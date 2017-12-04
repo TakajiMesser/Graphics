@@ -1,4 +1,4 @@
-﻿using Graphics.Mesh;
+﻿using Graphics.Meshes;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;

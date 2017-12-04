@@ -8,19 +8,17 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.IO;
 using Graphics;
-using Graphics.Mesh;
+using Graphics.Meshes;
+using Graphics.GameObjects;
+using Graphics.GameStates;
+using System.Runtime.InteropServices;
 
 namespace GraphicsTest
 {
     public class GameWindow : OpenTK.GameWindow
     {
         private ShaderProgram _program;
-
-        private Matrix4Uniform _modelMatrix;
-        private Matrix4Uniform _viewMatrix;
-        private Matrix4Uniform _projectionMatrix;
-
-        private Mesh _mesh;
+        private GameState _gameState;
 
         public GameWindow() : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -34,37 +32,24 @@ namespace GraphicsTest
 
         protected override void OnLoad(EventArgs e)
         {
+            WindowState = WindowState.Maximized;
+
             // Compile and load shaders
-            var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\vertex-shader.vs"));
-            var fragmentShader = new Shader(ShaderType.FragmentShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\fragment-shader.fs"));
+            var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-vertex-shader.glsl"));
+            var fragmentShader = new Shader(ShaderType.FragmentShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-fragment-shader.glsl"));
 
             _program = new ShaderProgram(vertexShader, fragmentShader);
+            _gameState = new GameState(new Camera("MainCamera", _program, Width, Height), _program);
 
             // Create simple triangle mesh to render on the display
-            var vertices = new List<MeshVertex>()
+            var triangle = new GameObject("Triangle")
             {
-                new MeshVertex(new Vector3(-1, -1, -1.5f), Vector3.Zero, Color4.Lime, Vector2.Zero),
-                new MeshVertex(new Vector3(-1, 1, -1.5f), Vector3.Zero, Color4.Red, Vector2.Zero),
-                new MeshVertex(new Vector3(1, -1, -1.5f), Vector3.Zero, Color4.Blue, Vector2.Zero)
+                Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Triangle.obj", _program),
+                Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One)
             };
+            triangle.Mesh.AddTestColors();
 
-            _mesh = new Mesh(vertices, new List<int>() { 0, 1, 2 }, _program);
-
-            _modelMatrix = new Matrix4Uniform("modelMatrix")
-            {
-                Matrix = Matrix4.Identity
-            };
-
-            _viewMatrix = new Matrix4Uniform("viewMatrix")
-            {
-                Matrix = Matrix4.Identity//Matrix4.LookAt(new Vector3(0, 0, 3), new Vector3(0, 0, 3) + new Vector3(0, 0, -1.0f), new Vector3(0, 1, 0))
-            };
-
-            // Specify the FOV
-            _projectionMatrix = new Matrix4Uniform("projectionMatrix")
-            {
-                Matrix = Matrix4.CreatePerspectiveFieldOfView((float)(Math.PI / 2), (float)Width / Height, 1.0f, 100.0f)
-            };
+            _gameState.AddGameObject(triangle);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -72,8 +57,20 @@ namespace GraphicsTest
             // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
             base.OnUpdateFrame(e);
 
-            var transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One);
-            _modelMatrix.Matrix *= transform.ToModelMatrix();
+            // For now, simply translate the mesh back and forth
+            var triangle = _gameState.GetByName("Triangle");
+            /*if (triangle.ModelMatrix.Matrix.M41 > 1.0f)
+            {
+                triangle.Transform = new Transform(new Vector3(-0.01f, 0, 0), Quaternion.Identity, Vector3.One);
+            }
+            else if (triangle.ModelMatrix.Matrix.M41 < -1.0f)
+            {
+                triangle.Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One);
+            }*/
+            //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromEulerAngles(0.0f, 0.1f, 0.0f), Vector3.One);
+            triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0.1f), Vector3.One);
+
+            _gameState.UpdateFrame();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -82,15 +79,9 @@ namespace GraphicsTest
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             _program.Use();
-
-            _modelMatrix.Set(_program);
-            _viewMatrix.Set(_program);
-            _projectionMatrix.Set(_program);
-
-            _mesh.Draw();
+            _gameState.RenderFrame();
 
             GL.UseProgram(0);
-
             SwapBuffers();
         }
     }

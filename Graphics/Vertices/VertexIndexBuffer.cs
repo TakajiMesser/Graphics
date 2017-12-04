@@ -5,60 +5,52 @@ using System.Text;
 using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.ES20;
+using OpenTK.Graphics.OpenGL;
 using Graphics.TwoDimensional;
 using Graphics.Helpers;
+using System.Runtime.InteropServices;
 
 namespace Graphics
 {
-    public class VertexBuffer<T> : IDisposable where T : struct
+    public class VertexIndexBuffer : IDisposable
     {
-        private readonly int _handle;
-        private readonly int _vertexSize;
-        private List<T> _vertices = new List<T>();
+        internal readonly int _handle;
+        private List<ushort> _indices = new List<ushort>();
 
-        public VertexBuffer()
+        public VertexIndexBuffer()
         {
-            _handle = GL.GenBuffer();
-            _vertexSize = VertexHelper.SizeOf<T>();
+            GL.GenBuffers(1, out _handle);
+            //_handle = GL.GenBuffer();
         }
 
-        public void AddVertex(T vertex)
+        public void AddIndex(ushort index)
         {
-            _vertices.Add(vertex);
+            _indices.Add(index);
         }
 
-        public void AddVertices(IEnumerable<T> vertices)
+        public void AddIndices(IEnumerable<ushort> indices)
         {
-            _vertices.AddRange(vertices);
+            _indices.AddRange(indices);
         }
 
         public void Clear()
         {
-            _vertices.Clear();
+            _indices.Clear();
         }
 
         public void Bind()
         {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _handle);
+            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
         }
 
         public void Buffer()
         {
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, _vertices.ToArray(), BufferUsageHint.StreamDraw);
+            GL.BufferData(BufferTarget.ElementArrayBuffer, Marshal.SizeOf<ushort>() * _indices.Count, _indices.ToArray(), BufferUsageHint.StreamDraw);
         }
 
         public void Draw()
         {
-            //GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Count);
-            //GL.DrawElements(PrimitiveType.Triangles, 0, DrawElementsType.UnsignedShort, )
-
-            /*glDrawElements(
-                 GL_TRIANGLES,      // mode
-                 indices.size(),    // count
-                 GL_UNSIGNED_INT,   // type
-                 (void*)0           // element array buffer offset
-             );*/
+            GL.DrawElements(PrimitiveType.Triangles, _indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
         }
 
         #region IDisposable Support
@@ -78,7 +70,7 @@ namespace Graphics
             }
         }
 
-        ~VertexBuffer()
+        ~VertexIndexBuffer()
         {
             Dispose(false);
         }

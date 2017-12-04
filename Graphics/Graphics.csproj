@@ -43,11 +43,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameObjects\Camera.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameStates\GameState.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
+    <Compile Include="Materials\Material.cs" />
     <Compile Include="Matrices\Transform.cs" />
     <Compile Include="Matrices\Matrix4Uniform.cs" />
-    <Compile Include="Mesh\MeshVertex.cs" />
-    <Compile Include="Mesh\Mesh.cs" />
+    <Compile Include="Meshes\MeshLoader.cs" />
+    <Compile Include="Meshes\MeshTriangle.cs" />
+    <Compile Include="Meshes\MeshVertex.cs" />
+    <Compile Include="Meshes\Mesh.cs" />
+    <Compile Include="Shaders\ShaderLoader.cs" />
     <Compile Include="Shaders\Shader.cs" />
     <Compile Include="Shaders\ShaderProgram.cs" />
     <Compile Include="TwoDimensional\LineSegment2.cs" />
@@ -67,16 +74,24 @@
     <Compile Include="Vertices\ColorVertex2.cs" />
     <Compile Include="Vertices\VertexArray.cs" />
     <Compile Include="Vertices\VertexAttribute.cs" />
+    <Compile Include="Vertices\VertexIndexBuffer.cs" />
     <Compile Include="Vertices\VertexBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Shaders\vertex-shader.vs" />
+    <None Include="Shaders\uv-fragment-shader.glsl" />
+    <None Include="Shaders\uv-vertex-shader.glsl" />
+    <None Include="Shaders\simple-vertex-shader.glsl" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Content Include="Shaders\fragment-shader.fs" />
+    <Folder Include="Lighting\" />
+    <Folder Include="Maps\" />
+    <Folder Include="Physics\" />
+    <Folder Include="Textures\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Shaders\simple-fragment-shader.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
