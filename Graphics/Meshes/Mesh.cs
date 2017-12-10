@@ -1,4 +1,5 @@
-﻿using Graphics.Materials;
+﻿using Graphics.Lighting;
+using Graphics.Materials;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -15,14 +16,15 @@ namespace Graphics.Meshes
     public class Mesh : IDisposable
     {
         public List<MeshVertex> _vertices = new List<MeshVertex>();
-        private List<Material> _materials = new List<Material>();
 
         private VertexArray<MeshVertex> _vertexArray;
-        private VertexBuffer<MeshVertex> _buffer;
+        private VertexBuffer<MeshVertex> _vertexBuffer;
+        private MaterialBuffer _materialBuffer;
+        private LightBuffer _lightBuffer;
         private VertexIndexBuffer _indexBuffer;
 
         private Mesh() { }
-        public Mesh(List<MeshVertex> vertices, List<int> triangleIndices, ShaderProgram program)
+        public Mesh(List<MeshVertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
             if (triangleIndices.Count % 3 != 0)
             {
@@ -34,10 +36,15 @@ namespace Graphics.Meshes
             _indexBuffer = new VertexIndexBuffer();
             _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
 
-            _buffer = new VertexBuffer<MeshVertex>();
-            _buffer.AddVertices(_vertices);
+            _lightBuffer = new LightBuffer("lights", program);
 
-            _vertexArray = new VertexArray<MeshVertex>(_buffer, program);
+            _materialBuffer = new MaterialBuffer("materials", program);
+            _materialBuffer.AddMaterials(materials);
+
+            _vertexBuffer = new VertexBuffer<MeshVertex>();
+            _vertexBuffer.AddVertices(_vertices);
+
+            _vertexArray = new VertexArray<MeshVertex>(_vertexBuffer, program);
         }
 
         public void AddTestColors()
@@ -46,37 +53,53 @@ namespace Graphics.Meshes
             {
                 if (i % 3 == 0)
                 {
-                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].Material);
+                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
                 else if (i % 3 == 1)
                 {
-                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Red, _vertices[i].TextureCoords, _vertices[i].Material);
+                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
                 else if (i % 3 == 2)
                 {
-                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].Material);
+                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
             }
 
-            _buffer.Clear();
-            _buffer.AddVertices(_vertices);
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertices(_vertices);
+
+            _lightBuffer.Clear();
+            _lightBuffer.AddLight(new Light()
+            {
+                Position = new Vector3(0.0f, 0.0f, -1.5f),
+                Radius = 5.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),//new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                //Attenuation = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 1.0f
+            });
         }
 
         public void Draw()
         {
             _vertexArray.Bind();
-            _buffer.Bind();
+            _vertexBuffer.Bind();
+            _materialBuffer.Bind();
+            _lightBuffer.Bind();
             _indexBuffer.Bind();
 
-            _buffer.Buffer();
+            _vertexBuffer.Buffer();
+            //_materialBuffer.Set();
+            _materialBuffer.Buffer();
+            _lightBuffer.Buffer();
             _indexBuffer.Buffer();
 
-            _buffer.Draw();
+            _vertexBuffer.Draw();
             _indexBuffer.Draw();
 
             GL.BindVertexArray(0);
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
             GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
         public void SaveToFile()
@@ -109,8 +132,8 @@ namespace Graphics.Meshes
                         case "mtllib":
                             foreach (var material in Material.LoadFromFile(Path.GetDirectoryName(path) + "\\" + values[1]))
                             {
-                                materialIndexByName.Add(material.Name, materials.Count);
-                                materials.Add(material);
+                                materialIndexByName.Add(material.Item1, materials.Count);
+                                materials.Add(material.Item2);
                             }
                             break;
                         case "usemtl":
@@ -149,11 +172,11 @@ namespace Graphics.Meshes
 
             for (var i = 0; i < vertexIndices.Count; i++)
             {
-                var meshVertex = new MeshVertex(vertices[vertexIndices[i]], normals[normalIndices[i]], uvs[uvIndices[i]], materials[materialIndices[i]]);
+                var meshVertex = new MeshVertex(vertices[vertexIndices[i]], normals[normalIndices[i]], uvs[uvIndices[i]], materialIndices[i]);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords
-                    && v.Material.Name == meshVertex.Material.Name);
+                    && v.MaterialIndex == meshVertex.MaterialIndex);
 
                 if (existingIndex >= 0)
                 {
@@ -166,7 +189,7 @@ namespace Graphics.Meshes
                 }
             }
 
-            var mesh = new Mesh(verticies, triangleIndices, program);
+            var mesh = new Mesh(verticies, materials, triangleIndices, program);
 
             return mesh;
         }

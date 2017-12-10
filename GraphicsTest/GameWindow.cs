@@ -12,6 +12,7 @@ using Graphics.Meshes;
 using Graphics.GameObjects;
 using Graphics.GameStates;
 using System.Runtime.InteropServices;
+using OpenTK.Input;
 
 namespace GraphicsTest
 {
@@ -19,6 +20,7 @@ namespace GraphicsTest
     {
         private ShaderProgram _program;
         private GameState _gameState;
+        private KeyboardState _keyState;
 
         public GameWindow() : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -33,6 +35,7 @@ namespace GraphicsTest
         protected override void OnLoad(EventArgs e)
         {
             WindowState = WindowState.Maximized;
+            //Size = new System.Drawing.Size(300, 300);
 
             // Compile and load shaders
             var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-vertex-shader.glsl"));
@@ -45,7 +48,7 @@ namespace GraphicsTest
             var triangle = new GameObject("Triangle")
             {
                 Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Triangle.obj", _program),
-                Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One)
+                //Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One)
             };
             triangle.Mesh.AddTestColors();
 
@@ -56,6 +59,8 @@ namespace GraphicsTest
         {
             // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
             base.OnUpdateFrame(e);
+
+            HandleInput();
 
             // For now, simply translate the mesh back and forth
             var triangle = _gameState.GetByName("Triangle");
@@ -68,7 +73,7 @@ namespace GraphicsTest
                 triangle.Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One);
             }*/
             //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromEulerAngles(0.0f, 0.1f, 0.0f), Vector3.One);
-            triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0.1f), Vector3.One);
+            //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0.1f), Vector3.One);
 
             _gameState.UpdateFrame();
         }
@@ -83,6 +88,57 @@ namespace GraphicsTest
 
             GL.UseProgram(0);
             SwapBuffers();
+
+            PollForInput();
+        }
+
+        private void HandleInput()
+        {
+            if (_keyState.IsKeyDown(Key.Escape))
+            {
+                Close();
+            }
+
+            Vector3 translation = new Vector3();
+            float zoom = 0.0f;
+
+            if (_keyState.IsKeyDown(Key.W))
+            {
+                translation.Y -= 0.1f;
+            }
+
+            if (_keyState.IsKeyDown(Key.A))
+            {
+                translation.X += 0.1f;
+            }
+
+            if (_keyState.IsKeyDown(Key.S))
+            {
+                translation.Y += 0.1f;
+            }
+
+            if (_keyState.IsKeyDown(Key.D))
+            {
+                translation.X -= 0.1f;
+            }
+
+            if (_keyState.IsKeyDown(Key.Up))
+            {
+                zoom -= 0.02f;
+            }
+
+            if (_keyState.IsKeyDown(Key.Down))
+            {
+                zoom += 0.02f;
+            }
+
+            _gameState.Camera.View.Matrix *= Matrix4.CreateTranslation(translation);
+            _gameState.Camera.AdjustFieldOfView(zoom, Width, Height);
+        }
+
+        private void PollForInput()
+        {
+            _keyState = Keyboard.GetState();
         }
     }
 }

@@ -11,9 +11,9 @@ namespace Graphics.GameObjects
     public class GameObject
     {
         public string Name { get; private set; }
-        public Transform Transform { get; set; }
         public Mesh Mesh { get; set; }
-        public Matrix4Uniform ModelMatrix { get => _modelMatrix; set => _modelMatrix = value; }
+        public Transform Transform { get; set; }
+        public Vector3 Position => _modelMatrix.Matrix.Column3.Xyz;
 
         internal ShaderProgram _program;
         private Matrix4Uniform _modelMatrix;

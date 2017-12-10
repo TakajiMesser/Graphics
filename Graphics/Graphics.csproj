@@ -44,9 +44,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObjects\Camera.cs" />
+    <Compile Include="GameObjects\Player.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
+    <Compile Include="Lighting\Light.cs" />
+    <Compile Include="Lighting\LightBuffer.cs" />
+    <Compile Include="Maps\Map.cs" />
+    <Compile Include="Materials\MaterialBuffer.cs" />
     <Compile Include="Materials\Material.cs" />
     <Compile Include="Matrices\Transform.cs" />
     <Compile Include="Matrices\Matrix4Uniform.cs" />
@@ -85,8 +90,6 @@
     <None Include="Shaders\simple-vertex-shader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Lighting\" />
-    <Folder Include="Maps\" />
     <Folder Include="Physics\" />
     <Folder Include="Textures\" />
   </ItemGroup>

@@ -47,7 +47,8 @@ namespace Graphics.Helpers
             {
                 new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, SizeOf<MeshVertex>(), 0),
                 new VertexAttribute("vNormal", 3, VertexAttribPointerType.Float, SizeOf<MeshVertex>(), 12),
-                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, SizeOf<MeshVertex>(), 24)
+                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, SizeOf<MeshVertex>(), 24),
+                new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, SizeOf<MeshVertex>(), 40)
             });
     }
 }
