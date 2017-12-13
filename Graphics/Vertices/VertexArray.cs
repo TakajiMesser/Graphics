@@ -6,11 +6,10 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
-//using OpenTK.Graphics.ES20;
 using Graphics.TwoDimensional;
 using Graphics.Helpers;
 
-namespace Graphics
+namespace Graphics.Vertices
 {
     public class VertexArray<T> : IDisposable where T : struct
     {

@@ -1,5 +1,6 @@
 ﻿using Graphics.Lighting;
 using Graphics.Materials;
+using Graphics.Vertices;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -15,16 +16,16 @@ namespace Graphics.Meshes
 {
     public class Mesh : IDisposable
     {
-        private List<MeshVertex> _vertices = new List<MeshVertex>();
-        private VertexArray<MeshVertex> _vertexArray;
-        private VertexBuffer<MeshVertex> _vertexBuffer;
+        private List<Vertex> _vertices = new List<Vertex>();
+        private VertexArray<Vertex> _vertexArray;
+        private VertexBuffer<Vertex> _vertexBuffer;
         private MaterialBuffer _materialBuffer;
         private LightBuffer _lightBuffer;
         private VertexIndexBuffer _indexBuffer;
 
-        public IEnumerable<MeshVertex> Vertices => _vertices;
+        public IEnumerable<Vertex> Vertices => _vertices;
 
-        public Mesh(List<MeshVertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
+        public Mesh(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
             if (triangleIndices.Count % 3 != 0)
             {
@@ -41,10 +42,10 @@ namespace Graphics.Meshes
             _materialBuffer = new MaterialBuffer("materials", program);
             _materialBuffer.AddMaterials(materials);
 
-            _vertexBuffer = new VertexBuffer<MeshVertex>();
+            _vertexBuffer = new VertexBuffer<Vertex>();
             _vertexBuffer.AddVertices(_vertices);
 
-            _vertexArray = new VertexArray<MeshVertex>(_vertexBuffer, program);
+            _vertexArray = new VertexArray<Vertex>(_vertexBuffer, program);
         }
 
         public void AddTestColors()
@@ -53,15 +54,15 @@ namespace Graphics.Meshes
             {
                 if (i % 3 == 0)
                 {
-                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
+                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
                 else if (i % 3 == 1)
                 {
-                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
+                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
                 else if (i % 3 == 2)
                 {
-                    _vertices[i] = new MeshVertex(_vertices[i].Position, _vertices[i].Normal, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
+                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
             }
 
@@ -169,12 +170,12 @@ namespace Graphics.Meshes
                 }
             }
 
-            var verticies = new List<MeshVertex>();
+            var verticies = new List<Vertex>();
             var triangleIndices = new List<int>();
 
             for (var i = 0; i < vertexIndices.Count; i++)
             {
-                var meshVertex = new MeshVertex(vertices[vertexIndices[i]], normals[normalIndices[i]], uvs[uvIndices[i]], materialIndices[i]);
+                var meshVertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], uvs[uvIndices[i]], materialIndices[i]);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords

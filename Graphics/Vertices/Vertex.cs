@@ -8,17 +8,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Graphics.Meshes
+namespace Graphics.Vertices
 {
-    public struct MeshVertex
+    public struct Vertex
     {
-        public Vector3 Position { get;  set; }
-        public Vector3 Normal { get;  set; }
-        public Color4 Color { get;  set; }
-        public Vector2 TextureCoords { get;  set; }
-        public int MaterialIndex { get;  set; }
+        public Vector3 Position { get; set; }
+        public Vector3 Normal { get; set; }
+        public Color4 Color { get; set; }
+        public Vector2 TextureCoords { get; set; }
+        public int MaterialIndex { get; set; }
 
-        public MeshVertex(Vector3 position, Vector3 normal, Vector2 textureCoords, int materialIndex)
+        public Vertex(Vector3 position, Vector3 normal, Vector2 textureCoords, int materialIndex)
         {
             Position = position;
             Normal = normal;
@@ -27,7 +27,7 @@ namespace Graphics.Meshes
             MaterialIndex = materialIndex;
         }
 
-        public MeshVertex(Vector3 position, Vector3 normal, Color4 color, Vector2 textureCoords, int materialIndex)
+        public Vertex(Vector3 position, Vector3 normal, Color4 color, Vector2 textureCoords, int materialIndex)
         {
             Position = position;
             Normal = normal;

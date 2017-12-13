@@ -10,7 +10,7 @@ using Graphics.TwoDimensional;
 using Graphics.Helpers;
 using System.Runtime.InteropServices;
 
-namespace Graphics
+namespace Graphics.Vertices
 {
     public class VertexIndexBuffer : IDisposable
     {

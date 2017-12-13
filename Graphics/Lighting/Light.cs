@@ -15,7 +15,6 @@ namespace Graphics.Lighting
         public Vector3 Position { get; set; }
         public float Radius { get; set; }
         public Vector3 Color { get; set; }
-        //public Vector3 Attenuation { get; set; }
         public float Intensity { get; set; }
     }
 }

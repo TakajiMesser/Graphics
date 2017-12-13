@@ -8,7 +8,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using Graphics.TwoDimensional;
 
-namespace Graphics
+namespace Graphics.Vertices
 {
     public class VertexAttribute
     {

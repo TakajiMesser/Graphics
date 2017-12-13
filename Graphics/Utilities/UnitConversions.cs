@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -21,5 +22,12 @@ namespace Graphics.Utilities
         /// <param name="radians">Radians value to convert</param>
         /// <returns>Converted value in degrees</returns>
         public static double RadiansToDegrees(double radians) => radians * 180 / Math.PI;
+
+        /// <summary>
+        /// Calculates the size of an unmanaged type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns>The size, in bytes</returns>
+        public static int SizeOf<T>() where T : struct => Marshal.SizeOf(typeof(T));
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Graphics.Meshes;
+using Graphics.Vertices;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -19,7 +20,7 @@ namespace Graphics.Physics.Collision
             Radius = radius;
         }
 
-        public BoundingSphere(IEnumerable<MeshVertex> vertices)
+        public BoundingSphere(IEnumerable<Vertex> vertices)
         {
             var maxDistanceSquared = vertices.Select(v => v.Position.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);

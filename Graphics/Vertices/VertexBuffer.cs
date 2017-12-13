@@ -8,8 +8,9 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
 using Graphics.TwoDimensional;
 using Graphics.Helpers;
+using Graphics.Utilities;
 
-namespace Graphics
+namespace Graphics.Vertices
 {
     public class VertexBuffer<T> : IDisposable where T : struct
     {
@@ -20,7 +21,7 @@ namespace Graphics
         public VertexBuffer()
         {
             _handle = GL.GenBuffer();
-            _vertexSize = VertexHelper.SizeOf<T>();
+            _vertexSize = UnitConversions.SizeOf<T>();
         }
 
         public void AddVertex(T vertex)

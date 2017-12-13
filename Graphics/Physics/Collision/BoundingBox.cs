@@ -1,4 +1,5 @@
 ﻿using Graphics.Meshes;
+using Graphics.Vertices;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,7 @@ namespace Graphics.Physics.Collision
             MaxXMaxY = maxXMaxY;
         }
 
-        public BoundingBox(IEnumerable<MeshVertex> vertices)
+        public BoundingBox(IEnumerable<Vertex> vertices)
         {
 
         }
