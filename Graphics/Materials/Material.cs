@@ -12,16 +12,12 @@ namespace Graphics.Materials
     public struct Material
     {
         // Ambient light is the light that enters a room and bounces around multiple times
-        // Ambient light = illuminance * light ambient color * ambient material
         public Vector4 Ambient { get; set; }
 
         // Diffuse light is the direct light hitting a surface
-        // Diffuse light = illuminance * max(0, dot(light direction, surface normal vector)) * light diffuse color * diffuse material
         public Vector4 Diffuse { get; set; }
 
         // Specular light is the white highlight reflection seen on smooth, shiny objects
-        // Specular light = illuminance * max(0, dot(perfect reflection vector, vector towards viewer)) ^ shininess coefficient * light specular color * specular material
-        // NOTE if dot(light direction, surface normal vector) is <= 0, then specular light color is zero
         public Vector3 Specular { get; set; }
 
         public float SpecularExponent { get; set; }

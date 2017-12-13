@@ -15,15 +15,15 @@ namespace Graphics.Meshes
 {
     public class Mesh : IDisposable
     {
-        public List<MeshVertex> _vertices = new List<MeshVertex>();
-
+        private List<MeshVertex> _vertices = new List<MeshVertex>();
         private VertexArray<MeshVertex> _vertexArray;
         private VertexBuffer<MeshVertex> _vertexBuffer;
         private MaterialBuffer _materialBuffer;
         private LightBuffer _lightBuffer;
         private VertexIndexBuffer _indexBuffer;
 
-        private Mesh() { }
+        public IEnumerable<MeshVertex> Vertices => _vertices;
+
         public Mesh(List<MeshVertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
             if (triangleIndices.Count % 3 != 0)
@@ -67,15 +67,17 @@ namespace Graphics.Meshes
 
             _vertexBuffer.Clear();
             _vertexBuffer.AddVertices(_vertices);
+        }
 
+        public void AddTestLight()
+        {
             _lightBuffer.Clear();
             _lightBuffer.AddLight(new Light()
             {
-                Position = new Vector3(0.0f, 0.0f, -1.5f),
-                Radius = 5.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),//new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
-                //Attenuation = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 1.0f
+                Position = new Vector3(0.0f, 0.0f, 0.0f),
+                Radius = 3.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 0.5f
             });
         }
 

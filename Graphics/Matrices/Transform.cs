@@ -12,9 +12,9 @@ namespace Graphics
 {
     public class Transform
     {
-        public Vector3 Translation { get; set; }
-        public Quaternion Rotation { get; set; }
-        public Vector3 Scale { get; set; }
+        public Vector3 Translation { get; set; } = Vector3.Zero;
+        public Quaternion Rotation { get; set; } = Quaternion.Identity;
+        public Vector3 Scale { get; set; } = Vector3.One;
 
         public Transform() { }
         public Transform(Vector3 translation, Quaternion rotation, Vector3 scale)
@@ -37,6 +37,30 @@ namespace Graphics
         {
             //int location = program.GetUniformLocation(_name);
             //GL.UniformMatrix4(location, false, ref _matrix);
+        }
+
+        public static Transform FromTranslation(Vector3 translation)
+        {
+            return new Transform()
+            {
+                Translation = translation
+            };
+        }
+
+        public static Transform FromRotation(Quaternion rotation)
+        {
+            return new Transform()
+            {
+                Rotation = rotation
+            };
+        }
+
+        public static Transform FromScale(Vector3 scale)
+        {
+            return new Transform()
+            {
+                Scale = scale
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,59 +10,74 @@ namespace Graphics.GameObjects
 {
     public class Camera
     {
-        public const float MAX_FIELD_OF_VIEW = 2.0f;
-        public const float MIN_FIELD_OF_VIEW = 1.0f;
+        public const float ZNEAR = -1.0f;
+        public const float ZFAR = 1.0f;
 
         private string _name;
         private ShaderProgram _program;
         private Matrix4Uniform _viewMatrix;
         private Matrix4Uniform _projectionMatrix;
-        private float _fieldOfView = (float)Math.PI / 2.0f;
+        private GameObject _attachedObject;
+
+        private float _aspectRatio;
+        private int _width = 20;
 
         public Matrix4Uniform View => _viewMatrix;
         public Matrix4Uniform Projection => _projectionMatrix;
-        public float FieldOfView => _fieldOfView;
         public Transform Transform { get; set; }
 
-        public Camera(string name, ShaderProgram program, float width, float height)
+        public Camera(string name, ShaderProgram program, int width, int height)
         {
             _name = name;
             _program = program;
+            _aspectRatio = (float)width / height;
 
             _viewMatrix = new Matrix4Uniform("viewMatrix")
             {
-                Matrix = Matrix4.Identity//Matrix4.LookAt(new Vector3(0, 0, 3), new Vector3(0, 0, 3) + new Vector3(0, 0, -1.0f), new Vector3(0, 1, 0))
+                Matrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY)
             };
 
-            // Specify the FOV
             _projectionMatrix = new Matrix4Uniform("projectionMatrix")
             {
-                Matrix = Matrix4.CreatePerspectiveFieldOfView(FieldOfView, width / height, 1.0f, 100.0f)
+                Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR)
             };
+        }
+
+        public void UpdateAspectRatio(int width, int height)
+        {
+            _aspectRatio = (float)width / height;
+            _projectionMatrix.Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR);
         }
 
         public void OnUpdateFrame()
         {
             /*if (Transform != null)
             {
-                ModelMatrix.Matrix *= Transform.ToModelMatrix();
+                _viewMatrix.Matrix *= Matrix4.CreateTranslation(Transform.Translation);
             }*/
-
-            if (Transform != null)
+            
+            if (_attachedObject != null)
             {
-                _viewMatrix.Matrix *= Matrix4.CreateTranslation(Transform.Translation);// Transform.ToModelMatrix();
+                var viewMatrix = _viewMatrix.Matrix.ClearTranslation();
+                viewMatrix.M41 = -_attachedObject.Position.X;
+                viewMatrix.M42 = -_attachedObject.Position.Y;
+
+                _viewMatrix.Matrix = viewMatrix;
+                //_viewMatrix.Matrix *= Transform.FromTranslation(new Vector3(-_attachedObject.Position.X, -_attachedObject.Position.Y, 0.0f)).ToModelMatrix();
             }
         }
 
-        public void AdjustFieldOfView(float amount, int width, int height)
+        public void OnHandleInput(KeyboardState keyState, MouseState mouseState, KeyboardState previousKeyState, MouseState previousMouseState)
         {
-            float fieldOfView = _fieldOfView + amount;
+            float amount = (previousMouseState.Wheel - mouseState.Wheel) * 1.0f;
+            _width += (int)amount;
 
-            if (fieldOfView < MAX_FIELD_OF_VIEW && fieldOfView > MIN_FIELD_OF_VIEW)
-            {
-                _fieldOfView = fieldOfView;
-                _projectionMatrix.Matrix = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, width / height, 1.0f, 100.0f);
-            }
+            _projectionMatrix.Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR);
+        }
+
+        public void AttachToObject(GameObject gameObject)
+        {
+            _attachedObject = gameObject;
         }
 
         public void OnRenderFrame()

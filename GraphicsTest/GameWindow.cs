@@ -13,6 +13,7 @@ using Graphics.GameObjects;
 using Graphics.GameStates;
 using System.Runtime.InteropServices;
 using OpenTK.Input;
+using Graphics.Physics.Collision;
 
 namespace GraphicsTest
 {
@@ -21,6 +22,9 @@ namespace GraphicsTest
         private ShaderProgram _program;
         private GameState _gameState;
         private KeyboardState _keyState;
+        private KeyboardState _previousKeyState;
+        private MouseState _mouseState;
+        private MouseState _previousMouseState;
 
         public GameWindow() : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -30,27 +34,40 @@ namespace GraphicsTest
         protected override void OnResize(EventArgs e)
         {
             GL.Viewport(0, 0, Width, Height);
+            _gameState.UpdateAspectRatio(Width, Height);
         }
 
         protected override void OnLoad(EventArgs e)
         {
-            WindowState = WindowState.Maximized;
-            //Size = new System.Drawing.Size(300, 300);
+            //WindowState = WindowState.Maximized;
+            Size = new System.Drawing.Size(300, 300);
 
             // Compile and load shaders
             var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-vertex-shader.glsl"));
             var fragmentShader = new Shader(ShaderType.FragmentShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-fragment-shader.glsl"));
 
             _program = new ShaderProgram(vertexShader, fragmentShader);
-            _gameState = new GameState(new Camera("MainCamera", _program, Width, Height), _program);
+
+            var player = new Player()
+            {
+                Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Cube.obj", _program)
+            };
+            player.Collider = new BoundingSphere(player.Mesh.Vertices);
+            player.Mesh.AddTestColors();
+            player.Mesh.AddTestLight();
+            player.Position = new Vector3(0.0f, 0.0f, -1.0f);
+
+            _gameState = new GameState(player, new Camera("MainCamera", _program, Width, Height), _program);
+            _gameState.Camera.AttachToObject(player);
 
             // Create simple triangle mesh to render on the display
             var triangle = new GameObject("Triangle")
             {
-                Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Triangle.obj", _program),
-                //Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One)
+                Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Triangle.obj", _program),
             };
+            triangle.Collider = new BoundingSphere(triangle.Mesh.Vertices);
             triangle.Mesh.AddTestColors();
+            triangle.Position = new Vector3(2.0f, 2.0f, -1.0f);
 
             _gameState.AddGameObject(triangle);
         }
@@ -61,9 +78,10 @@ namespace GraphicsTest
             base.OnUpdateFrame(e);
 
             HandleInput();
+            _gameState.HandleInput();
 
             // For now, simply translate the mesh back and forth
-            var triangle = _gameState.GetByName("Triangle");
+            //var triangle = _gameState.GetByName("Triangle");
             /*if (triangle.ModelMatrix.Matrix.M41 > 1.0f)
             {
                 triangle.Transform = new Transform(new Vector3(-0.01f, 0, 0), Quaternion.Identity, Vector3.One);
@@ -98,47 +116,15 @@ namespace GraphicsTest
             {
                 Close();
             }
-
-            Vector3 translation = new Vector3();
-            float zoom = 0.0f;
-
-            if (_keyState.IsKeyDown(Key.W))
-            {
-                translation.Y -= 0.1f;
-            }
-
-            if (_keyState.IsKeyDown(Key.A))
-            {
-                translation.X += 0.1f;
-            }
-
-            if (_keyState.IsKeyDown(Key.S))
-            {
-                translation.Y += 0.1f;
-            }
-
-            if (_keyState.IsKeyDown(Key.D))
-            {
-                translation.X -= 0.1f;
-            }
-
-            if (_keyState.IsKeyDown(Key.Up))
-            {
-                zoom -= 0.02f;
-            }
-
-            if (_keyState.IsKeyDown(Key.Down))
-            {
-                zoom += 0.02f;
-            }
-
-            _gameState.Camera.View.Matrix *= Matrix4.CreateTranslation(translation);
-            _gameState.Camera.AdjustFieldOfView(zoom, Width, Height);
         }
 
         private void PollForInput()
         {
+            _previousKeyState = _keyState;
+            _previousMouseState = _mouseState;
+
             _keyState = Keyboard.GetState();
+            _mouseState = Mouse.GetState();
         }
     }
 }

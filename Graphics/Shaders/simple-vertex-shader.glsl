@@ -46,15 +46,26 @@ flat out int fMaterialIndex;
 
 void main()
 {
-    gl_Position = modelMatrix * viewMatrix * projectionMatrix * vec4(vPosition, 1.0f);
+    gl_Position = modelMatrix * viewMatrix * projectionMatrix * vec4(vPosition, 1.0);
     
-	fPosition = (modelMatrix * vec4(vPosition, 1.0f)).xyz;
-	fNormal = (viewMatrix * modelMatrix * vec4(vNormal, 0.0f)).xyz;
-	fCameraDirection = vec3(0.0f, 0.0f, 0.0f) - (viewMatrix * modelMatrix * vec4(vPosition, 1.0f)).xyz;
-	
+	fPosition = (modelMatrix * vec4(vPosition, 1.0)).xyz;
+	//fNormal = (viewMatrix * modelMatrix * vec4(vNormal, 0.0)).xyz;
+	fNormal = (modelMatrix * vec4(vNormal, 0.0)).xyz;
+
+	// Model matrix maps vertices from "model coordinates" to "world coordinates"
+	vec4 vertexPosition_world = modelMatrix * vec4(vPosition, 1.0);
+
+	// This is the vector from the current vertex to the camera
+	fCameraDirection = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - vertexPosition_world.xyz;
+	//fCameraDirection = vec3(0,0,0) - (viewMatrix * modelMatrix * vec4(vPosition, 1.0)).xyz;
+
 	for (int i = 0; i < MAX_LIGHTS; i++)
 	{
-		fLightDirections[i] = (viewMatrix * vec4(lights[i].position, 1.0f)).xyz + fCameraDirection;
+		// Wouldn't we want the direction that the light is coming from? This would be the current position MINUS the light source
+		// This is the vector from the current vertex TO the light source
+		fLightDirections[i] = lights[i].position - vertexPosition_world.xyz;
+
+		//fLightDirections[i] = (viewMatrix * vec4(lights[i].position, 1.0)).xyz + fCameraDirection;
 	}
 	
 	fUV = vUV;
