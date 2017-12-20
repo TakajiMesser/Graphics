@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using Graphics.TwoDimensional;
+using Graphics.Geometry.TwoDimensional;
+using Graphics.Rendering.Shaders;
 
 namespace Graphics
 {
@@ -31,12 +32,18 @@ namespace Graphics
             var rotationMatrix = Matrix4.CreateFromQuaternion(Rotation);
 
             return translationMatrix * rotationMatrix * scaleMatrix;
+            //return rotationMatrix * translationMatrix * scaleMatrix;
         }
 
         public void Set(ShaderProgram program)
         {
             //int location = program.GetUniformLocation(_name);
             //GL.UniformMatrix4(location, false, ref _matrix);
+        }
+
+        public void PerformRotationInPlace(Quaternion rotation)
+        {
+
         }
 
         public static Transform FromTranslation(Vector3 translation)

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Graphics.OpenGL;
+using Graphics.Rendering.Buffers;
 
 namespace Graphics.Brushes
 {
@@ -28,7 +29,7 @@ namespace Graphics.Brushes
             _vertexArray.Bind();
             _vertexBuffer.Bind();
             _materialBuffer.Bind();
-            _lightBuffer.Bind();
+            //_lightBuffer.Bind();
             _indexBuffer.Bind();
 
             _vertexBuffer.Buffer();

@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
-using Graphics.TwoDimensional;
+using Graphics.Geometry.TwoDimensional;
 using Graphics.Helpers;
+using Graphics.Rendering.Buffers;
+using Graphics.Rendering.Shaders;
 
 namespace Graphics.Vertices
 {
-    public class VertexArray<T> : IDisposable where T : struct
+    public class VertexArray<T> : IDisposable, IBindable where T : struct
     {
         private readonly int _handle;
         private readonly VertexBuffer<T> _buffer;
@@ -21,14 +23,15 @@ namespace Graphics.Vertices
 
         public VertexArray(VertexBuffer<T> buffer, ShaderProgram program)
         {
+            _buffer = buffer;
+
             if (_generated)
             {
                 GL.DeleteVertexArrays(1, ref _handle);
             }
 
-            GL.GenVertexArrays(1, out _handle);
+            _handle = GL.GenVertexArray();
             _generated = true;
-            _buffer = buffer;
 
             Bind();
             buffer.Bind();
@@ -38,8 +41,8 @@ namespace Graphics.Vertices
                 attribute.Set(program);
             }
 
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+            Unbind();
+            buffer.Unbind();
         }
 
         public void Bind()
@@ -47,7 +50,7 @@ namespace Graphics.Vertices
             GL.BindVertexArray(_handle);
         }
 
-        public void UnBind()
+        public void Unbind()
         {
             GL.BindVertexArray(0);
         }

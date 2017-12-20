@@ -22,6 +22,7 @@ namespace Graphics.Utilities
         /// <param name="radians">Radians value to convert</param>
         /// <returns>Converted value in degrees</returns>
         public static double RadiansToDegrees(double radians) => radians * 180 / Math.PI;
+        public static float RadiansToDegrees(float radians) => (float)(radians * 180 / Math.PI);
 
         /// <summary>
         /// Calculates the size of an unmanaged type

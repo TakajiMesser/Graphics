@@ -1,5 +1,6 @@
 ﻿using Graphics.Meshes;
 using Graphics.Physics.Collision;
+using Graphics.Rendering.Shaders;
 using OpenTK;
 using OpenTK.Input;
 using System;
@@ -12,22 +13,30 @@ namespace Graphics.GameObjects
 {
     public class GameObject
     {
+        internal ShaderProgram _program;
+        private Matrix4Uniform _modelMatrix;
+
         public string Name { get; private set; }
         public Mesh Mesh { get; set; }
-        public Transform Transform { get; set; }
+        public Transform Transform { get; set; } = new Transform();
+        public ICollider Collider { get; set; }
         public Vector3 Position
         {
             get => new Vector3(_modelMatrix.Matrix.M41, _modelMatrix.Matrix.M42, _modelMatrix.Matrix.M43);
             set
             {
                 _modelMatrix.Matrix = Transform.FromTranslation(value).ToModelMatrix();
-                Collider.Center = value;
+
+                if (Collider != null)
+                {
+                    Collider.Center = value;
+                }
             }
         }
-        public ICollider Collider { get; set; }
-
-        internal ShaderProgram _program;
-        private Matrix4Uniform _modelMatrix;
+        public Quaternion Rotation
+        {
+            get => new Quaternion();
+        }
 
         public GameObject(string name)
         {
@@ -67,19 +76,32 @@ namespace Graphics.GameObjects
         {
             if (Transform != null && (Transform.Translation != Vector3.Zero || Transform.Rotation != Quaternion.Identity || Transform.Scale != Vector3.One))
             {
-                var newModel = _modelMatrix.Matrix * Transform.ToModelMatrix();
-                Collider.Center = new Vector3(newModel.M41, newModel.M42, newModel.M43);
+                // Translate back to the origin, in order to first perform the rotation, then translate back into place
+                var position = new Vector3(_modelMatrix.Matrix.M41, _modelMatrix.Matrix.M42, _modelMatrix.Matrix.M43);
 
-                foreach (var collider in colliders)
+                _modelMatrix.Matrix *= Matrix4.CreateTranslation(-position);
+                _modelMatrix.Matrix *= Matrix4.CreateFromQuaternion(Transform.Rotation);
+                _modelMatrix.Matrix *= Matrix4.CreateTranslation(position);
+
+                _modelMatrix.Matrix *= Matrix4.CreateScale(Transform.Scale);
+
+                var translatedModel = _modelMatrix.Matrix * Matrix4.CreateTranslation(Transform.Translation);
+
+                if (Collider != null)
                 {
-                    if (Collider.CollidesWith((BoundingSphere)collider))
+                    Collider.Center = new Vector3(translatedModel.M41, translatedModel.M42, translatedModel.M43);
+
+                    foreach (var collider in colliders)
                     {
-                        //Collider.Center = Position;
-                        //return;
+                        if (Collider.CollidesWith((BoundingSphere)collider))
+                        {
+                            Collider.Center = Position;
+                            return;
+                        }
                     }
                 }
 
-                _modelMatrix.Matrix *= Transform.ToModelMatrix();
+                _modelMatrix.Matrix = translatedModel;
             }
         }
 

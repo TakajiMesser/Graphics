@@ -1,10 +1,12 @@
 ﻿using OpenTK;
 using OpenTK.Input;
+using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Graphics.Rendering.Shaders;
 
 namespace Graphics.GameObjects
 {
@@ -15,15 +17,15 @@ namespace Graphics.GameObjects
 
         private string _name;
         private ShaderProgram _program;
-        private Matrix4Uniform _viewMatrix;
-        private Matrix4Uniform _projectionMatrix;
-        private GameObject _attachedObject;
+        public Matrix4Uniform _viewMatrix;
+        public Matrix4Uniform _projectionMatrix;
 
         private float _aspectRatio;
-        private int _width = 20;
+        private float _width = 20.0f;
+        //private Matrix4 _zoomScale = Matrix4.Identity;
+        //private float _scaleAmount = 1.0f;
 
-        public Matrix4Uniform View => _viewMatrix;
-        public Matrix4Uniform Projection => _projectionMatrix;
+        public GameObject AttachedObject { get; set; }
         public Transform Transform { get; set; }
 
         public Camera(string name, ShaderProgram program, int width, int height)
@@ -51,33 +53,24 @@ namespace Graphics.GameObjects
 
         public void OnUpdateFrame()
         {
-            /*if (Transform != null)
+            if (AttachedObject != null)
             {
-                _viewMatrix.Matrix *= Matrix4.CreateTranslation(Transform.Translation);
-            }*/
-            
-            if (_attachedObject != null)
-            {
-                var viewMatrix = _viewMatrix.Matrix.ClearTranslation();
-                viewMatrix.M41 = -_attachedObject.Position.X;
-                viewMatrix.M42 = -_attachedObject.Position.Y;
+                var viewMatrix = _viewMatrix.Matrix;
+                viewMatrix.M41 = -AttachedObject.Position.X;
+                viewMatrix.M42 = -AttachedObject.Position.Y;
 
                 _viewMatrix.Matrix = viewMatrix;
-                //_viewMatrix.Matrix *= Transform.FromTranslation(new Vector3(-_attachedObject.Position.X, -_attachedObject.Position.Y, 0.0f)).ToModelMatrix();
             }
         }
 
         public void OnHandleInput(KeyboardState keyState, MouseState mouseState, KeyboardState previousKeyState, MouseState previousMouseState)
         {
             float amount = (previousMouseState.Wheel - mouseState.Wheel) * 1.0f;
-            _width += (int)amount;
-
-            _projectionMatrix.Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR);
-        }
-
-        public void AttachToObject(GameObject gameObject)
-        {
-            _attachedObject = gameObject;
+            if (amount > 0.0f || amount < 0.0f)
+            {
+                _width += amount;
+                _projectionMatrix.Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR);
+            }
         }
 
         public void OnRenderFrame()

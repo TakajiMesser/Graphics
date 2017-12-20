@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using Graphics.TwoDimensional;
+using Graphics.Geometry.TwoDimensional;
+using Graphics.Rendering.Shaders;
 
 namespace Graphics.Vertices
 {

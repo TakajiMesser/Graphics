@@ -14,6 +14,9 @@ using Graphics.GameStates;
 using System.Runtime.InteropServices;
 using OpenTK.Input;
 using Graphics.Physics.Collision;
+using Graphics.Helpers;
+using Graphics.Maps;
+using Graphics.Rendering.Shaders;
 
 namespace GraphicsTest
 {
@@ -43,33 +46,15 @@ namespace GraphicsTest
             Size = new System.Drawing.Size(300, 300);
 
             // Compile and load shaders
-            var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-vertex-shader.glsl"));
-            var fragmentShader = new Shader(ShaderType.FragmentShader, File.ReadAllText(@"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Shaders\simple-fragment-shader.glsl"));
+            var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.VERTEX_SHADER_PATH));
+            var fragmentShader = new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FRAGMENT_SHADER_PATH));
 
             _program = new ShaderProgram(vertexShader, fragmentShader);
 
-            var player = new Player()
-            {
-                Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Cube.obj", _program)
-            };
-            player.Collider = new BoundingSphere(player.Mesh.Vertices);
-            player.Mesh.AddTestColors();
-            player.Mesh.AddTestLight();
-            player.Position = new Vector3(0.0f, 0.0f, -1.0f);
+            //Map.SaveTestMap();
+            var loadedMap = Map.Load(FilePathHelper.MAP_PATH);
 
-            _gameState = new GameState(player, new Camera("MainCamera", _program, Width, Height), _program);
-            _gameState.Camera.AttachToObject(player);
-
-            // Create simple triangle mesh to render on the display
-            var triangle = new GameObject("Triangle")
-            {
-                Mesh = Mesh.LoadFromFile(@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Triangle.obj", _program),
-            };
-            triangle.Collider = new BoundingSphere(triangle.Mesh.Vertices);
-            triangle.Mesh.AddTestColors();
-            triangle.Position = new Vector3(2.0f, 2.0f, -1.0f);
-
-            _gameState.AddGameObject(triangle);
+            _gameState = new GameState(_program, loadedMap, this);
         }
 
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -79,20 +64,6 @@ namespace GraphicsTest
 
             HandleInput();
             _gameState.HandleInput();
-
-            // For now, simply translate the mesh back and forth
-            //var triangle = _gameState.GetByName("Triangle");
-            /*if (triangle.ModelMatrix.Matrix.M41 > 1.0f)
-            {
-                triangle.Transform = new Transform(new Vector3(-0.01f, 0, 0), Quaternion.Identity, Vector3.One);
-            }
-            else if (triangle.ModelMatrix.Matrix.M41 < -1.0f)
-            {
-                triangle.Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One);
-            }*/
-            //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromEulerAngles(0.0f, 0.1f, 0.0f), Vector3.One);
-            //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0.1f), Vector3.One);
-
             _gameState.UpdateFrame();
         }
 

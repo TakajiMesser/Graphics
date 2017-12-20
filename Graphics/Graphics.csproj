@@ -35,6 +35,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -43,66 +44,77 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BehaviorTrees\BehaviorTreeExtensions.cs" />
-    <Compile Include="BehaviorTrees\INode.cs" />
-    <Compile Include="BehaviorTrees\LeafNode.cs" />
-    <Compile Include="BehaviorTrees\DecoratorNode.cs" />
-    <Compile Include="BehaviorTrees\SequenceNode.cs" />
-    <Compile Include="BehaviorTrees\BehaviorTree.cs" />
     <Compile Include="Brushes\Brush.cs" />
     <Compile Include="GameObjects\Camera.cs" />
     <Compile Include="GameObjects\Enemy.cs" />
+    <Compile Include="GameObjects\PlayerBehaviorTree.cs" />
     <Compile Include="GameObjects\Player.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameStates\GameState.cs" />
+    <Compile Include="Geometry\ThreeDimensional\Point3.cs" />
+    <Compile Include="Geometry\ThreeDimensional\Vector3.cs" />
+    <Compile Include="Geometry\TwoDimensional\Ellipse2.cs" />
+    <Compile Include="Geometry\TwoDimensional\Line2.cs" />
+    <Compile Include="Geometry\TwoDimensional\LineSegment2.cs" />
+    <Compile Include="Geometry\TwoDimensional\Point2.cs" />
+    <Compile Include="Geometry\TwoDimensional\Polygon2.cs" />
+    <Compile Include="Geometry\TwoDimensional\Ray2.cs" />
+    <Compile Include="Geometry\TwoDimensional\Rectangle2.cs" />
+    <Compile Include="Geometry\TwoDimensional\Vector2.cs" />
+    <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
+    <Compile Include="Inputs\Input.cs" />
+    <Compile Include="Inputs\InputMapping.cs" />
     <Compile Include="Lighting\Light.cs" />
-    <Compile Include="Lighting\LightBuffer.cs" />
+    <Compile Include="Maps\MapCamera.cs" />
+    <Compile Include="Maps\MapPlayer.cs" />
+    <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
-    <Compile Include="Materials\MaterialBuffer.cs" />
     <Compile Include="Materials\Material.cs" />
     <Compile Include="Matrices\Transform.cs" />
     <Compile Include="Matrices\Matrix4Uniform.cs" />
+    <Compile Include="Meshes\MeshManager.cs" />
     <Compile Include="Meshes\MeshLoader.cs" />
     <Compile Include="Meshes\MeshTriangle.cs" />
     <Compile Include="Meshes\Mesh.cs" />
     <Compile Include="Physics\Collision\ICollider.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />
     <Compile Include="Physics\Collision\BoundingSphere.cs" />
-    <Compile Include="Shaders\ShaderLoader.cs" />
-    <Compile Include="Shaders\Shader.cs" />
-    <Compile Include="Shaders\ShaderProgram.cs" />
-    <Compile Include="TwoDimensional\LineSegment2.cs" />
-    <Compile Include="TwoDimensional\Line2.cs" />
-    <Compile Include="TwoDimensional\Ellipse2.cs" />
-    <Compile Include="TwoDimensional\Rectangle2.cs" />
-    <Compile Include="TwoDimensional\Polygon2.cs" />
-    <Compile Include="TwoDimensional\Ray2.cs" />
-    <Compile Include="TwoDimensional\Vector2.cs" />
-    <Compile Include="TwoDimensional\Point2.cs" />
-    <Compile Include="ThreeDimensional\Vector3.cs" />
-    <Compile Include="ThreeDimensional\Point3.cs" />
+    <Compile Include="Rendering\Buffers\IBindable.cs" />
+    <Compile Include="Rendering\Buffers\LightBuffer.cs" />
+    <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
+    <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
+    <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\Shaders\Shader.cs" />
+    <Compile Include="Rendering\Shaders\ShaderLoader.cs" />
+    <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
+    <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
+    <Compile Include="Scripting\BehaviorTrees\ConditionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\INode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\LeafNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\SequenceNode.cs" />
+    <Compile Include="Scripting\Script.cs" />
+    <Compile Include="Scripting\Director.cs" />
+    <Compile Include="Uniforms\UniformBuffer.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
+    <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Vertices\Vertex.cs" />
     <Compile Include="Vertices\VertexArray.cs" />
     <Compile Include="Vertices\VertexAttribute.cs" />
-    <Compile Include="Vertices\VertexIndexBuffer.cs" />
-    <Compile Include="Vertices\VertexBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Shaders\uv-fragment-shader.glsl" />
-    <None Include="Shaders\uv-vertex-shader.glsl" />
-    <None Include="Shaders\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\simple-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\uv-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\uv-vertex-shader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Textures\" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Shaders\simple-fragment-shader.glsl" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using OpenTK.Input;
-using Graphics.BehaviorTrees;
+using Graphics.Scripting.BehaviorTrees;
 
 namespace Graphics.GameObjects
 {
@@ -16,7 +16,7 @@ namespace Graphics.GameObjects
         public const float RUN_SPEED = 0.015f;
         public const float CREEP_SPEED = 0.005f;
 
-        public BehaviorTree ArtificialIntelligence;
+        public BehaviorTree AI;
 
         public Enemy() : base("Enemy")
         {

@@ -52,6 +52,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Maps\TestMap.map">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="Meshes\Player.obj" />
     <None Include="Meshes\Cube.obj" />
     <None Include="Meshes\Triangle.obj" />
     <None Include="Meshes\GenericMaterial.mtl" />
@@ -64,5 +68,6 @@
       <Name>Graphics</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

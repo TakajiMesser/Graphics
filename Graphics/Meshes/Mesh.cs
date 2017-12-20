@@ -1,5 +1,7 @@
 ﻿using Graphics.Lighting;
 using Graphics.Materials;
+using Graphics.Rendering.Buffers;
+using Graphics.Rendering.Shaders;
 using Graphics.Vertices;
 using OpenTK;
 using OpenTK.Graphics;
@@ -91,17 +93,17 @@ namespace Graphics.Meshes
             _indexBuffer.Bind();
 
             _vertexBuffer.Buffer();
-            //_materialBuffer.Set();
             _materialBuffer.Buffer();
             _lightBuffer.Buffer();
             _indexBuffer.Buffer();
 
-            _vertexBuffer.Draw();
             _indexBuffer.Draw();
 
-            GL.BindVertexArray(0);
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, 0);
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+            _materialBuffer.Unbind();
+            _lightBuffer.Unbind();
+            _indexBuffer.Unbind();
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
