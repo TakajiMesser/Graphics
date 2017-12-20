@@ -1,4 +1,5 @@
-﻿using Graphics.Meshes;
+﻿using Graphics.Inputs;
+using Graphics.Meshes;
 using Graphics.Physics.Collision;
 using Graphics.Rendering.Shaders;
 using OpenTK;
@@ -58,7 +59,7 @@ namespace Graphics.GameObjects
             };
         }
 
-        public virtual void OnHandleInput(KeyboardState keyState, MouseState mouseState, KeyboardState previousKeyState, MouseState previousMouseState)
+        public virtual void OnHandleInput(InputState inputState)
         {
 
         }

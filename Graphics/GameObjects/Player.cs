@@ -25,62 +25,55 @@ namespace Graphics.GameObjects
 
         public Player() : base("Player") { }
 
-        public /*override*/ void OnHandleInput(KeyboardState keyState, MouseState mouseState, MouseDevice mouse, int width, int height, Camera camera)
+        public /*override*/ void OnHandleInput(InputState inputState, int width, int height, Camera camera)
         {
-            if (keyState != null)
-            {
-                HandleMovement(keyState);
-            }
-            
-            if (mouseState != null && mouse != null)
-            {
-                HandleTurning(mouseState, mouse, width, height, camera);
-            }
+            HandleMovement(inputState);
+            HandleTurning(inputState, width, height, camera);
         }
 
-        private void HandleMovement(KeyboardState keyState)
+        private void HandleMovement(InputState inputState)
         {
             var scale = new Vector3();
 
-            if (keyState.IsKeyDown(InputMapping.Evade))
+            if (inputState.IsPressed(InputMapping.Evade))
             {
 
             }
 
             var translation = new Vector3();
 
-            float speed = keyState.IsKeyDown(InputMapping.Run)
+            float speed = inputState.IsPressed(InputMapping.Run)
                 ? RUN_SPEED
-                : keyState.IsKeyDown(InputMapping.Crawl)
+                : inputState.IsPressed(InputMapping.Crawl)
                     ? CREEP_SPEED
                     : WALK_SPEED;
 
-            if (keyState.IsKeyDown(InputMapping.Forward))
+            if (inputState.IsPressed(InputMapping.Forward))
             {
                 translation.Y += speed;
             }
 
-            if (keyState.IsKeyDown(InputMapping.Left))
+            if (inputState.IsPressed(InputMapping.Left))
             {
                 translation.X -= speed;
             }
 
-            if (keyState.IsKeyDown(InputMapping.Backward))
+            if (inputState.IsPressed(InputMapping.Backward))
             {
                 translation.Y -= speed;
             }
 
-            if (keyState.IsKeyDown(InputMapping.Right))
+            if (inputState.IsPressed(InputMapping.Right))
             {
                 translation.X += speed;
             }
 
-            if (keyState.IsKeyDown(InputMapping.In))
+            if (inputState.IsPressed(InputMapping.In))
             {
                 translation.Z += speed;
             }
 
-            if (keyState.IsKeyDown(InputMapping.Out))
+            if (inputState.IsPressed(InputMapping.Out))
             {
                 translation.Z -= speed;
             }
@@ -89,12 +82,12 @@ namespace Graphics.GameObjects
             Transform = Transform.FromTranslation(translation);
         }
 
-        private void HandleTurning(MouseState mouseState, MouseDevice mouse, int width, int height, Camera camera)
+        private void HandleTurning(InputState inputState, int width, int height, Camera camera)
         {
             Quaternion rotation = Quaternion.Identity;
 
             // Compare current position to location of mouse, and set rotation to face the mouse
-            var mouseCoordinates = new Vector2(mouse.X, mouse.Y);
+            var mouseCoordinates = inputState.MouseCoordinates;
 
             if (mouseCoordinates.X.IsBetween(0.0f, width) && mouseCoordinates.Y.IsBetween(0.0f, height))
             {

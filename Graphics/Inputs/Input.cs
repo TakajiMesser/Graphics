@@ -18,8 +18,8 @@ namespace Graphics.Inputs
     {
         private Key _primaryKey = Key.Unknown;
         private Key _secondaryKey = Key.Unknown;
-        private MouseButton _primaryMouse;
-        private MouseButton _secondaryMouse;
+        private MouseButton? _primaryMouse = null;
+        private MouseButton? _secondaryMouse = null;
         //private GamePad _primaryGamePadButton;
         //private GamePadButtons _secondaryGamePadButton;
 
@@ -57,11 +57,16 @@ namespace Graphics.Inputs
             }
         }
 
-        public Input(InputType type)
+        public Input(Key primaryKey)
         {
-            Type = type;
+            Type = InputType.Key;
+            _primaryKey = primaryKey;
         }
 
-
+        public Input(MouseButton primaryMouseButton)
+        {
+            Type = InputType.Mouse;
+            _primaryMouse = primaryMouseButton;
+        }
     }
 }

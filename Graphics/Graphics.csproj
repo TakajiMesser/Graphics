@@ -63,6 +63,7 @@
     <Compile Include="Geometry\TwoDimensional\Vector2.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
+    <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="Inputs\InputMapping.cs" />
     <Compile Include="Lighting\Light.cs" />

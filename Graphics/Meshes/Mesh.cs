@@ -104,7 +104,6 @@ namespace Graphics.Meshes
             _materialBuffer.Unbind();
             _lightBuffer.Unbind();
             _indexBuffer.Unbind();
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
 
         public void SaveToFile()

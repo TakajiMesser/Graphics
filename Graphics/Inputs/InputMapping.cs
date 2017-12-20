@@ -10,17 +10,17 @@ namespace Graphics.Inputs
     public class InputMapping
     {
         // Movement
-        public Key Forward { get; set; } = Key.W;
-        public Key Backward { get; set; } = Key.S;
-        public Key Left { get; set; } = Key.A;
-        public Key Right { get; set; } = Key.D;
+        public Input Forward { get; set; } = new Input(Key.W);
+        public Input Backward { get; set; } = new Input(Key.S);
+        public Input Left { get; set; } = new Input(Key.A);
+        public Input Right { get; set; } = new Input(Key.D);
 
         // Other Movement
-        public Key Run { get; set; } = Key.ShiftLeft;
-        public Key Crawl { get; set; } = Key.ControlLeft;
-        public Key Evade { get; set; } = Key.Space;
-        public Key In { get; set; } = Key.Q;
-        public Key Out { get; set; } = Key.E;
+        public Input Run { get; set; } = new Input(Key.ShiftLeft);
+        public Input Crawl { get; set; } = new Input(Key.ControlLeft);
+        public Input Evade { get; set; } = new Input(Key.Space);
+        public Input In { get; set; } = new Input(Key.Q);
+        public Input Out { get; set; } = new Input(Key.E);
 
         // Actions
         public MouseButton Action { get; set; } = MouseButton.Left;

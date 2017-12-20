@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
+using Graphics.Inputs;
 
 namespace Graphics.GameStates
 {
@@ -19,13 +20,7 @@ namespace Graphics.GameStates
         private Camera _camera;
         private ShaderProgram _program;
         private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
-
-        private KeyboardState _keyState;
-        private KeyboardState _previousKeyState;
-        private MouseState _mouseState;
-        private MouseState _previousMouseState;
-        private MouseDevice _mouse;
-        private MouseDevice _previousMouse;
+        private InputState _inputState = new InputState();
 
         public GameWindow Window { get; private set; }
         public Camera Camera => _camera;
@@ -102,12 +97,12 @@ namespace Graphics.GameStates
 
         public void HandleInput()
         {
-            _player.OnHandleInput(_keyState, _mouseState, _mouse, Window.Width, Window.Height, _camera);
-            _camera.OnHandleInput(_keyState, _mouseState, _previousKeyState, _previousMouseState);
+            _player.OnHandleInput(_inputState, Window.Width, Window.Height, _camera);
+            _camera.OnHandleInput(_inputState);
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnHandleInput(_keyState, _mouseState, _previousKeyState, _previousMouseState);
+                gameObject.Value.OnHandleInput(_inputState);
             }
         }
 
@@ -138,13 +133,7 @@ namespace Graphics.GameStates
 
         private void PollForInput()
         {
-            _previousKeyState = _keyState;
-            _previousMouseState = _mouseState;
-            _previousMouse = _mouse;
-
-            _keyState = Keyboard.GetState();
-            _mouseState = Mouse.GetState();
-            _mouse = Window.Mouse;
+            _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), Window.Mouse);
         }
 
         private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)

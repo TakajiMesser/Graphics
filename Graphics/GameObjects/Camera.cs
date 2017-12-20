@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
+using Graphics.Inputs;
 
 namespace Graphics.GameObjects
 {
@@ -63,9 +64,9 @@ namespace Graphics.GameObjects
             }
         }
 
-        public void OnHandleInput(KeyboardState keyState, MouseState mouseState, KeyboardState previousKeyState, MouseState previousMouseState)
+        public void OnHandleInput(InputState inputState)
         {
-            float amount = (previousMouseState.Wheel - mouseState.Wheel) * 1.0f;
+            float amount = inputState.MouseWheelDelta * 1.0f;
             if (amount > 0.0f || amount < 0.0f)
             {
                 _width += amount;

@@ -64,7 +64,7 @@ namespace Graphics.Rendering.Buffers
 
         public void Unbind()
         {
-
+            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
         }
     }
 }
