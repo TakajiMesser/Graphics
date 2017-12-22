@@ -48,7 +48,7 @@ namespace MappingTool
         protected override void OnLoad(EventArgs e)
         {
             //WindowState = WindowState.Maximized;
-            Size = new System.Drawing.Size(800, 600);
+            Size = new System.Drawing.Size(1024, 768);
 
             // Compile and load shaders
             var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.VERTEX_SHADER_PATH));
@@ -56,32 +56,23 @@ namespace MappingTool
 
             _program = new ShaderProgram(vertexShader, fragmentShader);
 
-            //Map.SaveTestMap();
+            Map.SaveTestMap();
             var loadedMap = Map.Load(_mapPath);
 
             _gameState = new GameState(_program, loadedMap, this);
         }
 
+        //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;
+
+        //protected override void OnMouseLeave(EventArgs e) => CursorVisible = true;
+
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
-            base.OnUpdateFrame(e);
+            //base.OnUpdateFrame(e);
 
             HandleInput();
             _gameState.HandleInput();
-
-            // For now, simply translate the mesh back and forth
-            //var triangle = _gameState.GetByName("Triangle");
-            /*if (triangle.ModelMatrix.Matrix.M41 > 1.0f)
-            {
-                triangle.Transform = new Transform(new Vector3(-0.01f, 0, 0), Quaternion.Identity, Vector3.One);
-            }
-            else if (triangle.ModelMatrix.Matrix.M41 < -1.0f)
-            {
-                triangle.Transform = new Transform(new Vector3(0.01f, 0, 0), Quaternion.Identity, Vector3.One);
-            }*/
-            //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromEulerAngles(0.0f, 0.1f, 0.0f), Vector3.One);
-            //triangle.Transform = new Transform(Vector3.Zero, Quaternion.FromAxisAngle(new Vector3(0.0f, 1.0f, 0.0f), 0.1f), Vector3.One);
 
             _gameState.UpdateFrame();
         }

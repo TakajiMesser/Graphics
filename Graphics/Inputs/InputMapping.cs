@@ -23,19 +23,19 @@ namespace Graphics.Inputs
         public Input Out { get; set; } = new Input(Key.E);
 
         // Actions
-        public MouseButton Action { get; set; } = MouseButton.Left;
-        public MouseButton Cover { get; set; } = MouseButton.Right;
-        public Key Use { get; set; } = Key.F;
+        public Input Action { get; set; } = new Input(MouseButton.Left);
+        public Input Cover { get; set; } = new Input(MouseButton.Right);
+        public Input Use { get; set; } = new Input(Key.F);
 
         // Inventory
-        public MouseButton ItemWheel { get; set; } = MouseButton.Middle;
-        public Key ItemSlot1 { get; set; } = Key.Number1;
-        public Key ItemSlot2 { get; set; } = Key.Number2;
-        public Key ItemSlot3 { get; set; } = Key.Number3;
-        public Key ItemSlot4 { get; set; } = Key.Number4;
-        public Key ItemSlot5 { get; set; } = Key.Number5;
-        public Key ItemSlot6 { get; set; } = Key.Number6;
-        public Key ItemSlot7 { get; set; } = Key.Number7;
-        public Key ItemSlot8 { get; set; } = Key.Number8;
+        public Input ItemWheel { get; set; } = new Input(MouseButton.Middle);
+        public Input ItemSlot1 { get; set; } = new Input(Key.Number1);
+        public Input ItemSlot2 { get; set; } = new Input(Key.Number2);
+        public Input ItemSlot3 { get; set; } = new Input(Key.Number3);
+        public Input ItemSlot4 { get; set; } = new Input(Key.Number4);
+        public Input ItemSlot5 { get; set; } = new Input(Key.Number5);
+        public Input ItemSlot6 { get; set; } = new Input(Key.Number6);
+        public Input ItemSlot7 { get; set; } = new Input(Key.Number7);
+        public Input ItemSlot8 { get; set; } = new Input(Key.Number8);
     }
 }

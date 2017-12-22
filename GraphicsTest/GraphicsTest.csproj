@@ -8,9 +8,10 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>GraphicsTest</RootNamespace>
     <AssemblyName>GraphicsTest</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -46,7 +47,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameWindow.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -56,7 +56,8 @@
       <SubType>Designer</SubType>
     </None>
     <None Include="Meshes\Player.obj" />
-    <None Include="Meshes\Cube.obj" />
+    <None Include="Meshes\Floor.obj" />
+    <None Include="Meshes\Square.obj" />
     <None Include="Meshes\Triangle.obj" />
     <None Include="Meshes\GenericMaterial.mtl" />
     <None Include="OpenTK.dll.config" />
@@ -66,6 +67,10 @@
     <ProjectReference Include="..\Graphics\Graphics.csproj">
       <Project>{016D7A9D-C5D9-4D7F-A6E5-7753CC8832FE}</Project>
       <Name>Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MappingTool\MappingTool.csproj">
+      <Project>{682a34e6-d265-4782-9da1-2b03ca01f5a5}</Project>
+      <Name>MappingTool</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

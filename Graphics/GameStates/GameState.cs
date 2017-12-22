@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
+using Graphics.Brushes;
 
 namespace Graphics.GameStates
 {
@@ -20,10 +21,10 @@ namespace Graphics.GameStates
         private Camera _camera;
         private ShaderProgram _program;
         private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
+        private List<Brush> _brushes = new List<Brush>();
         private InputState _inputState = new InputState();
 
         public GameWindow Window { get; private set; }
-        public Camera Camera => _camera;
 
         public GameState(Player player, Camera camera, ShaderProgram program)
         {
@@ -58,6 +59,15 @@ namespace Graphics.GameStates
                     _camera.AttachedObject = _player;
                 }
             }
+
+            var floor = Brush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f, program);
+            floor.AddTestLight();
+            _brushes.Add(floor);
+
+            var wall = Brush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 50.0f, program);
+            wall.Collider = new BoundingBox(new Vector3(10.0f, 0.0f, -0.5f), wall.Vertices);
+            wall.AddTestLight();
+            _brushes.Add(wall);
 
             foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(program)))
             {
@@ -97,12 +107,12 @@ namespace Graphics.GameStates
 
         public void HandleInput()
         {
-            _player.OnHandleInput(_inputState, Window.Width, Window.Height, _camera);
+            _player.OnHandleInput(_inputState, _camera, _gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
             _camera.OnHandleInput(_inputState);
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnHandleInput(_inputState);
+                gameObject.Value.OnHandleInput(_inputState, _camera, _gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
             }
         }
 
@@ -121,6 +131,12 @@ namespace Graphics.GameStates
         public void RenderFrame()
         {
             _camera.OnRenderFrame();
+
+            foreach (var brush in _brushes)
+            {
+                brush.OnRenderFrame();
+            }
+
             _player.OnRenderFrame();
 
             foreach (var gameObject in PerformOcclusionCulling(PerformFrustumCulling(_gameObjects.Values)))
@@ -133,7 +149,7 @@ namespace Graphics.GameStates
 
         private void PollForInput()
         {
-            _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), Window.Mouse);
+            _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), Window);
         }
 
         private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)
@@ -163,8 +179,6 @@ namespace Graphics.GameStates
 
         public void SaveToFile(string path)
         {
-            // 
-
             throw new NotImplementedException();
         }
 

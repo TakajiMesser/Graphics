@@ -17,17 +17,33 @@ namespace Graphics.Maps
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
-        public Transform Transform { get; set; } = new Transform();
+        public Quaternion Rotation { get; set; }
+        public Vector3 Scale { get; set; }
         public string MeshFilePath { get; set; }
 
         public Player ToPlayer(ShaderProgram program)
         {
-            return new Player()
+            var player = new Player()
             {
-                Position = Position,
-                Transform = Transform,
                 Mesh = Mesh.LoadFromFile(MeshFilePath, program)
             };
+
+            if (Position != null)
+            {
+                player.Position = Position;
+            }
+
+            if (Rotation != null)
+            {
+                player.Rotation = Rotation;
+            }
+
+            if (Scale != null)
+            {
+                player.Scale = Scale;
+            }
+
+            return player;
         }
     }
 }

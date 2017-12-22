@@ -17,18 +17,34 @@ namespace Graphics.Maps
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
-        public Transform Transform { get; set; } = new Transform();
+        public Quaternion Rotation { get; set; }
+        public Vector3 Scale { get; set; }
         public string MeshFilePath { get; set; }
         //public ICollider Collider { get; set; }
 
         public GameObject ToGameObject(ShaderProgram program)
         {
-            return new GameObject(Name)
+            var gameObject = new GameObject(Name)
             {
-                Position = Position,
-                Transform = Transform,
                 Mesh = Mesh.LoadFromFile(MeshFilePath, program)
             };
+
+            if (Position != null)
+            {
+                gameObject.Position = Position;
+            }
+
+            if (Rotation != null)
+            {
+                gameObject.Rotation = Rotation;
+            }
+
+            if (Scale != null)
+            {
+                gameObject.Scale = Scale;
+            }
+
+            return gameObject;
         }
     }
 }

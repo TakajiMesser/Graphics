@@ -1,6 +1,6 @@
 ﻿using Graphics.Meshes;
+using Graphics.Rendering.Vertices;
 using Graphics.Utilities;
-using Graphics.Vertices;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;

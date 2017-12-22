@@ -49,21 +49,35 @@ namespace Graphics.Maps
                 {
                     Name = "Player",
                     Position = new Vector3(0.0f, 0.0f, -1.0f),
-                    MeshFilePath = FilePathHelper.CUBE_MESH_PATH
+                    Scale = Vector3.One,
+                    Rotation = Quaternion.Identity,
+                    MeshFilePath = FilePathHelper.PLAYER_MESH_PATH
                 },
                 Camera = new MapCamera()
                 {
                     Name = "MainCamera",
-                    AttachedGameObjectName = "Player"
+                    AttachedGameObjectName = "Player",
+                    Position = Vector3.Zero
                 }
             };
 
             map.GameObjects.Add(new MapGameObject()
             {
                 Name = "Triangle",
-                Position = new Vector3(2.0f, 2.0f, -1.0f),
+                Position = new Vector3(5.0f, 5.0f, -1.0f),
+                Scale = Vector3.One,
+                Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.TRIANGLE_MESH_PATH
             });
+            //map.Brushes.Add(Brush.Rectangle(new Vector3(), 20.0f, 20.0f, program));
+            /*map.GameObjects.Add(new MapGameObject()
+            {
+                Name = "Floor",
+                Position = new Vector3(0.0f, 0.0f, -10.0f),
+                Scale = Vector3.One,
+                Rotation = Quaternion.Identity,
+                MeshFilePath = FilePathHelper.FLOOR_MESH_PATH
+            });*/
 
             map.Save(FilePathHelper.MAP_PATH);
         }

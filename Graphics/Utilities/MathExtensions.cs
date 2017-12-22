@@ -9,6 +9,7 @@ namespace Graphics.Utilities
 {
     public static class MathExtensions
     {
+        public static bool IsBetween(this int value, int valueA, int valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
         public static bool IsBetween(this float value, float valueA, float valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
     }
 }

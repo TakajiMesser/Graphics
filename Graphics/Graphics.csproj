@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Graphics</RootNamespace>
     <AssemblyName>Graphics</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,16 +52,6 @@
     <Compile Include="GameObjects\Player.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameStates\GameState.cs" />
-    <Compile Include="Geometry\ThreeDimensional\Point3.cs" />
-    <Compile Include="Geometry\ThreeDimensional\Vector3.cs" />
-    <Compile Include="Geometry\TwoDimensional\Ellipse2.cs" />
-    <Compile Include="Geometry\TwoDimensional\Line2.cs" />
-    <Compile Include="Geometry\TwoDimensional\LineSegment2.cs" />
-    <Compile Include="Geometry\TwoDimensional\Point2.cs" />
-    <Compile Include="Geometry\TwoDimensional\Polygon2.cs" />
-    <Compile Include="Geometry\TwoDimensional\Ray2.cs" />
-    <Compile Include="Geometry\TwoDimensional\Rectangle2.cs" />
-    <Compile Include="Geometry\TwoDimensional\Vector2.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\InputState.cs" />
@@ -72,8 +63,9 @@
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
-    <Compile Include="Matrices\Transform.cs" />
-    <Compile Include="Matrices\Matrix4Uniform.cs" />
+    <Compile Include="Matrices\ProjectionMatrix.cs" />
+    <Compile Include="Matrices\ViewMatrix.cs" />
+    <Compile Include="Matrices\ModelMatrix.cs" />
     <Compile Include="Meshes\MeshManager.cs" />
     <Compile Include="Meshes\MeshLoader.cs" />
     <Compile Include="Meshes\MeshTriangle.cs" />
@@ -81,6 +73,7 @@
     <Compile Include="Physics\Collision\ICollider.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />
     <Compile Include="Physics\Collision\BoundingSphere.cs" />
+    <Compile Include="Rendering\Animations\KeyFrame.cs" />
     <Compile Include="Rendering\Buffers\IBindable.cs" />
     <Compile Include="Rendering\Buffers\LightBuffer.cs" />
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
@@ -89,6 +82,9 @@
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderLoader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Vertices\Vertex.cs" />
+    <Compile Include="Rendering\Vertices\VertexArray.cs" />
+    <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
     <Compile Include="Scripting\BehaviorTrees\ConditionNode.cs" />
@@ -102,9 +98,6 @@
     <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Vertices\Vertex.cs" />
-    <Compile Include="Vertices\VertexArray.cs" />
-    <Compile Include="Vertices\VertexAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="OpenTK.dll.config" />

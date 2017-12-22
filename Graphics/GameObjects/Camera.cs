@@ -8,59 +8,49 @@ using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
+using Graphics.Matrices;
 
 namespace Graphics.GameObjects
 {
     public class Camera
     {
-        public const float ZNEAR = -1.0f;
-        public const float ZFAR = 1.0f;
+        public const float ZNEAR = -10.0f;
+        public const float ZFAR = 10.0f;
 
         private string _name;
         private ShaderProgram _program;
-        public Matrix4Uniform _viewMatrix;
-        public Matrix4Uniform _projectionMatrix;
-
-        private float _aspectRatio;
+        private ViewMatrix _viewMatrix = new ViewMatrix();
+        private ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
         private float _width = 20.0f;
-        //private Matrix4 _zoomScale = Matrix4.Identity;
-        //private float _scaleAmount = 1.0f;
 
         public GameObject AttachedObject { get; set; }
-        public Transform Transform { get; set; }
+        public Vector3 Position
+        {
+            get => _viewMatrix.Translation;
+            set => _viewMatrix.Translation = value;
+        }
+        public Matrix4 ViewProjectionMatrix => _projectionMatrix.Projection * _viewMatrix.View;
 
         public Camera(string name, ShaderProgram program, int width, int height)
         {
             _name = name;
             _program = program;
-            _aspectRatio = (float)width / height;
-
-            _viewMatrix = new Matrix4Uniform("viewMatrix")
-            {
-                Matrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY)
-            };
-
-            _projectionMatrix = new Matrix4Uniform("projectionMatrix")
-            {
-                Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR)
-            };
+            _projectionMatrix.Width = _width;
+            _projectionMatrix.AspectRatio = (float)width / height;
+            _projectionMatrix.ZNear = ZNEAR;
+            _projectionMatrix.ZFar = ZFAR;
         }
 
         public void UpdateAspectRatio(int width, int height)
         {
-            _aspectRatio = (float)width / height;
-            _projectionMatrix.Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR);
+            _projectionMatrix.AspectRatio = (float)width / height;
         }
 
         public void OnUpdateFrame()
         {
             if (AttachedObject != null)
             {
-                var viewMatrix = _viewMatrix.Matrix;
-                viewMatrix.M41 = -AttachedObject.Position.X;
-                viewMatrix.M42 = -AttachedObject.Position.Y;
-
-                _viewMatrix.Matrix = viewMatrix;
+                Position = AttachedObject.Position;
             }
         }
 
@@ -70,7 +60,7 @@ namespace Graphics.GameObjects
             if (amount > 0.0f || amount < 0.0f)
             {
                 _width += amount;
-                _projectionMatrix.Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, ZNEAR, ZFAR);
+                _projectionMatrix.Width = _width;
             }
         }
 

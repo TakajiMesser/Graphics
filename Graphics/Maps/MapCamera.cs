@@ -16,12 +16,18 @@ namespace Graphics.Maps
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
-        public Transform Transform { get; set; }
         public string AttachedGameObjectName { get; set; }
 
         public Camera ToCamera(ShaderProgram program, int width, int height)
         {
-            throw new NotImplementedException();
+            var camera = new Camera(Name, program, width, height);
+
+            if (Position != null)
+            {
+                camera.Position = Position;
+            }
+
+            return camera;
         }
     }
 }

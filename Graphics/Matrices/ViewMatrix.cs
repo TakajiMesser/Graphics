@@ -1,0 +1,56 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using Graphics.Rendering.Shaders;
+
+namespace Graphics.Matrices
+{
+    public class ViewMatrix
+    {
+        public const string NAME = "viewMatrix";
+
+        //private Matrix4 _model = Matrix4.Identity;
+        internal Matrix4 View
+        {
+            get
+            {
+                var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
+
+                viewMatrix.M41 = -Translation.X;
+                viewMatrix.M42 = -Translation.Y;
+                viewMatrix.M43 = -Translation.Z;
+
+                return viewMatrix;
+            }
+        }
+
+        public Vector3 Translation { get; set; } = Vector3.Zero;
+        //public Quaternion Rotation { get; set; } = Quaternion.Identity;
+        //public Vector3 Scale { get; set; } = Vector3.One;
+
+        public ViewMatrix() { }
+        public ViewMatrix(Vector3 translation/*, Quaternion rotation, Vector3 scale*/)
+        {
+            Translation = translation;
+            //Rotation = rotation;
+            //Scale = scale;
+        }
+
+        public void Set(ShaderProgram program)
+        {
+            int location = program.GetUniformLocation(NAME);
+
+            var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
+            viewMatrix.M41 = -Translation.X;
+            viewMatrix.M42 = -Translation.Y;
+            viewMatrix.M43 = -Translation.Z;
+
+            GL.UniformMatrix4(location, false, ref viewMatrix);
+        }
+    }
+}

@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Graphics.Vertices
+namespace Graphics.Rendering.Vertices
 {
     public struct Vertex
     {

@@ -1,6 +1,6 @@
 ﻿using Graphics.Lighting;
 using Graphics.Materials;
-using Graphics.Vertices;
+using Graphics.Rendering.Vertices;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;

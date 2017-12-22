@@ -1,5 +1,5 @@
 ﻿using Graphics.Meshes;
-using Graphics.Vertices;
+using Graphics.Rendering.Vertices;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -45,13 +45,26 @@ namespace Graphics.Physics.Collision
 
         public bool CollidesWith(BoundingBox boundingBox)
         {
-            throw new NotImplementedException();
+            /*var distanceSquared = Math.Pow(Math.Max(boundingBox.MinX, Math.Min(Center.X, boundingBox.MaxX)), 2.0f)
+                + Math.Pow(Math.Max(boundingBox.MinY, Math.Min(Center.Y, boundingBox.MaxY)), 2.0f)
+                /*+ Math.Pow(Math.Max(boundingBox.MinXMinY.Z, Math.Min(Center.Z, boundingBox.MaxXMaxY.Z)), 2.0f)*;
 
-            var distanceSquared = Math.Pow(Math.Max(boundingBox.MinXMinY.X, Math.Min(Center.X, boundingBox.MaxXMaxY.X)), 2.0f)
-                + Math.Pow(Math.Max(boundingBox.MinXMinY.Y, Math.Min(Center.Y, boundingBox.MaxXMaxY.Y)), 2.0f)
-                /*+ Math.Pow(Math.Max(boundingBox.MinXMinY.Z, Math.Min(Center.Z, boundingBox.MaxXMaxY.Z)), 2.0f)*/;
+            var result = distanceSquared < Math.Pow(Radius, 2.0f);*/
 
-            return distanceSquared < Math.Pow(Radius, 2.0f);
+            var closestX = (Center.X > boundingBox.MaxX)
+                ? boundingBox.MaxX
+                : (Center.X < boundingBox.MinX)
+                    ? boundingBox.MinX
+                    : Center.X;
+
+            var closestY = (Center.X > boundingBox.MaxY)
+                ? boundingBox.MaxY
+                : (Center.Y < boundingBox.MinY)
+                    ? boundingBox.MinY
+                    : Center.Y;
+
+            var distanceSquared = Math.Pow(Center.X - closestX, 2) + Math.Pow(Center.Y - closestY, 2);
+            return distanceSquared < Math.Pow(Radius, 2);
         }
     }
 }

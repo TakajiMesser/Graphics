@@ -2,7 +2,7 @@
 using Graphics.Materials;
 using Graphics.Rendering.Buffers;
 using Graphics.Rendering.Shaders;
-using Graphics.Vertices;
+using Graphics.Rendering.Vertices;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
@@ -78,9 +78,9 @@ namespace Graphics.Meshes
             _lightBuffer.AddLight(new Light()
             {
                 Position = new Vector3(0.0f, 0.0f, 0.0f),
-                Radius = 3.0f,
+                Radius = 10.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.5f
+                Intensity = 0.25f
             });
         }
 

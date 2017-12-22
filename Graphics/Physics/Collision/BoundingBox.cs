@@ -1,5 +1,5 @@
 ﻿using Graphics.Meshes;
-using Graphics.Vertices;
+using Graphics.Rendering.Vertices;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -12,22 +12,25 @@ namespace Graphics.Physics.Collision
     public class BoundingBox : ICollider
     {
         public Vector3 Center { get; set; }
-        public Vector3 MinXMinY { get; set; }
-        public Vector3 MinXMaxY { get; set; }
-        public Vector3 MaxXMinY { get; set; }
-        public Vector3 MaxXMaxY { get; set; }
+        public float Width { get; set; }
+        public float Height { get; set; }
 
-        public BoundingBox(Vector3 minXMinY, Vector3 minXMaxY, Vector3 maxXMinY, Vector3 maxXMaxY)
+        public float MinX => Center.X - Width / 2.0f;
+        public float MaxX => Center.X + Width / 2.0f;
+        public float MinY => Center.Y - Height / 2.0f;
+        public float MaxY => Center.Y + Height / 2.0f;
+
+        public BoundingBox(Vector3 center, IEnumerable<Vertex> vertices)
         {
-            MinXMinY = minXMinY;
-            MinXMaxY = minXMaxY;
-            MaxXMinY = maxXMinY;
-            MaxXMaxY = maxXMaxY;
-        }
+            Center = center;
 
-        public BoundingBox(IEnumerable<Vertex> vertices)
-        {
+            var minX = vertices.Select(v => v.Position.X).Min();
+            var maxX = vertices.Select(v => v.Position.X).Max();
+            Width = maxX - minX;
 
+            var minY = vertices.Select(v => v.Position.Y).Min();
+            var maxY = vertices.Select(v => v.Position.Y).Max();
+            Height = maxY - minY;
         }
 
         public bool CollidesWith(Vector3 point)
