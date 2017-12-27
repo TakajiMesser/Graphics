@@ -22,19 +22,26 @@ namespace Graphics.GameObjects
         public const int EVADE_TICK_COUNT = 20;
 
         private int _nEvadeTicks = 0;
+        private Vector3 _rollDirection;
 
         public InputMapping InputMapping { get; set; } = new InputMapping();
-        public PlayerBehaviorTree BehaviorTree { get; set; } = new PlayerBehaviorTree();
 
         public Player() : base("Player") { }
 
         public override void OnHandleInput(InputState inputState, Camera camera, IEnumerable<ICollider> colliders)
         {
+            HandleCovering(inputState, colliders);
             HandleMovement(inputState, colliders);
             HandleTurning(inputState, camera);
         }
 
-        private Vector3 _rollDirection;
+        private void HandleCovering(InputState inputState, IEnumerable<ICollider> colliders)
+        {
+            if (inputState.IsMouseInWindow)
+            {
+                var axisAngle = Rotation.ToAxisAngle();
+            }
+        }
 
         private void HandleMovement(InputState inputState, IEnumerable<ICollider> colliders)
         {
@@ -47,6 +54,7 @@ namespace Graphics.GameObjects
                     _nEvadeTicks++;
                     Scale = new Vector3(1.0f, 0.5f, 1.0f);
                     _rollDirection = evadeTranslation;
+                    Rotation = new Quaternion(new Vector3((float)Math.Atan2(_rollDirection.Y, _rollDirection.X), 0.0f, 0.0f));
                 }
             }
             else if (_nEvadeTicks > EVADE_TICK_COUNT)
@@ -67,7 +75,7 @@ namespace Graphics.GameObjects
                     : WALK_SPEED;
 
             var translation = (_nEvadeTicks > 0) ? _rollDirection : GetTranslation(inputState, speed);
-            TranslateUnlessCollision(translation, colliders);
+            HandleCollisions(translation, colliders);
         }
 
         private Vector3 GetTranslation(InputState inputState, float speed)

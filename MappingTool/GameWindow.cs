@@ -17,6 +17,7 @@ using Graphics.Physics.Collision;
 using Graphics.Helpers;
 using Graphics.Maps;
 using Graphics.Rendering.Shaders;
+using Graphics.Scripting.BehaviorTrees;
 
 namespace MappingTool
 {
@@ -56,6 +57,7 @@ namespace MappingTool
 
             _program = new ShaderProgram(vertexShader, fragmentShader);
 
+            BehaviorTree.SaveTestEnemyBehavior();
             Map.SaveTestMap();
             var loadedMap = Map.Load(_mapPath);
 
@@ -69,8 +71,6 @@ namespace MappingTool
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
             // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
-            //base.OnUpdateFrame(e);
-
             HandleInput();
             _gameState.HandleInput();
 

@@ -60,14 +60,13 @@ namespace Graphics.GameStates
                 }
             }
 
-            var floor = Brush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f, program);
-            floor.AddTestLight();
-            _brushes.Add(floor);
-
-            var wall = Brush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 50.0f, program);
-            wall.Collider = new BoundingBox(new Vector3(10.0f, 0.0f, -0.5f), wall.Vertices);
-            wall.AddTestLight();
-            _brushes.Add(wall);
+            foreach (var brush in map.Brushes.Select(b => b.ToBrush(program)))
+            {
+                brush.AddTestColors();
+                brush.AddTestLight();
+                brush._program = program;
+                _brushes.Add(brush);
+            }
 
             foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(program)))
             {
@@ -76,7 +75,7 @@ namespace Graphics.GameStates
                     _camera.AttachedObject = gameObject;
                 }
 
-                gameObject.Collider = new BoundingSphere(gameObject.Mesh.Vertices)
+                gameObject.Collider = new BoundingBox(gameObject.Mesh.Vertices)
                 {
                     Center = gameObject.Position
                 };
@@ -119,12 +118,12 @@ namespace Graphics.GameStates
         public void UpdateFrame()
         {
             // For each object that has a non-zero transform, we need to determine the set of game objects to compare it against for hit detection
-            _player.OnUpdateFrame(_gameObjects.Select(g => g.Value.Collider));
+            _player.OnUpdateFrame(_gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
             _camera.OnUpdateFrame();
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnUpdateFrame();
+                gameObject.Value.OnUpdateFrame(_gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
             }
         }
 

@@ -14,6 +14,7 @@ using Graphics.Matrices;
 using Graphics.Physics.Collision;
 using Graphics.Helpers;
 using Graphics.Rendering.Vertices;
+using Graphics.GameObjects;
 
 namespace Graphics.Brushes
 {
@@ -32,32 +33,18 @@ namespace Graphics.Brushes
         private MaterialBuffer _materialBuffer;
         private LightBuffer _lightBuffer;
         private VertexIndexBuffer _indexBuffer;
+        private ICollider _collider;
 
         public List<Vertex> Vertices => _vertices;
-
-        public ICollider Collider { get; set; }
-        public Vector3 Position
+        public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
+        public ICollider Collider
         {
-            get => _modelMatrix.Translation;
+            get => _collider;
             set
             {
-                _modelMatrix.Translation = value;
-
-                if (Collider != null)
-                {
-                    Collider.Center = value;
-                }
+                _collider = value;
+                _collider.Properties = Properties;
             }
-        }
-        public Quaternion Rotation
-        {
-            get => _modelMatrix.Rotation;
-            set => _modelMatrix.Rotation = value;
-        }
-        public Vector3 Scale
-        {
-            get => _modelMatrix.Scale;
-            set => _modelMatrix.Scale = value;
         }
 
         public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
@@ -112,9 +99,16 @@ namespace Graphics.Brushes
             _lightBuffer.AddLight(new Light()
             {
                 Position = new Vector3(0.0f, 0.0f, 0.0f),
-                Radius = 10.0f,
+                Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
+            });
+            _lightBuffer.AddLight(new Light()
+            {
+                Position = new Vector3(0.0f, 20.0f, 0.0f),
+                Radius = 30.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 0.25f
             });
         }
 

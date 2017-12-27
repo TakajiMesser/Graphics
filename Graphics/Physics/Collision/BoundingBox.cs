@@ -1,4 +1,5 @@
-﻿using Graphics.Meshes;
+﻿using Graphics.GameObjects;
+using Graphics.Meshes;
 using Graphics.Rendering.Vertices;
 using OpenTK;
 using System;
@@ -12,6 +13,7 @@ namespace Graphics.Physics.Collision
     public class BoundingBox : ICollider
     {
         public Vector3 Center { get; set; }
+        public Dictionary<string, GameProperty> Properties { get; set; }
         public float Width { get; set; }
         public float Height { get; set; }
 
@@ -19,6 +21,24 @@ namespace Graphics.Physics.Collision
         public float MaxX => Center.X + Width / 2.0f;
         public float MinY => Center.Y - Height / 2.0f;
         public float MaxY => Center.Y + Height / 2.0f;
+
+        public BoundingBox(IEnumerable<Vertex> vertices)
+        {
+            var minX = vertices.Select(v => v.Position.X).Min();
+            var maxX = vertices.Select(v => v.Position.X).Max();
+            Width = maxX - minX;
+
+            var minY = vertices.Select(v => v.Position.Y).Min();
+            var maxY = vertices.Select(v => v.Position.Y).Max();
+            Height = maxY - minY;
+
+            Center = new Vector3()
+            {
+                X = (maxX + minX) / 2.0f,
+                Y = (maxY + minY) / 2.0f,
+                Z = vertices.Select(v => v.Position.Z).Average()
+            };
+        }
 
         public BoundingBox(Vector3 center, IEnumerable<Vertex> vertices)
         {

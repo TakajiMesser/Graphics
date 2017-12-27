@@ -2,6 +2,7 @@
 using Graphics.GameObjects;
 using Graphics.Meshes;
 using Graphics.Rendering.Shaders;
+using Graphics.Scripting.BehaviorTrees;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -20,13 +21,15 @@ namespace Graphics.Maps
         public Quaternion Rotation { get; set; }
         public Vector3 Scale { get; set; }
         public string MeshFilePath { get; set; }
+        public string BehaviorFilePath { get; set; }
         //public ICollider Collider { get; set; }
 
         public GameObject ToGameObject(ShaderProgram program)
         {
             var gameObject = new GameObject(Name)
             {
-                Mesh = Mesh.LoadFromFile(MeshFilePath, program)
+                Mesh = Mesh.LoadFromFile(MeshFilePath, program),
+                Behaviors = BehaviorTree.Load(BehaviorFilePath)
             };
 
             if (Position != null)

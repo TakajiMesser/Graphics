@@ -21,7 +21,7 @@ namespace Graphics.Maps
         public MapPlayer Player { get; set; }
         public MapCamera Camera { get; set; }
         public List<MapGameObject> GameObjects { get; set; } = new List<MapGameObject>();
-        public List<Brush> Brushes { get; set; } = new List<Brush>();
+        public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
 
         public void Save(string path)
         {
@@ -63,21 +63,19 @@ namespace Graphics.Maps
 
             map.GameObjects.Add(new MapGameObject()
             {
-                Name = "Triangle",
+                Name = "Enemy",
                 Position = new Vector3(5.0f, 5.0f, -1.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.TRIANGLE_MESH_PATH
+                MeshFilePath = FilePathHelper.TRIANGLE_MESH_PATH,
+                BehaviorFilePath = FilePathHelper.ENEMY_BEHAVIOR_PATH
             });
-            //map.Brushes.Add(Brush.Rectangle(new Vector3(), 20.0f, 20.0f, program));
-            /*map.GameObjects.Add(new MapGameObject()
-            {
-                Name = "Floor",
-                Position = new Vector3(0.0f, 0.0f, -10.0f),
-                Scale = Vector3.One,
-                Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.FLOOR_MESH_PATH
-            });*/
+
+            map.Brushes.Add(MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f));
+
+            var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 20.0f);
+            wall.HasCollision = true;
+            map.Brushes.Add(wall);
 
             map.Save(FilePathHelper.MAP_PATH);
         }

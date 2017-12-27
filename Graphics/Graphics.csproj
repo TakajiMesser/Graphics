@@ -46,11 +46,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Brushes\Brush.cs" />
-    <Compile Include="GameObjects\Camera.cs" />
-    <Compile Include="GameObjects\Enemy.cs" />
-    <Compile Include="GameObjects\PlayerBehaviorTree.cs" />
-    <Compile Include="GameObjects\Player.cs" />
-    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameStates\Camera.cs" />
+    <Compile Include="GameStates\Enemy.cs" />
+    <Compile Include="GameStates\GameProperty.cs" />
+    <Compile Include="GameStates\Player.cs" />
+    <Compile Include="GameStates\GameObject.cs" />
     <Compile Include="GameStates\GameState.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
@@ -59,6 +59,7 @@
     <Compile Include="Inputs\InputMapping.cs" />
     <Compile Include="Lighting\Light.cs" />
     <Compile Include="Maps\MapCamera.cs" />
+    <Compile Include="Maps\MapBrush.cs" />
     <Compile Include="Maps\MapPlayer.cs" />
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
@@ -70,6 +71,7 @@
     <Compile Include="Meshes\MeshLoader.cs" />
     <Compile Include="Meshes\MeshTriangle.cs" />
     <Compile Include="Meshes\Mesh.cs" />
+    <Compile Include="Physics\Collision\Collision.cs" />
     <Compile Include="Physics\Collision\ICollider.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />
     <Compile Include="Physics\Collision\BoundingSphere.cs" />
@@ -87,13 +89,18 @@
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
-    <Compile Include="Scripting\BehaviorTrees\ConditionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\ConditionNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\INode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\LeafNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\SequenceNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\NavigateNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
-    <Compile Include="Uniforms\UniformBuffer.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
@@ -108,7 +115,7 @@
     <None Include="Rendering\Shaders\uv-vertex-shader.glsl" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Textures\" />
+    <Folder Include="Rendering\Textures\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

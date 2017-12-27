@@ -1,4 +1,5 @@
-﻿using Graphics.Meshes;
+﻿using Graphics.GameObjects;
+using Graphics.Meshes;
 using Graphics.Rendering.Vertices;
 using OpenTK;
 using System;
@@ -13,6 +14,7 @@ namespace Graphics.Physics.Collision
     {
         public Vector3 Center { get; set; }
         public float Radius { get; set; }
+        public Dictionary<string, GameProperty> Properties { get; set; }
 
         public BoundingSphere(Vector3 center, float radius)
         {
@@ -57,7 +59,7 @@ namespace Graphics.Physics.Collision
                     ? boundingBox.MinX
                     : Center.X;
 
-            var closestY = (Center.X > boundingBox.MaxY)
+            var closestY = (Center.Y > boundingBox.MaxY)
                 ? boundingBox.MaxY
                 : (Center.Y < boundingBox.MinY)
                     ? boundingBox.MinY
