@@ -10,11 +10,11 @@ using Graphics.Rendering.Buffers;
 using Graphics.Rendering.Shaders;
 using OpenTK.Graphics;
 using OpenTK;
-using Graphics.Matrices;
 using Graphics.Physics.Collision;
 using Graphics.Helpers;
 using Graphics.Rendering.Vertices;
 using Graphics.GameObjects;
+using Graphics.Rendering.Matrices;
 
 namespace Graphics.Brushes
 {

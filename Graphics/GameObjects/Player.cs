@@ -24,18 +24,18 @@ namespace Graphics.GameObjects
         private int _nEvadeTicks = 0;
         private Vector3 _rollDirection;
 
-        public InputMapping InputMapping { get; set; } = new InputMapping();
-
         public Player() : base("Player") { }
 
         public override void OnHandleInput(InputState inputState, Camera camera, IEnumerable<ICollider> colliders)
         {
-            HandleCovering(inputState, colliders);
-            HandleMovement(inputState, colliders);
-            HandleTurning(inputState, camera);
+            base.OnHandleInput(inputState, camera, colliders);
+
+            //HandleCovering(inputState, colliders);
+            //HandleMovement(inputState, colliders);
+            //HandleTurning(inputState, camera);
         }
 
-        private void HandleCovering(InputState inputState, IEnumerable<ICollider> colliders)
+        public void HandleCovering(InputState inputState, IEnumerable<ICollider> colliders)
         {
             if (inputState.IsMouseInWindow)
             {
@@ -43,7 +43,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        private void HandleMovement(InputState inputState, IEnumerable<ICollider> colliders)
+        public void HandleMovement(InputState inputState, IEnumerable<ICollider> colliders)
         {
             if (_nEvadeTicks == 0 && inputState.IsPressed(InputMapping.Evade))
             {
@@ -78,7 +78,7 @@ namespace Graphics.GameObjects
             HandleCollisions(translation, colliders);
         }
 
-        private Vector3 GetTranslation(InputState inputState, float speed)
+        public Vector3 GetTranslation(InputState inputState, float speed)
         {
             var translation = new Vector3();
 
@@ -115,7 +115,7 @@ namespace Graphics.GameObjects
             return translation;
         }
 
-        private void HandleTurning(InputState inputState, Camera camera)
+        public void HandleTurning(InputState inputState, Camera camera)
         {
             // Compare current position to location of mouse, and set rotation to face the mouse
             if (_nEvadeTicks == 0 && inputState.IsMouseInWindow)

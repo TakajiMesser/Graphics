@@ -1,0 +1,198 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<BehaviorTree xmlns:i="http://www.w3.org/2001/XMLSchema-instance"
+              z:Id="1"
+              z:Type="Graphics.Scripting.BehaviorTrees.BehaviorTree"
+              z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+              xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/"
+              xmlns="http://schemas.datacontract.org/2004/07/Graphics.Scripting.BehaviorTrees">
+  <RootNode z:Id="2"
+            z:Type="Graphics.Scripting.BehaviorTrees.Composites.SequenceNode"
+            z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+    <Children xmlns:d3p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays"
+              z:Id="3"
+              xmlns="http://schemas.datacontract.org/2004/07/Graphics.Scripting.BehaviorTrees.Composites">
+      <d3p1:_items z:Id="4"
+                   z:Size="4">
+        <d3p1:anyType z:Id="5"
+                      z:Type="Graphics.Scripting.BehaviorTrees.Composites.SelectorNode"
+                      z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Children z:Id="6">
+            <d3p1:_items z:Id="7"
+                         z:Size="4">
+              <d3p1:anyType z:Id="8"
+                            z:Type="Graphics.Scripting.BehaviorTrees.Leaves.LeafNode"
+                            z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                <Behavior xmlns:d9p1="http://schemas.datacontract.org/2004/07/System"
+                          z:Id="9"
+                          z:FactoryType="d9p1:DelegateSerializationHolder"
+                          z:Type="System.DelegateSerializationHolder"
+                          z:Assembly="0"
+                          xmlns="http://schemas.datacontract.org/2004/07/Graphics.Scripting.BehaviorTrees.Leaves">
+                  <Delegate z:Id="10"
+                            z:Type="System.DelegateSerializationHolder+DelegateEntry"
+                            z:Assembly="0"
+                            xmlns="">
+                    <d9p1:assembly z:Id="11">mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</d9p1:assembly>
+                    <d9p1:delegateEntry i:nil="true" />
+                    <d9p1:methodName z:Id="12">&lt;SaveTestPlayerBehavior&gt;b__18_0</d9p1:methodName>
+                    <d9p1:target z:Id="13"
+                                 z:Type="System.String"
+                                 z:Assembly="0">target0</d9p1:target>
+                    <d9p1:targetTypeAssembly z:Id="14">Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null</d9p1:targetTypeAssembly>
+                    <d9p1:targetTypeName z:Id="15">Graphics.Scripting.BehaviorTrees.BehaviorTree+&lt;&gt;c</d9p1:targetTypeName>
+                    <d9p1:type z:Id="16">System.Func`2[[System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[Graphics.Scripting.BehaviorTrees.BehaviorStatuses, Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]</d9p1:type>
+                  </Delegate>
+                  <target0 z:Id="17"
+                           z:Type="Graphics.Scripting.BehaviorTrees.BehaviorTree+&lt;&gt;c"
+                           z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null"
+                           xmlns="" />
+                  <method0 z:Id="18"
+                           xmlns:d10p1="http://schemas.datacontract.org/2004/07/System.Reflection"
+                           z:FactoryType="d10p1:MemberInfoSerializationHolder"
+                           z:Type="System.Reflection.MemberInfoSerializationHolder"
+                           z:Assembly="0"
+                           xmlns="">
+                    <Name z:Ref="12"
+                          i:nil="true" />
+                    <AssemblyName z:Ref="14"
+                                  i:nil="true" />
+                    <ClassName z:Ref="15"
+                               i:nil="true" />
+                    <Signature z:Id="19"
+                               z:Type="System.String"
+                               z:Assembly="0">Graphics.Scripting.BehaviorTrees.BehaviorStatuses &lt;SaveTestPlayerBehavior&gt;b__18_0(System.Collections.Generic.Dictionary`2[System.String,System.Object])</Signature>
+                    <Signature2 z:Id="20"
+                                z:Type="System.String"
+                                z:Assembly="0">Graphics.Scripting.BehaviorTrees.BehaviorStatuses &lt;SaveTestPlayerBehavior&gt;b__18_0(System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]])</Signature2>
+                    <MemberType z:Id="21"
+                                z:Type="System.Int32"
+                                z:Assembly="0">8</MemberType>
+                    <GenericArguments i:nil="true" />
+                  </method0>
+                </Behavior>
+              </d3p1:anyType>
+              <d3p1:anyType z:Id="22"
+                            z:Type="Graphics.Scripting.BehaviorTrees.Leaves.LeafNode"
+                            z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+                <Behavior xmlns:d9p1="http://schemas.datacontract.org/2004/07/System"
+                          z:Id="23"
+                          z:FactoryType="d9p1:DelegateSerializationHolder"
+                          z:Type="System.DelegateSerializationHolder"
+                          z:Assembly="0"
+                          xmlns="http://schemas.datacontract.org/2004/07/Graphics.Scripting.BehaviorTrees.Leaves">
+                  <Delegate z:Id="24"
+                            z:Type="System.DelegateSerializationHolder+DelegateEntry"
+                            z:Assembly="0"
+                            xmlns="">
+                    <d9p1:assembly z:Ref="11"
+                                   i:nil="true" />
+                    <d9p1:delegateEntry i:nil="true" />
+                    <d9p1:methodName z:Id="25">&lt;SaveTestPlayerBehavior&gt;b__18_1</d9p1:methodName>
+                    <d9p1:target z:Id="26"
+                                 z:Type="System.String"
+                                 z:Assembly="0">target0</d9p1:target>
+                    <d9p1:targetTypeAssembly z:Ref="14"
+                                             i:nil="true" />
+                    <d9p1:targetTypeName z:Ref="15"
+                                         i:nil="true" />
+                    <d9p1:type z:Ref="16"
+                               i:nil="true" />
+                  </Delegate>
+                  <target0 z:Ref="17"
+                           i:nil="true"
+                           xmlns="" />
+                  <method0 z:Id="27"
+                           xmlns:d10p1="http://schemas.datacontract.org/2004/07/System.Reflection"
+                           z:FactoryType="d10p1:MemberInfoSerializationHolder"
+                           z:Type="System.Reflection.MemberInfoSerializationHolder"
+                           z:Assembly="0"
+                           xmlns="">
+                    <Name z:Ref="25"
+                          i:nil="true" />
+                    <AssemblyName z:Ref="14"
+                                  i:nil="true" />
+                    <ClassName z:Ref="15"
+                               i:nil="true" />
+                    <Signature z:Id="28"
+                               z:Type="System.String"
+                               z:Assembly="0">Graphics.Scripting.BehaviorTrees.BehaviorStatuses &lt;SaveTestPlayerBehavior&gt;b__18_1(System.Collections.Generic.Dictionary`2[System.String,System.Object])</Signature>
+                    <Signature2 z:Id="29"
+                                z:Type="System.String"
+                                z:Assembly="0">Graphics.Scripting.BehaviorTrees.BehaviorStatuses &lt;SaveTestPlayerBehavior&gt;b__18_1(System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]])</Signature2>
+                    <MemberType z:Id="30"
+                                z:Type="System.Int32"
+                                z:Assembly="0">8</MemberType>
+                    <GenericArguments i:nil="true" />
+                  </method0>
+                </Behavior>
+              </d3p1:anyType>
+              <d3p1:anyType i:nil="true" />
+              <d3p1:anyType i:nil="true" />
+            </d3p1:_items>
+            <d3p1:_size>2</d3p1:_size>
+            <d3p1:_version>1</d3p1:_version>
+          </Children>
+        </d3p1:anyType>
+        <d3p1:anyType z:Id="31"
+                      z:Type="Graphics.Scripting.BehaviorTrees.Leaves.LeafNode"
+                      z:Assembly="Graphics, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null">
+          <Behavior xmlns:d6p1="http://schemas.datacontract.org/2004/07/System"
+                    z:Id="32"
+                    z:FactoryType="d6p1:DelegateSerializationHolder"
+                    z:Type="System.DelegateSerializationHolder"
+                    z:Assembly="0"
+                    xmlns="http://schemas.datacontract.org/2004/07/Graphics.Scripting.BehaviorTrees.Leaves">
+            <Delegate z:Id="33"
+                      z:Type="System.DelegateSerializationHolder+DelegateEntry"
+                      z:Assembly="0"
+                      xmlns="">
+              <d6p1:assembly z:Ref="11"
+                             i:nil="true" />
+              <d6p1:delegateEntry i:nil="true" />
+              <d6p1:methodName z:Id="34">&lt;SaveTestPlayerBehavior&gt;b__18_2</d6p1:methodName>
+              <d6p1:target z:Id="35"
+                           z:Type="System.String"
+                           z:Assembly="0">target0</d6p1:target>
+              <d6p1:targetTypeAssembly z:Ref="14"
+                                       i:nil="true" />
+              <d6p1:targetTypeName z:Ref="15"
+                                   i:nil="true" />
+              <d6p1:type z:Ref="16"
+                         i:nil="true" />
+            </Delegate>
+            <target0 z:Ref="17"
+                     i:nil="true"
+                     xmlns="" />
+            <method0 z:Id="36"
+                     xmlns:d7p1="http://schemas.datacontract.org/2004/07/System.Reflection"
+                     z:FactoryType="d7p1:MemberInfoSerializationHolder"
+                     z:Type="System.Reflection.MemberInfoSerializationHolder"
+                     z:Assembly="0"
+                     xmlns="">
+              <Name z:Ref="34"
+                    i:nil="true" />
+              <AssemblyName z:Ref="14"
+                            i:nil="true" />
+              <ClassName z:Ref="15"
+                         i:nil="true" />
+              <Signature z:Id="37"
+                         z:Type="System.String"
+                         z:Assembly="0">Graphics.Scripting.BehaviorTrees.BehaviorStatuses &lt;SaveTestPlayerBehavior&gt;b__18_2(System.Collections.Generic.Dictionary`2[System.String,System.Object])</Signature>
+              <Signature2 z:Id="38"
+                          z:Type="System.String"
+                          z:Assembly="0">Graphics.Scripting.BehaviorTrees.BehaviorStatuses &lt;SaveTestPlayerBehavior&gt;b__18_2(System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.Object, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]])</Signature2>
+              <MemberType z:Id="39"
+                          z:Type="System.Int32"
+                          z:Assembly="0">8</MemberType>
+              <GenericArguments i:nil="true" />
+            </method0>
+          </Behavior>
+        </d3p1:anyType>
+        <d3p1:anyType i:nil="true" />
+        <d3p1:anyType i:nil="true" />
+      </d3p1:_items>
+      <d3p1:_size>2</d3p1:_size>
+      <d3p1:_version>1</d3p1:_version>
+    </Children>
+  </RootNode>
+</BehaviorTree>

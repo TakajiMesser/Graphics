@@ -27,7 +27,7 @@ namespace Graphics.Maps
         {
             using (var writer = XmlWriter.Create(path))
             {
-                var serializer = new DataContractSerializer(typeof(Map));
+                var serializer = new NetDataContractSerializer();
                 serializer.WriteObject(writer, this);
             }
         }
@@ -36,7 +36,7 @@ namespace Graphics.Maps
         {
             using (var reader = XmlReader.Create(path))
             {
-                var serializer = new DataContractSerializer(typeof(Map));
+                var serializer = new NetDataContractSerializer();
                 return serializer.ReadObject(reader, true) as Map;
             }
         }
@@ -45,14 +45,23 @@ namespace Graphics.Maps
         {
             var map = new Map()
             {
-                Player = new MapPlayer()
+                /*Player = new MapPlayer()
                 {
                     Name = "Player",
                     Position = new Vector3(0.0f, 0.0f, -1.0f),
                     Scale = Vector3.One,
                     Rotation = Quaternion.Identity,
-                    MeshFilePath = FilePathHelper.PLAYER_MESH_PATH
-                },
+                    MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
+                    BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
+                    Properties = new List<GameProperty>
+                    {
+                        new GameProperty("WALK_SPEED", typeof(float), 0.1f, true),
+                        new GameProperty("RUN_SPEED", typeof(float), 0.15f, true),
+                        new GameProperty("CREEP_SPEED", typeof(float), 0.04f, true),
+                        new GameProperty("EVADE_SPEED", typeof(float), 0.175f, true),
+                        new GameProperty("EVADE_TICK_COUNT", typeof(int), 20, true)
+                    }
+                },*/
                 Camera = new MapCamera()
                 {
                     Name = "MainCamera",
@@ -63,12 +72,30 @@ namespace Graphics.Maps
 
             map.GameObjects.Add(new MapGameObject()
             {
+                Name = "Player",
+                Position = new Vector3(0.0f, 0.0f, -1.0f),
+                Scale = Vector3.One,
+                Rotation = Quaternion.Identity,
+                MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
+                BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
+                Properties = new List<GameProperty>
+                {
+                    new GameProperty("WALK_SPEED", typeof(float), 0.1f, true),
+                    new GameProperty("RUN_SPEED", typeof(float), 0.15f, true),
+                    new GameProperty("CREEP_SPEED", typeof(float), 0.04f, true),
+                    new GameProperty("EVADE_SPEED", typeof(float), 0.175f, true),
+                    new GameProperty("EVADE_TICK_COUNT", typeof(int), 20, true)
+                }
+            });
+
+            map.GameObjects.Add(new MapGameObject()
+            {
                 Name = "Enemy",
                 Position = new Vector3(5.0f, 5.0f, -1.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.TRIANGLE_MESH_PATH,
-                BehaviorFilePath = FilePathHelper.ENEMY_BEHAVIOR_PATH
+                BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH
             });
 
             map.Brushes.Add(MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f));

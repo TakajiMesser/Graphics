@@ -1,7 +1,7 @@
 ﻿using Graphics.Inputs;
-using Graphics.Matrices;
 using Graphics.Meshes;
 using Graphics.Physics.Collision;
+using Graphics.Rendering.Matrices;
 using Graphics.Rendering.Shaders;
 using Graphics.Scripting.BehaviorTrees;
 using OpenTK;
@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace Graphics.GameObjects
 {
@@ -22,11 +23,8 @@ namespace Graphics.GameObjects
 
         public string Name { get; private set; }
         public Mesh Mesh { get; set; }
-        public BehaviorTree Behaviors
-        {
-            get;
-            set;
-        }
+        public BehaviorTree Behaviors { get; set; }
+        public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public ICollider Collider
         {
@@ -66,9 +64,28 @@ namespace Graphics.GameObjects
             Name = name;
         }
 
+        public virtual void OnInitialization()
+        {
+            if (Behaviors != null)
+            {
+                foreach (var property in Properties)
+                {
+                    if (property.Value.IsConstant)
+                    {
+                        Behaviors.VariablesByName.Add(property.Key, property.Value.Value);
+                    }
+                }
+            }
+        }
+
         public virtual void OnHandleInput(InputState inputState, Camera camera, IEnumerable<ICollider> colliders)
         {
-
+            if (Behaviors != null)
+            {
+                Behaviors.VariablesByName["InputState"] = inputState;
+                Behaviors.VariablesByName["InputMapping"] = InputMapping;
+                Behaviors.VariablesByName["Camera"] = camera;
+            }
         }
 
         public virtual void OnUpdateFrame(IEnumerable<ICollider> colliders)
@@ -80,6 +97,11 @@ namespace Graphics.GameObjects
                 Behaviors.VariablesByName["Rotation"] = Rotation;
                 Behaviors.VariablesByName["Scale"] = Scale;
 
+                foreach (var property in Properties.Where(p => !p.Value.IsConstant))
+                {
+                    Behaviors.VariablesByName[property.Key] = property.Value;
+                }
+
                 Behaviors.Tick();
 
                 if (Behaviors.VariablesByName.ContainsKey("Translation"))
@@ -87,6 +109,9 @@ namespace Graphics.GameObjects
                     HandleCollisions((Vector3)Behaviors.VariablesByName["Translation"], colliders);
                     Behaviors.VariablesByName["Translation"] = Vector3.Zero;
                 }
+
+                Rotation = (Quaternion)Behaviors.VariablesByName["Rotation"];
+                Scale = (Vector3)Behaviors.VariablesByName["Scale"];
             }
         }
 

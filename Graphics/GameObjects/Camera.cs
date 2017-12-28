@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
-using Graphics.Matrices;
+using Graphics.Rendering.Matrices;
 
 namespace Graphics.GameObjects
 {

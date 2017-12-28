@@ -53,6 +53,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="Behaviors\Enemy.btt" />
+    <None Include="Behaviors\EnemyPatrol.btt" />
+    <None Include="Behaviors\PlayerInput.btt" />
     <None Include="Maps\TestMap.map">
       <SubType>Designer</SubType>
     </None>

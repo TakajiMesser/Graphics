@@ -28,6 +28,7 @@ namespace Graphics.Helpers
 
         public const string MAP_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Maps\TestMap.map";
 
-        public const string ENEMY_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\Enemy.btt";
+        public const string ENEMY_PATROL_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\EnemyPatrol.btt";
+        public const string PLAYER_INPUT_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\PlayerInput.btt";
     }
 }

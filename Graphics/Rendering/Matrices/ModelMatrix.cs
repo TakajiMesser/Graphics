@@ -8,7 +8,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using Graphics.Rendering.Shaders;
 
-namespace Graphics.Matrices
+namespace Graphics.Rendering.Matrices
 {
     public class ModelMatrix
     {

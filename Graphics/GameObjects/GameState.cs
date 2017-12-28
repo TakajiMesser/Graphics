@@ -13,11 +13,10 @@ using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
 using Graphics.Brushes;
 
-namespace Graphics.GameStates
+namespace Graphics.GameObjects
 {
     public class GameState
     {
-        private Player _player;
         private Camera _camera;
         private ShaderProgram _program;
         private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
@@ -26,10 +25,8 @@ namespace Graphics.GameStates
 
         public GameWindow Window { get; private set; }
 
-        public GameState(Player player, Camera camera, ShaderProgram program)
+        public GameState(Camera camera, ShaderProgram program)
         {
-            _player = player;
-            _player._program = program;
             _camera = camera;
             _program = program;
         }
@@ -39,26 +36,7 @@ namespace Graphics.GameStates
             _program = program;
             Window = window;
 
-            _player = map.Player.ToPlayer(program);
             _camera = new Camera(map.Camera.Name, program, Window.Width, Window.Height);
-
-            if (_player != null)
-            {
-                _player.Collider = new BoundingSphere(_player.Mesh.Vertices)
-                {
-                    Center = _player.Position
-                };
-
-                _player.Mesh.AddTestColors();
-                _player.Mesh.AddTestLight();
-
-                _player._program = program;
-
-                if (_player.Name == map.Camera.AttachedGameObjectName)
-                {
-                    _camera.AttachedObject = _player;
-                }
-            }
 
             foreach (var brush in map.Brushes.Select(b => b.ToBrush(program)))
             {
@@ -75,10 +53,20 @@ namespace Graphics.GameStates
                     _camera.AttachedObject = gameObject;
                 }
 
-                gameObject.Collider = new BoundingBox(gameObject.Mesh.Vertices)
+                if (gameObject.Name == "Player")
                 {
-                    Center = gameObject.Position
-                };
+                    gameObject.Collider = new BoundingSphere(gameObject.Mesh.Vertices)
+                    {
+                        Center = gameObject.Position
+                    };
+                }
+                else
+                {
+                    gameObject.Collider = new BoundingBox(gameObject.Mesh.Vertices)
+                    {
+                        Center = gameObject.Position
+                    };
+                }
 
                 gameObject.Mesh.AddTestColors();
                 gameObject.Mesh.AddTestLight();
@@ -104,27 +92,39 @@ namespace Graphics.GameStates
             _gameObjects.Add(gameObject.Name, gameObject);
         }
 
+        public void Initialize()
+        {
+            foreach (var gameObject in _gameObjects)
+            {
+                gameObject.Value.OnInitialization();
+            }
+        }
+
         public void HandleInput()
         {
-            _player.OnHandleInput(_inputState, _camera, _gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
             _camera.OnHandleInput(_inputState);
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnHandleInput(_inputState, _camera, _gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
+                gameObject.Value.OnHandleInput(_inputState, _camera, _gameObjects.Where(g => g.Value.Name != gameObject.Value.Name)
+                    .Select(g => g.Value.Collider)
+                    .Concat(_brushes.Select(b => b.Collider)
+                        .Where(c => c != null)));
             }
         }
 
         public void UpdateFrame()
         {
             // For each object that has a non-zero transform, we need to determine the set of game objects to compare it against for hit detection
-            _player.OnUpdateFrame(_gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
-            _camera.OnUpdateFrame();
-
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnUpdateFrame(_gameObjects.Select(g => g.Value.Collider).Concat(_brushes.Select(b => b.Collider).Where(c => c != null)));
+                gameObject.Value.OnUpdateFrame(_gameObjects.Where(g => g.Value.Name != gameObject.Value.Name)
+                    .Select(g => g.Value.Collider)
+                    .Concat(_brushes.Select(b => b.Collider)
+                        .Where(c => c != null)));
             }
+
+            _camera.OnUpdateFrame();
         }
 
         public void RenderFrame()
@@ -135,8 +135,6 @@ namespace Graphics.GameStates
             {
                 brush.OnRenderFrame();
             }
-
-            _player.OnRenderFrame();
 
             foreach (var gameObject in PerformOcclusionCulling(PerformFrustumCulling(_gameObjects.Values)))
             {

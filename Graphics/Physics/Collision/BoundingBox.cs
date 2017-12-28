@@ -55,7 +55,7 @@ namespace Graphics.Physics.Collision
 
         public bool CollidesWith(Vector3 point)
         {
-            return false;
+            return (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);
         }
 
         public bool CollidesWith(ICollider collider)
@@ -65,12 +65,25 @@ namespace Graphics.Physics.Collision
 
         public bool CollidesWith(BoundingSphere boundingSphere)
         {
-            return false;
+            var closestX = (boundingSphere.Center.X > MaxX)
+                ? MaxX
+                : (boundingSphere.Center.X < MinX)
+                    ? MinX
+                    : boundingSphere.Center.X;
+
+            var closestY = (boundingSphere.Center.Y > MaxY)
+                ? MaxY
+                : (boundingSphere.Center.Y < MinY)
+                    ? MinY
+                    : boundingSphere.Center.Y;
+
+            var distanceSquared = Math.Pow(boundingSphere.Center.X - closestX, 2) + Math.Pow(boundingSphere.Center.Y - closestY, 2);
+            return distanceSquared < Math.Pow(boundingSphere.Radius, 2);
         }
 
         public bool CollidesWith(BoundingBox boundingBox)
         {
-            return false;
+            return (MinX < boundingBox.MaxX && MaxX > boundingBox.MinX) && (MinY < boundingBox.MaxY && MaxY > boundingBox.MinY);
         }
     }
 }

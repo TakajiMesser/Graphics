@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Graphics.Scripting.BehaviorTrees
+namespace Graphics.Scripting.BehaviorTrees.Leaves
 {
     [DataContract]
     public class NavigateNode : LeafNode
@@ -21,30 +21,26 @@ namespace Graphics.Scripting.BehaviorTrees
         {
             Position = position;
             Speed = speed;
-        }
-
-        public override void Tick(Dictionary<string, object> variablesByName)
-        {
-            if (!Status.IsComplete())
+            Behavior = (v) =>
             {
-                Status = BehaviorStatuses.Running;
-
-                var currentPosition = (Vector3)variablesByName["Position"];
+                var currentPosition = (Vector3)v["Position"];
                 var difference = Position - currentPosition;
 
                 if (difference == Vector3.Zero)
                 {
-                    Status = BehaviorStatuses.Success;
+                    return BehaviorStatuses.Success;
                 }
                 else if (difference.Length < Speed)
                 {
-                    variablesByName["Translation"] = difference;
+                    v["Translation"] = difference;
                 }
                 else
                 {
-                    variablesByName["Translation"] = difference.Normalized() * Speed;
+                    v["Translation"] = difference.Normalized() * Speed;
                 }
-            }
+
+                return BehaviorStatuses.Running;
+            };
         }
     }
 }

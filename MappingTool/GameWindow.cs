@@ -10,7 +10,6 @@ using System.IO;
 using Graphics;
 using Graphics.Meshes;
 using Graphics.GameObjects;
-using Graphics.GameStates;
 using System.Runtime.InteropServices;
 using OpenTK.Input;
 using Graphics.Physics.Collision;
@@ -58,10 +57,12 @@ namespace MappingTool
             _program = new ShaderProgram(vertexShader, fragmentShader);
 
             BehaviorTree.SaveTestEnemyBehavior();
+            BehaviorTree.SaveTestPlayerBehavior();
             Map.SaveTestMap();
             var loadedMap = Map.Load(_mapPath);
 
             _gameState = new GameState(_program, loadedMap, this);
+            _gameState.Initialize();
         }
 
         //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;

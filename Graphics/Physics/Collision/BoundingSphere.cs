@@ -47,12 +47,6 @@ namespace Graphics.Physics.Collision
 
         public bool CollidesWith(BoundingBox boundingBox)
         {
-            /*var distanceSquared = Math.Pow(Math.Max(boundingBox.MinX, Math.Min(Center.X, boundingBox.MaxX)), 2.0f)
-                + Math.Pow(Math.Max(boundingBox.MinY, Math.Min(Center.Y, boundingBox.MaxY)), 2.0f)
-                /*+ Math.Pow(Math.Max(boundingBox.MinXMinY.Z, Math.Min(Center.Z, boundingBox.MaxXMaxY.Z)), 2.0f)*;
-
-            var result = distanceSquared < Math.Pow(Radius, 2.0f);*/
-
             var closestX = (Center.X > boundingBox.MaxX)
                 ? boundingBox.MaxX
                 : (Center.X < boundingBox.MinX)

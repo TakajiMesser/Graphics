@@ -22,6 +22,7 @@ namespace Graphics.Maps
         public Vector3 Scale { get; set; }
         public string MeshFilePath { get; set; }
         public string BehaviorFilePath { get; set; }
+        public List<GameProperty> Properties { get; set; }
         //public ICollider Collider { get; set; }
 
         public GameObject ToGameObject(ShaderProgram program)
@@ -31,6 +32,14 @@ namespace Graphics.Maps
                 Mesh = Mesh.LoadFromFile(MeshFilePath, program),
                 Behaviors = BehaviorTree.Load(BehaviorFilePath)
             };
+
+            if (Properties != null)
+            {
+                foreach (var property in Properties)
+                {
+                    gameObject.Properties.Add(property.Name, property);
+                }
+            }
 
             if (Position != null)
             {

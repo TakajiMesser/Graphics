@@ -46,12 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Brushes\Brush.cs" />
-    <Compile Include="GameStates\Camera.cs" />
-    <Compile Include="GameStates\Enemy.cs" />
-    <Compile Include="GameStates\GameProperty.cs" />
-    <Compile Include="GameStates\Player.cs" />
-    <Compile Include="GameStates\GameObject.cs" />
-    <Compile Include="GameStates\GameState.cs" />
+    <Compile Include="GameObjects\Camera.cs" />
+    <Compile Include="GameObjects\Enemy.cs" />
+    <Compile Include="GameObjects\GameProperty.cs" />
+    <Compile Include="GameObjects\Player.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameObjects\GameState.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\InputState.cs" />
@@ -64,9 +64,11 @@
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
-    <Compile Include="Matrices\ProjectionMatrix.cs" />
-    <Compile Include="Matrices\ViewMatrix.cs" />
-    <Compile Include="Matrices\ModelMatrix.cs" />
+    <Compile Include="Physics\Raycasting\Ray3.cs" />
+    <Compile Include="Physics\Raycasting\Raycast.cs" />
+    <Compile Include="Rendering\Matrices\ProjectionMatrix.cs" />
+    <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
+    <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
     <Compile Include="Meshes\MeshManager.cs" />
     <Compile Include="Meshes\MeshLoader.cs" />
     <Compile Include="Meshes\MeshTriangle.cs" />
@@ -90,11 +92,12 @@
     <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\OrderedNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\ConditionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\ConditionNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\INode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\NavigateNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
