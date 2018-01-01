@@ -21,6 +21,7 @@ namespace Graphics.GameObjects
         private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
         private List<Brush> _brushes = new List<Brush>();
         private InputState _inputState = new InputState();
+        private QuadTree _quadTree;
 
         public GameWindow Window { get; private set; }
 
@@ -35,6 +36,7 @@ namespace Graphics.GameObjects
             _program = program;
             Window = window;
 
+            _quadTree = new QuadTree(0, map.Boundaries);
             _camera = new Camera(map.Camera.Name, program, Window.Width, Window.Height);
 
             foreach (var brush in map.Brushes.Select(b => b.ToBrush(program)))
@@ -43,6 +45,11 @@ namespace Graphics.GameObjects
                 brush.AddTestLight();
                 brush._program = program;
                 _brushes.Add(brush);
+
+                if (brush.Collider != null)
+                {
+                    _quadTree.Insert(brush.Collider);
+                } 
             }
 
             foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(program)))
@@ -61,15 +68,17 @@ namespace Graphics.GameObjects
 
                 gameObject._program = program;
                 _gameObjects.Add(gameObject.Name, gameObject);
+
+                if (gameObject.Collider != null)
+                {
+                    _quadTree.Insert(gameObject.Collider);
+                }
             }
         }
 
         public GameObject GetByName(string name) => _gameObjects[name];
 
-        public void UpdateAspectRatio(int width, int height)
-        {
-            _camera.UpdateAspectRatio(width, height);
-        }
+        public void UpdateAspectRatio(int width, int height) => _camera.UpdateAspectRatio(width, height);
 
         public void AddGameObject(GameObject gameObject)
         {
@@ -78,6 +87,11 @@ namespace Graphics.GameObjects
 
             gameObject._program = _program;
             _gameObjects.Add(gameObject.Name, gameObject);
+
+            if (gameObject.Collider != null)
+            {
+                _quadTree.Insert(gameObject.Collider);
+            }
         }
 
         public void Initialize()
@@ -94,22 +108,20 @@ namespace Graphics.GameObjects
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnHandleInput(_inputState, _camera, _gameObjects.Where(g => g.Value.Name != gameObject.Value.Name)
-                    .Select(g => g.Value.Collider)
-                    .Concat(_brushes.Select(b => b.Collider)
-                        .Where(c => c != null)));
+                gameObject.Value.OnHandleInput(_inputState, _camera);
             }
         }
 
         public void UpdateFrame()
         {
-            // For each object that has a non-zero transform, we need to determine the set of game objects to compare it against for hit detection
+            // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnUpdateFrame(_gameObjects.Where(g => g.Value.Name != gameObject.Value.Name)
-                    .Select(g => g.Value.Collider)
-                    .Concat(_brushes.Select(b => b.Collider)
-                        .Where(c => c != null)));
+                var filteredColliders = _quadTree.Retrieve(gameObject.Value.Collider)
+                    .Where(c => c.AttachedObject.GetType() != typeof(GameObject)
+                        || ((GameObject)c.AttachedObject).Name != gameObject.Value.Name);
+
+                gameObject.Value.OnUpdateFrame(filteredColliders);
             }
 
             _camera.OnUpdateFrame();
@@ -132,10 +144,7 @@ namespace Graphics.GameObjects
             PollForInput();
         }
 
-        private void PollForInput()
-        {
-            _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), Window);
-        }
+        private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), Window);
 
         private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)
         {

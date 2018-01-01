@@ -112,16 +112,21 @@ namespace Graphics.Helpers
 
         public static void CreateTestPlayerBehavior()
         {
+            CreatePlayerMovementNode();
+            CreatePlayerTurnNode();
+            CreatePlayerEvadeNode();
+            CreatePlayerCoverNode();
+
             var behavior = new BehaviorTree
             {
                 RootNode = new SelectorNode(
-                    CreatePlayerCoverNode(),
+                    Node.Load(FilePathHelper.PLAYER_COVER_BEHAVIOR_PATH),
                     new SequenceNode(
                         new SelectorNode(
-                            CreatePlayerEvadeNode(),
-                            CreatePlayerMovementNode()
+                            Node.Load(FilePathHelper.PLAYER_EVADE_BEHAVIOR_PATH),
+                            Node.Load(FilePathHelper.PLAYER_MOVEMENT_BEHAVIOR_PATH)
                         ),
-                        CreatePlayerTurnNode()
+                        Node.Load(FilePathHelper.PLAYER_TURN_BEHAVIOR_PATH)
                     )
                 )
             };
@@ -129,9 +134,9 @@ namespace Graphics.Helpers
             behavior.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
         }
 
-        private static LeafNode CreatePlayerCoverNode()
+        private static void CreatePlayerCoverNode()
         {
-            return new LeafNode()
+            var node = new LeafNode()
             {
                 Behavior = (v) =>
                 {
@@ -202,11 +207,13 @@ namespace Graphics.Helpers
                     return BehaviorStatuses.Failure;
                 }
             };
+
+            node.Save(FilePathHelper.PLAYER_COVER_BEHAVIOR_PATH);
         }
 
-        private static LeafNode CreatePlayerEvadeNode()
+        private static void CreatePlayerEvadeNode()
         {
-            return new LeafNode()
+            var node = new LeafNode()
             {
                 Behavior = (v) =>
                 {
@@ -284,11 +291,13 @@ namespace Graphics.Helpers
                     return BehaviorStatuses.Failure;
                 }
             };
+
+            node.Save(FilePathHelper.PLAYER_EVADE_BEHAVIOR_PATH);
         }
 
-        private static LeafNode CreatePlayerMovementNode()
+        private static void CreatePlayerMovementNode()
         {
-            return new LeafNode()
+            var node = new LeafNode()
             {
                 Behavior = (v) =>
                 {
@@ -340,11 +349,13 @@ namespace Graphics.Helpers
                     return BehaviorStatuses.Success;
                 }
             };
+
+            node.Save(FilePathHelper.PLAYER_MOVEMENT_BEHAVIOR_PATH);
         }
 
-        private static LeafNode CreatePlayerTurnNode()
+        private static void CreatePlayerTurnNode()
         {
-            return new LeafNode()
+            var node = new LeafNode()
             {
                 Behavior = (v) =>
                 {
@@ -371,6 +382,8 @@ namespace Graphics.Helpers
                     return BehaviorStatuses.Success;
                 }
             };
+
+            node.Save(FilePathHelper.PLAYER_TURN_BEHAVIOR_PATH);
         }
 
         #endregion

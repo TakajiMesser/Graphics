@@ -11,13 +11,19 @@ namespace Graphics.Materials
 {
     public struct Material
     {
-        // Ambient light is the light that enters a room and bounces around multiple times
+        /// <summary>
+        /// Ambient light is the light that enters a room and bounces around multiple times
+        /// </summary>
         public Vector4 Ambient { get; set; }
 
-        // Diffuse light is the direct light hitting a surface
+        /// <summary>
+        /// Diffuse light is the direct light hitting a surface
+        /// </summary>
         public Vector4 Diffuse { get; set; }
 
-        // Specular light is the white highlight reflection seen on smooth, shiny objects
+        /// <summary>
+        /// Specular light is the white highlight reflection seen on smooth, shiny objects
+        /// </summary>
         public Vector3 Specular { get; set; }
 
         public float SpecularExponent { get; set; }

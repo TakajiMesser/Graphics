@@ -26,9 +26,9 @@ namespace Graphics.GameObjects
 
         public Player() : base("Player") { }
 
-        public override void OnHandleInput(InputState inputState, Camera camera, IEnumerable<Collider> colliders)
+        public override void OnHandleInput(InputState inputState, Camera camera)
         {
-            base.OnHandleInput(inputState, camera, colliders);
+            base.OnHandleInput(inputState, camera);
 
             //HandleCovering(inputState, colliders);
             //HandleMovement(inputState, colliders);

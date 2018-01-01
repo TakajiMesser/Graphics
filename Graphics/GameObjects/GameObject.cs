@@ -78,7 +78,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public virtual void OnHandleInput(InputState inputState, Camera camera, IEnumerable<Collider> colliders)
+        public virtual void OnHandleInput(InputState inputState, Camera camera)
         {
             if (Behaviors != null)
             {

@@ -30,5 +30,9 @@ namespace Graphics.Helpers
 
         public const string ENEMY_PATROL_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\EnemyPatrol.btt";
         public const string PLAYER_INPUT_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\PlayerInput.btt";
+        public const string PLAYER_MOVEMENT_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\PlayerMovement.btt";
+        public const string PLAYER_TURN_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\PlayerTurn.btt";
+        public const string PLAYER_EVADE_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\PlayerEvade.btt";
+        public const string PLAYER_COVER_BEHAVIOR_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Behaviors\PlayerCover.btt";
     }
 }
