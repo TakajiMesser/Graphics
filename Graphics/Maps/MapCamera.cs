@@ -1,5 +1,4 @@
-﻿using Graphics.Brushes;
-using Graphics.GameObjects;
+﻿using Graphics.GameObjects;
 using Graphics.Rendering.Shaders;
 using OpenTK;
 using System;

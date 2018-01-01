@@ -26,7 +26,7 @@ namespace Graphics.GameObjects
             _behavior.VariablesByName.Add("", false);
         }
 
-        public override void OnUpdateFrame(IEnumerable<ICollider> colliders)
+        public override void OnUpdateFrame(IEnumerable<Collider> colliders)
         {
             base.OnUpdateFrame(colliders);
 

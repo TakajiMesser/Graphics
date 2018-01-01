@@ -1,4 +1,5 @@
 ﻿using Graphics.Physics.Collision;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,13 +8,9 @@ using System.Threading.Tasks;
 
 namespace Graphics.Physics.Raycasting
 {
-    public class Raycast
+    public class RaycastHit
     {
-        public static bool TryRaycast(Ray3 ray, out RaycastHit hit)
-        {
-            hit = new RaycastHit();
-
-            return false;
-        }
+        public Collider Collider { get; set; }
+        public Vector3 HitPosition { get; set; }
     }
 }

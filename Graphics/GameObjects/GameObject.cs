@@ -19,20 +19,20 @@ namespace Graphics.GameObjects
     {
         internal ShaderProgram _program;
         private ModelMatrix _modelMatrix = new ModelMatrix();
-        private ICollider _collider;
+        private Collider _collider;
 
+        //public int ID { get; private set; }
         public string Name { get; private set; }
         public Mesh Mesh { get; set; }
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public ICollider Collider
+        public Collider Collider
         {
             get => _collider;
             set
             {
                 _collider = value;
-                _collider.Properties = Properties;
             }
         }
         public Vector3 Position
@@ -78,7 +78,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public virtual void OnHandleInput(InputState inputState, Camera camera, IEnumerable<ICollider> colliders)
+        public virtual void OnHandleInput(InputState inputState, Camera camera, IEnumerable<Collider> colliders)
         {
             if (Behaviors != null)
             {
@@ -88,7 +88,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public virtual void OnUpdateFrame(IEnumerable<ICollider> colliders)
+        public virtual void OnUpdateFrame(IEnumerable<Collider> colliders)
         {
             if (Behaviors != null)
             {
@@ -115,7 +115,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public virtual void HandleCollisions(Vector3 translation, IEnumerable<ICollider> colliders)
+        public virtual void HandleCollisions(Vector3 translation, IEnumerable<Collider> colliders)
         {
             if (translation != Vector3.Zero && Collider != null)
             {

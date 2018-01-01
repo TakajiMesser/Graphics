@@ -11,7 +11,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
-using Graphics.Brushes;
 
 namespace Graphics.GameObjects
 {
@@ -53,20 +52,9 @@ namespace Graphics.GameObjects
                     _camera.AttachedObject = gameObject;
                 }
 
-                if (gameObject.Name == "Player")
-                {
-                    gameObject.Collider = new BoundingSphere(gameObject.Mesh.Vertices)
-                    {
-                        Center = gameObject.Position
-                    };
-                }
-                else
-                {
-                    gameObject.Collider = new BoundingBox(gameObject.Mesh.Vertices)
-                    {
-                        Center = gameObject.Position
-                    };
-                }
+                gameObject.Collider = gameObject.Name == "Player"
+                    ? (Collider)new BoundingSphere(gameObject)
+                    : new BoundingBox(gameObject);
 
                 gameObject.Mesh.AddTestColors();
                 gameObject.Mesh.AddTestLight();

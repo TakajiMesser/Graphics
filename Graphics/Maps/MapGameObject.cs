@@ -1,5 +1,4 @@
-﻿using Graphics.Brushes;
-using Graphics.GameObjects;
+﻿using Graphics.GameObjects;
 using Graphics.Meshes;
 using Graphics.Rendering.Shaders;
 using Graphics.Scripting.BehaviorTrees;

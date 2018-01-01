@@ -26,7 +26,7 @@ namespace Graphics.GameObjects
 
         public Player() : base("Player") { }
 
-        public override void OnHandleInput(InputState inputState, Camera camera, IEnumerable<ICollider> colliders)
+        public override void OnHandleInput(InputState inputState, Camera camera, IEnumerable<Collider> colliders)
         {
             base.OnHandleInput(inputState, camera, colliders);
 
@@ -35,7 +35,7 @@ namespace Graphics.GameObjects
             //HandleTurning(inputState, camera);
         }
 
-        public void HandleCovering(InputState inputState, IEnumerable<ICollider> colliders)
+        public void HandleCovering(InputState inputState, IEnumerable<Collider> colliders)
         {
             if (inputState.IsMouseInWindow)
             {
@@ -43,7 +43,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public void HandleMovement(InputState inputState, IEnumerable<ICollider> colliders)
+        public void HandleMovement(InputState inputState, IEnumerable<Collider> colliders)
         {
             if (_nEvadeTicks == 0 && inputState.IsPressed(InputMapping.Evade))
             {

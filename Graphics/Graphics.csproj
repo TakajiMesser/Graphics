@@ -45,7 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Brushes\Brush.cs" />
+    <Compile Include="GameObjects\Brush.cs" />
     <Compile Include="GameObjects\Camera.cs" />
     <Compile Include="GameObjects\Enemy.cs" />
     <Compile Include="GameObjects\GameProperty.cs" />
@@ -64,7 +64,9 @@
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
+    <Compile Include="Physics\Collision\Quad.cs" />
     <Compile Include="Physics\Raycasting\Ray3.cs" />
+    <Compile Include="Physics\Raycasting\RaycastHit.cs" />
     <Compile Include="Physics\Raycasting\Raycast.cs" />
     <Compile Include="Rendering\Matrices\ProjectionMatrix.cs" />
     <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
@@ -73,8 +75,8 @@
     <Compile Include="Meshes\MeshLoader.cs" />
     <Compile Include="Meshes\MeshTriangle.cs" />
     <Compile Include="Meshes\Mesh.cs" />
-    <Compile Include="Physics\Collision\Collision.cs" />
-    <Compile Include="Physics\Collision\ICollider.cs" />
+    <Compile Include="Physics\Collision\QuadTree.cs" />
+    <Compile Include="Physics\Collision\Collider.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />
     <Compile Include="Physics\Collision\BoundingSphere.cs" />
     <Compile Include="Rendering\Animations\KeyFrame.cs" />

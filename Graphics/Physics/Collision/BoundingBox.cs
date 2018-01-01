@@ -10,10 +10,8 @@ using System.Threading.Tasks;
 
 namespace Graphics.Physics.Collision
 {
-    public class BoundingBox : ICollider
+    public class BoundingBox : Collider
     {
-        public Vector3 Center { get; set; }
-        public Dictionary<string, GameProperty> Properties { get; set; }
         public float Width { get; set; }
         public float Height { get; set; }
 
@@ -22,68 +20,42 @@ namespace Graphics.Physics.Collision
         public float MinY => Center.Y - Height / 2.0f;
         public float MaxY => Center.Y + Height / 2.0f;
 
-        public BoundingBox(IEnumerable<Vertex> vertices)
+        public BoundingBox(GameObject gameObject) : base(gameObject)
         {
-            var minX = vertices.Select(v => v.Position.X).Min();
-            var maxX = vertices.Select(v => v.Position.X).Max();
+            var minX = gameObject.Mesh.Vertices.Select(v => v.Position.X).Min();
+            var maxX = gameObject.Mesh.Vertices.Select(v => v.Position.X).Max();
             Width = maxX - minX;
 
-            var minY = vertices.Select(v => v.Position.Y).Min();
-            var maxY = vertices.Select(v => v.Position.Y).Max();
+            var minY = gameObject.Mesh.Vertices.Select(v => v.Position.Y).Min();
+            var maxY = gameObject.Mesh.Vertices.Select(v => v.Position.Y).Max();
+            Height = maxY - minY;
+        }
+
+        public BoundingBox(Brush brush) : base(brush)
+        {
+            var minX = brush.Vertices.Select(v => v.Position.X).Min();
+            var maxX = brush.Vertices.Select(v => v.Position.X).Max();
+            Width = maxX - minX;
+
+            var minY = brush.Vertices.Select(v => v.Position.Y).Min();
+            var maxY = brush.Vertices.Select(v => v.Position.Y).Max();
             Height = maxY - minY;
 
             Center = new Vector3()
             {
                 X = (maxX + minX) / 2.0f,
                 Y = (maxY + minY) / 2.0f,
-                Z = vertices.Select(v => v.Position.Z).Average()
+                Z = brush.Vertices.Select(v => v.Position.Z).Average()
             };
         }
 
-        public BoundingBox(Vector3 center, IEnumerable<Vertex> vertices)
-        {
-            Center = center;
+        public override bool CollidesWith(Vector3 point) => (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);
 
-            var minX = vertices.Select(v => v.Position.X).Min();
-            var maxX = vertices.Select(v => v.Position.X).Max();
-            Width = maxX - minX;
+        public override bool CollidesWith(Collider collider) => throw new NotImplementedException();
 
-            var minY = vertices.Select(v => v.Position.Y).Min();
-            var maxY = vertices.Select(v => v.Position.Y).Max();
-            Height = maxY - minY;
-        }
+        public override bool CollidesWith(BoundingSphere boundingSphere) => HasCollision(boundingSphere, this);
 
-        public bool CollidesWith(Vector3 point)
-        {
-            return (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);
-        }
-
-        public bool CollidesWith(ICollider collider)
-        {
-            return false;
-        }
-
-        public bool CollidesWith(BoundingSphere boundingSphere)
-        {
-            var closestX = (boundingSphere.Center.X > MaxX)
-                ? MaxX
-                : (boundingSphere.Center.X < MinX)
-                    ? MinX
-                    : boundingSphere.Center.X;
-
-            var closestY = (boundingSphere.Center.Y > MaxY)
-                ? MaxY
-                : (boundingSphere.Center.Y < MinY)
-                    ? MinY
-                    : boundingSphere.Center.Y;
-
-            var distanceSquared = Math.Pow(boundingSphere.Center.X - closestX, 2) + Math.Pow(boundingSphere.Center.Y - closestY, 2);
-            return distanceSquared < Math.Pow(boundingSphere.Radius, 2);
-        }
-
-        public bool CollidesWith(BoundingBox boundingBox)
-        {
-            return (MinX < boundingBox.MaxX && MaxX > boundingBox.MinX) && (MinY < boundingBox.MaxY && MaxY > boundingBox.MinY);
-        }
+        public override bool CollidesWith(BoundingBox boundingBox) =>
+            (MinX < boundingBox.MaxX && MaxX > boundingBox.MinX) && (MinY < boundingBox.MaxY && MaxY > boundingBox.MinY);
     }
 }

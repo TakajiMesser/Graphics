@@ -16,7 +16,7 @@ using Graphics.Rendering.Vertices;
 using Graphics.GameObjects;
 using Graphics.Rendering.Matrices;
 
-namespace Graphics.Brushes
+namespace Graphics.GameObjects
 {
     /// <summary>
     /// Brushes are static geometric shapes that are baked into a scene.
@@ -33,17 +33,16 @@ namespace Graphics.Brushes
         private MaterialBuffer _materialBuffer;
         private LightBuffer _lightBuffer;
         private VertexIndexBuffer _indexBuffer;
-        private ICollider _collider;
+        private Collider _collider;
 
         public List<Vertex> Vertices => _vertices;
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public ICollider Collider
+        public Collider Collider
         {
             get => _collider;
             set
             {
                 _collider = value;
-                _collider.Properties = Properties;
             }
         }
 

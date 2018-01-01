@@ -1,5 +1,4 @@
-﻿using Graphics.Brushes;
-using Graphics.GameObjects;
+﻿using Graphics.GameObjects;
 using Graphics.Helpers;
 using Graphics.Materials;
 using Graphics.Meshes;
@@ -30,7 +29,7 @@ namespace Graphics.Maps
 
             if (HasCollision)
             {
-                brush.Collider = new BoundingBox(Vertices);
+                brush.Collider = new BoundingBox(brush);
             }
             
             return brush;

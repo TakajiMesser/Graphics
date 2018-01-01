@@ -10,57 +10,36 @@ using System.Threading.Tasks;
 
 namespace Graphics.Physics.Collision
 {
-    public class BoundingSphere : ICollider
+    public class BoundingSphere : Collider
     {
-        public Vector3 Center { get; set; }
         public float Radius { get; set; }
-        public Dictionary<string, GameProperty> Properties { get; set; }
 
-        public BoundingSphere(Vector3 center, float radius)
+        public BoundingSphere(GameObject gameObject) : base(gameObject)
         {
-            Center = center;
-            Radius = radius;
-        }
-
-        public BoundingSphere(IEnumerable<Vertex> vertices)
-        {
-            var maxDistanceSquared = vertices.Select(v => v.Position.LengthSquared).Max();
+            var maxDistanceSquared = gameObject.Mesh.Vertices.Select(v => v.Position.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
-        public bool CollidesWith(Vector3 point)
+        public BoundingSphere(Brush brush) : base(brush)
+        {
+            var maxDistanceSquared = brush.Vertices.Select(v => v.Position.LengthSquared).Max();
+            Radius = (float)Math.Sqrt(maxDistanceSquared);
+        }
+
+        public override bool CollidesWith(Vector3 point)
         {
             var distanceSquared = Math.Pow(point.X - Center.X, 2.0f) + Math.Pow(point.Y - Center.Y, 2.0f) + Math.Pow(point.Z - Center.Z, 2.0f);
             return distanceSquared < Math.Pow(Radius, 2.0f);
         }
 
-        public bool CollidesWith(ICollider collider)
-        {
-            return false;
-        }
+        public override bool CollidesWith(Collider collider) => throw new NotImplementedException();
 
-        public bool CollidesWith(BoundingSphere boundingSphere)
+        public override bool CollidesWith(BoundingSphere boundingSphere)
         {
             var distanceSquared = Math.Pow(Center.X - boundingSphere.Center.X, 2.0f) + Math.Pow(Center.Y - boundingSphere.Center.Y, 2.0f) + Math.Pow(Center.Z - boundingSphere.Center.Z, 2.0f);
             return distanceSquared < Math.Pow(Radius + boundingSphere.Radius, 2.0f);
         }
 
-        public bool CollidesWith(BoundingBox boundingBox)
-        {
-            var closestX = (Center.X > boundingBox.MaxX)
-                ? boundingBox.MaxX
-                : (Center.X < boundingBox.MinX)
-                    ? boundingBox.MinX
-                    : Center.X;
-
-            var closestY = (Center.Y > boundingBox.MaxY)
-                ? boundingBox.MaxY
-                : (Center.Y < boundingBox.MinY)
-                    ? boundingBox.MinY
-                    : Center.Y;
-
-            var distanceSquared = Math.Pow(Center.X - closestX, 2) + Math.Pow(Center.Y - closestY, 2);
-            return distanceSquared < Math.Pow(Radius, 2);
-        }
+        public override bool CollidesWith(BoundingBox boundingBox) => HasCollision(this, boundingBox);
     }
 }
