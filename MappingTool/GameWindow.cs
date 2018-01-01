@@ -56,9 +56,9 @@ namespace MappingTool
 
             _program = new ShaderProgram(vertexShader, fragmentShader);
 
-            BehaviorTree.SaveTestEnemyBehavior();
-            BehaviorTree.SaveTestPlayerBehavior();
-            Map.SaveTestMap();
+            TestHelper.CreateTestEnemyBehavior();
+            TestHelper.CreateTestPlayerBehavior();
+            TestHelper.CreateTestMap();
             var loadedMap = Map.Load(_mapPath);
 
             _gameState = new GameState(_program, loadedMap, this);

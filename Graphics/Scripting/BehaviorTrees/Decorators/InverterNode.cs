@@ -10,7 +10,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
     [DataContract]
     public class InverterNode : DecoratorNode
     {
-        public InverterNode(INode node) : base(node) { }
+        public InverterNode(Node node) : base(node) { }
 
         public override void Tick(Dictionary<string, object> variablesByName)
         {

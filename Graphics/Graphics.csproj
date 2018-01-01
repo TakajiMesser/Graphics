@@ -52,6 +52,7 @@
     <Compile Include="GameObjects\Player.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\GameState.cs" />
+    <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\InputState.cs" />
@@ -65,6 +66,8 @@
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
     <Compile Include="Physics\Collision\Quad.cs" />
+    <Compile Include="Physics\Raycasting\LineSegment.cs" />
+    <Compile Include="Physics\Raycasting\Circle.cs" />
     <Compile Include="Physics\Raycasting\Ray3.cs" />
     <Compile Include="Physics\Raycasting\RaycastHit.cs" />
     <Compile Include="Physics\Raycasting\Raycast.cs" />
@@ -100,7 +103,7 @@
     <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\ConditionNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\INode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Node.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\NavigateNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />

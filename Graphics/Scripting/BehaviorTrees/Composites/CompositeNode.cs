@@ -13,23 +13,17 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
     /// or random order depending on the particular composite node in question.
     /// </summary>
     [DataContract]
-    public abstract class CompositeNode : INode
+    public abstract class CompositeNode : Node
     {
-        public BehaviorStatuses Status { get; protected set; }
-
         [DataMember]
-        public List<INode> Children { get; protected set; } = new List<INode>();
+        public List<Node> Children { get; protected set; } = new List<Node>();
 
-        public CompositeNode(IEnumerable<INode> nodes)
+        public CompositeNode(IEnumerable<Node> nodes) => Children.AddRange(nodes);
+        public CompositeNode(params Node[] nodes) => Children.AddRange(nodes);
+
+        public override void Reset()
         {
-            Children.AddRange(nodes);
-        }
-
-        public abstract void Tick(Dictionary<string, object> variablesByName);
-
-        public void Reset()
-        {
-            Status = BehaviorStatuses.Dormant;
+            base.Reset();
 
             foreach (var node in Children)
             {

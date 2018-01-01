@@ -10,7 +10,8 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
     [DataContract]
     public class SequenceNode : CompositeNode
     {
-        public SequenceNode(IEnumerable<INode> nodes) : base(nodes) { }
+        public SequenceNode(IEnumerable<Node> nodes) : base(nodes) { }
+        public SequenceNode(params Node[] nodes) : base(nodes) { }
 
         public override void Tick(Dictionary<string, object> variablesByName)
         {

@@ -10,7 +10,8 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
     [DataContract]
     public class SelectorNode : CompositeNode
     {
-        public SelectorNode(IEnumerable<INode> nodes) : base(nodes) { }
+        public SelectorNode(IEnumerable<Node> nodes) : base(nodes) { }
+        public SelectorNode(params Node[] nodes) : base(nodes) { }
 
         public override void Tick(Dictionary<string, object> variablesByName)
         {

@@ -66,7 +66,7 @@ namespace Graphics.Rendering.Vertices
                     // TODO: dispose managed state (managed objects).
                 }
 
-                GL.DeleteBuffer(_handle);
+                GL.DeleteVertexArray(_handle);
                 disposedValue = true;
             }
         }

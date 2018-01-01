@@ -11,6 +11,6 @@ namespace Graphics.Physics.Raycasting
     public class RaycastHit
     {
         public Collider Collider { get; set; }
-        public Vector3 HitPosition { get; set; }
+        public Vector3 Intersection { get; set; }
     }
 }

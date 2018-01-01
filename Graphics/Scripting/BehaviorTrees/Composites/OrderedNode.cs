@@ -10,7 +10,8 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
     [DataContract]
     public class OrderedNode : CompositeNode
     {
-        public OrderedNode(IEnumerable<INode> nodes) : base(nodes) { }
+        public OrderedNode(IEnumerable<Node> nodes) : base(nodes) { }
+        public OrderedNode(params Node[] nodes) : base(nodes) { }
 
         public override void Tick(Dictionary<string, object> variablesByName)
         {

@@ -57,6 +57,9 @@ namespace Graphics.Inputs
             }
         }
 
+        public bool HasPrimaryMouseInput => _primaryMouse.HasValue;
+        public bool HasSecondaryMouseInput => _secondaryMouse.HasValue;
+
         public Input(Key primaryKey)
         {
             Type = InputType.Key;

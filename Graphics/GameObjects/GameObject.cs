@@ -96,6 +96,7 @@ namespace Graphics.GameObjects
                 Behaviors.VariablesByName["Position"] = Position;
                 Behaviors.VariablesByName["Rotation"] = Rotation;
                 Behaviors.VariablesByName["Scale"] = Scale;
+                Behaviors.VariablesByName["Colliders"] = colliders;
 
                 foreach (var property in Properties.Where(p => !p.Value.IsConstant))
                 {

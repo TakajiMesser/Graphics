@@ -8,23 +8,19 @@ using System.Threading.Tasks;
 
 namespace Graphics.Physics.Raycasting
 {
-    public struct Ray3
+    public struct Circle
     {
         public Vector3 Origin { get; set; }
-        public Vector3 Direction { get; set; }
-        public float Distance { get; set; }
+        public float Radius { get; set; }
 
-        public Ray3(Vector3 origin, Vector3 direction, float distance)
+        public Circle(Vector3 origin, float radius)
         {
             Origin = origin;
-            Direction = direction;
-            Distance = distance;
+            Radius = radius;
         }
 
         public bool TryGetBoxIntersection(BoundingBox box, out Vector3 intersection)
         {
-            var line = new LineSegment(Origin, Origin + Direction * Distance);
-
             Vector3? horizontalIntersection = null;
             Vector3? verticalIntersection = null;
 
@@ -37,9 +33,20 @@ namespace Graphics.Physics.Raycasting
                     PointB = new Vector3(box.MinX, box.MaxY, box.Center.Z)
                 };
 
-                if (line.TryGetLineSegmentIntersection(boxLeft, out Vector3 leftIntersection))
+                if (boxLeft.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    horizontalIntersection = leftIntersection;
+                    if (Origin.Y >= box.MaxY)
+                    {
+                        horizontalIntersection = new Vector3(box.MinX, box.MaxY, box.Center.Z);
+                    }
+                    else if (Origin.Y <= box.MinY)
+                    {
+                        horizontalIntersection = new Vector3(box.MinX, box.MinY, box.Center.Z);
+                    }
+                    else
+                    {
+                        horizontalIntersection = new Vector3(box.MinX, Origin.Y, box.Center.Z);
+                    }
                 }
             }
             else if (Origin.X > box.MaxX)
@@ -51,9 +58,20 @@ namespace Graphics.Physics.Raycasting
                     PointB = new Vector3(box.MaxX, box.MaxY, box.Center.Z)
                 };
 
-                if (line.TryGetLineSegmentIntersection(boxRight, out Vector3 rightIntersection))
+                if (boxRight.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    horizontalIntersection = rightIntersection;
+                    if (Origin.Y >= box.MaxY)
+                    {
+                        horizontalIntersection = new Vector3(box.MaxX, box.MaxY, box.Center.Z);
+                    }
+                    else if (Origin.Y <= box.MinY)
+                    {
+                        horizontalIntersection = new Vector3(box.MaxX, box.MinY, box.Center.Z);
+                    }
+                    else
+                    {
+                        horizontalIntersection = new Vector3(box.MaxX, Origin.Y, box.Center.Z);
+                    }
                 }
             }
 
@@ -66,9 +84,20 @@ namespace Graphics.Physics.Raycasting
                     PointB = new Vector3(box.MaxX, box.MinY, box.Center.Z)
                 };
 
-                if (line.TryGetLineSegmentIntersection(boxBottom, out Vector3 bottomIntersection))
+                if (boxBottom.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    verticalIntersection = bottomIntersection;
+                    if (Origin.X >= box.MaxX)
+                    {
+                        verticalIntersection = new Vector3(box.MaxX, box.MinY, box.Center.Z);
+                    }
+                    else if (Origin.X <= box.MinX)
+                    {
+                        verticalIntersection = new Vector3(box.MinX, box.MinY, box.Center.Z);
+                    }
+                    else
+                    {
+                        verticalIntersection = new Vector3(Origin.X, box.MinY, box.Center.Z);
+                    }
                 }
             }
             else if (Origin.Y > box.MaxY)
@@ -80,9 +109,20 @@ namespace Graphics.Physics.Raycasting
                     PointB = new Vector3(box.MaxX, box.MaxY, box.Center.Z)
                 };
 
-                if (line.TryGetLineSegmentIntersection(boxTop, out Vector3 topIntersection))
+                if (boxTop.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    verticalIntersection = topIntersection;
+                    if (Origin.X >= box.MaxX)
+                    {
+                        verticalIntersection = new Vector3(box.MaxX, box.MaxY, box.Center.Z);
+                    }
+                    else if (Origin.X <= box.MinX)
+                    {
+                        verticalIntersection = new Vector3(box.MinX, box.MaxY, box.Center.Z);
+                    }
+                    else
+                    {
+                        verticalIntersection = new Vector3(Origin.X, box.MaxY, box.Center.Z);
+                    }
                 }
             }
 

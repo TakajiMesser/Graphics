@@ -16,7 +16,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
         [DataMember]
         public int Count { get; private set; }
 
-        public LoopNode(INode node, int repetitions) : base(node)
+        public LoopNode(Node node, int repetitions) : base(node)
         {
             if (repetitions <= 0)
             {

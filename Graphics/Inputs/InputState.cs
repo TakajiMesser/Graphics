@@ -69,16 +69,19 @@ namespace Graphics.Inputs
                     }
 
                 case InputType.Mouse:
-                    if (_keyState != null)
+                    if (_mouseState != null)
                     {
-                        if (_previousKeyState != null)
+                        if (_previousMouseState != null)
                         {
-                            return _previousMouseState.IsButtonUp((MouseButton)input.PrimaryInput) && _previousMouseState.IsButtonUp((MouseButton)input.SecondaryInput)
-                                && (_mouseState.IsButtonDown((MouseButton)input.PrimaryInput) || _mouseState.IsButtonDown((MouseButton)input.SecondaryInput));
+                            return (!input.HasPrimaryMouseInput || _previousMouseState.IsButtonUp((MouseButton)input.PrimaryInput))
+                                && (!input.HasSecondaryMouseInput || _previousMouseState.IsButtonUp((MouseButton)input.SecondaryInput))
+                                && (input.HasPrimaryMouseInput && (_mouseState.IsButtonDown((MouseButton)input.PrimaryInput))
+                                    || (input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput)));
                         }
                         else
                         {
-                            return _mouseState.IsButtonDown((MouseButton)input.PrimaryInput) || _mouseState.IsButtonDown((MouseButton)input.SecondaryInput);
+                            return (input.HasPrimaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.PrimaryInput))
+                                || (input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput));
                         }
                     }
                     else
@@ -102,8 +105,43 @@ namespace Graphics.Inputs
 
                 case InputType.Mouse:
                     return (_mouseState != null)
-                        ? _mouseState.IsButtonDown((MouseButton)input.PrimaryInput) || _mouseState.IsButtonDown((MouseButton)input.SecondaryInput)
+                        ? (input.HasPrimaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.PrimaryInput))
+                            || (input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput))
                         : false;
+
+                default:
+                    throw new NotImplementedException("Cannot handle InputType " + Enum.GetName(typeof(Type), input.Type));
+            }
+        }
+
+        public bool IsReleased(Input input)
+        {
+            switch (input.Type)
+            {
+                case InputType.Key:
+                    if (_keyState != null && _previousKeyState != null)
+                    {
+                        return (_previousKeyState.IsKeyDown((Key)input.PrimaryInput) || _previousKeyState.IsKeyDown((Key)input.SecondaryInput))
+                                && _keyState.IsKeyUp((Key)input.PrimaryInput)
+                                && _keyState.IsKeyUp((Key)input.SecondaryInput);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+
+                case InputType.Mouse:
+                    if (_mouseState != null && _previousMouseState != null)
+                    {
+                        return ((input.HasPrimaryMouseInput && _previousMouseState.IsButtonDown((MouseButton)input.PrimaryInput))
+                            || (input.HasSecondaryMouseInput && _previousMouseState.IsButtonDown((MouseButton)input.SecondaryInput)))
+                                && (!input.HasPrimaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.PrimaryInput))
+                                && (!input.HasSecondaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.SecondaryInput));
+                    }
+                    else
+                    {
+                        return false;
+                    }
 
                 default:
                     throw new NotImplementedException("Cannot handle InputType " + Enum.GetName(typeof(Type), input.Type));

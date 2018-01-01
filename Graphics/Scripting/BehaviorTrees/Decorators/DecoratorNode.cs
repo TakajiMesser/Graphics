@@ -8,23 +8,16 @@ using System.Threading.Tasks;
 namespace Graphics.Scripting.BehaviorTrees.Decorators
 {
     [DataContract]
-    public abstract class DecoratorNode : INode
+    public abstract class DecoratorNode : Node
     {
-        public BehaviorStatuses Status { get; protected set; }
-
         [DataMember]
-        public INode Child { get; private set; }
+        public Node Child { get; private set; }
 
-        public DecoratorNode(INode node)
+        public DecoratorNode(Node node) => Child = node;
+
+        public override void Reset()
         {
-            Child = node;
-        }
-
-        public abstract void Tick(Dictionary<string, object> variablesByName);
-
-        public virtual void Reset()
-        {
-            Status = BehaviorStatuses.Dormant;
+            base.Reset();
             Child.Reset();
         }
     }
