@@ -25,12 +25,11 @@ namespace Graphics.Maps
 
         public Brush ToBrush(ShaderProgram program)
         {
-            var brush = new Brush(Vertices, Materials, TriangleIndices, program);
-
-            if (HasCollision)
+            var brush = new Brush(Vertices, Materials, TriangleIndices, program)
             {
-                brush.Collider = new BoundingBox(brush);
-            }
+                HasCollision = HasCollision
+            };
+            brush.Collider = new BoundingBox(brush);
             
             return brush;
         }

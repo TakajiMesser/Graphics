@@ -72,24 +72,8 @@ namespace Graphics.Meshes
             _vertexBuffer.AddVertices(_vertices);
         }
 
-        public void AddTestLight()
-        {
-            _lightBuffer.Clear();
-            _lightBuffer.AddLight(new Light()
-            {
-                Position = new Vector3(0.0f, 0.0f, 0.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.25f
-            });
-            _lightBuffer.AddLight(new Light()
-            {
-                Position = new Vector3(0.0f, 20.0f, 0.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.25f
-            });
-        }
+        public void ClearLights() => _lightBuffer.Clear();
+        public void AddLights(IEnumerable<Light> lights) => _lightBuffer.AddLights(lights);
 
         public void Draw()
         {

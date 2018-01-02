@@ -1,5 +1,6 @@
 ﻿using Graphics.GameObjects;
 using Graphics.Helpers;
+using Graphics.Lighting;
 using Graphics.Physics.Collision;
 using OpenTK;
 using System;
@@ -23,6 +24,7 @@ namespace Graphics.Maps
         public MapCamera Camera { get; set; }
         public List<MapGameObject> GameObjects { get; set; } = new List<MapGameObject>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
+        public List<Light> Lights { get; set; } = new List<Light>();
 
         public Map()
         {

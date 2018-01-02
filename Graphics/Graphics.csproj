@@ -65,6 +65,7 @@
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
+    <Compile Include="Physics\Collision\BoundingCircle.cs" />
     <Compile Include="Physics\Collision\Quad.cs" />
     <Compile Include="Physics\Raycasting\LineSegment.cs" />
     <Compile Include="Physics\Raycasting\Circle.cs" />

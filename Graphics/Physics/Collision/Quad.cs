@@ -25,24 +25,24 @@ namespace Graphics.Physics.Collision
                 var boundingBox = (BoundingBox)collider;
                 return (Min.X < boundingBox.MaxX && Max.X > boundingBox.MinX) && (Min.Y < boundingBox.MaxY && Max.Y > boundingBox.MinY);
             }
-            else if (collider.GetType() == typeof(BoundingSphere))
+            else if (collider.GetType() == typeof(BoundingCircle))
             {
-                var boundingSphere = (BoundingSphere)collider;
+                var boundingCircle = (BoundingCircle)collider;
 
-                var closestX = (boundingSphere.Center.X > Max.X)
+                var closestX = (boundingCircle.Center.X > Max.X)
                 ? Max.X
-                : (boundingSphere.Center.X < Min.X)
+                : (boundingCircle.Center.X < Min.X)
                     ? Min.X
-                    : boundingSphere.Center.X;
+                    : boundingCircle.Center.X;
 
-                var closestY = (boundingSphere.Center.Y > Max.Y)
+                var closestY = (boundingCircle.Center.Y > Max.Y)
                     ? Max.Y
-                    : (boundingSphere.Center.Y < Min.Y)
+                    : (boundingCircle.Center.Y < Min.Y)
                         ? Min.Y
-                        : boundingSphere.Center.Y;
+                        : boundingCircle.Center.Y;
 
-                var distanceSquared = Math.Pow(boundingSphere.Center.X - closestX, 2) + Math.Pow(boundingSphere.Center.Y - closestY, 2);
-                return distanceSquared < Math.Pow(boundingSphere.Radius, 2);
+                var distanceSquared = Math.Pow(boundingCircle.Center.X - closestX, 2) + Math.Pow(boundingCircle.Center.Y - closestY, 2);
+                return distanceSquared < Math.Pow(boundingCircle.Radius, 2);
             }
             else
             {

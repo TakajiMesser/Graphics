@@ -1,4 +1,5 @@
 ﻿using Graphics.GameObjects;
+using Graphics.Lighting;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -24,27 +25,33 @@ namespace Graphics.Physics.Collision
             AttachedObject = brush;
         }
 
+        public Collider(Light light)
+        {
+            AttachedObject = light;
+            Center = light.Position;
+        }
+
         public abstract bool CollidesWith(Vector3 point);
         public abstract bool CollidesWith(Collider collider);
-        public abstract bool CollidesWith(BoundingSphere boundingSphere);
+        public abstract bool CollidesWith(BoundingCircle boundingCircle);
         public abstract bool CollidesWith(BoundingBox boundingBox);
 
-        public static bool HasCollision(BoundingSphere sphere, BoundingBox box)
+        public static bool HasCollision(BoundingCircle circle, BoundingBox box)
         {
-            var closestX = (sphere.Center.X > box.MaxX)
+            var closestX = (circle.Center.X > box.MaxX)
                 ? box.MaxX
-                : (sphere.Center.X < box.MinX)
+                : (circle.Center.X < box.MinX)
                     ? box.MinX
-                    : sphere.Center.X;
+                    : circle.Center.X;
 
-            var closestY = (sphere.Center.Y > box.MaxY)
+            var closestY = (circle.Center.Y > box.MaxY)
                 ? box.MaxY
-                : (sphere.Center.Y < box.MinY)
+                : (circle.Center.Y < box.MinY)
                     ? box.MinY
-                    : sphere.Center.Y;
+                    : circle.Center.Y;
 
-            var distanceSquared = Math.Pow(sphere.Center.X - closestX, 2) + Math.Pow(sphere.Center.Y - closestY, 2);
-            return distanceSquared < Math.Pow(sphere.Radius, 2);
+            var distanceSquared = Math.Pow(circle.Center.X - closestX, 2) + Math.Pow(circle.Center.Y - closestY, 2);
+            return distanceSquared < Math.Pow(circle.Radius, 2);
         }
     }
 }

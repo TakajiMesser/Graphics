@@ -53,7 +53,7 @@ namespace Graphics.Physics.Collision
 
         public override bool CollidesWith(Collider collider) => throw new NotImplementedException();
 
-        public override bool CollidesWith(BoundingSphere boundingSphere) => HasCollision(boundingSphere, this);
+        public override bool CollidesWith(BoundingCircle boundingCircle) => HasCollision(boundingCircle, this);
 
         public override bool CollidesWith(BoundingBox boundingBox) =>
             (MinX < boundingBox.MaxX && MaxX > boundingBox.MinX) && (MinY < boundingBox.MaxY && MaxY > boundingBox.MinY);

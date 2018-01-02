@@ -24,6 +24,14 @@ namespace Graphics.Physics.Collision
             Quad = quad;
         }
 
+        public void InsertRange(IEnumerable<Collider> colliders)
+        {
+            foreach (var collider in colliders)
+            {
+                Insert(collider);
+            }
+        }
+
         public void Insert(Collider collider)
         {
             // When we insert a new collider, we need to check a few things

@@ -17,6 +17,7 @@ using Graphics.Scripting.BehaviorTrees.Leaves;
 using Graphics.Physics.Raycasting;
 using Graphics.Inputs;
 using Graphics.Physics.Collision;
+using Graphics.Lighting;
 
 namespace Graphics.Helpers
 {
@@ -42,6 +43,21 @@ namespace Graphics.Helpers
             var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 20.0f);
             wall.HasCollision = true;
             map.Brushes.Add(wall);
+
+            map.Lights.Add(new Light()
+            {
+                Position = new Vector3(0.0f, 0.0f, 0.0f),
+                Radius = 30.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 0.5f
+            });
+            map.Lights.Add(new Light()
+            {
+                Position = new Vector3(0.0f, 20.0f, 0.0f),
+                Radius = 30.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 0.25f
+            });
 
             map.Save(FilePathHelper.MAP_PATH);
         }

@@ -33,18 +33,11 @@ namespace Graphics.GameObjects
         private MaterialBuffer _materialBuffer;
         private LightBuffer _lightBuffer;
         private VertexIndexBuffer _indexBuffer;
-        private Collider _collider;
 
         public List<Vertex> Vertices => _vertices;
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public Collider Collider
-        {
-            get => _collider;
-            set
-            {
-                _collider = value;
-            }
-        }
+        public Collider Collider { get; set; }
+        public bool HasCollision { get; set; } = true;
 
         public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
@@ -92,24 +85,7 @@ namespace Graphics.GameObjects
             _vertexBuffer.AddVertices(_vertices);
         }
 
-        public void AddTestLight()
-        {
-            _lightBuffer.Clear();
-            _lightBuffer.AddLight(new Light()
-            {
-                Position = new Vector3(0.0f, 0.0f, 0.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.5f
-            });
-            _lightBuffer.AddLight(new Light()
-            {
-                Position = new Vector3(0.0f, 20.0f, 0.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.25f
-            });
-        }
+        public void AddLights(IEnumerable<Light> lights) => _lightBuffer.AddLights(lights);
 
         public void OnRenderFrame()
         {

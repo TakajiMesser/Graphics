@@ -11,17 +11,23 @@ using System.Text;
 using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
+using Graphics.Lighting;
 
 namespace Graphics.GameObjects
 {
     public class GameState
     {
-        private Camera _camera;
         private ShaderProgram _program;
-        private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
-        private List<Brush> _brushes = new List<Brush>();
+        private Camera _camera;
         private InputState _inputState = new InputState();
-        private QuadTree _quadTree;
+
+        private List<Brush> _brushes = new List<Brush>();
+        private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
+        private List<Light> _lights = new List<Light>();
+
+        private QuadTree _brushQuads;
+        private QuadTree _gameObjectQuads;
+        private QuadTree _lightQuads;
 
         public GameWindow Window { get; private set; }
 
@@ -36,20 +42,26 @@ namespace Graphics.GameObjects
             _program = program;
             Window = window;
 
-            _quadTree = new QuadTree(0, map.Boundaries);
+            _brushQuads = new QuadTree(0, map.Boundaries);
+            _gameObjectQuads = new QuadTree(0, map.Boundaries);
+            _lightQuads = new QuadTree(0, map.Boundaries);
+
             _camera = new Camera(map.Camera.Name, program, Window.Width, Window.Height);
+
+            _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
 
             foreach (var brush in map.Brushes.Select(b => b.ToBrush(program)))
             {
                 brush.AddTestColors();
-                brush.AddTestLight();
                 brush._program = program;
-                _brushes.Add(brush);
 
-                if (brush.Collider != null)
+                if (brush.HasCollision)
                 {
-                    _quadTree.Insert(brush.Collider);
-                } 
+                    _brushQuads.Insert(brush.Collider);
+                }
+                brush.AddLights(_lightQuads.Retrieve(brush.Collider).Select(c => (Light)c.AttachedObject));
+
+                _brushes.Add(brush);
             }
 
             foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(program)))
@@ -59,20 +71,13 @@ namespace Graphics.GameObjects
                     _camera.AttachedObject = gameObject;
                 }
 
-                gameObject.Collider = gameObject.Name == "Player"
-                    ? (Collider)new BoundingSphere(gameObject)
-                    : new BoundingBox(gameObject);
-
-                gameObject.Mesh.AddTestColors();
-                gameObject.Mesh.AddTestLight();
-
                 gameObject._program = program;
+                gameObject.Mesh.AddTestColors();
+                gameObject.Collider = gameObject.Name == "Player"
+                    ? (Collider)new BoundingCircle(gameObject)
+                    : new BoundingBox(gameObject);
+                
                 _gameObjects.Add(gameObject.Name, gameObject);
-
-                if (gameObject.Collider != null)
-                {
-                    _quadTree.Insert(gameObject.Collider);
-                }
             }
         }
 
@@ -87,11 +92,6 @@ namespace Graphics.GameObjects
 
             gameObject._program = _program;
             _gameObjects.Add(gameObject.Name, gameObject);
-
-            if (gameObject.Collider != null)
-            {
-                _quadTree.Insert(gameObject.Collider);
-            }
         }
 
         public void Initialize()
@@ -114,12 +114,21 @@ namespace Graphics.GameObjects
 
         public void UpdateFrame()
         {
+            // Update the gameobject colliders every frame, since they could have moved
+            _gameObjectQuads.Clear();
+            _gameObjectQuads.InsertRange(_gameObjects.Select(g => g.Value.Collider).Where(c => c != null));
+
             // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
             foreach (var gameObject in _gameObjects)
             {
-                var filteredColliders = _quadTree.Retrieve(gameObject.Value.Collider)
-                    .Where(c => c.AttachedObject.GetType() != typeof(GameObject)
-                        || ((GameObject)c.AttachedObject).Name != gameObject.Value.Name);
+                gameObject.Value.ClearLights();
+                gameObject.Value.AddLights(_lightQuads.Retrieve(gameObject.Value.Collider)
+                    .Select(c => (Light)c.AttachedObject));
+
+                var filteredColliders = _brushQuads.Retrieve(gameObject.Value.Collider)
+                    .Concat(_gameObjectQuads
+                        .Retrieve(gameObject.Value.Collider)
+                            .Where(c => ((GameObject)c.AttachedObject).Name != gameObject.Key));
 
                 gameObject.Value.OnUpdateFrame(filteredColliders);
             }

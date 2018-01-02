@@ -53,9 +53,9 @@ namespace Graphics.Rendering.Buffers
             GL.BufferData(BufferTarget.UniformBuffer, _size * _materials.Count, _materials.ToArray(), BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            int blockIndex = GL.GetUniformBlockIndex(_handle, "MaterialBlock");
-            GL.UniformBlockBinding(_handle, blockIndex, 0);
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _handle);
+            _program.BindUniformBlock("MaterialBlock", 1);
+            //GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 1, _handle, 0, _size * _materials.Count);
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 1, _handle);
         }
 
         public void Bind()

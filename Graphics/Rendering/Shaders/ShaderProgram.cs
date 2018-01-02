@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.ES20;
+﻿using OpenTK.Graphics.OpenGL;
 
 namespace Graphics.Rendering.Shaders
 {
@@ -36,6 +36,12 @@ namespace Graphics.Rendering.Shaders
         public int GetUniformLocation(string name)
         {
             return GL.GetUniformLocation(_handle, name);
+        }
+
+        public void BindUniformBlock(string name, int binding)
+        {
+            int blockIndex = GL.GetUniformBlockIndex(_handle, name);
+            GL.UniformBlockBinding(_handle, blockIndex, binding);
         }
     }
 }

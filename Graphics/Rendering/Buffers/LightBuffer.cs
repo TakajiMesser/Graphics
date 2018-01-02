@@ -50,8 +50,7 @@ namespace Graphics.Rendering.Buffers
             GL.BufferData(BufferTarget.UniformBuffer, _size * _lights.Count, _lights.ToArray(), BufferUsageHint.DynamicDraw);
             GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
-            int blockIndex = GL.GetUniformBlockIndex(_handle, "LightBlock");
-            GL.UniformBlockBinding(_handle, blockIndex, 0);
+            _program.BindUniformBlock("LightBlock", 0);
             GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _handle);
         }
 

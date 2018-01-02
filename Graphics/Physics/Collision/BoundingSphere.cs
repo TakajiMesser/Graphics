@@ -34,12 +34,17 @@ namespace Graphics.Physics.Collision
 
         public override bool CollidesWith(Collider collider) => throw new NotImplementedException();
 
-        public override bool CollidesWith(BoundingSphere boundingSphere)
+        public override bool CollidesWith(BoundingCircle boundingCircle)
+        {
+            throw new NotImplementedException();
+        }
+
+        /*public override bool CollidesWith(BoundingSphere boundingSphere)
         {
             var distanceSquared = Math.Pow(Center.X - boundingSphere.Center.X, 2.0f) + Math.Pow(Center.Y - boundingSphere.Center.Y, 2.0f) + Math.Pow(Center.Z - boundingSphere.Center.Z, 2.0f);
             return distanceSquared < Math.Pow(Radius + boundingSphere.Radius, 2.0f);
-        }
+        }*/
 
-        public override bool CollidesWith(BoundingBox boundingBox) => HasCollision(this, boundingBox);
+        public override bool CollidesWith(BoundingBox boundingBox) => throw new NotImplementedException();//HasCollision(this, boundingBox);
     }
 }

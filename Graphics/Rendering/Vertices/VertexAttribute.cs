@@ -34,6 +34,7 @@ namespace Graphics.Rendering.Vertices
             int index = program.GetAttributeLocation(_name);
             if (index == -1)
             {
+                // Note that any attributes not explicitly used in the shaders will be optimized out by the shader compiler, resulting in (index == -1)
                 //throw new ArgumentOutOfRangeException(_name + " not found in program attributes");
             }
 

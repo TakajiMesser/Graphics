@@ -98,6 +98,17 @@ namespace MappingTool
             {
                 Close();
             }
+            else if (_previousKeyState != null && _previousKeyState.IsKeyUp(Key.F11) && _keyState.IsKeyDown(Key.F11))
+            {
+                if (WindowState == WindowState.Normal)
+                {
+                    WindowState = WindowState.Fullscreen;
+                }
+                else
+                {
+                    WindowState = WindowState.Normal;
+                }
+            }
         }
 
         private void PollForInput()

@@ -56,12 +56,12 @@ vec4 computeDiffuseLight(vec3 diffuse, vec3 lightColor, float illuminance, vec3 
 
 vec4 computeSpecularLight(vec3 specular, vec3 lightColor, float illuminance, vec3 unitNormal, vec3 unitLight, vec3 unitCamera, float specularExponent)
 {
-	vec3 reflectionVector = reflect(-unitLight, unitNormal);
-
-	//return pow(max(0.0, dot(reflectionVector, unitCamera)), specularExponent) * reflectivity * lightColor;
 	return (dot(unitNormal, unitLight) <= 0.0)
 		? vec4(0.0, 0.0, 0.0, 0.0)
-		: illuminance * lightColor * specular * pow(max(0.0, dot(reflectionVector, unitCamera)), specularExponent);
+		: vec4(illuminance
+			* pow(max(0.0, dot(reflect(-unitLight, unitNormal), unitCamera)), specularExponent)
+			* lightColor
+			* specular, 1.0);
 }
 
 void main()
@@ -96,15 +96,15 @@ void main()
 		float illuminance = (attenuation > 0.0)
 			? lights[i].intensity / attenuation
 			: 0.0;
-
+		
 		ambientColor += computeAmbientLight(materials[fMaterialIndex].ambient, lights[i].color, illuminance);
 		diffuseColor += computeDiffuseLight(materials[fMaterialIndex].diffuse, lights[i].color, illuminance, unitNormal, unitLight);
-		//specularColor += computeSpecularLight(materials[fMaterialIndex].specular, lights[i].color, illuminance, unitNormal, unitLight, unitCamera, materials[fMaterialIndex].specularExponent);
+		specularColor += computeSpecularLight(materials[fMaterialIndex].specular, lights[i].color, illuminance, unitNormal, unitLight, unitCamera, materials[fMaterialIndex].specularExponent);
 	}
 
-	//vec4 textureColor = texture(textureSampler, fUV);
-	color = ambientColor + diffuseColor + specularColor;
-	//color = mix(fColor/*textureColor*/, ambientColor + diffuseColor + specularColor, 0.3);
-	
-	//vec4 mixedColor = vec4(totalDiffuse, 1.0) * textureColor + vec4(totalSpecular, 1.0);
+	vec4 lightColor = ambientColor + diffuseColor + specularColor;
+	vec4 textureColor = texture(textureSampler, fUV);
+
+	color = mix(lightColor, fColor, 0.1);
+	color = mix(color, textureColor, 0.1);
 }

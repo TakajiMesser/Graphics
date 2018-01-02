@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using Graphics.Lighting;
 
 namespace Graphics.GameObjects
 {
@@ -19,7 +20,6 @@ namespace Graphics.GameObjects
     {
         internal ShaderProgram _program;
         private ModelMatrix _modelMatrix = new ModelMatrix();
-        private Collider _collider;
 
         //public int ID { get; private set; }
         public string Name { get; private set; }
@@ -27,14 +27,9 @@ namespace Graphics.GameObjects
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public Collider Collider
-        {
-            get => _collider;
-            set
-            {
-                _collider = value;
-            }
-        }
+
+        public Collider Collider { get; set; }
+        public bool HasCollision { get; set; } = true;
         public Vector3 Position
         {
             get => _modelMatrix.Translation;
@@ -63,6 +58,9 @@ namespace Graphics.GameObjects
         {
             Name = name;
         }
+
+        public void ClearLights() => Mesh.ClearLights();
+        public void AddLights(IEnumerable<Light> lights) => Mesh.AddLights(lights);
 
         public virtual void OnInitialization()
         {
@@ -124,20 +122,20 @@ namespace Graphics.GameObjects
 
                 foreach (var collider in colliders)
                 {
-                    if (collider.GetType() == typeof(BoundingSphere))
+                    if (collider.GetType() == typeof(BoundingCircle))
                     {
-                        if (Collider.CollidesWith((BoundingSphere)collider))
+                        if (Collider.CollidesWith((BoundingCircle)collider))
                         {
                             // Correct the X translation
                             Collider.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
-                            if (Collider.CollidesWith((BoundingSphere)collider))
+                            if (Collider.CollidesWith((BoundingCircle)collider))
                             {
                                 translation.X = 0;
                             }
 
                             // Correct the Y translation
                             Collider.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
-                            if (Collider.CollidesWith((BoundingSphere)collider))
+                            if (Collider.CollidesWith((BoundingCircle)collider))
                             {
                                 translation.Y = 0;
                             }

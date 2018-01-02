@@ -15,14 +15,14 @@ namespace Graphics.Rendering.Vertices
     public class VertexArray<T> : IDisposable, IBindable where T : struct
     {
         private readonly int _handle;
-        private readonly VertexBuffer<T> _buffer;
+        //private readonly VertexBuffer<T> _buffer;
         private bool _generated = false;
 
         public int Handle => _handle;
 
         public VertexArray(VertexBuffer<T> buffer, ShaderProgram program)
         {
-            _buffer = buffer;
+            //_buffer = buffer;
 
             if (_generated)
             {
@@ -66,7 +66,7 @@ namespace Graphics.Rendering.Vertices
                     // TODO: dispose managed state (managed objects).
                 }
 
-                GL.DeleteVertexArray(_handle);
+                GL.DeleteBuffer(_handle);
                 disposedValue = true;
             }
         }
