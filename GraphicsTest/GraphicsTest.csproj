@@ -61,7 +61,7 @@
     <None Include="Meshes\Player.obj" />
     <None Include="Meshes\Floor.obj" />
     <None Include="Meshes\Square.obj" />
-    <None Include="Meshes\Triangle.obj" />
+    <None Include="Meshes\Enemy.obj" />
     <None Include="Meshes\GenericMaterial.mtl" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />

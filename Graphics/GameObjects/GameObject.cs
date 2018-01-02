@@ -28,7 +28,7 @@ namespace Graphics.GameObjects
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
 
-        public Collider Collider { get; set; }
+        public Collider Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
         public Vector3 Position
         {
@@ -37,9 +37,9 @@ namespace Graphics.GameObjects
             {
                 _modelMatrix.Translation = value;
 
-                if (Collider != null)
+                if (Bounds != null)
                 {
-                    Collider.Center = value;
+                    Bounds.Center = value;
                 }
             }
         }
@@ -116,26 +116,26 @@ namespace Graphics.GameObjects
 
         public virtual void HandleCollisions(Vector3 translation, IEnumerable<Collider> colliders)
         {
-            if (translation != Vector3.Zero && Collider != null)
+            if (HasCollision && Bounds != null && translation != Vector3.Zero)
             {
-                Collider.Center = Position + translation;
+                Bounds.Center = Position + translation;
 
                 foreach (var collider in colliders)
                 {
                     if (collider.GetType() == typeof(BoundingCircle))
                     {
-                        if (Collider.CollidesWith((BoundingCircle)collider))
+                        if (Bounds.CollidesWith((BoundingCircle)collider))
                         {
                             // Correct the X translation
-                            Collider.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
-                            if (Collider.CollidesWith((BoundingCircle)collider))
+                            Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
+                            if (Bounds.CollidesWith((BoundingCircle)collider))
                             {
                                 translation.X = 0;
                             }
 
                             // Correct the Y translation
-                            Collider.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
-                            if (Collider.CollidesWith((BoundingCircle)collider))
+                            Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
+                            if (Bounds.CollidesWith((BoundingCircle)collider))
                             {
                                 translation.Y = 0;
                             }
@@ -143,18 +143,18 @@ namespace Graphics.GameObjects
                     }
                     else if (collider.GetType() == typeof(BoundingBox))
                     {
-                        if (Collider.CollidesWith((BoundingBox)collider))
+                        if (Bounds.CollidesWith((BoundingBox)collider))
                         {
                             // Correct the X translation
-                            Collider.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
-                            if (Collider.CollidesWith((BoundingBox)collider))
+                            Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
+                            if (Bounds.CollidesWith((BoundingBox)collider))
                             {
                                 translation.X = 0;
                             }
 
                             // Correct the Y translation
-                            Collider.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
-                            if (Collider.CollidesWith((BoundingBox)collider))
+                            Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
+                            if (Bounds.CollidesWith((BoundingBox)collider))
                             {
                                 translation.Y = 0;
                             }

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:MappingTool"
+        xmlns:controls="clr-namespace:MappingTool.Controls"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525" WindowState="Maximized">
     <Window.CommandBindings>
@@ -26,39 +27,48 @@
                 </MenuItem>
             </Menu>
 
-            <TabControl DockPanel.Dock="Left">
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Overview" Foreground="Blue" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Grid Width="Auto" Height="Auto">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Content="Content goes here..." />
-                        <Button Name="RunButton" IsEnabled="false" HorizontalAlignment="Left" Grid.Row="1" Content="Run Map" Click="RunButton_Click"/>
-                    </Grid>
-                    
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Red" Foreground="Red" />
-                        </StackPanel>
-                    </TabItem.Header>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Green" Foreground="Green" />
-                        </StackPanel>
-                    </TabItem.Header>
-                </TabItem>
-            </TabControl>
+            <DockPanel DockPanel.Dock="Top">
+                <controls:ProjectTreeView x:Name ="ProjectTree" DockPanel.Dock="Left" MinWidth="200">
+
+                </controls:ProjectTreeView>
+
+                <TabControl>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Overview" Foreground="Blue" />
+                            </StackPanel>
+                        </TabItem.Header>
+                        <Grid Width="Auto" Height="Auto">
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Label Grid.Row="0" Content="Content goes here..." />
+                            <Button Name="RunButton" IsEnabled="false" HorizontalAlignment="Left" Grid.Row="1" Content="Run Map" Click="RunButton_Click"/>
+                        </Grid>
+
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Red" Foreground="Red" />
+                            </StackPanel>
+                        </TabItem.Header>
+                    </TabItem>
+                    <TabItem>
+                        <TabItem.Header>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="Green" Foreground="Green" />
+                            </StackPanel>
+                        </TabItem.Header>
+                    </TabItem>
+                </TabControl>
+
+                
+            </DockPanel>
+            
         </DockPanel>
 
     </Grid>

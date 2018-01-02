@@ -39,9 +39,9 @@ namespace Graphics.Meshes
             _indexBuffer = new VertexIndexBuffer();
             _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
 
-            _lightBuffer = new LightBuffer("lights", program);
+            _lightBuffer = new LightBuffer(program);
 
-            _materialBuffer = new MaterialBuffer("materials", program);
+            _materialBuffer = new MaterialBuffer(program);
             _materialBuffer.AddMaterials(materials);
 
             _vertexBuffer = new VertexBuffer<Vertex>();

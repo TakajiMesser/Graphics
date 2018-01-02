@@ -12,7 +12,8 @@ namespace Graphics.Rendering.Vertices
 {
     public class VertexAttribute
     {
-        private readonly string _name;
+        public string Name { get; private set; }
+
         private readonly int _size;
         private readonly VertexAttribPointerType _type;
         private readonly bool _normalize;
@@ -21,7 +22,7 @@ namespace Graphics.Rendering.Vertices
 
         public VertexAttribute(string name, int size, VertexAttribPointerType type, int stride, int offset, bool normalize = false)
         {
-            _name = name;
+            Name = name;
             _size = size;
             _type = type;
             _stride = stride;
@@ -29,15 +30,8 @@ namespace Graphics.Rendering.Vertices
             _normalize = normalize;
         }
 
-        public void Set(ShaderProgram program)
+        public void Set(int index)
         {
-            int index = program.GetAttributeLocation(_name);
-            if (index == -1)
-            {
-                // Note that any attributes not explicitly used in the shaders will be optimized out by the shader compiler, resulting in (index == -1)
-                //throw new ArgumentOutOfRangeException(_name + " not found in program attributes");
-            }
-
             GL.EnableVertexAttribArray(index);
             GL.VertexAttribPointer(index, _size, _type, _normalize, _stride, _offset);
         }

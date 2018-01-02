@@ -129,8 +129,8 @@ namespace Graphics.Physics.Raycasting
             if (horizontalIntersection.HasValue && verticalIntersection.HasValue)
             {
                 // TODO - Determine if LengthSquared is okay here... might cause problems at very close distances
-                var distanceA = (horizontalIntersection.Value - Origin).LengthSquared;
-                var distanceB = (verticalIntersection.Value - Origin).LengthSquared;
+                var distanceA = (horizontalIntersection.Value - Origin).Length;
+                var distanceB = (verticalIntersection.Value - Origin).Length;
 
                 if (distanceA < distanceB)
                 {
@@ -140,17 +140,24 @@ namespace Graphics.Physics.Raycasting
                 {
                     intersection = verticalIntersection.Value;
                 }
-
-                return true;
             }
             else if (horizontalIntersection.HasValue && !verticalIntersection.HasValue)
             {
                 intersection = horizontalIntersection.Value;
-                return true;
             }
             else if (!horizontalIntersection.HasValue && verticalIntersection.HasValue)
             {
                 intersection = verticalIntersection.Value;
+            }
+            else
+            {
+                intersection = Vector3.Zero;
+                return false;
+            }
+
+            // We now have a valid intersection, so find the distance from it and see if it is within our radius
+            if ((intersection - Origin).Length <= Radius)
+            {
                 return true;
             }
             else

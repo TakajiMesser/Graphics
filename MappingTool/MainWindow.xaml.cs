@@ -31,6 +31,12 @@ namespace MappingTool
         public MainWindow()
         {
             InitializeComponent();
+
+            var item = new TreeViewItem()
+            {
+                Header = "Project"
+            };
+            ProjectTree.Add(item);
         }
 
         private void NewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)

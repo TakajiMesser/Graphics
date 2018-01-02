@@ -36,7 +36,7 @@ namespace Graphics.GameObjects
 
         public List<Vertex> Vertices => _vertices;
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public Collider Collider { get; set; }
+        public Collider Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
 
         public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
@@ -51,9 +51,9 @@ namespace Graphics.GameObjects
             _indexBuffer = new VertexIndexBuffer();
             _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
 
-            _lightBuffer = new LightBuffer("lights", program);
+            _lightBuffer = new LightBuffer(program);
 
-            _materialBuffer = new MaterialBuffer("materials", program);
+            _materialBuffer = new MaterialBuffer(program);
             _materialBuffer.AddMaterials(materials);
 
             _vertexBuffer = new VertexBuffer<Vertex>();

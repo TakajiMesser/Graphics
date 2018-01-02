@@ -25,7 +25,7 @@ namespace Graphics.Rendering.Shaders
             GL.GetShader(Handle, ShaderParameter.CompileStatus, out int statusCode);
             if (statusCode != 1)
             {
-                throw new ApplicationException("Shader failed to compile: " + GL.GetShaderInfoLog(Handle));
+                throw new GraphicsException(ShaderType + " Shader failed to compile: " + GL.GetShaderInfoLog(Handle));
             }
         }
 

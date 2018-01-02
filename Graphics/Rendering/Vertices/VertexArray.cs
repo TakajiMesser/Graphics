@@ -37,7 +37,8 @@ namespace Graphics.Rendering.Vertices
 
             foreach (var attribute in VertexHelper.GetAttributes<T>())
             {
-                attribute.Set(program);
+                int index = program.GetAttributeLocation(attribute.Name);
+                attribute.Set(index);
             }
 
             Unbind();

@@ -40,9 +40,13 @@ namespace Graphics.Helpers
 
             map.Brushes.Add(MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f));
 
-            var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 20.0f);
+            var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 10.0f);
             wall.HasCollision = true;
             map.Brushes.Add(wall);
+
+            var wall2 = MapBrush.Rectangle(new Vector3(-10.0f, 0.0f, -0.5f), 5.0f, 10.0f);
+            wall2.HasCollision = true;
+            map.Brushes.Add(wall2);
 
             map.Lights.Add(new Light()
             {
@@ -88,8 +92,9 @@ namespace Graphics.Helpers
                     new GameProperty("RUN_SPEED", typeof(float), 0.15f, true),
                     new GameProperty("CREEP_SPEED", typeof(float), 0.04f, true),
                     new GameProperty("EVADE_SPEED", typeof(float), 0.175f, true),
+                    new GameProperty("COVER_SPEED", typeof(float), 0.1f, true),
                     new GameProperty("ENTER_COVER_SPEED", typeof(float), 0.12f, true),
-                    new GameProperty("COVER_DISTANCE", typeof(float), 3.0f, true),
+                    new GameProperty("COVER_DISTANCE", typeof(float), 5.0f, true),
                     new GameProperty("EVADE_TICK_COUNT", typeof(int), 20, true)
                 }
             };
@@ -103,7 +108,7 @@ namespace Graphics.Helpers
                 Position = new Vector3(5.0f, 5.0f, -1.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.TRIANGLE_MESH_PATH,
+                MeshFilePath = FilePathHelper.ENEMY_MESH_PATH,
                 BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH
             };
         }
@@ -118,8 +123,62 @@ namespace Graphics.Helpers
             var behavior = new BehaviorTree
             {
                 RootNode = new SequenceNode(
+                    new LeafNode()
+                    {
+                        Behavior = (v) =>
+                        {
+                            var position = (Vector3)v["Position"];
+                            var destination = new Vector3(5.0f, 5.0f, -1.0f);
+                            var vectorBetween = destination - position;
+                            float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+
+                            v["Rotation"] = new Quaternion(new Vector3(turnAngle, 0.0f, 0.0f));
+                            return BehaviorStatuses.Success;
+                        }
+                    },
                     new NavigateNode(new Vector3(5.0f, 5.0f, -1.0f), 0.1f),
-                    new NavigateNode(new Vector3(-1.0f, -1.0f, -1.0f), 0.1f)
+                    new LeafNode()
+                    {
+                        Behavior = (v) =>
+                        {
+                            var position = (Vector3)v["Position"];
+                            var destination = new Vector3(5.0f, -5.0f, -1.0f);
+                            var vectorBetween = destination - position;
+                            float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+
+                            v["Rotation"] = new Quaternion(new Vector3(turnAngle, 0.0f, 0.0f));
+                            return BehaviorStatuses.Success;
+                        }
+                    },
+                    new NavigateNode(new Vector3(5.0f, -5.0f, -1.0f), 0.1f),
+                    new LeafNode()
+                    {
+                        Behavior = (v) =>
+                        {
+                            var position = (Vector3)v["Position"];
+                            var destination = new Vector3(-5.0f, -5.0f, -1.0f);
+                            var vectorBetween = destination - position;
+                            float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+
+                            v["Rotation"] = new Quaternion(new Vector3(turnAngle, 0.0f, 0.0f));
+                            return BehaviorStatuses.Success;
+                        }
+                    },
+                    new NavigateNode(new Vector3(-5.0f, -5.0f, -1.0f), 0.1f),
+                    new LeafNode()
+                    {
+                        Behavior = (v) =>
+                        {
+                            var position = (Vector3)v["Position"];
+                            var destination = new Vector3(-5.0f, 5.0f, -1.0f);
+                            var vectorBetween = destination - position;
+                            float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+
+                            v["Rotation"] = new Quaternion(new Vector3(turnAngle, 0.0f, 0.0f));
+                            return BehaviorStatuses.Success;
+                        }
+                    },
+                    new NavigateNode(new Vector3(-5.0f, 5.0f, -1.0f), 0.1f)
                 )
             };
 
@@ -159,6 +218,7 @@ namespace Graphics.Helpers
                     var enterCoverSpeed = (float)v["ENTER_COVER_SPEED"];
                     var evadeSpeed = (float)v["EVADE_SPEED"];
                     var evadeTickCount = (int)v["EVADE_TICK_COUNT"];
+                    var coverSpeed = (float)v["COVER_SPEED"];
                     var coverDistance = (float)v["COVER_DISTANCE"];
                     var inputState = (InputState)v["InputState"];
                     var inputMapping = (InputMapping)v["InputMapping"];
@@ -196,9 +256,47 @@ namespace Graphics.Helpers
                                     var coverDirection = (Vector2)v["coverDirection"];
                                     v["Translation"] = new Vector3(coverDirection.X, coverDirection.Y, 0) * enterCoverSpeed;
                                 }
-                                else
+
+                                if ((float)v["coverDistance"] < 2.0f)
                                 {
                                     // Handle movement while in cover here
+                                    var translation = new Vector3();
+
+                                    if (inputState.IsHeld(inputMapping.Forward))
+                                    {
+                                        translation.Y += coverSpeed;
+                                    }
+
+                                    if (inputState.IsHeld(inputMapping.Left))
+                                    {
+                                        translation.X -= coverSpeed;
+                                    }
+
+                                    if (inputState.IsHeld(inputMapping.Backward))
+                                    {
+                                        translation.Y -= coverSpeed;
+                                    }
+
+                                    if (inputState.IsHeld(inputMapping.Right))
+                                    {
+                                        translation.X += coverSpeed;
+                                    }
+
+                                    if (translation != Vector3.Zero)
+                                    {
+                                        var filteredColliders = colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+
+                                        var coverDirection = (Vector2)v["coverDirection"];
+                                        if (Raycast.TryRaycast(new Ray3(position + translation, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), 1.0f), filteredColliders, out RaycastHit hit))
+                                        {
+                                            var vectorBetween = hit.Intersection - (position + translation);
+
+                                            translation.X += vectorBetween.X;
+                                            translation.Y += vectorBetween.Y;
+
+                                            v["Translation"] = translation;
+                                        }
+                                    }
                                 }
                             }
 

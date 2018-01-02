@@ -19,7 +19,7 @@ namespace Graphics.Helpers
         public const string PLAYER_MESH_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Player.obj";
         public const string SQUARE_MESH_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Square.obj";
         public const string FLOOR_MESH_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Floor.obj";
-        public const string TRIANGLE_MESH_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Triangle.obj";
+        public const string ENEMY_MESH_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\Enemy.obj";
 
         public const string GENERIC_MATERIAL_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Meshes\GenericMaterial.mtl";
 

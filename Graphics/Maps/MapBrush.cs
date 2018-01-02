@@ -29,7 +29,7 @@ namespace Graphics.Maps
             {
                 HasCollision = HasCollision
             };
-            brush.Collider = new BoundingBox(brush);
+            brush.Bounds = new BoundingBox(brush);
             
             return brush;
         }

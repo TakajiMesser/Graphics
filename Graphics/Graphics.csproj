@@ -65,6 +65,9 @@
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
+    <Compile Include="Outputs\Audio.cs" />
+    <Compile Include="Outputs\Display.cs" />
+    <Compile Include="Outputs\Resolution.cs" />
     <Compile Include="Physics\Collision\BoundingCircle.cs" />
     <Compile Include="Physics\Collision\Quad.cs" />
     <Compile Include="Physics\Raycasting\LineSegment.cs" />
@@ -72,6 +75,9 @@
     <Compile Include="Physics\Raycasting\Ray3.cs" />
     <Compile Include="Physics\Raycasting\RaycastHit.cs" />
     <Compile Include="Physics\Raycasting\Raycast.cs" />
+    <Compile Include="Rendering\Buffers\FrameBuffer.cs" />
+    <Compile Include="Rendering\Buffers\UniformBuffer.cs" />
+    <Compile Include="Rendering\Buffers\ShaderStorageBuffer.cs" />
     <Compile Include="Rendering\Matrices\ProjectionMatrix.cs" />
     <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
     <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
@@ -89,9 +95,12 @@
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderLoader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\Texture.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
@@ -123,8 +132,6 @@
     <None Include="Rendering\Shaders\uv-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\uv-vertex-shader.glsl" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Rendering\Textures\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using Graphics.Rendering.Vertices;
+using OpenTK.Graphics.OpenGL;
 
 namespace Graphics.Rendering.Shaders
 {
@@ -42,6 +43,18 @@ namespace Graphics.Rendering.Shaders
         {
             int blockIndex = GL.GetUniformBlockIndex(_handle, name);
             GL.UniformBlockBinding(_handle, blockIndex, binding);
+        }
+
+        public int GetVertexAttributeLocation(string name)
+        {
+            int index = GetAttributeLocation(name);
+            if (index == -1)
+            {
+                // Note that any attributes not explicitly used in the shaders will be optimized out by the shader compiler, resulting in (index == -1)
+                //throw new ArgumentOutOfRangeException(_name + " not found in program attributes");
+            }
+
+            return index;
         }
     }
 }

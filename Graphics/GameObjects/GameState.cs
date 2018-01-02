@@ -22,7 +22,7 @@ namespace Graphics.GameObjects
         private InputState _inputState = new InputState();
 
         private List<Brush> _brushes = new List<Brush>();
-        private Dictionary<string, GameObject> _gameObjects = new Dictionary<string, GameObject>();
+        private List<GameObject> _gameObjects = new List<GameObject>();
         private List<Light> _lights = new List<Light>();
 
         private QuadTree _brushQuads;
@@ -30,12 +30,6 @@ namespace Graphics.GameObjects
         private QuadTree _lightQuads;
 
         public GameWindow Window { get; private set; }
-
-        public GameState(Camera camera, ShaderProgram program)
-        {
-            _camera = camera;
-            _program = program;
-        }
 
         public GameState(ShaderProgram program, Map map, GameWindow window)
         {
@@ -57,9 +51,9 @@ namespace Graphics.GameObjects
 
                 if (brush.HasCollision)
                 {
-                    _brushQuads.Insert(brush.Collider);
+                    _brushQuads.Insert(brush.Bounds);
                 }
-                brush.AddLights(_lightQuads.Retrieve(brush.Collider).Select(c => (Light)c.AttachedObject));
+                brush.AddLights(_lightQuads.Retrieve(brush.Bounds).Select(c => (Light)c.AttachedObject));
 
                 _brushes.Add(brush);
             }
@@ -73,32 +67,32 @@ namespace Graphics.GameObjects
 
                 gameObject._program = program;
                 gameObject.Mesh.AddTestColors();
-                gameObject.Collider = gameObject.Name == "Player"
+                gameObject.Bounds = gameObject.Name == "Player"
                     ? (Collider)new BoundingCircle(gameObject)
                     : new BoundingBox(gameObject);
                 
-                _gameObjects.Add(gameObject.Name, gameObject);
+                _gameObjects.Add(gameObject);
             }
         }
 
-        public GameObject GetByName(string name) => _gameObjects[name];
+        public GameObject GetByName(string name) => _gameObjects.First(g => g.Name == name);
 
         public void UpdateAspectRatio(int width, int height) => _camera.UpdateAspectRatio(width, height);
 
         public void AddGameObject(GameObject gameObject)
         {
             if (string.IsNullOrEmpty(gameObject.Name)) throw new ArgumentException("GameObject must have a name defined");
-            if (_gameObjects.ContainsKey(gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
+            if (_gameObjects.Any(g => g.Name == gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
 
             gameObject._program = _program;
-            _gameObjects.Add(gameObject.Name, gameObject);
+            _gameObjects.Add(gameObject);
         }
 
         public void Initialize()
         {
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnInitialization();
+                gameObject.OnInitialization();
             }
         }
 
@@ -108,7 +102,7 @@ namespace Graphics.GameObjects
 
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.OnHandleInput(_inputState, _camera);
+                gameObject.OnHandleInput(_inputState, _camera);
             }
         }
 
@@ -116,21 +110,21 @@ namespace Graphics.GameObjects
         {
             // Update the gameobject colliders every frame, since they could have moved
             _gameObjectQuads.Clear();
-            _gameObjectQuads.InsertRange(_gameObjects.Select(g => g.Value.Collider).Where(c => c != null));
+            _gameObjectQuads.InsertRange(_gameObjects.Select(g => g.Bounds).Where(c => c != null));
 
             // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
             foreach (var gameObject in _gameObjects)
             {
-                gameObject.Value.ClearLights();
-                gameObject.Value.AddLights(_lightQuads.Retrieve(gameObject.Value.Collider)
+                gameObject.ClearLights();
+                gameObject.AddLights(_lightQuads.Retrieve(gameObject.Bounds)
                     .Select(c => (Light)c.AttachedObject));
 
-                var filteredColliders = _brushQuads.Retrieve(gameObject.Value.Collider)
+                var filteredColliders = _brushQuads.Retrieve(gameObject.Bounds)
                     .Concat(_gameObjectQuads
-                        .Retrieve(gameObject.Value.Collider)
-                            .Where(c => ((GameObject)c.AttachedObject).Name != gameObject.Key));
+                        .Retrieve(gameObject.Bounds)
+                            .Where(c => ((GameObject)c.AttachedObject).Name != gameObject.Name));
 
-                gameObject.Value.OnUpdateFrame(filteredColliders);
+                gameObject.OnUpdateFrame(filteredColliders);
             }
 
             _camera.OnUpdateFrame();
@@ -145,7 +139,7 @@ namespace Graphics.GameObjects
                 brush.OnRenderFrame();
             }
 
-            foreach (var gameObject in PerformOcclusionCulling(PerformFrustumCulling(_gameObjects.Values)))
+            foreach (var gameObject in PerformOcclusionCulling(PerformFrustumCulling(_gameObjects)))
             {
                 gameObject.OnRenderFrame();
             }

@@ -12,89 +12,25 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Buffers
 {
-    public class MaterialBuffer : IDisposable, IBindable
+    public class MaterialBuffer : UniformBuffer<Material>
     {
-        private readonly int _handle;
-        private readonly int _size;
-        private readonly string _name;
-        private readonly ShaderProgram _program;
+        public const string NAME = "MaterialBlock";
+        public const int BINDING = 1;
 
-        private Dictionary<string, int> _indexByName = new Dictionary<string, int>();
+        public List<Material> Materials { get; } = new List<Material>();
 
-        private List<Material> _materials = new List<Material>();
-        public List<Material> Materials => _materials;
+        public MaterialBuffer(ShaderProgram program) : base(NAME, BINDING, program) { }
 
-        public MaterialBuffer(string name, ShaderProgram program)
-        {
-            _handle = GL.GenBuffer();
-            _size = Marshal.SizeOf<Material>();
-            _name = name;
-            _program = program;
-        }
+        public void AddMaterial(Material material) => Materials.Add(material);
 
-        public void AddMaterial(Material material)
-        {
-            _materials.Add(material);
-        }
+        public void AddMaterials(IEnumerable<Material> materials) => Materials.AddRange(materials);
 
-        public void AddMaterials(IEnumerable<Material> materials)
-        {
-            _materials.AddRange(materials);
-        }
+        public void Clear() => Materials.Clear();
 
-        public void Clear()
-        {
-            _materials.Clear();
-        }
-
-        public void Buffer()
+        public override void Bind()
         {
             GL.BindBuffer(BufferTarget.UniformBuffer, _handle);
-            GL.BufferData(BufferTarget.UniformBuffer, _size * _materials.Count, _materials.ToArray(), BufferUsageHint.DynamicDraw);
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-            _program.BindUniformBlock("MaterialBlock", 1);
-            //GL.BindBufferRange(BufferRangeTarget.UniformBuffer, 1, _handle, 0, _size * _materials.Count);
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 1, _handle);
+            GL.BufferData(BufferTarget.UniformBuffer, _size * Materials.Count, Materials.ToArray(), BufferUsageHint.DynamicDraw);
         }
-
-        public void Bind()
-        {
-            
-        }
-
-        public void Unbind()
-        {
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-        }
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteBuffer(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~MaterialBuffer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }
