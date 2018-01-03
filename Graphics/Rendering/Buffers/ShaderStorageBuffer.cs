@@ -12,30 +12,31 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Buffers
 {
-    public class ShaderStorageBuffer : IDisposable, IBindable
+    public abstract class ShaderStorageBuffer<T> : IDisposable, IBindable
     {
-        private readonly int _handle;
-        private readonly int _size;
+        protected readonly int _handle;
+        protected readonly int _size;
+        protected readonly int _binding;
 
-        private List<Light> _lights = new List<Light>();
-
-        public ShaderStorageBuffer(ShaderProgram program)
+        public ShaderStorageBuffer(string name, int binding, ShaderProgram program)
         {
             _handle = GL.GenBuffer();
+            _size = Marshal.SizeOf<T>();
+            _binding = binding;
 
-            // Size of SSBO is more complicated...
-            // _size = Marshal.SizeOf<Light>();
+            program.BindShaderStorageBlock(name, binding);
         }
 
         public void Buffer()
         {
-            //GL.BufferData(BufferRangeTarget.ShaderStorageBuffer, _size, (IntPtr)0, _handle);
+            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
         }
 
-        public void Bind()
-        {
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _handle);
-        }
+        public abstract void Bind();
+        // GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _handle);
+        // GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, index, _id);
+        // GL.BufferData(BufferTarget.ShaderStorageBuffer, (int)EngineHelper.size.vec2, ref default_luminosity, BufferUsageHint.DynamicCopy);
+        // GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, (IntPtr)0, exp_size, ref lumRead);
 
         public void Unbind()
         {

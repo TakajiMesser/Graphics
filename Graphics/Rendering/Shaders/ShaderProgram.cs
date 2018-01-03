@@ -45,6 +45,12 @@ namespace Graphics.Rendering.Shaders
             GL.UniformBlockBinding(_handle, blockIndex, binding);
         }
 
+        public void BindShaderStorageBlock(string name, int binding)
+        {
+            int blockIndex = 0;// GL.ShaderSto;
+            GL.ShaderStorageBlockBinding(_handle, blockIndex, binding);
+        }
+
         public int GetVertexAttributeLocation(string name)
         {
             int index = GetAttributeLocation(name);

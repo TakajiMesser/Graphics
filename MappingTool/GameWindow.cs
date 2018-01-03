@@ -17,6 +17,7 @@ using Graphics.Helpers;
 using Graphics.Maps;
 using Graphics.Rendering.Shaders;
 using Graphics.Scripting.BehaviorTrees;
+using Graphics.Rendering.PostProcessing;
 
 namespace MappingTool
 {
@@ -24,7 +25,6 @@ namespace MappingTool
     {
         private string _mapPath;
 
-        private ShaderProgram _program;
         private GameState _gameState;
         private KeyboardState _keyState;
         private KeyboardState _previousKeyState;
@@ -33,7 +33,9 @@ namespace MappingTool
         private MouseDevice _mouse;
         private MouseDevice _previousMouse;
 
-        public GameWindow(string mapPath) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameWindow(string mapPath) : base(1280, 720, 
+            GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, 
+            DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             _mapPath = mapPath;
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
@@ -50,18 +52,13 @@ namespace MappingTool
             //WindowState = WindowState.Maximized;
             Size = new System.Drawing.Size(1024, 768);
 
-            // Compile and load shaders
-            var vertexShader = new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.VERTEX_SHADER_PATH));
-            var fragmentShader = new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FRAGMENT_SHADER_PATH));
-
-            _program = new ShaderProgram(vertexShader, fragmentShader);
-
+            // Create test objects
             TestHelper.CreateTestEnemyBehavior();
             TestHelper.CreateTestPlayerBehavior();
             TestHelper.CreateTestMap();
             var loadedMap = Map.Load(_mapPath);
 
-            _gameState = new GameState(_program, loadedMap, this);
+            _gameState = new GameState(loadedMap, this);
             _gameState.Initialize();
         }
 
@@ -76,6 +73,7 @@ namespace MappingTool
             _gameState.HandleInput();
 
             _gameState.UpdateFrame();
+            PollForInput();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
@@ -83,13 +81,10 @@ namespace MappingTool
             GL.ClearColor(Color4.Purple);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            _program.Use();
             _gameState.RenderFrame();
 
             GL.UseProgram(0);
             SwapBuffers();
-
-            PollForInput();
         }
 
         private void HandleInput()

@@ -16,30 +16,57 @@ namespace Graphics.Rendering.Buffers
     public class FrameBuffer : IDisposable, IBindable
     {
         private readonly int _handle;
-        private readonly string _name;
 
-        private Dictionary<FramebufferAttachment, Texture> _attachments = new Dictionary<FramebufferAttachment, Texture>();
+        private Dictionary<FramebufferAttachment, Texture> _textures = new Dictionary<FramebufferAttachment, Texture>();
+        private Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
 
-        public FrameBuffer(string name)
+        public FrameBuffer()
         {
-            _handle = GL.GenBuffer();
-            _name = name;
+            _handle = GL.GenFramebuffer();
         }
 
-        public void Buffer()
+        public void Add(FramebufferAttachment attachment, Texture texture) => _textures.Add(attachment, texture);
+        public void Add(FramebufferAttachment attachment, RenderBuffer renderBuffer) => _renderBuffers.Add(attachment, renderBuffer);
+
+        public void AttachAttachments()
         {
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, 0, _handle);
+            foreach (var texture in _textures)
+            {
+                GL.FramebufferTexture(FramebufferTarget.Framebuffer, texture.Key, texture.Value.Handle, 0);
+            }
+
+            foreach (var renderBuffer in _renderBuffers)
+            {
+                GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, renderBuffer.Key, RenderbufferTarget.Renderbuffer, renderBuffer.Value.Handle);
+            }
+
+            // Check if the framebuffer is "complete"
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            {
+                throw new GraphicsErrorException("Error in FrameBuffer: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
+            }
         }
 
-        public void Bind()
+        public void Bind() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, _handle);
+
+        public void Draw()
         {
-            //GL.BindBuffer(BufferTarget.UniformBuffer, _handle);
-            //GL.BufferData(BufferTarget.UniformBuffer, _size * _lights.Count, _lights.ToArray(), BufferUsageHint.DynamicDraw);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _handle);
+
+            foreach (var attachment in _textures)
+            {
+                GL.DrawBuffer((DrawBufferMode)attachment.Key);
+            }
+
+            foreach (var attachment in _renderBuffers)
+            {
+                GL.DrawBuffer((DrawBufferMode)attachment.Key);
+            }
         }
 
         public void Unbind()
         {
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
         }
 
         #region IDisposable Support
@@ -54,7 +81,7 @@ namespace Graphics.Rendering.Buffers
                     // TODO: dispose managed state (managed objects).
                 }
 
-                GL.DeleteBuffer(_handle);
+                GL.DeleteFramebuffer(_handle);
                 disposedValue = true;
             }
         }

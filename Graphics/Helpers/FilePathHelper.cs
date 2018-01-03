@@ -25,6 +25,8 @@ namespace Graphics.Helpers
 
         public const string VERTEX_SHADER_PATH = @"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Rendering\Shaders\simple-vertex-shader.glsl";
         public const string FRAGMENT_SHADER_PATH = @"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Rendering\Shaders\simple-fragment-shader.glsl";
+        public const string BLUR_SHADER_PATH = @"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Rendering\Shaders\MotionBlur\mb_blur.glsl";
+        public const string DILATE_SHADER_PATH = @"C:\Users\Takaji\documents\visual studio 2017\Projects\Graphics\Graphics\Rendering\Shaders\MotionBlur\mb_dilate.glsl";
 
         public const string MAP_PATH = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics\GraphicsTest\Maps\TestMap.map";
 

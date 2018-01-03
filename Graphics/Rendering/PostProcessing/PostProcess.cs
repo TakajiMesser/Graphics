@@ -1,4 +1,7 @@
 ﻿using Graphics.Outputs;
+using Graphics.Rendering.Buffers;
+using Graphics.Rendering.Shaders;
+using Graphics.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,17 +12,31 @@ namespace Graphics.Rendering.PostProcessing
 {
     public abstract class PostProcess
     {
-        public string Name { get; set; }
+        public string Name { get; private set; }
         public bool Enabled { get; set; }
         public Resolution Resolution { get; set; }
-        
-        public PostProcess(string name)
+
+        public Texture FinalTexture { get; protected set; }
+
+        //protected ShaderProgram _program;
+        protected FrameBuffer _frameBuffer = new FrameBuffer();
+
+        public PostProcess(string name, Resolution resolution)
         {
             Name = name;
+            Resolution = resolution;
         }
 
-        public abstract void Load();
-        public abstract void Unload();
-        public abstract void Reload();
+        public void Load()
+        {
+            LoadProgram();
+            LoadBuffers();
+        }
+
+        protected abstract void LoadProgram();
+        protected abstract void LoadBuffers();
+
+        //public abstract void Render();
+        //public abstract void Render();
     }
 }

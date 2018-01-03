@@ -30,13 +30,9 @@ namespace Graphics.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
+            var modelMatrix = Matrix4.Identity * Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
+
             int location = program.GetUniformLocation(NAME);
-
-            var modelMatrix = Matrix4.Identity;
-            modelMatrix *= Matrix4.CreateScale(Scale);
-            modelMatrix *= Matrix4.CreateFromQuaternion(Rotation);
-            modelMatrix *= Matrix4.CreateTranslation(Translation);
-
             GL.UniformMatrix4(location, false, ref modelMatrix);
         }
     }

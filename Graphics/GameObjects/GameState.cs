@@ -12,15 +12,23 @@ using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
 using Graphics.Lighting;
+using System.IO;
+using Graphics.Helpers;
+using Graphics.Rendering.PostProcessing;
+using Graphics.Outputs;
 
 namespace Graphics.GameObjects
 {
     public class GameState
     {
-        private ShaderProgram _program;
-        private Camera _camera;
+        private GameWindow _window;
         private InputState _inputState = new InputState();
 
+        private ShaderProgram _geometryProgram;
+        private List<PostProcess> _preProcesses = new List<PostProcess>();
+        private List<PostProcess> _postProcesses = new List<PostProcess>();
+
+        private Camera _camera;
         private List<Brush> _brushes = new List<Brush>();
         private List<GameObject> _gameObjects = new List<GameObject>();
         private List<Light> _lights = new List<Light>();
@@ -29,25 +37,24 @@ namespace Graphics.GameObjects
         private QuadTree _gameObjectQuads;
         private QuadTree _lightQuads;
 
-        public GameWindow Window { get; private set; }
-
-        public GameState(ShaderProgram program, Map map, GameWindow window)
+        public GameState(Map map, GameWindow window)
         {
-            _program = program;
-            Window = window;
+            _postProcesses.Add(new MotionBlur(new Resolution(window.Width, window.Height)));
+            LoadPrograms();
+
+            _window = window;
 
             _brushQuads = new QuadTree(0, map.Boundaries);
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
             _lightQuads = new QuadTree(0, map.Boundaries);
-
-            _camera = new Camera(map.Camera.Name, program, Window.Width, Window.Height);
-
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
 
-            foreach (var brush in map.Brushes.Select(b => b.ToBrush(program)))
+            _camera = new Camera(map.Camera.Name, _geometryProgram, window.Width, window.Height);
+
+            foreach (var brush in map.Brushes.Select(b => b.ToBrush(_geometryProgram)))
             {
                 brush.AddTestColors();
-                brush._program = program;
+                brush._program = _geometryProgram;
 
                 if (brush.HasCollision)
                 {
@@ -58,20 +65,36 @@ namespace Graphics.GameObjects
                 _brushes.Add(brush);
             }
 
-            foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(program)))
+            foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(_geometryProgram)))
             {
                 if (gameObject.Name == map.Camera.AttachedGameObjectName)
                 {
                     _camera.AttachedObject = gameObject;
                 }
 
-                gameObject._program = program;
+                gameObject._program = _geometryProgram;
                 gameObject.Mesh.AddTestColors();
                 gameObject.Bounds = gameObject.Name == "Player"
                     ? (Collider)new BoundingCircle(gameObject)
                     : new BoundingBox(gameObject);
                 
                 _gameObjects.Add(gameObject);
+            }
+        }
+
+        private void LoadPrograms()
+        {
+            foreach (var process in _preProcesses)
+            {
+                process.Load();
+            }
+
+            _geometryProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FRAGMENT_SHADER_PATH)));
+
+            foreach (var process in _postProcesses)
+            {
+                process.Load();
             }
         }
 
@@ -84,7 +107,7 @@ namespace Graphics.GameObjects
             if (string.IsNullOrEmpty(gameObject.Name)) throw new ArgumentException("GameObject must have a name defined");
             if (_gameObjects.Any(g => g.Name == gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
 
-            gameObject._program = _program;
+            gameObject._program = _geometryProgram;
             _gameObjects.Add(gameObject);
         }
 
@@ -128,10 +151,14 @@ namespace Graphics.GameObjects
             }
 
             _camera.OnUpdateFrame();
+
+            PollForInput();
         }
 
         public void RenderFrame()
         {
+            _geometryProgram.Use();
+
             _camera.OnRenderFrame();
 
             foreach (var brush in _brushes)
@@ -143,11 +170,9 @@ namespace Graphics.GameObjects
             {
                 gameObject.OnRenderFrame();
             }
-
-            PollForInput();
         }
 
-        private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), Window);
+        private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), _window);
 
         private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)
         {
