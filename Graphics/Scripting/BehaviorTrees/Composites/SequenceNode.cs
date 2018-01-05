@@ -13,7 +13,7 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
         public SequenceNode(IEnumerable<Node> nodes) : base(nodes) { }
         public SequenceNode(params Node[] nodes) : base(nodes) { }
 
-        public override void Tick(Dictionary<string, object> variablesByName)
+        public override void Tick(BehaviorContext context)
         {
             if (!Status.IsComplete())
             {
@@ -21,10 +21,7 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
 
                 foreach (var node in Children)
                 {
-                    if (!node.Status.IsComplete())
-                    {
-                        node.Tick(variablesByName);
-                    }
+                    node.Tick(context);
 
                     if (node.Status == BehaviorStatuses.Failure)
                     {

@@ -20,7 +20,6 @@ namespace Graphics.Maps
     public class Map
     {
         public Quad Boundaries { get; private set; }
-        public MapPlayer Player { get; set; }
         public MapCamera Camera { get; set; }
         public List<MapGameObject> GameObjects { get; set; } = new List<MapGameObject>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();

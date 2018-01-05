@@ -26,7 +26,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
             Repetitions = repetitions;
         }
 
-        public override void Tick(Dictionary<string, object> variablesByName)
+        public override void Tick(BehaviorContext context)
         {
             if (!Status.IsComplete())
             {
@@ -39,7 +39,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
                         Child.Reset();
                     }
 
-                    Child.Tick(variablesByName);
+                    Child.Tick(context);
 
                     if (Child.Status == BehaviorStatuses.Success)
                     {

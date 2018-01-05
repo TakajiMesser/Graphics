@@ -17,16 +17,17 @@ namespace Graphics.Scripting.BehaviorTrees
     [DataContract]
     [KnownType(typeof(SelectorNode))]
     [KnownType(typeof(SequenceNode))]
-    [KnownType(typeof(OrderedNode))]
+    [KnownType(typeof(ParallelNode))]
+    [KnownType(typeof(RepeaterNode))]
     [KnownType(typeof(InverterNode))]
     [KnownType(typeof(LoopNode))]
     [KnownType(typeof(NavigateNode))]
     [KnownType(typeof(ConditionNode))]
     public abstract class Node
     {
-        public BehaviorStatuses Status { get; protected set; }
+        public BehaviorStatuses Status { get; set; }
 
-        public abstract void Tick(Dictionary<string, object> variablesByName);
+        public abstract void Tick(BehaviorContext context);
 
         public virtual void Reset()
         {

@@ -12,13 +12,13 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
     {
         public InverterNode(Node node) : base(node) { }
 
-        public override void Tick(Dictionary<string, object> variablesByName)
+        public override void Tick(BehaviorContext context)
         {
             if (!Status.IsComplete())
             {
                 Status = BehaviorStatuses.Running;
 
-                Child.Tick(variablesByName);
+                Child.Tick(context);
 
                 if (Child.Status == BehaviorStatuses.Success)
                 {

@@ -23,7 +23,7 @@ namespace Graphics.GameObjects
 
         public Enemy() : base("Enemy")
         {
-            _behavior.VariablesByName.Add("", false);
+            _behavior.Context.Add("", false);
         }
 
         public override void OnUpdateFrame(IEnumerable<Collider> colliders)

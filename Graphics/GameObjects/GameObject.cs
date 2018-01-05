@@ -70,7 +70,7 @@ namespace Graphics.GameObjects
                 {
                     if (property.Value.IsConstant)
                     {
-                        Behaviors.VariablesByName.Add(property.Key, property.Value.Value);
+                        Behaviors.Context.Add(property.Key, property.Value.Value);
                     }
                 }
             }
@@ -80,9 +80,9 @@ namespace Graphics.GameObjects
         {
             if (Behaviors != null)
             {
-                Behaviors.VariablesByName["InputState"] = inputState;
-                Behaviors.VariablesByName["InputMapping"] = InputMapping;
-                Behaviors.VariablesByName["Camera"] = camera;
+                Behaviors.Context.InputState = inputState;
+                Behaviors.Context.InputMapping = InputMapping;
+                Behaviors.Context.Camera = camera;
             }
         }
 
@@ -90,27 +90,27 @@ namespace Graphics.GameObjects
         {
             if (Behaviors != null)
             {
-                Behaviors.VariablesByName["Name"] = Name;
-                Behaviors.VariablesByName["Position"] = Position;
-                Behaviors.VariablesByName["Rotation"] = Rotation;
-                Behaviors.VariablesByName["Scale"] = Scale;
-                Behaviors.VariablesByName["Colliders"] = colliders;
+                Behaviors.Context.GameObjectName = Name;
+                Behaviors.Context.Position = Position;
+                Behaviors.Context.Rotation = Rotation;
+                Behaviors.Context.Scale = Scale;
+                Behaviors.Context.Colliders = colliders;
 
                 foreach (var property in Properties.Where(p => !p.Value.IsConstant))
                 {
-                    Behaviors.VariablesByName[property.Key] = property.Value;
+                    Behaviors.Context[property.Key] = property.Value;
                 }
 
                 Behaviors.Tick();
 
-                if (Behaviors.VariablesByName.ContainsKey("Translation"))
+                if (Behaviors.Context.Translation != Vector3.Zero)
                 {
-                    HandleCollisions((Vector3)Behaviors.VariablesByName["Translation"], colliders);
-                    Behaviors.VariablesByName["Translation"] = Vector3.Zero;
+                    HandleCollisions(Behaviors.Context.Translation, colliders);
+                    Behaviors.Context.Translation = Vector3.Zero;
                 }
 
-                Rotation = (Quaternion)Behaviors.VariablesByName["Rotation"];
-                Scale = (Vector3)Behaviors.VariablesByName["Scale"];
+                Rotation = Behaviors.Context.Rotation;
+                Scale = Behaviors.Context.Scale;
             }
         }
 

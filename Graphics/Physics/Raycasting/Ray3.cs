@@ -89,8 +89,8 @@ namespace Graphics.Physics.Raycasting
             if (horizontalIntersection.HasValue && verticalIntersection.HasValue)
             {
                 // TODO - Determine if LengthSquared is okay here... might cause problems at very close distances
-                var distanceA = (horizontalIntersection.Value - Origin).LengthSquared;
-                var distanceB = (verticalIntersection.Value - Origin).LengthSquared;
+                var distanceA = (horizontalIntersection.Value - Origin).Length;
+                var distanceB = (verticalIntersection.Value - Origin).Length;
 
                 if (distanceA < distanceB)
                 {

@@ -11,15 +11,15 @@ namespace Graphics.Scripting.BehaviorTrees.Leaves
     public class LeafNode : Node
     {
         [DataMember]
-        public Func<Dictionary<string, object>, BehaviorStatuses> Behavior { get; internal set; }
+        public Func<BehaviorContext, BehaviorStatuses> Behavior { get; internal set; }
 
         public LeafNode() { }
 
-        public override void Tick(Dictionary<string, object> variablesByName)
+        public override void Tick(BehaviorContext context)
         {
             if (!Status.IsComplete())
             {
-                Status = Behavior.Invoke(variablesByName);
+                Status = Behavior.Invoke(context);
             }
         }
     }

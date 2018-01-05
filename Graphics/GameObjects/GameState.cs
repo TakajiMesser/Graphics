@@ -39,6 +39,7 @@ namespace Graphics.GameObjects
 
         public GameState(Map map, GameWindow window)
         {
+            _postProcesses.Add(new RenderToScreen(new Resolution(window.Width, window.Height)));
             _postProcesses.Add(new MotionBlur(new Resolution(window.Width, window.Height)));
             LoadPrograms();
 

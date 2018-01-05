@@ -20,7 +20,8 @@ namespace Graphics.Scripting.BehaviorTrees
     [DataContract]
     [KnownType(typeof(SelectorNode))]
     [KnownType(typeof(SequenceNode))]
-    [KnownType(typeof(OrderedNode))]
+    [KnownType(typeof(ParallelNode))]
+    [KnownType(typeof(RepeaterNode))]
     [KnownType(typeof(InverterNode))]
     [KnownType(typeof(LoopNode))]
     [KnownType(typeof(NavigateNode))]
@@ -28,7 +29,7 @@ namespace Graphics.Scripting.BehaviorTrees
     public class BehaviorTree
     {
         public BehaviorStatuses Status { get; private set; }
-        public Dictionary<string, object> VariablesByName { get; protected set; } = new Dictionary<string, object>();
+        public BehaviorContext Context { get; set; } = new BehaviorContext();
 
         [DataMember]
         public Node RootNode { get; set; }
@@ -36,17 +37,12 @@ namespace Graphics.Scripting.BehaviorTrees
         [OnDeserialized]
         private void OnDeserialized(StreamingContext c)
         {
-            VariablesByName = new Dictionary<string, object>();
+            Context = new BehaviorContext();
         }
 
         public void Tick()
         {
-            if (Status.IsComplete())
-            {
-                Reset();
-            }
-
-            RootNode.Tick(VariablesByName);
+            RootNode.Tick(Context);
             Status = RootNode.Status;
         }
 

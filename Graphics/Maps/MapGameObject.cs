@@ -28,9 +28,16 @@ namespace Graphics.Maps
         {
             var gameObject = new GameObject(Name)
             {
-                Mesh = Mesh.LoadFromFile(MeshFilePath, program),
-                Behaviors = BehaviorTree.Load(BehaviorFilePath)
+                Mesh = Mesh.LoadFromFile(MeshFilePath, program)
             };
+
+            if (!string.IsNullOrEmpty(BehaviorFilePath))
+            {
+                gameObject.Behaviors = new BehaviorTree()
+                {
+                    RootNode = Node.Load(BehaviorFilePath)
+                };
+            }
 
             if (Properties != null)
             {

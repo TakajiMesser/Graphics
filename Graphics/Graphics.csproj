@@ -61,7 +61,6 @@
     <Compile Include="Lighting\Light.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />
-    <Compile Include="Maps\MapPlayer.cs" />
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
@@ -96,6 +95,7 @@
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\RenderToScreen.cs" />
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
@@ -107,11 +107,13 @@
     <Compile Include="Rendering\Vertices\Vertex.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
+    <Compile Include="Scripting\BehaviorTrees\BehaviorContext.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Composites\OrderedNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\ParallelNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\RepeaterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
@@ -130,13 +132,26 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_cube_array.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_3D.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_2D_array.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_2D_fragment.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_2D_vertex.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_1D.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_blur.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_dilate.glsl" />
-    <None Include="Rendering\Shaders\simple-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\simple-vertex-shader.glsl" />
-    <None Include="Rendering\Shaders\uv-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\uv-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\simple-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\uv-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\uv-vertex-shader.glsl" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Rendering\Shaders\DepthOfField\" />
+    <Folder Include="Rendering\Shaders\HDR\" />
+    <Folder Include="Rendering\Shaders\Lens\" />
+    <Folder Include="Rendering\Shaders\Shadows\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -12,19 +12,18 @@ namespace Graphics.Scripting.BehaviorTrees.Leaves
     public class NavigateNode : LeafNode
     {
         [DataMember]
-        public Vector3 Position { get; private set; }
+        public Vector3 Destination { get; private set; }
 
         [DataMember]
         public float Speed { get; private set; }
 
-        public NavigateNode(Vector3 position, float speed)
+        public NavigateNode(Vector3 destination, float speed)
         {
-            Position = position;
+            Destination = destination;
             Speed = speed;
             Behavior = (v) =>
             {
-                var currentPosition = (Vector3)v["Position"];
-                var difference = Position - currentPosition;
+                var difference = Destination - v.Position;
 
                 if (difference == Vector3.Zero)
                 {
@@ -32,11 +31,11 @@ namespace Graphics.Scripting.BehaviorTrees.Leaves
                 }
                 else if (difference.Length < Speed)
                 {
-                    v["Translation"] = difference;
+                    v.Translation = difference;
                 }
                 else
                 {
-                    v["Translation"] = difference.Normalized() * Speed;
+                    v.Translation = difference.Normalized() * Speed;
                 }
 
                 return BehaviorStatuses.Running;

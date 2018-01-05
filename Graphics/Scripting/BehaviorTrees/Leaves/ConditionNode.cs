@@ -11,9 +11,9 @@ namespace Graphics.Scripting.BehaviorTrees.Leaves
     public class ConditionNode : LeafNode
     {
         [DataMember]
-        public Predicate<Dictionary<string, object>> Condition { get; set; }
+        public Predicate<BehaviorContext> Condition { get; set; }
 
-        public ConditionNode(Predicate<Dictionary<string, object>> condition)
+        public ConditionNode(Predicate<BehaviorContext> condition)
         {
             Condition = condition;
             Behavior = (v) => Condition.Invoke(v) ? BehaviorStatuses.Success : BehaviorStatuses.Failure;
