@@ -21,13 +21,16 @@ namespace Graphics.Scripting.BehaviorTrees.Composites
         public CompositeNode(IEnumerable<Node> nodes) => Children.AddRange(nodes);
         public CompositeNode(params Node[] nodes) => Children.AddRange(nodes);
 
-        public override void Reset()
+        public override void Reset(bool recursive = false)
         {
             base.Reset();
 
             foreach (var node in Children)
             {
-                node.Reset();
+                if (recursive || node.Status.IsComplete())
+                {
+                    node.Reset(recursive);
+                }
             }
         }
     }

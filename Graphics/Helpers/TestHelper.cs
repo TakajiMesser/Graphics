@@ -130,7 +130,7 @@ namespace Graphics.Helpers
             CreateCheckPlayerInSightBehavior();
             CreateTurnTowardsBehavior();
 
-            var rootNode = new RepeaterNode(new SelectorNode(
+            var rootNode = new SelectorNode(
                 new RepeaterNode(
                     Node.Load(FilePathHelper.ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH)
                 ),
@@ -152,7 +152,7 @@ namespace Graphics.Helpers
                         Node.Load(FilePathHelper.ENEMY_TURN_BEHAVIOR_PATH)
                     )
                 )
-            ));
+            );
 
             rootNode.Save(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
         }
@@ -163,7 +163,7 @@ namespace Graphics.Helpers
             {
                 Behavior = (v) =>
                 {
-                    var turnAngle = 2.0f * (float)Math.Acos(v.Rotation.Z);
+                    var turnAngle = v.Rotation.X;//2.0f * (float)Math.Acos(v.Rotation.Z);
                     var player = v.Colliders.FirstOrDefault(c => c.AttachedObject.GetType() == typeof(GameObject) && ((GameObject)c.AttachedObject).Name == "Player");
 
                     if (player != null)
@@ -202,7 +202,7 @@ namespace Graphics.Helpers
                     if (v.Translation != Vector3.Zero)
                     {
                         float turnAngle = (float)Math.Atan2(v.Translation.Y, v.Translation.X);
-                        v.Rotation = new Quaternion(new Vector3(turnAngle, 0.0f, 0.0f));
+                        v.Rotation = new Vector3(turnAngle, v.Rotation.Y, v.Rotation.Z);
                     }
                     
                     return BehaviorStatuses.Success;
@@ -219,7 +219,7 @@ namespace Graphics.Helpers
             CreatePlayerEvadeNode();
             CreatePlayerCoverNode();
 
-            var rootNode = new RepeaterNode(new SelectorNode(
+            var rootNode = new SelectorNode(
                 Node.Load(FilePathHelper.PLAYER_COVER_BEHAVIOR_PATH),
                 new SequenceNode(
                     new SelectorNode(
@@ -228,7 +228,7 @@ namespace Graphics.Helpers
                     ),
                     Node.Load(FilePathHelper.PLAYER_TURN_BEHAVIOR_PATH)
                 )
-            ));
+            );
 
             rootNode.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
         }
@@ -258,7 +258,7 @@ namespace Graphics.Helpers
                             v["coverDistance"] = vectorBetween.Length;
 
                             float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
-                            v.Rotation = new Quaternion(new Vector3(turnAngle + (float)Math.PI, 0.0f, 0.0f));
+                            v.Rotation = new Vector3(turnAngle + (float)Math.PI, v.Rotation.Y, v.Rotation.Z);
 
                             return BehaviorStatuses.Success;
                         }
@@ -393,7 +393,7 @@ namespace Graphics.Helpers
                         {
                             nEvadeTicks++;
 
-                            v.Rotation = new Quaternion(new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f));
+                            v.Rotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), v.Rotation.Y, v.Rotation.Z);
                             v.Scale = new Vector3(1.0f, 0.5f, 1.0f);
                             v.Translation = evadeTranslation;
 
@@ -505,7 +505,7 @@ namespace Graphics.Helpers
                         var vectorBetween = v.InputState.MouseCoordinates - screenCoordinates;
                         float turnAngle = -(float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
 
-                        v.Rotation = new Quaternion(new Vector3(turnAngle, 0.0f, 0.0f));
+                        v.Rotation = new Vector3(turnAngle, v.Rotation.Y, v.Rotation.Z);
                     }
 
                     return BehaviorStatuses.Success;

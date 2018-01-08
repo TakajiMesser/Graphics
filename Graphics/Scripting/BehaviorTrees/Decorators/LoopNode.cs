@@ -57,7 +57,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
             }
         }
 
-        public override void Reset()
+        public override void Reset(bool recursive = false)
         {
             base.Reset();
             Count = 0;

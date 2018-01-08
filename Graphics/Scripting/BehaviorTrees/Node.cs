@@ -29,7 +29,7 @@ namespace Graphics.Scripting.BehaviorTrees
 
         public abstract void Tick(BehaviorContext context);
 
-        public virtual void Reset()
+        public virtual void Reset(bool recursive = false)
         {
             Status = BehaviorStatuses.Dormant;
         }

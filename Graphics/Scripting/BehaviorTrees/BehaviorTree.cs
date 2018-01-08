@@ -44,6 +44,11 @@ namespace Graphics.Scripting.BehaviorTrees
         {
             RootNode.Tick(Context);
             Status = RootNode.Status;
+
+            if (RootNode.Status.IsComplete())
+            {
+                RootNode.Reset();
+            }
         }
 
         public void Reset()

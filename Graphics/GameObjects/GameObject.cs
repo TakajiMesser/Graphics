@@ -67,6 +67,8 @@ namespace Graphics.GameObjects
         {
             if (Behaviors != null)
             {
+                Behaviors.Context.GameObjectName = Name;
+
                 foreach (var property in Properties)
                 {
                     if (property.Value.IsConstant)
@@ -91,9 +93,8 @@ namespace Graphics.GameObjects
         {
             if (Behaviors != null)
             {
-                Behaviors.Context.GameObjectName = Name;
                 Behaviors.Context.Position = Position;
-                Behaviors.Context.Rotation = Rotation;
+                //Behaviors.Context.Rotation = Rotation;
                 Behaviors.Context.Scale = Scale;
                 Behaviors.Context.Colliders = colliders;
 
@@ -110,7 +111,7 @@ namespace Graphics.GameObjects
                     Behaviors.Context.Translation = Vector3.Zero;
                 }
 
-                Rotation = Behaviors.Context.Rotation;
+                Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
                 Scale = Behaviors.Context.Scale;
             }
         }

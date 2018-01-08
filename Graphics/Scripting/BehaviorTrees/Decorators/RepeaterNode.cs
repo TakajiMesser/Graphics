@@ -20,7 +20,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
 
             if (Child.Status.IsComplete())
             {
-                Child.Reset();
+                Child.Reset(true);
             }
         }
     }

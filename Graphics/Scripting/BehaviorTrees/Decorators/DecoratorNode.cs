@@ -15,7 +15,7 @@ namespace Graphics.Scripting.BehaviorTrees.Decorators
 
         public DecoratorNode(Node node) => Child = node;
 
-        public override void Reset()
+        public override void Reset(bool recursive = false)
         {
             base.Reset();
             Child.Reset();
