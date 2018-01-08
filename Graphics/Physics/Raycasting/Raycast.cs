@@ -12,6 +12,9 @@ namespace Graphics.Physics.Raycasting
     {
         public static bool TryRaycast(Ray3 ray, IEnumerable<Collider> colliders, out RaycastHit hit)
         {
+            hit = new RaycastHit();
+            float shortestDistance = ray.Distance;
+
             foreach (var collider in colliders)
             {
                 if (collider.GetType() == typeof(BoundingBox))
@@ -20,19 +23,43 @@ namespace Graphics.Physics.Raycasting
 
                     if (ray.TryGetBoxIntersection(box, out Vector3 intersection))
                     {
-                        hit = new RaycastHit()
-                        {
-                            Collider = collider,
-                            Intersection = intersection
-                        };
+                        float distance = (intersection - ray.Origin).Length;
 
-                        return true;
+                        if (hit.Collider == null || distance < shortestDistance)
+                        {
+                            hit = new RaycastHit()
+                            {
+                                Collider = collider,
+                                Intersection = intersection
+                            };
+
+                            shortestDistance = distance;
+                        }
+                    }
+                }
+                else if (collider.GetType() == typeof(BoundingCircle))
+                {
+                    var circle = (BoundingCircle)collider;
+
+                    if (ray.TryGetCircleIntersection(circle, out Vector3 intersection))
+                    {
+                        float distance = (intersection - ray.Origin).Length;
+
+                        if (hit.Collider == null || distance < shortestDistance)
+                        {
+                            hit = new RaycastHit()
+                            {
+                                Collider = collider,
+                                Intersection = intersection
+                            };
+
+                            shortestDistance = distance;
+                        }
                     }
                 }
             }
 
-            hit = new RaycastHit();
-            return false;
+            return (hit.Collider != null);
         }
 
         public static bool TryCircleCast(Circle circle, IEnumerable<Collider> colliders, out RaycastHit hit)
@@ -44,6 +71,21 @@ namespace Graphics.Physics.Raycasting
                     var box = (BoundingBox)collider;
 
                     if (circle.TryGetBoxIntersection(box, out Vector3 intersection))
+                    {
+                        hit = new RaycastHit()
+                        {
+                            Collider = collider,
+                            Intersection = intersection
+                        };
+
+                        return true;
+                    }
+                }
+                else if (collider.GetType() == typeof(BoundingCircle))
+                {
+                    var boundingCircle = (BoundingCircle)collider;
+
+                    if (circle.TryGetCircleIntersection(boundingCircle, out Vector3 intersection))
                     {
                         hit = new RaycastHit()
                         {

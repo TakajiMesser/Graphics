@@ -1,6 +1,7 @@
 ﻿using Graphics.GameObjects;
 using Graphics.Meshes;
 using Graphics.Rendering.Vertices;
+using Graphics.Utilities;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -57,5 +58,18 @@ namespace Graphics.Physics.Collision
 
         public override bool CollidesWith(BoundingBox boundingBox) =>
             (MinX < boundingBox.MaxX && MaxX > boundingBox.MinX) && (MinY < boundingBox.MaxY && MaxY > boundingBox.MinY);
+
+        public override Vector3 GetBorder(Vector3 direction)
+        {
+            var xRatio = (Width / 2.0f) / direction.X;
+            var yRatio = (Height / 2.0f) / direction.Y;
+
+            var newX = direction.X * yRatio;
+            var newY = direction.Y * xRatio;
+
+            return (Math.Abs(newX) < Width / 2.0f)
+                ? new Vector3(Center.X + newX, Center.Y + direction.Y * yRatio, Center.Z)
+                : new Vector3(Center.X + direction.X * xRatio, Center.Y + newY, Center.Z);
+        }
     }
 }

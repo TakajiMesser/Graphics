@@ -21,6 +21,61 @@ namespace Graphics.Physics.Raycasting
             Distance = distance;
         }
 
+        // From http://mathworld.wolfram.com/Circle-LineIntersection.html
+        public bool TryGetCircleIntersection(BoundingCircle circle, out Vector3 intersection)
+        {
+            var line = new LineSegment(Origin - circle.Center, Origin + Direction * Distance - circle.Center);
+
+            var dx = line.PointB.X - line.PointA.X;
+            var dy = line.PointB.Y - line.PointA.Y;
+            var dr2 = dx * dx + dy * dy;
+            var d = line.PointA.X * line.PointB.Y - line.PointB.X * line.PointA.Y;
+
+            var discriminant = circle.Radius * circle.Radius * dr2 - d * d;
+
+            if (discriminant >= 0 && (Origin - circle.Center).Length - circle.Radius < Distance)
+            {
+                if (discriminant == 0)
+                {
+                    intersection = new Vector3()
+                    {
+                        X = circle.Center.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        Y = circle.Center.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        Z = circle.Center.Z
+                    };
+
+                    return true;
+                }
+                else
+                {
+                    var intersectionA = new Vector3()
+                    {
+                        X = circle.Center.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        Y = circle.Center.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        Z = circle.Center.Z
+                    };
+
+                    var intersectionB = new Vector3()
+                    {
+                        X = circle.Center.X + (float)((d * dy - (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        Y = circle.Center.Y + (float)((-d * dx - Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        Z = circle.Center.Z
+                    };
+
+                    intersection = (intersectionA - Origin).Length < (intersectionB - Origin).Length
+                        ? intersectionA
+                        : intersectionB;
+
+                    return true;
+                }
+            }
+            else
+            {
+                intersection = Vector3.Zero;
+                return false;
+            }
+        }
+
         public bool TryGetBoxIntersection(BoundingBox box, out Vector3 intersection)
         {
             var line = new LineSegment(Origin, Origin + Direction * Distance);

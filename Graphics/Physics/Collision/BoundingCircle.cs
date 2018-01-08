@@ -47,5 +47,11 @@ namespace Graphics.Physics.Collision
         }
 
         public override bool CollidesWith(BoundingBox boundingBox) => HasCollision(this, boundingBox);
+
+        public override Vector3 GetBorder(Vector3 direction)
+        {
+            var extended = Center.Xy + (direction.Xy.Normalized() * Radius);
+            return new Vector3(extended.X, extended.Y, Center.Z);
+        }
     }
 }

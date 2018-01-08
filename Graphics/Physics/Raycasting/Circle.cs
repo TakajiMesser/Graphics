@@ -166,5 +166,63 @@ namespace Graphics.Physics.Raycasting
                 return false;
             }
         }
+
+        // From https://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
+        public bool TryGetCircleIntersection(BoundingCircle circle, out Vector3 intersection)
+        {
+            var distanceSquared = (circle.Center.X - Origin.X) * (circle.Center.X - Origin.X) + (circle.Center.Y - Origin.Y) * (circle.Center.Y - Origin.Y);
+            var r1Squared = Radius * Radius;
+            var r2Squared = circle.Radius * circle.Radius;
+
+            var discriminant = (2 * (r1Squared + r2Squared)) / distanceSquared
+                - (r1Squared - r2Squared) * (r1Squared - r2Squared) / (distanceSquared * distanceSquared)
+                - 1;
+
+            if (discriminant >= 0)
+            {
+                // Calculate coefficients in advance, since they are used multiple times
+                var b = (r1Squared - r2Squared) / (2 * distanceSquared);
+                var c = 0.5f * (float)Math.Sqrt(discriminant);
+
+                if (discriminant == 0)
+                {
+                    intersection = new Vector3()
+                    {
+                        X = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
+                        Z = circle.Center.Z
+                    };
+
+                    return true;
+                }
+                else
+                {
+                    var intersectionA = new Vector3()
+                    {
+                        X = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
+                        Z = circle.Center.Z
+                    };
+
+                    var intersectionB = new Vector3()
+                    {
+                        X = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) - c * (circle.Center.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) - c * (circle.Center.Y - Origin.Y),
+                        Z = circle.Center.Z
+                    };
+
+                    intersection = (intersectionA - Origin).Length < (intersectionB - Origin).Length
+                        ? intersectionA
+                        : intersectionB;
+
+                    return true;
+                }
+            }
+            else
+            {
+                intersection = Vector3.Zero;
+                return false;
+            }
+        }
     }
 }

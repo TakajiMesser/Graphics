@@ -68,6 +68,7 @@ namespace Graphics.GameObjects
             if (Behaviors != null)
             {
                 Behaviors.Context.GameObjectName = Name;
+                Behaviors.Context.Bounds = Bounds;
 
                 foreach (var property in Properties)
                 {

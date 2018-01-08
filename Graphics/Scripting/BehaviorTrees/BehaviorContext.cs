@@ -20,11 +20,12 @@ namespace Graphics.Scripting.BehaviorTrees
     public class BehaviorContext
     {
         // Values set by the GameObject
-        public string GameObjectName { get; set; }
-        public IEnumerable<Collider> Colliders { get; set; }
-        public InputState InputState { get; set; }
-        public InputMapping InputMapping { get; set; }
-        public Camera Camera { get; set; }
+        public string GameObjectName { get; internal set; }
+        public Collider Bounds { get; internal set; }
+        public IEnumerable<Collider> Colliders { get; internal set; }
+        public InputState InputState { get; internal set; }
+        public InputMapping InputMapping { get; internal set; }
+        public Camera Camera { get; internal set; }
 
         // Values set by the GameObject, or altered by Behavior Nodes
         public Vector3 Position { get; set; }
@@ -41,10 +42,45 @@ namespace Graphics.Scripting.BehaviorTrees
         public void Add(string key, object value) => VariablesByName.Add(key, value);
         public void Remove(string key) => VariablesByName.Remove(key);
 
+        public void RemoveIfExists(string key)
+        {
+            if (VariablesByName.ContainsKey(key))
+            {
+                VariablesByName.Remove(key);
+            }
+        }
+
         public object this[string key]
         {
             get => VariablesByName[key];
             set => VariablesByName[key] = value;
+        }
+
+        public Vector3 GetTranslation(float speed)
+        {
+            Vector3 translation = new Vector3();
+
+            if (InputState.IsHeld(InputMapping.Forward))
+            {
+                translation.Y += speed;
+            }
+
+            if (InputState.IsHeld(InputMapping.Left))
+            {
+                translation.X -= speed;
+            }
+
+            if (InputState.IsHeld(InputMapping.Backward))
+            {
+                translation.Y -= speed;
+            }
+
+            if (InputState.IsHeld(InputMapping.Right))
+            {
+                translation.X += speed;
+            }
+
+            return translation;
         }
     }
 }

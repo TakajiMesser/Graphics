@@ -116,7 +116,8 @@ namespace Graphics.Helpers
                 Properties = new List<GameProperty>
                 {
                     new GameProperty("WALK_SPEED", typeof(float), 0.1f, true),
-                    new GameProperty("VIEW_ANGLE", typeof(float), 0.5236f, true)
+                    new GameProperty("VIEW_ANGLE", typeof(float), 1.0472f, true),
+                    new GameProperty("VIEW_DISTANCE", typeof(float), 5.0f, true)
                 }
             };
         }
@@ -132,7 +133,25 @@ namespace Graphics.Helpers
 
             var rootNode = new SelectorNode(
                 new RepeaterNode(
-                    Node.Load(FilePathHelper.ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH)
+                    new SequenceNode(
+                        Node.Load(FilePathHelper.ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH),
+                        new LeafNode()
+                        {
+                            Behavior = (v) =>
+                            {
+                                // Check if we are at full alertness
+                                return BehaviorStatuses.Failure;
+                            }
+                        },
+                        new LeafNode()
+                        {
+                            Behavior = (v) =>
+                            {
+                                // Chase player
+                                return BehaviorStatuses.Failure;
+                            }
+                        }
+                    )
                 ),
                 new SequenceNode(
                     new ParallelNode(
@@ -163,7 +182,6 @@ namespace Graphics.Helpers
             {
                 Behavior = (v) =>
                 {
-                    var turnAngle = v.Rotation.X;//2.0f * (float)Math.Acos(v.Rotation.Z);
                     var player = v.Colliders.FirstOrDefault(c => c.AttachedObject.GetType() == typeof(GameObject) && ((GameObject)c.AttachedObject).Name == "Player");
 
                     if (player != null)
@@ -173,7 +191,7 @@ namespace Graphics.Helpers
                         var playerDirection = playerPosition - v.Position;
                         float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
-                        var angleDifference = (playerAngle - turnAngle + Math.PI) % (2 * Math.PI) - Math.PI;
+                        var angleDifference = (playerAngle - v.Rotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
                         if (angleDifference < -Math.PI)
                         {
                             angleDifference += (float)(2 * Math.PI);
@@ -182,7 +200,16 @@ namespace Graphics.Helpers
                         var viewAngle = (float)v["VIEW_ANGLE"];
                         if (Math.Abs(angleDifference) <= viewAngle / 2.0f)
                         {
-                            return BehaviorStatuses.Success;
+                            // Perform a raycast to see if any other colliders obstruct our view of the player
+                            // TODO - Filter colliders by their ability to obstruct vision
+                            var viewDistance = (float)v["VIEW_DISTANCE"];
+                            if (Raycast.TryRaycast(new Ray3(v.Position, playerDirection, viewDistance), v.Colliders, out RaycastHit hit))
+                            {
+                                if (hit.Collider.AttachedObject.GetType() == typeof(GameObject) && ((GameObject)hit.Collider.AttachedObject).Name == "Player")
+                                {
+                                    return BehaviorStatuses.Success;
+                                }
+                            }
                         }
                     }
 
@@ -240,102 +267,79 @@ namespace Graphics.Helpers
                 Behavior = (v) =>
                 {
                     var enterCoverSpeed = (float)v["ENTER_COVER_SPEED"];
-                    var evadeSpeed = (float)v["EVADE_SPEED"];
-                    var evadeTickCount = (int)v["EVADE_TICK_COUNT"];
                     var coverSpeed = (float)v["COVER_SPEED"];
                     var coverDistance = (float)v["COVER_DISTANCE"];
                     var nEvadeTicks = v.ContainsKey("nEvadeTicks") ? (int)v["nEvadeTicks"] : 0;
 
-                    if (v.InputState.IsPressed(v.InputMapping.Cover))
+                    if (nEvadeTicks == 0)
                     {
-                        // TODO - Filter gameobjects and brushes based on "coverable" property
-                        var filteredColliders = v.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
-
-                        if (Raycast.TryCircleCast(new Circle(v.Position, coverDistance), filteredColliders, out RaycastHit hit))
+                        if (v.InputState.IsPressed(v.InputMapping.Cover))
                         {
-                            var vectorBetween = hit.Intersection - v.Position;
-                            v["coverDirection"] = vectorBetween.Xy;
-                            v["coverDistance"] = vectorBetween.Length;
+                            // TODO - Filter gameobjects and brushes based on "coverable" property
+                            var filteredColliders = v.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
 
-                            float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
-                            v.Rotation = new Vector3(turnAngle + (float)Math.PI, v.Rotation.Y, v.Rotation.Z);
-
-                            return BehaviorStatuses.Success;
-                        }
-                    }
-                    else if (v.InputState.IsHeld(v.InputMapping.Cover))
-                    {
-                        if (v.ContainsKey("coverDirection"))
-                        {
-                            if (v.ContainsKey("coverDistance"))
+                            if (Raycast.TryCircleCast(new Circle(v.Position, coverDistance), filteredColliders, out RaycastHit hit))
                             {
-                                if ((float)v["coverDistance"] > 0.0f)
+                                var vectorBetween = hit.Intersection - v.Position;
+                                v["coverDirection"] = vectorBetween.Xy;
+                                v["coverDistance"] = vectorBetween.Length;
+
+                                float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+                                v.Rotation = new Vector3(turnAngle + (float)Math.PI, v.Rotation.Y, v.Rotation.Z);
+
+                                return BehaviorStatuses.Success;
+                            }
+                        }
+                        else if (v.InputState.IsHeld(v.InputMapping.Cover))
+                        {
+                            if (v.ContainsKey("coverDirection"))
+                            {
+                                if (v.ContainsKey("coverDistance"))
                                 {
-                                    v["coverDistance"] = (float)v["coverDistance"] - enterCoverSpeed;
-
-                                    var coverDirection = (Vector2)v["coverDirection"];
-                                    v.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * enterCoverSpeed;
-                                }
-
-                                if ((float)v["coverDistance"] < 2.0f)
-                                {
-                                    // Handle movement while in cover here
-                                    var translation = new Vector3();
-
-                                    if (v.InputState.IsHeld(v.InputMapping.Forward))
+                                    if ((float)v["coverDistance"] > 0.0f)
                                     {
-                                        translation.Y += coverSpeed;
-                                    }
-
-                                    if (v.InputState.IsHeld(v.InputMapping.Left))
-                                    {
-                                        translation.X -= coverSpeed;
-                                    }
-
-                                    if (v.InputState.IsHeld(v.InputMapping.Backward))
-                                    {
-                                        translation.Y -= coverSpeed;
-                                    }
-
-                                    if (v.InputState.IsHeld(v.InputMapping.Right))
-                                    {
-                                        translation.X += coverSpeed;
-                                    }
-
-                                    if (translation != Vector3.Zero)
-                                    {
-                                        var filteredColliders = v.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+                                        v["coverDistance"] = (float)v["coverDistance"] - enterCoverSpeed;
 
                                         var coverDirection = (Vector2)v["coverDirection"];
-                                        if (Raycast.TryRaycast(new Ray3(v.Position + translation, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), 1.0f), filteredColliders, out RaycastHit hit))
+                                        v.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * enterCoverSpeed;
+                                    }
+
+                                    if ((float)v["coverDistance"] < 0.1f)
+                                    {
+                                        // Handle movement while in cover here
+                                        var translation = v.GetTranslation(coverSpeed);
+
+                                        if (translation != Vector3.Zero)
                                         {
-                                            var vectorBetween = hit.Intersection - (v.Position + translation);
+                                            var filteredColliders = v.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
 
-                                            translation.X += vectorBetween.X;
-                                            translation.Y += vectorBetween.Y;
+                                            // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
+                                            var borderPoint = v.Bounds.GetBorder(translation);
 
-                                            v.Translation = translation;
+                                            var coverDirection = (Vector2)v["coverDirection"];
+                                            if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), 1.0f), filteredColliders, out RaycastHit hit))
+                                            {
+                                                var vectorBetween = hit.Intersection - borderPoint;
+
+                                                translation.X += vectorBetween.X;
+                                                translation.Y += vectorBetween.Y;
+
+                                                v.Translation = translation;
+                                            }
                                         }
                                     }
                                 }
+
+                                return BehaviorStatuses.Success;
                             }
+                        }
+                        else if (v.InputState.IsReleased(v.InputMapping.Cover))
+                        {
+                            v.RemoveIfExists("coverDirection");
+                            v.RemoveIfExists("coverDistance");
 
                             return BehaviorStatuses.Success;
                         }
-                    }
-                    else if (v.InputState.IsReleased(v.InputMapping.Cover))
-                    {
-                        if (v.ContainsKey("coverDirection"))
-                        {
-                            v.Remove("coverDirection");
-                        }
-
-                        if (v.ContainsKey("coverDistance"))
-                        {
-                            v.Remove("coverDistance");
-                        }
-
-                        return BehaviorStatuses.Success;
                     }
 
                     return BehaviorStatuses.Failure;
@@ -357,37 +361,7 @@ namespace Graphics.Helpers
 
                     if (nEvadeTicks == 0 && v.InputState.IsPressed(v.InputMapping.Evade))
                     {
-                        var evadeTranslation = new Vector3();
-
-                        if (v.InputState.IsHeld(v.InputMapping.Forward))
-                        {
-                            evadeTranslation.Y += evadeSpeed;
-                        }
-
-                        if (v.InputState.IsHeld(v.InputMapping.Left))
-                        {
-                            evadeTranslation.X -= evadeSpeed;
-                        }
-
-                        if (v.InputState.IsHeld(v.InputMapping.Backward))
-                        {
-                            evadeTranslation.Y -= evadeSpeed;
-                        }
-
-                        if (v.InputState.IsHeld(v.InputMapping.Right))
-                        {
-                            evadeTranslation.X += evadeSpeed;
-                        }
-
-                        if (v.InputState.IsHeld(v.InputMapping.In))
-                        {
-                            evadeTranslation.Z += evadeSpeed;
-                        }
-
-                        if (v.InputState.IsHeld(v.InputMapping.Out))
-                        {
-                            evadeTranslation.Z -= evadeSpeed;
-                        }
+                        var evadeTranslation = v.GetTranslation(evadeSpeed);
 
                         if (evadeTranslation != Vector3.Zero)
                         {
@@ -444,27 +418,7 @@ namespace Graphics.Helpers
                             ? creepSpeed
                             : walkSpeed;
 
-                    var translation = new Vector3();
-
-                    if (v.InputState.IsHeld(v.InputMapping.Forward))
-                    {
-                        translation.Y += speed;
-                    }
-
-                    if (v.InputState.IsHeld(v.InputMapping.Left))
-                    {
-                        translation.X -= speed;
-                    }
-
-                    if (v.InputState.IsHeld(v.InputMapping.Backward))
-                    {
-                        translation.Y -= speed;
-                    }
-
-                    if (v.InputState.IsHeld(v.InputMapping.Right))
-                    {
-                        translation.X += speed;
-                    }
+                    var translation = v.GetTranslation(speed);
 
                     if (v.InputState.IsHeld(v.InputMapping.In))
                     {

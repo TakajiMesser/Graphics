@@ -46,5 +46,7 @@ namespace Graphics.Physics.Collision
         }*/
 
         public override bool CollidesWith(BoundingBox boundingBox) => throw new NotImplementedException();//HasCollision(this, boundingBox);
+
+        public override Vector3 GetBorder(Vector3 direction) => Center + (direction.Normalized() * Radius);
     }
 }
