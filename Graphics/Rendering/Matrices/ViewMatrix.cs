@@ -34,12 +34,6 @@ namespace Graphics.Rendering.Matrices
         //public Vector3 Scale { get; set; } = Vector3.One;
 
         public ViewMatrix() { }
-        public ViewMatrix(Vector3 translation/*, Quaternion rotation, Vector3 scale*/)
-        {
-            Translation = translation;
-            //Rotation = rotation;
-            //Scale = scale;
-        }
 
         public void Set(ShaderProgram program)
         {

@@ -1,14 +1,14 @@
 ﻿#version 440
 
-out vec4 color;
-in vec2 v_TexCoord;
-
-uniform sampler2D sampler0;
+uniform sampler2D textureSampler;
 uniform int channel;
+
+in vec2 fUV;
+out vec4 color;
 
 void main()
 {
-	vec4 tex = texture(sampler0, v_TexCoord);
-	
+	vec4 tex = texture(textureSampler, fUV);
+	//color = vec4(1.0 - tex.r, 1.0 - tex.g, 1.0 - tex.b, tex.a);
 	color = vec4((channel < 0) ? tex : vec4(tex[channel]));
 }

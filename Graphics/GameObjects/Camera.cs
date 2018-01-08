@@ -18,7 +18,6 @@ namespace Graphics.GameObjects
         public const float ZFAR = 10.0f;
 
         private string _name;
-        private ShaderProgram _program;
         private ViewMatrix _viewMatrix = new ViewMatrix();
         private ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
         private float _width = 20.0f;
@@ -31,10 +30,9 @@ namespace Graphics.GameObjects
         }
         public Matrix4 ViewProjectionMatrix => _projectionMatrix.Projection * _viewMatrix.View;
 
-        public Camera(string name, ShaderProgram program, int width, int height)
+        public Camera(string name, int width, int height)
         {
             _name = name;
-            _program = program;
             _projectionMatrix.Width = _width;
             _projectionMatrix.AspectRatio = (float)width / height;
             _projectionMatrix.ZNear = ZNEAR;
@@ -64,10 +62,10 @@ namespace Graphics.GameObjects
             }
         }
 
-        public void OnRenderFrame()
+        public void Draw(ShaderProgram program)
         {
-            _viewMatrix.Set(_program);
-            _projectionMatrix.Set(_program);
+            _viewMatrix.Set(program);
+            _projectionMatrix.Set(program);
         }
     }
 }

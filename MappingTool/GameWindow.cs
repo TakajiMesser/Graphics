@@ -18,6 +18,7 @@ using Graphics.Maps;
 using Graphics.Rendering.Shaders;
 using Graphics.Scripting.BehaviorTrees;
 using Graphics.Rendering.PostProcessing;
+using Graphics.Outputs;
 
 namespace MappingTool
 {
@@ -33,6 +34,8 @@ namespace MappingTool
         private MouseDevice _mouse;
         private MouseDevice _previousMouse;
 
+        public Resolution Resolution { get; private set; }
+
         public GameWindow(string mapPath) : base(1280, 720, 
             GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, 
             DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
@@ -43,14 +46,14 @@ namespace MappingTool
 
         protected override void OnResize(EventArgs e)
         {
-            GL.Viewport(0, 0, Width, Height);
+            Resolution = new Resolution(Width, Height);
             _gameState.UpdateAspectRatio(Width, Height);
         }
 
         protected override void OnLoad(EventArgs e)
         {
             //WindowState = WindowState.Maximized;
-            Size = new System.Drawing.Size(1024, 768);
+            Size = new System.Drawing.Size(1280, 720);
 
             // Create test objects
             TestHelper.CreateTestEnemyBehavior();

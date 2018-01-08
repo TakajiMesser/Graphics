@@ -16,6 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
+using GameWindow = Graphics.GameObjects.GameWindow;
 
 namespace MappingTool
 {

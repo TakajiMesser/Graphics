@@ -11,21 +11,21 @@ namespace Graphics.Rendering.Shaders
 {
     public class Shader : IDisposable
     {
-        public int Handle { get; private set; }
+        internal int _handle;
         public ShaderType ShaderType { get; private set; }
 
         public Shader(ShaderType type, string code)
         {
             ShaderType = type;
-            Handle = GL.CreateShader(type);
+            _handle = GL.CreateShader(type);
 
-            GL.ShaderSource(Handle, code);
-            GL.CompileShader(Handle);
+            GL.ShaderSource(_handle, code);
+            GL.CompileShader(_handle);
 
-            GL.GetShader(Handle, ShaderParameter.CompileStatus, out int statusCode);
+            GL.GetShader(_handle, ShaderParameter.CompileStatus, out int statusCode);
             if (statusCode != 1)
             {
-                throw new GraphicsException(ShaderType + " Shader failed to compile: " + GL.GetShaderInfoLog(Handle));
+                throw new GraphicsException(ShaderType + " Shader failed to compile: " + GL.GetShaderInfoLog(_handle));
             }
         }
 
@@ -41,7 +41,7 @@ namespace Graphics.Rendering.Shaders
                     // TODO: dispose managed state (managed objects).
                 }
 
-                GL.DeleteShader(Handle);
+                GL.DeleteShader(_handle);
                 disposedValue = true;
             }
         }

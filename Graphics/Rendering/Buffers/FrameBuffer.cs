@@ -15,10 +15,10 @@ namespace Graphics.Rendering.Buffers
 {
     public class FrameBuffer : IDisposable, IBindable
     {
-        private readonly int _handle;
+        internal readonly int _handle;
 
-        private Dictionary<FramebufferAttachment, Texture> _textures = new Dictionary<FramebufferAttachment, Texture>();
-        private Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
+        internal Dictionary<FramebufferAttachment, Texture> _textures = new Dictionary<FramebufferAttachment, Texture>();
+        internal Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
 
         public FrameBuffer()
         {
@@ -56,12 +56,15 @@ namespace Graphics.Rendering.Buffers
             foreach (var attachment in _textures)
             {
                 GL.DrawBuffer((DrawBufferMode)attachment.Key);
+                //GL.DrawBuffers(1, new[] { DrawBuffersEnum.ColorAttachment0 });
             }
 
             foreach (var attachment in _renderBuffers)
             {
                 GL.DrawBuffer((DrawBufferMode)attachment.Key);
             }
+
+            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
         }
 
         public void Unbind()

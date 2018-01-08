@@ -23,20 +23,11 @@ namespace Graphics.Rendering.Buffers
             _vertexSize = UnitConversions.SizeOf<T>();
         }
 
-        public void AddVertex(T vertex)
-        {
-            _vertices.Add(vertex);
-        }
+        public void AddVertex(T vertex) => _vertices.Add(vertex);
 
-        public void AddVertices(IEnumerable<T> vertices)
-        {
-            _vertices.AddRange(vertices);
-        }
+        public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
 
-        public void Clear()
-        {
-            _vertices.Clear();
-        }
+        public void Clear() => _vertices.Clear();
 
         public void Buffer()
         {
@@ -53,17 +44,14 @@ namespace Graphics.Rendering.Buffers
             GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
         }
 
-        public void Draw()
+        public void DrawTriangles()
         {
-            //GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Count);
-            //GL.DrawElements(PrimitiveType.Triangles, 0, DrawElementsType.UnsignedShort, )
+            GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Count);
+        }
 
-            /*glDrawElements(
-                 GL_TRIANGLES,      // mode
-                 indices.size(),    // count
-                 GL_UNSIGNED_INT,   // type
-                 (void*)0           // element array buffer offset
-             );*/
+        public void DrawQuads()
+        {
+            GL.DrawArrays(PrimitiveType.Quads, 0, _vertices.Count);
         }
 
         #region IDisposable Support

@@ -7,6 +7,9 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK;
 using Graphics.Rendering.Buffers;
 using OpenTK.Graphics;
+using System.Drawing;
+using System.Drawing.Imaging;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace Graphics.Rendering.Textures
 {
@@ -179,6 +182,42 @@ namespace Graphics.Rendering.Textures
             {
                 GL.TexParameter(Target, (TextureParameterName)All.TextureMaxAnisotropyExt, _maxAnisotrophy);
             }
+        }
+
+        public static Texture LoadFromFile(string path)
+        {
+            Bitmap bitmap = new Bitmap(path);
+            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+
+            var texture = new Texture(bitmap.Width, bitmap.Height, 1)
+            {
+                Target = TextureTarget.Texture2D,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Repeat
+            };
+
+            switch (data.PixelFormat)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.ColorIndex;
+                    texture.PixelType = PixelType.Bitmap;
+                    break;
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.Bgr;
+                    texture.PixelType = PixelType.UnsignedByte;
+                    break;
+            }
+
+            texture.Bind();
+            texture.Load(data.Scan0);
+
+            bitmap.UnlockBits(data);
+            bitmap.Dispose();
+
+            return texture;
         }
 
         #region IDisposable Support

@@ -105,19 +105,12 @@ namespace Graphics.Rendering.PostProcessing
             GL.Uniform2(sizeLocation, new Vector2(_velocityTextureA.Width, _velocityTextureA.Height));
 
             int directionLocation = _dilateProgram.GetUniformLocation("direction_selector");
-            int sourceLocation = _dilateProgram.GetUniformLocation("source");
-            int destinationLocation = _dilateProgram.GetUniformLocation("destination");
 
             // Horizontal direction
             GL.Uniform1(directionLocation, 0);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            velocity.Bind();
-            GL.Uniform1(sourceLocation, 0);
-
-            GL.ActiveTexture(TextureUnit.Texture1);
-            _velocityTextureB.BindImageTexture(1);
-            GL.Uniform1(destinationLocation, 1);
+            _dilateProgram.BindTexture(velocity, "source", 0);
+            _dilateProgram.BindImageTexture(_velocityTextureB, "destination", 1);
 
             GL.DispatchCompute(_velocityTextureA.Height, 2, 1);
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
@@ -125,13 +118,8 @@ namespace Graphics.Rendering.PostProcessing
             // Vertical direction
             GL.Uniform1(directionLocation, 1);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            _velocityTextureB.Bind();
-            GL.Uniform1(sourceLocation, 0);
-
-            GL.ActiveTexture(TextureUnit.Texture1);
-            _velocityTextureA.BindImageTexture(1);
-            GL.Uniform1(destinationLocation, 1);
+            _dilateProgram.BindTexture(_velocityTextureB, "source", 0);
+            _dilateProgram.BindImageTexture(_velocityTextureA, "destination", 1);
 
             GL.DispatchCompute(_velocityTextureA.Width, 2, 1);
             GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
@@ -145,24 +133,13 @@ namespace Graphics.Rendering.PostProcessing
             int fpsLocation = _blurProgram.GetUniformLocation("fps_scaler");
             GL.Uniform1(fpsLocation, fps);
 
-            int sourceLocation = _blurProgram.GetUniformLocation("source");
-            int velocityLocation = _blurProgram.GetUniformLocation("velocity");
-            int depthLocation = _blurProgram.GetUniformLocation("depth");
-
-            GL.ActiveTexture(TextureUnit.Texture1);
-            _velocityTextureA.Bind();
-            GL.Uniform1(velocityLocation, 1);
-
-            GL.ActiveTexture(TextureUnit.Texture2);
-            depth.Bind();
-            GL.Uniform1(depthLocation, 2);
+            _blurProgram.BindTexture(_velocityTextureA, "velocity", 1);
+            _blurProgram.BindTexture(depth, "depth", 2);
 
             // Pass 1
             _frameBuffer.Draw();
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            scene.Bind();
-            GL.Uniform1(sourceLocation, 0);
+            _blurProgram.BindTexture(scene, "source", 0);
 
             // quad.Render();
 
@@ -170,9 +147,7 @@ namespace Graphics.Rendering.PostProcessing
             // sceneFrames.Bind(FramebufferTarget.DrawFramebuffer);
             // GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
 
-            GL.ActiveTexture(TextureUnit.Texture0);
-            FinalTexture.Bind();
-            GL.Uniform1(sourceLocation, 0);
+            _blurProgram.BindTexture(FinalTexture, "source", 0);
 
             // quad.Render();
         }

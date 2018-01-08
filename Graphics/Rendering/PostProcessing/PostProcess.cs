@@ -13,7 +13,7 @@ namespace Graphics.Rendering.PostProcessing
     public abstract class PostProcess
     {
         public string Name { get; private set; }
-        public bool Enabled { get; set; }
+        public bool Enabled { get; set; } = true;
         public Resolution Resolution { get; set; }
 
         public Texture FinalTexture { get; protected set; }

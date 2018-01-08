@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -47,11 +48,10 @@
   <ItemGroup>
     <Compile Include="GameObjects\Brush.cs" />
     <Compile Include="GameObjects\Camera.cs" />
-    <Compile Include="GameObjects\Enemy.cs" />
     <Compile Include="GameObjects\GameProperty.cs" />
-    <Compile Include="GameObjects\Player.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\GameState.cs" />
+    <Compile Include="GameObjects\GameWindow.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
@@ -82,7 +82,6 @@
     <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
     <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
     <Compile Include="Meshes\MeshManager.cs" />
-    <Compile Include="Meshes\MeshLoader.cs" />
     <Compile Include="Meshes\MeshTriangle.cs" />
     <Compile Include="Meshes\Mesh.cs" />
     <Compile Include="Physics\Collision\QuadTree.cs" />
@@ -95,12 +94,13 @@
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\InvertColors.cs" />
     <Compile Include="Rendering\PostProcessing\RenderToScreen.cs" />
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\GeometryRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
-    <Compile Include="Rendering\Shaders\ShaderLoader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
@@ -132,6 +132,7 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\Miscellaneous\invert.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_array.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl" />

@@ -17,9 +17,9 @@ namespace Graphics.Maps
         public Vector3 Position { get; set; }
         public string AttachedGameObjectName { get; set; }
 
-        public Camera ToCamera(ShaderProgram program, int width, int height)
+        public Camera ToCamera(int width, int height)
         {
-            var camera = new Camera(Name, program, width, height);
+            var camera = new Camera(Name, width, height);
 
             if (Position != null)
             {

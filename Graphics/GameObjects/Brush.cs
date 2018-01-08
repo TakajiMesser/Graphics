@@ -15,6 +15,8 @@ using Graphics.Helpers;
 using Graphics.Rendering.Vertices;
 using Graphics.GameObjects;
 using Graphics.Rendering.Matrices;
+using Graphics.Meshes;
+using Graphics.Rendering.Textures;
 
 namespace Graphics.GameObjects
 {
@@ -24,95 +26,31 @@ namespace Graphics.GameObjects
     /// </summary>
     public class Brush
     {
-        internal ShaderProgram _program;
         private ModelMatrix _modelMatrix = new ModelMatrix();
+        internal Mesh _mesh;
 
-        private List<Vertex> _vertices = new List<Vertex>();
-        private VertexArray<Vertex> _vertexArray;
-        private VertexBuffer<Vertex> _vertexBuffer;
-        private MaterialBuffer _materialBuffer;
-        private LightBuffer _lightBuffer;
-        private VertexIndexBuffer _indexBuffer;
-
-        public List<Vertex> Vertices => _vertices;
+        public List<Vertex> Vertices => _mesh.Vertices;
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public Collider Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
+        public Texture Texture { get; set; }
 
         public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
-            if (triangleIndices.Count % 3 != 0)
-            {
-                throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
-            }
-
-            _vertices = vertices;
-
-            _indexBuffer = new VertexIndexBuffer();
-            _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
-
-            _lightBuffer = new LightBuffer(program);
-
-            _materialBuffer = new MaterialBuffer(program);
-            _materialBuffer.AddMaterials(materials);
-
-            _vertexBuffer = new VertexBuffer<Vertex>();
-            _vertexBuffer.AddVertices(_vertices);
-
-            _vertexArray = new VertexArray<Vertex>(_vertexBuffer, program);
-            _program = program;
+            _mesh = new Mesh(vertices, materials, triangleIndices, program);
         }
 
         public void AddTestColors()
         {
-            for (var i = 0; i < _vertices.Count; i++)
-            {
-                if (i % 3 == 0)
-                {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
-                }
-                else if (i % 3 == 1)
-                {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
-                }
-                else if (i % 3 == 2)
-                {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
-                }
-            }
-
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(_vertices);
+            _mesh.AddTestColors();
         }
 
-        public void AddLights(IEnumerable<Light> lights) => _lightBuffer.AddLights(lights);
+        public void AddLights(IEnumerable<Light> lights) => _mesh.AddLights(lights);
 
-        public void OnRenderFrame()
+        public void Draw(ShaderProgram program)
         {
-            _modelMatrix.Set(_program);
-            Draw();
-        }
-
-        public void Draw()
-        {
-            _vertexArray.Bind();
-            _vertexBuffer.Bind();
-            _materialBuffer.Bind();
-            _lightBuffer.Bind();
-            _indexBuffer.Bind();
-
-            _vertexBuffer.Buffer();
-            _materialBuffer.Buffer();
-            _lightBuffer.Buffer();
-            _indexBuffer.Buffer();
-
-            _indexBuffer.Draw();
-
-            _vertexArray.Unbind();
-            _vertexBuffer.Unbind();
-            _materialBuffer.Unbind();
-            _lightBuffer.Unbind();
-            _indexBuffer.Unbind();
+            _modelMatrix.Set(program);
+            _mesh.Draw();
         }
 
         public static Brush Rectangle(Vector3 center, float width, float height, ShaderProgram program)

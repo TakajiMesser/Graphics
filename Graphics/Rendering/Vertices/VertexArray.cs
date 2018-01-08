@@ -15,25 +15,21 @@ namespace Graphics.Rendering.Vertices
     public class VertexArray<T> : IDisposable, IBindable where T : struct
     {
         private readonly int _handle;
-        //private readonly VertexBuffer<T> _buffer;
         private bool _generated = false;
 
         public int Handle => _handle;
 
-        public VertexArray(VertexBuffer<T> buffer, ShaderProgram program)
+        public VertexArray(ShaderProgram program)
         {
-            //_buffer = buffer;
-
             if (_generated)
             {
-                GL.DeleteVertexArrays(1, ref _handle);
+                GL.DeleteVertexArray(_handle);
             }
 
             _handle = GL.GenVertexArray();
             _generated = true;
 
             Bind();
-            buffer.Bind();
 
             foreach (var attribute in VertexHelper.GetAttributes<T>())
             {
@@ -42,7 +38,6 @@ namespace Graphics.Rendering.Vertices
             }
 
             Unbind();
-            buffer.Unbind();
         }
 
         public void Bind()
@@ -67,7 +62,7 @@ namespace Graphics.Rendering.Vertices
                     // TODO: dispose managed state (managed objects).
                 }
 
-                GL.DeleteBuffer(_handle);
+                GL.DeleteVertexArray(_handle);
                 disposedValue = true;
             }
         }

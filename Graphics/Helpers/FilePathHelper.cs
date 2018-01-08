@@ -18,20 +18,32 @@ namespace Graphics.Helpers
     {
         private const string SOLUTION_DIRECTORY = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics";
 
+        #region Maps
         public const string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Maps\TestMap.map";
+        #endregion
 
+        #region Meshes
         public const string PLAYER_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Player.obj";
         public const string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Square.obj";
         public const string FLOOR_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Floor.obj";
         public const string ENEMY_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Enemy.obj";
+        #endregion
 
+        #region Materials
         public const string GENERIC_MATERIAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\GenericMaterial.mtl";
+        #endregion
+
+        #region Textures
+        public const string BRICK_01_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-d.jpg";
+        #endregion
 
         #region Shaders
         public const string VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\simple-vertex-shader.glsl";
         public const string FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\simple-fragment-shader.glsl";
         public const string BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\MotionBlur\mb_blur.glsl";
         public const string DILATE_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\MotionBlur\mb_dilate.glsl";
+
+        public const string INVERT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Miscellaneous\invert.glsl";
 
         public const string RENDER_1D_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_1D.glsl";
         public const string RENDER_2D_ARRAY_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_2D_array.glsl";

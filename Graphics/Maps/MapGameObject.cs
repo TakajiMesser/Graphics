@@ -1,6 +1,8 @@
 ﻿using Graphics.GameObjects;
 using Graphics.Meshes;
+using Graphics.Physics.Collision;
 using Graphics.Rendering.Shaders;
+using Graphics.Rendering.Textures;
 using Graphics.Scripting.BehaviorTrees;
 using OpenTK;
 using System;
@@ -20,6 +22,7 @@ namespace Graphics.Maps
         public Quaternion Rotation { get; set; }
         public Vector3 Scale { get; set; }
         public string MeshFilePath { get; set; }
+        public string TextureFilePath { get; set; }
         public string BehaviorFilePath { get; set; }
         public List<GameProperty> Properties { get; set; }
         //public ICollider Collider { get; set; }
@@ -30,6 +33,11 @@ namespace Graphics.Maps
             {
                 Mesh = Mesh.LoadFromFile(MeshFilePath, program)
             };
+
+            if (!string.IsNullOrEmpty(TextureFilePath))
+            {
+                gameObject.Texture = Texture.LoadFromFile(TextureFilePath);
+            }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))
             {
@@ -61,6 +69,11 @@ namespace Graphics.Maps
             {
                 gameObject.Scale = Scale;
             }
+
+            gameObject.Mesh.AddTestColors();
+            gameObject.Bounds = gameObject.Name == "Player"
+                ? (Collider)new BoundingCircle(gameObject)
+                : new BoundingBox(gameObject);
 
             return gameObject;
         }

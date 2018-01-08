@@ -43,10 +43,12 @@ namespace Graphics.Helpers
 
             var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 10.0f);
             wall.HasCollision = true;
+            wall.TextureFilePath = FilePathHelper.BRICK_01_TEXTURE_PATH;
             map.Brushes.Add(wall);
 
             var wall2 = MapBrush.Rectangle(new Vector3(-10.0f, 0.0f, -0.5f), 5.0f, 10.0f);
             wall2.HasCollision = true;
+            wall2.TextureFilePath = FilePathHelper.BRICK_01_TEXTURE_PATH;
             map.Brushes.Add(wall2);
 
             map.Lights.Add(new Light()

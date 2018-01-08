@@ -4,6 +4,7 @@ using Graphics.Materials;
 using Graphics.Meshes;
 using Graphics.Physics.Collision;
 using Graphics.Rendering.Shaders;
+using Graphics.Rendering.Textures;
 using Graphics.Rendering.Vertices;
 using OpenTK;
 using System;
@@ -22,6 +23,7 @@ namespace Graphics.Maps
         public List<Material> Materials { get; set; } = new List<Material>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool HasCollision { get; set; }
+        public string TextureFilePath { get; set; }
 
         public Brush ToBrush(ShaderProgram program)
         {
@@ -30,7 +32,13 @@ namespace Graphics.Maps
                 HasCollision = HasCollision
             };
             brush.Bounds = new BoundingBox(brush);
-            
+            brush.AddTestColors();
+
+            if (!string.IsNullOrEmpty(TextureFilePath))
+            {
+                brush.Texture = Texture.LoadFromFile(TextureFilePath);
+            }
+
             return brush;
         }
 

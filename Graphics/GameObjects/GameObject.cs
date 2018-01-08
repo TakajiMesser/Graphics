@@ -13,17 +13,18 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
 using Graphics.Lighting;
+using Graphics.Rendering.Textures;
 
 namespace Graphics.GameObjects
 {
     public class GameObject
     {
-        internal ShaderProgram _program;
-        private ModelMatrix _modelMatrix = new ModelMatrix();
+        internal ModelMatrix _modelMatrix = new ModelMatrix();
 
         //public int ID { get; private set; }
         public string Name { get; private set; }
         public Mesh Mesh { get; set; }
+        public Texture Texture { get; set; }
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
@@ -166,10 +167,15 @@ namespace Graphics.GameObjects
             Position += translation;
         }
 
-        public virtual void OnRenderFrame()
+        public void Draw(ShaderProgram program)
         {
-            _modelMatrix.Set(_program);
-            Mesh?.Draw();
+            if (Mesh == null)
+            {
+                throw new InvalidOperationException("Cannot draw GameObject " + Name + " with null mesh");
+            }
+
+            _modelMatrix.Set(program);
+            Mesh.Draw();
         }
 
         // Define how this object's state will be saved, if desired

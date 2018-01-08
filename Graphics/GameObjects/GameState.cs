@@ -16,6 +16,10 @@ using System.IO;
 using Graphics.Helpers;
 using Graphics.Rendering.PostProcessing;
 using Graphics.Outputs;
+using Graphics.Rendering.Processing;
+using Graphics.Rendering.Textures;
+using System.Drawing;
+using System.Drawing.Imaging;
 
 namespace Graphics.GameObjects
 {
@@ -24,39 +28,40 @@ namespace Graphics.GameObjects
         private GameWindow _window;
         private InputState _inputState = new InputState();
 
-        private ShaderProgram _geometryProgram;
+        //private Texture _texture;
+        private GeometryRenderer _geometryRenderer;
         private List<PostProcess> _preProcesses = new List<PostProcess>();
         private List<PostProcess> _postProcesses = new List<PostProcess>();
 
         private Camera _camera;
-        private List<Brush> _brushes = new List<Brush>();
         private List<GameObject> _gameObjects = new List<GameObject>();
+        private List<Brush> _brushes = new List<Brush>();
         private List<Light> _lights = new List<Light>();
 
-        private QuadTree _brushQuads;
         private QuadTree _gameObjectQuads;
+        private QuadTree _brushQuads;
         private QuadTree _lightQuads;
 
         public GameState(Map map, GameWindow window)
         {
-            _postProcesses.Add(new RenderToScreen(new Resolution(window.Width, window.Height)));
-            _postProcesses.Add(new MotionBlur(new Resolution(window.Width, window.Height)));
+            _geometryRenderer = new GeometryRenderer(window.Resolution);
+            _postProcesses.Add(new MotionBlur(window.Resolution));
+            _postProcesses.Add(new InvertColors(window.Resolution) { Enabled = false });
+            _postProcesses.Add(new RenderToScreen(window.Resolution));
+            
             LoadPrograms();
 
             _window = window;
 
-            _brushQuads = new QuadTree(0, map.Boundaries);
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
+            _brushQuads = new QuadTree(0, map.Boundaries);
             _lightQuads = new QuadTree(0, map.Boundaries);
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
 
-            _camera = new Camera(map.Camera.Name, _geometryProgram, window.Width, window.Height);
+            _camera = map.Camera.ToCamera(window.Width, window.Height);
 
-            foreach (var brush in map.Brushes.Select(b => b.ToBrush(_geometryProgram)))
+            foreach (var brush in map.Brushes.Select(b => b.ToBrush(_geometryRenderer._geometryProgram)))
             {
-                brush.AddTestColors();
-                brush._program = _geometryProgram;
-
                 if (brush.HasCollision)
                 {
                     _brushQuads.Insert(brush.Bounds);
@@ -66,36 +71,14 @@ namespace Graphics.GameObjects
                 _brushes.Add(brush);
             }
 
-            foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(_geometryProgram)))
+            foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(_geometryRenderer._geometryProgram)))
             {
                 if (gameObject.Name == map.Camera.AttachedGameObjectName)
                 {
                     _camera.AttachedObject = gameObject;
                 }
-
-                gameObject._program = _geometryProgram;
-                gameObject.Mesh.AddTestColors();
-                gameObject.Bounds = gameObject.Name == "Player"
-                    ? (Collider)new BoundingCircle(gameObject)
-                    : new BoundingBox(gameObject);
                 
                 _gameObjects.Add(gameObject);
-            }
-        }
-
-        private void LoadPrograms()
-        {
-            foreach (var process in _preProcesses)
-            {
-                process.Load();
-            }
-
-            _geometryProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.VERTEX_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FRAGMENT_SHADER_PATH)));
-
-            foreach (var process in _postProcesses)
-            {
-                process.Load();
             }
         }
 
@@ -103,12 +86,28 @@ namespace Graphics.GameObjects
 
         public void UpdateAspectRatio(int width, int height) => _camera.UpdateAspectRatio(width, height);
 
+        private void LoadPrograms()
+        {
+            //_texture = Texture.LoadFromFile(FilePathHelper.BRICK_01_TEXTURE_PATH);
+
+            foreach (var process in _preProcesses)
+            {
+                process.Load();
+            }
+
+            _geometryRenderer.Load();
+
+            foreach (var process in _postProcesses)
+            {
+                process.Load();
+            }
+        }
+
         public void AddGameObject(GameObject gameObject)
         {
             if (string.IsNullOrEmpty(gameObject.Name)) throw new ArgumentException("GameObject must have a name defined");
             if (_gameObjects.Any(g => g.Name == gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
 
-            gameObject._program = _geometryProgram;
             _gameObjects.Add(gameObject);
         }
 
@@ -158,47 +157,35 @@ namespace Graphics.GameObjects
 
         public void RenderFrame()
         {
-            _geometryProgram.Use();
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            //GL.Enable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Back);
 
-            _camera.OnRenderFrame();
+            _geometryRenderer.Render(_camera, _brushes, _gameObjects);
 
-            foreach (var brush in _brushes)
+            // Now, extract the final texture from the geometry renderer, so that we can pass it off to the post-processes
+            var texture = _geometryRenderer.FinalTexture;
+
+            GL.Disable(EnableCap.DepthTest);
+
+            foreach (var process in _postProcesses.Where(p => p.Enabled))
             {
-                brush.OnRenderFrame();
-            }
-
-            foreach (var gameObject in PerformOcclusionCulling(PerformFrustumCulling(_gameObjects)))
-            {
-                gameObject.OnRenderFrame();
+                if (process.GetType() == typeof(InvertColors))
+                {
+                    var invert = (InvertColors)process;
+                    invert.Render(texture);
+                    texture = invert.FinalTexture;
+                }
+                else if (process.GetType() == typeof(RenderToScreen))
+                {
+                    var renderToScreen = (RenderToScreen)process;
+                    renderToScreen.Render(texture);
+                }
             }
         }
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), _window);
-
-        private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)
-        {
-            // Don't render meshes that are not in the camera's view
-
-            // Using the position of the gameObject, determine if we should render the mesh
-            // We will also need a bounding sphere or bounding box from the mesh to determine this
-            foreach (var gameObject in gameObjects)
-            {
-                Vector3 position = gameObject.Position;
-            }
-            
-            return gameObjects;
-        }
-
-        private IEnumerable<GameObject> PerformOcclusionCulling(IEnumerable<GameObject> gameObjects)
-        {
-            // Don't render meshes that are obscured by closer meshes
-            foreach (var gameObject in gameObjects)
-            {
-                Vector3 position = gameObject.Position;
-            }
-
-            return gameObjects;
-        }
 
         public void SaveToFile(string path)
         {

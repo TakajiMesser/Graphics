@@ -19,13 +19,13 @@ namespace Graphics.Meshes
     public class Mesh : IDisposable
     {
         private List<Vertex> _vertices = new List<Vertex>();
+        private VertexBuffer<Vertex> _vertexBuffer = new VertexBuffer<Vertex>();
+        private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
         private VertexArray<Vertex> _vertexArray;
-        private VertexBuffer<Vertex> _vertexBuffer;
         private MaterialBuffer _materialBuffer;
         private LightBuffer _lightBuffer;
-        private VertexIndexBuffer _indexBuffer;
 
-        public IEnumerable<Vertex> Vertices => _vertices;
+        public List<Vertex> Vertices => _vertices;
 
         public Mesh(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
@@ -35,19 +35,17 @@ namespace Graphics.Meshes
             }
 
             _vertices = vertices;
-
-            _indexBuffer = new VertexIndexBuffer();
             _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
+            _vertexBuffer.AddVertices(_vertices);
+
+            _vertexBuffer.Bind();
+            _vertexArray = new VertexArray<Vertex>(program);
+            _vertexBuffer.Unbind();
 
             _lightBuffer = new LightBuffer(program);
 
             _materialBuffer = new MaterialBuffer(program);
             _materialBuffer.AddMaterials(materials);
-
-            _vertexBuffer = new VertexBuffer<Vertex>();
-            _vertexBuffer.AddVertices(_vertices);
-
-            _vertexArray = new VertexArray<Vertex>(_vertexBuffer, program);
         }
 
         public void AddTestColors()

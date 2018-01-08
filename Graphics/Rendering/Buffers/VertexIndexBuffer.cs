@@ -13,7 +13,7 @@ namespace Graphics.Rendering.Buffers
 {
     public class VertexIndexBuffer : IDisposable, IBindable
     {
-        internal readonly int _handle;
+        private int _handle;
         private List<ushort> _indices = new List<ushort>();
 
         public VertexIndexBuffer()
@@ -21,20 +21,11 @@ namespace Graphics.Rendering.Buffers
             _handle = GL.GenBuffer();
         }
 
-        public void AddIndex(ushort index)
-        {
-            _indices.Add(index);
-        }
+        public void AddIndex(ushort index) => _indices.Add(index);
 
-        public void AddIndices(IEnumerable<ushort> indices)
-        {
-            _indices.AddRange(indices);
-        }
+        public void AddIndices(IEnumerable<ushort> indices) => _indices.AddRange(indices);
 
-        public void Clear()
-        {
-            _indices.Clear();
-        }
+        public void Clear() => _indices.Clear();
 
         public void Buffer()
         {

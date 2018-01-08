@@ -1,4 +1,5 @@
-﻿using Graphics.Rendering.Vertices;
+﻿using Graphics.Rendering.Textures;
+using Graphics.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
 
 namespace Graphics.Rendering.Shaders
@@ -13,14 +14,14 @@ namespace Graphics.Rendering.Shaders
 
             foreach (var shader in shaders)
             {
-                GL.AttachShader(_handle, shader.Handle);
+                GL.AttachShader(_handle, shader._handle);
             }
 
             GL.LinkProgram(_handle);
 
             foreach (var shader in shaders)
             {
-                GL.DetachShader(_handle, shader.Handle);
+                GL.DetachShader(_handle, shader._handle);
             }
         }
 
@@ -49,6 +50,24 @@ namespace Graphics.Rendering.Shaders
         {
             int blockIndex = 0;// GL.ShaderSto;
             GL.ShaderStorageBlockBinding(_handle, blockIndex, binding);
+        }
+
+        public void BindTexture(Texture texture, string name, int index)
+        {
+            int location = GetUniformLocation(name);
+
+            GL.ActiveTexture(TextureUnit.Texture0 + index);
+            texture.Bind();
+            GL.Uniform1(location, index);
+        }
+
+        public void BindImageTexture(Texture texture, string name, int index)
+        {
+            int location = GetUniformLocation(name);
+
+            GL.ActiveTexture(TextureUnit.Texture0 + index);
+            texture.BindImageTexture(index);
+            GL.Uniform1(location, index);
         }
 
         public int GetVertexAttributeLocation(string name)
