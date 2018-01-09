@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace Graphics.Physics.Collision
 {
-    public class BoundingCircle : Collider
+    public class BoundingCircle : Bounds
     {
         public float Radius { get; set; }
 
@@ -38,7 +38,7 @@ namespace Graphics.Physics.Collision
             return distanceSquared < Math.Pow(Radius, 2.0f);
         }
 
-        public override bool CollidesWith(Collider collider) => throw new NotImplementedException();
+        public override bool CollidesWith(Bounds collider) => throw new NotImplementedException();
 
         public override bool CollidesWith(BoundingCircle boundingCircle)
         {

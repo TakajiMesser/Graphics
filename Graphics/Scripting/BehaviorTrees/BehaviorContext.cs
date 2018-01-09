@@ -21,8 +21,8 @@ namespace Graphics.Scripting.BehaviorTrees
     {
         // Values set by the GameObject
         public string GameObjectName { get; internal set; }
-        public Collider Bounds { get; internal set; }
-        public IEnumerable<Collider> Colliders { get; internal set; }
+        public Bounds Bounds { get; internal set; }
+        public IEnumerable<Bounds> Colliders { get; internal set; }
         public InputState InputState { get; internal set; }
         public InputMapping InputMapping { get; internal set; }
         public Camera Camera { get; internal set; }

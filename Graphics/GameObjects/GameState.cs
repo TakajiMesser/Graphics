@@ -31,6 +31,7 @@ namespace Graphics.GameObjects
         private GeometryRenderer _geometryRenderer;
         private List<PostProcess> _preProcesses = new List<PostProcess>();
         private List<PostProcess> _postProcesses = new List<PostProcess>();
+        private TextureManager _textureManager = new TextureManager();
 
         private Camera _camera;
         private List<GameObject> _gameObjects = new List<GameObject>();
@@ -70,8 +71,16 @@ namespace Graphics.GameObjects
                 _brushes.Add(brush);
             }
 
-            foreach (var gameObject in map.GameObjects.Select(g => g.ToGameObject(_geometryRenderer._geometryProgram)))
+            foreach (var mapObject in map.GameObjects)
             {
+                var gameObject = mapObject.ToGameObject(_geometryRenderer._geometryProgram);
+
+                gameObject.TextureMapping = new TextureMapping()
+                {
+                    MainTextureID = !string.IsNullOrEmpty(mapObject.TextureFilePath) ? _textureManager.AddTexture(mapObject.TextureFilePath) : 0,
+                    NormalMapID = !string.IsNullOrEmpty(mapObject.NormalMapFilePath) ? _textureManager.AddTexture(mapObject.NormalMapFilePath) : 0
+                };
+
                 if (gameObject.Name == map.Camera.AttachedGameObjectName)
                 {
                     _camera.AttachedObject = gameObject;
@@ -159,7 +168,7 @@ namespace Graphics.GameObjects
             //GL.Enable(EnableCap.CullFace);
             //GL.CullFace(CullFaceMode.Back);
 
-            _geometryRenderer.Render(_camera, _brushes, _gameObjects);
+            _geometryRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
 
             // Now, extract the final texture from the geometry renderer, so that we can pass it off to the post-processes
             var texture = _geometryRenderer.FinalTexture;

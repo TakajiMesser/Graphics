@@ -85,7 +85,7 @@
     <Compile Include="Meshes\MeshTriangle.cs" />
     <Compile Include="Meshes\Mesh.cs" />
     <Compile Include="Physics\Collision\QuadTree.cs" />
-    <Compile Include="Physics\Collision\Collider.cs" />
+    <Compile Include="Physics\Collision\Bounds.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />
     <Compile Include="Physics\Collision\BoundingSphere.cs" />
     <Compile Include="Rendering\Animations\KeyFrame.cs" />
@@ -103,6 +103,7 @@
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />

@@ -10,7 +10,7 @@ namespace Graphics.Physics.Raycasting
 {
     public static class Raycast
     {
-        public static bool TryRaycast(Ray3 ray, IEnumerable<Collider> colliders, out RaycastHit hit)
+        public static bool TryRaycast(Ray3 ray, IEnumerable<Bounds> colliders, out RaycastHit hit)
         {
             hit = new RaycastHit();
             float shortestDistance = ray.Distance;
@@ -62,7 +62,7 @@ namespace Graphics.Physics.Raycasting
             return (hit.Collider != null);
         }
 
-        public static bool TryCircleCast(Circle circle, IEnumerable<Collider> colliders, out RaycastHit hit)
+        public static bool TryCircleCast(Circle circle, IEnumerable<Bounds> colliders, out RaycastHit hit)
         {
             foreach (var collider in colliders)
             {

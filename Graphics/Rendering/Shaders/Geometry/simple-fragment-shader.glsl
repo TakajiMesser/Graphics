@@ -4,8 +4,6 @@
 const int MAX_LIGHTS = 10;
 const int MAX_MATERIALS = 10;
 
-//_MainTex ("Description", 2D) = "black" {}
-
 struct Light {
 	vec3 position;
 	float radius;
@@ -32,8 +30,10 @@ layout (std140) uniform MaterialBlock
 	Material materials[MAX_MATERIALS];
 };
 
-uniform sampler2D textureSampler;
-uniform int useTextures;
+uniform sampler2D mainTexture;
+uniform int useMainTexture;
+uniform sampler2D normalMap;
+uniform int useNormalMap;
 //uniform float shine;
 //uniform float reflectivity;
 
@@ -106,9 +106,9 @@ void main()
 	}
 
 	vec4 lightColor = ambientColor + diffuseColor + specularColor;
-	vec4 textureColor = texture(textureSampler, fUV);
+	vec4 textureColor = texture(mainTexture, fUV);
 
-	if (useTextures > 0)
+	if (useMainTexture > 0)
 	{
 		color = mix(textureColor, fColor, 0.2);
 	}

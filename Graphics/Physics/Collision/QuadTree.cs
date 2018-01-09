@@ -15,7 +15,7 @@ namespace Graphics.Physics.Collision
 
         public int Level { get; set; }
         public Quad Quad { get; set; }
-        public List<Collider> Colliders { get; set; } = new List<Collider>();
+        public List<Bounds> Colliders { get; set; } = new List<Bounds>();
         public QuadTree[] Nodes { get; set; } = null;
 
         public QuadTree(int level, Quad quad)
@@ -24,7 +24,7 @@ namespace Graphics.Physics.Collision
             Quad = quad;
         }
 
-        public void InsertRange(IEnumerable<Collider> colliders)
+        public void InsertRange(IEnumerable<Bounds> colliders)
         {
             foreach (var collider in colliders)
             {
@@ -32,7 +32,7 @@ namespace Graphics.Physics.Collision
             }
         }
 
-        public void Insert(Collider collider)
+        public void Insert(Bounds collider)
         {
             // When we insert a new collider, we need to check a few things
             // First, is this quad already split up? If not, we can just insert into the parent quad
@@ -62,9 +62,9 @@ namespace Graphics.Physics.Collision
             }
         }
 
-        public IEnumerable<Collider> Retrieve(Collider collider)
+        public IEnumerable<Bounds> Retrieve(Bounds collider)
         {
-            var colliders = new List<Collider>(Colliders);
+            var colliders = new List<Bounds>(Colliders);
 
             if (TryGetNodeIndex(collider, out int index))
             {
@@ -102,7 +102,7 @@ namespace Graphics.Physics.Collision
             }
         }
 
-        public bool TryGetNodeIndex(Collider collider, out int index)
+        public bool TryGetNodeIndex(Bounds collider, out int index)
         {
             if (Nodes != null)
             {

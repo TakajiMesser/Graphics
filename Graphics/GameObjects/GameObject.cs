@@ -25,12 +25,12 @@ namespace Graphics.GameObjects
         //public int ID { get; private set; }
         public string Name { get; private set; }
         public Mesh Mesh { get; set; }
-        public Texture Texture { get; set; }
+        public TextureMapping TextureMapping { get; set; }
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
 
-        public Collider Bounds { get; set; }
+        public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
         public Vector3 Position
         {
@@ -91,7 +91,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public virtual void OnUpdateFrame(IEnumerable<Collider> colliders)
+        public virtual void OnUpdateFrame(IEnumerable<Bounds> colliders)
         {
             if (Behaviors != null)
             {
@@ -118,7 +118,7 @@ namespace Graphics.GameObjects
             }
         }
 
-        public virtual void HandleCollisions(Vector3 translation, IEnumerable<Collider> colliders)
+        public virtual void HandleCollisions(Vector3 translation, IEnumerable<Bounds> colliders)
         {
             if (HasCollision && Bounds != null && translation != Vector3.Zero)
             {
@@ -178,15 +178,6 @@ namespace Graphics.GameObjects
             }
 
             _modelMatrix.Set(program);
-
-            // TODO - This should instead be performed by the geometry renderer, which should bind textures to avoid re-binding for duplicate objects
-            int useTexturesLocation = program.GetUniformLocation("useTextures");
-            GL.Uniform1(useTexturesLocation, (Texture != null) ? 1 : 0);
-
-            if (Texture != null)
-            {
-                program.BindTexture(Texture, "textureSampler", 0);
-            }
 
             Mesh.Draw();
         }

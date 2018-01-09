@@ -9,30 +9,30 @@ using System.Threading.Tasks;
 
 namespace Graphics.Physics.Collision
 {
-    public abstract class Collider
+    public abstract class Bounds
     {
         public object AttachedObject { get; set; }
         public Vector3 Center { get; set; }
 
-        public Collider(GameObject gameObject)
+        public Bounds(GameObject gameObject)
         {
             AttachedObject = gameObject;
             Center = gameObject.Position;
         }
 
-        public Collider(Brush brush)
+        public Bounds(Brush brush)
         {
             AttachedObject = brush;
         }
 
-        public Collider(Light light)
+        public Bounds(Light light)
         {
             AttachedObject = light;
             Center = light.Position;
         }
 
         public abstract bool CollidesWith(Vector3 point);
-        public abstract bool CollidesWith(Collider collider);
+        public abstract bool CollidesWith(Bounds collider);
         public abstract bool CollidesWith(BoundingCircle boundingCircle);
         public abstract bool CollidesWith(BoundingBox boundingBox);
 

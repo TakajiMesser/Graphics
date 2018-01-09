@@ -15,6 +15,7 @@ namespace Graphics.Rendering.Textures
 {
     public class TextureManager : IDisposable
     {
+        private Dictionary<string, int> _pathsByID = new Dictionary<string, int>(); 
         private List<Texture> _textures = new List<Texture>();
 
         public TextureManager() { }
@@ -27,12 +28,33 @@ namespace Graphics.Rendering.Textures
         public int AddTexture(Texture texture)
         {
             _textures.Add(texture);
-            return _textures.Count - 1;
+            return _textures.Count;
         }
 
-        public Texture RetrieveTexture(int id) => _textures[id];
+        public int AddTexture(string texturePath)
+        {
+            if (_pathsByID.ContainsKey(texturePath))
+            {
+                return _pathsByID[texturePath];
+            }
+            else
+            {
+                var texture = Texture.LoadFromFile(texturePath);
+                int id = AddTexture(texture);
 
+                _pathsByID.Add(texturePath, id);
+                return id;
+            }
+        }
 
+        public void Clear()
+        {
+            // TODO - Probably need to unbind/unload textures here...
+            _pathsByID.Clear();
+            _textures.Clear();
+        }
+
+        public Texture RetrieveTexture(int id) => (id > 0 && id <= _textures.Count) ? _textures[id - 1] : null;
 
         #region IDisposable Support
         private bool disposedValue = false;

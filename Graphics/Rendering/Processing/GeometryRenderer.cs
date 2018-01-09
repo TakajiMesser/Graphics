@@ -65,7 +65,7 @@ namespace Graphics.Rendering.Processing
             _frameBuffer.Unbind();
         }
 
-        public void Render(Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void Render(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             _geometryProgram.Use();
             _frameBuffer.Draw();
@@ -83,6 +83,24 @@ namespace Graphics.Rendering.Processing
 
             foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
             {
+                // TODO - Order gameobject rendering in a way that allows us to not re-bind duplicate textures repeatedly
+                // Check game object's texture mapping to see which textures we need to bind
+                var mainTexture = textureManager.RetrieveTexture(gameObject.TextureMapping.MainTextureID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useMainTexture"), (mainTexture != null) ? 1 : 0);
+                if (mainTexture != null)
+                {
+                    _geometryProgram.BindTexture(mainTexture, "mainTexture", 0);
+                }
+
+                var normalMap = textureManager.RetrieveTexture(gameObject.TextureMapping.NormalMapID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
+                if (normalMap != null)
+                {
+                    _geometryProgram.BindTexture(normalMap, "normalMap", 1);
+                }
+
                 gameObject.Draw(_geometryProgram);
             }
         }

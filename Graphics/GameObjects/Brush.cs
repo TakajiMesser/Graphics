@@ -31,7 +31,7 @@ namespace Graphics.GameObjects
 
         public List<Vertex> Vertices => _mesh.Vertices;
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public Collider Bounds { get; set; }
+        public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
         public Texture Texture { get; set; }
 

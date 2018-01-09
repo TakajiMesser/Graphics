@@ -23,6 +23,7 @@ namespace Graphics.Maps
         public Vector3 Scale { get; set; }
         public string MeshFilePath { get; set; }
         public string TextureFilePath { get; set; }
+        public string NormalMapFilePath { get; set; }
         public string BehaviorFilePath { get; set; }
         public List<GameProperty> Properties { get; set; }
         //public ICollider Collider { get; set; }
@@ -33,11 +34,6 @@ namespace Graphics.Maps
             {
                 Mesh = Mesh.LoadFromFile(MeshFilePath, program)
             };
-
-            if (!string.IsNullOrEmpty(TextureFilePath))
-            {
-                gameObject.Texture = Texture.LoadFromFile(TextureFilePath);
-            }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))
             {
@@ -72,7 +68,7 @@ namespace Graphics.Maps
 
             gameObject.Mesh.AddTestColors();
             gameObject.Bounds = gameObject.Name == "Player"
-                ? (Collider)new BoundingCircle(gameObject)
+                ? (Bounds)new BoundingCircle(gameObject)
                 : new BoundingBox(gameObject);
 
             return gameObject;

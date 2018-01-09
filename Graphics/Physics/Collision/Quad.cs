@@ -18,7 +18,7 @@ namespace Graphics.Physics.Collision
             Max = max;
         }
 
-        public bool CanContain(Collider collider)
+        public bool CanContain(Bounds collider)
         {
             if (collider.GetType() == typeof(BoundingBox))
             {
