@@ -18,6 +18,8 @@ namespace Graphics.Helpers
     {
         private const string SOLUTION_DIRECTORY = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics";
 
+        public const string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Screenshots\";
+
         #region Maps
         public const string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Maps\TestMap.map";
         #endregion

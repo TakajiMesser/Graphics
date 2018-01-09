@@ -88,6 +88,7 @@ namespace Graphics.Helpers
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
+                TextureFilePath = FilePathHelper.BRICK_01_TEXTURE_PATH,
                 BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
                 Properties = new List<GameProperty>
                 {
@@ -140,7 +141,7 @@ namespace Graphics.Helpers
                             Behavior = (v) =>
                             {
                                 // Check if we are at full alertness
-                                return BehaviorStatuses.Failure;
+                                return BehaviorStatuses.Success;
                             }
                         },
                         new LeafNode()
@@ -148,7 +149,7 @@ namespace Graphics.Helpers
                             Behavior = (v) =>
                             {
                                 // Chase player
-                                return BehaviorStatuses.Failure;
+                                return BehaviorStatuses.Success;
                             }
                         }
                     )

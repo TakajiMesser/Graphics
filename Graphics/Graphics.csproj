@@ -103,6 +103,7 @@
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
@@ -145,8 +146,6 @@
     <None Include="Rendering\Shaders\MotionBlur\mb_dilate.glsl" />
     <None Include="Rendering\Shaders\Geometry\simple-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\simple-vertex-shader.glsl" />
-    <None Include="Rendering\Shaders\Geometry\uv-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\Geometry\uv-vertex-shader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Shaders\DepthOfField\" />

@@ -78,6 +78,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Textures\brick1-d.jpg" />
+    <Content Include="Textures\brick1-h.jpg" />
+    <Content Include="Textures\brick1-n.jpg" />
+    <Content Include="Textures\brick1-s.jpg" />
+    <Content Include="Textures\Grass01.png" />
+    <Content Include="Textures\Grass01_disp.png" />
+    <Content Include="Textures\Grass01_normal.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Screenshots\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

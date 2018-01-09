@@ -28,7 +28,6 @@ namespace Graphics.GameObjects
         private GameWindow _window;
         private InputState _inputState = new InputState();
 
-        //private Texture _texture;
         private GeometryRenderer _geometryRenderer;
         private List<PostProcess> _preProcesses = new List<PostProcess>();
         private List<PostProcess> _postProcesses = new List<PostProcess>();
@@ -88,8 +87,6 @@ namespace Graphics.GameObjects
 
         private void LoadPrograms()
         {
-            //_texture = Texture.LoadFromFile(FilePathHelper.BRICK_01_TEXTURE_PATH);
-
             foreach (var process in _preProcesses)
             {
                 process.Load();

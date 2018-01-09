@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Graphics.Lighting;
 using Graphics.Rendering.Textures;
+using OpenTK.Graphics.OpenGL;
 
 namespace Graphics.GameObjects
 {
@@ -177,6 +178,16 @@ namespace Graphics.GameObjects
             }
 
             _modelMatrix.Set(program);
+
+            // TODO - This should instead be performed by the geometry renderer, which should bind textures to avoid re-binding for duplicate objects
+            int useTexturesLocation = program.GetUniformLocation("useTextures");
+            GL.Uniform1(useTexturesLocation, (Texture != null) ? 1 : 0);
+
+            if (Texture != null)
+            {
+                program.BindTexture(Texture, "textureSampler", 0);
+            }
+
             Mesh.Draw();
         }
 
