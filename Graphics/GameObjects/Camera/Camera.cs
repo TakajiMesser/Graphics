@@ -17,9 +17,10 @@ namespace Graphics.GameObjects
         private string _name;
         protected ViewMatrix _viewMatrix = new ViewMatrix();
         protected ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
+        protected float _distanceFromPlayer;
 
         public GameObject AttachedObject { get; private set; }
-        public Vector3 AttachedTranslation { get; private set; }
+        public Vector3 AttachedTranslation { get; protected set; }
 
         public Vector3 Position
         {
@@ -40,6 +41,7 @@ namespace Graphics.GameObjects
 
             // Determine the original distance from the attached object, based on the current camera position
             AttachedTranslation = gameObject.Position - Position;
+            _distanceFromPlayer = AttachedTranslation.Length;
         }
 
         public void UpdateAspectRatio(int width, int height) => _projectionMatrix.AspectRatio = (float)width / height;
@@ -49,6 +51,7 @@ namespace Graphics.GameObjects
             if (AttachedObject != null)
             {
                 Position = AttachedObject.Position - AttachedTranslation;
+                _viewMatrix.LookAt = AttachedObject.Position;
             }
         }
 

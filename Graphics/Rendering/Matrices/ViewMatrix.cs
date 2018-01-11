@@ -19,19 +19,19 @@ namespace Graphics.Rendering.Matrices
         {
             get
             {
-                var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
+                //var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
 
-                viewMatrix.M41 = -Translation.X;
-                viewMatrix.M42 = -Translation.Y;
-                viewMatrix.M43 = -Translation.Z;
+                var viewMatrix = Matrix4.LookAt(Translation, Translation - Vector3.UnitZ, Vector3.UnitY);
+                //viewMatrix.M41 = -Translation.X;
+                //viewMatrix.M42 = -Translation.Y;
+                //viewMatrix.M43 = -Translation.Z;
 
                 return viewMatrix;
             }
         }
 
         public Vector3 Translation { get; set; } = Vector3.Zero;
-        //public Quaternion Rotation { get; set; } = Quaternion.Identity;
-        //public Vector3 Scale { get; set; } = Vector3.One;
+        public Vector3 LookAt { get; set; } = -Vector3.UnitZ;
 
         public ViewMatrix() { }
 
@@ -39,10 +39,10 @@ namespace Graphics.Rendering.Matrices
         {
             int location = program.GetUniformLocation(NAME);
 
-            var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
-            viewMatrix.M41 = -Translation.X;
+            var viewMatrix = Matrix4.LookAt(Translation, LookAt, Vector3.UnitY);
+            /*viewMatrix.M41 = -Translation.X;
             viewMatrix.M42 = -Translation.Y;
-            viewMatrix.M43 = -Translation.Z;
+            viewMatrix.M43 = -Translation.Z;*/
 
             GL.UniformMatrix4(location, false, ref viewMatrix);
         }

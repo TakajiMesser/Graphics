@@ -19,6 +19,7 @@ namespace Graphics.GameObjects
 
         public OrthographicCamera(string name, int width, int height, float startingWidth) : base(name, width, height)
         {
+            _projectionMatrix.Type = ProjectionTypes.Orthographic;
             _projectionMatrix.Width = startingWidth;
             _projectionMatrix.ZNear = ZNEAR;
             _projectionMatrix.ZFar = ZFAR;

@@ -61,5 +61,31 @@ namespace Graphics.Maps
                 }
             };
         }
+
+        public static MapBrush RectangularPrism(Vector3 center, float width, float height, float depth)
+        {
+            return new MapBrush()
+            {
+                Vertices = new List<Vertex>
+                {
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0), 0),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1), 0),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0), 0),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1), 0),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0)
+                },
+                Materials = new List<Material>
+                {
+                    Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
+                },
+                TriangleIndices = new List<int>()
+                {
+                    6, 7, 4, 7, 4, 5, 3, 1, 7, 1, 7, 5, 2, 3, 6, 3, 6, 7, 0, 1, 2, 1, 2, 3, 0, 2, 4, 2, 4, 6, 4, 5, 0, 5, 0, 1
+                }
+            };
+        }
     }
 }

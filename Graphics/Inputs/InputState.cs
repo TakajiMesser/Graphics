@@ -22,9 +22,15 @@ namespace Graphics.Inputs
         public int WindowHeight { get; set; }
 
         public Vector2 MouseCoordinates => new Vector2(_mouseDevice.X, _mouseDevice.Y);
+
+        public Vector2 MouseDelta => _mouseState == null || _previousMouseState == null
+            ? Vector2.Zero
+            : new Vector2(_mouseState.X, _mouseState.Y) - new Vector2(_previousMouseState.X, _previousMouseState.Y);
+
         public bool IsMouseInWindow => _mouseDevice != null
             ? (_mouseDevice.X.IsBetween(0, WindowWidth) && _mouseDevice.Y.IsBetween(0, WindowHeight))
             : false;
+
         public int MouseWheelDelta => _mouseState == null
             ? 0
             : _previousMouseState == null

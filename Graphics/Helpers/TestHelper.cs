@@ -45,13 +45,13 @@ namespace Graphics.Helpers
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             map.Brushes.Add(floor);
 
-            var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -1.0f), 5.0f, 10.0f);
+            var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, -1.0f), 5.0f, 10.0f, 5.0f);
             wall.HasCollision = true;
             wall.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
             wall.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall);
 
-            var wall2 = MapBrush.Rectangle(new Vector3(-10.0f, 0.0f, -1.0f), 5.0f, 10.0f);
+            var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, -1.0f), 5.0f, 10.0f, 5.0f);
             wall2.HasCollision = true;
             wall2.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
@@ -77,14 +77,21 @@ namespace Graphics.Helpers
 
         private static MapCamera CreateCameraObject()
         {
+            /*return new MapCamera()
+            {
+                Name = "MainCamera",
+                AttachedGameObjectName = "Player",
+                Position = new Vector3(0.0f, 0.0f, -10.0f),
+                Type = ProjectionTypes.Orthographic,
+                StartingWidth = 20.0f,
+            };*/
             return new MapCamera()
             {
                 Name = "MainCamera",
                 AttachedGameObjectName = "Player",
-                Position = new Vector3(0.0f, 0.0f, 0.0f),
-                Type = ProjectionTypes.Orthographic,
-                StartingWidth = 20.0f,
-                FieldOfViewY = 45.0f
+                Position = new Vector3(0.0f, 0.0f, 20.0f),
+                Type = ProjectionTypes.Perspective,
+                FieldOfViewY = (float)UnitConversions.DegreesToRadians(45.0f)
             };
         }
 
@@ -481,7 +488,7 @@ namespace Graphics.Helpers
                     var nEvadeTicks = v.ContainsKey("nEvadeTicks") ? (int)v["nEvadeTicks"] : 0;
 
                     // Compare current position to location of mouse, and set rotation to face the mouse
-                    if (nEvadeTicks == 0 && v.InputState.IsMouseInWindow)
+                    if (!v.InputState.IsHeld(v.InputMapping.ItemWheel) && nEvadeTicks == 0 && v.InputState.IsMouseInWindow)
                     {
                         var clipSpacePosition = v.Camera.ViewProjectionMatrix * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//Position, 1.0f);
                         var screenCoordinates = new Vector2()
