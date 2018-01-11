@@ -21,6 +21,7 @@ namespace Graphics.Rendering.Processing
     {
         public Resolution Resolution { get; private set; }
         public Texture FinalTexture { get; protected set; }
+        public Texture DepthTexture { get; protected set; }
 
         internal ShaderProgram _geometryProgram;
         protected FrameBuffer _frameBuffer = new FrameBuffer();
@@ -59,7 +60,24 @@ namespace Graphics.Rendering.Processing
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
+            DepthTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2D,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                PixelInternalFormat = PixelInternalFormat.DepthComponent32f,
+                PixelFormat = PixelFormat.DepthComponent,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            DepthTexture.Bind();
+            DepthTexture.ReserveMemory();
+
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Add(FramebufferAttachment.DepthAttachment, DepthTexture);
+
             _frameBuffer.Bind();
             _frameBuffer.AttachAttachments();
             _frameBuffer.Unbind();
@@ -78,6 +96,40 @@ namespace Graphics.Rendering.Processing
 
             foreach (var brush in brushes)
             {
+                // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
+                // Check brush's texture mapping to see which textures we need to bind
+                var mainTexture = textureManager.RetrieveTexture(brush.TextureMapping.MainTextureID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useMainTexture"), (mainTexture != null) ? 1 : 0);
+                if (mainTexture != null)
+                {
+                    _geometryProgram.BindTexture(mainTexture, "mainTexture", 0);
+                }
+
+                var normalMap = textureManager.RetrieveTexture(brush.TextureMapping.NormalMapID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
+                if (normalMap != null)
+                {
+                    _geometryProgram.BindTexture(normalMap, "normalMap", 1);
+                }
+
+                var diffuseMap = textureManager.RetrieveTexture(brush.TextureMapping.DiffuseMapID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+                if (diffuseMap != null)
+                {
+                    _geometryProgram.BindTexture(diffuseMap, "diffuseMap", 2);
+                }
+
+                var specularMap = textureManager.RetrieveTexture(brush.TextureMapping.SpecularMapID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
+                if (specularMap != null)
+                {
+                    _geometryProgram.BindTexture(specularMap, "specularMap", 3);
+                }
+
                 brush.Draw(_geometryProgram);
             }
 
@@ -99,6 +151,22 @@ namespace Graphics.Rendering.Processing
                 if (normalMap != null)
                 {
                     _geometryProgram.BindTexture(normalMap, "normalMap", 1);
+                }
+
+                var diffuseMap = textureManager.RetrieveTexture(gameObject.TextureMapping.DiffuseMapID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+                if (diffuseMap != null)
+                {
+                    _geometryProgram.BindTexture(diffuseMap, "diffuseMap", 2);
+                }
+
+                var specularMap = textureManager.RetrieveTexture(gameObject.TextureMapping.SpecularMapID);
+
+                GL.Uniform1(_geometryProgram.GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
+                if (specularMap != null)
+                {
+                    _geometryProgram.BindTexture(specularMap, "specularMap", 3);
                 }
 
                 gameObject.Draw(_geometryProgram);

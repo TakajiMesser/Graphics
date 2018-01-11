@@ -24,6 +24,8 @@ namespace Graphics.Maps
         public string MeshFilePath { get; set; }
         public string TextureFilePath { get; set; }
         public string NormalMapFilePath { get; set; }
+        public string DiffuseMapFilePath { get; set; }
+        public string SpecularMapFilePath { get; set; }
         public string BehaviorFilePath { get; set; }
         public List<GameProperty> Properties { get; set; }
         //public ICollider Collider { get; set; }

@@ -54,15 +54,15 @@ namespace Graphics.Meshes
             {
                 if (i % 3 == 0)
                 {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
+                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, _vertices[i].Tangent, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
                 else if (i % 3 == 1)
                 {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
+                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, _vertices[i].Tangent, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
                 else if (i % 3 == 2)
                 {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
+                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, _vertices[i].Tangent, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
                 }
             }
 
@@ -150,9 +150,9 @@ namespace Graphics.Meshes
                             {
                                 var indices = values[i].Split('/');
 
-                                vertexIndices.Add(int.Parse(indices[0]));
-                                uvIndices.Add(int.Parse(indices[1]));
-                                normalIndices.Add(int.Parse(indices[2]));
+                                vertexIndices.Add(int.Parse(indices[0]) - 1);
+                                uvIndices.Add(int.Parse(indices[1]) - 1);
+                                normalIndices.Add(int.Parse(indices[2]) - 1);
                                 materialIndices.Add(currentMaterialIndex);
                             }
                             break;
@@ -163,9 +163,32 @@ namespace Graphics.Meshes
             var verticies = new List<Vertex>();
             var triangleIndices = new List<int>();
 
+            Vector3 tangent = Vector3.Zero;
+
             for (var i = 0; i < vertexIndices.Count; i++)
             {
-                var meshVertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], uvs[uvIndices[i]], materialIndices[i]);
+                if (i % 3 == 0)
+                {
+                    // Grab vertexIndices, three at a time!
+                    // For a given triangle with vertex positions P0, P1, P2 and corresponding UV texture coordinates T0, T1, and T2:
+                    // deltaPos1 = P1 - P0;
+                    // delgaPos2 = P2 - P0;
+                    // deltaUv1 = T1 - T0;
+                    // deltaUv2 = T2 - T0;
+                    // r = 1 / (deltaUv1.x * deltaUv2.y - deltaUv1.y - deltaUv2.x);
+                    // tangent = (deltaPos1 * deltaUv2.y - deltaPos2 * deltaUv1.y) * r;
+                    var deltaPos1 = vertices[vertexIndices[i + 1]] - vertices[vertexIndices[i]];
+                    var deltaPos2 = vertices[vertexIndices[i + 2]] - vertices[vertexIndices[i]];
+                    var deltaUV1 = uvs[uvIndices[i + 1]] - uvs[uvIndices[i]];
+                    var deltaUV2 = uvs[uvIndices[i + 1]] - uvs[uvIndices[i]];
+
+                    var r = 1 / (deltaUV1.X * deltaUV2.Y - deltaUV1.Y - deltaUV2.X);
+                    tangent = (deltaPos1 * deltaUV2.Y - deltaPos2 * deltaUV1.Y) * r;
+                }
+
+                var uv = uvIndices[i] > 0 ? uvs[uvIndices[i]] : Vector2.Zero;
+
+                var meshVertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], tangent, uv, materialIndices[i]);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords

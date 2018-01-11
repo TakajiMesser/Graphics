@@ -60,13 +60,23 @@ namespace Graphics.GameObjects
 
             _camera = map.Camera.ToCamera(window.Width, window.Height);
 
-            foreach (var brush in map.Brushes.Select(b => b.ToBrush(_geometryRenderer._geometryProgram)))
+            foreach (var mapBrush in map.Brushes)
             {
+                var brush = mapBrush.ToBrush(_geometryRenderer._geometryProgram);
+
                 if (brush.HasCollision)
                 {
                     _brushQuads.Insert(brush.Bounds);
                 }
                 brush.AddLights(_lightQuads.Retrieve(brush.Bounds).Select(c => (Light)c.AttachedObject));
+
+                brush.TextureMapping = new TextureMapping()
+                {
+                    MainTextureID = !string.IsNullOrEmpty(mapBrush.TextureFilePath) ? _textureManager.AddTexture(mapBrush.TextureFilePath) : 0,
+                    NormalMapID = !string.IsNullOrEmpty(mapBrush.NormalMapFilePath) ? _textureManager.AddTexture(mapBrush.NormalMapFilePath) : 0,
+                    DiffuseMapID = !string.IsNullOrEmpty(mapBrush.DiffuseMapFilePath) ? _textureManager.AddTexture(mapBrush.DiffuseMapFilePath) : 0,
+                    SpecularMapID = !string.IsNullOrEmpty(mapBrush.SpecularMapFilePath) ? _textureManager.AddTexture(mapBrush.SpecularMapFilePath) : 0
+                };
 
                 _brushes.Add(brush);
             }
@@ -78,12 +88,14 @@ namespace Graphics.GameObjects
                 gameObject.TextureMapping = new TextureMapping()
                 {
                     MainTextureID = !string.IsNullOrEmpty(mapObject.TextureFilePath) ? _textureManager.AddTexture(mapObject.TextureFilePath) : 0,
-                    NormalMapID = !string.IsNullOrEmpty(mapObject.NormalMapFilePath) ? _textureManager.AddTexture(mapObject.NormalMapFilePath) : 0
+                    NormalMapID = !string.IsNullOrEmpty(mapObject.NormalMapFilePath) ? _textureManager.AddTexture(mapObject.NormalMapFilePath) : 0,
+                    DiffuseMapID = !string.IsNullOrEmpty(mapObject.DiffuseMapFilePath) ? _textureManager.AddTexture(mapObject.DiffuseMapFilePath) : 0,
+                    SpecularMapID = !string.IsNullOrEmpty(mapObject.SpecularMapFilePath) ? _textureManager.AddTexture(mapObject.SpecularMapFilePath) : 0
                 };
 
                 if (gameObject.Name == map.Camera.AttachedGameObjectName)
                 {
-                    _camera.AttachedObject = gameObject;
+                    _camera.AttachToGameObject(gameObject, true, true);
                 }
                 
                 _gameObjects.Add(gameObject);
@@ -163,8 +175,13 @@ namespace Graphics.GameObjects
 
         public void RenderFrame()
         {
-            GL.DepthMask(true);
+            //GL.DepthMask(true);
+            //GL.Enable(EnableCap.DepthTest);
+            //GL.Enable(EnableCap.CullFace);
+            //GL.CullFace(CullFaceMode.Back);
+
             GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
             //GL.Enable(EnableCap.CullFace);
             //GL.CullFace(CullFaceMode.Back);
 

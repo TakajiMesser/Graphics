@@ -12,17 +12,15 @@ using Graphics.Rendering.Matrices;
 
 namespace Graphics.GameObjects
 {
-    public class Camera
+    public abstract class Camera
     {
-        public const float ZNEAR = -10.0f;
-        public const float ZFAR = 10.0f;
-
         private string _name;
-        private ViewMatrix _viewMatrix = new ViewMatrix();
-        private ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
-        private float _width = 20.0f;
+        protected ViewMatrix _viewMatrix = new ViewMatrix();
+        protected ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
 
-        public GameObject AttachedObject { get; set; }
+        public GameObject AttachedObject { get; private set; }
+        public Vector3 AttachedTranslation { get; private set; }
+
         public Vector3 Position
         {
             get => _viewMatrix.Translation;
@@ -33,34 +31,28 @@ namespace Graphics.GameObjects
         public Camera(string name, int width, int height)
         {
             _name = name;
-            _projectionMatrix.Width = _width;
             _projectionMatrix.AspectRatio = (float)width / height;
-            _projectionMatrix.ZNear = ZNEAR;
-            _projectionMatrix.ZFar = ZFAR;
         }
 
-        public void UpdateAspectRatio(int width, int height)
+        public void AttachToGameObject(GameObject gameObject, bool attachTranslation, bool attachRotation)
         {
-            _projectionMatrix.AspectRatio = (float)width / height;
+            AttachedObject = gameObject;
+
+            // Determine the original distance from the attached object, based on the current camera position
+            AttachedTranslation = gameObject.Position - Position;
         }
+
+        public void UpdateAspectRatio(int width, int height) => _projectionMatrix.AspectRatio = (float)width / height;
 
         public void OnUpdateFrame()
         {
             if (AttachedObject != null)
             {
-                Position = AttachedObject.Position;
+                Position = AttachedObject.Position - AttachedTranslation;
             }
         }
 
-        public void OnHandleInput(InputState inputState)
-        {
-            float amount = inputState.MouseWheelDelta * 1.0f;
-            if (amount > 0.0f || amount < 0.0f)
-            {
-                _width += amount;
-                _projectionMatrix.Width = _width;
-            }
-        }
+        public abstract void OnHandleInput(InputState inputState);
 
         public void Draw(ShaderProgram program)
         {

@@ -19,6 +19,7 @@ using Graphics.Inputs;
 using Graphics.Physics.Collision;
 using Graphics.Lighting;
 using Graphics.Scripting.BehaviorTrees.Decorators;
+using Graphics.Rendering.Matrices;
 
 namespace Graphics.Helpers
 {
@@ -39,28 +40,33 @@ namespace Graphics.Helpers
             map.GameObjects.Add(CreatePlayerObject());
             map.GameObjects.Add(CreateEnemyObject());
 
-            map.Brushes.Add(MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f));
+            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f);
+            //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
+            //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
+            map.Brushes.Add(floor);
 
-            var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -0.5f), 5.0f, 10.0f);
+            var wall = MapBrush.Rectangle(new Vector3(10.0f, 0.0f, -1.0f), 5.0f, 10.0f);
             wall.HasCollision = true;
-            wall.TextureFilePath = FilePathHelper.BRICK_01_TEXTURE_PATH;
+            wall.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
+            wall.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall);
 
-            var wall2 = MapBrush.Rectangle(new Vector3(-10.0f, 0.0f, -0.5f), 5.0f, 10.0f);
+            var wall2 = MapBrush.Rectangle(new Vector3(-10.0f, 0.0f, -1.0f), 5.0f, 10.0f);
             wall2.HasCollision = true;
-            wall2.TextureFilePath = FilePathHelper.BRICK_01_TEXTURE_PATH;
+            wall2.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
+            wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall2);
 
             map.Lights.Add(new Light()
             {
-                Position = new Vector3(0.0f, 0.0f, 0.0f),
+                Position = new Vector3(0.0f, 0.0f, 1.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
             });
             map.Lights.Add(new Light()
             {
-                Position = new Vector3(0.0f, 20.0f, 0.0f),
+                Position = new Vector3(0.0f, 20.0f, 1.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.25f
@@ -75,7 +81,10 @@ namespace Graphics.Helpers
             {
                 Name = "MainCamera",
                 AttachedGameObjectName = "Player",
-                Position = Vector3.Zero
+                Position = new Vector3(0.0f, 0.0f, 0.0f),
+                Type = ProjectionTypes.Orthographic,
+                StartingWidth = 20.0f,
+                FieldOfViewY = 45.0f
             };
         }
 
@@ -84,11 +93,13 @@ namespace Graphics.Helpers
             return new MapGameObject()
             {
                 Name = "Player",
-                Position = new Vector3(0.0f, 0.0f, -1.0f),
+                Position = new Vector3(0.0f, 0.0f, -0.5f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
-                TextureFilePath = FilePathHelper.BRICK_01_TEXTURE_PATH,
+                TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
+                //SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH,
                 BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
                 Properties = new List<GameProperty>
                 {
@@ -113,6 +124,8 @@ namespace Graphics.Helpers
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.ENEMY_MESH_PATH,
+                //TextureFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                //NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH,
                 BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH,
                 Properties = new List<GameProperty>
                 {
@@ -429,6 +442,26 @@ namespace Graphics.Helpers
                     if (v.InputState.IsHeld(v.InputMapping.Out))
                     {
                         translation.Z -= speed;
+                    }
+
+                    if (v.InputState.IsHeld(v.InputMapping.ItemSlot1))
+                    {
+                        v.Rotation = new Vector3(v.Rotation.X, v.Rotation.Y + 0.1f, v.Rotation.Z);
+                    }
+
+                    if (v.InputState.IsHeld(v.InputMapping.ItemSlot2))
+                    {
+                        v.Rotation = new Vector3(v.Rotation.X, v.Rotation.Y - 0.1f, v.Rotation.Z);
+                    }
+
+                    if (v.InputState.IsHeld(v.InputMapping.ItemSlot3))
+                    {
+                        v.Rotation = new Vector3(v.Rotation.X, v.Rotation.Y, v.Rotation.Z + 0.1f);
+                    }
+
+                    if (v.InputState.IsHeld(v.InputMapping.ItemSlot4))
+                    {
+                        v.Rotation = new Vector3(v.Rotation.X, v.Rotation.Y, v.Rotation.Z - 0.1f);
                     }
 
                     v.Translation = translation;

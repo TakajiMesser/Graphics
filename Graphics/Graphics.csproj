@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObjects\Brush.cs" />
-    <Compile Include="GameObjects\Camera.cs" />
+    <Compile Include="GameObjects\Camera\PerspectiveCamera.cs" />
+    <Compile Include="GameObjects\Camera\OrthographicCamera.cs" />
+    <Compile Include="GameObjects\Camera\Camera.cs" />
     <Compile Include="GameObjects\GameProperty.cs" />
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\GameState.cs" />
@@ -134,6 +136,11 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\Geometry\geometry-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-tess-control-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
     <None Include="Rendering\Shaders\Miscellaneous\invert.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_array.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl" />
@@ -145,8 +152,8 @@
     <None Include="Rendering\Shaders\RenderToScreen\render_1D.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_blur.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_dilate.glsl" />
-    <None Include="Rendering\Shaders\Geometry\simple-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\Geometry\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\ForwardRendering\simple-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\ForwardRendering\simple-vertex-shader.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Shaders\DepthOfField\" />

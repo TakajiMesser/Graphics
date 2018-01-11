@@ -60,6 +60,7 @@
     </None>
     <None Include="Meshes\Player.obj" />
     <None Include="Meshes\Floor.obj" />
+    <None Include="Meshes\Cube.obj" />
     <None Include="Meshes\Square.obj" />
     <None Include="Meshes\Enemy.obj" />
     <None Include="Meshes\GenericMaterial.mtl" />
@@ -81,6 +82,10 @@
     <Content Include="Textures\brick1-h.jpg" />
     <Content Include="Textures\brick1-n.jpg" />
     <Content Include="Textures\brick1-s.jpg" />
+    <Content Include="Textures\brick2-d.jpg" />
+    <Content Include="Textures\brick2-h.jpg" />
+    <Content Include="Textures\brick2-n.jpg" />
+    <Content Include="Textures\brick2-s.jpg" />
     <Content Include="Textures\Grass01.png" />
     <Content Include="Textures\Grass01_disp.png" />
     <Content Include="Textures\Grass01_normal.png" />

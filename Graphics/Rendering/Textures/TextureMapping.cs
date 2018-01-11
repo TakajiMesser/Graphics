@@ -17,5 +17,7 @@ namespace Graphics.Rendering.Textures
     {
         public int MainTextureID { get; set; }
         public int NormalMapID { get; set; }
+        public int DiffuseMapID { get; set; }
+        public int SpecularMapID { get; set; }
     }
 }

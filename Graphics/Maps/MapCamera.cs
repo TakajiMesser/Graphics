@@ -1,4 +1,5 @@
 ﻿using Graphics.GameObjects;
+using Graphics.Rendering.Matrices;
 using Graphics.Rendering.Shaders;
 using OpenTK;
 using System;
@@ -16,10 +17,23 @@ namespace Graphics.Maps
         public string Name { get; set; }
         public Vector3 Position { get; set; }
         public string AttachedGameObjectName { get; set; }
+        public ProjectionTypes Type { get; set; }
+
+        /// <summary>
+        /// Only relevant for orthographic cameras
+        /// </summary>
+        public float StartingWidth { get; set; }
+
+        /// <summary>
+        /// Only relevant for perspective cameras
+        /// </summary>
+        public float FieldOfViewY { get; set; }
 
         public Camera ToCamera(int width, int height)
         {
-            var camera = new Camera(Name, width, height);
+            var camera = Type == ProjectionTypes.Orthographic
+                ? (Camera)new OrthographicCamera(Name, width, height, StartingWidth)
+                : new PerspectiveCamera(Name, width, height, FieldOfViewY);
 
             if (Position != null)
             {

@@ -27,6 +27,7 @@ namespace Graphics.Helpers
         #region Meshes
         public const string PLAYER_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Player.obj";
         public const string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Square.obj";
+        public const string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Cube.obj";
         public const string FLOOR_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Floor.obj";
         public const string ENEMY_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Enemy.obj";
         #endregion
@@ -36,12 +37,30 @@ namespace Graphics.Helpers
         #endregion
 
         #region Textures
-        public const string BRICK_01_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-d.jpg";
+        public const string BRICK_01_D_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-d.jpg";
+        public const string BRICK_01_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-h.jpg";
+        public const string BRICK_01_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-n.jpg";
+        public const string BRICK_01_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-s.jpg";
+
+        public const string BRICK_02_D_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-d.jpg";
+        public const string BRICK_02_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-h.jpg";
+        public const string BRICK_02_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-n.jpg";
+        public const string BRICK_02_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-s.jpg";
+
+        public const string GRASS_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Grass01.png";
+        public const string GRASS_N_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Grass01_normal.png";
         #endregion
 
         #region Shaders
-        public const string VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\simple-vertex-shader.glsl";
-        public const string FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\simple-fragment-shader.glsl";
+        public const string VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\ForwardRendering\simple-vertex-shader.glsl";
+        public const string FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\ForwardRendering\simple-fragment-shader.glsl";
+
+        public const string GEOMETRY_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-vertex-shader.glsl";
+        public const string GEOMETRY_TESS_CONTROL_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-tess-control-shader.glsl";
+        public const string GEOMETRY_TESS_EVAL_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl";
+        public const string GEOMETRY_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-shader.glsl";
+        public const string GEOMETRY_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-fragment-shader.glsl";
+
         public const string BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\MotionBlur\mb_blur.glsl";
         public const string DILATE_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\MotionBlur\mb_dilate.glsl";
 

@@ -24,6 +24,9 @@ namespace Graphics.Maps
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool HasCollision { get; set; }
         public string TextureFilePath { get; set; }
+        public string NormalMapFilePath { get; set; }
+        public string DiffuseMapFilePath { get; set; }
+        public string SpecularMapFilePath { get; set; }
 
         public Brush ToBrush(ShaderProgram program)
         {
@@ -34,11 +37,6 @@ namespace Graphics.Maps
             brush.Bounds = new BoundingBox(brush);
             brush.AddTestColors();
 
-            if (!string.IsNullOrEmpty(TextureFilePath))
-            {
-                brush.Texture = Texture.LoadFromFile(TextureFilePath);
-            }
-
             return brush;
         }
 
@@ -48,10 +46,10 @@ namespace Graphics.Maps
             {
                 Vertices = new List<Vertex>
                 {
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector2.Zero, 0),
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector2.Zero, 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector2.Zero, 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector2.Zero, 0)
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0), 0),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1), 0),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0)
                 },
                 Materials = new List<Material>
                 {

@@ -89,7 +89,7 @@ namespace Graphics.Rendering.PostProcessing
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
             GL.ClearColor(Color4.Purple);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, texture.Width, texture.Height);
 
             switch (texture.Target)
