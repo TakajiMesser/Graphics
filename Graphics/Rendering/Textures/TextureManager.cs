@@ -18,6 +18,9 @@ namespace Graphics.Rendering.Textures
         private Dictionary<string, int> _pathsByID = new Dictionary<string, int>(); 
         private List<Texture> _textures = new List<Texture>();
 
+        public bool EnableMipMapping { get; set; }
+        public bool EnableAnisotropy { get; set; }
+
         public TextureManager() { }
 
         /// <summary>
@@ -39,7 +42,7 @@ namespace Graphics.Rendering.Textures
             }
             else
             {
-                var texture = Texture.LoadFromFile(texturePath);
+                var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
                 int id = AddTexture(texture);
 
                 _pathsByID.Add(texturePath, id);

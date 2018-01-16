@@ -10,6 +10,7 @@ using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
 using Graphics.Rendering.Matrices;
 using Graphics.Utilities;
+using Graphics.Outputs;
 
 namespace Graphics.GameObjects
 {
@@ -17,10 +18,12 @@ namespace Graphics.GameObjects
     {
         public const float ZNEAR = 0.1f;
         public const float ZFAR = 100.0f;
+        public const float MAX_ANGLE_Y = -0.1f;
+        public const float MIN_ANGLE_Y = -(float)Math.PI + 0.1f;
 
-        private Vector3 _currentAngles = new Vector3(-(float)Math.PI, 0, 0);
+        private Vector3 _currentAngles = new Vector3(0, -(float)Math.PI / 2.0f, 0);
 
-        public PerspectiveCamera(string name, int width, int height, float fieldOfViewY) : base(name, width, height)
+        public PerspectiveCamera(string name, Resolution resolution, float fieldOfViewY) : base(name, resolution)
         {
             _projectionMatrix.Type = ProjectionTypes.Perspective;
             _projectionMatrix.FieldOfView = fieldOfViewY;
@@ -28,13 +31,42 @@ namespace Graphics.GameObjects
             _projectionMatrix.ZFar = ZFAR;
         }
 
+        private void CalculateTranslation()
+        {
+            var horizontal = _distance * Math.Cos(_currentAngles.Y);
+            var vertical = _distance * Math.Sin(_currentAngles.Y);
+
+            AttachedTranslation = new Vector3()
+            {
+                X = -(float)(horizontal * Math.Sin(_currentAngles.X)),
+                Y = -(float)(horizontal * Math.Cos(_currentAngles.X)),
+                Z = (float)vertical
+            };
+        }
+
+        private void CalculateUp()
+        {
+            var yAngle = _currentAngles.Y - (float)Math.PI / 2.0f;
+
+            var horizontal = _distance * Math.Cos(yAngle);
+            var vertical = _distance * Math.Sin(yAngle);
+
+            _viewMatrix.Up = new Vector3()
+            {
+                X = -(float)(horizontal * Math.Sin(_currentAngles.X)),
+                Y = -(float)(horizontal * Math.Cos(_currentAngles.X)),
+                Z = (float)vertical
+            };
+        }
+
         public override void OnHandleInput(InputState inputState)
         {
             float amount = inputState.MouseWheelDelta * 1.0f;
             if (amount > 0.0f || amount < 0.0f)
             {
-                AttachedTranslation = new Vector3(AttachedTranslation.X, AttachedTranslation.Y, AttachedTranslation.Z - amount);
-                _distanceFromPlayer = AttachedTranslation.Length;
+                _distance += amount;
+                CalculateTranslation();
+                CalculateUp();
             }
 
             if (inputState.IsHeld(new Input(MouseButton.Middle)))
@@ -43,19 +75,12 @@ namespace Graphics.GameObjects
 
                 if (mouseDelta != Vector2.Zero)
                 {
-                    var currentAngles = _currentAngles;
-                    _currentAngles.X += mouseDelta.Y;
-                    _currentAngles.Y += mouseDelta.X;
+                    _currentAngles.X += mouseDelta.X;
+                    _currentAngles.Y += mouseDelta.Y;
+                    _currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
-                    var horizontal = _distanceFromPlayer * Math.Cos(currentAngles.X);
-                    var vertical = _distanceFromPlayer * Math.Sin(currentAngles.X + mouseDelta.Y);
-
-                    AttachedTranslation = new Vector3()
-                    {
-                        X = (float)(horizontal * Math.Sin(currentAngles.Y + mouseDelta.X)),
-                        Y = (float)vertical,
-                        Z = (float)(horizontal * Math.Cos(currentAngles.Y + mouseDelta.X))
-                    };
+                    CalculateTranslation();
+                    CalculateUp();
                 }
             }
         }

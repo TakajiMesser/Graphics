@@ -113,7 +113,8 @@ namespace Graphics.GameObjects
                     Behaviors.Context.Translation = Vector3.Zero;
                 }
 
-                Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
+                //Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
+                Rotation = Behaviors.Context.QRotation;
                 Scale = Behaviors.Context.Scale;
             }
         }

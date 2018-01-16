@@ -37,6 +37,7 @@ namespace Graphics.GameObjects
         private MouseDevice _previousMouse;
 
         public Resolution Resolution { get; private set; }
+        public EventHandler Resized;
 
         public GameWindow(string mapPath) : base(1280, 720,
             GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default,
@@ -52,7 +53,7 @@ namespace Graphics.GameObjects
         {
             Resolution.Width = Width;
             Resolution.Height = Height;
-            _gameState.UpdateAspectRatio(Width, Height);
+            Resized.Invoke(this, new EventArgs());
         }
 
         protected override void OnLoad(EventArgs e)

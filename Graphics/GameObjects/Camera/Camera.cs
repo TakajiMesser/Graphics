@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
 using Graphics.Rendering.Matrices;
+using Graphics.Outputs;
 
 namespace Graphics.GameObjects
 {
@@ -17,7 +18,7 @@ namespace Graphics.GameObjects
         private string _name;
         protected ViewMatrix _viewMatrix = new ViewMatrix();
         protected ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
-        protected float _distanceFromPlayer;
+        protected float _distance;
 
         public GameObject AttachedObject { get; private set; }
         public Vector3 AttachedTranslation { get; protected set; }
@@ -29,10 +30,10 @@ namespace Graphics.GameObjects
         }
         public Matrix4 ViewProjectionMatrix => _projectionMatrix.Projection * _viewMatrix.View;
 
-        public Camera(string name, int width, int height)
+        public Camera(string name, Resolution resolution)
         {
             _name = name;
-            _projectionMatrix.AspectRatio = (float)width / height;
+            _projectionMatrix.Resolution = resolution;
         }
 
         public void AttachToGameObject(GameObject gameObject, bool attachTranslation, bool attachRotation)
@@ -41,10 +42,8 @@ namespace Graphics.GameObjects
 
             // Determine the original distance from the attached object, based on the current camera position
             AttachedTranslation = gameObject.Position - Position;
-            _distanceFromPlayer = AttachedTranslation.Length;
+            _distance = AttachedTranslation.Length;
         }
-
-        public void UpdateAspectRatio(int width, int height) => _projectionMatrix.AspectRatio = (float)width / height;
 
         public void OnUpdateFrame()
         {

@@ -56,6 +56,7 @@
     <Compile Include="GameObjects\GameWindow.cs" />
     <Compile Include="Helpers\TestHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
+    <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
@@ -101,6 +102,7 @@
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\ForwardRenderer.cs" />
     <Compile Include="Rendering\Processing\GeometryRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />

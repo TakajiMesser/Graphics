@@ -30,6 +30,7 @@ namespace Graphics.Scripting.BehaviorTrees
         // Values set by the GameObject, or altered by Behavior Nodes
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
+        public Quaternion QRotation { get; set; } = Quaternion.Identity;
         public Vector3 Scale { get; set; }
 
         // Values set by Behavior Nodes, and RESET by the GameObject

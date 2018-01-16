@@ -135,9 +135,7 @@ void main()
 	for (int i = 0; i < MAX_LIGHTS; i++)
 	{
         vec3 unitLight = normalize(fLightDirections[i]);
-        //unitLight = vec3(0, 0, 1);
 		float illuminance = calculateIlluminance(fLightDirections[i], lights[i].radius, lights[i].intensity);
-        //unitNormal = vec3(0, 0, 1);
 		
 		ambientColor += computeAmbientLight(materials[fMaterialIndex].ambient, lights[i].color, illuminance);
 		diffuseColor += computeDiffuseLight(materials[fMaterialIndex].diffuse, lights[i].color, illuminance, unitNormal, unitLight);

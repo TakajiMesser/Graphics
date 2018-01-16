@@ -1,4 +1,5 @@
 ﻿using Graphics.GameObjects;
+using Graphics.Outputs;
 using Graphics.Rendering.Matrices;
 using Graphics.Rendering.Shaders;
 using OpenTK;
@@ -29,11 +30,11 @@ namespace Graphics.Maps
         /// </summary>
         public float FieldOfViewY { get; set; }
 
-        public Camera ToCamera(int width, int height)
+        public Camera ToCamera(Resolution resolution)
         {
             var camera = Type == ProjectionTypes.Orthographic
-                ? (Camera)new OrthographicCamera(Name, width, height, StartingWidth)
-                : new PerspectiveCamera(Name, width, height, FieldOfViewY);
+                ? (Camera)new OrthographicCamera(Name, resolution, StartingWidth)
+                : new PerspectiveCamera(Name, resolution, FieldOfViewY);
 
             if (Position != null)
             {

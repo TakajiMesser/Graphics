@@ -1,8 +1,10 @@
 ﻿#version 150
 
 uniform mat4 modelMatrix;
+uniform mat4 previousModelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+
 uniform int useSkinning;
 uniform mat4[32] boneMatrices;
 
@@ -15,12 +17,13 @@ in int vMaterialIndex;
 in vec4 vBoneIDs;
 in vec4 vBoneWeights;
 
+out vec3 cPosition;
+out vec3 cPreviousPosition;
 out vec3 cNormal;
+out vec3 cTangent;
 out vec4 cColor;
 out vec2 cUV;
 flat out int cMaterialIndex;
-out vec3 cCameraDirection;
-out vec3 cLightDirections[MAX_LIGHTS];
 
 mat3 GetTangentMatrix()
 {
@@ -41,21 +44,10 @@ void main()
 
     mat3 toTangentSpace = GetTangentMatrix();
 
-	fNormal = toTangentSpace * (modelMatrix * vec4(vNormal, 0.0)).xyz;
-    fColor = vColor;
-    fUV = vUV;
-    fMaterialIndex = vMaterialIndex;
-
-	// Model matrix maps vertices from "model coordinates" to "world coordinates"
-	vec4 vertexPosition_world = modelMatrix * vec4(vPosition, 1.0);
-
-	// This is the vector from the current vertex to the camera
-	fCameraDirection = toTangentSpace * ((inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - vertexPosition_world.xyz);
-
-	for (int i = 0; i < MAX_LIGHTS; i++)
-	{
-		// Wouldn't we want the direction that the light is coming from? This would be the current position MINUS the light source
-		// This is the vector from the current vertex TO the light source
-		fLightDirections[i] = toTangentSpace * (lights[i].position - vertexPosition_world.xyz);
-	}
+    cPosition = toTangentSpace * (modelMatrix * vec4(vPosition, 0.0)).xyz;
+    cPreviousPosition = toTangentSpace * (previousModelMatrix * vec4(vPosition, 0.0)).xyz;
+	cNormal = toTangentSpace * (modelMatrix * vec4(vNormal, 0.0)).xyz;
+    cColor = vColor;
+    cUV = vUV;
+    cMaterialIndex = vMaterialIndex;
 }

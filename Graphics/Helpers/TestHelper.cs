@@ -250,6 +250,7 @@ namespace Graphics.Helpers
                     if (v.Translation != Vector3.Zero)
                     {
                         float turnAngle = (float)Math.Atan2(v.Translation.Y, v.Translation.X);
+                        v.QRotation = new Quaternion(turnAngle, 0.0f, 0.0f);
                         v.Rotation = new Vector3(turnAngle, v.Rotation.Y, v.Rotation.Z);
                     }
                     
@@ -306,6 +307,7 @@ namespace Graphics.Helpers
                                 v["coverDistance"] = vectorBetween.Length;
 
                                 float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+                                v.QRotation = new Quaternion(turnAngle + (float)Math.PI, 0.0f, 0.0f);
                                 v.Rotation = new Vector3(turnAngle + (float)Math.PI, v.Rotation.Y, v.Rotation.Z);
 
                                 return BehaviorStatuses.Success;
@@ -388,8 +390,11 @@ namespace Graphics.Helpers
                         {
                             nEvadeTicks++;
 
+                            var angle = (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X);
+
+                            v.QRotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
                             v.Rotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), v.Rotation.Y, v.Rotation.Z);
-                            v.Scale = new Vector3(1.0f, 0.5f, 1.0f);
+                            //v.Scale = new Vector3(1.0f, 0.5f, 1.0f);
                             v.Translation = evadeTranslation;
 
                             v["evadeTranslation"] = evadeTranslation;
@@ -402,12 +407,19 @@ namespace Graphics.Helpers
                     {
                         nEvadeTicks = 0;
                         v["nEvadeTicks"] = nEvadeTicks;
+                        v.QRotation = Quaternion.Identity;
+                        v.Rotation = new Vector3(v.Rotation.X, 0.0f, v.Rotation.Z);
                         v.Scale = Vector3.One;
 
                         return BehaviorStatuses.Failure;
                     }
                     else if (nEvadeTicks > 0)
                     {
+                        var evadeTranslation = (Vector3)v["evadeTranslation"];
+
+                        v.QRotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), 2.0f * (float)Math.PI / evadeTickCount * nEvadeTicks);
+                        v.QRotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
+                        v.Rotation = new Vector3(v.Rotation.X, 2.0f * (float)Math.PI / evadeTickCount * nEvadeTicks, v.Rotation.Z);
                         nEvadeTicks++;
                         v["nEvadeTicks"] = nEvadeTicks;
                         v.Translation = (Vector3)v["evadeTranslation"];
@@ -500,6 +512,7 @@ namespace Graphics.Helpers
                         var vectorBetween = v.InputState.MouseCoordinates - screenCoordinates;
                         float turnAngle = -(float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
 
+                        v.QRotation = new Quaternion(turnAngle, 0.0f, 0.0f);
                         v.Rotation = new Vector3(turnAngle, v.Rotation.Y, v.Rotation.Z);
                     }
 

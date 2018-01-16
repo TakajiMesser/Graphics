@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
 using Graphics.Rendering.Matrices;
+using Graphics.Outputs;
 
 namespace Graphics.GameObjects
 {
@@ -17,7 +18,7 @@ namespace Graphics.GameObjects
         public const float ZNEAR = -10.0f;
         public const float ZFAR = 10.0f;
 
-        public OrthographicCamera(string name, int width, int height, float startingWidth) : base(name, width, height)
+        public OrthographicCamera(string name, Resolution resolution, float startingWidth) : base(name, resolution)
         {
             _projectionMatrix.Type = ProjectionTypes.Orthographic;
             _projectionMatrix.Width = startingWidth;

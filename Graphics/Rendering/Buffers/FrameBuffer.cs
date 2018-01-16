@@ -28,6 +28,12 @@ namespace Graphics.Rendering.Buffers
         public void Add(FramebufferAttachment attachment, Texture texture) => _textures.Add(attachment, texture);
         public void Add(FramebufferAttachment attachment, RenderBuffer renderBuffer) => _renderBuffers.Add(attachment, renderBuffer);
 
+        public void Clear()
+        {
+            _textures.Clear();
+            _renderBuffers.Clear();
+        }
+
         public void AttachAttachments()
         {
             foreach (var texture in _textures)

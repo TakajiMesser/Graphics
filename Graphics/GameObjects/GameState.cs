@@ -28,6 +28,7 @@ namespace Graphics.GameObjects
         private GameWindow _window;
         private InputState _inputState = new InputState();
 
+        private ForwardRenderer _forwardRenderer;
         private GeometryRenderer _geometryRenderer;
         private List<PostProcess> _preProcesses = new List<PostProcess>();
         private List<PostProcess> _postProcesses = new List<PostProcess>();
@@ -44,7 +45,12 @@ namespace Graphics.GameObjects
 
         public GameState(Map map, GameWindow window)
         {
+            _forwardRenderer = new ForwardRenderer(window.Resolution);
+            _textureManager.EnableMipMapping = true;
+            _textureManager.EnableAnisotropy = true;
+
             _geometryRenderer = new GeometryRenderer(window.Resolution);
+
             _postProcesses.Add(new MotionBlur(window.Resolution));
             _postProcesses.Add(new InvertColors(window.Resolution) { Enabled = false });
             _postProcesses.Add(new RenderToScreen(window.Resolution));
@@ -52,17 +58,17 @@ namespace Graphics.GameObjects
             LoadPrograms();
 
             _window = window;
+            _window.Resized += (s, e) => _forwardRenderer.LoadBuffers();
+            _camera = map.Camera.ToCamera(window.Resolution);
 
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
             _brushQuads = new QuadTree(0, map.Boundaries);
             _lightQuads = new QuadTree(0, map.Boundaries);
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
 
-            _camera = map.Camera.ToCamera(window.Width, window.Height);
-
             foreach (var mapBrush in map.Brushes)
             {
-                var brush = mapBrush.ToBrush(_geometryRenderer._geometryProgram);
+                var brush = mapBrush.ToBrush(_forwardRenderer._program);
 
                 if (brush.HasCollision)
                 {
@@ -83,7 +89,7 @@ namespace Graphics.GameObjects
 
             foreach (var mapObject in map.GameObjects)
             {
-                var gameObject = mapObject.ToGameObject(_geometryRenderer._geometryProgram);
+                var gameObject = mapObject.ToGameObject(_forwardRenderer._program);
 
                 gameObject.TextureMapping = new TextureMapping()
                 {
@@ -104,8 +110,6 @@ namespace Graphics.GameObjects
 
         public GameObject GetByName(string name) => _gameObjects.First(g => g.Name == name);
 
-        public void UpdateAspectRatio(int width, int height) => _camera.UpdateAspectRatio(width, height);
-
         private void LoadPrograms()
         {
             foreach (var process in _preProcesses)
@@ -113,6 +117,7 @@ namespace Graphics.GameObjects
                 process.Load();
             }
 
+            _forwardRenderer.Load();
             _geometryRenderer.Load();
 
             foreach (var process in _postProcesses)
@@ -176,19 +181,17 @@ namespace Graphics.GameObjects
         public void RenderFrame()
         {
             //GL.DepthMask(true);
-            //GL.Enable(EnableCap.DepthTest);
-            //GL.Enable(EnableCap.CullFace);
-            //GL.CullFace(CullFaceMode.Back);
-
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
+
+            // TODO - Find out why back-face culling is causing wonky visuals
             //GL.Enable(EnableCap.CullFace);
             //GL.CullFace(CullFaceMode.Back);
 
-            _geometryRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
+            _forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
 
             // Now, extract the final texture from the geometry renderer, so that we can pass it off to the post-processes
-            var texture = _geometryRenderer.FinalTexture;
+            var texture = _forwardRenderer.FinalTexture;
 
             GL.Disable(EnableCap.DepthTest);
 

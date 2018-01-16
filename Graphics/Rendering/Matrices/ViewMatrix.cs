@@ -32,6 +32,7 @@ namespace Graphics.Rendering.Matrices
 
         public Vector3 Translation { get; set; } = Vector3.Zero;
         public Vector3 LookAt { get; set; } = -Vector3.UnitZ;
+        public Vector3 Up { get; set; } = Vector3.UnitY;
 
         public ViewMatrix() { }
 
@@ -39,7 +40,7 @@ namespace Graphics.Rendering.Matrices
         {
             int location = program.GetUniformLocation(NAME);
 
-            var viewMatrix = Matrix4.LookAt(Translation, LookAt, Vector3.UnitY);
+            var viewMatrix = Matrix4.LookAt(Translation, LookAt, Up);
             /*viewMatrix.M41 = -Translation.X;
             viewMatrix.M42 = -Translation.Y;
             viewMatrix.M43 = -Translation.Z;*/

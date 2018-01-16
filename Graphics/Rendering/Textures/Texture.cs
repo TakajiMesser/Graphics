@@ -160,6 +160,26 @@ namespace Graphics.Rendering.Textures
 
         private void SetTextureParameters()
         {
+            if (EnableMipMap)
+            {
+                _maxMipMapLevels = (int)(Math.Log(Math.Max(Width, Height), 2.0) - 1.0);
+                MinFilter = TextureMinFilter.LinearMipmapLinear;
+
+                GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
+                GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, _maxMipMapLevels);
+
+                GL.GenerateMipmap((GenerateMipmapTarget)Target);
+
+                // This appears to require OpenGL v4.5 :(
+                //GL.GenerateTextureMipmap(_handle);
+            }
+
+            if (EnableAnisotropy)
+            {
+                _maxAnisotrophy = GL.GetFloat((GetPName)All.MaxTextureMaxAnisotropyExt);
+                GL.TexParameter(Target, (TextureParameterName)All.TextureMaxAnisotropyExt, _maxAnisotrophy);
+            }
+
             GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (float)MinFilter);
             GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (float)MinFilter);
             GL.TexParameter(Target, TextureParameterName.TextureWrapS, (float)WrapMode);
@@ -171,20 +191,9 @@ namespace Graphics.Rendering.Textures
                 GL.TexParameter(Target, TextureParameterName.TextureBorderColor,
                     new[] { BorderColor.X, BorderColor.Y, BorderColor.Z, BorderColor.W });
             }
-
-            if (EnableMipMap)
-            {
-                GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
-                GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, _maxMipMapLevels);
-            }
-
-            if (EnableAnisotropy)
-            {
-                GL.TexParameter(Target, (TextureParameterName)All.TextureMaxAnisotropyExt, _maxAnisotrophy);
-            }
         }
 
-        public static Texture LoadFromFile(string path)
+        public static Texture LoadFromFile(string path, bool enableMipMap, bool enableAnisotrophy)
         {
             Bitmap bitmap = new Bitmap(path);
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
@@ -194,7 +203,9 @@ namespace Graphics.Rendering.Textures
                 Target = TextureTarget.Texture2D,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.Repeat
+                WrapMode = TextureWrapMode.Repeat,
+                EnableMipMap = enableMipMap,
+                EnableAnisotropy = enableAnisotrophy
             };
 
             switch (data.PixelFormat)

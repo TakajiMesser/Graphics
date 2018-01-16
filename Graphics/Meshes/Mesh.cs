@@ -167,9 +167,9 @@ namespace Graphics.Meshes
 
             for (var i = 0; i < vertexIndices.Count; i++)
             {
+                // Grab vertexIndices, three at a time, to form each triangle
                 if (i % 3 == 0)
                 {
-                    // Grab vertexIndices, three at a time!
                     // For a given triangle with vertex positions P0, P1, P2 and corresponding UV texture coordinates T0, T1, and T2:
                     // deltaPos1 = P1 - P0;
                     // delgaPos2 = P2 - P0;

@@ -7,6 +7,7 @@ using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using Graphics.Rendering.Shaders;
+using Graphics.Outputs;
 
 namespace Graphics.Rendering.Matrices
 {
@@ -25,9 +26,10 @@ namespace Graphics.Rendering.Matrices
         public ProjectionTypes Type { get; set; }
         public float Width { get; set; }
         public float FieldOfView { get; set; }
-        public float AspectRatio { get; set; }
         public float ZNear { get; set; }
         public float ZFar { get; set; }
+
+        public Resolution Resolution { get; set; }
 
         public Matrix4 Projection
         {
@@ -36,9 +38,9 @@ namespace Graphics.Rendering.Matrices
                 switch (Type)
                 {
                     case ProjectionTypes.Orthographic:
-                        return Matrix4.CreateOrthographic(Width, Width / AspectRatio, ZNear, ZFar);
+                        return Matrix4.CreateOrthographic(Width, Width / Resolution.AspectRatio, ZNear, ZFar);
                     case ProjectionTypes.Perspective:
-                        return Matrix4.CreatePerspectiveFieldOfView(FieldOfView, AspectRatio, ZNear, ZFar);
+                        return Matrix4.CreatePerspectiveFieldOfView(FieldOfView, Resolution.AspectRatio, ZNear, ZFar);
                     default:
                         throw new NotImplementedException();
                 }
@@ -46,10 +48,9 @@ namespace Graphics.Rendering.Matrices
         }
 
         public ProjectionMatrix() { }
-        public ProjectionMatrix(float width, float aspectRatio, float zNear, float zFar)
+        public ProjectionMatrix(float width, float zNear, float zFar)
         {
             Width = width;
-            AspectRatio = aspectRatio;
             ZNear = zNear;
             ZFar = zFar;
         }
