@@ -21,6 +21,7 @@ using Graphics.Rendering.PostProcessing;
 using Graphics.Outputs;
 using System.Drawing;
 using System.Drawing.Imaging;
+using Graphics.Helpers.Builders;
 
 namespace Graphics.GameObjects
 {
@@ -63,9 +64,9 @@ namespace Graphics.GameObjects
             //Size = new System.Drawing.Size(1280, 720);
 
             // Create test objects
-            TestHelper.CreateTestEnemyBehavior();
-            TestHelper.CreateTestPlayerBehavior();
-            TestHelper.CreateTestMap();
+            BehaviorBuilder.CreateTestEnemyBehavior();
+            BehaviorBuilder.CreateTestPlayerBehavior();
+            MapBuilder.CreateTestMap();
             var loadedMap = Map.Load(_mapPath);
 
             _gameState = new GameState(loadedMap, this);

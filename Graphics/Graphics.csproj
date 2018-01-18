@@ -54,7 +54,9 @@
     <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="GameObjects\GameState.cs" />
     <Compile Include="GameObjects\GameWindow.cs" />
-    <Compile Include="Helpers\TestHelper.cs" />
+    <Compile Include="Helpers\Builders\BehaviorBuilder.cs" />
+    <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />

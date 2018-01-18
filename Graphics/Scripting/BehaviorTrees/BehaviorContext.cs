@@ -39,13 +39,17 @@ namespace Graphics.Scripting.BehaviorTrees
         public Dictionary<string, object> PropertiesByName { get; protected set; } = new Dictionary<string, object>();
         public Dictionary<string, object> VariablesByName { get; protected set; } = new Dictionary<string, object>();
 
-        public bool ContainsVariable(string name) => VariablesByName.ContainsKey(name);
         public bool ContainsProperty(string name) => PropertiesByName.ContainsKey(name);
-
         public void AddProperty(string name, object value) => PropertiesByName.Add(name, value);
+        public T GetProperty<T>(string name) => (T)PropertiesByName[name];
+        public void SetProperty(string name, object value) => PropertiesByName[name] = value;
 
+        public bool ContainsVariable(string name) => VariablesByName.ContainsKey(name);
         public void AddVariable(string name, object value) => VariablesByName.Add(name, value);
         public void RemoveVariable(string name) => VariablesByName.Remove(name);
+        public T GetVariable<T>(string name) => (T)VariablesByName[name];
+        public T GetVariableOrDefault<T>(string name) => VariablesByName.ContainsKey(name) ? (T)VariablesByName[name] : default(T);
+        public void SetVariable(string name, object value) => VariablesByName[name] = value;
 
         public void RemoveVariableIfExists(string name)
         {
@@ -55,16 +59,11 @@ namespace Graphics.Scripting.BehaviorTrees
             }
         }
 
-        public T GetProperty<T>(string name) => (T)PropertiesByName[name];
-        public T GetVariable<T>(string name) => (T)VariablesByName[name];
-
-        public void SetProperty(string name, object value) => PropertiesByName[name] = value;
-        public void SetVariable(string name, object value) => VariablesByName[name] = value;
-
         public Vector3 GetTranslation(float speed)
         {
             Vector3 translation = new Vector3();
 
+            // Project the "Up" vector of the camera's view onto the XY plane, since that is what we restrict our movement translation to
             var flattenedUp = Camera._viewMatrix.Up.Xy;
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);

@@ -1,152 +1,20 @@
-﻿using Graphics.Meshes;
-using Graphics.Utilities;
-using Graphics.Rendering.Vertices;
-using OpenTK.Graphics.OpenGL;
+﻿using Graphics.GameObjects;
+using Graphics.Physics.Raycasting;
+using Graphics.Scripting.BehaviorTrees;
+using Graphics.Scripting.BehaviorTrees.Composites;
+using Graphics.Scripting.BehaviorTrees.Decorators;
+using Graphics.Scripting.BehaviorTrees.Leaves;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
-using Graphics.Maps;
-using OpenTK;
-using Graphics.GameObjects;
-using Graphics.Scripting.BehaviorTrees;
-using Graphics.Scripting.BehaviorTrees.Composites;
-using Graphics.Scripting.BehaviorTrees.Leaves;
-using Graphics.Physics.Raycasting;
-using Graphics.Inputs;
-using Graphics.Physics.Collision;
-using Graphics.Lighting;
-using Graphics.Scripting.BehaviorTrees.Decorators;
-using Graphics.Rendering.Matrices;
 
-namespace Graphics.Helpers
+namespace Graphics.Helpers.Builders
 {
-    /// <summary>
-    /// For now, this is a helper class for creating test objects
-    /// </summary>
-    public static class TestHelper
+    public static class BehaviorBuilder
     {
-        #region Maps
-
-        public static void CreateTestMap()
-        {
-            var map = new Map()
-            {
-                Camera = CreateCameraObject()
-            };
-
-            map.GameObjects.Add(CreatePlayerObject());
-            map.GameObjects.Add(CreateEnemyObject());
-
-            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f);
-            //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
-            //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
-            map.Brushes.Add(floor);
-
-            var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, -1.0f), 5.0f, 10.0f, 5.0f);
-            wall.HasCollision = true;
-            wall.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
-            wall.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
-            map.Brushes.Add(wall);
-
-            var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, -1.0f), 5.0f, 10.0f, 5.0f);
-            wall2.HasCollision = true;
-            wall2.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
-            wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
-            map.Brushes.Add(wall2);
-
-            map.Lights.Add(new Light()
-            {
-                Position = new Vector3(0.0f, 0.0f, 1.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.5f
-            });
-            map.Lights.Add(new Light()
-            {
-                Position = new Vector3(0.0f, 20.0f, 1.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.25f
-            });
-
-            map.Save(FilePathHelper.MAP_PATH);
-        }
-
-        private static MapCamera CreateCameraObject()
-        {
-            /*return new MapCamera()
-            {
-                Name = "MainCamera",
-                AttachedGameObjectName = "Player",
-                Position = new Vector3(0.0f, 0.0f, -10.0f),
-                Type = ProjectionTypes.Orthographic,
-                StartingWidth = 20.0f,
-            };*/
-            return new MapCamera()
-            {
-                Name = "MainCamera",
-                AttachedGameObjectName = "Player",
-                Position = new Vector3(0.0f, 0.0f, 20.0f),
-                Type = ProjectionTypes.Perspective,
-                FieldOfViewY = (float)UnitConversions.DegreesToRadians(45.0f)
-            };
-        }
-
-        private static MapGameObject CreatePlayerObject()
-        {
-            return new MapGameObject()
-            {
-                Name = "Player",
-                Position = new Vector3(0.0f, 0.0f, -0.5f),
-                Scale = Vector3.One,
-                Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
-                TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
-                //SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH,
-                BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
-                Properties = new List<GameProperty>
-                {
-                    new GameProperty("WALK_SPEED", typeof(float), 0.1f, true),
-                    new GameProperty("RUN_SPEED", typeof(float), 0.15f, true),
-                    new GameProperty("CREEP_SPEED", typeof(float), 0.04f, true),
-                    new GameProperty("EVADE_SPEED", typeof(float), 0.175f, true),
-                    new GameProperty("COVER_SPEED", typeof(float), 0.1f, true),
-                    new GameProperty("ENTER_COVER_SPEED", typeof(float), 0.12f, true),
-                    new GameProperty("COVER_DISTANCE", typeof(float), 5.0f, true),
-                    new GameProperty("EVADE_TICK_COUNT", typeof(int), 20, true)
-                }
-            };
-        }
-
-        private static MapGameObject CreateEnemyObject()
-        {
-            return new MapGameObject()
-            {
-                Name = "Enemy",
-                Position = new Vector3(5.0f, 5.0f, -1.0f),
-                Scale = Vector3.One,
-                Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.ENEMY_MESH_PATH,
-                //TextureFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
-                //NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH,
-                BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH,
-                Properties = new List<GameProperty>
-                {
-                    new GameProperty("WALK_SPEED", typeof(float), 0.1f, true),
-                    new GameProperty("VIEW_ANGLE", typeof(float), 1.0472f, true),
-                    new GameProperty("VIEW_DISTANCE", typeof(float), 5.0f, true)
-                }
-            };
-        }
-
-        #endregion
-
-        #region BehaviorTrees
-
         public static void CreateTestEnemyBehavior()
         {
             CreateCheckPlayerInSightBehavior();
@@ -254,7 +122,7 @@ namespace Graphics.Helpers
                         context.QRotation = new Quaternion(turnAngle, 0.0f, 0.0f);
                         context.Rotation = new Vector3(turnAngle, context.Rotation.Y, context.Rotation.Z);
                     }
-                    
+
                     return BehaviorStatuses.Success;
                 }
             };
@@ -526,7 +394,5 @@ namespace Graphics.Helpers
 
             node.Save(FilePathHelper.PLAYER_TURN_BEHAVIOR_PATH);
         }
-
-        #endregion
     }
 }

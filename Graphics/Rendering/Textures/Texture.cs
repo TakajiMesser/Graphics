@@ -74,6 +74,13 @@ namespace Graphics.Rendering.Textures
             GL.GenerateTextureMipmap(_handle);
         }
 
+        public void Resize(int width, int height, int depth)
+        {
+            Width = width;
+            Height = height;
+            Depth = depth;
+        }
+
         public void ReserveMemory()
         {
             Specify(IntPtr.Zero);

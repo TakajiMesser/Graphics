@@ -18,8 +18,6 @@ namespace Graphics.GameObjects
         private string _name;
         internal ViewMatrix _viewMatrix = new ViewMatrix();
         internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
-        internal Matrix4 _previousViewMatrix;
-        internal Matrix4 _previousProjectionMatrix;
 
         protected float _distance;
 
@@ -31,7 +29,7 @@ namespace Graphics.GameObjects
             get => _viewMatrix.Translation;
             set => _viewMatrix.Translation = value;
         }
-        public Matrix4 ViewProjectionMatrix => _projectionMatrix.Projection * _viewMatrix.View;
+        public Matrix4 ViewProjectionMatrix => _projectionMatrix.Matrix * _viewMatrix.Matrix;
 
         public Camera(string name, Resolution resolution)
         {
@@ -62,26 +60,7 @@ namespace Graphics.GameObjects
         public void Draw(ShaderProgram program)
         {
             _viewMatrix.Set(program);
-
-            int location = program.GetUniformLocation("previousViewMatrix");
-            GL.UniformMatrix4(location, false, ref _previousViewMatrix);
-
-            _previousViewMatrix = _viewMatrix.View;
-
             _projectionMatrix.Set(program);
-
-            int location2 = program.GetUniformLocation("previousProjectionMatrix");
-            GL.UniformMatrix4(location2, false, ref _previousProjectionMatrix);
-
-            _previousProjectionMatrix = _projectionMatrix.Projection;
-
-            /*_modelMatrix.Set(program);
-
-            var model = _modelMatrix.Model;
-            int location = program.GetUniformLocation("previousModelMatrix");
-            GL.UniformMatrix4(location, false, ref model);
-
-            _mesh.Draw();*/
         }
     }
 }

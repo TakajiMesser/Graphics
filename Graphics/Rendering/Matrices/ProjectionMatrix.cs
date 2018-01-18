@@ -20,8 +20,9 @@ namespace Graphics.Rendering.Matrices
     public class ProjectionMatrix
     {
         public const string NAME = "projectionMatrix";
+        public const string PREVIOUS_NAME = "previousProjectionMatrix";
 
-        //private Matrix4 _projection = Matrix4.Identity;
+        private Matrix4 _previousMatrix;
 
         public ProjectionTypes Type { get; set; }
         public float Width { get; set; }
@@ -31,7 +32,7 @@ namespace Graphics.Rendering.Matrices
 
         public Resolution Resolution { get; set; }
 
-        public Matrix4 Projection
+        public Matrix4 Matrix
         {
             get
             {
@@ -57,10 +58,10 @@ namespace Graphics.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
-            int location = program.GetUniformLocation(NAME);
+            program.SetUniformMatrix(NAME, Matrix);
+            program.SetUniformMatrix(PREVIOUS_NAME, _previousMatrix);
 
-            var projection = Projection;
-            GL.UniformMatrix4(location, false, ref projection);
+            _previousMatrix = Matrix;
         }
     }
 }

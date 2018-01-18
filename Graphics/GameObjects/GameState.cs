@@ -45,21 +45,17 @@ namespace Graphics.GameObjects
 
         public GameState(Map map, GameWindow window)
         {
-            _forwardRenderer = new ForwardRenderer(window.Resolution);
-            _textureManager.EnableMipMapping = true;
-            _textureManager.EnableAnisotropy = true;
-
-            _geometryRenderer = new GeometryRenderer(window.Resolution);
-
-            _postProcesses.Add(new MotionBlur(window.Resolution));
-            _postProcesses.Add(new Blur(window.Resolution));
-            _postProcesses.Add(new InvertColors(window.Resolution) { Enabled = false });
-            _postProcesses.Add(new RenderToScreen(window.Resolution));
-            
+            _window = window;
             LoadPrograms();
 
-            _window = window;
-            _window.Resized += (s, e) => _forwardRenderer.LoadBuffers();
+            _window.Resized += (s, e) =>
+            {
+                _forwardRenderer.ResizeTextures();
+                foreach (var process in _postProcesses)
+                {
+                    process.ResizeTextures();
+                }
+            };
             _camera = map.Camera.ToCamera(window.Resolution);
 
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
@@ -113,6 +109,17 @@ namespace Graphics.GameObjects
 
         private void LoadPrograms()
         {
+            _forwardRenderer = new ForwardRenderer(_window.Resolution);
+            _textureManager.EnableMipMapping = true;
+            _textureManager.EnableAnisotropy = true;
+
+            _geometryRenderer = new GeometryRenderer(_window.Resolution);
+
+            _postProcesses.Add(new MotionBlur(_window.Resolution) { Enabled = false });
+            _postProcesses.Add(new Blur(_window.Resolution) { Enabled = true });
+            _postProcesses.Add(new InvertColors(_window.Resolution) { Enabled = false });
+            _postProcesses.Add(new RenderToScreen(_window.Resolution) { Enabled = true });
+
             foreach (var process in _preProcesses)
             {
                 process.Load();
@@ -201,15 +208,15 @@ namespace Graphics.GameObjects
             {
                 if (process.GetType() == typeof(InvertColors))
                 {
-                    //var invert = (InvertColors)process;
-                    //invert.Render(texture);
-                    //texture = invert.FinalTexture;
+                    var invert = (InvertColors)process;
+                    invert.Render(texture);
+                    texture = invert.FinalTexture;
                 }
                 else if (process.GetType() == typeof(MotionBlur))
                 {
-                    //var blur = (MotionBlur)process;
-                    //blur.Render(_forwardRenderer.VelocityTexture, _forwardRenderer.DepthTexture, texture, 60.0f);
-                    //texture = blur.FinalTexture;
+                    var blur = (MotionBlur)process;
+                    blur.Render(_forwardRenderer.VelocityTexture, _forwardRenderer.DepthTexture, texture, 60.0f);
+                    texture = blur.FinalTexture;
                 }
                 else if (process.GetType() == typeof(Blur))
                 {

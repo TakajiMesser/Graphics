@@ -13,9 +13,11 @@ namespace Graphics.Rendering.Matrices
     public class ViewMatrix
     {
         public const string NAME = "viewMatrix";
+        public const string PREVIOUS_NAME = "previousViewMatrix";
 
-        //private Matrix4 _model = Matrix4.Identity;
-        internal Matrix4 View
+        private Matrix4 _previousMatrix;
+
+        internal Matrix4 Matrix
         {
             get
             {
@@ -38,14 +40,10 @@ namespace Graphics.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
-            int location = program.GetUniformLocation(NAME);
+            program.SetUniformMatrix(NAME, Matrix);
+            program.SetUniformMatrix(PREVIOUS_NAME, _previousMatrix);
 
-            var viewMatrix = Matrix4.LookAt(Translation, LookAt, Up);
-            /*viewMatrix.M41 = -Translation.X;
-            viewMatrix.M42 = -Translation.Y;
-            viewMatrix.M43 = -Translation.Z;*/
-
-            GL.UniformMatrix4(location, false, ref viewMatrix);
+            _previousMatrix = Matrix;
         }
     }
 }

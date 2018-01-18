@@ -27,10 +27,9 @@ namespace Graphics.GameObjects
     public class Brush
     {
         private ModelMatrix _modelMatrix = new ModelMatrix();
-        internal Matrix4 _previousModelMatrix;
-        internal Mesh _mesh;
-
-        public List<Vertex> Vertices => _mesh.Vertices;
+        
+        public Mesh Mesh { get; set; }
+        public List<Vertex> Vertices => Mesh.Vertices;
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
@@ -38,26 +37,17 @@ namespace Graphics.GameObjects
 
         public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
-            _mesh = new Mesh(vertices, materials, triangleIndices, program);
+            Mesh = new Mesh(vertices, materials, triangleIndices, program);
         }
 
-        public void AddTestColors()
-        {
-            _mesh.AddTestColors();
-        }
+        public void AddTestColors() => Mesh.AddTestColors();
 
-        public void AddLights(IEnumerable<Light> lights) => _mesh.AddLights(lights);
+        public void AddLights(IEnumerable<Light> lights) => Mesh.AddLights(lights);
 
         public void Draw(ShaderProgram program)
         {
             _modelMatrix.Set(program);
-
-            int location = program.GetUniformLocation("previousModelMatrix");
-            GL.UniformMatrix4(location, false, ref _previousModelMatrix);
-
-            _previousModelMatrix = _modelMatrix.Model;
-
-            _mesh.Draw();
+            Mesh.Draw();
         }
 
         public static Brush Rectangle(Vector3 center, float width, float height, ShaderProgram program)

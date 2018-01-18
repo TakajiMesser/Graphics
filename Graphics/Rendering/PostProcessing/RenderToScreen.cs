@@ -68,6 +68,13 @@ namespace Graphics.Rendering.PostProcessing
             _vertexBuffer.Unbind();
         }
 
+        public override void ResizeTextures()
+        {
+            /*FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();*/
+        }
+
         public void Render()
         {
             GL.BindVertexArray(_vertexArrayHandle);

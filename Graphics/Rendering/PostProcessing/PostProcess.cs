@@ -35,6 +35,7 @@ namespace Graphics.Rendering.PostProcessing
 
         protected abstract void LoadProgram();
         protected abstract void LoadBuffers();
+        public abstract void ResizeTextures();
 
         //public abstract void Render();
         //public abstract void Render();

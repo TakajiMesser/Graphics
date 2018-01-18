@@ -13,9 +13,12 @@ namespace Graphics.Rendering.Matrices
     public class ModelMatrix
     {
         public const string NAME = "modelMatrix";
+        public const string PREVIOUS_NAME = "previousModelMatrix";
 
+        private Matrix4 _previousMatrix;
         //private Matrix4 _model = Matrix4.Identity;
-        public Matrix4 Model => Matrix4.Identity * Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
+
+        public Matrix4 Matrix => Matrix4.Identity * Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
 
         public Vector3 Translation { get; set; } = Vector3.Zero;
         public Quaternion Rotation { get; set; } = Quaternion.Identity;
@@ -31,10 +34,10 @@ namespace Graphics.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
-            var modelMatrix = Matrix4.Identity * Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
+            program.SetUniformMatrix(NAME, Matrix);
+            program.SetUniformMatrix(PREVIOUS_NAME, _previousMatrix);
 
-            int location = program.GetUniformLocation(NAME);
-            GL.UniformMatrix4(location, false, ref modelMatrix);
+            _previousMatrix = Matrix;
         }
     }
 }

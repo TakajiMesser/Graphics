@@ -44,6 +44,21 @@ namespace Graphics.Rendering.Processing
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FRAGMENT_SHADER_PATH)));
         }
 
+        public void ResizeTextures()
+        {
+            FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
+
+            VelocityTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            VelocityTexture.Bind();
+            VelocityTexture.ReserveMemory();
+
+            DepthTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            DepthTexture.Bind();
+            DepthTexture.ReserveMemory();
+        }
+
         public void LoadBuffers()
         {
             FinalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
