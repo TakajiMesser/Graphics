@@ -98,6 +98,7 @@
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
     <Compile Include="Rendering\PostProcessing\InvertColors.cs" />
+    <Compile Include="Rendering\PostProcessing\Blur.cs" />
     <Compile Include="Rendering\PostProcessing\RenderToScreen.cs" />
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
@@ -144,6 +145,7 @@
     <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
     <None Include="Rendering\Shaders\Miscellaneous\invert.glsl" />
+    <None Include="Rendering\Shaders\MotionBlur\mb_myBlur.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_array.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl" />
     <None Include="Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl" />

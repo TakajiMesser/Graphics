@@ -16,8 +16,11 @@ namespace Graphics.GameObjects
     public abstract class Camera
     {
         private string _name;
-        protected ViewMatrix _viewMatrix = new ViewMatrix();
-        protected ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
+        internal ViewMatrix _viewMatrix = new ViewMatrix();
+        internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
+        internal Matrix4 _previousViewMatrix;
+        internal Matrix4 _previousProjectionMatrix;
+
         protected float _distance;
 
         public GameObject AttachedObject { get; private set; }
@@ -59,7 +62,26 @@ namespace Graphics.GameObjects
         public void Draw(ShaderProgram program)
         {
             _viewMatrix.Set(program);
+
+            int location = program.GetUniformLocation("previousViewMatrix");
+            GL.UniformMatrix4(location, false, ref _previousViewMatrix);
+
+            _previousViewMatrix = _viewMatrix.View;
+
             _projectionMatrix.Set(program);
+
+            int location2 = program.GetUniformLocation("previousProjectionMatrix");
+            GL.UniformMatrix4(location2, false, ref _previousProjectionMatrix);
+
+            _previousProjectionMatrix = _projectionMatrix.Projection;
+
+            /*_modelMatrix.Set(program);
+
+            var model = _modelMatrix.Model;
+            int location = program.GetUniformLocation("previousModelMatrix");
+            GL.UniformMatrix4(location, false, ref model);
+
+            _mesh.Draw();*/
         }
     }
 }

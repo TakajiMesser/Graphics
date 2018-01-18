@@ -21,7 +21,7 @@ namespace Graphics.Rendering.Matrices
             {
                 //var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
 
-                var viewMatrix = Matrix4.LookAt(Translation, Translation - Vector3.UnitZ, Vector3.UnitY);
+                var viewMatrix = Matrix4.LookAt(Translation, LookAt, Up);
                 //viewMatrix.M41 = -Translation.X;
                 //viewMatrix.M42 = -Translation.Y;
                 //viewMatrix.M43 = -Translation.Z;

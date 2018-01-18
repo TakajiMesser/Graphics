@@ -21,6 +21,7 @@ namespace Graphics.GameObjects
     public class GameObject
     {
         internal ModelMatrix _modelMatrix = new ModelMatrix();
+        internal Matrix4 _previousModelMatrix;
 
         //public int ID { get; private set; }
         public string Name { get; private set; }
@@ -179,6 +180,11 @@ namespace Graphics.GameObjects
             }
 
             _modelMatrix.Set(program);
+
+            int location = program.GetUniformLocation("previousModelMatrix");
+            GL.UniformMatrix4(location, false, ref _previousModelMatrix);
+
+            _previousModelMatrix = _modelMatrix.Model;
 
             Mesh.Draw();
         }

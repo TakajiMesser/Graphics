@@ -1,5 +1,6 @@
 ﻿using Graphics.Rendering.Textures;
 using Graphics.Rendering.Vertices;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 
 namespace Graphics.Rendering.Shaders
@@ -68,6 +69,12 @@ namespace Graphics.Rendering.Shaders
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.BindImageTexture(index);
             GL.Uniform1(location, index);
+        }
+
+        public void SetUniformMatrix(string name, Matrix4 matrix)
+        {
+            int location = GetUniformLocation(name);
+            GL.UniformMatrix4(location, false, ref matrix);
         }
 
         public int GetVertexAttributeLocation(string name)

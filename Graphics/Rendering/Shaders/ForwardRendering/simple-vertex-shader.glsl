@@ -1,6 +1,8 @@
-﻿#version 150
+﻿#version 440
 
 const int MAX_LIGHTS = 10;
+const int MAX_JOINTS = 32;
+const int MAX_WEIGHTS = 4;
 
 struct Light {
 	vec3 position;
@@ -9,13 +11,20 @@ struct Light {
 	float intensity;
 };
 
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
 layout (std140) uniform LightBlock
 {
 	Light lights[MAX_LIGHTS];
 };
+
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 previousModelMatrix;
+uniform mat4 previousViewMatrix;
+uniform mat4 previousProjectionMatrix;
+
+uniform int useSkinning;
+uniform mat4[MAX_JOINTS] jointTransforms;
 
 in vec3 vPosition;
 in vec3 vNormal;
@@ -23,7 +32,11 @@ in vec3 vTangent;
 in vec4 vColor;
 in vec2 vUV;
 in int vMaterialIndex;
+in ivec4 vBoneIDs;
+in vec4 vBoneWeights;
 
+out vec4 fPosition;
+out vec4 fPreviousPosition;
 out vec3 fNormal;
 out vec4 fColor;
 out vec2 fUV;
@@ -31,29 +44,48 @@ flat out int fMaterialIndex;
 out vec3 fCameraDirection;
 out vec3 fLightDirections[MAX_LIGHTS];
 
-mat3 GetTangentMatrix()
+mat3 GetTangentMatrix(vec4 normal, vec4 tangent)
 {
-    vec3 normal = normalize(vNormal);
-    vec3 tangent = normalize(viewMatrix * modelMatrix * vec4(vTangent, 0.0)).xyz;
-    vec3 bitangent = normalize(cross(normal, tangent));
+    vec4 nNormal = normalize(normal);
+    vec4 nTangent = normalize(viewMatrix * modelMatrix * tangent);
+    vec3 nBitangent = normalize(cross(nNormal.xyz, nTangent.xyz));
 
     return mat3(
-        tangent.x, bitangent.x, normal.x,
-        tangent.y, bitangent.y, normal.y,
-        tangent.z, bitangent.z, normal.z
+        nTangent.x, nBitangent.x, nNormal.x,
+        nTangent.y, nBitangent.y, nNormal.y,
+        nTangent.z, nBitangent.z, nNormal.z
     );
 }
 
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+    vec4 position = vec4(vPosition, 1.0);
+    vec4 normal = vec4(vNormal, 0.0);
+    vec4 tangent = vec4(vTangent, 0.0);
 
-    mat3 toTangentSpace = GetTangentMatrix();
+    if (useSkinning == 1)
+    {
+        mat4 jointTransform = mat4(0);
+        for (int i = 0; i < MAX_WEIGHTS; i++)
+        {
+            jointTransform += jointTransforms[vBoneIDs[i]] * vBoneWeights[i];
+        }
 
-	fNormal = toTangentSpace * (modelMatrix * vec4(vNormal, 0.0)).xyz;
+        position = jointTransform * position;
+        normal = jointTransform * normal;
+        tangent = jointTransform * tangent;
+    }
+
+    mat3 toTangentSpace = GetTangentMatrix(normal, tangent);
+
+    fPosition = projectionMatrix * viewMatrix * modelMatrix * position;
+    fPreviousPosition = previousProjectionMatrix * previousViewMatrix * previousModelMatrix * position;
+	fNormal = toTangentSpace * (modelMatrix * normal).xyz;
     fColor = vColor;
     fUV = vUV;
     fMaterialIndex = vMaterialIndex;
+
+    gl_Position = fPosition;
 
 	// Model matrix maps vertices from "model coordinates" to "world coordinates"
 	vec4 vertexPosition_world = modelMatrix * vec4(vPosition, 1.0);

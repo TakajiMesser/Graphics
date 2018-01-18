@@ -61,24 +61,28 @@ namespace Graphics.Scripting.BehaviorTrees
         {
             Vector3 translation = new Vector3();
 
+            var flattenedUp = Camera._viewMatrix.Up.Xy;
+            var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
+            var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
+
             if (InputState.IsHeld(InputMapping.Forward))
             {
-                translation.Y += speed;
+                 translation += up.Normalized() * speed;
             }
 
             if (InputState.IsHeld(InputMapping.Left))
             {
-                translation.X -= speed;
+                translation -= right.Normalized() * speed;
             }
 
             if (InputState.IsHeld(InputMapping.Backward))
             {
-                translation.Y -= speed;
+                translation -= up.Normalized() * speed;
             }
 
             if (InputState.IsHeld(InputMapping.Right))
             {
-                translation.X += speed;
+                translation += right.Normalized() * speed;
             }
 
             return translation;

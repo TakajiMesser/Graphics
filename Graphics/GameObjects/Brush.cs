@@ -27,6 +27,7 @@ namespace Graphics.GameObjects
     public class Brush
     {
         private ModelMatrix _modelMatrix = new ModelMatrix();
+        internal Matrix4 _previousModelMatrix;
         internal Mesh _mesh;
 
         public List<Vertex> Vertices => _mesh.Vertices;
@@ -50,6 +51,12 @@ namespace Graphics.GameObjects
         public void Draw(ShaderProgram program)
         {
             _modelMatrix.Set(program);
+
+            int location = program.GetUniformLocation("previousModelMatrix");
+            GL.UniformMatrix4(location, false, ref _previousModelMatrix);
+
+            _previousModelMatrix = _modelMatrix.Model;
+
             _mesh.Draw();
         }
 

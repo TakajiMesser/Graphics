@@ -15,6 +15,7 @@ namespace Graphics.Rendering.Matrices
         public const string NAME = "modelMatrix";
 
         //private Matrix4 _model = Matrix4.Identity;
+        public Matrix4 Model => Matrix4.Identity * Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
 
         public Vector3 Translation { get; set; } = Vector3.Zero;
         public Quaternion Rotation { get; set; } = Quaternion.Identity;

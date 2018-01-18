@@ -1,83 +1,115 @@
-﻿#version 150
-// vertex
+﻿#version 400
 
-const int MAX_LIGHTS = 10;
-const int MAX_MATERIALS = 10;
-
-struct Light {
-	vec3 position;
-	float radius;
-	vec3 color;
-	float intensity;
-};
-
-struct Material {
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-	float specularExponent;
-};
+layout(vertices = 3) out;
 
 uniform mat4 modelMatrix;
+uniform mat4 previousModelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
-layout (std140) uniform LightBlock
+uniform vec3 cameraPosition;
+
+uniform int useDisplacementTexture;
+uniform vec2 renderSize;
+
+in vec3 cPosition[];
+in vec3 cPreviousPosition[];
+in vec3 cNormal[];
+in vec3 cTangent[];
+in vec4 cColor[];
+in vec2 cUV[];
+flat in int cMaterialIndex[];
+
+out vec3 ePosition[];
+out vec3 ePreviousPosition[];
+out vec3 eNormal[];
+out vec3 eTangent[];
+out vec4 eColor[];
+out vec2 eUV[];
+flat out int eMaterialIndex[];
+
+float screenSphereSize(vec4 e1, vec4 e2)
 {
-	Light lights[MAX_LIGHTS];
-};
-layout (std140) uniform MaterialBlock
+	vec4 p1 = (e1 + e2) * 0.5;
+	vec4 p2 = p1;
+	p2.y += distance(e1, e2);
+
+	p1 = p1 / p1.w;
+	//p1 = p1 * 0.5 + 0.5;
+	p2 = p2 / p2.w;
+	//p2 = p2 * 0.5 + 0.5;
+
+	float l = length((p1.xy - p2.xy) * renderSize * 0.5);
+
+	return (clamp(l / 15.0, 1.0, 64.0));
+}
+
+bool edgeInFrustum(vec4 p, vec4 q)
 {
-	Material materials[MAX_MATERIALS];
-};
+	return !((p.x < -p.w && q.x < -q.w) 
+        || (p.x > p.w && q.x > q.w) 
+		|| (p.z < -p.w && q.z < -q.w)
+        || (p.z > p.w && q.z > q.w));
+}
 
-in vec3 vPosition;
-in vec3 vNormal;
-in vec3 vTangent;
-in vec4 vColor;
-in vec2 vUV;
-in int vMaterialIndex;
-
-out vec3 fNormal;
-out vec4 fColor;
-out vec2 fUV;
-flat out int fMaterialIndex;
-out vec3 fCameraDirection;
-out vec3 fLightDirections[MAX_LIGHTS];
-
-mat3 GetTangentMatrix()
+bool frustumCullTest(vec4 vertexPosition[3])
 {
-    vec3 normal = normalize(vNormal);
-    vec3 tangent = normalize(viewMatrix * modelMatrix * vec4(vTangent, 0.0)).xyz;
-    vec3 bitangent = normalize(cross(normal, tangent));
+	return edgeInFrustum(vertexPosition[1], vertexPosition[0])
+        || edgeInFrustum(vertexPosition[2], vertexPosition[0])
+        || edgeInFrustum(vertexPosition[2], vertexPosition[1]);
+}
 
-    return mat3(
-        tangent.x, bitangent.x, normal.x,
-        tangent.y, bitangent.y, normal.y,
-        tangent.z, bitangent.z, normal.z
-    );
+bool backfaceCullTest(vec3 worldPosition, vec3 eyePosition, vec3 normal)
+{
+	vec3 L = normalize(eyePosition - worldPosition);
+	float angle_of_inc = dot(L, normal);
+	return angle_of_inc > 0;
+}
+
+void controlTessellation()
+{
+	float tessLevel = 1.0;
+	vec4 vertexPosition[3];
+
+	for (int i = 0; i < 3; i++)
+	{
+		vertexPosition[i] = projectionMatrix * viewMatrix * vec4(cPosition[i], 1.0);
+	}
+
+	if (frustumCullTest(vertexPosition) && backfaceCullTest(cPosition[gl_InvocationID], -cameraPosition, cNormal[gl_InvocationID]))
+	{
+		if (useDisplacementTexture == 0)
+		{
+			tessLevel = 1.0;
+			gl_TessLevelOuter[2] = tessLevel;
+			gl_TessLevelOuter[1] = tessLevel;
+			gl_TessLevelOuter[0] = tessLevel;
+			gl_TessLevelInner[0] = tessLevel;
+		}
+		else
+		{
+			// Calculate the tessellation levels
+			gl_TessLevelOuter[2] = screenSphereSize(vertexPosition[1], vertexPosition[0]);
+			gl_TessLevelOuter[1] = screenSphereSize(vertexPosition[2], vertexPosition[0]);
+			gl_TessLevelOuter[0] = screenSphereSize(vertexPosition[2], vertexPosition[1]);
+			gl_TessLevelInner[0] = max(gl_TessLevelOuter[1], max(gl_TessLevelOuter[0], gl_TessLevelOuter[2]));
+		}
+	}
+	else
+	{
+		gl_TessLevelOuter[0] = gl_TessLevelOuter[1] = gl_TessLevelOuter[2] = 0.0;
+		gl_TessLevelInner[0] = 0.0;
+	}
 }
 
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+    ePosition[gl_InvocationID] = cPosition[gl_InvocationID];
+    ePreviousPosition[gl_InvocationID] = cPreviousPosition[gl_InvocationID];
+	eNormal[gl_InvocationID] = cNormal[gl_InvocationID];
+	eTangent[gl_InvocationID] = cTangent[gl_InvocationID];
+    eColor[gl_InvocationID] = cColor[gl_InvocationID];
+    eUV[gl_InvocationID] = cUV[gl_InvocationID];
+    eMaterialIndex[gl_InvocationID] = cMaterialIndex[gl_InvocationID];
 
-    mat3 toTangentSpace = GetTangentMatrix();
-
-	fNormal = toTangentSpace * (modelMatrix * vec4(vNormal, 0.0)).xyz;
-    fColor = vColor;
-    fUV = vUV;
-    fMaterialIndex = vMaterialIndex;
-
-	// Model matrix maps vertices from "model coordinates" to "world coordinates"
-	vec4 vertexPosition_world = modelMatrix * vec4(vPosition, 1.0);
-
-	// This is the vector from the current vertex to the camera
-	fCameraDirection = toTangentSpace * ((inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - vertexPosition_world.xyz);
-
-	for (int i = 0; i < MAX_LIGHTS; i++)
-	{
-		// Wouldn't we want the direction that the light is coming from? This would be the current position MINUS the light source
-		// This is the vector from the current vertex TO the light source
-		fLightDirections[i] = toTangentSpace * (lights[i].position - vertexPosition_world.xyz);
-	}
+	controlTessellation();
 }

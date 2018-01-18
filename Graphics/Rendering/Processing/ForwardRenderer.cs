@@ -21,6 +21,7 @@ namespace Graphics.Rendering.Processing
     {
         public Resolution Resolution { get; private set; }
         public Texture FinalTexture { get; protected set; }
+        public Texture VelocityTexture { get; protected set; }
         public Texture DepthTexture { get; protected set; }
 
         internal ShaderProgram _program;
@@ -60,6 +61,21 @@ namespace Graphics.Rendering.Processing
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
+            VelocityTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2D,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                PixelInternalFormat = PixelInternalFormat.Rg16f,
+                PixelFormat = PixelFormat.Rg,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            VelocityTexture.Bind();
+            VelocityTexture.ReserveMemory();
+
             DepthTexture = new Texture(Resolution.Width, Resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
@@ -77,6 +93,8 @@ namespace Graphics.Rendering.Processing
 
             _frameBuffer.Clear();
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment1, VelocityTexture);
+            //_frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, new RenderBuffer(RenderbufferTarget.Renderbuffer, Resolution.Width, Resolution.Height));
             _frameBuffer.Add(FramebufferAttachment.DepthAttachment, DepthTexture);
 
             _frameBuffer.Bind();

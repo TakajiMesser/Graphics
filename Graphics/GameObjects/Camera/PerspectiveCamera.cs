@@ -18,7 +18,7 @@ namespace Graphics.GameObjects
     {
         public const float ZNEAR = 0.1f;
         public const float ZFAR = 100.0f;
-        public const float MAX_ANGLE_Y = -0.1f;
+        public const float MAX_ANGLE_Y = -(float)Math.PI / 2 + 0.1f;
         public const float MIN_ANGLE_Y = -(float)Math.PI + 0.1f;
 
         private Vector3 _currentAngles = new Vector3(0, -(float)Math.PI / 2.0f, 0);

@@ -1,4 +1,4 @@
-﻿#version 150
+﻿#version 440
 
 const int MAX_LIGHTS = 10;
 const int MAX_MATERIALS = 10;
@@ -26,6 +26,13 @@ layout (std140) uniform MaterialBlock
 	Material materials[MAX_MATERIALS];
 };
 
+uniform mat4 modelMatrix;
+uniform mat4 viewMatrix;
+uniform mat4 projectionMatrix;
+uniform mat4 previousModelMatrix;
+uniform mat4 previousViewMatrix;
+uniform mat4 previousProjectionMatrix;
+
 uniform sampler2D mainTexture;
 uniform sampler2D normalMap;
 uniform sampler2D diffuseMap;
@@ -36,6 +43,8 @@ uniform int useNormalMap;
 uniform int useDiffuseMap;
 uniform int useSpecularMap;
 
+in vec4 fPosition;
+in vec4 fPreviousPosition;
 in vec3 fNormal;
 in vec4 fColor;
 in vec2 fUV;
@@ -43,7 +52,8 @@ flat in int fMaterialIndex;
 in vec3 fCameraDirection;
 in vec3 fLightDirections[MAX_LIGHTS];
 
-out vec4 color;
+layout(location = 0) out vec4 finalColor;
+layout(location = 1) out vec2 velocity;
 
 vec4 computeAmbientLight(vec3 ambient, vec3 lightColor, float illuminance)
 {
@@ -147,12 +157,16 @@ void main()
 
 	if (useMainTexture > 0)
 	{
-        color = textureColor;
+        finalColor = textureColor;
 	}
 	else
 	{
-		color = fColor;
+		finalColor = fColor;
 	}
 	
-	color = mix(lightColor, color, 0.2);
+	finalColor = mix(lightColor, finalColor, 0.2);
+
+    vec2 a = (fPosition.xy / fPosition.w) * 0.5 + 0.5;
+    vec2 b = (fPreviousPosition.xy / fPreviousPosition.w) * 0.5 + 0.5;
+    velocity = a - b;
 }

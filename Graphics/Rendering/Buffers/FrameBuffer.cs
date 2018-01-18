@@ -61,16 +61,21 @@ namespace Graphics.Rendering.Buffers
 
             foreach (var attachment in _textures)
             {
-                GL.DrawBuffer((DrawBufferMode)attachment.Key);
+                //GL.DrawBuffer((DrawBufferMode)attachment.Key);
                 //GL.DrawBuffers(1, new[] { DrawBuffersEnum.ColorAttachment0 });
             }
+
+            GL.DrawBuffers(_textures.Count, _textures.Keys
+                .Where(k => k != FramebufferAttachment.DepthStencilAttachment && k != FramebufferAttachment.DepthAttachment)
+                .Select(k => (DrawBuffersEnum)k)
+                .ToArray());
 
             foreach (var attachment in _renderBuffers)
             {
                 GL.DrawBuffer((DrawBufferMode)attachment.Key);
             }
 
-            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+            // GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
         }
 
         public void Unbind()

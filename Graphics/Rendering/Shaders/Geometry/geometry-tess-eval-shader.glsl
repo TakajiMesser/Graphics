@@ -1,83 +1,91 @@
-﻿#version 150
-// vertex
+﻿#version 400
 
-const int MAX_LIGHTS = 10;
-const int MAX_MATERIALS = 10;
-
-struct Light {
-	vec3 position;
-	float radius;
-	vec3 color;
-	float intensity;
-};
-
-struct Material {
-	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
-	float specularExponent;
-};
+layout(triangles, fractional_odd_spacing, ccw) in;
 
 uniform mat4 modelMatrix;
+uniform mat4 previousModelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
-layout (std140) uniform LightBlock
+uniform vec3 cameraPosition;
+
+uniform int useDisplacementTexture;
+uniform int displacementTextureUnit;
+uniform float displacementStrength = 0.1;
+
+/*layout(std140) uniform MaterialTextures
 {
-	Light lights[MAX_LIGHTS];
-};
-layout (std140) uniform MaterialBlock
+	sampler2D bindlessTexture[80];
+};*/
+
+in vec3 ePosition[];
+in vec3 ePreviousPosition[];
+in vec3 eNormal[];
+in vec3 eTangent[];
+in vec4 eColor[];
+in vec2 eUV[];
+flat in int eMaterialIndex[];
+
+out vec3 gPosition;
+out vec3 gPreviousPosition;
+out vec3 gNormal;
+out vec3 gTangent;
+out vec4 gColor;
+out vec2 gUV;
+flat out int gMaterialIndex;
+
+vec2 interpolate2DTriangle(vec2 v0, vec2 v1, vec2 v2)
 {
-	Material materials[MAX_MATERIALS];
-};
+   	return vec2(gl_TessCoord.x) * v0 + vec2(gl_TessCoord.y) * v1 + vec2(gl_TessCoord.z) * v2;
+}
 
-in vec3 vPosition;
-in vec3 vNormal;
-in vec3 vTangent;
-in vec4 vColor;
-in vec2 vUV;
-in int vMaterialIndex;
-
-out vec3 fNormal;
-out vec4 fColor;
-out vec2 fUV;
-flat out int fMaterialIndex;
-out vec3 fCameraDirection;
-out vec3 fLightDirections[MAX_LIGHTS];
-
-mat3 GetTangentMatrix()
+vec3 interpolate3DTriangle(vec3 v0, vec3 v1, vec3 v2)
 {
-    vec3 normal = normalize(vNormal);
-    vec3 tangent = normalize(viewMatrix * modelMatrix * vec4(vTangent, 0.0)).xyz;
-    vec3 bitangent = normalize(cross(normal, tangent));
+   	return vec3(gl_TessCoord.x) * v0 + vec3(gl_TessCoord.y) * v1 + vec3(gl_TessCoord.z) * v2;
+}
 
-    return mat3(
-        tangent.x, bitangent.x, normal.x,
-        tangent.y, bitangent.y, normal.y,
-        tangent.z, bitangent.z, normal.z
-    );
+vec4 interpolate3DTriangle(vec4 v0, vec4 v1, vec4 v2)
+{
+   	return vec4(gl_TessCoord.x) * v0 + vec4(gl_TessCoord.y) * v1 + vec4(gl_TessCoord.z) * v2;
+}
+
+vec2 interpolate2DQuad(vec2 v0, vec2 v1, vec2 v2, vec2 v3)
+{
+	float u = gl_TessCoord.x;
+	float v = gl_TessCoord.y;
+
+	vec2 a = mix(v0, v1, u);
+	vec2 b = mix(v2, v3, u);
+	return mix(a, b, v);
+}
+
+vec3 interpolate3DQuad(vec3 v0, vec3 v1, vec3 v2, vec3 v3)
+{
+	float u = gl_TessCoord.x;
+	float v = gl_TessCoord.y;
+
+	vec3 a = mix(v0, v1, u);
+	vec3 b = mix(v2, v3, u);
+
+	return mix(a, b, v);
 }
 
 void main()
 {
-	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+	gPosition = interpolate3DTriangle(ePosition[0], ePosition[1], ePosition[2]);
+	gPreviousPosition = interpolate3DTriangle(ePreviousPosition[0], ePreviousPosition[1], ePreviousPosition[2]);
+    gNormal = normalize(interpolate3DTriangle(eNormal[0], eNormal[1], eNormal[2]));
+	gTangent = normalize(interpolate3DTriangle(eTangent[0], eTangent[1], eTangent[2]));
+    gColor = normalize(interpolate3DTriangle(eColor[0], eColor[1], eColor[2]));
+	gUV = interpolate2DTriangle(eUV[0], eUV[1], eUV[2]);
+    gMaterialIndex = eMaterialIndex[0];
 
-    mat3 toTangentSpace = GetTangentMatrix();
-
-	fNormal = toTangentSpace * (modelMatrix * vec4(vNormal, 0.0)).xyz;
-    fColor = vColor;
-    fUV = vUV;
-    fMaterialIndex = vMaterialIndex;
-
-	// Model matrix maps vertices from "model coordinates" to "world coordinates"
-	vec4 vertexPosition_world = modelMatrix * vec4(vPosition, 1.0);
-
-	// This is the vector from the current vertex to the camera
-	fCameraDirection = toTangentSpace * ((inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - vertexPosition_world.xyz);
-
-	for (int i = 0; i < MAX_LIGHTS; i++)
-	{
-		// Wouldn't we want the direction that the light is coming from? This would be the current position MINUS the light source
-		// This is the vector from the current vertex TO the light source
-		fLightDirections[i] = toTangentSpace * (lights[i].position - vertexPosition_world.xyz);
+	if(useDisplacementTexture == 1)
+	{	
+		//float displacement = texture(bindlessTexture[displacementTextureUnit], gUV).r * displacementStrength;
+		//vec3 displacementMod = (gNormal * displacement);
+		//gPosition += displacementMod;
+		//gPreviousPosition = gPreviousPosition + (displacementMod);
 	}
+
+	gl_Position = vec4(gPosition, 1.0);
 }
