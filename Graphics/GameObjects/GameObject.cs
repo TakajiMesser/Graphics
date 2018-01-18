@@ -76,7 +76,7 @@ namespace Graphics.GameObjects
                 {
                     if (property.Value.IsConstant)
                     {
-                        Behaviors.Context.Add(property.Key, property.Value.Value);
+                        Behaviors.Context.AddProperty(property.Key, property.Value.Value);
                     }
                 }
             }
@@ -103,7 +103,7 @@ namespace Graphics.GameObjects
 
                 foreach (var property in Properties.Where(p => !p.Value.IsConstant))
                 {
-                    Behaviors.Context[property.Key] = property.Value;
+                    Behaviors.Context.SetProperty(property.Key, property.Value);
                 }
 
                 Behaviors.Tick();

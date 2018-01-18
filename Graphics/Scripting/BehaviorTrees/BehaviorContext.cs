@@ -36,26 +36,30 @@ namespace Graphics.Scripting.BehaviorTrees
         // Values set by Behavior Nodes, and RESET by the GameObject
         public Vector3 Translation { get; set; }
 
+        public Dictionary<string, object> PropertiesByName { get; protected set; } = new Dictionary<string, object>();
         public Dictionary<string, object> VariablesByName { get; protected set; } = new Dictionary<string, object>();
 
-        public bool ContainsKey(string key) => VariablesByName.ContainsKey(key);
+        public bool ContainsVariable(string name) => VariablesByName.ContainsKey(name);
+        public bool ContainsProperty(string name) => PropertiesByName.ContainsKey(name);
 
-        public void Add(string key, object value) => VariablesByName.Add(key, value);
-        public void Remove(string key) => VariablesByName.Remove(key);
+        public void AddProperty(string name, object value) => PropertiesByName.Add(name, value);
 
-        public void RemoveIfExists(string key)
+        public void AddVariable(string name, object value) => VariablesByName.Add(name, value);
+        public void RemoveVariable(string name) => VariablesByName.Remove(name);
+
+        public void RemoveVariableIfExists(string name)
         {
-            if (VariablesByName.ContainsKey(key))
+            if (VariablesByName.ContainsKey(name))
             {
-                VariablesByName.Remove(key);
+                VariablesByName.Remove(name);
             }
         }
 
-        public object this[string key]
-        {
-            get => VariablesByName[key];
-            set => VariablesByName[key] = value;
-        }
+        public T GetProperty<T>(string name) => (T)PropertiesByName[name];
+        public T GetVariable<T>(string name) => (T)VariablesByName[name];
+
+        public void SetProperty(string name, object value) => PropertiesByName[name] = value;
+        public void SetVariable(string name, object value) => VariablesByName[name] = value;
 
         public Vector3 GetTranslation(float speed)
         {
