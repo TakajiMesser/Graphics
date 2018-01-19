@@ -28,10 +28,6 @@ namespace Graphics.Rendering.PostProcessing
         private ShaderProgram _renderCubeProgram;
         private ShaderProgram _renderCubeArrayProgram;
 
-        private int _vertexArrayHandle;
-        //private VertexArray<Vertex> _vertexArray;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
-
         public RenderToScreen(Resolution resolution) : base(NAME, resolution) { }
 
         protected override void LoadProgram()
@@ -49,46 +45,15 @@ namespace Graphics.Rendering.PostProcessing
 
         protected override void LoadBuffers()
         {
-            _vertexArrayHandle = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.AddVertices(new[]
-            {
-                new Vector3(1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f)
-            });
-            _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
-
-            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
-            attribute.Set(_render2DProgram.GetAttributeLocation("vPosition"));
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
-        }
-
-        public override void ResizeTextures()
-        {
-            /*FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();*/
+            LoadQuad(_render2DProgram);
         }
 
         public void Render()
         {
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.Bind();
-            
-            _vertexBuffer.DrawQuads();
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
-
-            /*GL.BindVertexArray(_vertexArrayHandle);
-            GL.DrawArrays(PrimitiveType.Triangles, 0, 3);
-            GL.BindVertexArray(0);*/
+            RenderQuad();
         }
+
+        public override void ResizeTextures() { }
 
         public void Render(Texture texture, int channel = -1)
         {

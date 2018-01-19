@@ -49,6 +49,13 @@ namespace Graphics.Helpers
 
         public const string GRASS_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Grass01.png";
         public const string GRASS_N_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Grass01_normal.png";
+
+        public const string SPACE_01_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_right1.png";
+        public const string SPACE_02_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_left2.png";
+        public const string SPACE_03_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_top3.png";
+        public const string SPACE_04_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_bottom4.png";
+        public const string SPACE_05_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_front5.png";
+        public const string SPACE_06_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_back6.png";
         #endregion
 
         #region Shaders
@@ -75,6 +82,9 @@ namespace Graphics.Helpers
         public const string RENDER_CUBE_ARRAY_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_cube_array.glsl";
         public const string RENDER_CUBE_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl";
         public const string RENDER_CUBE_VERTEX_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl";
+
+        public const string SKYBOX_VERTEX_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Skybox\skybox_vert.glsl";
+        public const string SKYBOX_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Skybox\skybox_frag.glsl";
         #endregion
 
         #region Behaviors

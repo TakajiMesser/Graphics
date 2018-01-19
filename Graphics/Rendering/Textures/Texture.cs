@@ -238,6 +238,59 @@ namespace Graphics.Rendering.Textures
             return texture;
         }
 
+        public static Texture LoadFromFile(List<string> paths, TextureTarget target, bool enableMipMap, bool enableAnisotrophy)
+        {
+            var firstBitmap = new Bitmap(paths.First());
+            var data = firstBitmap.LockBits(new Rectangle(0, 0, firstBitmap.Width, firstBitmap.Height), ImageLockMode.ReadOnly, firstBitmap.PixelFormat);
+
+            var texture = new Texture(firstBitmap.Width, firstBitmap.Height, paths.Count)
+            {
+                Target = target,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.ClampToEdge,
+                EnableMipMap = enableMipMap,
+                EnableAnisotropy = enableAnisotrophy
+            };
+
+            switch (data.PixelFormat)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.ColorIndex;
+                    texture.PixelType = PixelType.Bitmap;
+                    break;
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.Bgr;
+                    texture.PixelType = PixelType.UnsignedByte;
+                    break;
+            }
+
+            var bitmaps = new List<Bitmap> { firstBitmap };
+            var imageData = new List<BitmapData> { data };
+
+            for (var i = 1; i < paths.Count; i++)
+            {
+                var bitmap = new Bitmap(paths[i]);
+                imageData.Add(bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat));
+
+                bitmaps.Add(bitmap);
+            }
+
+            texture.Bind();
+            texture.Specify(imageData.Select(d => d.Scan0).ToArray());
+            texture.SetTextureParameters();
+
+            for (var i = 0; i < bitmaps.Count; i++)
+            {
+                bitmaps[i].UnlockBits(imageData[i]);
+                bitmaps[i].Dispose();
+            }
+
+            return texture;
+        }
+
         #region IDisposable Support
         private bool disposedValue = false;
 

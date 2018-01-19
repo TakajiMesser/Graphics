@@ -25,7 +25,7 @@ namespace Graphics.Rendering.Processing
         public Texture DepthTexture { get; protected set; }
 
         internal ShaderProgram _program;
-        protected FrameBuffer _frameBuffer = new FrameBuffer();
+        internal FrameBuffer _frameBuffer = new FrameBuffer();
 
         public ForwardRenderer(Resolution resolution)
         {

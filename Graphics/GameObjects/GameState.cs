@@ -29,6 +29,7 @@ namespace Graphics.GameObjects
         private InputState _inputState = new InputState();
 
         private ForwardRenderer _forwardRenderer;
+        private SkyboxRenderer _skyboxRenderer;
         private GeometryRenderer _geometryRenderer;
         private List<PostProcess> _preProcesses = new List<PostProcess>();
         private List<PostProcess> _postProcesses = new List<PostProcess>();
@@ -113,10 +114,12 @@ namespace Graphics.GameObjects
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
 
+            _skyboxRenderer = new SkyboxRenderer(_window.Resolution);
+
             _geometryRenderer = new GeometryRenderer(_window.Resolution);
 
             _postProcesses.Add(new MotionBlur(_window.Resolution) { Enabled = false });
-            _postProcesses.Add(new Blur(_window.Resolution) { Enabled = true });
+            _postProcesses.Add(new Blur(_window.Resolution) { Enabled = false });
             _postProcesses.Add(new InvertColors(_window.Resolution) { Enabled = false });
             _postProcesses.Add(new RenderToScreen(_window.Resolution) { Enabled = true });
 
@@ -126,6 +129,7 @@ namespace Graphics.GameObjects
             }
 
             _forwardRenderer.Load();
+            _skyboxRenderer.Load();
             _geometryRenderer.Load();
 
             foreach (var process in _postProcesses)
@@ -198,6 +202,8 @@ namespace Graphics.GameObjects
 
             _forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
             //_geometryRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
+
+            _skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
 
             // Now, extract the final texture from the geometry renderer, so that we can pass it off to the post-processes
             var texture = _forwardRenderer.FinalTexture;

@@ -105,6 +105,7 @@
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\SkyboxRenderer.cs" />
     <Compile Include="Rendering\Processing\ForwardRenderer.cs" />
     <Compile Include="Rendering\Processing\GeometryRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
@@ -163,6 +164,8 @@
     <None Include="Rendering\Shaders\MotionBlur\mb_dilate.glsl" />
     <None Include="Rendering\Shaders\ForwardRendering\simple-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\ForwardRendering\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Skybox\skybox_frag.glsl" />
+    <None Include="Rendering\Shaders\Skybox\skybox_vert.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Shaders\DepthOfField\" />

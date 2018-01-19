@@ -22,8 +22,6 @@ namespace Graphics.Rendering.PostProcessing
         public const string NAME = "Blur";
 
         private ShaderProgram _blurProgram;
-        private int _vertexArrayHandle;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
 
         public Blur(Resolution resolution) : base(NAME, resolution) { }
 
@@ -35,50 +33,13 @@ namespace Graphics.Rendering.PostProcessing
 
         protected override void LoadBuffers()
         {
-            _vertexArrayHandle = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.AddVertices(new[]
-            {
-                new Vector3(1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f)
-            });
-            _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
-
-            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
-            attribute.Set(_blurProgram.GetAttributeLocation("vPosition"));
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
-
-            FinalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
-            {
-                Target = TextureTarget.Texture2D,
-                EnableMipMap = false,
-                EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
-                PixelFormat = PixelFormat.Rgba,
-                PixelType = PixelType.Float,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.Clamp
-            };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            LoadQuad(_blurProgram);
+            LoadFinalTexture();
 
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Bind();
             _frameBuffer.AttachAttachments();
             _frameBuffer.Unbind();
-        }
-
-        public override void ResizeTextures()
-        {
-            FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
         }
 
         public void Render(Texture scene, Texture velocity, float fps)
@@ -93,13 +54,7 @@ namespace Graphics.Rendering.PostProcessing
             _blurProgram.BindTexture(scene, "sceneTexture", 0);
             _blurProgram.BindTexture(velocity, "velocityTexture", 1);
 
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.Bind();
-
-            _vertexBuffer.DrawQuads();
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
+            RenderQuad();
         }
     }
 }

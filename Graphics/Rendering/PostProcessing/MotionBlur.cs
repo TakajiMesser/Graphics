@@ -88,13 +88,6 @@ namespace Graphics.Rendering.PostProcessing
             _frameBuffer.Unbind();
         }
 
-        public override void ResizeTextures()
-        {
-            FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
-
         public void Render(Texture velocity, Texture depth, Texture scene, float fps)
         {
             DilateVelocity(velocity);

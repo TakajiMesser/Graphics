@@ -1,6 +1,6 @@
 ﻿#version 440
 
-const int MAX_SAMPLES = 50;
+const int MAX_SAMPLES = 30;
 
 uniform sampler2D sceneTexture;
 uniform sampler2D velocityTexture;
