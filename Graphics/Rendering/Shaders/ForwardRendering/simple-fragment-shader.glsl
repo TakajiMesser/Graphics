@@ -57,36 +57,60 @@ layout(location = 1) out vec2 velocity;
 
 vec4 computeAmbientLight(vec3 ambient, vec3 lightColor, float illuminance)
 {
-	return vec4(illuminance * lightColor * ambient, 1.0);
+    return vec4(lightColor * ambient, 1.0);
+	//return vec4(illuminance * lightColor * ambient, 1.0);
 }
 
 vec4 computeDiffuseLight(vec3 diffuse, vec3 lightColor, float illuminance, vec3 unitNormal, vec3 unitLight)
 {
-	vec4 diffuseColor = vec4(illuminance * max(0.0, dot(unitNormal, unitLight)) * lightColor * diffuse, 1.0);
-
     if (useDiffuseMap > 0)
     {
-        diffuseColor = vec4(texture(diffuseMap, fUV).xyz, 1.0);
+        return vec4(texture(diffuseMap, fUV).xyz, 1.0);
     }
-
-    return diffuseColor;
+    else
+    {
+        float diffuseFactor = dot(unitNormal, unitLight);
+        if (diffuseFactor <= 0)
+        {
+            return vec4(0);
+        }
+        else
+        {
+            return vec4(illuminance * diffuseFactor * lightColor * diffuse, 1.0);
+        }
+    }
 }
 
 vec4 computeSpecularLight(vec3 specular, vec3 lightColor, float illuminance, vec3 unitNormal, vec3 unitLight, vec3 unitCamera, float specularExponent)
 {
-	vec4 specularColor = (dot(unitNormal, unitLight) <= 0.0)
-		? vec4(0.0, 0.0, 0.0, 0.0)
-		: vec4(illuminance
-			* pow(max(0.0, dot(reflect(-unitLight, unitNormal), unitCamera)), specularExponent)
-			* lightColor
-			* specular, 1.0);
-
     if (useSpecularMap > 0)
     {
-        specularColor = vec4(texture(specularMap, fUV).xyz, 1.0);
+        return vec4(texture(specularMap, fUV).xyz, 1.0);
     }
+    else
+    {
+        if (dot(unitNormal, unitLight) <= 0.0)
+        {
+            return vec4(0);
+        }
+        else
+        {
+            vec3 lightReflect = reflect(-unitLight, unitNormal);
+            float specularFactor = dot(lightReflect, unitCamera);
 
-    return specularColor;
+            if (specularFactor <= 0.0)
+            {
+                return vec4(0);
+            }
+            else
+            {
+                return vec4(illuminance
+			        * pow(specularFactor, specularExponent)
+			        * lightColor
+			        * specular, 1.0);
+            }
+        }
+    }
 }
 
 float calculateIlluminance(vec3 lightDirection, float radius, float intensity)
@@ -164,7 +188,7 @@ void main()
 		finalColor = fColor;
 	}
 	
-	finalColor = mix(lightColor, finalColor, 0.2);
+	finalColor *= lightColor;//mix(lightColor, finalColor, 0.2);
 
     vec2 a = (fPosition.xy / fPosition.w) * 0.5 + 0.5;
     vec2 b = (fPreviousPosition.xy / fPreviousPosition.w) * 0.5 + 0.5;

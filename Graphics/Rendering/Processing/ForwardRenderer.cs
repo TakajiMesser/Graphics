@@ -122,7 +122,7 @@ namespace Graphics.Rendering.Processing
             _program.Use();
             _frameBuffer.Draw();
 
-            GL.ClearColor(Color4.Purple);
+            GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 

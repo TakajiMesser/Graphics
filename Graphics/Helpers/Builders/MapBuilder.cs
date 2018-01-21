@@ -24,18 +24,18 @@ namespace Graphics.Helpers.Builders
             map.GameObjects.Add(CreatePlayerObject());
             map.GameObjects.Add(CreateEnemyObject());
 
-            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -2.0f), 50.0f, 50.0f);
+            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 50.0f, 50.0f);
             //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             map.Brushes.Add(floor);
 
-            var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, -1.0f), 5.0f, 10.0f, 5.0f);
+            var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
             wall.HasCollision = true;
             wall.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
             wall.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall);
 
-            var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, -1.0f), 5.0f, 10.0f, 5.0f);
+            var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
             wall2.HasCollision = true;
             wall2.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
@@ -84,7 +84,7 @@ namespace Graphics.Helpers.Builders
             return new MapGameObject()
             {
                 Name = "Player",
-                Position = new Vector3(0.0f, 0.0f, -0.5f),
+                Position = new Vector3(0.0f, 0.0f, -1.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,

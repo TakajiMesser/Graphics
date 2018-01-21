@@ -119,7 +119,7 @@ namespace Graphics.GameObjects
             _geometryRenderer = new GeometryRenderer(_window.Resolution);
 
             _postProcesses.Add(new MotionBlur(_window.Resolution) { Enabled = false });
-            _postProcesses.Add(new Blur(_window.Resolution) { Enabled = false });
+            _postProcesses.Add(new Blur(_window.Resolution) { Enabled = true });
             _postProcesses.Add(new InvertColors(_window.Resolution) { Enabled = false });
             _postProcesses.Add(new RenderToScreen(_window.Resolution) { Enabled = true });
 
@@ -194,11 +194,11 @@ namespace Graphics.GameObjects
         {
             //GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
-            //GL.DepthFunc(DepthFunction.Less);
+            GL.DepthFunc(DepthFunction.Less);
 
             // TODO - Find out why back-face culling is causing wonky visuals
-            //GL.Enable(EnableCap.CullFace);
-            //GL.CullFace(CullFaceMode.Back);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
 
             _forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
             //_geometryRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);

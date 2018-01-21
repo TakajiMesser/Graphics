@@ -57,7 +57,7 @@ namespace Graphics.Maps
                 },
                 TriangleIndices = new List<int>()
                 {
-                    0, 1, 2, 1, 2, 3
+                    0, 2, 1, 1, 2, 3
                 }
             };
         }
@@ -79,9 +79,9 @@ namespace Graphics.Maps
             var uvs = new List<Vector2>
             {
                 new Vector2(0, 0),
-                new Vector2(0, 1),
-                new Vector2(1, 0),
-                new Vector2(1, 1)
+                new Vector2(0, 2),
+                new Vector2(2, 0),
+                new Vector2(2, 2)
             };
 
             var normals = new List<Vector3>
@@ -96,21 +96,21 @@ namespace Graphics.Maps
 
             var vertexIndices = new List<int>
             {
-                7, 8, 5, 8, 5, 6,
-                4, 2, 8, 2, 8, 6,
-                3, 4, 7, 4, 7, 8,
-                1, 2, 3, 2, 3, 4, 
-                1, 3, 5, 3, 5, 7,
-                5, 6, 1, 6, 1, 2
+                8, 7, 5, 8, 5, 6,
+                2, 4, 8, 2, 8, 6,
+                4, 3, 7, 4, 7, 8,
+                2, 1, 3, 2, 3, 4, 
+                3, 1, 5, 3, 5, 7,
+                6, 5, 1, 6, 1, 2
             };
             var uvIndices = new List<int>
             {
-                1, 2, 3, 2, 3, 4,
-                1, 2, 3, 2, 3, 4,
-                1, 2, 3, 2, 3, 4,
-                1, 2, 3, 2, 3, 4,
-                1, 2, 3, 2, 3, 4,
-                1, 2, 3, 2, 3, 4
+                2, 1, 3, 2, 3, 4,
+                2, 1, 3, 2, 3, 4,
+                2, 1, 3, 2, 3, 4,
+                2, 1, 3, 2, 3, 4,
+                2, 1, 3, 2, 3, 4,
+                2, 1, 3, 2, 3, 4
             };
             var normalIndices = new List<int>
             {

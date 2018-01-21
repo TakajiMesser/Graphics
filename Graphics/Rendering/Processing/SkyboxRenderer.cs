@@ -113,7 +113,7 @@ namespace Graphics.Rendering.Processing
             _program.Use();
             gBuffer.Draw();
             //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
-            //GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+            //GL.DrawBuffers(1, new[] { DrawBuffersEnum.ColorAttachment0 });
 
             //GL.ClearColor(Color4.Purple);
             //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
