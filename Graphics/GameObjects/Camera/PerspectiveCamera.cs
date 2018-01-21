@@ -83,6 +83,35 @@ namespace Graphics.GameObjects
                     CalculateUp();
                 }
             }
+            else
+            {
+                var cameraSpeed = 0.02f;
+
+                if (inputState.IsHeld(new Input(Key.Up)))
+                {
+                    _currentAngles.Y += cameraSpeed;
+                }
+
+                if (inputState.IsHeld(new Input(Key.Down)))
+                {
+                    _currentAngles.Y -= cameraSpeed;
+                }
+
+                if (inputState.IsHeld(new Input(Key.Right)))
+                {
+                    _currentAngles.X -= cameraSpeed;
+                }
+
+                if (inputState.IsHeld(new Input(Key.Left)))
+                {
+                    _currentAngles.X += cameraSpeed;
+                }
+
+                _currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+
+                CalculateTranslation();
+                CalculateUp();
+            }
         }
 
         private Vector3 GetCurrentAngles()
