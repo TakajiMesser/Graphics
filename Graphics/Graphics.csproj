@@ -63,12 +63,15 @@
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="Inputs\InputMapping.cs" />
+    <Compile Include="Lighting\SpotLight.cs" />
+    <Compile Include="Lighting\PointLight.cs" />
     <Compile Include="Lighting\Light.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
+    <Compile Include="Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />
     <Compile Include="Outputs\Resolution.cs" />
@@ -105,9 +108,10 @@
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\LightRenderer.cs" />
     <Compile Include="Rendering\Processing\SkyboxRenderer.cs" />
     <Compile Include="Rendering\Processing\ForwardRenderer.cs" />
-    <Compile Include="Rendering\Processing\GeometryRenderer.cs" />
+    <Compile Include="Rendering\Processing\DeferredRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
@@ -147,6 +151,7 @@
     <None Include="Rendering\Shaders\Geometry\geometry-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\light-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-light-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\spot-light-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\stencil-vertex-shader.glsl" />
@@ -162,8 +167,10 @@
     <None Include="Rendering\Shaders\RenderToScreen\render_1D.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_blur.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_dilate.glsl" />
-    <None Include="Rendering\Shaders\ForwardRendering\simple-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\ForwardRendering\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\ForwardRendering\forward-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\ForwardRendering\forward-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Simple\simple-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Simple\simple-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Skybox\skybox_frag.glsl" />
     <None Include="Rendering\Shaders\Skybox\skybox_vert.glsl" />
   </ItemGroup>

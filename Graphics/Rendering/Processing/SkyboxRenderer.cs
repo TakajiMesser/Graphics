@@ -111,9 +111,8 @@ namespace Graphics.Rendering.Processing
         public void Render(Camera camera, FrameBuffer gBuffer)
         {
             _program.Use();
-            gBuffer.Draw();
-            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
-            //GL.DrawBuffers(1, new[] { DrawBuffersEnum.ColorAttachment0 });
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
             //GL.ClearColor(Color4.Purple);
             //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -122,6 +121,8 @@ namespace Graphics.Rendering.Processing
             int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
             int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
 
+            //GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
             GL.CullFace(CullFaceMode.Front);
             GL.DepthFunc(DepthFunction.Lequal);
 
@@ -131,7 +132,7 @@ namespace Graphics.Rendering.Processing
 
             var modelMatrix = Matrix4.CreateTranslation(camera.Position);
             //var modelMatrix = Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, -0.5f));
-            _program.SetUniformMatrix(ModelMatrix.NAME, modelMatrix);
+            _program.SetUniform(ModelMatrix.NAME, modelMatrix);
 
             RenderCube();
 

@@ -2,6 +2,7 @@
 using Graphics.Rendering.Vertices;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Linq;
 
 namespace Graphics.Rendering.Shaders
 {
@@ -71,10 +72,50 @@ namespace Graphics.Rendering.Shaders
             GL.Uniform1(location, index);
         }
 
-        public void SetUniformMatrix(string name, Matrix4 matrix)
+        public void SetUniform(string name, Matrix4 matrix)
         {
             int location = GetUniformLocation(name);
             GL.UniformMatrix4(location, false, ref matrix);
+        }
+
+        public void SetUniform(string name, Matrix4[] matrices)
+        {
+            int location = GetUniformLocation(name);
+
+            float[] values = new float[16 * matrices.Length];
+
+            for (var i = 0; i < matrices.Length; i++)
+            {
+                var columns = new Vector4[]
+                {
+                    matrices[i].Column0,
+                    matrices[i].Column1,
+                    matrices[i].Column2,
+                    matrices[i].Column3
+                };
+
+                for (var j = 0; j < 4; j++)
+                {
+                    values[i * 16 + j * 4] = columns[j].X;
+                    values[i * 16 + j * 4 + 1] = columns[j].Y;
+                    values[i * 16 + j * 4 + 2] = columns[j].Z;
+                    values[i * 16 + j * 4 + 3] = columns[j].W;
+                }
+            }
+
+            GL.UniformMatrix4(location, matrices.Length, true, values);
+        }
+
+        public void SetUniform(string name, Vector3 vector)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform3(location, vector);
+        }
+
+        public void SetUniform(string name, float value)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform1(location, value);
         }
 
         public int GetVertexAttributeLocation(string name)

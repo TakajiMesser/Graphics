@@ -1,19 +1,19 @@
 ﻿#version 440
 
-const int MAX_LIGHTS = 10;
+const int MAX_POINT_LIGHTS = 10;
 const int MAX_JOINTS = 32;
 const int MAX_WEIGHTS = 4;
 
-struct Light {
+struct PointLight {
 	vec3 position;
 	float radius;
 	vec3 color;
 	float intensity;
 };
 
-layout (std140) uniform LightBlock
+layout (std140) uniform PointLightBlock
 {
-	Light lights[MAX_LIGHTS];
+	PointLight pointLights[MAX_POINT_LIGHTS];
 };
 
 uniform mat4 modelMatrix;
@@ -38,27 +38,17 @@ in vec4 vBoneWeights;
 out vec4 fPosition;
 out vec4 fPreviousPosition;
 out vec3 fNormal;
+out vec3 fTangent;
 out vec4 fColor;
 out vec2 fUV;
 flat out int fMaterialIndex;
 out vec3 fCameraDirection;
-out vec3 fLightDirections[MAX_LIGHTS];
-
-mat3 GetTangentMatrix(vec4 normal, vec4 tangent)
-{
-    vec4 nNormal = normalize(normal);
-    vec4 nTangent = normalize(viewMatrix * modelMatrix * tangent);
-    vec3 nBitangent = normalize(cross(nNormal.xyz, nTangent.xyz));
-
-    return mat3(
-        nTangent.x, nBitangent.x, nNormal.x,
-        nTangent.y, nBitangent.y, nNormal.y,
-        nTangent.z, nBitangent.z, nNormal.z
-    );
-}
+out vec3 fLightDirections[MAX_POINT_LIGHTS];
 
 void main()
 {
+    mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
+
     vec4 position = vec4(vPosition, 1.0);
     vec4 normal = vec4(vNormal, 0.0);
     vec4 tangent = vec4(vTangent, 0.0);
@@ -76,11 +66,10 @@ void main()
         tangent = jointTransform * tangent;
     }
 
-    mat3 toTangentSpace = GetTangentMatrix(normal, tangent);
-
-    fPosition = projectionMatrix * viewMatrix * modelMatrix * position;
+    fPosition = mvp * position;
     fPreviousPosition = previousProjectionMatrix * previousViewMatrix * previousModelMatrix * position;
-	fNormal = toTangentSpace * (modelMatrix * normal).xyz;
+	fNormal = (modelMatrix * normal).xyz;
+    fTangent = (modelMatrix * tangent).xyz;
     fColor = vColor;
     fUV = vUV;
     fMaterialIndex = vMaterialIndex;
@@ -88,15 +77,15 @@ void main()
     gl_Position = fPosition;
 
 	// Model matrix maps vertices from "model coordinates" to "world coordinates"
-	vec4 vertexPosition_world = modelMatrix * vec4(vPosition, 1.0);
+	vec4 worldPosition = modelMatrix * vec4(vPosition, 1.0);
 
 	// This is the vector from the current vertex to the camera
-	fCameraDirection = toTangentSpace * ((inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - vertexPosition_world.xyz);
+	fCameraDirection = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 
-	for (int i = 0; i < MAX_LIGHTS; i++)
+	for (int i = 0; i < MAX_POINT_LIGHTS; i++)
 	{
 		// Wouldn't we want the direction that the light is coming from? This would be the current position MINUS the light source
 		// This is the vector from the current vertex TO the light source
-		fLightDirections[i] = toTangentSpace * (lights[i].position - vertexPosition_world.xyz);
+		fLightDirections[i] = pointLights[i].position - worldPosition.xyz;
 	}
 }

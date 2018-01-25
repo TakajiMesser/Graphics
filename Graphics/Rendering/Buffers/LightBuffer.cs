@@ -12,25 +12,24 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Buffers
 {
-    public class LightBuffer : UniformBuffer<Light>
+    public class LightBuffer : UniformBuffer<PointLight>
     {
-        public const string NAME = "LightBlock";
-        public const int BINDING = 0;
+        public const string NAME = "PointLightBlock";
+        public const int BINDING = 1;
 
-        public List<Light> Lights { get; } = new List<Light>();
+        public List<PointLight> PointLights { get; } = new List<PointLight>();
 
         public LightBuffer(ShaderProgram program) : base(NAME, BINDING, program) { }
 
-        public void AddLight(Light light) => Lights.Add(light);
+        public void AddPointLight(PointLight light) => PointLights.Add(light);
+        public void AddPointLights(IEnumerable<PointLight> lights) => PointLights.AddRange(lights);
 
-        public void AddLights(IEnumerable<Light> lights) => Lights.AddRange(lights);
-
-        public void Clear() => Lights.Clear();
+        public void Clear() => PointLights.Clear();
 
         public override void Bind()
         {
             GL.BindBuffer(BufferTarget.UniformBuffer, _handle);
-            GL.BufferData(BufferTarget.UniformBuffer, _size * Lights.Count, Lights.ToArray(), BufferUsageHint.DynamicDraw);
+            GL.BufferData(BufferTarget.UniformBuffer, _size * PointLights.Count, PointLights.ToArray(), BufferUsageHint.DynamicDraw);
         }
     }
 }

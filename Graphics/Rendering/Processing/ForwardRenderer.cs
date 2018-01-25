@@ -40,8 +40,8 @@ namespace Graphics.Rendering.Processing
 
         protected void LoadPrograms()
         {
-            _program = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.VERTEX_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FRAGMENT_SHADER_PATH)));
+            _program = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.FORWARD_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FORWARD_FRAGMENT_SHADER_PATH)));
         }
 
         public void ResizeTextures()

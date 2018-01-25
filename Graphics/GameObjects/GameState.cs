@@ -30,7 +30,9 @@ namespace Graphics.GameObjects
 
         private ForwardRenderer _forwardRenderer;
         private SkyboxRenderer _skyboxRenderer;
-        private GeometryRenderer _geometryRenderer;
+        private DeferredRenderer _deferredRenderer;
+        //private LightRenderer _lightRenderer;
+
         private List<PostProcess> _preProcesses = new List<PostProcess>();
         private List<PostProcess> _postProcesses = new List<PostProcess>();
         private TextureManager _textureManager = new TextureManager();
@@ -38,7 +40,7 @@ namespace Graphics.GameObjects
         private Camera _camera;
         private List<GameObject> _gameObjects = new List<GameObject>();
         private List<Brush> _brushes = new List<Brush>();
-        private List<Light> _lights = new List<Light>();
+        private List<PointLight> _pointLights = new List<PointLight>();
 
         private QuadTree _gameObjectQuads;
         private QuadTree _brushQuads;
@@ -62,7 +64,8 @@ namespace Graphics.GameObjects
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
             _brushQuads = new QuadTree(0, map.Boundaries);
             _lightQuads = new QuadTree(0, map.Boundaries);
-            _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
+            _lightQuads.InsertRange(map.PointLights.Select(l => new BoundingCircle(l)));
+            _pointLights.AddRange(map.PointLights);
 
             foreach (var mapBrush in map.Brushes)
             {
@@ -72,7 +75,7 @@ namespace Graphics.GameObjects
                 {
                     _brushQuads.Insert(brush.Bounds);
                 }
-                brush.AddLights(_lightQuads.Retrieve(brush.Bounds).Select(c => (Light)c.AttachedObject));
+                brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Select(c => (PointLight)c.AttachedObject));
 
                 brush.TextureMapping = new TextureMapping()
                 {
@@ -110,14 +113,14 @@ namespace Graphics.GameObjects
 
         private void LoadPrograms()
         {
-            _forwardRenderer = new ForwardRenderer(_window.Resolution);
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
 
+            _forwardRenderer = new ForwardRenderer(_window.Resolution);
+            _deferredRenderer = new DeferredRenderer(_window.Resolution);
+            //_lightRenderer = new LightRenderer(_window.Resolution);
             _skyboxRenderer = new SkyboxRenderer(_window.Resolution);
-
-            _geometryRenderer = new GeometryRenderer(_window.Resolution);
-
+            
             _postProcesses.Add(new MotionBlur(_window.Resolution) { Enabled = false });
             _postProcesses.Add(new Blur(_window.Resolution) { Enabled = true });
             _postProcesses.Add(new InvertColors(_window.Resolution) { Enabled = false });
@@ -129,8 +132,9 @@ namespace Graphics.GameObjects
             }
 
             _forwardRenderer.Load();
+            _deferredRenderer.Load();
+            //_lightRenderer.Load();
             _skyboxRenderer.Load();
-            _geometryRenderer.Load();
 
             foreach (var process in _postProcesses)
             {
@@ -174,8 +178,8 @@ namespace Graphics.GameObjects
             foreach (var gameObject in _gameObjects)
             {
                 gameObject.ClearLights();
-                gameObject.AddLights(_lightQuads.Retrieve(gameObject.Bounds)
-                    .Select(c => (Light)c.AttachedObject));
+                gameObject.AddPointLights(_lightQuads.Retrieve(gameObject.Bounds)
+                    .Select(c => (PointLight)c.AttachedObject));
 
                 var filteredColliders = _brushQuads.Retrieve(gameObject.Bounds)
                     .Concat(_gameObjectQuads
@@ -192,21 +196,25 @@ namespace Graphics.GameObjects
 
         public void RenderFrame()
         {
-            //GL.DepthMask(true);
+            GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
-
-            // TODO - Find out why back-face culling is causing wonky visuals
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-            _forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
-            //_geometryRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
+            //_forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
+            //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
 
-            _skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
+            _deferredRenderer.GeometryPass(_textureManager, _camera, _brushes, _gameObjects);            
+            _deferredRenderer.LightPass(_camera, _pointLights);
+            _skyboxRenderer.Render(_camera, _deferredRenderer.GBuffer);
 
-            // Now, extract the final texture from the geometry renderer, so that we can pass it off to the post-processes
-            var texture = _forwardRenderer.FinalTexture;
+            // Read from GBuffer's final texture, so that we can post-process it
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.ReadBuffer(ReadBufferMode.ColorAttachment6);
+            var texture = _deferredRenderer.FinalTexture;
+            //GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
+            //var texture = _deferredRenderer.ColorTexture;
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -221,13 +229,13 @@ namespace Graphics.GameObjects
                 else if (process.GetType() == typeof(MotionBlur))
                 {
                     var blur = (MotionBlur)process;
-                    blur.Render(_forwardRenderer.VelocityTexture, _forwardRenderer.DepthTexture, texture, 60.0f);
+                    blur.Render(_deferredRenderer.VelocityTexture, _deferredRenderer.DepthStencilTexture, texture, 60.0f);
                     texture = blur.FinalTexture;
                 }
                 else if (process.GetType() == typeof(Blur))
                 {
                     var blur = (Blur)process;
-                    blur.Render(texture, _forwardRenderer.VelocityTexture, 60.0f);
+                    blur.Render(texture, _deferredRenderer.VelocityTexture, 60.0f);
                     texture = blur.FinalTexture;
                 }
                 else if (process.GetType() == typeof(RenderToScreen))

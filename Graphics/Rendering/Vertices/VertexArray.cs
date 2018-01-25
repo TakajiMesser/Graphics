@@ -9,6 +9,8 @@ using OpenTK.Graphics.ES30;
 using Graphics.Helpers;
 using Graphics.Rendering.Buffers;
 using Graphics.Rendering.Shaders;
+using System.Runtime.InteropServices;
+using System.Reflection;
 
 namespace Graphics.Rendering.Vertices
 {
@@ -30,14 +32,76 @@ namespace Graphics.Rendering.Vertices
             _generated = true;
 
             Bind();
+            SetVertexAttributes(program);
+            Unbind();
+        }
 
-            foreach (var attribute in VertexHelper.GetAttributes<T>())
+        private int GetSize(Type type)
+        {
+            if (type == typeof(int) || type == typeof(float))
+            {
+                return 1;
+            }
+            else if (type == typeof(Vector2))
+            {
+                return 2;
+            }
+            else if (type == typeof(Vector3))
+            {
+                return 3;
+            }
+            else if (type == typeof(Vector4) || type == typeof(Color4))
+            {
+                return 4;
+            }
+            else
+            {
+                throw new NotImplementedException("Cannot handle property type " + type);
+            }
+        }
+
+        private VertexAttribPointerType GetPointerType(Type type)
+        {
+            if (type == typeof(int))
+            {
+                return VertexAttribPointerType.Int;
+            }
+            else if (type == typeof(float)
+                || type == typeof(Vector2)
+                || type == typeof(Vector3)
+                || type == typeof(Vector4)
+                || type == typeof(Color4))
+            {
+                return VertexAttribPointerType.Float;
+            }
+            else
+            {
+                throw new NotImplementedException("Cannot handle property type " + type);
+            }
+        }
+
+        private void SetVertexAttributes(ShaderProgram program)
+        {
+            int stride = Marshal.SizeOf<T>();
+            //var properties = typeof(T).GetProperties(/*BindingFlags.Public*/);
+            var fields = typeof(T).GetFields();
+
+            for (var i = 0; i < fields.Length; i++)
+            {
+                GL.EnableVertexAttribArray(i);
+
+                int size = GetSize(fields[i].FieldType);
+                IntPtr offset = Marshal.OffsetOf<T>(fields[i].Name);
+                VertexAttribPointerType type = GetPointerType(fields[i].FieldType);
+
+                GL.VertexAttribPointer(i, size, type, false, stride, offset);
+            }
+
+            /*foreach (var attribute in VertexHelper.GetAttributes<T>())
             {
                 int index = program.GetAttributeLocation(attribute.Name);
                 attribute.Set(index);
-            }
-
-            Unbind();
+            }*/
         }
 
         public void Bind()

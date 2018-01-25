@@ -57,10 +57,10 @@ namespace Graphics.Rendering.PostProcessing
 
         public void Render(Texture texture, int channel = -1)
         {
-            // Render it!
+            GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            GL.ClearColor(Color4.Purple);
+            GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, texture.Width, texture.Height);
 

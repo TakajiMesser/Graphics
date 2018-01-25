@@ -74,8 +74,6 @@ namespace Graphics.Rendering.Buffers
             {
                 GL.DrawBuffer((DrawBufferMode)attachment.Key);
             }
-
-            // GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
         }
 
         public void Unbind()

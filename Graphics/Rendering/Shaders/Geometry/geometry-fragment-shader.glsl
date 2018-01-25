@@ -1,244 +1,85 @@
-﻿#version 400
+﻿#version 440
 
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat4 previousModelMatrix;
-uniform mat4 previousViewMatrix;
-uniform mat4 previousProjectionMatrix;
-uniform vec3 cameraPosition;
+const int MAX_MATERIALS = 10;
 
-uniform int useDisplacementTexture;
-uniform int displacementTextureUnit;
-uniform float displacementStrength = 0.1;
-uniform vec2 renderSize;
-
-/*layout(std140) uniform MaterialTextures
-{
-	sampler2D bindlessTexture[80];
-};*/
-
-uniform int useWireframe;
-
-uniform vec3 diffuseColor;
-uniform float emissionStrength;
-uniform vec3 specularColor;
-uniform float specularShininess;
+struct Material {
+	vec3 ambient;
+	vec3 diffuse;
+	vec3 specular;
+	float specularExponent;
+};
 
 uniform sampler2D mainTexture;
 uniform sampler2D normalMap;
 uniform sampler2D diffuseMap;
 uniform sampler2D specularMap;
-uniform sampler2D parallaxTexture;
 
 uniform int useMainTexture;
 uniform int useNormalMap;
 uniform int useDiffuseMap;
 uniform int useSpecularMap;
-uniform int useParallaxTexture;
+
+layout (std140) uniform MaterialBlock
+{
+	Material materials[MAX_MATERIALS];
+};
 
 in vec3 fPosition;
-in vec3 fPreviousPosition;
+in vec4 fClipPosition;
+in vec4 fPreviousClipPosition;
 in vec3 fNormal;
 in vec3 fTangent;
 in vec4 fColor;
 in vec2 fUV;
 flat in int fMaterialIndex;
-in vec3 fCameraPosition;
-in vec4 fClipPosition;
-in vec4 fPreviousClipPosition;
-noperspective in vec3 fWireframeDistance;
+in vec3 fCameraDirection;
 
-out vec4 diffuseID;
-out vec4 normalDepth;
-out vec4 specular;
-out vec2 velocity;
+layout(location = 0) out vec3 position;
+layout(location = 1) out vec4 color;
+layout(location = 2) out vec4 normalDepth;
+layout(location = 3) out vec4 diffuseMaterial;
+layout(location = 4) out vec4 specular;
+layout(location = 5) out vec2 velocity;
+layout(location = 6) out vec4 finalColor;
 
-float calcLinearDepth(float depth, float near, float far)
+vec3 calculateNormal()
 {
-	depth = depth * 2.0 - 1.0;
-	float linearDepth = (2.0 * near * far) / (far + near - depth * (far - near));
+    vec3 nNormal = normalize(fNormal);
+    vec3 nTangent = normalize(fTangent);
 
-	linearDepth = depth / (far - near);
+    // Turn into an orthonormal basis by the Gramm-Schmidt process
+    nTangent = normalize(nTangent - dot(nTangent, nNormal) * nNormal);
+    
+    vec3 nBitangent = cross(nTangent, nNormal);
 
-	return linearDepth;
-}
+    mat3 tbn = mat3(nTangent, nBitangent, nNormal);
 
-float calcRealDepth(float linearDepth, float near, float far)
-{
-	float depth = linearDepth * (far - near);
-	return depth;
-}
+    vec4 depth = 2.0 * texture(normalMap, fUV, -1.0) - 1.0;
+    return normalize(tbn * depth.rgb);
 
-mat3 GetTangentMatrix()
-{
-    vec3 normal = normalize(fNormal);
-    vec3 tangent = normalize(viewMatrix * modelMatrix * vec4(fTangent, 0.0)).xyz;
-    vec3 bitangent = normalize(cross(normal, tangent));
-
-    return mat3(
-        tangent.x, bitangent.x, normal.x,
-        tangent.y, bitangent.y, normal.y,
-        tangent.z, bitangent.z, normal.z
-    );
-}
-
-vec3 calcNormalMapping(sampler2D normal_texture, vec2 tex_coords, mat3 TBN)
-{
-	vec3 mapNormal = texture(normal_texture, tex_coords).xyz;
-	mapNormal = 2.0 * mapNormal - vec3(1.0);
-
-	vec3 finalNormal;
-	finalNormal = TBN * mapNormal;
-	return normalize(finalNormal);
-}
-
-vec2 calcParallaxMapping(sampler2D parallax_texture, vec2 tex_coords, mat3 TBN, vec3 camera_position, vec3 world_position)
-{ 
-	float height_scale = 0.02;
-
-	mat3 tTBN = transpose(TBN);
-
-	vec3 t_camPosition = tTBN * camera_position;
-	vec3 t_worldPosition = tTBN * world_position;
-
-	vec3 viewDir = normalize(-t_camPosition - t_worldPosition);
-
-	// number of depth layers
-	const float minLayers = 5;
-	const float maxLayers = 20;
-	float numLayers = mix(maxLayers, minLayers, abs(dot(vec3(0.0, 0.0, 1.0), viewDir)));  
-	// calculate the size of each layer
-	float layerDepth = 1.0 / numLayers;
-	// depth of current layer
-	float currentLayerDepth = 0.0;
-	// the amount to shift the texture coordinates per layer (from vector P)
-	vec2 P = viewDir.xy / viewDir.z * height_scale; 
-	vec2 deltaTexCoords = P / numLayers;
-
-	// get initial values
-	vec2  currentTexCoords     = tex_coords;
-	float currentDepthMapValue = 1.0 - texture(parallax_texture, currentTexCoords).r;
-
-	while(currentLayerDepth < currentDepthMapValue)
-	{
-		// shift texture coordinates along direction of P
-		currentTexCoords -= deltaTexCoords;
-		// get depthmap value at current texture coordinates
-		currentDepthMapValue = 1.0 - texture(parallax_texture, currentTexCoords).r;  
-		// get depth of next layer
-		currentLayerDepth += layerDepth;  
-	}
-
-	// -- parallax occlusion mapping interpolation from here on
-	// get texture coordinates before collision (reverse operations)
-	vec2 prevTexCoords = currentTexCoords + deltaTexCoords;
-
-	// get depth after and before collision for linear interpolation
-	float afterDepth  = currentDepthMapValue - currentLayerDepth;
-	float beforeDepth = 1.0 - texture(parallax_texture, prevTexCoords).r - currentLayerDepth + layerDepth;
-
-	// interpolation of texture coordinates
-	float weight = afterDepth / (afterDepth - beforeDepth);
-	vec2 finalTexCoords = prevTexCoords * weight + currentTexCoords * (1.0 - weight);
-
-	return finalTexCoords;
+    return depth.rgb;
 }
 
 void main()
 {
-	mat3 toTangentSpace = GetTangentMatrix();
-	
-	// Parallax Mapping
-	vec2 textureCoords = fUV;
-	if (useParallaxTexture == 1)
-	{
-		textureCoords = calcParallaxMapping(parallaxTexture, textureCoords, toTangentSpace, fCameraPosition, fPosition);
-	}
+    position = fPosition;
 
-	// Diffuse mapping + material ID
-	vec4 diffuse_color_final = vec4(diffuseColor, 1.0);
-	if (useDiffuseMap == 1)
-	{
-		diffuse_color_final = texture(diffuseMap, textureCoords);
-	}
+    color = (useMainTexture > 0) ? texture(mainTexture, fUV) : fColor;
 
-	int material_id = 0;
-	if (emissionStrength > 0)
-	{
-		material_id = 1;
-		diffuse_color_final.xyz *= (emissionStrength);
-	}
-	diffuseID = vec4(diffuse_color_final.xyz, material_id);
+	vec3 unitNormal = (useNormalMap > 0) ? calculateNormal() : normalize(fNormal);
+	normalDepth = vec4(unitNormal, length(fCameraDirection));
 
-	if (useWireframe == 1)
-	{
-		float near_distance = min(min(fWireframeDistance[0], fWireframeDistance[1]), fWireframeDistance[2]);
-		float line_size = 1.0;
-		float edgeIntensity1 = exp2(-(1.0 / line_size) * near_distance * near_distance);
-		line_size = 20.0;
-		float edgeIntensity2 = exp2(-(1.0 / line_size) * near_distance * near_distance);
+    diffuseMaterial = (useDiffuseMap > 0)
+        ? vec4(texture(diffuseMap, fUV).xyz, fMaterialIndex)
+        : vec4(materials[fMaterialIndex].diffuse, fMaterialIndex);
 
-		vec3 lineColor_inner = (edgeIntensity1 * vec3(1.0)) + ((1.0 - edgeIntensity1) * vec3(0.0));
-		vec3 lineColor_outer = (edgeIntensity2 * vec3(0.0)) + ((1.0 - edgeIntensity2) * diffuseID.xyz);
+    specular = (useSpecularMap > 0)
+        ? vec4(texture(specularMap, fUV))
+        : vec4(materials[fMaterialIndex].specular, materials[fMaterialIndex].specularExponent);
 
-		diffuseID.xyz = lineColor_inner + lineColor_outer;
-	}
+    vec2 a = (fClipPosition.xy / fClipPosition.w) * 0.5 + 0.5;
+    vec2 b = (fPreviousClipPosition.xy / fPreviousClipPosition.w) * 0.5 + 0.5;
+    velocity = a - b;
 
-	// Normal mapping + linear depth
-	float depth = length(fCameraPosition);
-	normalDepth = vec4(fNormal, depth);
-	if (useNormalMap == 1)
-	{	
-		vec3 normal_map = calcNormalMapping(normalMap, textureCoords, toTangentSpace);
-		normalDepth = vec4(normal_map, depth);
-	}
-
-    // Specular mapping
-	vec3 specular_color_final = specularColor;
-	float specular_shininess_final = max(0.05, 0.9 - (log2(specularShininess) / 9.0));
-	if (useSpecularMap == 1)
-	{
-		specular_color_final = texture(specularMap, textureCoords).xyz;
-	}
-	specular = vec4(specular_color_final, specular_shininess_final);
-
-	// Velocity mapping
-	vec2 a = fClipPosition.xy / fClipPosition.w;
-	vec2 b = fPreviousClipPosition.xy / fPreviousClipPosition.w;
-	velocity = a - b;
+    finalColor = color * vec4(materials[fMaterialIndex].ambient, 1.0);
 }
-
-/*out vec4 diffuseID;
-out vec4 normalDepth;
-out vec4 specular;
-out vec2 velocity;
-
-uniform vec3 diffuseColor;
-uniform float emissionStrength;
-uniform vec3 specularColor;
-uniform float specularShininess;
-
-uniform sampler2D mainTexture;
-uniform sampler2D normalMap;
-uniform sampler2D diffuseMap;
-uniform sampler2D specularMap;
-uniform sampler2D parallaxTexture;
-
-uniform int useMainTexture;
-uniform int useNormalMap;
-uniform int useDiffuseMap;
-uniform int useSpecularMap;
-uniform int useParallaxTexture;
-
-in vec3 fPosition;
-in vec3 fPreviousPosition;
-in vec3 fNormal;
-in vec3 fTangent;
-in vec4 fColor;
-in vec2 fUV;
-flat in int fMaterialIndex;
-in vec3 fCameraPosition;
-in vec4 fClipPosition;
-in vec4 fPreviousClipPosition;
-noperspective in vec3 fWireframeDistance;*/

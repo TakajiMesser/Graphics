@@ -25,7 +25,7 @@ namespace Graphics.Physics.Collision
             AttachedObject = brush;
         }
 
-        public Bounds(Light light)
+        public Bounds(PointLight light)
         {
             AttachedObject = light;
             Center = light.Position;

@@ -24,6 +24,8 @@ namespace Graphics.Helpers
                 new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 36),
                 new VertexAttribute("vUV", 2, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 52),
                 new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<Vertex>(), 60)
+                //new VertexAttribute("vBoneIDs", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 64),
+                //new VertexAttribute("vBoneWeights", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 80)
             });
 
         public static IEnumerable<VertexAttribute> GetAttributes<T>() where T : struct

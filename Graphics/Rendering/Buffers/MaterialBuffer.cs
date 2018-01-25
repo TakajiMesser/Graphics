@@ -15,7 +15,7 @@ namespace Graphics.Rendering.Buffers
     public class MaterialBuffer : UniformBuffer<Material>
     {
         public const string NAME = "MaterialBlock";
-        public const int BINDING = 1;
+        public const int BINDING = 0;
 
         public List<Material> Materials { get; } = new List<Material>();
 

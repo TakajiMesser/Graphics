@@ -41,14 +41,14 @@ namespace Graphics.Helpers.Builders
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall2);
 
-            map.Lights.Add(new Light()
+            map.PointLights.Add(new PointLight()
             {
                 Position = new Vector3(0.0f, 0.0f, 1.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
             });
-            map.Lights.Add(new Light()
+            map.PointLights.Add(new PointLight()
             {
                 Position = new Vector3(0.0f, 20.0f, 1.0f),
                 Radius = 30.0f,

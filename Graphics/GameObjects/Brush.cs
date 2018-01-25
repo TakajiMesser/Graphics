@@ -42,10 +42,13 @@ namespace Graphics.GameObjects
 
         public void AddTestColors() => Mesh.AddTestColors();
 
-        public void AddLights(IEnumerable<Light> lights) => Mesh.AddLights(lights);
+        public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
 
         public void Draw(ShaderProgram program)
         {
+            program.SetUniform("useSkinning", 0);
+            program.SetUniform("jointTransforms", new Matrix4[32]);
+
             _modelMatrix.Set(program);
             Mesh.Draw();
         }

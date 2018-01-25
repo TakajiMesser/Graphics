@@ -62,7 +62,7 @@ namespace Graphics.GameObjects
         }
 
         public void ClearLights() => Mesh.ClearLights();
-        public void AddLights(IEnumerable<Light> lights) => Mesh.AddLights(lights);
+        public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
 
         public virtual void OnInitialization()
         {
@@ -177,6 +177,9 @@ namespace Graphics.GameObjects
             {
                 throw new InvalidOperationException("Cannot draw GameObject " + Name + " with null mesh");
             }
+
+            program.SetUniform("useSkinning", 0);
+            program.SetUniform("jointTransforms", new Matrix4[32]);
 
             _modelMatrix.Set(program);
             Mesh.Draw();

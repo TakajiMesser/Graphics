@@ -58,8 +58,8 @@ namespace Graphics.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
-            program.SetUniformMatrix(NAME, Matrix);
-            program.SetUniformMatrix(PREVIOUS_NAME, _previousMatrix);
+            program.SetUniform(NAME, Matrix);
+            program.SetUniform(PREVIOUS_NAME, _previousMatrix);
 
             _previousMatrix = Matrix;
         }

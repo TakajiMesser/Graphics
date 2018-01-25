@@ -23,7 +23,7 @@ namespace Graphics.Maps
         public MapCamera Camera { get; set; }
         public List<MapGameObject> GameObjects { get; set; } = new List<MapGameObject>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
-        public List<Light> Lights { get; set; } = new List<Light>();
+        public List<PointLight> PointLights { get; set; } = new List<PointLight>();
 
         public Map()
         {

@@ -1,9 +1,9 @@
 ﻿#version 440
 
-const int MAX_LIGHTS = 10;
+const int MAX_POINT_LIGHTS = 10;
 const int MAX_MATERIALS = 10;
 
-struct Light {
+struct PointLight {
 	vec3 position;
 	float radius;
 	vec3 color;
@@ -17,21 +17,14 @@ struct Material {
 	float specularExponent;
 };
 
-layout (std140) uniform LightBlock
+layout (std140) uniform PointLightBlock
 {
-	Light lights[MAX_LIGHTS];
+	PointLight pointLights[MAX_POINT_LIGHTS];
 };
 layout (std140) uniform MaterialBlock
 {
 	Material materials[MAX_MATERIALS];
 };
-
-uniform mat4 modelMatrix;
-uniform mat4 viewMatrix;
-uniform mat4 projectionMatrix;
-uniform mat4 previousModelMatrix;
-uniform mat4 previousViewMatrix;
-uniform mat4 previousProjectionMatrix;
 
 uniform sampler2D mainTexture;
 uniform sampler2D normalMap;
@@ -46,19 +39,26 @@ uniform int useSpecularMap;
 in vec4 fPosition;
 in vec4 fPreviousPosition;
 in vec3 fNormal;
+in vec3 fTangent;
 in vec4 fColor;
 in vec2 fUV;
 flat in int fMaterialIndex;
 in vec3 fCameraDirection;
-in vec3 fLightDirections[MAX_LIGHTS];
+in vec3 fLightDirections[MAX_POINT_LIGHTS];
 
 layout(location = 0) out vec4 finalColor;
 layout(location = 1) out vec2 velocity;
 
-vec4 computeAmbientLight(vec3 ambient, vec3 lightColor, float illuminance)
+vec4 computeAmbientLight(vec3 ambient, vec3 lightColor)
 {
-    return vec4(lightColor * ambient, 1.0);
-	//return vec4(illuminance * lightColor * ambient, 1.0);
+    if (ambient == vec3(0.05, 0.05, 0.05))
+    {
+        return vec4(lightColor * ambient, 1.0);
+    }
+    else
+    {
+        return vec4(0, 0, 0, 1.0);
+    }
 }
 
 vec4 computeDiffuseLight(vec3 diffuse, vec3 lightColor, float illuminance, vec3 unitNormal, vec3 unitLight)
@@ -151,43 +151,45 @@ float calculateIlluminance(vec3 lightDirection, float radius, float intensity)
     }
 }
 
+vec3 calculateNormal()
+{
+    vec3 nNormal = normalize(fNormal);
+    vec3 nTangent = normalize(fTangent);
+
+    // Turn into an orthonormal basis by the Gramm-Schmidt process
+    nTangent = normalize(nTangent - dot(nTangent, nNormal) * nNormal);
+    
+    vec3 nBitangent = cross(nTangent, nNormal);
+
+    mat3 tbn = mat3(nTangent, nBitangent, nNormal);
+
+    vec4 normalDepth = 2.0 * texture(normalMap, fUV, -1.0) - 1.0;
+    return normalize(tbn * normalDepth.rgb);
+}
+
 void main()
 {
 	vec4 ambientColor = vec4(0.0, 0.0, 0.0, 1.0);
 	vec4 diffuseColor = vec4(0.0, 0.0, 0.0, 1.0);
 	vec4 specularColor = vec4(0.0, 0.0, 0.0, 1.0);
 
-	vec3 unitNormal = normalize(fNormal);
+	vec3 unitNormal = (useNormalMap > 0) ? calculateNormal() : normalize(fNormal);
 	vec3 unitCamera = normalize(fCameraDirection);
 
-    if (useNormalMap > 0)
-    {
-        vec4 normalDepth = 2.0 * texture(normalMap, fUV, -1.0) - 1.0;
-        unitNormal = normalize(normalDepth.rgb);
-    }
-
-	for (int i = 0; i < MAX_LIGHTS; i++)
+	for (int i = 0; i < MAX_POINT_LIGHTS; i++)
 	{
         vec3 unitLight = normalize(fLightDirections[i]);
-		float illuminance = calculateIlluminance(fLightDirections[i], lights[i].radius, lights[i].intensity);
+		float illuminance = calculateIlluminance(fLightDirections[i], pointLights[i].radius, pointLights[i].intensity);
 		
-		ambientColor += computeAmbientLight(materials[fMaterialIndex].ambient, lights[i].color, illuminance);
-		diffuseColor += computeDiffuseLight(materials[fMaterialIndex].diffuse, lights[i].color, illuminance, unitNormal, unitLight);
-		specularColor += computeSpecularLight(materials[fMaterialIndex].specular, lights[i].color, illuminance, unitNormal, unitLight, unitCamera, materials[fMaterialIndex].specularExponent);
+		ambientColor += computeAmbientLight(materials[fMaterialIndex].ambient, pointLights[i].color);
+		diffuseColor += computeDiffuseLight(materials[fMaterialIndex].diffuse, pointLights[i].color, illuminance, unitNormal, unitLight);
+		specularColor += computeSpecularLight(materials[fMaterialIndex].specular, pointLights[i].color, illuminance, unitNormal, unitLight, unitCamera, materials[fMaterialIndex].specularExponent);
 	}
 
 	vec4 lightColor = ambientColor + diffuseColor + specularColor;
 	vec4 textureColor = texture(mainTexture, fUV);
 
-	if (useMainTexture > 0)
-	{
-        finalColor = textureColor;
-	}
-	else
-	{
-		finalColor = fColor;
-	}
-	
+    finalColor = (useMainTexture > 0) ? textureColor : fColor;
 	finalColor *= lightColor;//mix(lightColor, finalColor, 0.2);
 
     vec2 a = (fPosition.xy / fPosition.w) * 0.5 + 0.5;

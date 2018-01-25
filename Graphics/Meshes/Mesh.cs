@@ -71,7 +71,7 @@ namespace Graphics.Meshes
         }
 
         public void ClearLights() => _lightBuffer.Clear();
-        public void AddLights(IEnumerable<Light> lights) => _lightBuffer.AddLights(lights);
+        public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
 
         public void Draw()
         {
