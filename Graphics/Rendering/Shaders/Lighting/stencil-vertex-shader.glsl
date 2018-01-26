@@ -11,5 +11,4 @@ in vec3 vPosition;
 void main()
 {
 	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
-    //gl_Position = vec4(vPosition, 1.0);
 }

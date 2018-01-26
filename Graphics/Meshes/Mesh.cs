@@ -182,13 +182,13 @@ namespace Graphics.Meshes
                     var deltaUV1 = uvs[uvIndices[i + 1]] - uvs[uvIndices[i]];
                     var deltaUV2 = uvs[uvIndices[i + 1]] - uvs[uvIndices[i]];
 
-                    var r = 1 / (deltaUV1.X * deltaUV2.Y - deltaUV1.Y - deltaUV2.X);
+                    var r = 1.0f / (deltaUV1.X * deltaUV2.Y - deltaUV1.Y - deltaUV2.X);
                     tangent = (deltaPos1 * deltaUV2.Y - deltaPos2 * deltaUV1.Y) * r;
                 }
 
                 var uv = uvIndices[i] > 0 ? uvs[uvIndices[i]] : Vector2.Zero;
 
-                var meshVertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], tangent, uv, materialIndices[i]);
+                var meshVertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], tangent.Normalized(), uv, materialIndices[i]);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords

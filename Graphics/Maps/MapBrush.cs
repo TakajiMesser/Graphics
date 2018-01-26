@@ -150,7 +150,7 @@ namespace Graphics.Maps
 
                 var uv = uvIndices[i] > 0 ? uvs[uvIndices[i] - 1] : Vector2.Zero;
 
-                var meshVertex = new Vertex(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent, uv, 0);
+                var meshVertex = new Vertex(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv, 0);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords

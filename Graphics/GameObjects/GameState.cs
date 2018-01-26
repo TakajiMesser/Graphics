@@ -54,6 +54,7 @@ namespace Graphics.GameObjects
             _window.Resized += (s, e) =>
             {
                 _forwardRenderer.ResizeTextures();
+                _deferredRenderer.ResizeTextures();
                 foreach (var process in _postProcesses)
                 {
                     process.ResizeTextures();
@@ -67,9 +68,10 @@ namespace Graphics.GameObjects
             _lightQuads.InsertRange(map.PointLights.Select(l => new BoundingCircle(l)));
             _pointLights.AddRange(map.PointLights);
 
-            foreach (var mapBrush in map.Brushes)
+            for (var i = 0; i < map.Brushes.Count; i++)
             {
-                var brush = mapBrush.ToBrush(_forwardRenderer._program);
+                var mapBrush = map.Brushes[i];
+                var brush = mapBrush.ToBrush(_deferredRenderer._geometryProgram);
 
                 if (brush.HasCollision)
                 {
@@ -90,7 +92,7 @@ namespace Graphics.GameObjects
 
             foreach (var mapObject in map.GameObjects)
             {
-                var gameObject = mapObject.ToGameObject(_forwardRenderer._program);
+                var gameObject = mapObject.ToGameObject(_deferredRenderer._geometryProgram);
 
                 gameObject.TextureMapping = new TextureMapping()
                 {
@@ -213,8 +215,6 @@ namespace Graphics.GameObjects
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.ReadBuffer(ReadBufferMode.ColorAttachment6);
             var texture = _deferredRenderer.FinalTexture;
-            //GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-            //var texture = _deferredRenderer.ColorTexture;
 
             GL.Disable(EnableCap.DepthTest);
 

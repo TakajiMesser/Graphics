@@ -26,7 +26,7 @@ namespace Graphics.Rendering.Processing
 
         public Texture PositionTexture { get; protected set; }
         public Texture ColorTexture { get; protected set; }
-        public Texture NormalDepthTexture { get; protected set; }
+        public Texture NormalTexture { get; protected set; }
         public Texture DiffuseMaterialTexture { get; protected set; }
         public Texture SpecularTexture { get; protected set; }
         public Texture VelocityTexture { get; protected set; }
@@ -53,7 +53,7 @@ namespace Graphics.Rendering.Processing
         {
             LoadPrograms();
             LoadBuffers();
-            LoadQuad(_pointLightProgram);
+            LoadPointLightMesh();
         }
 
         protected void LoadPrograms()
@@ -92,9 +92,9 @@ namespace Graphics.Rendering.Processing
             ColorTexture.Bind();
             ColorTexture.ReserveMemory();
 
-            NormalDepthTexture.Resize(Resolution.Width, Resolution.Height, 0);
-            NormalDepthTexture.Bind();
-            NormalDepthTexture.ReserveMemory();
+            NormalTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            NormalTexture.Bind();
+            NormalTexture.ReserveMemory();
 
             DiffuseMaterialTexture.Resize(Resolution.Width, Resolution.Height, 0);
             DiffuseMaterialTexture.Bind();
@@ -149,20 +149,20 @@ namespace Graphics.Rendering.Processing
             ColorTexture.Bind();
             ColorTexture.ReserveMemory();
 
-            NormalDepthTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            NormalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
-                PixelFormat = PixelFormat.Rgba,
+                PixelInternalFormat = PixelInternalFormat.Rgb16f,
+                PixelFormat = PixelFormat.Rgb,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            NormalDepthTexture.Bind();
-            NormalDepthTexture.ReserveMemory();
+            NormalTexture.Bind();
+            NormalTexture.ReserveMemory();
 
             DiffuseMaterialTexture = new Texture(Resolution.Width, Resolution.Height, 0)
             {
@@ -242,7 +242,7 @@ namespace Graphics.Rendering.Processing
             GBuffer.Clear();
             GBuffer.Add(FramebufferAttachment.ColorAttachment0, PositionTexture);
             GBuffer.Add(FramebufferAttachment.ColorAttachment1, ColorTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment2, NormalDepthTexture);
+            GBuffer.Add(FramebufferAttachment.ColorAttachment2, NormalTexture);
             GBuffer.Add(FramebufferAttachment.ColorAttachment3, DiffuseMaterialTexture);
             GBuffer.Add(FramebufferAttachment.ColorAttachment4, SpecularTexture);
             GBuffer.Add(FramebufferAttachment.ColorAttachment5, VelocityTexture);
@@ -252,8 +252,6 @@ namespace Graphics.Rendering.Processing
             GBuffer.Bind();
             GBuffer.AttachAttachments();
             GBuffer.Unbind();
-
-            LoadPointLightMesh();
         }
 
         private void LoadPointLightMesh()
@@ -273,14 +271,6 @@ namespace Graphics.Rendering.Processing
                     new Vector3(0, -0.525731f, -0.850651f),
                     new Vector3(0, 0.525731f, -0.850651f),
                     new Vector3(0, 0.525731f, 0.850651f)
-                    /*new Vector3(-0.5f, -0.5f, -0.5f),
-                    new Vector3(-0.5f, 0.5f, -0.5f),
-                    new Vector3(-0.5f, -0.5f, 0.5f),
-                    new Vector3(-0.5f, 0.5f, 0.5f),
-                    new Vector3(0.5f, -0.5f, -0.5f),
-                    new Vector3(0.5f, 0.5f, -0.5f),
-                    new Vector3(0.5f, -0.5f, 0.5f),
-                    new Vector3(0.5f, 0.5f, 0.5f)*/
                 },
                 new List<int>
                 {
@@ -304,18 +294,6 @@ namespace Graphics.Rendering.Processing
                     7, 1, 0,
                     3, 9, 8,
                     4, 8, 0
-                    /*7, 6, 4,
-                    7, 4, 5,
-                    1, 3, 7,
-                    1, 7, 5,
-                    3, 2, 6,
-                    3, 6, 7,
-                    1, 0, 2,
-                    1, 2, 3,
-                    2, 0, 4,
-                    2, 4, 6,
-                    5, 4, 0,
-                    5, 0, 1*/
                 },
                 _pointLightProgram
             );
@@ -361,20 +339,6 @@ namespace Graphics.Rendering.Processing
                 BindTextures(textureManager, gameObject.TextureMapping);
                 gameObject.Draw(_geometryProgram);
             }
-
-            /*GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            //GL.Disable(EnableCap.DepthTest);
-            _simpleProgram.Use();
-            camera.Draw(_simpleProgram);
-
-            var translation = new Vector3(0.0f, 0.0f, -1.0f);
-            var rotation = Quaternion.Identity;
-            var scale = Vector3.One;
-
-            _simpleProgram.SetUniform("modelMatrix", Matrix4.Identity * Matrix4.CreateScale(scale) * Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(translation));
-            _pointLightMesh.Draw();*/
         }
 
         public void StencilPass(PointLight light, Camera camera)
@@ -412,11 +376,12 @@ namespace Graphics.Rendering.Processing
                 _pointLightProgram.Use();
                 _pointLightProgram.BindTexture(PositionTexture, "positionMap", 0);
                 _pointLightProgram.BindTexture(ColorTexture, "colorMap", 1);
-                _pointLightProgram.BindTexture(NormalDepthTexture, "normalDepth", 2);
+                _pointLightProgram.BindTexture(NormalTexture, "normalMap", 2);
                 _pointLightProgram.BindTexture(DiffuseMaterialTexture, "diffuseMaterial", 3);
                 _pointLightProgram.BindTexture(SpecularTexture, "specularMap", 4);
 
                 camera.Draw(_pointLightProgram);
+                _pointLightProgram.SetUniform("cameraPosition", camera.Position);
 
                 GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
                 GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
@@ -428,7 +393,6 @@ namespace Graphics.Rendering.Processing
 
                 light.Draw(_pointLightProgram);
                 _pointLightMesh.Draw();
-                //RenderQuad();
             }
 
             GL.Enable(EnableCap.CullFace);
@@ -436,42 +400,6 @@ namespace Graphics.Rendering.Processing
 
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.Blend);
-        }
-
-        protected void LoadQuad(ShaderProgram program)
-        {
-            _vertexArrayHandle = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.AddVertices(new[]
-            {
-                /*new Vector3(1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f)*/
-                new Vector3(0.5f, 0.5f, 0.0f),
-                new Vector3(-0.5f, 0.5f, 0.0f),
-                new Vector3(-0.5f, -0.5f, 0.0f),
-                new Vector3(0.5f, -0.5f, 0.0f)
-            });
-            _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
-
-            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
-            attribute.Set(program.GetAttributeLocation("vPosition"));
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
-        }
-
-        protected void RenderQuad()
-        {
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.Bind();
-
-            _vertexBuffer.DrawQuads();
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
         }
 
         private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)

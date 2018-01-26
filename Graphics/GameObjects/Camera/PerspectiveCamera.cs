@@ -17,9 +17,10 @@ namespace Graphics.GameObjects
     public class PerspectiveCamera : Camera
     {
         public const float ZNEAR = 0.1f;
-        public const float ZFAR = 100.0f;
+        public const float ZFAR = 1000.0f;
         public const float MAX_ANGLE_Y = -(float)Math.PI / 2 + 0.1f;
         public const float MIN_ANGLE_Y = -(float)Math.PI + 0.1f;
+        public const float MIN_DISTANCE = 1.0f;
 
         private Vector3 _currentAngles = new Vector3(0, -(float)Math.PI / 2.0f, 0);
 
@@ -65,6 +66,11 @@ namespace Graphics.GameObjects
             if (amount > 0.0f || amount < 0.0f)
             {
                 _distance += amount;
+                if (_distance < MIN_DISTANCE)
+                {
+                    _distance = MIN_DISTANCE;
+                }
+
                 CalculateTranslation();
                 CalculateUp();
             }

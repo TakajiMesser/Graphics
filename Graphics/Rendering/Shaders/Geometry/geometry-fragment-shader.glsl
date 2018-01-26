@@ -32,11 +32,10 @@ in vec3 fTangent;
 in vec4 fColor;
 in vec2 fUV;
 flat in int fMaterialIndex;
-in vec3 fCameraDirection;
 
 layout(location = 0) out vec3 position;
 layout(location = 1) out vec4 color;
-layout(location = 2) out vec4 normalDepth;
+layout(location = 2) out vec3 normal;
 layout(location = 3) out vec4 diffuseMaterial;
 layout(location = 4) out vec4 specular;
 layout(location = 5) out vec2 velocity;
@@ -51,13 +50,10 @@ vec3 calculateNormal()
     nTangent = normalize(nTangent - dot(nTangent, nNormal) * nNormal);
     
     vec3 nBitangent = cross(nTangent, nNormal);
-
     mat3 tbn = mat3(nTangent, nBitangent, nNormal);
 
-    vec4 depth = 2.0 * texture(normalMap, fUV, -1.0) - 1.0;
-    return normalize(tbn * depth.rgb);
-
-    return depth.rgb;
+    vec4 bumpedNormal = 2.0 * texture(normalMap, fUV, -1.0) - 1.0;
+    return normalize(tbn * bumpedNormal.rgb);
 }
 
 void main()
@@ -66,8 +62,7 @@ void main()
 
     color = (useMainTexture > 0) ? texture(mainTexture, fUV) : fColor;
 
-	vec3 unitNormal = (useNormalMap > 0) ? calculateNormal() : normalize(fNormal);
-	normalDepth = vec4(unitNormal, length(fCameraDirection));
+	normal = (useNormalMap > 0) ? calculateNormal() : normalize(fNormal);
 
     diffuseMaterial = (useDiffuseMap > 0)
         ? vec4(texture(diffuseMap, fUV).xyz, fMaterialIndex)

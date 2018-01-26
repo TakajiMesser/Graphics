@@ -6,15 +6,16 @@ uniform mat4 projectionMatrix;
 
 uniform sampler2D positionMap;
 uniform sampler2D colorMap;
-uniform sampler2D normalDepth;
+uniform sampler2D normalMap;
 uniform sampler2D diffuseMaterial;
 uniform sampler2D specularMap;
+
+uniform vec3 cameraPosition;
 
 uniform vec3 lightPosition;
 uniform float lightRadius;
 uniform vec3 lightColor;
 uniform float lightIntensity;
-uniform vec3 cameraPosition;
 
 layout(location = 0) out vec4 finalColor;
 
@@ -33,26 +34,24 @@ vec4 computeDiffuseLight(vec3 diffuse, float illuminance, vec3 unitNormal, vec3 
 
 vec4 computeSpecularLight(vec3 specular, float illuminance, vec3 unitNormal, vec3 unitLight, vec3 unitCamera, float specularExponent)
 {
-    if (dot(unitNormal, unitLight) <= 0.0)
+    if (dot(unitNormal, unitLight) > 0.0)
     {
-        return vec4(0);
-    }
-    else
-    {
-        vec3 lightReflect = reflect(-unitLight, unitNormal);
-        float specularFactor = dot(lightReflect, unitCamera);
+        vec3 lightReflect = normalize(reflect(-unitLight, unitNormal));
+        float specularFactor = dot(unitCamera, lightReflect);
 
-        if (specularFactor <= 0.0)
+        if (specularFactor > 0.0)
         {
-            return vec4(0);
+            return vec4(illuminance * lightColor * specular
+			    * pow(specularFactor, specularExponent), 1.0);
         }
         else
         {
-            return vec4(illuminance
-			    * pow(specularFactor, specularExponent)
-			    * lightColor
-			    * specular, 1.0);
+            return vec4(0);
         }
+    }
+    else
+    {
+        return vec4(0);
     }
 }
 
@@ -74,6 +73,10 @@ float calculateIlluminance(vec3 lightDirection)
     {
         return 0.0;
     }
+
+    // Typical function is 1 / (1 + k * d ^ 2), where k is the base quadratic attenuation coefficient
+    // Issue with this is that the attenuation never actually equals zero, so typically we have some cutoff (like .01)
+    // Another approach is 1 - d ^ 2 / r ^ 2 -> For 0.01 -> (r ^ 2 - d ^ 2) / (r ^ 2 + 99 * d ^ 2), is clamped to range of 0 to 1
 
     vec3 l = lightDirection / distance;
     float denom = max(distance - lightRadius, 0.0) / lightRadius + 1.0;
@@ -97,7 +100,7 @@ float calculateIlluminance(vec3 lightDirection)
 void main()
 {
     // Easy to calculate texture coordinates in here
-    vec2 resolution = textureSize(colorMap, 0);
+    vec2 resolution = textureSize(positionMap, 0);
 	vec2 uv = gl_FragCoord.xy / resolution;
 
     vec3 position = texture(positionMap, uv).xyz;
@@ -106,10 +109,9 @@ void main()
     vec4 color = texture(colorMap, uv);
 
     // Get normal/depth
-    vec4 normalAndDepth = texture(normalDepth, uv);
-    vec3 unitNormal = normalAndDepth.xyz;
+    vec4 normal = texture(normalMap, uv);
+    vec3 unitNormal = normalize(normal.xyz);
     //unitNormal = vec3(0, 0, 1);
-    float depth = normalAndDepth.w;
 
     // Get diffuse/material
     vec4 diffuseAndMaterial = texture(diffuseMaterial, uv);
@@ -119,19 +121,35 @@ void main()
     // Get specular properties
     vec4 specular = texture(specularMap, uv);
 
-    // vec3 lightDirection
-    float illuminance = calculateIlluminance(lightPosition - position);
-
-    // Get unit light vector (light)
-    // Get unit camera vector (camera)
+    vec3 lightDirection = lightPosition - position;
+    float illuminance = calculateIlluminance(lightDirection);
     vec3 unitCamera = normalize(cameraPosition - position);
-    vec3 unitLight = normalize(lightPosition - position);
+    vec3 unitLight = normalize(lightDirection);
 
     vec4 diffuseLight = computeDiffuseLight(diffuse, illuminance, unitNormal, unitLight);
     vec4 specularLight = computeSpecularLight(specular.xyz, illuminance, unitNormal, unitLight, unitCamera, specular.z);
 
     finalColor = color * (diffuseLight + specularLight);
-    /*finalColor = (illuminance > 0.0)
-        ? vec4(1)
-        : vec4(0);*/
+
+    /*if (unitNormal == vec3(0, 0, 1))
+    {
+        finalColor = vec4(1.0);
+    }
+    finalColor = vec4(unitNormal, 1.0);*/
+
+    /*finalColor = (length(lightDirection) < lightRadius)
+        ? color * vec4(1.0 - length(lightDirection) / lightRadius)
+        : color;*/
+
+    // If these two vectors are parallel, color the pixel white
+    vec3 cameraToLight = lightPosition - cameraPosition;
+    vec3 cameraToPosition = position - cameraPosition;
+
+    float cosAngle = dot(cameraToLight, cameraToPosition) / (length(cameraToLight) * length(cameraToPosition));
+    float angle = acos(cosAngle);
+
+    if (angle <= 0.02)
+    {
+        finalColor = vec4(1.0);
+    }
 }

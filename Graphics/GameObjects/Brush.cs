@@ -40,6 +40,22 @@ namespace Graphics.GameObjects
             Mesh = new Mesh(vertices, materials, triangleIndices, program);
         }
 
+        public GameObject ToGameObject()
+        {
+            var gameObject = new GameObject("wall2")
+            {
+                Mesh = Mesh,
+                Bounds = Bounds,
+                HasCollision = HasCollision,
+                TextureMapping = TextureMapping,
+                Position = new Vector3(0, 0, 0)
+            };
+
+            gameObject.Bounds.AttachedObject = gameObject;
+
+            return gameObject;
+        }
+
         public void AddTestColors() => Mesh.AddTestColors();
 
         public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);

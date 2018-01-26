@@ -30,15 +30,14 @@ out vec3 fTangent;
 out vec4 fColor;
 out vec2 fUV;
 flat out int fMaterialIndex;
-out vec3 fCameraDirection;
 
 void main()
 {
     mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;
 
     vec4 position = vec4(vPosition, 1.0);
-    vec4 normal = vec4(vNormal, 1.0);
-    vec4 tangent = vec4(vTangent, 1.0);
+    vec4 normal = vec4(vNormal, 0.0);
+    vec4 tangent = vec4(vTangent, 0.0);
 
     if (useSkinning == 1)
     {
@@ -63,10 +62,4 @@ void main()
     fMaterialIndex = vMaterialIndex;
 
     gl_Position = fClipPosition;
-
-    // Model matrix maps vertices from "model coordinates" to "world coordinates"
-	vec4 worldPosition = modelMatrix * vec4(vPosition, 1.0);
-
-	// This is the vector from the current vertex to the camera
-	fCameraDirection = (inverse(viewMatrix) * vec4(0.0, 0.0, 0.0, 1.0)).xyz - worldPosition.xyz;
 }

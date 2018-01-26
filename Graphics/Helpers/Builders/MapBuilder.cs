@@ -43,7 +43,7 @@ namespace Graphics.Helpers.Builders
 
             map.PointLights.Add(new PointLight()
             {
-                Position = new Vector3(0.0f, 0.0f, 1.0f),
+                Position = new Vector3(0.0f, 0.0f, 5.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
@@ -90,7 +90,7 @@ namespace Graphics.Helpers.Builders
                 MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
                 TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                 NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
-                //SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH,
+                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH,
                 BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
                 Properties = new List<GameProperty>
                 {
