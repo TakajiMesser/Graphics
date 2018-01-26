@@ -82,7 +82,10 @@ namespace Graphics.Rendering.Vertices
 
         private void SetVertexAttributes(ShaderProgram program)
         {
+            // TODO - This should all either be hard-coded or determined at compile time, since doing this on the fly is pointlessly wasteful
             int stride = Marshal.SizeOf<T>();
+
+            // TODO - Replace vertex fields with properties, since struct fields are janky
             //var properties = typeof(T).GetProperties(/*BindingFlags.Public*/);
             var fields = typeof(T).GetFields();
 

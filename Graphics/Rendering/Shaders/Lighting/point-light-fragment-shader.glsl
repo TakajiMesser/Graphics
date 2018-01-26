@@ -59,15 +59,7 @@ float calculateIlluminance(vec3 lightDirection)
 {
 	// Reference -> https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
     float distance = length(lightDirection);
-
-    /*if (useNormalMap > 0)
-    {
-        vec4 normalDepth = 2.0 * texture(normalMap, fUV, -1.0) - 1.0;
-        distance -= normalDepth.a;
-
-        // Need to also consider that light direction is not just straight up...
-        distance = min(distance, 0.0);
-    }*/
+    // TODO - Consider normal map distance in distance calculation as well?
 
     if (lightRadius <= 0.0 || distance > lightRadius)
     {
@@ -111,7 +103,6 @@ void main()
     // Get normal/depth
     vec4 normal = texture(normalMap, uv);
     vec3 unitNormal = normalize(normal.xyz);
-    //unitNormal = vec3(0, 0, 1);
 
     // Get diffuse/material
     vec4 diffuseAndMaterial = texture(diffuseMaterial, uv);
@@ -131,17 +122,8 @@ void main()
 
     finalColor = color * (diffuseLight + specularLight);
 
-    /*if (unitNormal == vec3(0, 0, 1))
-    {
-        finalColor = vec4(1.0);
-    }
-    finalColor = vec4(unitNormal, 1.0);*/
-
-    /*finalColor = (length(lightDirection) < lightRadius)
-        ? color * vec4(1.0 - length(lightDirection) / lightRadius)
-        : color;*/
-
     // If these two vectors are parallel, color the pixel white
+    // TODO - Remove this, it is purely for debugging purposes
     vec3 cameraToLight = lightPosition - cameraPosition;
     vec3 cameraToPosition = position - cameraPosition;
 

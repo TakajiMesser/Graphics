@@ -18,44 +18,44 @@ namespace Graphics.Helpers
     {
         private const string SOLUTION_DIRECTORY = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics";
 
-        public const string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Screenshots\";
+        public const string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Screenshots\";
 
         #region Maps
-        public const string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Maps\TestMap.map";
+        public const string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Maps\TestMap.map";
         #endregion
 
         #region Meshes
-        public const string PLAYER_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Player.obj";
-        public const string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Square.obj";
-        public const string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Cube.obj";
-        public const string FLOOR_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Floor.obj";
-        public const string ENEMY_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\Enemy.obj";
+        public const string PLAYER_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Player.obj";
+        public const string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Square.obj";
+        public const string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Cube.obj";
+        public const string FLOOR_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Floor.obj";
+        public const string ENEMY_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Enemy.obj";
         #endregion
 
         #region Materials
-        public const string GENERIC_MATERIAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Meshes\GenericMaterial.mtl";
+        public const string GENERIC_MATERIAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\GenericMaterial.mtl";
         #endregion
 
         #region Textures
-        public const string BRICK_01_D_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-d.jpg";
-        public const string BRICK_01_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-h.jpg";
-        public const string BRICK_01_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-n.jpg";
-        public const string BRICK_01_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick1-s.jpg";
+        public const string BRICK_01_D_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick1-d.jpg";
+        public const string BRICK_01_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick1-h.jpg";
+        public const string BRICK_01_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick1-n.jpg";
+        public const string BRICK_01_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick1-s.jpg";
 
-        public const string BRICK_02_D_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-d.jpg";
-        public const string BRICK_02_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-h.jpg";
-        public const string BRICK_02_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-n.jpg";
-        public const string BRICK_02_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\brick2-s.jpg";
+        public const string BRICK_02_D_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-d.jpg";
+        public const string BRICK_02_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-h.jpg";
+        public const string BRICK_02_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-n.jpg";
+        public const string BRICK_02_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-s.jpg";
 
-        public const string GRASS_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Grass01.png";
-        public const string GRASS_N_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Grass01_normal.png";
+        public const string GRASS_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Grass01.png";
+        public const string GRASS_N_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Grass01_normal.png";
 
-        public const string SPACE_01_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_right1.png";
-        public const string SPACE_02_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_left2.png";
-        public const string SPACE_03_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_top3.png";
-        public const string SPACE_04_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_bottom4.png";
-        public const string SPACE_05_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_front5.png";
-        public const string SPACE_06_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Textures\Skybox\space_back6.png";
+        public const string SPACE_01_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Skybox\space_right1.png";
+        public const string SPACE_02_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Skybox\space_left2.png";
+        public const string SPACE_03_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Skybox\space_top3.png";
+        public const string SPACE_04_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Skybox\space_bottom4.png";
+        public const string SPACE_05_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Skybox\space_front5.png";
+        public const string SPACE_06_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Skybox\space_back6.png";
         #endregion
 
         #region Shaders
@@ -96,15 +96,15 @@ namespace Graphics.Helpers
         #endregion
 
         #region Behaviors
-        public const string ENEMY_PATROL_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\EnemyPatrol.btt";
-        public const string ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\SearchForPlayer.btt";
-        public const string ENEMY_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\EnemyTurn.btt";
+        public const string ENEMY_PATROL_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\EnemyPatrol.btt";
+        public const string ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\SearchForPlayer.btt";
+        public const string ENEMY_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\EnemyTurn.btt";
 
-        public const string PLAYER_INPUT_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\PlayerInput.btt";
-        public const string PLAYER_MOVEMENT_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\PlayerMovement.btt";
-        public const string PLAYER_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\PlayerTurn.btt";
-        public const string PLAYER_EVADE_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\PlayerEvade.btt";
-        public const string PLAYER_COVER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Behaviors\PlayerCover.btt";
+        public const string PLAYER_INPUT_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\PlayerInput.btt";
+        public const string PLAYER_MOVEMENT_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\PlayerMovement.btt";
+        public const string PLAYER_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\PlayerTurn.btt";
+        public const string PLAYER_EVADE_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\PlayerEvade.btt";
+        public const string PLAYER_COVER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Behaviors\PlayerCover.btt";
         #endregion
     }
 }

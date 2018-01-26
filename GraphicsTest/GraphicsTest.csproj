@@ -52,20 +52,24 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="Behaviors\Enemy.btt" />
-    <None Include="Behaviors\EnemyPatrol.btt" />
-    <None Include="Behaviors\PlayerInput.btt" />
-    <None Include="Maps\TestMap.map">
-      <SubType>Designer</SubType>
-    </None>
-    <None Include="Meshes\Player.obj" />
-    <None Include="Meshes\Floor.obj" />
-    <None Include="Meshes\Cube.obj" />
-    <None Include="Meshes\Square.obj" />
-    <None Include="Meshes\Enemy.obj" />
-    <None Include="Meshes\GenericMaterial.mtl" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Resources\Behaviors\Enemy.btt" />
+    <None Include="Resources\Behaviors\EnemyPatrol.btt" />
+    <None Include="Resources\Behaviors\EnemyTurn.btt" />
+    <None Include="Resources\Behaviors\PlayerCover.btt" />
+    <None Include="Resources\Behaviors\PlayerEvade.btt" />
+    <None Include="Resources\Behaviors\PlayerInput.btt" />
+    <None Include="Resources\Behaviors\PlayerMovement.btt" />
+    <None Include="Resources\Behaviors\PlayerTurn.btt" />
+    <None Include="Resources\Behaviors\SearchForPlayer.btt" />
+    <None Include="Resources\Maps\TestMap.map" />
+    <None Include="Resources\Meshes\Cube.obj" />
+    <None Include="Resources\Meshes\Enemy.obj" />
+    <None Include="Resources\Meshes\Floor.obj" />
+    <None Include="Resources\Meshes\GenericMaterial.mtl" />
+    <None Include="Resources\Meshes\Player.obj" />
+    <None Include="Resources\Meshes\Square.obj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Graphics\Graphics.csproj">
@@ -78,20 +82,80 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Textures\brick1-d.jpg" />
-    <Content Include="Textures\brick1-h.jpg" />
-    <Content Include="Textures\brick1-n.jpg" />
-    <Content Include="Textures\brick1-s.jpg" />
-    <Content Include="Textures\brick2-d.jpg" />
-    <Content Include="Textures\brick2-h.jpg" />
-    <Content Include="Textures\brick2-n.jpg" />
-    <Content Include="Textures\brick2-s.jpg" />
-    <Content Include="Textures\Grass01.png" />
-    <Content Include="Textures\Grass01_disp.png" />
-    <Content Include="Textures\Grass01_normal.png" />
+    <Content Include="Resources\Maps\TestMap.xml" />
+    <Content Include="Resources\Screenshots\20180108_211355.png" />
+    <Content Include="Resources\Screenshots\20180111_085059.png" />
+    <Content Include="Resources\Screenshots\20180111_104600.png" />
+    <Content Include="Resources\Screenshots\20180111_105008.png" />
+    <Content Include="Resources\Screenshots\20180111_105110.png" />
+    <Content Include="Resources\Screenshots\20180111_120726.png" />
+    <Content Include="Resources\Screenshots\20180111_120727.png" />
+    <Content Include="Resources\Screenshots\20180111_120733.png" />
+    <Content Include="Resources\Screenshots\20180111_120755.png" />
+    <Content Include="Resources\Screenshots\20180111_120756.png" />
+    <Content Include="Resources\Screenshots\20180111_120951.png" />
+    <Content Include="Resources\Screenshots\20180111_120952.png" />
+    <Content Include="Resources\Screenshots\20180111_121008.png" />
+    <Content Include="Resources\Screenshots\20180111_121600.png" />
+    <Content Include="Resources\Screenshots\20180111_121603.png" />
+    <Content Include="Resources\Screenshots\20180111_121608.png" />
+    <Content Include="Resources\Screenshots\20180111_121808.png" />
+    <Content Include="Resources\Screenshots\20180111_132005.png" />
+    <Content Include="Resources\Screenshots\20180111_141348.png" />
+    <Content Include="Resources\Screenshots\20180111_142537.png" />
+    <Content Include="Resources\Screenshots\20180111_142558.png" />
+    <Content Include="Resources\Screenshots\20180111_142602.png" />
+    <Content Include="Resources\Screenshots\20180111_142606.png" />
+    <Content Include="Resources\Screenshots\20180113_132119.png" />
+    <Content Include="Resources\Screenshots\20180113_132156.png" />
+    <Content Include="Resources\Screenshots\20180116_103605.png" />
+    <Content Include="Resources\Screenshots\20180116_104146.png" />
+    <Content Include="Resources\Screenshots\20180116_104610.png" />
+    <Content Include="Resources\Screenshots\20180116_150804.png" />
+    <Content Include="Resources\Screenshots\20180117_091234.png" />
+    <Content Include="Resources\Screenshots\20180117_122045.png" />
+    <Content Include="Resources\Screenshots\20180117_135332.png" />
+    <Content Include="Resources\Screenshots\20180121_211955.png" />
+    <Content Include="Resources\Screenshots\20180122_140542.png" />
+    <Content Include="Resources\Screenshots\20180122_142103.png" />
+    <Content Include="Resources\Screenshots\20180123_153709.png" />
+    <Content Include="Resources\Screenshots\20180124_084350.png" />
+    <Content Include="Resources\Textures\brick1-d.jpg" />
+    <Content Include="Resources\Textures\brick1-h.jpg" />
+    <Content Include="Resources\Textures\brick1-n.jpg" />
+    <Content Include="Resources\Textures\brick1-s.jpg" />
+    <Content Include="Resources\Textures\brick2-b.jpg" />
+    <Content Include="Resources\Textures\brick2-d.jpg" />
+    <Content Include="Resources\Textures\brick2-h.jpg" />
+    <Content Include="Resources\Textures\brick2-n.jpg" />
+    <Content Include="Resources\Textures\brick2-s.jpg" />
+    <Content Include="Resources\Textures\cement-d.png" />
+    <Content Include="Resources\Textures\cement-n.png" />
+    <Content Include="Resources\Textures\cement-s.png" />
+    <Content Include="Resources\Textures\ceramic-tile-d.jpg" />
+    <Content Include="Resources\Textures\ceramic-tile-n.jpg" />
+    <Content Include="Resources\Textures\flashlight1.jpg" />
+    <Content Include="Resources\Textures\Grass01.png" />
+    <Content Include="Resources\Textures\Grass01_disp.png" />
+    <Content Include="Resources\Textures\Grass01_normal.png" />
+    <Content Include="Resources\Textures\plane-d.png" />
+    <Content Include="Resources\Textures\plane-n.png" />
+    <Content Include="Resources\Textures\plane-s.png" />
+    <Content Include="Resources\Textures\Skybox\space_back6.png" />
+    <Content Include="Resources\Textures\Skybox\space_bottom4.png" />
+    <Content Include="Resources\Textures\Skybox\space_front5.png" />
+    <Content Include="Resources\Textures\Skybox\space_left2.png" />
+    <Content Include="Resources\Textures\Skybox\space_right1.png" />
+    <Content Include="Resources\Textures\Skybox\space_top3.png" />
+    <Content Include="Resources\Textures\Steinwand_C1_Diffuse.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C2_Displacement.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C3_Normal.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C4_Specular.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C5_Bump.jpg" />
+    <Content Include="Resources\Textures\water1-d.jpg" />
+    <Content Include="Resources\Textures\water1-h.jpg" />
+    <Content Include="Resources\Textures\water1-n.jpg" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Screenshots\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
