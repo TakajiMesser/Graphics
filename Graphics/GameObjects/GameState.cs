@@ -40,7 +40,7 @@ namespace Graphics.GameObjects
         private Camera _camera;
         private List<GameObject> _gameObjects = new List<GameObject>();
         private List<Brush> _brushes = new List<Brush>();
-        private List<PointLight> _pointLights = new List<PointLight>();
+        private List<Light> _lights = new List<Light>();
 
         private QuadTree _gameObjectQuads;
         private QuadTree _brushQuads;
@@ -65,8 +65,8 @@ namespace Graphics.GameObjects
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
             _brushQuads = new QuadTree(0, map.Boundaries);
             _lightQuads = new QuadTree(0, map.Boundaries);
-            _lightQuads.InsertRange(map.PointLights.Select(l => new BoundingCircle(l)));
-            _pointLights.AddRange(map.PointLights);
+            _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
+            _lights.AddRange(map.Lights);
 
             for (var i = 0; i < map.Brushes.Count; i++)
             {
@@ -77,7 +77,7 @@ namespace Graphics.GameObjects
                 {
                     _brushQuads.Insert(brush.Bounds);
                 }
-                brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Select(c => (PointLight)c.AttachedObject));
+                brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedObject is PointLight).Select(c => (PointLight)c.AttachedObject));
 
                 brush.TextureMapping = new TextureMapping()
                 {
@@ -181,6 +181,7 @@ namespace Graphics.GameObjects
             {
                 gameObject.ClearLights();
                 gameObject.AddPointLights(_lightQuads.Retrieve(gameObject.Bounds)
+                    .Where(c => c.AttachedObject is PointLight)
                     .Select(c => (PointLight)c.AttachedObject));
 
                 var filteredColliders = _brushQuads.Retrieve(gameObject.Bounds)
@@ -207,8 +208,8 @@ namespace Graphics.GameObjects
             //_forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
             //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
 
-            _deferredRenderer.GeometryPass(_textureManager, _camera, _brushes, _gameObjects);            
-            _deferredRenderer.LightPass(_camera, _pointLights);
+            _deferredRenderer.GeometryPass(_textureManager, _camera, _brushes, _gameObjects);
+            _deferredRenderer.LightPass(_camera, _lights);
             _skyboxRenderer.Render(_camera, _deferredRenderer.GBuffer);
 
             // Read from GBuffer's final texture, so that we can post-process it

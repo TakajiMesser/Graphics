@@ -4,8 +4,6 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
-uniform vec3 lightPosition;
-
 in vec3 vPosition;
 
 void main()

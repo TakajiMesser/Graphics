@@ -25,10 +25,19 @@ namespace Graphics.Physics.Collision
             AttachedObject = brush;
         }
 
-        public Bounds(PointLight light)
+        public Bounds(Light light)
         {
             AttachedObject = light;
-            Center = light.Position;
+
+            switch (light)
+            {
+                case PointLight pLight:
+                    Center = pLight.Position;
+                    break;
+                case SpotLight sLight:
+                    Center = sLight.Position;
+                    break;
+            }
         }
 
         public abstract bool CollidesWith(Vector3 point);

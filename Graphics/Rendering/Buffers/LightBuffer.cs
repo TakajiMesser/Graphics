@@ -12,17 +12,17 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Buffers
 {
-    public class LightBuffer : UniformBuffer<PointLight>
+    public class LightBuffer : UniformBuffer<PLight>
     {
         public const string NAME = "PointLightBlock";
         public const int BINDING = 1;
 
-        public List<PointLight> PointLights { get; } = new List<PointLight>();
+        public List<PLight> PointLights { get; } = new List<PLight>();
 
         public LightBuffer(ShaderProgram program) : base(NAME, BINDING, program) { }
 
-        public void AddPointLight(PointLight light) => PointLights.Add(light);
-        public void AddPointLights(IEnumerable<PointLight> lights) => PointLights.AddRange(lights);
+        public void AddPointLight(PointLight light) => PointLights.Add(light.ToStruct());
+        public void AddPointLights(IEnumerable<PointLight> lights) => PointLights.AddRange(lights.Select(l => l.ToStruct()));
 
         public void Clear() => PointLights.Clear();
 

@@ -38,11 +38,10 @@ namespace Graphics.Rendering.Processing
         internal ShaderProgram _geometryProgram;
         internal ShaderProgram _stencilProgram;
         internal ShaderProgram _pointLightProgram;
-        internal ShaderProgram _simpleProgram;
+        internal ShaderProgram _spotLightProgram;
 
         private SimpleMesh _pointLightMesh;
-        private int _vertexArrayHandle;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
+        private SimpleMesh _spotLightMesh;
 
         public DeferredRenderer(Resolution resolution)
         {
@@ -54,6 +53,7 @@ namespace Graphics.Rendering.Processing
             LoadPrograms();
             LoadBuffers();
             LoadPointLightMesh();
+            LoadSpotLightMesh();
         }
 
         protected void LoadPrograms()
@@ -76,9 +76,9 @@ namespace Graphics.Rendering.Processing
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.POINT_LIGHT_FRAGMENT_SHADER_PATH))
             });
 
-            _simpleProgram = new ShaderProgram(new[] {
-                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SIMPLE_VERTEX_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SIMPLE_FRAGMENT_SHADER_PATH))
+            _spotLightProgram = new ShaderProgram(new[] {
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.LIGHT_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SPOT_LIGHT_FRAGMENT_SHADER_PATH))
             });
         }
 
@@ -249,9 +249,9 @@ namespace Graphics.Rendering.Processing
             GBuffer.Add(FramebufferAttachment.ColorAttachment6, FinalTexture);
             GBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
 
-            GBuffer.Bind();
+            GBuffer.Bind(FramebufferTarget.Framebuffer);
             GBuffer.AttachAttachments();
-            GBuffer.Unbind();
+            GBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
         private void LoadPointLightMesh()
@@ -299,6 +299,51 @@ namespace Graphics.Rendering.Processing
             );
         }
 
+        private void LoadSpotLightMesh()
+        {
+            _spotLightMesh = new SimpleMesh(
+                new List<Vector3>
+                {
+                    new Vector3(0, -0.525731f, 0.850651f),
+                    new Vector3(0.850651f, 0, 0.525731f),
+                    new Vector3(0.850651f, 0, -0.525731f),
+                    new Vector3(-0.850651f, 0, -0.525731f),
+                    new Vector3(-0.850651f, 0,  0.525731f),
+                    new Vector3(-0.525731f, 0.850651f, 0),
+                    new Vector3(0.525731f, 0.850651f, 0),
+                    new Vector3(0.525731f, -0.850651f, 0),
+                    new Vector3(-0.525731f, -0.850651f, 0),
+                    new Vector3(0, -0.525731f, -0.850651f),
+                    new Vector3(0, 0.525731f, -0.850651f),
+                    new Vector3(0, 0.525731f, 0.850651f)
+                },
+                new List<int>
+                {
+                    1, 2, 6,
+                    1, 7, 2,
+                    3, 4, 5,
+                    4, 3, 8,
+                    6, 5, 11,
+                    5, 6, 10,
+                    9, 10, 2,
+                    10, 9, 3,
+                    7, 8, 9,
+                    8, 7, 0,
+                    11, 0, 1,
+                    0, 11, 4,
+                    6, 2, 10,
+                    1, 6, 11,
+                    3, 5, 10,
+                    5, 4, 11,
+                    2, 7, 9,
+                    7, 1, 0,
+                    3, 9, 8,
+                    4, 8, 0
+                },
+                _spotLightProgram
+            );
+        }
+
         public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             // Clear final texture from last frame
@@ -341,7 +386,30 @@ namespace Graphics.Rendering.Processing
             }
         }
 
-        public void StencilPass(PointLight light, Camera camera)
+        public void LightPass(Camera camera, IEnumerable<Light> lights)
+        {
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            foreach (var light in lights)
+            {
+                var lightMesh = GetMeshForLight(light);
+                StencilPass(light, camera, lightMesh);
+
+                var lightProgram = GetProgramForLight(light);
+                DrawLight(light, camera, lightMesh, lightProgram);
+            }
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);
+        }
+
+        public void StencilPass(Light light, Camera camera, SimpleMesh mesh)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.None);
@@ -359,47 +427,63 @@ namespace Graphics.Rendering.Processing
             _stencilProgram.Use();
             camera.Draw(_stencilProgram);
             light.Draw(_stencilProgram);
-            _pointLightMesh.Draw();
+            mesh?.Draw();
         }
 
-        public void LightPass(Camera camera, IEnumerable<PointLight> pointLights)
+        private void DrawLight(Light light, Camera camera, SimpleMesh mesh, ShaderProgram program)
         {
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            program.Use();
+            program.BindTexture(PositionTexture, "positionMap", 0);
+            program.BindTexture(ColorTexture, "colorMap", 1);
+            program.BindTexture(NormalTexture, "normalMap", 2);
+            program.BindTexture(DiffuseMaterialTexture, "diffuseMaterial", 3);
+            program.BindTexture(SpecularTexture, "specularMap", 4);
 
-            foreach (var light in pointLights)
-            {
-                StencilPass(light, camera);
+            camera.Draw(program);
+            program.SetUniform("cameraPosition", camera.Position);
 
-                _pointLightProgram.Use();
-                _pointLightProgram.BindTexture(PositionTexture, "positionMap", 0);
-                _pointLightProgram.BindTexture(ColorTexture, "colorMap", 1);
-                _pointLightProgram.BindTexture(NormalTexture, "normalMap", 2);
-                _pointLightProgram.BindTexture(DiffuseMaterialTexture, "diffuseMaterial", 3);
-                _pointLightProgram.BindTexture(SpecularTexture, "specularMap", 4);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
-                camera.Draw(_pointLightProgram);
-                _pointLightProgram.SetUniform("cameraPosition", camera.Position);
-
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-                GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-
-                GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
-                GL.Disable(EnableCap.DepthTest);
-                GL.Enable(EnableCap.CullFace);
-                GL.CullFace(CullFaceMode.Front);
-
-                light.Draw(_pointLightProgram);
-                _pointLightMesh.Draw();
-            }
-
+            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
+            GL.Disable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
+            GL.CullFace(CullFaceMode.Front);
 
-            GL.Disable(EnableCap.StencilTest);
-            GL.Disable(EnableCap.Blend);
+            light.Draw(program);
+            mesh?.Draw();
+        }
+
+        private SimpleMesh GetMeshForLight(Light light)
+        {
+            if (light.GetType() == typeof(PointLight))
+            {
+                return _pointLightMesh;
+            }
+            else if (light.GetType() == typeof(SpotLight))
+            {
+                return _spotLightMesh;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private ShaderProgram GetProgramForLight(Light light)
+        {
+            if (light.GetType() == typeof(PointLight))
+            {
+                return _pointLightProgram;
+            }
+            else if (light.GetType() == typeof(SpotLight))
+            {
+                return _spotLightProgram;
+            }
+            else
+            {
+                return null;
+            }
         }
 
         private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)

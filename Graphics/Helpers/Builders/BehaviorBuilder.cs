@@ -4,6 +4,7 @@ using Graphics.Scripting.BehaviorTrees;
 using Graphics.Scripting.BehaviorTrees.Composites;
 using Graphics.Scripting.BehaviorTrees.Decorators;
 using Graphics.Scripting.BehaviorTrees.Leaves;
+using Graphics.Utilities;
 using OpenTK;
 using System;
 using System.Collections.Generic;
@@ -36,7 +37,7 @@ namespace Graphics.Helpers.Builders
                         {
                             Behavior = (c) =>
                             {
-                                // Chase player
+                                // TODO - Chase Player. For now, this will return success and cause the AI to stop
                                 return BehaviorStatuses.Success;
                             }
                         }
@@ -138,13 +139,15 @@ namespace Graphics.Helpers.Builders
             CreatePlayerCoverNode();
 
             var rootNode = new SelectorNode(
-                Node.Load(FilePathHelper.PLAYER_COVER_BEHAVIOR_PATH),
-                new SequenceNode(
+                new SelectorNode(
                     new SelectorNode(
                         Node.Load(FilePathHelper.PLAYER_EVADE_BEHAVIOR_PATH),
-                        Node.Load(FilePathHelper.PLAYER_MOVEMENT_BEHAVIOR_PATH)
+                        Node.Load(FilePathHelper.PLAYER_COVER_BEHAVIOR_PATH)
                     ),
-                    Node.Load(FilePathHelper.PLAYER_TURN_BEHAVIOR_PATH)
+                    new SequenceNode(
+                        Node.Load(FilePathHelper.PLAYER_MOVEMENT_BEHAVIOR_PATH),
+                        Node.Load(FilePathHelper.PLAYER_TURN_BEHAVIOR_PATH)
+                    )
                 )
             );
 
@@ -160,78 +163,74 @@ namespace Graphics.Helpers.Builders
                     var enterCoverSpeed = context.GetProperty<float>("ENTER_COVER_SPEED");
                     var coverSpeed = context.GetProperty<float>("COVER_SPEED");
                     var coverDistance = context.GetProperty<float>("COVER_DISTANCE");
-                    var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
-                    if (nEvadeTicks == 0)
+                    if (context.InputState.IsPressed(context.InputMapping.Cover))
                     {
-                        if (context.InputState.IsPressed(context.InputMapping.Cover))
+                        // TODO - Filter gameobjects and brushes based on "coverable" property
+                        var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+
+                        if (Raycast.TryCircleCast(new Circle(context.Position, coverDistance), filteredColliders, out RaycastHit hit))
                         {
-                            // TODO - Filter gameobjects and brushes based on "coverable" property
-                            var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+                            var vectorBetween = hit.Intersection - context.Position;
+                            context.SetVariable("coverDirection", vectorBetween.Xy);
+                            context.SetVariable("coverDistance", vectorBetween.Length);
 
-                            if (Raycast.TryCircleCast(new Circle(context.Position, coverDistance), filteredColliders, out RaycastHit hit))
-                            {
-                                var vectorBetween = hit.Intersection - context.Position;
-                                context.SetVariable("coverDirection", vectorBetween.Xy);
-                                context.SetVariable("coverDistance", vectorBetween.Length);
-
-                                float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
-                                context.QRotation = new Quaternion(turnAngle + (float)Math.PI, 0.0f, 0.0f);
-                                context.Rotation = new Vector3(turnAngle + (float)Math.PI, context.Rotation.Y, context.Rotation.Z);
-
-                                return BehaviorStatuses.Success;
-                            }
-                        }
-                        else if (context.InputState.IsHeld(context.InputMapping.Cover))
-                        {
-                            if (context.ContainsVariable("coverDirection"))
-                            {
-                                if (context.ContainsVariable("coverDistance"))
-                                {
-                                    if (context.GetVariable<float>("coverDistance") > 0.0f)
-                                    {
-                                        context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - enterCoverSpeed);
-
-                                        var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                                        context.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * enterCoverSpeed;
-                                    }
-
-                                    if (context.GetVariable<float>("coverDistance") < 0.1f)
-                                    {
-                                        // Handle movement while in cover here
-                                        var translation = context.GetTranslation(coverSpeed);
-
-                                        if (translation != Vector3.Zero)
-                                        {
-                                            var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
-
-                                            // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
-                                            var borderPoint = context.Bounds.GetBorder(translation);
-
-                                            var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                                            if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), 1.0f), filteredColliders, out RaycastHit hit))
-                                            {
-                                                var vectorBetween = hit.Intersection - borderPoint;
-
-                                                translation.X += vectorBetween.X;
-                                                translation.Y += vectorBetween.Y;
-
-                                                context.Translation = translation;
-                                            }
-                                        }
-                                    }
-                                }
-
-                                return BehaviorStatuses.Success;
-                            }
-                        }
-                        else if (context.InputState.IsReleased(context.InputMapping.Cover))
-                        {
-                            context.RemoveVariableIfExists("coverDirection");
-                            context.RemoveVariableIfExists("coverDistance");
+                            float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+                            context.QRotation = new Quaternion(turnAngle + (float)Math.PI, 0.0f, 0.0f);
+                            context.Rotation = new Vector3(turnAngle + (float)Math.PI, context.Rotation.Y, context.Rotation.Z);
 
                             return BehaviorStatuses.Success;
                         }
+                    }
+                    else if (context.InputState.IsHeld(context.InputMapping.Cover))
+                    {
+                        if (context.ContainsVariable("coverDirection"))
+                        {
+                            if (context.ContainsVariable("coverDistance"))
+                            {
+                                if (context.GetVariable<float>("coverDistance") > 0.0f)
+                                {
+                                    context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - enterCoverSpeed);
+
+                                    var coverDirection = context.GetVariable<Vector2>("coverDirection");
+                                    context.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * enterCoverSpeed;
+                                }
+
+                                if (context.GetVariable<float>("coverDistance") < 0.1f)
+                                {
+                                    // Handle movement while in cover here
+                                    var translation = context.GetTranslation(coverSpeed);
+
+                                    if (translation != Vector3.Zero)
+                                    {
+                                        var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+
+                                        // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
+                                        var borderPoint = context.Bounds.GetBorder(translation);
+
+                                        var coverDirection = context.GetVariable<Vector2>("coverDirection");
+                                        if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), 1.0f), filteredColliders, out RaycastHit hit))
+                                        {
+                                            var vectorBetween = hit.Intersection - borderPoint;
+
+                                            translation.X += vectorBetween.X;
+                                            translation.Y += vectorBetween.Y;
+
+                                            context.Translation = translation;
+                                        }
+                                    }
+                                }
+                            }
+
+                            return BehaviorStatuses.Success;
+                        }
+                    }
+                    else if (context.InputState.IsReleased(context.InputMapping.Cover))
+                    {
+                        context.RemoveVariableIfExists("coverDirection");
+                        context.RemoveVariableIfExists("coverDistance");
+
+                        return BehaviorStatuses.Success;
                     }
 
                     return BehaviorStatuses.Failure;
@@ -250,6 +249,28 @@ namespace Graphics.Helpers.Builders
                     var evadeSpeed = context.GetProperty<float>("EVADE_SPEED");
                     var evadeTickCount = context.GetProperty<int>("EVADE_TICK_COUNT");
                     var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
+
+                    if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
+                    {
+                        var evadeTranslation = context.GetTranslation(evadeSpeed);
+
+                        if (evadeTranslation != Vector3.Zero)
+                        {
+                            // Find angle between possible evade and cover direction
+                            var coverDirection = context.GetVariable<Vector2>("coverDirection");
+                            float angle = coverDirection.AngleBetween(evadeTranslation.Xy);
+
+                            // If this angle is greater than or equal to 90 degrees, let the evade take place
+                            if (angle < (float)Math.PI / 2.0f)
+                            {
+                                return BehaviorStatuses.Failure;
+                            }
+                            else
+                            {
+                                context.RemoveVariable("coverDirection");
+                            }
+                        }
+                    }
 
                     if (nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
                     {
@@ -272,17 +293,8 @@ namespace Graphics.Helpers.Builders
                             return BehaviorStatuses.Success;
                         }
                     }
-                    else if (nEvadeTicks > evadeTickCount)
-                    {
-                        nEvadeTicks = 0;
-                        context.SetVariable("nEvadeTicks", nEvadeTicks);
-                        context.QRotation = Quaternion.Identity;
-                        context.Rotation = new Vector3(context.Rotation.X, 0.0f, context.Rotation.Z);
-                        context.Scale = Vector3.One;
-
-                        return BehaviorStatuses.Failure;
-                    }
-                    else if (nEvadeTicks > 0)
+                    
+                    else if (nEvadeTicks > 0 && nEvadeTicks <= evadeTickCount)
                     {
                         var evadeTranslation = context.GetVariable<Vector3>("evadeTranslation");
 
@@ -295,8 +307,17 @@ namespace Graphics.Helpers.Builders
 
                         return BehaviorStatuses.Success;
                     }
+                    else if (nEvadeTicks > evadeTickCount)
+                    {
+                        nEvadeTicks = 0;
+                        context.SetVariable("nEvadeTicks", nEvadeTicks);
+                        context.QRotation = Quaternion.Identity;
+                        context.Rotation = new Vector3(context.Rotation.X, 0.0f, context.Rotation.Z);
+                        context.Scale = Vector3.One;
 
-                    context.SetVariable("nEvadeTicks", nEvadeTicks);
+                        return BehaviorStatuses.Failure;
+                    }
+
                     return BehaviorStatuses.Failure;
                 }
             };

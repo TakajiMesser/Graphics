@@ -54,7 +54,7 @@ namespace Graphics.GameObjects
         {
             Resolution.Width = Width;
             Resolution.Height = Height;
-            Resized.Invoke(this, new EventArgs());
+            Resized?.Invoke(this, new EventArgs());
         }
 
         protected override void OnLoad(EventArgs e)

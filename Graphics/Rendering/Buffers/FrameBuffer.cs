@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Buffers
 {
-    public class FrameBuffer : IDisposable, IBindable
+    public class FrameBuffer : IDisposable
     {
         internal readonly int _handle;
 
@@ -53,17 +53,12 @@ namespace Graphics.Rendering.Buffers
             }
         }
 
-        public void Bind() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, _handle);
+        public void Bind(FramebufferTarget target) => GL.BindFramebuffer(target, _handle);
+        public void Unbind(FramebufferTarget target) => GL.BindFramebuffer(target, 0);
 
         public void Draw()
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _handle);
-
-            foreach (var attachment in _textures)
-            {
-                //GL.DrawBuffer((DrawBufferMode)attachment.Key);
-                //GL.DrawBuffers(1, new[] { DrawBuffersEnum.ColorAttachment0 });
-            }
 
             GL.DrawBuffers(_textures.Count, _textures.Keys
                 .Where(k => k != FramebufferAttachment.DepthStencilAttachment && k != FramebufferAttachment.DepthAttachment)
@@ -76,9 +71,10 @@ namespace Graphics.Rendering.Buffers
             }
         }
 
-        public void Unbind()
+        public void Draw(params DrawBuffersEnum[] colorBuffers)
         {
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+            Bind(FramebufferTarget.DrawFramebuffer);
+            GL.DrawBuffers(colorBuffers.Length, colorBuffers);
         }
 
         #region IDisposable Support

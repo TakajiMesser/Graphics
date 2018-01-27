@@ -27,9 +27,14 @@ namespace Graphics.Physics.Collision
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
-        public BoundingCircle(PointLight light) : base(light)
+        public BoundingCircle(Light light) : base(light)
         {
-            Radius = light.Radius;
+            switch (light)
+            {
+                case PointLight pLight:
+                    Radius = pLight.Radius;
+                    break;
+            }
         }
 
         public override bool CollidesWith(Vector3 point)

@@ -41,19 +41,28 @@ namespace Graphics.Helpers.Builders
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall2);
 
-            map.PointLights.Add(new PointLight()
+            map.Lights.Add(new PointLight()
             {
                 Position = new Vector3(0.0f, 0.0f, 5.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
             });
-            map.PointLights.Add(new PointLight()
+            map.Lights.Add(new PointLight()
             {
                 Position = new Vector3(0.0f, 20.0f, 1.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.25f
+            });
+            map.Lights.Add(new SpotLight()
+            {
+                Position = new Vector3(-20.0f, 0.0f, 1.0f),
+                Cutoff = 10.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 0.5f,
+                Rotation = Quaternion.FromEulerAngles(0, -20.0f, 0),
+                Width = new Vector2(5.0f, 10.0f)
             });
 
             map.Save(FilePathHelper.MAP_PATH);

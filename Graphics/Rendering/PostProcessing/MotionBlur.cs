@@ -83,9 +83,9 @@ namespace Graphics.Rendering.PostProcessing
             FinalTexture.ReserveMemory();
 
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind();
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
             _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
         public void Render(Texture velocity, Texture depth, Texture scene, float fps)

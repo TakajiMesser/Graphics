@@ -62,6 +62,57 @@ namespace Graphics.Meshes
             _indexBuffer.Unbind();
         }
 
+        public static SimpleMesh LoadFromFile(string path, ShaderProgram program)
+        {
+            var vertices = new List<Vector3>();
+            var vertexIndices = new List<int>();
+
+            foreach (var line in File.ReadLines(path))
+            {
+                var values = line.Split(' ');
+
+                if (values.Length > 0)
+                {
+                    switch (values[0])
+                    {
+                        case "v":
+                            vertices.Add(new Vector3(float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3])));
+                            break;
+                        case "f":
+                            for (var i = 1; i <= 3; i++)
+                            {
+                                var indices = values[i].Split('/');
+                                vertexIndices.Add(int.Parse(indices[0]) - 1);
+                            }
+                            break;
+                    }
+                }
+            }
+
+            var verticies = new List<Vector3>();
+            var triangleIndices = new List<int>();
+
+            for (var i = 0; i < vertexIndices.Count; i++)
+            {
+                var vertex = vertices[vertexIndices[i]];
+                var existingIndex = verticies.FindIndex(v => v == vertex);
+
+                if (existingIndex >= 0)
+                {
+                    triangleIndices.Add(existingIndex);
+                }
+                else
+                {
+                    triangleIndices.Add(verticies.Count);
+                    verticies.Add(vertex);
+                }
+            }
+
+            var mesh = new SimpleMesh(verticies, triangleIndices, program);
+
+            return mesh;
+        }
+
         #region IDisposable Support
         private bool disposedValue = false;
 

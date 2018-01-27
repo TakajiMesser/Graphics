@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Graphics.Rendering.Shaders;
+using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -10,11 +11,23 @@ using System.Threading.Tasks;
 
 namespace Graphics.Lighting
 {
-    public struct Light
+    public abstract class Light
     {
-        public Vector3 Position { get; set; }
-        public float Radius { get; set; }
+        private float _intensity;
+
         public Vector3 Color { get; set; }
-        public float Intensity { get; set; }
+        public float Intensity
+        {
+            get => _intensity;
+            set
+            {
+                if (value > 1.0f) throw new ArgumentOutOfRangeException("Intensity cannot be greater than 1.0");
+                if (value < 0.0f) throw new ArgumentOutOfRangeException("Intensity cannot be less than 0.0");
+
+                _intensity = value;
+            }
+        }
+
+        public abstract void Draw(ShaderProgram program);
     }
 }

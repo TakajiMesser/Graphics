@@ -112,9 +112,9 @@ namespace Graphics.Rendering.Processing
             //_frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, new RenderBuffer(RenderbufferTarget.Renderbuffer, Resolution.Width, Resolution.Height));
             _frameBuffer.Add(FramebufferAttachment.DepthAttachment, DepthTexture);
 
-            _frameBuffer.Bind();
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
             _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
         public void Render(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)

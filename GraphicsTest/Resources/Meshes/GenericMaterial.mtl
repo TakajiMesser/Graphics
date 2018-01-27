@@ -1,5 +1,5 @@
 ﻿newmtl GenericMaterial
-Ka 0.1 0.1 0.1
+Ka 0.07 0.07 0.07
 Kd 1.0 1.0 1.0
 Ks 0.2 0.2 0.2
-Ns 2.0
+Ns 1.0
