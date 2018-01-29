@@ -38,7 +38,6 @@ namespace Graphics.Lighting
 
         public override void Draw(ShaderProgram program)
         {
-            // Need to set the model matrix (?)
             var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
             program.SetUniform("modelMatrix", model);
 

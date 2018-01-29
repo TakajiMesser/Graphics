@@ -64,11 +64,13 @@
     <None Include="Resources\Behaviors\PlayerTurn.btt" />
     <None Include="Resources\Behaviors\SearchForPlayer.btt" />
     <None Include="Resources\Maps\TestMap.map" />
+    <None Include="Resources\Meshes\Cone.obj" />
     <None Include="Resources\Meshes\Cube.obj" />
     <None Include="Resources\Meshes\Enemy.obj" />
     <None Include="Resources\Meshes\Floor.obj" />
     <None Include="Resources\Meshes\GenericMaterial.mtl" />
     <None Include="Resources\Meshes\Player.obj" />
+    <None Include="Resources\Meshes\Sphere.obj" />
     <None Include="Resources\Meshes\Square.obj" />
   </ItemGroup>
   <ItemGroup>

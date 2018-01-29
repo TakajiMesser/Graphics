@@ -57,12 +57,12 @@ namespace Graphics.Helpers.Builders
             });
             map.Lights.Add(new SpotLight()
             {
-                Position = new Vector3(-20.0f, 0.0f, 1.0f),
-                Cutoff = 10.0f,
+                Position = new Vector3(-20.0f, 0.0f, 3.0f),
+                Radius = 10.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f,
-                Rotation = Quaternion.FromEulerAngles(0, -20.0f, 0),
-                Width = new Vector2(5.0f, 10.0f)
+                Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -0.5f) * Quaternion.FromAxisAngle(Vector3.UnitY, -0.5f),
+                Height = 12.0f
             });
 
             map.Save(FilePathHelper.MAP_PATH);

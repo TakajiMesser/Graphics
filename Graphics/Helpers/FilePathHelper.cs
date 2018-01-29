@@ -31,6 +31,8 @@ namespace Graphics.Helpers
         public static string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Cube.obj";
         public static string FLOOR_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Floor.obj";
         public static string ENEMY_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Enemy.obj";
+        public static string SPHERE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Sphere.obj";
+        public static string CONE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Cone.obj";
         #endregion
 
         #region Materials

@@ -4,6 +4,7 @@ using Graphics.Lighting;
 using Graphics.Meshes;
 using Graphics.Outputs;
 using Graphics.Rendering.Buffers;
+using Graphics.Rendering.Matrices;
 using Graphics.Rendering.Shaders;
 using Graphics.Rendering.Textures;
 using Graphics.Rendering.Vertices;
@@ -39,6 +40,7 @@ namespace Graphics.Rendering.Processing
         internal ShaderProgram _stencilProgram;
         internal ShaderProgram _pointLightProgram;
         internal ShaderProgram _spotLightProgram;
+        internal ShaderProgram _simpleProgram;
 
         private SimpleMesh _pointLightMesh;
         private SimpleMesh _spotLightMesh;
@@ -79,6 +81,12 @@ namespace Graphics.Rendering.Processing
             _spotLightProgram = new ShaderProgram(new[] {
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.LIGHT_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SPOT_LIGHT_FRAGMENT_SHADER_PATH))
+            });
+
+            _simpleProgram = new ShaderProgram(new[]
+            {
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SIMPLE_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SIMPLE_FRAGMENT_SHADER_PATH))
             });
         }
 
@@ -256,7 +264,8 @@ namespace Graphics.Rendering.Processing
 
         private void LoadPointLightMesh()
         {
-            _pointLightMesh = new SimpleMesh(
+            _pointLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
+            /*_pointLightMesh = new SimpleMesh(
                 new List<Vector3>
                 {
                     new Vector3(0, -0.525731f, 0.850651f),
@@ -296,12 +305,13 @@ namespace Graphics.Rendering.Processing
                     4, 8, 0
                 },
                 _pointLightProgram
-            );
+            );*/
         }
 
         private void LoadSpotLightMesh()
         {
-            _spotLightMesh = new SimpleMesh(
+            _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
+            /*_spotLightMesh = new SimpleMesh(
                 new List<Vector3>
                 {
                     new Vector3(0, -0.525731f, 0.850651f),
@@ -341,7 +351,7 @@ namespace Graphics.Rendering.Processing
                     4, 8, 0
                 },
                 _spotLightProgram
-            );
+            );*/
         }
 
         public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
@@ -384,6 +394,14 @@ namespace Graphics.Rendering.Processing
                 BindTextures(textureManager, gameObject.TextureMapping);
                 gameObject.Draw(_geometryProgram);
             }
+
+            /*GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            _simpleProgram.Use();
+            camera.Draw(_simpleProgram);
+            var modelMatrix = new ModelMatrix(new Vector3(-20.0f, 0, 3.0f), Quaternion.FromAxisAngle(Vector3.UnitZ, -1.0f) * Quaternion.FromAxisAngle(Vector3.UnitY, -1.0f), new Vector3(5.0f, 5.0f, 18.0f));
+            modelMatrix.Set(_simpleProgram);
+            _spotLightMesh.Draw();*/
         }
 
         public void LightPass(Camera camera, IEnumerable<Light> lights)
