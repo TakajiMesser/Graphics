@@ -29,7 +29,9 @@ namespace Graphics.GameObjects
         private ModelMatrix _modelMatrix = new ModelMatrix();
         
         public Mesh Mesh { get; set; }
-        public List<Vertex> Vertices => Mesh.Vertices;
+        public SimpleMesh SimpleMesh { get; set; }
+
+        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
@@ -38,6 +40,7 @@ namespace Graphics.GameObjects
         public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
         {
             Mesh = new Mesh(vertices, materials, triangleIndices, program);
+            //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
         public GameObject ToGameObject()

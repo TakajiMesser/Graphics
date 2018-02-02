@@ -5,8 +5,10 @@ uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D diffuseMaterial;
 uniform sampler2D specularMap;
+uniform sampler2D shadowMap;
 
-uniform mat4 modelMatrix;
+uniform mat4 lightMatrix;
+
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
 uniform float lightRadius;
@@ -54,7 +56,29 @@ vec4 computeSpecularLight(vec3 specular, float illuminance, vec3 unitNormal, vec
     }
 }
 
-float calculateIlluminance(vec3 lightToPixel)
+float calculateShadowFactor(vec3 position)
+{
+    // Convert world position to light-space
+    vec4 lightSpace = lightMatrix * vec4(position, 1.0);
+
+    // Convert coordinate to NDC space (-1 to 1)
+    vec3 projCoords = lightSpace.xyz / lightSpace.w;
+
+    // Convert range to [0 to 1]
+    vec3 uvCoords = projCoords * vec3(0.5) + vec3(0.5);
+
+    float depth = texture(shadowMap, uvCoords.xy).x;
+    float z = uvCoords.z;
+
+    // If the depth from the shadow map is LESS than the depth of the current pixel,
+    // then this pixel is in shadow
+    const float bias = 0.0001;
+    return (depth < z - bias)
+        ? 0.5
+        : 1.0;
+}
+
+float calculateIlluminance(vec3 lightToPixel, vec3 position)
 {
     float spotFactor = dot(normalize(lightToPixel), normalize(lightVector));
 
@@ -63,7 +87,8 @@ float calculateIlluminance(vec3 lightToPixel)
         float attenuation = 1.0 - (1.0 - spotFactor) * 1.0 / (1.0 - lightCutoffAngle);
         if (attenuation > 0.0)
 	    {
-		    return lightIntensity * attenuation;
+            float shadowFactor = calculateShadowFactor(position);
+		    return lightIntensity * attenuation * shadowFactor;
 	    }
     }
     
@@ -94,7 +119,7 @@ void main()
     vec4 specular = texture(specularMap, uv);
 
     vec3 lightToPixel = position - lightPosition;
-    float illuminance = calculateIlluminance(lightToPixel);
+    float illuminance = calculateIlluminance(lightToPixel, position);
 
     vec3 unitLight = normalize(lightPosition - position);
     vec3 unitCamera = normalize(cameraPosition - position);

@@ -41,13 +41,13 @@ namespace Graphics.Helpers.Builders
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall2);
 
-            map.Lights.Add(new PointLight()
+            /*map.Lights.Add(new PointLight()
             {
                 Position = new Vector3(0.0f, 0.0f, 5.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
-            });
+            });*/
             map.Lights.Add(new PointLight()
             {
                 Position = new Vector3(0.0f, 20.0f, 1.0f),
@@ -57,12 +57,12 @@ namespace Graphics.Helpers.Builders
             });
             map.Lights.Add(new SpotLight()
             {
-                Position = new Vector3(-20.0f, 0.0f, 3.0f),
+                Position = new Vector3(-17.0f, -2.0f, 3.0f),
                 Radius = 10.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f,
-                Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -0.5f) * Quaternion.FromAxisAngle(Vector3.UnitY, -0.5f),
-                Height = 12.0f
+                Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
+                Height = 20.0f
             });
 
             map.Save(FilePathHelper.MAP_PATH);
@@ -93,7 +93,8 @@ namespace Graphics.Helpers.Builders
             return new MapGameObject()
             {
                 Name = "Player",
-                Position = new Vector3(0.0f, 0.0f, -1.0f),
+                //Position = new Vector3(0.0f, 0.0f, -1.0f),
+                Position = new Vector3(-15.0f, -5.0f, -1.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,

@@ -23,30 +23,30 @@ namespace Graphics.Physics.Collision
 
         public BoundingBox(GameObject gameObject) : base(gameObject)
         {
-            var minX = gameObject.Mesh.Vertices.Select(v => v.Position.X).Min();
-            var maxX = gameObject.Mesh.Vertices.Select(v => v.Position.X).Max();
+            var minX = gameObject.Vertices.Select(v => v.X).Min();
+            var maxX = gameObject.Vertices.Select(v => v.X).Max();
             Width = maxX - minX;
 
-            var minY = gameObject.Mesh.Vertices.Select(v => v.Position.Y).Min();
-            var maxY = gameObject.Mesh.Vertices.Select(v => v.Position.Y).Max();
+            var minY = gameObject.Vertices.Select(v => v.Y).Min();
+            var maxY = gameObject.Vertices.Select(v => v.Y).Max();
             Height = maxY - minY;
         }
 
         public BoundingBox(Brush brush) : base(brush)
         {
-            var minX = brush.Vertices.Select(v => v.Position.X).Min();
-            var maxX = brush.Vertices.Select(v => v.Position.X).Max();
+            var minX = brush.Vertices.Select(v => v.X).Min();
+            var maxX = brush.Vertices.Select(v => v.X).Max();
             Width = maxX - minX;
 
-            var minY = brush.Vertices.Select(v => v.Position.Y).Min();
-            var maxY = brush.Vertices.Select(v => v.Position.Y).Max();
+            var minY = brush.Vertices.Select(v => v.Y).Min();
+            var maxY = brush.Vertices.Select(v => v.Y).Max();
             Height = maxY - minY;
 
             Center = new Vector3()
             {
                 X = (maxX + minX) / 2.0f,
                 Y = (maxY + minY) / 2.0f,
-                Z = brush.Vertices.Select(v => v.Position.Z).Average()
+                Z = brush.Vertices.Select(v => v.Z).Average()
             };
         }
 

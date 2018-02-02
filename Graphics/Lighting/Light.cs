@@ -1,4 +1,6 @@
-﻿using Graphics.Rendering.Shaders;
+﻿using Graphics.GameObjects;
+using Graphics.Outputs;
+using Graphics.Rendering.Shaders;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System;
@@ -28,6 +30,7 @@ namespace Graphics.Lighting
             }
         }
 
-        public abstract void Draw(ShaderProgram program);
+        public abstract void DrawForStencilPass(ShaderProgram program);
+        public abstract void DrawForLightPass(Resolution resolution, ShaderProgram program);
     }
 }

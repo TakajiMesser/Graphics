@@ -404,7 +404,7 @@ namespace Graphics.Rendering.Processing
             _spotLightMesh.Draw();*/
         }
 
-        public void LightPass(Camera camera, IEnumerable<Light> lights)
+        public void LightPass(Camera camera, IEnumerable<Light> lights, Texture pointShadows, Texture spotShadows)
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
@@ -417,7 +417,8 @@ namespace Graphics.Rendering.Processing
                 StencilPass(light, camera, lightMesh);
 
                 var lightProgram = GetProgramForLight(light);
-                DrawLight(light, camera, lightMesh, lightProgram);
+                var shadowTexture = light is PointLight ? pointShadows : spotShadows;
+                DrawLight(light, camera, lightMesh, shadowTexture, lightProgram);
             }
 
             GL.Enable(EnableCap.CullFace);
@@ -429,6 +430,8 @@ namespace Graphics.Rendering.Processing
 
         public void StencilPass(Light light, Camera camera, SimpleMesh mesh)
         {
+            _stencilProgram.Use();
+
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.None);
 
@@ -441,24 +444,15 @@ namespace Graphics.Rendering.Processing
             GL.StencilFunc(StencilFunction.Always, 0, 0);
             GL.StencilOpSeparate(StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
             GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
-
-            _stencilProgram.Use();
+            
             camera.Draw(_stencilProgram);
-            light.Draw(_stencilProgram);
-            mesh?.Draw();
+            light.DrawForStencilPass(_stencilProgram);
+            mesh.Draw();
         }
 
-        private void DrawLight(Light light, Camera camera, SimpleMesh mesh, ShaderProgram program)
+        private void DrawLight(Light light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
             program.Use();
-            program.BindTexture(PositionTexture, "positionMap", 0);
-            program.BindTexture(ColorTexture, "colorMap", 1);
-            program.BindTexture(NormalTexture, "normalMap", 2);
-            program.BindTexture(DiffuseMaterialTexture, "diffuseMaterial", 3);
-            program.BindTexture(SpecularTexture, "specularMap", 4);
-
-            camera.Draw(program);
-            program.SetUniform("cameraPosition", camera.Position);
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
@@ -468,17 +462,27 @@ namespace Graphics.Rendering.Processing
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Front);
 
-            light.Draw(program);
-            mesh?.Draw();
+            program.BindTexture(PositionTexture, "positionMap", 0);
+            program.BindTexture(ColorTexture, "colorMap", 1);
+            program.BindTexture(NormalTexture, "normalMap", 2);
+            program.BindTexture(DiffuseMaterialTexture, "diffuseMaterial", 3);
+            program.BindTexture(SpecularTexture, "specularMap", 4);
+            program.BindTexture(shadowMap, "shadowMap", 5);
+
+            camera.Draw(program);
+            program.SetUniform("cameraPosition", camera.Position);
+
+            light.DrawForLightPass(Resolution, program);
+            mesh.Draw();
         }
 
         private SimpleMesh GetMeshForLight(Light light)
         {
-            if (light.GetType() == typeof(PointLight))
+            if (light is PointLight)
             {
                 return _pointLightMesh;
             }
-            else if (light.GetType() == typeof(SpotLight))
+            else if (light is SpotLight)
             {
                 return _spotLightMesh;
             }
@@ -490,11 +494,11 @@ namespace Graphics.Rendering.Processing
 
         private ShaderProgram GetProgramForLight(Light light)
         {
-            if (light.GetType() == typeof(PointLight))
+            if (light is PointLight)
             {
                 return _pointLightProgram;
             }
-            else if (light.GetType() == typeof(SpotLight))
+            else if (light is SpotLight)
             {
                 return _spotLightProgram;
             }

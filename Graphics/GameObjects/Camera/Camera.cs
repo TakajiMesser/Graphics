@@ -10,6 +10,7 @@ using Graphics.Rendering.Shaders;
 using Graphics.Inputs;
 using Graphics.Rendering.Matrices;
 using Graphics.Outputs;
+using Graphics.Lighting;
 
 namespace Graphics.GameObjects
 {
@@ -61,6 +62,18 @@ namespace Graphics.GameObjects
         {
             _viewMatrix.Set(program);
             _projectionMatrix.Set(program);
+        }
+
+        public void DrawFromLight(ShaderProgram program, PointLight light, TextureTarget target)
+        {
+            program.SetUniform(ProjectionMatrix.NAME, light.GetProjection(_projectionMatrix.Resolution));
+            program.SetUniform(ViewMatrix.NAME, light.GetView(target));
+        }
+
+        public void DrawFromLight(ShaderProgram program, SpotLight light)
+        {
+            program.SetUniform(ProjectionMatrix.NAME, light.GetProjection(_projectionMatrix.Resolution));
+            program.SetUniform(ViewMatrix.NAME, light.View);
         }
     }
 }

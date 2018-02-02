@@ -31,6 +31,7 @@ namespace Graphics.GameObjects
         private ForwardRenderer _forwardRenderer;
         private SkyboxRenderer _skyboxRenderer;
         private DeferredRenderer _deferredRenderer;
+        private ShadowRenderer _shadowRenderer;
         //private LightRenderer _lightRenderer;
 
         private List<PostProcess> _preProcesses = new List<PostProcess>();
@@ -55,6 +56,7 @@ namespace Graphics.GameObjects
             {
                 _forwardRenderer.ResizeTextures();
                 _deferredRenderer.ResizeTextures();
+                _shadowRenderer.ResizeTextures();
                 foreach (var process in _postProcesses)
                 {
                     process.ResizeTextures();
@@ -120,6 +122,7 @@ namespace Graphics.GameObjects
 
             _forwardRenderer = new ForwardRenderer(_window.Resolution);
             _deferredRenderer = new DeferredRenderer(_window.Resolution);
+            _shadowRenderer = new ShadowRenderer(_window.Resolution);
             //_lightRenderer = new LightRenderer(_window.Resolution);
             _skyboxRenderer = new SkyboxRenderer(_window.Resolution);
             
@@ -135,6 +138,7 @@ namespace Graphics.GameObjects
 
             _forwardRenderer.Load();
             _deferredRenderer.Load();
+            _shadowRenderer.Load();
             //_lightRenderer.Load();
             _skyboxRenderer.Load();
 
@@ -209,7 +213,8 @@ namespace Graphics.GameObjects
             //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
 
             _deferredRenderer.GeometryPass(_textureManager, _camera, _brushes, _gameObjects);
-            _deferredRenderer.LightPass(_camera, _lights);
+            _shadowRenderer.Render(_camera, _lights, _brushes, _gameObjects);
+            _deferredRenderer.LightPass(_camera, _lights, _shadowRenderer.PointDepthTexture, _shadowRenderer.SpotDepthTexture);
             _skyboxRenderer.Render(_camera, _deferredRenderer.GBuffer);
 
             // Read from GBuffer's final texture, so that we can post-process it

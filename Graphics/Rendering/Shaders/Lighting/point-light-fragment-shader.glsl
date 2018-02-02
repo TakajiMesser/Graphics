@@ -5,6 +5,7 @@ uniform sampler2D colorMap;
 uniform sampler2D normalMap;
 uniform sampler2D diffuseMaterial;
 uniform sampler2D specularMap;
+uniform samplerCube shadowMap;
 
 uniform vec3 cameraPosition;
 uniform vec3 lightPosition;
@@ -50,32 +51,29 @@ vec4 computeSpecularLight(vec3 specular, float illuminance, vec3 unitNormal, vec
     }
 }
 
-float calculateIlluminance(vec3 lightDirection)
+float calculateShadowFactor(vec3 lightToPixel, vec3 position)
 {
-	// Reference -> https://imdoingitwrong.wordpress.com/2011/01/31/light-attenuation/
-    float lightDistance = length(lightDirection);
-    // TODO - Consider normal map distance in distance calculation as well?
+    float sampledDistance = texture(shadowMap, lightToPixel).r;
+    float lightDistance = length(lightToPixel);
 
-    // Typical function is 1 / (1 + k * d ^ 2), where k is the base quadratic attenuation coefficient
-    // Issue with this is that the attenuation never actually equals zero, so typically we have some cutoff (like .01)
-    // Another approach is 1 - d ^ 2 / r ^ 2 -> For 0.01 -> (r ^ 2 - d ^ 2) / (r ^ 2 + 99 * d ^ 2), is clamped to range of 0 to 1
+    const float bias = 0.0001;
+    return (lightDistance < sampledDistance + bias)
+        ? 1.0
+        : 0.5;
+}
+
+float calculateIlluminance(vec3 lightToPixel, vec3 position)
+{
+    float lightDistance = length(lightToPixel);
+
     if (lightRadius > 0.0 && lightDistance < lightRadius)
     {
         // Attenuation is the percentage of remaining light, from 0.0 to 1.0
         float attenuation = smoothstep(lightRadius, 0.0, lightDistance);
-
-        //float denom = max(lightDistance - lightRadius, 0.0) / lightRadius + 1.0;
-        //float attenuation = 1.0 / (denom * denom);
-	    //attenuation = (attenuation - 0.001) / (1.0 - 0.001);
-
-        //float r2 = lightRadius * lightRadius;
-        //float d2 = lightDistance * lightDistance;
-        //float attenuation = 1 - d2 / r2;
-        //float attenuation = (r2 - d2) / (r2 + 99 * d2);
-
-	    if (attenuation > 0.0)
+        if (attenuation > 0.0)
 	    {
-		    return lightIntensity * attenuation;
+            float shadowFactor = calculateShadowFactor(lightToPixel, position);
+		    return lightIntensity * attenuation * shadowFactor;
 	    }
     }
     
@@ -105,14 +103,15 @@ void main()
     // Get specular properties
     vec4 specular = texture(specularMap, uv);
 
-    vec3 lightDirection = lightPosition - position;
-    float illuminance = calculateIlluminance(lightDirection);
+    vec3 lightToPixel = position - lightPosition;
+    float illuminance = calculateIlluminance(lightToPixel, position);
+
+    vec3 unitLight = normalize(lightPosition - position);
     vec3 unitCamera = normalize(cameraPosition - position);
-    vec3 unitLight = normalize(lightDirection);
 
     vec4 diffuseLight = computeDiffuseLight(diffuse, illuminance, unitNormal, unitLight);
     vec4 specularLight = computeSpecularLight(specular.xyz, illuminance, unitNormal, unitLight, unitCamera, specular.z);
-
+    
     finalColor = color * (diffuseLight + specularLight);
 
     // If these two vectors are parallel, color the pixel white

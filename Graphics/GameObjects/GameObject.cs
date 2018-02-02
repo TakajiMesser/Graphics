@@ -25,6 +25,7 @@ namespace Graphics.GameObjects
         //public int ID { get; private set; }
         public string Name { get; private set; }
         public Mesh Mesh { get; set; }
+        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
         public TextureMapping TextureMapping { get; set; }
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();

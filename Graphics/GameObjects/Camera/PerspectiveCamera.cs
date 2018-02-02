@@ -83,7 +83,7 @@ namespace Graphics.GameObjects
                 {
                     _currentAngles.X += mouseDelta.X;
                     _currentAngles.Y += mouseDelta.Y;
-                    _currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                    //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
                     CalculateTranslation();
                     CalculateUp();
@@ -113,7 +113,7 @@ namespace Graphics.GameObjects
                     _currentAngles.X += cameraSpeed;
                 }
 
-                _currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
                 CalculateTranslation();
                 CalculateUp();
