@@ -30,7 +30,7 @@ namespace Graphics.GameObjects
             get => _viewMatrix.Translation;
             set => _viewMatrix.Translation = value;
         }
-        public Matrix4 ViewProjectionMatrix => _projectionMatrix.Matrix * _viewMatrix.Matrix;
+        public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
 
         public Camera(string name, Resolution resolution)
         {
@@ -62,6 +62,16 @@ namespace Graphics.GameObjects
         {
             _viewMatrix.Set(program);
             _projectionMatrix.Set(program);
+        }
+
+        public void DrawFromLight(ShaderProgram program, PointLight light)
+        {
+            var shadowViews = new List<Matrix4>();
+            for (var i = 0; i < 6; i++)
+            {
+                shadowViews.Add(light.GetView(TextureTarget.TextureCubeMapPositiveX + i) * light.GetProjection(_projectionMatrix.Resolution));
+            }
+            program.SetUniform(ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
         }
 
         public void DrawFromLight(ShaderProgram program, PointLight light, TextureTarget target)

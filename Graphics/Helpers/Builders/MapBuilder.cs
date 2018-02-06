@@ -25,6 +25,7 @@ namespace Graphics.Helpers.Builders
             map.GameObjects.Add(CreateEnemyObject());
 
             var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 50.0f, 50.0f);
+            //floor = MapBrush.RectangularPrism(new Vector3(0.0f, 0.0f, -2.5f), 50.0f, 50.0f, 1.0f);
             //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             map.Brushes.Add(floor);
@@ -41,16 +42,16 @@ namespace Graphics.Helpers.Builders
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall2);
 
-            /*map.Lights.Add(new PointLight()
-            {
-                Position = new Vector3(0.0f, 0.0f, 5.0f),
-                Radius = 30.0f,
-                Color = new Vector3(1.0f, 1.0f, 1.0f),
-                Intensity = 0.5f
-            });*/
             map.Lights.Add(new PointLight()
             {
-                Position = new Vector3(0.0f, 20.0f, 1.0f),
+                Position = new Vector3(0.0f, 0.0f, 5.0f),
+                Radius = 20.0f,
+                Color = new Vector3(1.0f, 1.0f, 1.0f),
+                Intensity = 0.5f
+            });
+            map.Lights.Add(new PointLight()
+            {
+                Position = new Vector3(0.0f, 20.0f, 3.0f),
                 Radius = 30.0f,
                 Color = new Vector3(1.0f, 1.0f, 1.0f),
                 Intensity = 0.25f
@@ -93,8 +94,8 @@ namespace Graphics.Helpers.Builders
             return new MapGameObject()
             {
                 Name = "Player",
-                //Position = new Vector3(0.0f, 0.0f, -1.0f),
-                Position = new Vector3(-15.0f, -5.0f, -1.0f),
+                Position = new Vector3(0.0f, 0.0f, -1.0f),
+                //Position = new Vector3(0.0f, 20.0f, 0.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
                 MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,

@@ -19,7 +19,7 @@ namespace Graphics.Rendering.Buffers
         public int Handle => _handle;
 
         public RenderbufferTarget Target { get; private set; }
-        public RenderbufferStorage Storage { get; private set; }
+        public RenderbufferStorage Storage { get; set; }
 
         public int Width { get; private set; }
         public int Height { get; private set; }

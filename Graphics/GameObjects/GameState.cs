@@ -213,9 +213,10 @@ namespace Graphics.GameObjects
             //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
 
             _deferredRenderer.GeometryPass(_textureManager, _camera, _brushes, _gameObjects);
-            _shadowRenderer.Render(_camera, _lights, _brushes, _gameObjects);
-            _deferredRenderer.LightPass(_camera, _lights, _shadowRenderer.PointDepthTexture, _shadowRenderer.SpotDepthTexture);
-            _skyboxRenderer.Render(_camera, _deferredRenderer.GBuffer);
+            //_shadowRenderer.Render(_camera, _lights, _brushes, _gameObjects);
+            //_deferredRenderer.LightPass(_camera, _lights, _shadowRenderer.PointDepthCubeMap, _shadowRenderer.SpotDepthTexture);
+            _deferredRenderer.LightPass(_camera, _lights, _brushes, _gameObjects, _shadowRenderer);
+            _skyboxRenderer.Render(_camera, _deferredRenderer.GBuffer/*, _shadowRenderer.PointDepthCubeMap*/);
 
             // Read from GBuffer's final texture, so that we can post-process it
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);

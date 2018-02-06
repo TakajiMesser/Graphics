@@ -72,7 +72,7 @@ float calculateShadowFactor(vec3 position)
 
     // If the depth from the shadow map is LESS than the depth of the current pixel,
     // then this pixel is in shadow
-    const float bias = 0.0001;
+    const float bias = 0.00001;
     return (depth < z - bias)
         ? 0.5
         : 1.0;

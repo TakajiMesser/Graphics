@@ -2,6 +2,7 @@
 using Graphics.Rendering.Vertices;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace Graphics.Rendering.Shaders
@@ -78,10 +79,23 @@ namespace Graphics.Rendering.Shaders
             GL.UniformMatrix4(location, false, ref matrix);
         }
 
-        public void SetUniform(string name, Matrix4[] matrices)
+        public void SetUniform(string name, List<Matrix4> matrices)
         {
             int location = GetUniformLocation(name);
 
+            //GL.UniformMatrix4
+        }
+
+        public void SetUniform(string name, Matrix4[] matrices)
+        {
+            for (var i = 0; i < matrices.Length; i++)
+            {
+                int iLocation = GetUniformLocation(name + "[" + i + "]");
+                GL.UniformMatrix4(iLocation, false, ref matrices[i]);
+            }
+            return;
+
+            int location = GetUniformLocation(name);
             float[] values = new float[16 * matrices.Length];
 
             for (var i = 0; i < matrices.Length; i++)

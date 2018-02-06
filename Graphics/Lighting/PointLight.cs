@@ -44,17 +44,17 @@ namespace Graphics.Lighting
             switch (target)
             {
                 case TextureTarget.TextureCubeMapPositiveX:
-                    return Matrix4.LookAt(Position, Vector3.UnitX, -Vector3.UnitY);
+                    return Matrix4.LookAt(Position, Position + Vector3.UnitX, -Vector3.UnitY);
                 case TextureTarget.TextureCubeMapNegativeX:
-                    return Matrix4.LookAt(Position, -Vector3.UnitX, -Vector3.UnitY);
+                    return Matrix4.LookAt(Position, Position - Vector3.UnitX, -Vector3.UnitY);
                 case TextureTarget.TextureCubeMapPositiveY:
-                    return Matrix4.LookAt(Position, Vector3.UnitY, -Vector3.UnitZ);
+                    return Matrix4.LookAt(Position, Position + Vector3.UnitY, Vector3.UnitZ);
                 case TextureTarget.TextureCubeMapNegativeY:
-                    return Matrix4.LookAt(Position, -Vector3.UnitY, Vector3.UnitZ);
+                    return Matrix4.LookAt(Position, Position - Vector3.UnitY, -Vector3.UnitZ);
                 case TextureTarget.TextureCubeMapPositiveZ:
-                    return Matrix4.LookAt(Position, Vector3.UnitZ, -Vector3.UnitY);
+                    return Matrix4.LookAt(Position, Position + Vector3.UnitZ, -Vector3.UnitY);
                 case TextureTarget.TextureCubeMapNegativeZ:
-                    return Matrix4.LookAt(Position, -Vector3.UnitZ, -Vector3.UnitY);
+                    return Matrix4.LookAt(Position, Position - Vector3.UnitZ, -Vector3.UnitY);
                 default:
                     throw new NotImplementedException("Could not handle target " + target);
             }
@@ -62,7 +62,7 @@ namespace Graphics.Lighting
 
         public Matrix4 GetProjection(Resolution resolution)
         {
-            return Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), resolution.AspectRatio, 0.1f, Radius);
+            return Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
         }
 
         public override void DrawForStencilPass(ShaderProgram program)

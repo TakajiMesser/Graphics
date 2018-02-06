@@ -1,13 +1,13 @@
-﻿#version 440
+﻿#version 440 core
 
 uniform vec3 lightPosition;
+uniform float lightRadius;
 
-in vec3 fPosition;
-
-out float color;
+in vec4 fPosition;
 
 void main()
 {
-    vec3 lightToVertex = fPosition - lightPosition;
-    color = length(lightToVertex);
+    vec3 lightToVertex = fPosition.xyz - lightPosition;
+    float lightDistance = length(lightToVertex);
+    gl_FragDepth = lightDistance / lightRadius;
 }

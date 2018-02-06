@@ -392,7 +392,7 @@ namespace Graphics.Helpers.Builders
                     // Compare current position to location of mouse, and set rotation to face the mouse
                     if (!context.InputState.IsHeld(context.InputMapping.ItemWheel) && nEvadeTicks == 0 && context.InputState.IsMouseInWindow)
                     {
-                        var clipSpacePosition = context.Camera.ViewProjectionMatrix * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Position, 1.0f);
+                        var clipSpacePosition = context.Camera.ViewProjectionMatrix.Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Position, 1.0f);
                         var screenCoordinates = new Vector2()
                         {
                             X = ((clipSpacePosition.X + 1.0f) / 2.0f) * context.InputState.WindowWidth,

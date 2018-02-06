@@ -152,6 +152,7 @@
     <None Include="Rendering\Shaders\Geometry\geometry-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\point-shadow-geometry-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\spot-shadow-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-shadow-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\light-vertex-shader.glsl" />

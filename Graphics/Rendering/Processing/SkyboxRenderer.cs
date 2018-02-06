@@ -26,9 +26,7 @@ namespace Graphics.Rendering.Processing
         public Texture SkyTexture { get; protected set; }
         
         internal ShaderProgram _program;
-        private int _vertexArrayHandle;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
-        private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
+        private SimpleMesh _cubeMesh;
 
         public SkyboxRenderer(Resolution resolution)
         {
@@ -39,6 +37,7 @@ namespace Graphics.Rendering.Processing
         {
             LoadPrograms();
             LoadBuffers();
+            LoadCubeMesh();
         }
 
         protected void LoadPrograms()
@@ -49,8 +48,6 @@ namespace Graphics.Rendering.Processing
 
         public void LoadBuffers()
         {
-            LoadCube(_program);
-
             var texturePaths = new List<string>
             {
                 FilePathHelper.SPACE_01_TEXTURE_PATH,
@@ -64,48 +61,9 @@ namespace Graphics.Rendering.Processing
             SkyTexture = Texture.LoadFromFile(texturePaths, TextureTarget.TextureCubeMap, true, true);
         }
 
-        protected void LoadCube(ShaderProgram program)
+        private void LoadCubeMesh()
         {
-            _vertexArrayHandle = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.AddVertices(new[]
-            {
-                new Vector3(-20.0f, -20.0f, -20.0f),
-                new Vector3(-20.0f, -20.0f, 20.0f),
-                new Vector3(-20.0f, 20.0f, -20.0f),
-                new Vector3(-20.0f, 20.0f, 20.0f),
-                new Vector3(20.0f, -20.0f, -20.0f),
-                new Vector3(20.0f, -20.0f, 20.0f),
-                new Vector3(20.0f, 20.0f, -20.0f),
-                new Vector3(20.0f, 20.0f, 20.0f)
-            });
-            _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
-
-            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
-            attribute.Set(program.GetAttributeLocation("vPosition"));
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
-
-            _indexBuffer.AddIndices(new List<ushort>
-            {
-                0, 6, 4,
-                0, 2, 6,
-                0, 3, 2,
-                0, 1, 3,
-                2, 7, 6,
-                2, 3, 7,
-                4, 6, 7,
-                4, 7, 5,
-                0, 4, 5,
-                0, 5, 1,
-                1, 5, 7,
-                1, 7, 3
-            });
-            _indexBuffer.Bind();
-            _indexBuffer.Buffer();
-            _indexBuffer.Unbind();
+            _cubeMesh = SimpleMesh.LoadFromFile(FilePathHelper.CUBE_MESH_PATH, _program);
         }
 
         public void Render(Camera camera, FrameBuffer gBuffer)
@@ -115,7 +73,7 @@ namespace Graphics.Rendering.Processing
             GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
             //GL.ClearColor(Color4.Purple);
-            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
@@ -129,28 +87,39 @@ namespace Graphics.Rendering.Processing
             _program.BindTexture(SkyTexture, "mainTexture", 0);
 
             camera.Draw(_program);
-
-            var modelMatrix = Matrix4.CreateTranslation(camera.Position);
-            //var modelMatrix = Matrix4.CreateTranslation(new Vector3(0.0f, 0.0f, -0.5f));
-            _program.SetUniform(ModelMatrix.NAME, modelMatrix);
-
-            RenderCube();
+            _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
+            _cubeMesh.Draw();
 
             GL.CullFace((CullFaceMode)oldCullFaceMode);
             GL.DepthFunc((DepthFunction)oldDepthFunc);
         }
 
-        protected void RenderCube()
+        public void Render(Camera camera, FrameBuffer gBuffer, Texture cubeMap)
         {
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.Bind();
-            _indexBuffer.Bind();
+            _program.Use();
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
-            _indexBuffer.Draw();
+            //GL.ClearColor(Color4.Purple);
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
-            _indexBuffer.Unbind();
+            int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
+            int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
+
+            //GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.CullFace(CullFaceMode.Front);
+            GL.DepthFunc(DepthFunction.Lequal);
+
+            _program.BindTexture(cubeMap, "mainTexture", 0);
+
+            camera.Draw(_program);
+            _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
+            _cubeMesh.Draw();
+
+            GL.CullFace((CullFaceMode)oldCullFaceMode);
+            GL.DepthFunc((DepthFunction)oldDepthFunc);
         }
     }
 }

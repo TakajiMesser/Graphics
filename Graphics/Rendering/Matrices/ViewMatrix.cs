@@ -14,6 +14,7 @@ namespace Graphics.Rendering.Matrices
     {
         public const string NAME = "viewMatrix";
         public const string PREVIOUS_NAME = "previousViewMatrix";
+        public const string SHADOW_NAME = "shadowViewMatrices";
 
         private Matrix4 _previousMatrix;
 

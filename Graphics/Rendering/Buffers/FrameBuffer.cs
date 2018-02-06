@@ -58,7 +58,7 @@ namespace Graphics.Rendering.Buffers
 
         public void Draw()
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _handle);
+            Bind(FramebufferTarget.DrawFramebuffer);
 
             GL.DrawBuffers(_textures.Count, _textures.Keys
                 .Where(k => k != FramebufferAttachment.DepthStencilAttachment && k != FramebufferAttachment.DepthAttachment)

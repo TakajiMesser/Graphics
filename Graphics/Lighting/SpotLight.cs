@@ -73,8 +73,6 @@ namespace Graphics.Lighting
         {
             program.SetUniform("modelMatrix", Model);
             program.SetUniform("lightMatrix", View * GetProjection(resolution));
-            program.SetUniform("lightViewMatrix", View);
-            program.SetUniform("lightProjectionMatrix", GetProjection(resolution));
 
             program.SetUniform("lightPosition", Position);
             program.SetUniform("lightRadius", Radius);

@@ -265,93 +265,11 @@ namespace Graphics.Rendering.Processing
         private void LoadPointLightMesh()
         {
             _pointLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
-            /*_pointLightMesh = new SimpleMesh(
-                new List<Vector3>
-                {
-                    new Vector3(0, -0.525731f, 0.850651f),
-                    new Vector3(0.850651f, 0, 0.525731f),
-                    new Vector3(0.850651f, 0, -0.525731f),
-                    new Vector3(-0.850651f, 0, -0.525731f),
-                    new Vector3(-0.850651f, 0,  0.525731f),
-                    new Vector3(-0.525731f, 0.850651f, 0),
-                    new Vector3(0.525731f, 0.850651f, 0),
-                    new Vector3(0.525731f, -0.850651f, 0),
-                    new Vector3(-0.525731f, -0.850651f, 0),
-                    new Vector3(0, -0.525731f, -0.850651f),
-                    new Vector3(0, 0.525731f, -0.850651f),
-                    new Vector3(0, 0.525731f, 0.850651f)
-                },
-                new List<int>
-                {
-                    1, 2, 6,
-                    1, 7, 2,
-                    3, 4, 5,
-                    4, 3, 8,
-                    6, 5, 11,
-                    5, 6, 10,
-                    9, 10, 2,
-                    10, 9, 3,
-                    7, 8, 9,
-                    8, 7, 0,
-                    11, 0, 1,
-                    0, 11, 4,
-                    6, 2, 10,
-                    1, 6, 11,
-                    3, 5, 10,
-                    5, 4, 11,
-                    2, 7, 9,
-                    7, 1, 0,
-                    3, 9, 8,
-                    4, 8, 0
-                },
-                _pointLightProgram
-            );*/
         }
 
         private void LoadSpotLightMesh()
         {
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
-            /*_spotLightMesh = new SimpleMesh(
-                new List<Vector3>
-                {
-                    new Vector3(0, -0.525731f, 0.850651f),
-                    new Vector3(0.850651f, 0, 0.525731f),
-                    new Vector3(0.850651f, 0, -0.525731f),
-                    new Vector3(-0.850651f, 0, -0.525731f),
-                    new Vector3(-0.850651f, 0,  0.525731f),
-                    new Vector3(-0.525731f, 0.850651f, 0),
-                    new Vector3(0.525731f, 0.850651f, 0),
-                    new Vector3(0.525731f, -0.850651f, 0),
-                    new Vector3(-0.525731f, -0.850651f, 0),
-                    new Vector3(0, -0.525731f, -0.850651f),
-                    new Vector3(0, 0.525731f, -0.850651f),
-                    new Vector3(0, 0.525731f, 0.850651f)
-                },
-                new List<int>
-                {
-                    1, 2, 6,
-                    1, 7, 2,
-                    3, 4, 5,
-                    4, 3, 8,
-                    6, 5, 11,
-                    5, 6, 10,
-                    9, 10, 2,
-                    10, 9, 3,
-                    7, 8, 9,
-                    8, 7, 0,
-                    11, 0, 1,
-                    0, 11, 4,
-                    6, 2, 10,
-                    1, 6, 11,
-                    3, 5, 10,
-                    5, 4, 11,
-                    2, 7, 9,
-                    7, 1, 0,
-                    3, 9, 8,
-                    4, 8, 0
-                },
-                _spotLightProgram
-            );*/
         }
 
         public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
@@ -404,6 +322,33 @@ namespace Graphics.Rendering.Processing
             _spotLightMesh.Draw();*/
         }
 
+        public void LightPass(Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects, ShadowRenderer shadowRenderer)
+        {
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            foreach (var light in lights)
+            {
+                var lightMesh = GetMeshForLight(light);
+                StencilPass(light, camera, lightMesh);
+
+                GL.Disable(EnableCap.Blend);
+                shadowRenderer.Render(camera, light, brushes, gameObjects);
+                GL.Enable(EnableCap.Blend);
+
+                var lightProgram = GetProgramForLight(light);
+                DrawLight(light, camera, lightMesh, light is PointLight ? shadowRenderer.PointDepthCubeMap : shadowRenderer.SpotDepthTexture, lightProgram);
+            }
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);
+        }
+
         public void LightPass(Camera camera, IEnumerable<Light> lights, Texture pointShadows, Texture spotShadows)
         {
             GL.Enable(EnableCap.StencilTest);
@@ -434,6 +379,7 @@ namespace Graphics.Rendering.Processing
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.None);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             GL.DepthMask(false);
             GL.Enable(EnableCap.DepthTest);
@@ -456,6 +402,7 @@ namespace Graphics.Rendering.Processing
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Disable(EnableCap.DepthTest);
