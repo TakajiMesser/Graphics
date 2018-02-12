@@ -17,7 +17,7 @@ namespace Graphics.GameObjects
     public abstract class Camera
     {
         private string _name;
-        internal ViewMatrix _viewMatrix = new ViewMatrix();
+        public ViewMatrix _viewMatrix = new ViewMatrix();
         internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
 
         protected float _distance;
@@ -43,7 +43,7 @@ namespace Graphics.GameObjects
             AttachedObject = gameObject;
 
             // Determine the original distance from the attached object, based on the current camera position
-            AttachedTranslation = gameObject.Position - Position;
+            AttachedTranslation = gameObject.Model.Position - Position;
             _distance = AttachedTranslation.Length;
         }
 
@@ -51,8 +51,8 @@ namespace Graphics.GameObjects
         {
             if (AttachedObject != null)
             {
-                Position = AttachedObject.Position - AttachedTranslation;
-                _viewMatrix.LookAt = AttachedObject.Position;
+                Position = AttachedObject.Model.Position - AttachedTranslation;
+                _viewMatrix.LookAt = AttachedObject.Model.Position;
             }
         }
 

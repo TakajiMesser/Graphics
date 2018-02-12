@@ -19,7 +19,7 @@ namespace Graphics.Rendering.Buffers
 
         public List<Material> Materials { get; } = new List<Material>();
 
-        public MaterialBuffer(ShaderProgram program) : base(NAME, BINDING, program) { }
+        public MaterialBuffer() : base(NAME, BINDING) { }
 
         public void AddMaterial(Material material) => Materials.Add(material);
 

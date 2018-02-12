@@ -3,10 +3,12 @@ using Graphics.Meshes;
 using Graphics.Physics.Collision;
 using Graphics.Rendering.Shaders;
 using Graphics.Rendering.Textures;
+using Graphics.Rendering.Vertices;
 using Graphics.Scripting.BehaviorTrees;
 using OpenTK;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
@@ -21,21 +23,23 @@ namespace Graphics.Maps
         public Vector3 Position { get; set; }
         public Quaternion Rotation { get; set; }
         public Vector3 Scale { get; set; }
-        public string MeshFilePath { get; set; }
-        public string TextureFilePath { get; set; }
-        public string NormalMapFilePath { get; set; }
+        public string ModelFilePath { get; set; }
         public string DiffuseMapFilePath { get; set; }
+        public string NormalMapFilePath { get; set; }
         public string SpecularMapFilePath { get; set; }
+        public string ParallaxMapFilePath { get; set; }
         public string BehaviorFilePath { get; set; }
         public List<GameProperty> Properties { get; set; }
         //public ICollider Collider { get; set; }
 
-        public GameObject ToGameObject(ShaderProgram program)
+        public GameObject ToGameObject()
         {
-            var gameObject = new GameObject(Name)
+            var gameObject = new GameObject(Name);
+
+            if (!string.IsNullOrEmpty(ModelFilePath))
             {
-                Mesh = Mesh.LoadFromFile(MeshFilePath, program)
-            };
+                gameObject.Model = Model.LoadFromFile(ModelFilePath);
+            }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))
             {
@@ -55,20 +59,20 @@ namespace Graphics.Maps
 
             if (Position != null)
             {
-                gameObject.Position = Position;
+                gameObject.Model.Position = Position;
             }
 
             if (Rotation != null)
             {
-                gameObject.Rotation = Rotation;
+                gameObject.Model.Rotation = Rotation;
             }
 
             if (Scale != null)
             {
-                gameObject.Scale = Scale;
+                gameObject.Model.Scale = Scale;
             }
 
-            gameObject.Mesh.AddTestColors();
+            gameObject.Model.AddTestColors();
             gameObject.Bounds = gameObject.Name == "Player"
                 ? (Bounds)new BoundingCircle(gameObject)
                 : new BoundingBox(gameObject);

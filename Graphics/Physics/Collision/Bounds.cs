@@ -17,7 +17,7 @@ namespace Graphics.Physics.Collision
         public Bounds(GameObject gameObject)
         {
             AttachedObject = gameObject;
-            Center = gameObject.Position;
+            Center = gameObject.Model.Position;
         }
 
         public Bounds(Brush brush)

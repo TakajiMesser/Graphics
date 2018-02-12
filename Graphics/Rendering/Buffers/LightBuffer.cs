@@ -19,7 +19,7 @@ namespace Graphics.Rendering.Buffers
 
         public List<PLight> PointLights { get; } = new List<PLight>();
 
-        public LightBuffer(ShaderProgram program) : base(NAME, BINDING, program) { }
+        public LightBuffer() : base(NAME, BINDING) { }
 
         public void AddPointLight(PointLight light) => PointLights.Add(light.ToStruct());
         public void AddPointLights(IEnumerable<PointLight> lights) => PointLights.AddRange(lights.Select(l => l.ToStruct()));

@@ -16,18 +16,18 @@ using System.Threading.Tasks;
 
 namespace Graphics.Meshes
 {
-    public class Mesh : IDisposable
+    public class Mesh<T> : IDisposable where T : struct
     {
-        private List<Vertex> _vertices = new List<Vertex>();
-        private VertexBuffer<Vertex> _vertexBuffer = new VertexBuffer<Vertex>();
+        private List<T> _vertices = new List<T>();
+        private VertexBuffer<T> _vertexBuffer = new VertexBuffer<T>();
         private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
-        private VertexArray<Vertex> _vertexArray;
-        private MaterialBuffer _materialBuffer;
-        private LightBuffer _lightBuffer;
+        private VertexArray<T> _vertexArray = new VertexArray<T>();
+        private Material _material;
+        private LightBuffer _lightBuffer = new LightBuffer();
 
-        public List<Vertex> Vertices => _vertices;
+        public List<T> Vertices => _vertices;
 
-        public Mesh(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
+        public Mesh(List<T> vertices, Material material, List<int> triangleIndices)
         {
             if (triangleIndices.Count % 3 != 0)
             {
@@ -37,35 +37,30 @@ namespace Graphics.Meshes
             _vertices = vertices;
             _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
             _vertexBuffer.AddVertices(_vertices);
-
-            _vertexBuffer.Bind();
-            _vertexArray = new VertexArray<Vertex>(program);
-            _vertexBuffer.Unbind();
-
-            _lightBuffer = new LightBuffer(program);
-
-            _materialBuffer = new MaterialBuffer(program);
-            _materialBuffer.AddMaterials(materials);
+            _material = material;
         }
 
-        public void AddTestColors()
+        public void Load(ShaderProgram program)
         {
-            for (var i = 0; i < _vertices.Count; i++)
-            {
-                if (i % 3 == 0)
-                {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, _vertices[i].Tangent, Color4.Lime, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
-                }
-                else if (i % 3 == 1)
-                {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, _vertices[i].Tangent, Color4.Red, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
-                }
-                else if (i % 3 == 2)
-                {
-                    _vertices[i] = new Vertex(_vertices[i].Position, _vertices[i].Normal, _vertices[i].Tangent, Color4.Blue, _vertices[i].TextureCoords, _vertices[i].MaterialIndex);
-                }
-            }
+            _vertexBuffer.Bind();
+            _vertexArray.Load(program);
+            _vertexBuffer.Unbind();
 
+            _lightBuffer.Load(program);
+        }
+
+        public void ClearVertices()
+        {
+            _vertices.Clear();
+        }
+
+        public void AddVertices(IEnumerable<T> vertices)
+        {
+            _vertices.AddRange(vertices);
+        }
+
+        public void RefreshVertices()
+        {
             _vertexBuffer.Clear();
             _vertexBuffer.AddVertices(_vertices);
         }
@@ -73,16 +68,16 @@ namespace Graphics.Meshes
         public void ClearLights() => _lightBuffer.Clear();
         public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
 
-        public void Draw()
+        public void Draw(ShaderProgram program)
         {
+            _material.Draw(program);
+
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _materialBuffer.Bind();
             _lightBuffer.Bind();
             _indexBuffer.Bind();
 
             _vertexBuffer.Buffer();
-            _materialBuffer.Buffer();
             _lightBuffer.Buffer();
             _indexBuffer.Buffer();
 
@@ -90,7 +85,6 @@ namespace Graphics.Meshes
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
-            _materialBuffer.Unbind();
             _lightBuffer.Unbind();
             _indexBuffer.Unbind();
         }
@@ -100,8 +94,50 @@ namespace Graphics.Meshes
             throw new NotImplementedException();
         }
 
-        public static Mesh LoadFromFile(string path, ShaderProgram program)
+        /*public static Mesh<Vertex> LoadFromFile(string filePath)
         {
+            using (var importer = new Assimp.AssimpContext())
+            {
+                var scene = importer.ImportFile(filePath, Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.CalculateTangentSpace);
+
+                // For now, assume every file has just one mesh
+                var mesh = scene.Meshes.First();
+                var material = scene.Materials[mesh.MaterialIndex];
+
+                var vertices2 = new List<Vertex>();
+
+                for (var i = 0; i < mesh.VertexCount; i++)
+                {
+                    var vertex = new Vertex()
+                    {
+                        Position = new Vector3(mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z),
+                        Color = new Color4(),
+                        MaterialIndex = 0
+                    };
+
+                    if (mesh.HasNormals)
+                    {
+                        vertex.Normal = new Vector3(mesh.Normals[i].X, mesh.Normals[i].Y, mesh.Normals[i].Z);
+                    }
+
+                    if (mesh.HasTextureCoords(0))
+                    {
+                        vertex.TextureCoords = new Vector2(mesh.TextureCoordinateChannels[0][i].X, mesh.TextureCoordinateChannels[0][i].Y);
+                    }
+
+                    if (mesh.HasTangentBasis)
+                    {
+                        vertex.Tangent = new Vector3(mesh.Tangents[i].X, mesh.Tangents[i].Y, mesh.Tangents[i].Z);
+                    }
+
+                    vertices2.Add(vertex);
+                }
+
+                var triangleIndices2 = mesh.GetIndices().ToList();
+
+                return new Mesh<Vertex>(vertices2, new List<Material> { new Material(material) }, triangleIndices2);
+            }
+
             var materials = new List<Material>();
             var vertices = new List<Vector3>();
             var uvs = new List<Vector2>();
@@ -114,7 +150,7 @@ namespace Graphics.Meshes
             var materialIndexByName = new Dictionary<string, int>();
             int currentMaterialIndex = 0;
 
-            foreach (var line in File.ReadLines(path))
+            foreach (var line in File.ReadLines(filePath))
             {
                 var values = line.Split(' ');
 
@@ -123,7 +159,7 @@ namespace Graphics.Meshes
                     switch (values[0])
                     {
                         case "mtllib":
-                            foreach (var material in Material.LoadFromFile(Path.GetDirectoryName(path) + "\\" + values[1]))
+                            foreach (var material in Material.LoadFromFile(Path.GetDirectoryName(filePath) + "\\" + values[1]))
                             {
                                 materialIndexByName.Add(material.Item1, materials.Count);
                                 materials.Add(material.Item2);
@@ -188,11 +224,11 @@ namespace Graphics.Meshes
 
                 var uv = uvIndices[i] > 0 ? uvs[uvIndices[i]] : Vector2.Zero;
 
-                var meshVertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], tangent.Normalized(), uv, materialIndices[i]);
-                var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
-                    && v.Normal == meshVertex.Normal
-                    && v.TextureCoords == meshVertex.TextureCoords
-                    && v.MaterialIndex == meshVertex.MaterialIndex);
+                var vertex = new Vertex(vertices[vertexIndices[i]], normals[normalIndices[i]], tangent.Normalized(), uv, materialIndices[i]);
+                var existingIndex = verticies.FindIndex(v => v.Position == vertex.Position
+                    && v.Normal == vertex.Normal
+                    && v.TextureCoords == vertex.TextureCoords
+                    && v.MaterialIndex == vertex.MaterialIndex);
 
                 if (existingIndex >= 0)
                 {
@@ -201,14 +237,12 @@ namespace Graphics.Meshes
                 else
                 {
                     triangleIndices.Add(verticies.Count);
-                    verticies.Add(meshVertex);
+                    verticies.Add(vertex);
                 }
             }
 
-            var mesh = new Mesh(verticies, materials, triangleIndices, program);
-
-            return mesh;
-        }
+            return new Mesh<Vertex>(verticies, materials, triangleIndices);
+        }*/
 
         #region IDisposable Support
         private bool disposedValue = false;

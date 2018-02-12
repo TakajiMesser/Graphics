@@ -132,6 +132,12 @@ namespace Graphics.Rendering.Shaders
             GL.Uniform1(location, value);
         }
 
+        public void SetUniform(string name, int value)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform1(location, value);
+        }
+
         public int GetVertexAttributeLocation(string name)
         {
             int index = GetAttributeLocation(name);

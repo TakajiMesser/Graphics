@@ -57,8 +57,6 @@ float calculateShadowFactor(vec3 lightToPixel, vec3 position)
     float lightDistance = length(lightToPixel);
 
     shadowDistance *= lightRadius;
-    //return lightDistance;
-    //return shadowDistance / lightRadius;
 
     const float bias = 0.05;
     return (lightDistance > shadowDistance + bias)
@@ -77,7 +75,6 @@ float calculateIlluminance(vec3 lightToPixel, vec3 position)
         if (attenuation > 0.0)
 	    {
             float shadowFactor = calculateShadowFactor(lightToPixel, position);
-            //return shadowFactor;
 		    return lightIntensity * attenuation * shadowFactor;
 	    }
     }
@@ -118,8 +115,6 @@ void main()
     vec4 specularLight = computeSpecularLight(specular.xyz, illuminance, unitNormal, unitLight, unitCamera, specular.z);
     
     finalColor = color * (diffuseLight + specularLight);
-    //finalColor = vec4(illuminance);
-    //finalColor = vec4(length(lightToPixel) / lightRadius);
 
     // If these two vectors are parallel, color the pixel white
     // TODO - Remove this, it is purely for debugging purposes

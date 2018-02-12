@@ -8,6 +8,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
 using Graphics.Helpers;
 using Graphics.Utilities;
+using Graphics.Rendering.Vertices;
 
 namespace Graphics.Rendering.Buffers
 {

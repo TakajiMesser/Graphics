@@ -21,7 +21,7 @@ namespace Graphics.Rendering.Vertices
 
         public int Handle => _handle;
 
-        public VertexArray(ShaderProgram program)
+        public VertexArray()
         {
             if (_generated)
             {
@@ -30,7 +30,10 @@ namespace Graphics.Rendering.Vertices
 
             _handle = GL.GenVertexArray();
             _generated = true;
+        }
 
+        public void Load(ShaderProgram program)
+        {
             Bind();
             SetVertexAttributes(program);
             Unbind();

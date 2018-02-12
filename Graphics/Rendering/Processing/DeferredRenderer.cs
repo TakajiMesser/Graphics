@@ -21,10 +21,8 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Processing
 {
-    public class DeferredRenderer
+    public class DeferredRenderer : Renderer
     {
-        public Resolution Resolution { get; private set; }
-
         public Texture PositionTexture { get; protected set; }
         public Texture ColorTexture { get; protected set; }
         public Texture NormalTexture { get; protected set; }
@@ -37,6 +35,8 @@ namespace Graphics.Rendering.Processing
         public FrameBuffer GBuffer { get; private set; } = new FrameBuffer();
 
         internal ShaderProgram _geometryProgram;
+        internal ShaderProgram _jointGeometryProgram;
+
         internal ShaderProgram _stencilProgram;
         internal ShaderProgram _pointLightProgram;
         internal ShaderProgram _spotLightProgram;
@@ -45,89 +45,82 @@ namespace Graphics.Rendering.Processing
         private SimpleMesh _pointLightMesh;
         private SimpleMesh _spotLightMesh;
 
-        public DeferredRenderer(Resolution resolution)
+        protected override void LoadPrograms()
         {
-            Resolution = resolution;
-        }
-
-        public void Load()
-        {
-            LoadPrograms();
-            LoadBuffers();
-            LoadPointLightMesh();
-            LoadSpotLightMesh();
-        }
-
-        protected void LoadPrograms()
-        {
-            _geometryProgram = new ShaderProgram(new[] {
+            _geometryProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.GEOMETRY_VERTEX_SHADER_PATH)),
                 //new Shader(ShaderType.TessControlShader, File.ReadAllText(FilePathHelper.GEOMETRY_TESS_CONTROL_SHADER_PATH)),
                 //new Shader(ShaderType.TessEvaluationShader, File.ReadAllText(FilePathHelper.GEOMETRY_TESS_EVAL_SHADER_PATH)),
                 //new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.GEOMETRY_GEOMETRY_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.GEOMETRY_FRAGMENT_SHADER_PATH))
-            });
+            );
 
-            _stencilProgram = new ShaderProgram(new[]
-            {
+            _jointGeometryProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.GEOMETRY_SKINNING_VERTEX_SHADER_PATH)),
+                //new Shader(ShaderType.TessControlShader, File.ReadAllText(FilePathHelper.GEOMETRY_TESS_CONTROL_SHADER_PATH)),
+                //new Shader(ShaderType.TessEvaluationShader, File.ReadAllText(FilePathHelper.GEOMETRY_TESS_EVAL_SHADER_PATH)),
+                //new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.GEOMETRY_GEOMETRY_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.GEOMETRY_FRAGMENT_SHADER_PATH))
+            );
+
+            _stencilProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.STENCIL_VERTEX_SHADER_PATH))
-            });
+            );
 
-            _pointLightProgram = new ShaderProgram(new[] {
+            _pointLightProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.LIGHT_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.POINT_LIGHT_FRAGMENT_SHADER_PATH))
-            });
+            );
 
-            _spotLightProgram = new ShaderProgram(new[] {
+            _spotLightProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.LIGHT_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SPOT_LIGHT_FRAGMENT_SHADER_PATH))
-            });
+            );
 
-            _simpleProgram = new ShaderProgram(new[]
-            {
+            _simpleProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SIMPLE_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SIMPLE_FRAGMENT_SHADER_PATH))
-            });
+            );
         }
 
-        public void ResizeTextures()
+        public override void ResizeTextures(Resolution resolution)
         {
-            PositionTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            PositionTexture.Resize(resolution.Width, resolution.Height, 0);
             PositionTexture.Bind();
             PositionTexture.ReserveMemory();
 
-            ColorTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            ColorTexture.Resize(resolution.Width, resolution.Height, 0);
             ColorTexture.Bind();
             ColorTexture.ReserveMemory();
 
-            NormalTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            NormalTexture.Resize(resolution.Width, resolution.Height, 0);
             NormalTexture.Bind();
             NormalTexture.ReserveMemory();
 
-            DiffuseMaterialTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            DiffuseMaterialTexture.Resize(resolution.Width, resolution.Height, 0);
             DiffuseMaterialTexture.Bind();
             DiffuseMaterialTexture.ReserveMemory();
 
-            SpecularTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            SpecularTexture.Resize(resolution.Width, resolution.Height, 0);
             SpecularTexture.Bind();
             SpecularTexture.ReserveMemory();
 
-            VelocityTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            VelocityTexture.Resize(resolution.Width, resolution.Height, 0);
             VelocityTexture.Bind();
             VelocityTexture.ReserveMemory();
 
-            FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
-            DepthStencilTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
             DepthStencilTexture.Bind();
             DepthStencilTexture.ReserveMemory();
         }
 
-        protected void LoadBuffers()
+        protected override void LoadTextures(Resolution resolution)
         {
-            PositionTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            PositionTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -142,7 +135,7 @@ namespace Graphics.Rendering.Processing
             PositionTexture.Bind();
             PositionTexture.ReserveMemory();
 
-            ColorTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            ColorTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -157,7 +150,7 @@ namespace Graphics.Rendering.Processing
             ColorTexture.Bind();
             ColorTexture.ReserveMemory();
 
-            NormalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            NormalTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -172,7 +165,7 @@ namespace Graphics.Rendering.Processing
             NormalTexture.Bind();
             NormalTexture.ReserveMemory();
 
-            DiffuseMaterialTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            DiffuseMaterialTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -187,7 +180,7 @@ namespace Graphics.Rendering.Processing
             DiffuseMaterialTexture.Bind();
             DiffuseMaterialTexture.ReserveMemory();
 
-            SpecularTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            SpecularTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -202,7 +195,7 @@ namespace Graphics.Rendering.Processing
             SpecularTexture.Bind();
             SpecularTexture.ReserveMemory();
 
-            VelocityTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            VelocityTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -217,7 +210,7 @@ namespace Graphics.Rendering.Processing
             VelocityTexture.Bind();
             VelocityTexture.ReserveMemory();
 
-            FinalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -232,7 +225,7 @@ namespace Graphics.Rendering.Processing
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
-            DepthStencilTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -246,7 +239,10 @@ namespace Graphics.Rendering.Processing
             };
             DepthStencilTexture.Bind();
             DepthStencilTexture.ReserveMemory();
+        }
 
+        protected override void LoadBuffers()
+        {
             GBuffer.Clear();
             GBuffer.Add(FramebufferAttachment.ColorAttachment0, PositionTexture);
             GBuffer.Add(FramebufferAttachment.ColorAttachment1, ColorTexture);
@@ -260,19 +256,12 @@ namespace Graphics.Rendering.Processing
             GBuffer.Bind(FramebufferTarget.Framebuffer);
             GBuffer.AttachAttachments();
             GBuffer.Unbind(FramebufferTarget.Framebuffer);
-        }
 
-        private void LoadPointLightMesh()
-        {
             _pointLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
-        }
-
-        private void LoadSpotLightMesh()
-        {
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
-        public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void GeometryPass(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             // Clear final texture from last frame
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
@@ -294,12 +283,13 @@ namespace Graphics.Rendering.Processing
 
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
 
             camera.Draw(_geometryProgram);
+            _geometryProgram.SetUniform("cameraPosition", camera.Position);
 
             foreach (var brush in brushes)
             {
@@ -307,22 +297,50 @@ namespace Graphics.Rendering.Processing
                 brush.Draw(_geometryProgram);
             }
 
-            foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
+            foreach (var gameObject in gameObjects)
             {
                 BindTextures(textureManager, gameObject.TextureMapping);
                 gameObject.Draw(_geometryProgram);
             }
-
-            /*GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-            _simpleProgram.Use();
-            camera.Draw(_simpleProgram);
-            var modelMatrix = new ModelMatrix(new Vector3(-20.0f, 0, 3.0f), Quaternion.FromAxisAngle(Vector3.UnitZ, -1.0f) * Quaternion.FromAxisAngle(Vector3.UnitY, -1.0f), new Vector3(5.0f, 5.0f, 18.0f));
-            modelMatrix.Set(_simpleProgram);
-            _spotLightMesh.Draw();*/
         }
 
-        public void LightPass(Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects, ShadowRenderer shadowRenderer)
+        public void JointGeometryPass(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<GameObject> gameObjects)
+        {
+            // Clear final texture from last frame
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+
+            _jointGeometryProgram.Use();
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
+            GL.DrawBuffers(7, new DrawBuffersEnum[]
+            {
+                DrawBuffersEnum.ColorAttachment0,
+                DrawBuffersEnum.ColorAttachment1,
+                DrawBuffersEnum.ColorAttachment2,
+                DrawBuffersEnum.ColorAttachment3,
+                DrawBuffersEnum.ColorAttachment4,
+                DrawBuffersEnum.ColorAttachment5,
+                DrawBuffersEnum.ColorAttachment6
+            });
+
+            GL.ClearColor(Color4.Black);
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
+
+            GL.Enable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.Blend);
+
+            camera.Draw(_jointGeometryProgram);
+
+            foreach (var gameObject in gameObjects)
+            {
+                BindTextures(textureManager, gameObject.TextureMapping);
+                gameObject.Draw(_jointGeometryProgram);
+            }
+        }
+
+        public void LightPass(Resolution resolution, Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects, ShadowRenderer shadowRenderer)
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
@@ -332,14 +350,14 @@ namespace Graphics.Rendering.Processing
             foreach (var light in lights)
             {
                 var lightMesh = GetMeshForLight(light);
-                StencilPass(light, camera, lightMesh);
+                StencilPass(resolution, light, camera, lightMesh);
 
                 GL.Disable(EnableCap.Blend);
-                shadowRenderer.Render(camera, light, brushes, gameObjects);
+                shadowRenderer.Render(resolution, camera, light, brushes, gameObjects);
                 GL.Enable(EnableCap.Blend);
 
                 var lightProgram = GetProgramForLight(light);
-                DrawLight(light, camera, lightMesh, light is PointLight ? shadowRenderer.PointDepthCubeMap : shadowRenderer.SpotDepthTexture, lightProgram);
+                DrawLight(resolution, light, camera, lightMesh, light is PointLight ? shadowRenderer.PointDepthCubeMap : shadowRenderer.SpotDepthTexture, lightProgram);
             }
 
             GL.Enable(EnableCap.CullFace);
@@ -349,7 +367,7 @@ namespace Graphics.Rendering.Processing
             GL.Disable(EnableCap.Blend);
         }
 
-        public void LightPass(Camera camera, IEnumerable<Light> lights, Texture pointShadows, Texture spotShadows)
+        public void LightPass(Resolution resolution, Camera camera, IEnumerable<Light> lights, Texture pointShadows, Texture spotShadows)
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
@@ -359,11 +377,11 @@ namespace Graphics.Rendering.Processing
             foreach (var light in lights)
             {
                 var lightMesh = GetMeshForLight(light);
-                StencilPass(light, camera, lightMesh);
+                StencilPass(resolution, light, camera, lightMesh);
 
                 var lightProgram = GetProgramForLight(light);
                 var shadowTexture = light is PointLight ? pointShadows : spotShadows;
-                DrawLight(light, camera, lightMesh, shadowTexture, lightProgram);
+                DrawLight(resolution, light, camera, lightMesh, shadowTexture, lightProgram);
             }
 
             GL.Enable(EnableCap.CullFace);
@@ -373,13 +391,13 @@ namespace Graphics.Rendering.Processing
             GL.Disable(EnableCap.Blend);
         }
 
-        public void StencilPass(Light light, Camera camera, SimpleMesh mesh)
+        public void StencilPass(Resolution resolution, Light light, Camera camera, SimpleMesh mesh)
         {
             _stencilProgram.Use();
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.None);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             GL.DepthMask(false);
             GL.Enable(EnableCap.DepthTest);
@@ -396,13 +414,13 @@ namespace Graphics.Rendering.Processing
             mesh.Draw();
         }
 
-        private void DrawLight(Light light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
+        private void DrawLight(Resolution resolution, Light light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
             program.Use();
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Disable(EnableCap.DepthTest);
@@ -419,7 +437,7 @@ namespace Graphics.Rendering.Processing
             camera.Draw(program);
             program.SetUniform("cameraPosition", camera.Position);
 
-            light.DrawForLightPass(Resolution, program);
+            light.DrawForLightPass(resolution, program);
             mesh.Draw();
         }
 
@@ -459,36 +477,32 @@ namespace Graphics.Rendering.Processing
         {
             // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
             // Check brush's texture mapping to see which textures we need to bind
-            var mainTexture = textureManager.RetrieveTexture(textureMapping.MainTextureID);
-
-            GL.Uniform1(_geometryProgram.GetUniformLocation("useMainTexture"), (mainTexture != null) ? 1 : 0);
-            if (mainTexture != null)
+            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
+            GL.Uniform1(_geometryProgram.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+            if (diffuseMap != null)
             {
-                _geometryProgram.BindTexture(mainTexture, "mainTexture", 0);
+                _geometryProgram.BindTexture(diffuseMap, "diffuseMap", 0);
             }
 
             var normalMap = textureManager.RetrieveTexture(textureMapping.NormalMapID);
-
             GL.Uniform1(_geometryProgram.GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
             if (normalMap != null)
             {
                 _geometryProgram.BindTexture(normalMap, "normalMap", 1);
             }
 
-            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
-
-            GL.Uniform1(_geometryProgram.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
-            if (diffuseMap != null)
-            {
-                _geometryProgram.BindTexture(diffuseMap, "diffuseMap", 2);
-            }
-
             var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularMapID);
-
             GL.Uniform1(_geometryProgram.GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
             if (specularMap != null)
             {
-                _geometryProgram.BindTexture(specularMap, "specularMap", 3);
+                _geometryProgram.BindTexture(specularMap, "specularMap", 2);
+            }
+
+            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxMapID);
+            GL.Uniform1(_geometryProgram.GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
+            if (parallaxMap != null)
+            {
+                _geometryProgram.BindTexture(parallaxMap, "parallaxMap", 3);
             }
         }
 
@@ -500,7 +514,7 @@ namespace Graphics.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var gameObject in gameObjects)
             {
-                Vector3 position = gameObject.Position;
+                Vector3 position = gameObject.Model.Position;
             }
 
             return gameObjects;
@@ -511,7 +525,7 @@ namespace Graphics.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var gameObject in gameObjects)
             {
-                Vector3 position = gameObject.Position;
+                Vector3 position = gameObject.Model.Position;
             }
 
             return gameObjects;

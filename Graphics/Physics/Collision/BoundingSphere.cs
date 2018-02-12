@@ -16,13 +16,13 @@ namespace Graphics.Physics.Collision
 
         public BoundingSphere(GameObject gameObject) : base(gameObject)
         {
-            var maxDistanceSquared = gameObject.Vertices.Select(v => v.LengthSquared).Max();
+            var maxDistanceSquared = gameObject.Model.Vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
         public BoundingSphere(Brush brush) : base(brush)
         {
-            var maxDistanceSquared = brush.Vertices.Select(v => v.LengthSquared).Max();
+            var maxDistanceSquared = brush.Model.Vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 

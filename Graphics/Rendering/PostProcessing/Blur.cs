@@ -1,6 +1,7 @@
 ﻿using Graphics.Helpers;
 using Graphics.Outputs;
 using Graphics.Rendering.Buffers;
+using Graphics.Rendering.Processing;
 using Graphics.Rendering.Shaders;
 using Graphics.Rendering.Textures;
 using Graphics.Rendering.Vertices;
@@ -17,44 +18,94 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.PostProcessing
 {
-    public class Blur : PostProcess
+    public class Blur : Renderer
     {
-        public const string NAME = "Blur";
+        public Texture FinalTexture { get; protected set; }
 
         private ShaderProgram _blurProgram;
 
-        public Blur(Resolution resolution) : base(NAME, resolution) { }
+        private int _vertexArrayHandle;
+        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
+        protected FrameBuffer _frameBuffer = new FrameBuffer();
 
-        protected override void LoadProgram()
+        protected override void LoadPrograms()
         {
-            _blurProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.RENDER_2D_VERTEX_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.MY_BLUR_SHADER_PATH)));
+            _blurProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.RENDER_2D_VERTEX_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.MY_BLUR_SHADER_PATH))
+            );
+        }
+
+        protected override void LoadTextures(Resolution resolution)
+        {
+            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2D,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                PixelFormat = PixelFormat.Rgba,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
         }
 
         protected override void LoadBuffers()
         {
-            LoadQuad(_blurProgram);
-            LoadFinalTexture();
-
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Bind(FramebufferTarget.Framebuffer);
             _frameBuffer.AttachAttachments();
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+
+            _vertexArrayHandle = GL.GenVertexArray();
+            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.AddVertices(new[]
+            {
+                new Vector3(1.0f, 1.0f, 0.0f),
+                new Vector3(-1.0f, 1.0f, 0.0f),
+                new Vector3(-1.0f, -1.0f, 0.0f),
+                new Vector3(1.0f, -1.0f, 0.0f)
+            });
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
+            attribute.Set(_blurProgram.GetAttributeLocation("vPosition"));
+
+            GL.BindVertexArray(0);
+            _vertexBuffer.Unbind();
         }
 
-        public void Render(Texture scene, Texture velocity, float fps)
+        public override void ResizeTextures(Resolution resolution)
+        {
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
+        }
+
+        public void Render(Resolution resolution, Texture scene, Texture velocity, float fps)
         {
             _blurProgram.Use();
             _frameBuffer.Draw();
 
             GL.ClearColor(Color4.Purple);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             _blurProgram.BindTexture(scene, "sceneTexture", 0);
             _blurProgram.BindTexture(velocity, "velocityTexture", 1);
 
-            RenderQuad();
+            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.Bind();
+
+            _vertexBuffer.DrawQuads();
+
+            GL.BindVertexArray(0);
+            _vertexBuffer.Unbind();
         }
     }
 }

@@ -20,13 +20,10 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Processing
 {
-    public class ShadowRenderer
+    public class ShadowRenderer : Renderer
     {
         public const int SHADOW_SIZE = 1024;
 
-        public Resolution Resolution { get; private set; }
-
-        //public Texture PointDepthTexture { get; protected set; }
         public Texture PointDepthCubeMap { get; protected set; }
         public Texture SpotDepthTexture { get; protected set; }
 
@@ -36,63 +33,33 @@ namespace Graphics.Rendering.Processing
         internal FrameBuffer _pointFrameBuffer = new FrameBuffer();
         internal FrameBuffer _spotFrameBuffer = new FrameBuffer();
 
-        public ShadowRenderer(Resolution resolution)
+        protected override void LoadPrograms()
         {
-            Resolution = resolution;
-        }
-
-        public void Load()
-        {
-            LoadPrograms();
-            LoadBuffers();
-        }
-
-        protected void LoadPrograms()
-        {
-            _pointShadowProgram = new ShaderProgram(new[] {
+            _pointShadowProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_GEOMETRY_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_FRAGMENT_SHADER_PATH))
-            });
+            );
 
-            _spotShadowProgram = new ShaderProgram(new[] {
+            _spotShadowProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SPOT_SHADOW_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SPOT_SHADOW_FRAGMENT_SHADER_PATH))
-            });
+            );
         }
 
-        public void ResizeTextures()
+        public override void ResizeTextures(Resolution resolution)
         {
-            //PointDepthTexture.Resize(SHADOW_SIZE, SHADOW_SIZE, 0);
-            //PointDepthTexture.Bind();
-            //PointDepthTexture.ReserveMemory();
-
             PointDepthCubeMap.Resize(SHADOW_SIZE, SHADOW_SIZE, 0);
             PointDepthCubeMap.Bind();
             PointDepthCubeMap.ReserveMemory();
 
-            SpotDepthTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            SpotDepthTexture.Resize(resolution.Width, resolution.Height, 0);
             SpotDepthTexture.Bind();
             SpotDepthTexture.ReserveMemory();
         }
 
-        protected void LoadBuffers()
+        protected override void LoadTextures(Resolution resolution)
         {
-            /*PointDepthTexture = new Texture(SHADOW_SIZE, SHADOW_SIZE, 0)
-            {
-                Target = TextureTarget.Texture2D,
-                EnableMipMap = false,
-                EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                PixelFormat = PixelFormat.DepthComponent,
-                PixelType = PixelType.Float,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.ClampToEdge
-            };
-            PointDepthTexture.Bind();
-            PointDepthTexture.ReserveMemory();*/
-
             PointDepthCubeMap = new Texture(SHADOW_SIZE, SHADOW_SIZE, 6)
             {
                 Target = TextureTarget.TextureCubeMap,
@@ -108,7 +75,7 @@ namespace Graphics.Rendering.Processing
             PointDepthCubeMap.Bind();
             PointDepthCubeMap.ReserveMemory();
 
-            SpotDepthTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            SpotDepthTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -122,7 +89,10 @@ namespace Graphics.Rendering.Processing
             };
             SpotDepthTexture.Bind();
             SpotDepthTexture.ReserveMemory();
+        }
 
+        protected override void LoadBuffers()
+        {
             _pointFrameBuffer.Clear();
             _pointFrameBuffer.Add(FramebufferAttachment.DepthAttachment, PointDepthCubeMap);
 
@@ -166,7 +136,7 @@ namespace Graphics.Rendering.Processing
                 brush.Draw(_pointShadowProgram);
             }
 
-            foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
+            foreach (var gameObject in gameObjects)
             {
                 gameObject.Draw(_pointShadowProgram);
             }
@@ -174,7 +144,7 @@ namespace Graphics.Rendering.Processing
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightPass(Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        private void SpotLightPass(Resolution resolution, Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             _spotShadowProgram.Use();
 
@@ -188,7 +158,7 @@ namespace Graphics.Rendering.Processing
             GL.CullFace(CullFaceMode.Back);
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             // Draw camera from the spot light's perspective
             camera.DrawFromLight(_spotShadowProgram, light);
@@ -199,7 +169,7 @@ namespace Graphics.Rendering.Processing
                 brush.Draw(_spotShadowProgram);
             }
 
-            foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
+            foreach (var gameObject in gameObjects)
             {
                 gameObject.Draw(_spotShadowProgram);
             }
@@ -233,7 +203,7 @@ namespace Graphics.Rendering.Processing
                     brush.Draw(_pointShadowProgram);
                 }
 
-                foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
+                foreach (var gameObject in gameObjects)
                 {
                     gameObject.Draw(_pointShadowProgram);
                 }
@@ -242,7 +212,7 @@ namespace Graphics.Rendering.Processing
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightPass(Camera camera, IEnumerable<SpotLight> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        private void SpotLightPass(Resolution resolution, Camera camera, IEnumerable<SpotLight> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             _spotShadowProgram.Use();
 
@@ -251,7 +221,7 @@ namespace Graphics.Rendering.Processing
 
             GL.Enable(EnableCap.DepthTest);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             // Draw camera from the spot light's perspective
             foreach (var light in lights)
@@ -264,14 +234,14 @@ namespace Graphics.Rendering.Processing
                     brush.Draw(_spotShadowProgram);
                 }
 
-                foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
+                foreach (var gameObject in gameObjects)
                 {
                     gameObject.Draw(_spotShadowProgram);
                 }
             }
         }
 
-        public void Render(Camera camera, Light light, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void Render(Resolution resolution, Camera camera, Light light, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             switch (light)
             {
@@ -279,19 +249,19 @@ namespace Graphics.Rendering.Processing
                     PointLightPass(camera, pLight, brushes, gameObjects);
                     break;
                 case SpotLight sLight:
-                    SpotLightPass(camera, sLight, brushes, gameObjects);
+                    SpotLightPass(resolution, camera, sLight, brushes, gameObjects);
                     break;
             }
         }
 
-        public void Render(Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void Render(Resolution resolution, Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             PointLightPass(camera,
                 lights.Where(l => l is PointLight)
                     .Select(l => l as PointLight),
                 brushes, gameObjects);
 
-            SpotLightPass(camera,
+            SpotLightPass(resolution, camera,
                 lights.Where(l => l is SpotLight)
                     .Select(l => l as SpotLight),
                 brushes, gameObjects);

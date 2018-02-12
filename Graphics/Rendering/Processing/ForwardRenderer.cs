@@ -17,9 +17,8 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Processing
 {
-    public class ForwardRenderer
+    public class ForwardRenderer : Renderer
     {
-        public Resolution Resolution { get; private set; }
         public Texture FinalTexture { get; protected set; }
         public Texture VelocityTexture { get; protected set; }
         public Texture DepthTexture { get; protected set; }
@@ -27,41 +26,32 @@ namespace Graphics.Rendering.Processing
         internal ShaderProgram _program;
         internal FrameBuffer _frameBuffer = new FrameBuffer();
 
-        public ForwardRenderer(Resolution resolution)
+        protected override void LoadPrograms()
         {
-            Resolution = resolution;
+            _program = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.FORWARD_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FORWARD_FRAGMENT_SHADER_PATH))
+            );
         }
 
-        public void Load()
+        public override void ResizeTextures(Resolution resolution)
         {
-            LoadPrograms();
-            LoadBuffers();
-        }
-
-        protected void LoadPrograms()
-        {
-            _program = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.FORWARD_VERTEX_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FORWARD_FRAGMENT_SHADER_PATH)));
-        }
-
-        public void ResizeTextures()
-        {
-            FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
-            VelocityTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            VelocityTexture.Resize(resolution.Width, resolution.Height, 0);
             VelocityTexture.Bind();
             VelocityTexture.ReserveMemory();
 
-            DepthTexture.Resize(Resolution.Width, Resolution.Height, 0);
+            DepthTexture.Resize(resolution.Width, resolution.Height, 0);
             DepthTexture.Bind();
             DepthTexture.ReserveMemory();
         }
 
-        public void LoadBuffers()
+        protected override void LoadTextures(Resolution resolution)
         {
-            FinalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -76,7 +66,7 @@ namespace Graphics.Rendering.Processing
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
-            VelocityTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            VelocityTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -91,7 +81,7 @@ namespace Graphics.Rendering.Processing
             VelocityTexture.Bind();
             VelocityTexture.ReserveMemory();
 
-            DepthTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            DepthTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -105,7 +95,10 @@ namespace Graphics.Rendering.Processing
             };
             DepthTexture.Bind();
             DepthTexture.ReserveMemory();
+        }
 
+        protected override void LoadBuffers()
+        {
             _frameBuffer.Clear();
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment1, VelocityTexture);
@@ -117,14 +110,14 @@ namespace Graphics.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void Render(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             _program.Use();
             _frameBuffer.Draw();
 
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             camera.Draw(_program);
 
@@ -134,7 +127,7 @@ namespace Graphics.Rendering.Processing
                 brush.Draw(_program);
             }
 
-            foreach (var gameObject in gameObjects.Where(g => g.Mesh != null))
+            foreach (var gameObject in gameObjects)
             {
                 BindTextures(textureManager, gameObject.TextureMapping);
                 gameObject.Draw(_program);
@@ -145,36 +138,32 @@ namespace Graphics.Rendering.Processing
         {
             // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
             // Check brush's texture mapping to see which textures we need to bind
-            var mainTexture = textureManager.RetrieveTexture(textureMapping.MainTextureID);
-
-            GL.Uniform1(_program.GetUniformLocation("useMainTexture"), (mainTexture != null) ? 1 : 0);
-            if (mainTexture != null)
+            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
+            GL.Uniform1(_program.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+            if (diffuseMap != null)
             {
-                _program.BindTexture(mainTexture, "mainTexture", 0);
+                _program.BindTexture(diffuseMap, "diffuseMap", 0);
             }
 
             var normalMap = textureManager.RetrieveTexture(textureMapping.NormalMapID);
-
             GL.Uniform1(_program.GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
             if (normalMap != null)
             {
                 _program.BindTexture(normalMap, "normalMap", 1);
             }
 
-            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
-
-            GL.Uniform1(_program.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
-            if (diffuseMap != null)
-            {
-                _program.BindTexture(diffuseMap, "diffuseMap", 2);
-            }
-
             var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularMapID);
-
             GL.Uniform1(_program.GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
             if (specularMap != null)
             {
-                _program.BindTexture(specularMap, "specularMap", 3);
+                _program.BindTexture(specularMap, "specularMap", 2);
+            }
+
+            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxMapID);
+            GL.Uniform1(_program.GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
+            if (parallaxMap != null)
+            {
+                _program.BindTexture(parallaxMap, "parallaxMap", 3);
             }
         }
 
@@ -186,7 +175,7 @@ namespace Graphics.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var gameObject in gameObjects)
             {
-                Vector3 position = gameObject.Position;
+                Vector3 position = gameObject.Model.Position;
             }
 
             return gameObjects;
@@ -197,7 +186,7 @@ namespace Graphics.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var gameObject in gameObjects)
             {
-                Vector3 position = gameObject.Position;
+                Vector3 position = gameObject.Model.Position;
             }
 
             return gameObjects;

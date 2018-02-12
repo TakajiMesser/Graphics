@@ -21,7 +21,6 @@ namespace Graphics.Scripting.BehaviorTrees
     [KnownType(typeof(RepeaterNode))]
     [KnownType(typeof(InverterNode))]
     [KnownType(typeof(LoopNode))]
-    [KnownType(typeof(NavigateNode))]
     [KnownType(typeof(ConditionNode))]
     public abstract class Node
     {

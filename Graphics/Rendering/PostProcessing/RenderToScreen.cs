@@ -1,6 +1,7 @@
 ﻿using Graphics.Helpers;
 using Graphics.Outputs;
 using Graphics.Rendering.Buffers;
+using Graphics.Rendering.Processing;
 using Graphics.Rendering.Shaders;
 using Graphics.Rendering.Textures;
 using Graphics.Rendering.Vertices;
@@ -17,9 +18,10 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.PostProcessing
 {
-    public class RenderToScreen : PostProcess
+    public class RenderToScreen : Renderer
     {
-        public const string NAME = "RenderToScreen";
+        public Texture FinalTexture { get; protected set; }
+        public float Gamma { get; set; } = 2.2f;
 
         private ShaderProgram _render1DProgram;
         private ShaderProgram _render2DProgram;
@@ -28,9 +30,11 @@ namespace Graphics.Rendering.PostProcessing
         private ShaderProgram _renderCubeProgram;
         private ShaderProgram _renderCubeArrayProgram;
 
-        public RenderToScreen(Resolution resolution) : base(NAME, resolution) { }
+        private int _vertexArrayHandle;
+        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
+        protected FrameBuffer _frameBuffer = new FrameBuffer();
 
-        protected override void LoadProgram()
+        protected override void LoadPrograms()
         {
             _render1DProgram = new ShaderProgram(new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.RENDER_1D_PATH)));
             _render2DProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.RENDER_2D_VERTEX_PATH)), 
@@ -43,17 +47,56 @@ namespace Graphics.Rendering.PostProcessing
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.RENDER_CUBE_ARRAY_PATH)));
         }
 
+        protected override void LoadTextures(Resolution resolution)
+        {
+            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2D,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                PixelFormat = PixelFormat.Rgba,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
+        }
+
         protected override void LoadBuffers()
         {
-            LoadQuad(_render2DProgram);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            _frameBuffer.AttachAttachments();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+
+            _vertexArrayHandle = GL.GenVertexArray();
+            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.AddVertices(new[]
+            {
+                new Vector3(1.0f, 1.0f, 0.0f),
+                new Vector3(-1.0f, 1.0f, 0.0f),
+                new Vector3(-1.0f, -1.0f, 0.0f),
+                new Vector3(1.0f, -1.0f, 0.0f)
+            });
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
+            attribute.Set(_render2DProgram.GetAttributeLocation("vPosition"));
+
+            GL.BindVertexArray(0);
+            _vertexBuffer.Unbind();
         }
 
-        public void Render()
+        public override void ResizeTextures(Resolution resolution)
         {
-            RenderQuad();
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
         }
-
-        public override void ResizeTextures() { }
 
         public void Render(Texture texture, int channel = -1)
         {
@@ -74,8 +117,8 @@ namespace Graphics.Rendering.PostProcessing
                     _render2DProgram.Use();
                     _render2DProgram.BindTexture(texture, "textureSampler", 0);
 
-                    int channelLocation = _render2DProgram.GetUniformLocation("channel");
-                    GL.Uniform1(channelLocation, channel);
+                    _render2DProgram.SetUniform("gamma", Gamma);
+                    _render2DProgram.SetUniform("channel", channel);
                     break;
                 case TextureTarget.Texture3D:
                     break;
@@ -87,7 +130,13 @@ namespace Graphics.Rendering.PostProcessing
                     throw new NotImplementedException("Cannot render texture target type " + texture.Target);
             }
 
-            Render();
+            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.Bind();
+
+            _vertexBuffer.DrawQuads();
+
+            GL.BindVertexArray(0);
+            _vertexBuffer.Unbind();
         }
     }
 }

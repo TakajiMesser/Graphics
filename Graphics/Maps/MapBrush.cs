@@ -20,17 +20,16 @@ namespace Graphics.Maps
     public class MapBrush
     {
         public List<Vertex> Vertices { get; set; } = new List<Vertex>();
-        public List<Material> Materials { get; set; } = new List<Material>();
+        public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool HasCollision { get; set; }
-        public string TextureFilePath { get; set; }
-        public string NormalMapFilePath { get; set; }
         public string DiffuseMapFilePath { get; set; }
+        public string NormalMapFilePath { get; set; }
         public string SpecularMapFilePath { get; set; }
 
-        public Brush ToBrush(ShaderProgram program)
+        public Brush ToBrush()
         {
-            var brush = new Brush(Vertices, Materials, TriangleIndices, program)
+            var brush = new Brush(Vertices, Material, TriangleIndices)
             {
                 HasCollision = HasCollision
             };
@@ -51,10 +50,7 @@ namespace Graphics.Maps
                     new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
                     new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0)
                 },
-                Materials = new List<Material>
-                {
-                    Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
-                },
+                Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = new List<int>()
                 {
                     0, 2, 1, 1, 2, 3
@@ -170,7 +166,7 @@ namespace Graphics.Maps
             return new MapBrush()
             {
                 Vertices = verticies,
-                Materials = new List<Material> { Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2 },
+                Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices
             };
 
@@ -187,10 +183,7 @@ namespace Graphics.Maps
                     new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
                     new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0)
                 },
-                Materials = new List<Material>
-                {
-                    Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
-                },
+                Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = new List<int>()
                 {
                     6, 7, 4, 7, 4, 5, 3, 1, 7, 1, 7, 5, 2, 3, 6, 3, 6, 7, 0, 1, 2, 1, 2, 3, 0, 2, 4, 2, 4, 6, 4, 5, 0, 5, 0, 1

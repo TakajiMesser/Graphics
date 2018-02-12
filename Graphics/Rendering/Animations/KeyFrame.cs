@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Animations
 {
-    public struct KeyFrame
+    public class KeyFrame
     {
         public float Time { get; set; }
-        public float Data { get; set; }
-        public Vector4 Bezier { get; set; }
+        public List<JointTransform> Transforms { get; private set; } = new List<JointTransform>();
+        //public Vector4 Bezier { get; set; }
     }
 }

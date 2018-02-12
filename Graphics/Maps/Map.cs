@@ -24,6 +24,7 @@ namespace Graphics.Maps
         public List<MapGameObject> GameObjects { get; set; } = new List<MapGameObject>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
         public List<Light> Lights { get; set; } = new List<Light>();
+        public List<string> SkyboxTextureFilePaths { get; set; }
 
         public Map()
         {

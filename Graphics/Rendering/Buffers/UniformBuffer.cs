@@ -14,17 +14,23 @@ namespace Graphics.Rendering.Buffers
 {
     public abstract class UniformBuffer<T> : IDisposable, IBindable
     {
+        public string Name { get; private set; }
         protected readonly int _handle;
         protected readonly int _size;
         protected readonly int _binding;
 
-        public UniformBuffer(string name, int binding, ShaderProgram program)
+        public UniformBuffer(string name, int binding)
         {
+            Name = name;
+
             _handle = GL.GenBuffer();
             _size = Marshal.SizeOf<T>();
             _binding = binding;
+        }
 
-            program.BindUniformBlock(name, binding);
+        public void Load(ShaderProgram program)
+        {
+            program.BindUniformBlock(Name, _binding);
         }
 
         public void Buffer()

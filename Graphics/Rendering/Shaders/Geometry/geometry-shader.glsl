@@ -19,7 +19,6 @@ in vec3 gNormal[];
 in vec3 gTangent[];
 in vec4 gColor[];
 in vec2 gUV[];
-flat in int gMaterialIndex[];
 
 out vec3 fPosition;
 out vec3 fPreviousPosition;
@@ -27,7 +26,6 @@ out vec3 fNormal;
 out vec3 fTangent;
 out vec4 fColor;
 out vec2 fUV;
-flat out int fMaterialIndex;
 out vec3 fCameraPosition;
 out vec4 fClipPosition;
 out vec4 fPreviousClipPosition;
@@ -67,7 +65,6 @@ void main()
         fTangent = gTangent[i];
         fColor = gColor[i];
 		fUV = gUV[i];
-		fMaterialIndex = gMaterialIndex[0];
         fCameraPosition = viewPositions[i].xyz;
         fWireframeDistance = vec3(area / length(v[i])) * chooser[i];
 

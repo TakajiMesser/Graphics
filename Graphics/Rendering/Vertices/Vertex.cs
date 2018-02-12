@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 namespace Graphics.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vertex
+    public struct Vertex// : IVertex
     {
         public Vector3 Position;// { get; set; }
         public Vector3 Normal;// { get; set; }
@@ -20,8 +20,6 @@ namespace Graphics.Rendering.Vertices
         public Color4 Color;// { get; set; }
         public Vector2 TextureCoords;// { get; set; }
         public int MaterialIndex;// { get; set; }
-        public Vector4 BoneIDs;// { get; set; }
-        public Vector4 BoneWeights;// { get; set; }
 
         public Vertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, int materialIndex)
         {
@@ -31,11 +29,32 @@ namespace Graphics.Rendering.Vertices
             Color = new Color4();
             TextureCoords = textureCoords;
             MaterialIndex = materialIndex;
-            BoneIDs = new Vector4();
-            BoneWeights = new Vector4();
         }
 
-        public Vertex(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords, int materialIndex)
+        public Vertex Colored(Color4 color)
+        {
+            return new Vertex()
+            {
+                Position = Position,
+                Normal = Normal,
+                Tangent = Tangent,
+                Color = color,
+                TextureCoords = TextureCoords,
+                MaterialIndex = MaterialIndex
+            };
+        }
+
+        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, int materialIndex)
+        {
+            Position = position;
+            Normal = normal;
+            Tangent = tangent;
+            Color = new Color4();
+            TextureCoords = textureCoords;
+            MaterialIndex = materialIndex;
+        }
+
+        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords, int materialIndex)
         {
             Position = position;
             Normal = normal;
@@ -43,8 +62,6 @@ namespace Graphics.Rendering.Vertices
             Color = color;
             TextureCoords = textureCoords;
             MaterialIndex = materialIndex;
-            BoneIDs = new Vector4();
-            BoneWeights = new Vector4();
         }
     }
 }

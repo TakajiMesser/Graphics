@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Graphics.Rendering.Shaders;
+using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -14,12 +15,12 @@ namespace Graphics.Materials
         /// <summary>
         /// Ambient light is the light that enters a room and bounces around multiple times
         /// </summary>
-        public Vector4 Ambient { get; set; }
+        public Vector3 Ambient { get; set; }
 
         /// <summary>
         /// Diffuse light is the direct light hitting a surface
         /// </summary>
-        public Vector4 Diffuse { get; set; }
+        public Vector3 Diffuse { get; set; }
 
         /// <summary>
         /// Specular light is the white highlight reflection seen on smooth, shiny objects
@@ -27,6 +28,22 @@ namespace Graphics.Materials
         public Vector3 Specular { get; set; }
 
         public float SpecularExponent { get; set; }
+
+        public Material(Assimp.Material material)
+        {
+            Ambient = new Vector3(material.ColorAmbient.R, material.ColorAmbient.G, material.ColorAmbient.B);
+            Diffuse = new Vector3(material.ColorDiffuse.R, material.ColorDiffuse.G, material.ColorDiffuse.B);
+            Specular = new Vector3(material.ColorSpecular.R, material.ColorSpecular.G, material.ColorSpecular.B);
+            SpecularExponent = 1.0f - material.Shininess;
+        }
+
+        public void Draw(ShaderProgram program)
+        {
+            program.SetUniform("ambientColor", Ambient);
+            program.SetUniform("diffuseColor", Diffuse);
+            program.SetUniform("specularColor", Specular);
+            program.SetUniform("specularExponent", SpecularExponent);
+        }
 
         public void SaveToFile(string name, string path)
         {
@@ -62,10 +79,10 @@ namespace Graphics.Materials
                             name = values[1];
                             break;
                         case "Ka":
-                            material.Ambient = new Vector4(float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]), 1.0f);
+                            material.Ambient = new Vector3(float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
                             break;
                         case "Kd":
-                            material.Diffuse = new Vector4(float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]), 1.0f);
+                            material.Diffuse = new Vector3(float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));
                             break;
                         case "Ks":
                             material.Specular = new Vector3(float.Parse(values[1]), float.Parse(values[2]), float.Parse(values[3]));

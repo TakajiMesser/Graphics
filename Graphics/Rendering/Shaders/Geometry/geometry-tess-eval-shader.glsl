@@ -23,7 +23,6 @@ in vec3 eNormal[];
 in vec3 eTangent[];
 in vec4 eColor[];
 in vec2 eUV[];
-flat in int eMaterialIndex[];
 
 out vec3 gPosition;
 out vec3 gPreviousPosition;
@@ -31,7 +30,6 @@ out vec3 gNormal;
 out vec3 gTangent;
 out vec4 gColor;
 out vec2 gUV;
-flat out int gMaterialIndex;
 
 vec2 interpolate2DTriangle(vec2 v0, vec2 v1, vec2 v2)
 {
@@ -77,7 +75,6 @@ void main()
 	gTangent = normalize(interpolate3DTriangle(eTangent[0], eTangent[1], eTangent[2]));
     gColor = normalize(interpolate3DTriangle(eColor[0], eColor[1], eColor[2]));
 	gUV = interpolate2DTriangle(eUV[0], eUV[1], eUV[2]);
-    gMaterialIndex = eMaterialIndex[0];
 
 	if(useDisplacementTexture == 1)
 	{	

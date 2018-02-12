@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 namespace Graphics.Scripting.BehaviorTrees.Leaves
 {
     [DataContract]
-    public class LeafNode : Node
+    public abstract class LeafNode : Node
     {
-        [DataMember]
-        public Func<BehaviorContext, BehaviorStatuses> Behavior { get; internal set; }
-
         public LeafNode() { }
 
         public override void Tick(BehaviorContext context)
         {
             if (!Status.IsComplete())
             {
-                Status = Behavior.Invoke(context);
+                Status = Behavior(context);
             }
         }
+
+        public abstract BehaviorStatuses Behavior(BehaviorContext context);
     }
 }

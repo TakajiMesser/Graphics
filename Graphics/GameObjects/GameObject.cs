@@ -15,17 +15,15 @@ using System.Diagnostics;
 using Graphics.Lighting;
 using Graphics.Rendering.Textures;
 using OpenTK.Graphics.OpenGL;
+using Graphics.Rendering.Vertices;
 
 namespace Graphics.GameObjects
 {
     public class GameObject
     {
-        internal ModelMatrix _modelMatrix = new ModelMatrix();
-
         //public int ID { get; private set; }
         public string Name { get; private set; }
-        public Mesh Mesh { get; set; }
-        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
+        public Model Model { get; set; }
         public TextureMapping TextureMapping { get; set; }
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
@@ -33,37 +31,19 @@ namespace Graphics.GameObjects
 
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set
-            {
-                _modelMatrix.Translation = value;
-
-                if (Bounds != null)
-                {
-                    Bounds.Center = value;
-                }
-            }
-        }
-        public Quaternion Rotation
-        {
-            get => _modelMatrix.Rotation;
-            set => _modelMatrix.Rotation = value;
-        }
-        public Vector3 Scale
-        {
-            get => _modelMatrix.Scale;
-            set => _modelMatrix.Scale = value;
-        }
 
         public GameObject(string name)
         {
             Name = name;
         }
 
-        public void ClearLights() => Mesh.ClearLights();
-        public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
+        /*On Model Position Change -> if (Bounds != null)
+        {
+            Bounds.Center = value;
+        }*/
+
+        public void ClearLights() => Model.ClearLights();
+        public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
 
         public virtual void OnInitialization()
         {
@@ -96,9 +76,9 @@ namespace Graphics.GameObjects
         {
             if (Behaviors != null)
             {
-                Behaviors.Context.Position = Position;
+                Behaviors.Context.Position = Model.Position;
                 //Behaviors.Context.Rotation = Rotation;
-                Behaviors.Context.Scale = Scale;
+                Behaviors.Context.Scale = Model.Scale;
                 Behaviors.Context.Colliders = colliders;
 
                 foreach (var property in Properties.Where(p => !p.Value.IsConstant))
@@ -115,8 +95,8 @@ namespace Graphics.GameObjects
                 }
 
                 //Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
-                Rotation = Behaviors.Context.QRotation;
-                Scale = Behaviors.Context.Scale;
+                Model.Rotation = Behaviors.Context.QRotation;
+                Model.Scale = Behaviors.Context.Scale;
             }
         }
 
@@ -124,7 +104,7 @@ namespace Graphics.GameObjects
         {
             if (HasCollision && Bounds != null && translation != Vector3.Zero)
             {
-                Bounds.Center = Position + translation;
+                Bounds.Center = Model.Position + translation;
 
                 foreach (var collider in colliders)
                 {
@@ -133,14 +113,14 @@ namespace Graphics.GameObjects
                         if (Bounds.CollidesWith((BoundingCircle)collider))
                         {
                             // Correct the X translation
-                            Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
+                            Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
                             if (Bounds.CollidesWith((BoundingCircle)collider))
                             {
                                 translation.X = 0;
                             }
 
                             // Correct the Y translation
-                            Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
+                            Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
                             if (Bounds.CollidesWith((BoundingCircle)collider))
                             {
                                 translation.Y = 0;
@@ -152,14 +132,14 @@ namespace Graphics.GameObjects
                         if (Bounds.CollidesWith((BoundingBox)collider))
                         {
                             // Correct the X translation
-                            Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
+                            Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
                             if (Bounds.CollidesWith((BoundingBox)collider))
                             {
                                 translation.X = 0;
                             }
 
                             // Correct the Y translation
-                            Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
+                            Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
                             if (Bounds.CollidesWith((BoundingBox)collider))
                             {
                                 translation.Y = 0;
@@ -169,22 +149,10 @@ namespace Graphics.GameObjects
                 }
             }
 
-            Position += translation;
+            Model.Position += translation;
         }
 
-        public void Draw(ShaderProgram program)
-        {
-            if (Mesh == null)
-            {
-                throw new InvalidOperationException("Cannot draw GameObject " + Name + " with null mesh");
-            }
-
-            program.SetUniform("useSkinning", 0);
-            program.SetUniform("jointTransforms", new Matrix4[32]);
-
-            _modelMatrix.Set(program);
-            Mesh.Draw();
-        }
+        public virtual void Draw(ShaderProgram program) => Model.Draw(program);
 
         // Define how this object's state will be saved, if desired
         public virtual void OnSaveState() { }

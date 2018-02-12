@@ -27,19 +27,16 @@ namespace Graphics.GameObjects
     public class Brush
     {
         private ModelMatrix _modelMatrix = new ModelMatrix();
-        
-        public Mesh Mesh { get; set; }
-        public SimpleMesh SimpleMesh { get; set; }
 
-        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
+        public SimpleModel Model { get; set; } = new SimpleModel();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
         public TextureMapping TextureMapping { get; set; }
 
-        public Brush(List<Vertex> vertices, List<Material> materials, List<int> triangleIndices, ShaderProgram program)
+        public Brush(List<Vertex> vertices, Material material, List<int> triangleIndices)
         {
-            Mesh = new Mesh(vertices, materials, triangleIndices, program);
+            Model.Meshes.Add(new Mesh<Vertex>(vertices, material, triangleIndices));
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
@@ -47,11 +44,11 @@ namespace Graphics.GameObjects
         {
             var gameObject = new GameObject("wall2")
             {
-                Mesh = Mesh,
+                //Mesh = Mesh,
                 Bounds = Bounds,
                 HasCollision = HasCollision,
                 TextureMapping = TextureMapping,
-                Position = new Vector3(0, 0, 0)
+                //Position = new Vector3(0, 0, 0)
             };
 
             gameObject.Bounds.AttachedObject = gameObject;
@@ -59,20 +56,12 @@ namespace Graphics.GameObjects
             return gameObject;
         }
 
-        public void AddTestColors() => Mesh.AddTestColors();
+        public void AddTestColors() => Model.AddTestColors();
+        public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
 
-        public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
+        public void Draw(ShaderProgram program) => Model.Draw(program);
 
-        public void Draw(ShaderProgram program)
-        {
-            program.SetUniform("useSkinning", 0);
-            program.SetUniform("jointTransforms", new Matrix4[32]);
-
-            _modelMatrix.Set(program);
-            Mesh.Draw();
-        }
-
-        public static Brush Rectangle(Vector3 center, float width, float height, ShaderProgram program)
+        public static Brush Rectangle(Vector3 center, float width, float height)
         {
             var vertices = new List<Vertex>
             {
@@ -82,17 +71,14 @@ namespace Graphics.GameObjects
                 new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero, 0)
             };
 
-            var materials = new List<Material>
-            {
-                Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
-            };
+            var material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
 
             var triangleIndices = new List<int>()
             {
                 0, 1, 2, 1, 2, 3
             };
 
-            return new Brush(vertices, materials, triangleIndices, program);
+            return new Brush(vertices, material, triangleIndices);
         }
     }
 }

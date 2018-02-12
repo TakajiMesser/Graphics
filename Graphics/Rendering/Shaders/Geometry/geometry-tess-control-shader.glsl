@@ -17,7 +17,6 @@ in vec3 cNormal[];
 in vec3 cTangent[];
 in vec4 cColor[];
 in vec2 cUV[];
-flat in int cMaterialIndex[];
 
 out vec3 ePosition[];
 out vec3 ePreviousPosition[];
@@ -25,7 +24,6 @@ out vec3 eNormal[];
 out vec3 eTangent[];
 out vec4 eColor[];
 out vec2 eUV[];
-flat out int eMaterialIndex[];
 
 float screenSphereSize(vec4 e1, vec4 e2)
 {
@@ -109,7 +107,6 @@ void main()
 	eTangent[gl_InvocationID] = cTangent[gl_InvocationID];
     eColor[gl_InvocationID] = cColor[gl_InvocationID];
     eUV[gl_InvocationID] = cUV[gl_InvocationID];
-    eMaterialIndex[gl_InvocationID] = cMaterialIndex[gl_InvocationID];
 
 	controlTessellation();
 }

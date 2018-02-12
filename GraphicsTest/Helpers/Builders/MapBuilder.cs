@@ -10,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Graphics.Helpers.Builders
+namespace GraphicsTest.Helpers.Builders
 {
     public static class MapBuilder
     {
@@ -32,13 +32,13 @@ namespace Graphics.Helpers.Builders
 
             var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
             wall.HasCollision = true;
-            wall.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
+            wall.DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
             wall.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall);
 
             var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
             wall2.HasCollision = true;
-            wall2.TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
+            wall2.DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
             wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
             map.Brushes.Add(wall2);
 
@@ -65,6 +65,16 @@ namespace Graphics.Helpers.Builders
                 Rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
                 Height = 20.0f
             });
+
+            map.SkyboxTextureFilePaths = new List<string>
+            {
+                FilePathHelper.SPACE_01_TEXTURE_PATH,
+                FilePathHelper.SPACE_02_TEXTURE_PATH,
+                FilePathHelper.SPACE_03_TEXTURE_PATH,
+                FilePathHelper.SPACE_04_TEXTURE_PATH,
+                FilePathHelper.SPACE_05_TEXTURE_PATH,
+                FilePathHelper.SPACE_06_TEXTURE_PATH,
+            };
 
             map.Save(FilePathHelper.MAP_PATH);
         }
@@ -98,10 +108,11 @@ namespace Graphics.Helpers.Builders
                 //Position = new Vector3(0.0f, 20.0f, 0.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.PLAYER_MESH_PATH,
-                TextureFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                ModelFilePath = FilePathHelper.PLAYER_MESH_PATH,
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                 NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
                 SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH,
+                //ParallaxMapFilePath = FilePathHelper.BRICK_01_H_TEXTURE_PATH,
                 BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH,
                 Properties = new List<GameProperty>
                 {
@@ -125,7 +136,7 @@ namespace Graphics.Helpers.Builders
                 Position = new Vector3(5.0f, 5.0f, -1.0f),
                 Scale = Vector3.One,
                 Rotation = Quaternion.Identity,
-                MeshFilePath = FilePathHelper.ENEMY_MESH_PATH,
+                ModelFilePath = FilePathHelper.ENEMY_MESH_PATH,
                 //TextureFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
                 //NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH,
                 BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH,

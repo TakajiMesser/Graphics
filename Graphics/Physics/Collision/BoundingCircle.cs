@@ -17,13 +17,13 @@ namespace Graphics.Physics.Collision
 
         public BoundingCircle(GameObject gameObject) : base(gameObject)
         {
-            var maxDistanceSquared = gameObject.Vertices.Select(v => v.Xy.LengthSquared).Max();
+            var maxDistanceSquared = gameObject.Model.Vertices.Select(v => v.Xy.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
         public BoundingCircle(Brush brush) : base(brush)
         {
-            var maxDistanceSquared = brush.Vertices.Select(v => v.Xy.LengthSquared).Max();
+            var maxDistanceSquared = brush.Model.Vertices.Select(v => v.Xy.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 

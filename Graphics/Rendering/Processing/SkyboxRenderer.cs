@@ -20,53 +20,41 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Processing
 {
-    public class SkyboxRenderer
+    public class SkyboxRenderer : Renderer
     {
-        public Resolution Resolution { get; private set; }
         public Texture SkyTexture { get; protected set; }
         
         internal ShaderProgram _program;
         private SimpleMesh _cubeMesh;
+        private List<string> _texturePaths = new List<string>();
 
-        public SkyboxRenderer(Resolution resolution)
+        public void SetTextures(IEnumerable<string> texturePath)
         {
-            Resolution = resolution;
+            _texturePaths.Clear();
+            _texturePaths.AddRange(texturePath);
         }
 
-        public void Load()
+        protected override void LoadPrograms()
         {
-            LoadPrograms();
-            LoadBuffers();
-            LoadCubeMesh();
+            _program = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SKYBOX_VERTEX_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SKYBOX_FRAGMENT_PATH))
+            );
         }
 
-        protected void LoadPrograms()
+        protected override void LoadTextures(Resolution resolution)
         {
-            _program = new ShaderProgram(new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SKYBOX_VERTEX_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SKYBOX_FRAGMENT_PATH)));
+            SkyTexture = Texture.LoadFromFile(_texturePaths, TextureTarget.TextureCubeMap, true, true);
         }
 
-        public void LoadBuffers()
-        {
-            var texturePaths = new List<string>
-            {
-                FilePathHelper.SPACE_01_TEXTURE_PATH,
-                FilePathHelper.SPACE_02_TEXTURE_PATH,
-                FilePathHelper.SPACE_03_TEXTURE_PATH,
-                FilePathHelper.SPACE_04_TEXTURE_PATH,
-                FilePathHelper.SPACE_05_TEXTURE_PATH,
-                FilePathHelper.SPACE_06_TEXTURE_PATH,
-            };
+        public override void ResizeTextures(Resolution resolution) { }
 
-            SkyTexture = Texture.LoadFromFile(texturePaths, TextureTarget.TextureCubeMap, true, true);
-        }
-
-        private void LoadCubeMesh()
+        protected override void LoadBuffers()
         {
             _cubeMesh = SimpleMesh.LoadFromFile(FilePathHelper.CUBE_MESH_PATH, _program);
         }
 
-        public void Render(Camera camera, FrameBuffer gBuffer)
+        public void Render(Resolution resolution, Camera camera, FrameBuffer gBuffer)
         {
             _program.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
@@ -74,7 +62,7 @@ namespace Graphics.Rendering.Processing
 
             //GL.ClearColor(Color4.Purple);
             //GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
             int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
@@ -85,34 +73,6 @@ namespace Graphics.Rendering.Processing
             GL.DepthFunc(DepthFunction.Lequal);
 
             _program.BindTexture(SkyTexture, "mainTexture", 0);
-
-            camera.Draw(_program);
-            _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
-            _cubeMesh.Draw();
-
-            GL.CullFace((CullFaceMode)oldCullFaceMode);
-            GL.DepthFunc((DepthFunction)oldDepthFunc);
-        }
-
-        public void Render(Camera camera, FrameBuffer gBuffer, Texture cubeMap)
-        {
-            _program.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-
-            //GL.ClearColor(Color4.Purple);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
-            int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
-
-            //GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.CullFace(CullFaceMode.Front);
-            GL.DepthFunc(DepthFunction.Lequal);
-
-            _program.BindTexture(cubeMap, "mainTexture", 0);
 
             camera.Draw(_program);
             _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));

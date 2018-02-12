@@ -28,14 +28,7 @@ namespace Graphics.GameObjects
         private GameWindow _window;
         private InputState _inputState = new InputState();
 
-        private ForwardRenderer _forwardRenderer;
-        private SkyboxRenderer _skyboxRenderer;
-        private DeferredRenderer _deferredRenderer;
-        private ShadowRenderer _shadowRenderer;
-        //private LightRenderer _lightRenderer;
-
-        private List<PostProcess> _preProcesses = new List<PostProcess>();
-        private List<PostProcess> _postProcesses = new List<PostProcess>();
+        private RenderManager _renderManager;
         private TextureManager _textureManager = new TextureManager();
 
         private Camera _camera;
@@ -50,18 +43,14 @@ namespace Graphics.GameObjects
         public GameState(Map map, GameWindow window)
         {
             _window = window;
-            LoadPrograms();
 
-            _window.Resized += (s, e) =>
-            {
-                _forwardRenderer.ResizeTextures();
-                _deferredRenderer.ResizeTextures();
-                _shadowRenderer.ResizeTextures();
-                foreach (var process in _postProcesses)
-                {
-                    process.ResizeTextures();
-                }
-            };
+            _textureManager.EnableMipMapping = true;
+            _textureManager.EnableAnisotropy = true;
+
+            _renderManager = new RenderManager(window.Resolution);
+            //_renderManager.Load(_brushes, _gameObjects);
+            _window.Resized += (s, e) => _renderManager.ResizeTextures();
+
             _camera = map.Camera.ToCamera(window.Resolution);
 
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
@@ -73,7 +62,8 @@ namespace Graphics.GameObjects
             for (var i = 0; i < map.Brushes.Count; i++)
             {
                 var mapBrush = map.Brushes[i];
-                var brush = mapBrush.ToBrush(_deferredRenderer._geometryProgram);
+                var brush = mapBrush.ToBrush();
+                //brush.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
                 if (brush.HasCollision)
                 {
@@ -83,9 +73,8 @@ namespace Graphics.GameObjects
 
                 brush.TextureMapping = new TextureMapping()
                 {
-                    MainTextureID = !string.IsNullOrEmpty(mapBrush.TextureFilePath) ? _textureManager.AddTexture(mapBrush.TextureFilePath) : 0,
-                    NormalMapID = !string.IsNullOrEmpty(mapBrush.NormalMapFilePath) ? _textureManager.AddTexture(mapBrush.NormalMapFilePath) : 0,
                     DiffuseMapID = !string.IsNullOrEmpty(mapBrush.DiffuseMapFilePath) ? _textureManager.AddTexture(mapBrush.DiffuseMapFilePath) : 0,
+                    NormalMapID = !string.IsNullOrEmpty(mapBrush.NormalMapFilePath) ? _textureManager.AddTexture(mapBrush.NormalMapFilePath) : 0,
                     SpecularMapID = !string.IsNullOrEmpty(mapBrush.SpecularMapFilePath) ? _textureManager.AddTexture(mapBrush.SpecularMapFilePath) : 0
                 };
 
@@ -94,14 +83,15 @@ namespace Graphics.GameObjects
 
             foreach (var mapObject in map.GameObjects)
             {
-                var gameObject = mapObject.ToGameObject(_deferredRenderer._geometryProgram);
+                var gameObject = mapObject.ToGameObject();
+                //gameObject.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
                 gameObject.TextureMapping = new TextureMapping()
                 {
-                    MainTextureID = !string.IsNullOrEmpty(mapObject.TextureFilePath) ? _textureManager.AddTexture(mapObject.TextureFilePath) : 0,
-                    NormalMapID = !string.IsNullOrEmpty(mapObject.NormalMapFilePath) ? _textureManager.AddTexture(mapObject.NormalMapFilePath) : 0,
                     DiffuseMapID = !string.IsNullOrEmpty(mapObject.DiffuseMapFilePath) ? _textureManager.AddTexture(mapObject.DiffuseMapFilePath) : 0,
-                    SpecularMapID = !string.IsNullOrEmpty(mapObject.SpecularMapFilePath) ? _textureManager.AddTexture(mapObject.SpecularMapFilePath) : 0
+                    NormalMapID = !string.IsNullOrEmpty(mapObject.NormalMapFilePath) ? _textureManager.AddTexture(mapObject.NormalMapFilePath) : 0,
+                    SpecularMapID = !string.IsNullOrEmpty(mapObject.SpecularMapFilePath) ? _textureManager.AddTexture(mapObject.SpecularMapFilePath) : 0,
+                    ParallaxMapID = !string.IsNullOrEmpty(mapObject.ParallaxMapFilePath) ? _textureManager.AddTexture(mapObject.ParallaxMapFilePath) : 0
                 };
 
                 if (gameObject.Name == map.Camera.AttachedGameObjectName)
@@ -111,42 +101,11 @@ namespace Graphics.GameObjects
                 
                 _gameObjects.Add(gameObject);
             }
+
+            _renderManager.Load(_brushes, _gameObjects, map.SkyboxTextureFilePaths);
         }
 
         public GameObject GetByName(string name) => _gameObjects.First(g => g.Name == name);
-
-        private void LoadPrograms()
-        {
-            _textureManager.EnableMipMapping = true;
-            _textureManager.EnableAnisotropy = true;
-
-            _forwardRenderer = new ForwardRenderer(_window.Resolution);
-            _deferredRenderer = new DeferredRenderer(_window.Resolution);
-            _shadowRenderer = new ShadowRenderer(_window.Resolution);
-            //_lightRenderer = new LightRenderer(_window.Resolution);
-            _skyboxRenderer = new SkyboxRenderer(_window.Resolution);
-            
-            _postProcesses.Add(new MotionBlur(_window.Resolution) { Enabled = false });
-            _postProcesses.Add(new Blur(_window.Resolution) { Enabled = true });
-            _postProcesses.Add(new InvertColors(_window.Resolution) { Enabled = false });
-            _postProcesses.Add(new RenderToScreen(_window.Resolution) { Enabled = true });
-
-            foreach (var process in _preProcesses)
-            {
-                process.Load();
-            }
-
-            _forwardRenderer.Load();
-            _deferredRenderer.Load();
-            _shadowRenderer.Load();
-            //_lightRenderer.Load();
-            _skyboxRenderer.Load();
-
-            foreach (var process in _postProcesses)
-            {
-                process.Load();
-            }
-        }
 
         public void AddGameObject(GameObject gameObject)
         {
@@ -203,54 +162,7 @@ namespace Graphics.GameObjects
 
         public void RenderFrame()
         {
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-
-            //_forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
-            //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
-
-            _deferredRenderer.GeometryPass(_textureManager, _camera, _brushes, _gameObjects);
-            //_shadowRenderer.Render(_camera, _lights, _brushes, _gameObjects);
-            //_deferredRenderer.LightPass(_camera, _lights, _shadowRenderer.PointDepthCubeMap, _shadowRenderer.SpotDepthTexture);
-            _deferredRenderer.LightPass(_camera, _lights, _brushes, _gameObjects, _shadowRenderer);
-            _skyboxRenderer.Render(_camera, _deferredRenderer.GBuffer/*, _shadowRenderer.PointDepthCubeMap*/);
-
-            // Read from GBuffer's final texture, so that we can post-process it
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment6);
-            var texture = _deferredRenderer.FinalTexture;
-
-            GL.Disable(EnableCap.DepthTest);
-
-            foreach (var process in _postProcesses.Where(p => p.Enabled))
-            {
-                if (process.GetType() == typeof(InvertColors))
-                {
-                    var invert = (InvertColors)process;
-                    invert.Render(texture);
-                    texture = invert.FinalTexture;
-                }
-                else if (process.GetType() == typeof(MotionBlur))
-                {
-                    var blur = (MotionBlur)process;
-                    blur.Render(_deferredRenderer.VelocityTexture, _deferredRenderer.DepthStencilTexture, texture, 60.0f);
-                    texture = blur.FinalTexture;
-                }
-                else if (process.GetType() == typeof(Blur))
-                {
-                    var blur = (Blur)process;
-                    blur.Render(texture, _deferredRenderer.VelocityTexture, 60.0f);
-                    texture = blur.FinalTexture;
-                }
-                else if (process.GetType() == typeof(RenderToScreen))
-                {
-                    var renderToScreen = (RenderToScreen)process;
-                    renderToScreen.Render(texture);
-                }
-            }
+            _renderManager.RenderFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
         }
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), _window);

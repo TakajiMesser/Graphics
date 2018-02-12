@@ -16,7 +16,11 @@ namespace Graphics.Scripting.BehaviorTrees.Leaves
         public ConditionNode(Predicate<BehaviorContext> condition)
         {
             Condition = condition;
-            Behavior = (v) => Condition.Invoke(v) ? BehaviorStatuses.Success : BehaviorStatuses.Failure;
+        }
+
+        public override BehaviorStatuses Behavior(BehaviorContext context)
+        {
+            return Condition.Invoke(context) ? BehaviorStatuses.Success : BehaviorStatuses.Failure;
         }
     }
 }
