@@ -19,6 +19,7 @@ using Graphics.Rendering.Vertices;
 using OpenTK.Graphics;
 using System.IO;
 using Graphics.Materials;
+using Graphics.Utilities;
 
 namespace Graphics.GameObjects
 {
@@ -82,24 +83,24 @@ namespace Graphics.GameObjects
                     {
                         var vertex = new Vertex()
                         {
-                            Position = new Vector3(mesh.Vertices[i].X, mesh.Vertices[i].Y, mesh.Vertices[i].Z),
+                            Position = mesh.Vertices[i].ToVector3(),
                             Color = new Color4(),
                             MaterialIndex = 0
                         };
 
                         if (mesh.HasNormals)
                         {
-                            vertex.Normal = new Vector3(mesh.Normals[i].X, mesh.Normals[i].Y, mesh.Normals[i].Z);
+                            vertex.Normal = mesh.Normals[i].ToVector3();
                         }
 
                         if (mesh.HasTextureCoords(0))
                         {
-                            vertex.TextureCoords = new Vector2(mesh.TextureCoordinateChannels[0][i].X, mesh.TextureCoordinateChannels[0][i].Y);
+                            vertex.TextureCoords = mesh.TextureCoordinateChannels[0][i].ToVector2();
                         }
 
                         if (mesh.HasTangentBasis)
                         {
-                            vertex.Tangent = new Vector3(mesh.Tangents[i].X, mesh.Tangents[i].Y, mesh.Tangents[i].Z);
+                            vertex.Tangent = mesh.Tangents[i].ToVector3();
                         }
 
                         vertices.Add(vertex);

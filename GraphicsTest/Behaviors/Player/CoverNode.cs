@@ -15,18 +15,30 @@ namespace GraphicsTest.Behaviors.Player
     [DataContract]
     public class CoverNode : LeafNode
     {
+        [DataMember]
+        public float CoverSpeed { get; set; }
+
+        [DataMember]
+        public float EnterCoverSpeed { get; set; }
+
+        [DataMember]
+        public float CoverDistance { get; set; }
+
+        public CoverNode(float coverSpeed, float enterCoverSpeed, float coverDistance)
+        {
+            CoverSpeed = coverSpeed;
+            EnterCoverSpeed = enterCoverSpeed;
+            CoverDistance = coverDistance;
+        }
+
         public override BehaviorStatuses Behavior(BehaviorContext context)
         {
-            var enterCoverSpeed = context.GetProperty<float>("ENTER_COVER_SPEED");
-            var coverSpeed = context.GetProperty<float>("COVER_SPEED");
-            var coverDistance = context.GetProperty<float>("COVER_DISTANCE");
-
             if (context.InputState.IsPressed(context.InputMapping.Cover))
             {
                 // TODO - Filter gameobjects and brushes based on "coverable" property
                 var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
 
-                if (Raycast.TryCircleCast(new Circle(context.Position, coverDistance), filteredColliders, out RaycastHit hit))
+                if (Raycast.TryCircleCast(new Circle(context.Position, CoverDistance), filteredColliders, out RaycastHit hit))
                 {
                     var vectorBetween = hit.Intersection - context.Position;
                     context.SetVariable("coverDirection", vectorBetween.Xy);
@@ -47,16 +59,16 @@ namespace GraphicsTest.Behaviors.Player
                     {
                         if (context.GetVariable<float>("coverDistance") > 0.0f)
                         {
-                            context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - enterCoverSpeed);
+                            context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - EnterCoverSpeed);
 
                             var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                            context.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * enterCoverSpeed;
+                            context.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed;
                         }
 
                         if (context.GetVariable<float>("coverDistance") < 0.1f)
                         {
                             // Handle movement while in cover here
-                            var translation = context.GetTranslation(coverSpeed);
+                            var translation = context.GetTranslation(CoverSpeed);
 
                             if (translation != Vector3.Zero)
                             {

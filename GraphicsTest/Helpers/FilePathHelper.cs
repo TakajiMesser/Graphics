@@ -48,6 +48,7 @@ namespace GraphicsTest.Helpers
         public static string BRICK_02_H_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-h.jpg";
         public static string BRICK_02_N_NORMAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-n.jpg";
         public static string BRICK_02_S_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-s.jpg";
+        public static string BRICK_02_B_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\brick2-b.jpg";
 
         public static string GRASS_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Grass01.png";
         public static string GRASS_N_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Textures\Grass01_normal.png";

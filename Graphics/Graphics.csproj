@@ -141,12 +141,13 @@
     <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\ParallelNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\ConditionNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\RepeaterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Leaves\ConditionNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\FunctionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\InlineNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Node.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />

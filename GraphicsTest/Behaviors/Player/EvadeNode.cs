@@ -16,15 +16,25 @@ namespace GraphicsTest.Behaviors.Player
     [DataContract]
     public class EvadeNode : LeafNode
     {
+        [DataMember]
+        public float EvadeSpeed { get; set; }
+
+        [DataMember]
+        public int TickCount { get; set; }
+
+        public EvadeNode(float evadeSpeed, int tickCount)
+        {
+            EvadeSpeed = evadeSpeed;
+            TickCount = tickCount;
+        }
+
         public override BehaviorStatuses Behavior(BehaviorContext context)
         {
-            var evadeSpeed = context.GetProperty<float>("EVADE_SPEED");
-            var evadeTickCount = context.GetProperty<int>("EVADE_TICK_COUNT");
             var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
             if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
             {
-                var evadeTranslation = context.GetTranslation(evadeSpeed);
+                var evadeTranslation = context.GetTranslation(EvadeSpeed);
 
                 if (evadeTranslation != Vector3.Zero)
                 {
@@ -46,7 +56,7 @@ namespace GraphicsTest.Behaviors.Player
 
             if (nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
             {
-                var evadeTranslation = context.GetTranslation(evadeSpeed);
+                var evadeTranslation = context.GetTranslation(EvadeSpeed);
 
                 if (evadeTranslation != Vector3.Zero)
                 {
@@ -66,20 +76,20 @@ namespace GraphicsTest.Behaviors.Player
                 }
             }
 
-            else if (nEvadeTicks > 0 && nEvadeTicks <= evadeTickCount)
+            else if (nEvadeTicks > 0 && nEvadeTicks <= TickCount)
             {
                 var evadeTranslation = context.GetVariable<Vector3>("evadeTranslation");
 
-                context.QRotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), 2.0f * (float)Math.PI / evadeTickCount * nEvadeTicks);
+                context.QRotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), 2.0f * (float)Math.PI / TickCount * nEvadeTicks);
                 context.QRotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
-                context.Rotation = new Vector3(context.Rotation.X, 2.0f * (float)Math.PI / evadeTickCount * nEvadeTicks, context.Rotation.Z);
+                context.Rotation = new Vector3(context.Rotation.X, 2.0f * (float)Math.PI / TickCount * nEvadeTicks, context.Rotation.Z);
                 nEvadeTicks++;
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
                 context.Translation = evadeTranslation;
 
                 return BehaviorStatuses.Success;
             }
-            else if (nEvadeTicks > evadeTickCount)
+            else if (nEvadeTicks > TickCount)
             {
                 nEvadeTicks = 0;
                 context.SetVariable("nEvadeTicks", nEvadeTicks);

@@ -15,17 +15,29 @@ namespace GraphicsTest.Behaviors.Player
     [DataContract]
     public class MoveNode : LeafNode
     {
+        [DataMember]
+        public float RunSpeed { get; set; }
+
+        [DataMember]
+        public float CreepSpeed { get; set; }
+
+        [DataMember]
+        public float WalkSpeed { get; set; }
+
+        public MoveNode(float runSpeed, float creepSpeed, float walkSpeed)
+        {
+            RunSpeed = runSpeed;
+            CreepSpeed = creepSpeed;
+            WalkSpeed = walkSpeed;
+        }
+
         public override BehaviorStatuses Behavior(BehaviorContext context)
         {
-            var runSpeed = context.GetProperty<float>("RUN_SPEED");
-            var creepSpeed = context.GetProperty<float>("CREEP_SPEED");
-            var walkSpeed = context.GetProperty<float>("WALK_SPEED");
-
             var speed = context.InputState.IsHeld(context.InputMapping.Run)
-                ? runSpeed
+                ? RunSpeed
                 : context.InputState.IsHeld(context.InputMapping.Crawl)
-                    ? creepSpeed
-                    : walkSpeed;
+                    ? CreepSpeed
+                    : WalkSpeed;
 
             var translation = context.GetTranslation(speed);
 

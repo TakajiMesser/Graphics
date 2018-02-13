@@ -14,9 +14,6 @@ namespace GraphicsTest
     {
         static void Main(string[] args)
         {
-            // Create test objects
-            BehaviorBuilder.CreateTestEnemyBehavior();
-            BehaviorBuilder.CreateTestPlayerBehavior();
             MapBuilder.CreateTestMap();
 
             using (var game = new GameWindow(FilePathHelper.MAP_PATH))
