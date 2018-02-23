@@ -123,14 +123,12 @@ namespace Graphics.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                BindTextures(textureManager, brush.TextureMapping);
-                brush.Draw(_program);
+                brush.Draw(_program, textureManager);
             }
 
             foreach (var gameObject in gameObjects)
             {
-                BindTextures(textureManager, gameObject.TextureMapping);
-                gameObject.Draw(_program);
+                gameObject.Draw(_program, textureManager);
             }
         }
 

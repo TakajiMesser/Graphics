@@ -33,7 +33,12 @@ namespace Graphics.Rendering.Vertices
         public void Set(int index)
         {
             GL.EnableVertexAttribArray(index);
+
             GL.VertexAttribPointer(index, _size, _type, _normalize, _stride, _offset);
+            /*if (_type == VertexAttribPointerType.Int)
+            {
+                GL.VertexAttribIPointer(index, _size, VertexAttribIntegerType.Int, _normalize, _stride, _offset);
+            }*/
         }
     }
 }

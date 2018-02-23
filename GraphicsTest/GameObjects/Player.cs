@@ -1,5 +1,9 @@
 ﻿using Graphics.Maps;
+using Graphics.Rendering.Textures;
+using Graphics.Scripting.BehaviorTrees;
 using Graphics.Scripting.BehaviorTrees.Composites;
+using Graphics.Scripting.BehaviorTrees.Decorators;
+using Graphics.Scripting.BehaviorTrees.Leaves;
 using GraphicsTest.Behaviors.Player;
 using GraphicsTest.Helpers;
 using OpenTK;
@@ -32,11 +36,24 @@ namespace GraphicsTest.GameObjects
             Scale = Vector3.One;
             Rotation = Quaternion.Identity;
             ModelFilePath = FilePathHelper.PLAYER_MESH_PATH;
-            DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
-            NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
-            SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH;
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
+                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH
+            });
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
+                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH
+            });
+
             //ParallaxMapFilePath = FilePathHelper.BRICK_01_H_TEXTURE_PATH,
             BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH;
+            HasCollision = true;
 
             SaveBehaviorTree();
         }
@@ -47,7 +64,23 @@ namespace GraphicsTest.GameObjects
                 new SelectorNode(
                     new SelectorNode(
                         new EvadeNode(EVADE_SPEED, EVADE_TICK_COUNT),
-                        new CoverNode(COVER_SPEED, ENTER_COVER_SPEED, COVER_DISTANCE)
+                        new SelectorNode(
+                            new InlineConditionNode(c => c.InputState.IsPressed(c.InputMapping.Cover),
+                                new TakeCoverNode(COVER_SPEED, ENTER_COVER_SPEED, COVER_DISTANCE)
+                            ),
+                            new InlineConditionNode(c => c.InputState.IsHeld(c.InputMapping.Cover),
+                                new CoverNode(COVER_SPEED, ENTER_COVER_SPEED, COVER_DISTANCE)
+                            ),
+                            new InlineConditionNode(c => c.InputState.IsReleased(c.InputMapping.Cover),
+                                new InlineLeafNode(c =>
+                                {
+                                    c.RemoveVariableIfExists("coverDirection");
+                                    c.RemoveVariableIfExists("coverDistance");
+
+                                    return BehaviorStatuses.Success;
+                                })
+                            )
+                        )
                     ),
                     new SequenceNode(
                         new MoveNode(RUN_SPEED, CREEP_SPEED, WALK_SPEED),

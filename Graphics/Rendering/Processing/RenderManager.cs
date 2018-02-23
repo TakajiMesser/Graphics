@@ -51,7 +51,7 @@ namespace Graphics.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                brush.Model.Load(_deferredRenderer._geometryProgram);
+                brush.Load(_deferredRenderer._geometryProgram);
             }
 
             foreach (var gameObject in gameObjects)
@@ -82,7 +82,8 @@ namespace Graphics.Rendering.Processing
             //_forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
             //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
 
-            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects);
+            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
             //_shadowRenderer.Render(_camera, _lights, _brushes, _gameObjects);
             //_deferredRenderer.LightPass(_camera, _lights, _shadowRenderer.PointDepthCubeMap, _shadowRenderer.SpotDepthTexture);
             _deferredRenderer.LightPass(Resolution, camera, lights, brushes, gameObjects, _shadowRenderer);

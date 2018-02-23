@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Graphics.Rendering.Textures;
 using GraphicsTest.GameObjects;
 
 namespace GraphicsTest.Helpers.Builders
@@ -33,14 +34,20 @@ namespace GraphicsTest.Helpers.Builders
 
             var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
             wall.HasCollision = true;
-            wall.DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
-            wall.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
+            wall.TexturesPaths = new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+            };
             map.Brushes.Add(wall);
 
             var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
             wall2.HasCollision = true;
-            wall2.DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH;
-            wall2.NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH;
+            wall2.TexturesPaths = new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+            };
             map.Brushes.Add(wall2);
 
             map.Lights.Add(new PointLight()

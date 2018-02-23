@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace EcoDrive.Shared.Utilities
+namespace Graphics.Utilities
 {
     public static class LINQExtensions
     {

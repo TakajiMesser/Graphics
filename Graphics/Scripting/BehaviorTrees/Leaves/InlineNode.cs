@@ -8,16 +8,16 @@ using System.Threading.Tasks;
 namespace Graphics.Scripting.BehaviorTrees.Leaves
 {
     [DataContract]
-    public class InlineNode : LeafNode
+    public class InlineLeafNode : LeafNode
     {
         [DataMember]
-        public Func<BehaviorContext, BehaviorStatuses> Function { get; set; }
+        public Func<BehaviorContext, BehaviorStatuses> Action { get; set; }
 
-        public InlineNode(Func<BehaviorContext, BehaviorStatuses> func)
+        public InlineLeafNode(Func<BehaviorContext, BehaviorStatuses> action)
         {
-            Function = func;
+            Action = action;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context) => Function(context);
+        public override BehaviorStatuses Behavior(BehaviorContext context) => Action(context);
     }
 }

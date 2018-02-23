@@ -36,6 +36,13 @@
     <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
     </Reference>
+    <Reference Include="DevILSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevILSharp.0.1.2\lib\net45\DevILSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -78,6 +85,7 @@
     <Compile Include="Maps\MapGameObject.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
+    <Compile Include="Meshes\JointMesh.cs" />
     <Compile Include="Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />
@@ -89,7 +97,10 @@
     <Compile Include="Physics\Raycasting\Ray3.cs" />
     <Compile Include="Physics\Raycasting\RaycastHit.cs" />
     <Compile Include="Physics\Raycasting\Raycast.cs" />
+    <Compile Include="Rendering\Animations\Animator.cs" />
     <Compile Include="Rendering\Animations\Animation.cs" />
+    <Compile Include="Rendering\Animations\MeshTransforms.cs" />
+    <Compile Include="Rendering\Animations\JointIndex.cs" />
     <Compile Include="Rendering\Animations\JointTransform.cs" />
     <Compile Include="Rendering\Animations\Joint.cs" />
     <Compile Include="Rendering\Buffers\RenderBuffer.cs" />
@@ -127,6 +138,7 @@
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\TexturePaths.cs" />
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
@@ -141,6 +153,7 @@
     <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\ParallelNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\InlineConditionNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\ConditionNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\RepeaterNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
@@ -153,6 +166,7 @@
     <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
+    <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Utilities\VectorExtensions.cs" />
@@ -170,10 +184,12 @@
     <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-shadow-geometry-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\point-shadow-skinning-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\spot-shadow-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-shadow-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\light-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-light-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\spot-shadow-skinning-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\spot-shadow-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\spot-light-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-shadow-vertex-shader.glsl" />

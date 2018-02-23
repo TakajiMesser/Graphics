@@ -25,7 +25,7 @@ namespace Graphics.Scripting.BehaviorTrees
     [KnownType(typeof(InverterNode))]
     [KnownType(typeof(LoopNode))]
     [KnownType(typeof(ConditionNode))]
-    [KnownType(typeof(InlineNode))]
+    [KnownType(typeof(InlineLeafNode))]
     [KnownType(typeof(LeafNode))]
     public class BehaviorTree
     {

@@ -2,6 +2,7 @@
 using Graphics.Materials;
 using Graphics.Rendering.Buffers;
 using Graphics.Rendering.Shaders;
+using Graphics.Rendering.Textures;
 using Graphics.Rendering.Vertices;
 using OpenTK;
 using OpenTK.Graphics;
@@ -25,6 +26,7 @@ namespace Graphics.Meshes
         private Material _material;
         private LightBuffer _lightBuffer = new LightBuffer();
 
+        public TextureMapping TextureMapping { get; set; }
         public List<T> Vertices => _vertices;
 
         public Mesh(List<T> vertices, Material material, List<int> triangleIndices)
@@ -68,8 +70,13 @@ namespace Graphics.Meshes
         public void ClearLights() => _lightBuffer.Clear();
         public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
 
-        public void Draw(ShaderProgram program)
+        public void Draw(ShaderProgram program, TextureManager textureManager)
         {
+            if (textureManager != null && TextureMapping != null)
+            {
+                program.BindTextures(textureManager, TextureMapping);
+            }
+
             _material.Draw(program);
 
             _vertexArray.Bind();

@@ -118,7 +118,7 @@ void main()
 
     // If these two vectors are parallel, color the pixel white
     // TODO - Remove this, it is purely for debugging purposes
-    vec3 cameraToLight = lightPosition - cameraPosition;
+    /*vec3 cameraToLight = lightPosition - cameraPosition;
     vec3 cameraToPosition = position - cameraPosition;
 
     float cosAngle = dot(cameraToLight, cameraToPosition) / (length(cameraToLight) * length(cameraToPosition));
@@ -127,5 +127,5 @@ void main()
     if (angle <= 0.02)
     {
         finalColor = vec4(0, 1, 0, 1);
-    }
+    }*/
 }

@@ -19,18 +19,16 @@ namespace Graphics.Rendering.Vertices
         public Vector3 Tangent;// { get; set; }
         public Color4 Color;// { get; set; }
         public Vector2 TextureCoords;// { get; set; }
-        public int MaterialIndex;// { get; set; }
         public Vector4 BoneIDs;// { get; set; }
         public Vector4 BoneWeights;// { get; set; }
 
-        public JointVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, int materialIndex)
+        public JointVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
         {
             Position = position;
             Normal = normal;
             Tangent = tangent;
             Color = new Color4();
             TextureCoords = textureCoords;
-            MaterialIndex = materialIndex;
             BoneIDs = new Vector4();
             BoneWeights = new Vector4();
         }
@@ -44,30 +42,27 @@ namespace Graphics.Rendering.Vertices
                 Tangent = Tangent,
                 Color = color,
                 TextureCoords = TextureCoords,
-                MaterialIndex = MaterialIndex,
                 BoneIDs = BoneIDs,
                 BoneWeights = BoneWeights
             };
         }
 
-        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, int materialIndex)
+        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
         {
             Position = position;
             Normal = normal;
             Tangent = tangent;
             Color = new Color4();
             TextureCoords = textureCoords;
-            MaterialIndex = materialIndex;
         }
 
-        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords, int materialIndex)
+        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords)
         {
             Position = position;
             Normal = normal;
             Tangent = tangent;
             Color = color;
             TextureCoords = textureCoords;
-            MaterialIndex = materialIndex;
         }
     }
 }

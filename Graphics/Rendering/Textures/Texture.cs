@@ -10,6 +10,8 @@ using OpenTK.Graphics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using System.IO;
+using DevILSharp;
 
 namespace Graphics.Rendering.Textures
 {
@@ -201,6 +203,48 @@ namespace Graphics.Rendering.Textures
         }
 
         public static Texture LoadFromFile(string path, bool enableMipMap, bool enableAnisotrophy)
+        {
+            switch (Path.GetExtension(path))
+            {
+                
+                case ".jpg":
+                case ".png":
+                    return LoadFromBitmap(path, enableMipMap, enableAnisotrophy);
+                default:
+                    return null;
+                    var image = DevILSharp.Image.Load(path);
+                    var texture = new Texture(image.Width, image.Height, 1)
+                    {
+                        Target = TextureTarget.Texture2D,
+                        MinFilter = TextureMinFilter.Linear,
+                        MagFilter = TextureMagFilter.Linear,
+                        WrapMode = TextureWrapMode.Repeat,
+                        EnableMipMap = enableMipMap,
+                        EnableAnisotropy = enableAnisotrophy
+                    };
+
+                    switch (image.ChannelFormat)
+                    {
+                        case ChannelFormat.RGB:
+                            texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                            break;
+                    }
+
+                    switch (image.ChannelType)
+                    {
+                        //case ChannelType.
+                    }
+
+                    texture.Bind();
+                    texture.Load(image.Data);
+
+                    image.Dispose();
+
+                    return texture;
+            }
+        }
+
+        public static Texture LoadFromBitmap(string path, bool enableMipMap, bool enableAnisotrophy)
         {
             Bitmap bitmap = new Bitmap(path);
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);

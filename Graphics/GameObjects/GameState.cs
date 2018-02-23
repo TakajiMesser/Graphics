@@ -59,9 +59,8 @@ namespace Graphics.GameObjects
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
             _lights.AddRange(map.Lights);
 
-            for (var i = 0; i < map.Brushes.Count; i++)
+            foreach (var mapBrush in map.Brushes)
             {
-                var mapBrush = map.Brushes[i];
                 var brush = mapBrush.ToBrush();
                 //brush.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
@@ -71,28 +70,38 @@ namespace Graphics.GameObjects
                 }
                 brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedObject is PointLight).Select(c => (PointLight)c.AttachedObject));
 
-                brush.TextureMapping = new TextureMapping()
-                {
-                    DiffuseMapID = !string.IsNullOrEmpty(mapBrush.DiffuseMapFilePath) ? _textureManager.AddTexture(mapBrush.DiffuseMapFilePath) : 0,
-                    NormalMapID = !string.IsNullOrEmpty(mapBrush.NormalMapFilePath) ? _textureManager.AddTexture(mapBrush.NormalMapFilePath) : 0,
-                    SpecularMapID = !string.IsNullOrEmpty(mapBrush.SpecularMapFilePath) ? _textureManager.AddTexture(mapBrush.SpecularMapFilePath) : 0
-                };
+                brush.Mesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
 
                 _brushes.Add(brush);
             }
 
             foreach (var mapObject in map.GameObjects)
             {
-                var gameObject = mapObject.ToGameObject();
+                var gameObject = mapObject.ToGameObject(_textureManager);
                 //gameObject.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
-                gameObject.TextureMapping = new TextureMapping()
+                switch (gameObject.Model)
                 {
-                    DiffuseMapID = !string.IsNullOrEmpty(mapObject.DiffuseMapFilePath) ? _textureManager.AddTexture(mapObject.DiffuseMapFilePath) : 0,
-                    NormalMapID = !string.IsNullOrEmpty(mapObject.NormalMapFilePath) ? _textureManager.AddTexture(mapObject.NormalMapFilePath) : 0,
-                    SpecularMapID = !string.IsNullOrEmpty(mapObject.SpecularMapFilePath) ? _textureManager.AddTexture(mapObject.SpecularMapFilePath) : 0,
-                    ParallaxMapID = !string.IsNullOrEmpty(mapObject.ParallaxMapFilePath) ? _textureManager.AddTexture(mapObject.ParallaxMapFilePath) : 0
-                };
+                    case SimpleModel s:
+                        for (var i = 0; i < s.Meshes.Count; i++)
+                        {
+                            if (i < mapObject.TexturesPaths.Count)
+                            {
+                                s.Meshes[i].TextureMapping = mapObject.TexturesPaths[i].ToTextureMapping(_textureManager);
+                            }
+                        }
+                        break;
+
+                    case AnimatedModel a:
+                        for (var i = 0; i < a.Meshes.Count; i++)
+                        {
+                            if (i < mapObject.TexturesPaths.Count)
+                            {
+                                a.Meshes[i].TextureMapping = mapObject.TexturesPaths[i].ToTextureMapping(_textureManager);
+                            }
+                        }
+                        break;
+                }
 
                 if (gameObject.Name == map.Camera.AttachedGameObjectName)
                 {

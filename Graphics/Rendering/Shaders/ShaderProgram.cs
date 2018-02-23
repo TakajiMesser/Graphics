@@ -149,5 +149,38 @@ namespace Graphics.Rendering.Shaders
 
             return index;
         }
+
+        public void BindTextures(TextureManager textureManager, TextureMapping textureMapping)
+        {
+            // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
+            // Check brush's texture mapping to see which textures we need to bind
+            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
+            GL.Uniform1(GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+            if (diffuseMap != null)
+            {
+                BindTexture(diffuseMap, "diffuseMap", 0);
+            }
+
+            var normalMap = textureManager.RetrieveTexture(textureMapping.NormalMapID);
+            GL.Uniform1(GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
+            if (normalMap != null)
+            {
+                BindTexture(normalMap, "normalMap", 1);
+            }
+
+            var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularMapID);
+            GL.Uniform1(GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
+            if (specularMap != null)
+            {
+                BindTexture(specularMap, "specularMap", 2);
+            }
+
+            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxMapID);
+            GL.Uniform1(GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
+            if (parallaxMap != null)
+            {
+                BindTexture(parallaxMap, "parallaxMap", 3);
+            }
+        }
     }
 }

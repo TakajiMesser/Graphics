@@ -23,7 +23,7 @@ namespace Graphics.Physics.Collision
 
         public BoundingCircle(Brush brush) : base(brush)
         {
-            var maxDistanceSquared = brush.Model.Vertices.Select(v => v.Xy.LengthSquared).Max();
+            var maxDistanceSquared = brush.Vertices.Select(v => v.Xy.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 

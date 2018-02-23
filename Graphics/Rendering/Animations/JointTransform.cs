@@ -7,15 +7,22 @@ using System.Threading.Tasks;
 
 namespace Graphics.Rendering.Animations
 {
-    public struct JointTransform
+    public class JointTransform
     {
-        public Vector3 Position { get; private set; }
-        public Quaternion Rotation { get; private set; }
+        public string Name { get; set; }
+        public List<JointIndex> JointIndices { get; private set; } = new List<JointIndex>();
+        public Vector3 Position { get; set; } = Vector3.Zero;
+        public Quaternion Rotation { get; set; } = Quaternion.Identity;
+        public Vector3 Scale { get; set; } = Vector3.One;
 
-        public JointTransform(Vector3 position, Quaternion rotation)
-        {
-            Position = position;
-            Rotation = rotation;
-        }
+        public Matrix4 Transform => //Matrix4.Identity
+            Matrix4.CreateScale(Scale)
+            *
+            Matrix4.CreateFromQuaternion(Rotation)
+            *
+            Matrix4.CreateTranslation(Position) 
+            ;
+
+        public JointTransform() { }
     }
 }

@@ -7,6 +7,7 @@ using GraphicsTest.Behaviors;
 using GraphicsTest.Behaviors.Enemy;
 using GraphicsTest.Helpers;
 using OpenTK;
+using Graphics.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,10 +29,48 @@ namespace GraphicsTest.GameObjects
         {
             Name = NAME;
             Position = new Vector3(5.0f, 5.0f, -1.0f);
-            Scale = Vector3.One;
+            Scale = 0.04f * Vector3.One;
             Rotation = Quaternion.Identity;
-            ModelFilePath = FilePathHelper.ENEMY_MESH_PATH;
+            ModelFilePath = FilePathHelper.BOB_LAMP_MESH_PATH;
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
+            });
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
+            });
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
+            });
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
+            });
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
+            });
+
+            TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_02_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
+            });
+
             BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH;
+            HasCollision = true;
 
             SaveBehaviorTree();
         }
@@ -42,24 +81,10 @@ namespace GraphicsTest.GameObjects
                 new RepeaterNode(
                     new SequenceNode(
                         new PlayerInSightNode(VIEW_ANGLE, VIEW_DISTANCE,
-                            new InlineNode(c => BehaviorStatuses.Success)
+                            new InlineLeafNode(c => BehaviorStatuses.Success)
+                            // TODO - Check if we are at full alertness
+                            // TODO - Chase Player
                         )
-                    /*new LeafNode()
-                    {
-                        Behavior = (c) =>
-                        {
-                            // Check if we are at full alertness
-                            return BehaviorStatuses.Success;
-                        }
-                    },
-                    new LeafNode()
-                    {
-                        Behavior = (c) =>
-                        {
-                            // TODO - Chase Player. For now, this will return success and cause the AI to stop
-                            return BehaviorStatuses.Success;
-                        }
-                    }*/
                     )
                 ),
                 new SequenceNode(

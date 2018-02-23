@@ -28,15 +28,15 @@ namespace Graphics.GameObjects
     {
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
-        public SimpleModel Model { get; set; } = new SimpleModel();
+        public Mesh<Vertex> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
-        public TextureMapping TextureMapping { get; set; }
+        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
 
         public Brush(List<Vertex> vertices, Material material, List<int> triangleIndices)
         {
-            Model.Meshes.Add(new Mesh<Vertex>(vertices, material, triangleIndices));
+            Mesh = new Mesh<Vertex>(vertices, material, triangleIndices);
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
@@ -47,7 +47,7 @@ namespace Graphics.GameObjects
                 //Mesh = Mesh,
                 Bounds = Bounds,
                 HasCollision = HasCollision,
-                TextureMapping = TextureMapping,
+                //TextureMapping = TextureMapping,
                 //Position = new Vector3(0, 0, 0)
             };
 
@@ -56,19 +56,50 @@ namespace Graphics.GameObjects
             return gameObject;
         }
 
-        public void AddTestColors() => Model.AddTestColors();
-        public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
+        public void ClearLights() => Mesh.ClearLights();
+        public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
 
-        public void Draw(ShaderProgram program) => Model.Draw(program);
+        public void AddTestColors()
+        {
+            var vertices = new List<Vertex>();
+
+            for (var i = 0; i < Mesh.Vertices.Count; i++)
+            {
+                if (i % 3 == 0)
+                {
+                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Lime));
+                }
+                else if (i % 3 == 1)
+                {
+                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Red));
+                }
+                else if (i % 3 == 2)
+                {
+                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Blue));
+                }
+            }
+
+            Mesh.ClearVertices();
+            Mesh.AddVertices(vertices);
+            Mesh.RefreshVertices();
+        }
+
+        public void Load(ShaderProgram program) => Mesh.Load(program);
+
+        public void Draw(ShaderProgram program, TextureManager textureManager = null)
+        {
+            _modelMatrix.Set(program);
+            Mesh.Draw(program, textureManager);
+        }
 
         public static Brush Rectangle(Vector3 center, float width, float height)
         {
             var vertices = new List<Vertex>
             {
-                new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero, 0),
-                new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero, 0),
-                new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero, 0),
-                new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero, 0)
+                new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
+                new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
+                new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
+                new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero)
             };
 
             var material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;

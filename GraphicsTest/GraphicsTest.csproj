@@ -38,6 +38,13 @@
     <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
     </Reference>
+    <Reference Include="DevILSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevILSharp.0.1.2\lib\net45\DevILSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -56,6 +63,7 @@
     <Compile Include="Behaviors\Enemy\TurnTowardsNode.cs" />
     <Compile Include="Behaviors\Enemy\PlayerInSightNode.cs" />
     <Compile Include="Behaviors\MoveToNode.cs" />
+    <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
     <Compile Include="Behaviors\Player\TurnNode.cs" />
     <Compile Include="Behaviors\Player\MoveNode.cs" />
     <Compile Include="Behaviors\Player\EvadeNode.cs" />
@@ -72,6 +80,8 @@
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Resources\Animations\boblampclean.md5anim" />
+    <None Include="Resources\Animations\boblampclean.md5mesh" />
     <None Include="Resources\Behaviors\Enemy.btt" />
     <None Include="Resources\Behaviors\EnemyPatrol.btt" />
     <None Include="Resources\Behaviors\EnemyTurn.btt" />

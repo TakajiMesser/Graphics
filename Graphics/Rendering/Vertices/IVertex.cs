@@ -19,8 +19,5 @@ namespace Graphics.Rendering.Vertices
         Color4 Color { get; }
         Vector2 TextureCoords { get; }
         int MaterialIndex { get; }
-
-        void Load(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, int materialIndex);
-        void Load(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords, int materialIndex);
     }
 }

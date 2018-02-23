@@ -45,25 +45,27 @@ namespace Graphics.GameObjects
             set => _modelMatrix.Scale = value;
         }
 
-        //public void ClearLights() => Mesh.ClearLights();
-        //public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
-
         public abstract void Load(ShaderProgram program);
+        public abstract void Draw(ShaderProgram program, TextureManager textureManager);
+
         public abstract void ClearLights();
         public abstract void AddPointLights(IEnumerable<PointLight> lights);
         public abstract void AddTestColors();
-        public abstract void Draw(ShaderProgram program);
 
-        public static Model LoadFromFile(string filePath)
+        public static Model LoadFromFile(string filePath, TextureManager textureManager)
         {
-            switch (Path.GetExtension(filePath))
+            using (var importer = new Assimp.AssimpContext())
             {
-                case ".obj":
-                    return SimpleModel.LoadFromFile(filePath);
-                case ".dae":
-                    return AnimatedModel.LoadFromFile(filePath);
-                default:
-                    throw new NotImplementedException("Could not handle file type " + filePath);
+                var scene = importer.ImportFile(filePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                    | Assimp.PostProcessSteps.CalculateTangentSpace
+                    | Assimp.PostProcessSteps.LimitBoneWeights
+                    | Assimp.PostProcessSteps.Triangulate
+                    | Assimp.PostProcessSteps.GenerateSmoothNormals
+                    | Assimp.PostProcessSteps.FlipUVs);
+
+                return scene.HasAnimations
+                    ? (Model)new AnimatedModel(scene, textureManager)
+                    : new SimpleModel(scene);
             }
         }
 

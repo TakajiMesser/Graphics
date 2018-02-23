@@ -24,21 +24,19 @@ namespace Graphics.Maps
         public Quaternion Rotation { get; set; }
         public Vector3 Scale { get; set; }
         public string ModelFilePath { get; set; }
-        public string DiffuseMapFilePath { get; set; }
-        public string NormalMapFilePath { get; set; }
-        public string SpecularMapFilePath { get; set; }
-        public string ParallaxMapFilePath { get; set; }
+        public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
         public string BehaviorFilePath { get; set; }
         public List<GameProperty> Properties { get; set; }
+        public bool HasCollision { get; set; }
         //public ICollider Collider { get; set; }
 
-        public GameObject ToGameObject()
+        public GameObject ToGameObject(TextureManager textureManager)
         {
             var gameObject = new GameObject(Name);
 
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
-                gameObject.Model = Model.LoadFromFile(ModelFilePath);
+                gameObject.Model = Model.LoadFromFile(ModelFilePath, textureManager);
             }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))
@@ -73,6 +71,8 @@ namespace Graphics.Maps
             }
 
             gameObject.Model.AddTestColors();
+
+            gameObject.HasCollision = HasCollision;
             gameObject.Bounds = gameObject.Name == "Player"
                 ? (Bounds)new BoundingCircle(gameObject)
                 : new BoundingBox(gameObject);

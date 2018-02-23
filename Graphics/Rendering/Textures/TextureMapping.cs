@@ -13,7 +13,7 @@ using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace Graphics.Rendering.Textures
 {
-    public struct TextureMapping
+    public class TextureMapping
     {
         public int DiffuseMapID { get; set; }
         public int NormalMapID { get; set; }

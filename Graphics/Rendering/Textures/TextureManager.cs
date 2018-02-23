@@ -43,10 +43,17 @@ namespace Graphics.Rendering.Textures
             else
             {
                 var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
-                int id = AddTexture(texture);
+                if (texture != null)
+                {
+                    int id = AddTexture(texture);
 
-                _pathsByID.Add(texturePath, id);
-                return id;
+                    _pathsByID.Add(texturePath, id);
+                    return id;
+                }
+                else
+                {
+                    return 0;
+                }
             }
         }
 

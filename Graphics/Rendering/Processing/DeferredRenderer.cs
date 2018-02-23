@@ -293,23 +293,21 @@ namespace Graphics.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                BindTextures(textureManager, brush.TextureMapping);
-                brush.Draw(_geometryProgram);
+                brush.Draw(_geometryProgram, textureManager);
             }
 
             foreach (var gameObject in gameObjects)
             {
-                BindTextures(textureManager, gameObject.TextureMapping);
-                gameObject.Draw(_geometryProgram);
+                gameObject.Draw(_geometryProgram, textureManager);
             }
         }
 
         public void JointGeometryPass(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<GameObject> gameObjects)
         {
             // Clear final texture from last frame
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
+            //GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
 
             _jointGeometryProgram.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
@@ -324,8 +322,10 @@ namespace Graphics.Rendering.Processing
                 DrawBuffersEnum.ColorAttachment6
             });
 
-            GL.ClearColor(Color4.Black);
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Disable(EnableCap.CullFace);
+
+            //GL.ClearColor(Color4.Black);
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             GL.Enable(EnableCap.DepthTest);
@@ -335,9 +335,10 @@ namespace Graphics.Rendering.Processing
 
             foreach (var gameObject in gameObjects)
             {
-                BindTextures(textureManager, gameObject.TextureMapping);
-                gameObject.Draw(_jointGeometryProgram);
+                gameObject.Draw(_jointGeometryProgram, textureManager);
             }
+
+            GL.Enable(EnableCap.CullFace);
         }
 
         public void LightPass(Resolution resolution, Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects, ShadowRenderer shadowRenderer)
@@ -470,39 +471,6 @@ namespace Graphics.Rendering.Processing
             else
             {
                 return null;
-            }
-        }
-
-        private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)
-        {
-            // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
-            // Check brush's texture mapping to see which textures we need to bind
-            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
-            GL.Uniform1(_geometryProgram.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
-            if (diffuseMap != null)
-            {
-                _geometryProgram.BindTexture(diffuseMap, "diffuseMap", 0);
-            }
-
-            var normalMap = textureManager.RetrieveTexture(textureMapping.NormalMapID);
-            GL.Uniform1(_geometryProgram.GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
-            if (normalMap != null)
-            {
-                _geometryProgram.BindTexture(normalMap, "normalMap", 1);
-            }
-
-            var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularMapID);
-            GL.Uniform1(_geometryProgram.GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
-            if (specularMap != null)
-            {
-                _geometryProgram.BindTexture(specularMap, "specularMap", 2);
-            }
-
-            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxMapID);
-            GL.Uniform1(_geometryProgram.GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
-            if (parallaxMap != null)
-            {
-                _geometryProgram.BindTexture(parallaxMap, "parallaxMap", 3);
             }
         }
 

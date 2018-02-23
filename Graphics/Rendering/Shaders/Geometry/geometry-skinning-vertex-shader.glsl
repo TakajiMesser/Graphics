@@ -1,6 +1,6 @@
 ﻿#version 440
 
-const int MAX_JOINTS = 32;
+const int MAX_JOINTS = 100;
 const int MAX_WEIGHTS = 4;
 
 uniform mat4 modelMatrix;
@@ -10,7 +10,6 @@ uniform mat4 previousModelMatrix;
 uniform mat4 previousViewMatrix;
 uniform mat4 previousProjectionMatrix;
 
-uniform int useSkinning;
 uniform mat4[MAX_JOINTS] jointTransforms;
 
 layout(location = 0) in vec3 vPosition;
@@ -18,8 +17,8 @@ layout(location = 1) in vec3 vNormal;
 layout(location = 2) in vec3 vTangent;
 layout(location = 3) in vec4 vColor;
 layout(location = 4) in vec2 vUV;
-layout(location = 6) in vec4 vBoneIDs;
-layout(location = 7) in vec4 vBoneWeights;
+layout(location = 5) in vec4 vBoneIDs;
+layout(location = 6) in vec4 vBoneWeights;
 
 out vec3 fPosition;
 out vec4 fClipPosition;
@@ -37,18 +36,15 @@ void main()
     vec4 normal = vec4(vNormal, 0.0);
     vec4 tangent = vec4(vTangent, 0.0);
 
-    if (useSkinning == 1)
+    mat4 jointTransform = mat4(0.0);
+    for (int i = 0; i < MAX_WEIGHTS; i++)
     {
-        mat4 jointTransform = mat4(0);
-        for (int i = 0; i < MAX_WEIGHTS; i++)
-        {
-            jointTransform += jointTransforms[0] * vBoneWeights[i];
-        }
-
-        position = jointTransform * position;
-        normal = jointTransform * normal;
-        tangent = jointTransform * tangent;
+        jointTransform += jointTransforms[int(vBoneIDs[i])] * vBoneWeights[i];
     }
+
+    position = jointTransform * position;
+    normal = jointTransform * normal;
+    tangent = jointTransform * tangent;
 
     fPosition = (modelMatrix * position).xyz;
     fClipPosition = mvp * position;

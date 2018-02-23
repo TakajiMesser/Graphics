@@ -28,6 +28,44 @@ namespace Graphics.GameObjects
         public List<Mesh<Vertex>> Meshes { get; private set; } = new List<Mesh<Vertex>>();
         public override List<Vector3> Vertices => Meshes.SelectMany(m => m.Vertices.Select(v => v.Position)).Distinct().ToList();
 
+        public SimpleModel() { }
+        public SimpleModel(Assimp.Scene scene)
+        {
+            foreach (var mesh in scene.Meshes)
+            {
+                var material = new Material(scene.Materials[mesh.MaterialIndex]);
+                var vertices = new List<Vertex>();
+
+                for (var i = 0; i < mesh.VertexCount; i++)
+                {
+                    var vertex = new Vertex()
+                    {
+                        Position = mesh.Vertices[i].ToVector3(),
+                        Color = new Color4()
+                    };
+
+                    if (mesh.HasNormals)
+                    {
+                        vertex.Normal = mesh.Normals[i].ToVector3();
+                    }
+
+                    if (mesh.HasTextureCoords(0))
+                    {
+                        vertex.TextureCoords = mesh.TextureCoordinateChannels[0][i].ToVector2();
+                    }
+
+                    if (mesh.HasTangentBasis)
+                    {
+                        vertex.Tangent = mesh.Tangents[i].ToVector3();
+                    }
+
+                    vertices.Add(vertex);
+                }
+
+                Meshes.Add(new Mesh<Vertex>(vertices, material, mesh.GetIndices().ToList()));
+            }
+        }
+
         public override void Load(ShaderProgram program) => Meshes.ForEach(m => m.Load(program));
         public override void ClearLights() => Meshes.ForEach(m => m.ClearLights());
         public override void AddPointLights(IEnumerable<PointLight> lights) => Meshes.ForEach(m => m.AddPointLights(lights));
@@ -60,56 +98,13 @@ namespace Graphics.GameObjects
             }
         }
 
-        public override void Draw(ShaderProgram program)
+        public override void Draw(ShaderProgram program, TextureManager textureManager)
         {
             _modelMatrix.Set(program);
-            Meshes.ForEach(m => m.Draw(program));
-        }
 
-        public new static SimpleModel LoadFromFile(string filePath)
-        {
-            var model = new SimpleModel();
-
-            using (var importer = new Assimp.AssimpContext())
+            foreach (var mesh in Meshes)
             {
-                var scene = importer.ImportFile(filePath, Assimp.PostProcessSteps.JoinIdenticalVertices | Assimp.PostProcessSteps.CalculateTangentSpace);
-
-                foreach (var mesh in scene.Meshes)
-                {
-                    var material = new Material(scene.Materials[mesh.MaterialIndex]);
-                    var vertices = new List<Vertex>();
-
-                    for (var i = 0; i < mesh.VertexCount; i++)
-                    {
-                        var vertex = new Vertex()
-                        {
-                            Position = mesh.Vertices[i].ToVector3(),
-                            Color = new Color4(),
-                            MaterialIndex = 0
-                        };
-
-                        if (mesh.HasNormals)
-                        {
-                            vertex.Normal = mesh.Normals[i].ToVector3();
-                        }
-
-                        if (mesh.HasTextureCoords(0))
-                        {
-                            vertex.TextureCoords = mesh.TextureCoordinateChannels[0][i].ToVector2();
-                        }
-
-                        if (mesh.HasTangentBasis)
-                        {
-                            vertex.Tangent = mesh.Tangents[i].ToVector3();
-                        }
-
-                        vertices.Add(vertex);
-                    }
-
-                    model.Meshes.Add(new Mesh<Vertex>(vertices, material, mesh.GetIndices().ToList()));
-                }
-
-                return model;
+                mesh.Draw(program, textureManager);
             }
         }
 

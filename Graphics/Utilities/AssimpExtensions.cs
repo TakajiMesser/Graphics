@@ -26,7 +26,9 @@ namespace Graphics.Utilities
                     matrix4[i, j] = matrix[i + 1, j + 1];
                 }
             }
-
+            //matrix4.Invert();
+            matrix4.Transpose();
+            
             return matrix4;
         }
 

@@ -23,9 +23,7 @@ namespace Graphics.Maps
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool HasCollision { get; set; }
-        public string DiffuseMapFilePath { get; set; }
-        public string NormalMapFilePath { get; set; }
-        public string SpecularMapFilePath { get; set; }
+        public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
 
         public Brush ToBrush()
         {
@@ -45,10 +43,10 @@ namespace Graphics.Maps
             {
                 Vertices = new List<Vertex>
                 {
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0), 0),
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1), 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0)
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
                 },
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = new List<int>()
@@ -146,11 +144,10 @@ namespace Graphics.Maps
 
                 var uv = uvIndices[i] > 0 ? uvs[uvIndices[i] - 1] : Vector2.Zero;
 
-                var meshVertex = new Vertex(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv, 0);
+                var meshVertex = new Vertex(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
-                    && v.TextureCoords == meshVertex.TextureCoords
-                    && v.MaterialIndex == meshVertex.MaterialIndex);
+                    && v.TextureCoords == meshVertex.TextureCoords);
 
                 if (existingIndex >= 0)
                 {
@@ -174,14 +171,14 @@ namespace Graphics.Maps
             {
                 Vertices = new List<Vertex>
                 {
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0), 0),
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1), 0),
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0), 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1), 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0), 0),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1), 0)
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
+                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1)),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
+                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
                 },
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = new List<int>()

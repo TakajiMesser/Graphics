@@ -19,16 +19,14 @@ namespace Graphics.Rendering.Vertices
         public Vector3 Tangent;// { get; set; }
         public Color4 Color;// { get; set; }
         public Vector2 TextureCoords;// { get; set; }
-        public int MaterialIndex;// { get; set; }
 
-        public Vertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, int materialIndex)
+        public Vertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
         {
             Position = position;
             Normal = normal;
             Tangent = tangent;
             Color = new Color4();
             TextureCoords = textureCoords;
-            MaterialIndex = materialIndex;
         }
 
         public Vertex Colored(Color4 color)
@@ -40,7 +38,6 @@ namespace Graphics.Rendering.Vertices
                 Tangent = Tangent,
                 Color = color,
                 TextureCoords = TextureCoords,
-                MaterialIndex = MaterialIndex
             };
         }
 
@@ -51,7 +48,6 @@ namespace Graphics.Rendering.Vertices
             Tangent = tangent;
             Color = new Color4();
             TextureCoords = textureCoords;
-            MaterialIndex = materialIndex;
         }
 
         public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords, int materialIndex)
@@ -61,7 +57,6 @@ namespace Graphics.Rendering.Vertices
             Tangent = tangent;
             Color = color;
             TextureCoords = textureCoords;
-            MaterialIndex = materialIndex;
         }
     }
 }

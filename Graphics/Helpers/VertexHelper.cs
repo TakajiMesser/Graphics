@@ -24,7 +24,7 @@ namespace Graphics.Helpers
                 new VertexAttribute("vTangent", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 24),
                 new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 36),
                 new VertexAttribute("vUV", 2, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 52),
-                new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<Vertex>(), 60)
+                //new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<Vertex>(), 60)
                 //new VertexAttribute("vBoneIDs", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 64),
                 //new VertexAttribute("vBoneWeights", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 80)
             });
@@ -37,9 +37,9 @@ namespace Graphics.Helpers
                 new VertexAttribute("vTangent", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 24),
                 new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 36),
                 new VertexAttribute("vUV", 2, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 52),
-                new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<JointVertex>(), 60),
-                new VertexAttribute("vBoneIDs", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 64),
-                new VertexAttribute("vBoneWeights", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 80)
+                //new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<JointVertex>(), 60),
+                new VertexAttribute("vBoneIDs", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 60),
+                new VertexAttribute("vBoneWeights", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 76)
             });
 
         public static IEnumerable<VertexAttribute> GetAttributes<T>() where T : struct

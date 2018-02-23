@@ -28,7 +28,9 @@ namespace Graphics.Rendering.Processing
         public Texture SpotDepthTexture { get; protected set; }
 
         internal ShaderProgram _pointShadowProgram;
+        internal ShaderProgram _pointShadowJointProgram;
         internal ShaderProgram _spotShadowProgram;
+        internal ShaderProgram _spotShadowJointProgram;
 
         internal FrameBuffer _pointFrameBuffer = new FrameBuffer();
         internal FrameBuffer _spotFrameBuffer = new FrameBuffer();
@@ -41,8 +43,19 @@ namespace Graphics.Rendering.Processing
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_FRAGMENT_SHADER_PATH))
             );
 
+            _pointShadowJointProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_SKINNING_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_GEOMETRY_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.POINT_SHADOW_FRAGMENT_SHADER_PATH))
+            );
+
             _spotShadowProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SPOT_SHADOW_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SPOT_SHADOW_FRAGMENT_SHADER_PATH))
+            );
+
+            _spotShadowJointProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SPOT_SHADOW_SKINNING_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SPOT_SHADOW_FRAGMENT_SHADER_PATH))
             );
         }
@@ -144,6 +157,37 @@ namespace Graphics.Rendering.Processing
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
+        public void PointLightJointPass(Camera camera, PointLight light, IEnumerable<GameObject> gameObjects)
+        {
+            _pointShadowJointProgram.Use();
+
+            _pointFrameBuffer.Bind(FramebufferTarget.DrawFramebuffer);
+            _pointFrameBuffer.Draw(DrawBuffersEnum.None);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.StencilTest);
+
+            //GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
+
+            // Draw camera from the point light's perspective
+            //GL.FramebufferTexture(FramebufferTarget.DrawFramebuffer, FramebufferAttachment.DepthAttachment, PointDepthCubeMap.Handle, 0);
+            camera.DrawFromLight(_pointShadowJointProgram, light);
+            _pointShadowJointProgram.SetUniform("lightRadius", light.Radius);
+            _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
+            // Draw all geometry, but only the positions
+            foreach (var gameObject in gameObjects)
+            {
+                gameObject.Draw(_pointShadowJointProgram);
+            }
+
+            _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
+        }
+
         private void SpotLightPass(Resolution resolution, Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             _spotShadowProgram.Use();
@@ -172,6 +216,32 @@ namespace Graphics.Rendering.Processing
             foreach (var gameObject in gameObjects)
             {
                 gameObject.Draw(_spotShadowProgram);
+            }
+        }
+
+        private void SpotLightJointPass(Resolution resolution, Camera camera, SpotLight light, IEnumerable<GameObject> gameObjects)
+        {
+            _spotShadowJointProgram.Use();
+
+            _spotFrameBuffer.Bind(FramebufferTarget.DrawFramebuffer);
+            _spotFrameBuffer.Draw(DrawBuffersEnum.None);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
+            //GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, resolution.Width, resolution.Height);
+
+            // Draw camera from the spot light's perspective
+            camera.DrawFromLight(_spotShadowJointProgram, light);
+
+            // Draw all geometry, but only the positions
+            foreach (var gameObject in gameObjects)
+            {
+                gameObject.Draw(_spotShadowJointProgram);
             }
         }
 
@@ -246,10 +316,12 @@ namespace Graphics.Rendering.Processing
             switch (light)
             {
                 case PointLight pLight:
-                    PointLightPass(camera, pLight, brushes, gameObjects);
+                    PointLightPass(camera, pLight, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+                    PointLightJointPass(camera, pLight, gameObjects.Where(g => g.Model is AnimatedModel));
                     break;
                 case SpotLight sLight:
-                    SpotLightPass(resolution, camera, sLight, brushes, gameObjects);
+                    SpotLightPass(resolution, camera, sLight, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+                    SpotLightJointPass(resolution, camera, sLight, gameObjects.Where(g => g.Model is AnimatedModel));
                     break;
             }
         }

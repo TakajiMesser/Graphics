@@ -24,7 +24,6 @@ namespace Graphics.GameObjects
         //public int ID { get; private set; }
         public string Name { get; private set; }
         public Model Model { get; set; }
-        public TextureMapping TextureMapping { get; set; }
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
@@ -94,6 +93,12 @@ namespace Graphics.GameObjects
                     Behaviors.Context.Translation = Vector3.Zero;
                 }
 
+                if (Model is AnimatedModel animated)
+                {
+                    animated.Animator.CurrentAnimation = animated.Animator.Animations.First();
+                    animated.Animator.Tick();
+                }
+
                 //Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
                 Model.Rotation = Behaviors.Context.QRotation;
                 Model.Scale = Behaviors.Context.Scale;
@@ -108,6 +113,21 @@ namespace Graphics.GameObjects
 
                 foreach (var collider in colliders)
                 {
+                    if (collider.AttachedObject is GameObject g)
+                    {
+                        if (!g.HasCollision)
+                        {
+                            continue;
+                        }
+                    }
+                    else if (collider.AttachedObject is Brush b)
+                    {
+                        if (!b.HasCollision)
+                        {
+                            continue;
+                        }
+                    }
+
                     if (collider.GetType() == typeof(BoundingCircle))
                     {
                         if (Bounds.CollidesWith((BoundingCircle)collider))
@@ -152,7 +172,7 @@ namespace Graphics.GameObjects
             Model.Position += translation;
         }
 
-        public virtual void Draw(ShaderProgram program) => Model.Draw(program);
+        public virtual void Draw(ShaderProgram program, TextureManager textureManager = null) => Model.Draw(program, textureManager);
 
         // Define how this object's state will be saved, if desired
         public virtual void OnSaveState() { }

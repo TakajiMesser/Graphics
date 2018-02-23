@@ -23,6 +23,11 @@ namespace GraphicsTest.Helpers
         public static string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Maps\TestMap.map";
         #endregion
 
+        #region Animations
+        public static string BOB_LAMP_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Animations\boblampclean.md5mesh";
+        public static string BOB_LAMP_ANIMATION_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Animations\boblampclean.md5anim";
+        #endregion
+
         #region Meshes
         public static string PLAYER_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Player.obj";
         public static string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Square.obj";
