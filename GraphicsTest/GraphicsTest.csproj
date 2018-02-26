@@ -34,6 +34,26 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
@@ -60,8 +80,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\Enemy\IsAtFullAlert.cs" />
     <Compile Include="Behaviors\Enemy\TurnTowardsNode.cs" />
-    <Compile Include="Behaviors\Enemy\PlayerInSightNode.cs" />
+    <Compile Include="Behaviors\Enemy\IsPlayerInSightNode.cs" />
     <Compile Include="Behaviors\MoveToNode.cs" />
     <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
     <Compile Include="Behaviors\Player\TurnNode.cs" />
@@ -91,6 +112,24 @@
     <None Include="Resources\Behaviors\PlayerMovement.btt" />
     <None Include="Resources\Behaviors\PlayerTurn.btt" />
     <None Include="Resources\Behaviors\SearchForPlayer.btt" />
+    <None Include="Resources\Fonts\Roboto-Black.ttf" />
+    <None Include="Resources\Fonts\Roboto-BlackItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Bold.ttf" />
+    <None Include="Resources\Fonts\Roboto-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Italic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Light.ttf" />
+    <None Include="Resources\Fonts\Roboto-LightItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Medium.ttf" />
+    <None Include="Resources\Fonts\Roboto-MediumItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Regular.ttf" />
+    <None Include="Resources\Fonts\Roboto-Thin.ttf" />
+    <None Include="Resources\Fonts\Roboto-ThinItalic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Bold.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Italic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Light.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-LightItalic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Regular.ttf" />
     <None Include="Resources\Maps\TestMap.map" />
     <None Include="Resources\Meshes\Cone.obj" />
     <None Include="Resources\Meshes\Cube.obj" />

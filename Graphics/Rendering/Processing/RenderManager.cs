@@ -27,12 +27,14 @@ namespace Graphics.Rendering.Processing
         public Resolution Resolution { get; private set; }
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
-        internal DeferredRenderer _deferredRenderer = new DeferredRenderer();
+        private DeferredRenderer _deferredRenderer = new DeferredRenderer();
         private ShadowRenderer _shadowRenderer = new ShadowRenderer();
+        private LightRenderer _lightRenderer = new LightRenderer();
         private SkyboxRenderer _skyboxRenderer = new SkyboxRenderer();
 
         private Blur _blurRenderer = new Blur();
         private InvertColors _invertRenderer = new InvertColors();
+        private TextRenderer _textRenderer = new TextRenderer();
         private RenderToScreen _renderToScreen = new RenderToScreen();
 
         public RenderManager(Resolution resolution) => Resolution = resolution;
@@ -44,9 +46,11 @@ namespace Graphics.Rendering.Processing
             _forwardRenderer.Load(Resolution);
             _deferredRenderer.Load(Resolution);
             _shadowRenderer.Load(Resolution);
+            _lightRenderer.Load(Resolution);
             _skyboxRenderer.Load(Resolution);
             _blurRenderer.Load(Resolution);
             _invertRenderer.Load(Resolution);
+            _textRenderer.Load(Resolution);
             _renderToScreen.Load(Resolution);
 
             foreach (var brush in brushes)
@@ -65,13 +69,15 @@ namespace Graphics.Rendering.Processing
             _forwardRenderer.ResizeTextures(Resolution);
             _deferredRenderer.ResizeTextures(Resolution);
             _shadowRenderer.ResizeTextures(Resolution);
+            _lightRenderer.ResizeTextures(Resolution);
             _skyboxRenderer.ResizeTextures(Resolution);
             _blurRenderer.ResizeTextures(Resolution);
             _invertRenderer.ResizeTextures(Resolution);
+            _textRenderer.ResizeTextures(Resolution);
             _renderToScreen.ResizeTextures(Resolution);
         }
 
-        public void RenderFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects, double frequency)
         {
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
@@ -92,6 +98,9 @@ namespace Graphics.Rendering.Processing
             _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
 
             // Read from GBuffer's final texture, so that we can post-process it
+            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _lightRenderer._frameBuffer._handle);
+            //GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
+            //var texture = _lightRenderer.FinalTexture;
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.ReadBuffer(ReadBufferMode.ColorAttachment6);
             var texture = _deferredRenderer.FinalTexture;
@@ -100,7 +109,15 @@ namespace Graphics.Rendering.Processing
 
             //_invertRenderer.Render(texture);
             _blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
-            _renderToScreen.Render(_blurRenderer.FinalTexture);
+            //_renderToScreen.Render(_blurRenderer.FinalTexture);
+
+            var fontPath = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\GraphicsTest\Resources\Fonts\Roboto-Regular.ttf";
+            var bitmapPath = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\GraphicsTest\Resources\Fonts\Roboto-Regular.png";
+            _textRenderer.SaveFontBitmap(fontPath, bitmapPath, 14);
+
+            var fontTexture = Texture.LoadFromBitmap(bitmapPath, false, false);
+            _renderToScreen.Render(texture);
+            _textRenderer.RenderText(fontTexture, "FPS: " + frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
     }
 }

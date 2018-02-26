@@ -21,6 +21,7 @@ using Graphics.Rendering.PostProcessing;
 using Graphics.Outputs;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Timers;
 
 namespace Graphics.GameObjects
 {
@@ -36,6 +37,10 @@ namespace Graphics.GameObjects
         private MouseDevice _mouse;
         private MouseDevice _previousMouse;
 
+        private Timer _fpsTimer = new Timer(1000);
+        private List<double> _frequencies = new List<double>();
+
+        public double Frequency { get; private set; }
         public Resolution Resolution { get; private set; }
         public EventHandler Resized;
 
@@ -47,6 +52,17 @@ namespace Graphics.GameObjects
 
             _mapPath = mapPath;
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
+
+            _fpsTimer.Elapsed += (s, e) =>
+            {
+                if (_frequencies.Count > 0)
+                {
+                    Frequency = _frequencies.Average();
+                    Console.WriteLine("FPS: " + Frequency);
+                    _frequencies.Clear();
+                }
+            };
+            _fpsTimer.Start();
         }
 
         protected override void OnResize(EventArgs e)
@@ -84,6 +100,7 @@ namespace Graphics.GameObjects
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
+            _frequencies.Add(RenderFrequency);
             _gameState.RenderFrame();
 
             GL.UseProgram(0);

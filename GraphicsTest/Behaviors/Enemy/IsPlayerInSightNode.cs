@@ -13,7 +13,7 @@ using Graphics.Scripting.BehaviorTrees.Decorators;
 namespace GraphicsTest.Behaviors.Enemy
 {
     [DataContract]
-    public class PlayerInSightNode : ConditionNode
+    public class IsPlayerInSightNode : ConditionNode
     {
         [DataMember]
         public float ViewAngle { get; set; }
@@ -21,7 +21,7 @@ namespace GraphicsTest.Behaviors.Enemy
         [DataMember]
         public float ViewDistance { get; set; }
 
-        public PlayerInSightNode(float viewAngle, float viewDistance, Node node) : base(node)
+        public IsPlayerInSightNode(float viewAngle, float viewDistance, Node node) : base(node)
         {
             ViewAngle = viewAngle;
             ViewDistance = viewDistance;
@@ -55,6 +55,17 @@ namespace GraphicsTest.Behaviors.Enemy
                             return true;
                         }
                     }
+                }
+            }
+
+            if (context.ContainsVariable("nAlertTicks"))
+            {
+                int nAlertTicks = context.GetVariable<int>("nAlertTicks");
+
+                if (nAlertTicks > 0)
+                {
+                    nAlertTicks--;
+                    context.SetVariable("nAlertTicks", nAlertTicks);
                 }
             }
 

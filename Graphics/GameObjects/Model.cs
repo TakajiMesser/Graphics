@@ -26,6 +26,7 @@ namespace Graphics.GameObjects
         internal ModelMatrix _modelMatrix = new ModelMatrix();
 
         public abstract List<Vector3> Vertices { get; }
+        public Quaternion OriginalRotation { get; set; } = Quaternion.Identity;
 
         public Vector3 Position
         {
@@ -35,8 +36,8 @@ namespace Graphics.GameObjects
 
         public Quaternion Rotation
         {
-            get => _modelMatrix.Rotation;
-            set => _modelMatrix.Rotation = value;
+            get => OriginalRotation * _modelMatrix.Rotation;
+            set => _modelMatrix.Rotation = OriginalRotation * value;
         }
 
         public Vector3 Scale
@@ -64,7 +65,7 @@ namespace Graphics.GameObjects
                     | Assimp.PostProcessSteps.FlipUVs);
 
                 return scene.HasAnimations
-                    ? (Model)new AnimatedModel(scene, textureManager)
+                    ? (Model)new AnimatedModel(filePath, scene, textureManager)
                     : new SimpleModel(scene);
             }
         }

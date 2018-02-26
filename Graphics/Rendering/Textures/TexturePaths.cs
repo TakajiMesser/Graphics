@@ -10,6 +10,7 @@ using OpenTK.Graphics;
 using System.Drawing;
 using System.Drawing.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+using System.IO;
 
 namespace Graphics.Rendering.Textures
 {
@@ -21,11 +22,22 @@ namespace Graphics.Rendering.Textures
         public string ParallaxMapFilePath { get; set; }
 
         public TexturePaths() { }
-        public TexturePaths(Assimp.Material material)
+        public TexturePaths(Assimp.Material material, string directoryPath)
         {
-            DiffuseMapFilePath = material.TextureDiffuse.FilePath;
-            NormalMapFilePath = material.TextureNormal.FilePath;
-            SpecularMapFilePath = material.TextureSpecular.FilePath;
+            if (!string.IsNullOrEmpty(material.TextureDiffuse.FilePath))
+            {
+                DiffuseMapFilePath = Path.Combine(directoryPath, material.TextureDiffuse.FilePath);
+            }
+
+            if (!string.IsNullOrEmpty(material.TextureNormal.FilePath))
+            {
+                NormalMapFilePath = Path.Combine(directoryPath, material.TextureNormal.FilePath);
+            }
+
+            if (!string.IsNullOrEmpty(material.TextureSpecular.FilePath))
+            {
+                SpecularMapFilePath = Path.Combine(directoryPath, material.TextureSpecular.FilePath);
+            }
         }
 
         public TextureMapping ToTextureMapping(TextureManager textureManager)

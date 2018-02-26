@@ -171,7 +171,8 @@ namespace Graphics.GameObjects
 
         public void RenderFrame()
         {
-            _renderManager.RenderFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
+            _renderManager.RenderFrame(_textureManager, _camera, _lights, _brushes, _gameObjects, _window.Frequency);
+            //Console.WriteLine("FPS: " + _window.Frequency);
         }
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), _window);

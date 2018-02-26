@@ -217,6 +217,8 @@ namespace Graphics.Rendering.Processing
             {
                 gameObject.Draw(_spotShadowProgram);
             }
+
+            _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         private void SpotLightJointPass(Resolution resolution, Camera camera, SpotLight light, IEnumerable<GameObject> gameObjects)
@@ -243,6 +245,8 @@ namespace Graphics.Rendering.Processing
             {
                 gameObject.Draw(_spotShadowJointProgram);
             }
+
+            _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         private void PointLightPass(Camera camera, IEnumerable<PointLight> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
@@ -309,6 +313,8 @@ namespace Graphics.Rendering.Processing
                     gameObject.Draw(_spotShadowProgram);
                 }
             }
+
+            _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         public void Render(Resolution resolution, Camera camera, Light light, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)

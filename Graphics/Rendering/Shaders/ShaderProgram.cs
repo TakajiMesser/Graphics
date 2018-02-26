@@ -120,6 +120,12 @@ namespace Graphics.Rendering.Shaders
             GL.UniformMatrix4(location, matrices.Length, true, values);
         }
 
+        public void SetUniform(string name, Vector2 vector)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform2(location, vector);
+        }
+
         public void SetUniform(string name, Vector3 vector)
         {
             int location = GetUniformLocation(name);

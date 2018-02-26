@@ -46,23 +46,5 @@ namespace Graphics.Rendering.Vertices
                 BoneWeights = BoneWeights
             };
         }
-
-        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
-        {
-            Position = position;
-            Normal = normal;
-            Tangent = tangent;
-            Color = new Color4();
-            TextureCoords = textureCoords;
-        }
-
-        public void Load(Vector3 position, Vector3 normal, Vector3 tangent, Color4 color, Vector2 textureCoords)
-        {
-            Position = position;
-            Normal = normal;
-            Tangent = tangent;
-            Color = color;
-            TextureCoords = textureCoords;
-        }
     }
 }

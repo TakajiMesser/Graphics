@@ -52,13 +52,13 @@ namespace Graphics.Helpers
         public static string POINT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\point-light-fragment-shader.glsl";
         public static string SPOT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\spot-light-fragment-shader.glsl";
 
-        public static string POINT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\point-shadow-vertex-shader.glsl";
-        public static string POINT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\point-shadow-skinning-vertex-shader.glsl";
-        public static string POINT_SHADOW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\point-shadow-geometry-shader.glsl";
-        public static string POINT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\point-shadow-fragment-shader.glsl";
-        public static string SPOT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\spot-shadow-vertex-shader.glsl";
-        public static string SPOT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\spot-shadow-skinning-vertex-shader.glsl";
-        public static string SPOT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Lighting\spot-shadow-fragment-shader.glsl";
+        public static string POINT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\point-shadow-vertex-shader.glsl";
+        public static string POINT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\point-shadow-skinning-vertex-shader.glsl";
+        public static string POINT_SHADOW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\point-shadow-geometry-shader.glsl";
+        public static string POINT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\point-shadow-fragment-shader.glsl";
+        public static string SPOT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\spot-shadow-vertex-shader.glsl";
+        public static string SPOT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\spot-shadow-skinning-vertex-shader.glsl";
+        public static string SPOT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Shadows\spot-shadow-fragment-shader.glsl";
 
         public static string MY_BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\MotionBlur\mb_myBlur.glsl";
         public static string BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\MotionBlur\mb_blur.glsl";
@@ -74,6 +74,9 @@ namespace Graphics.Helpers
         public static string RENDER_CUBE_ARRAY_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_cube_array.glsl";
         public static string RENDER_CUBE_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl";
         public static string RENDER_CUBE_VERTEX_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl";
+
+        public static string TEXT_VERTEX_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Text\text_vertex.glsl";
+        public static string TEXT_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Text\text_fragment.glsl";
 
         public static string SKYBOX_VERTEX_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Skybox\skybox_vert.glsl";
         public static string SKYBOX_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Skybox\skybox_frag.glsl";

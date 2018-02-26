@@ -32,12 +32,51 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
       <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
     </Reference>
     <Reference Include="DevILSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DevILSharp.0.1.2\lib\net45\DevILSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="FreeImageNET-PCL, Version=3.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeImageNET-PCL.3.17.1\lib\portable45-net45+win8+wpa81\FreeImageNET-PCL.dll</HintPath>
     </Reference>
     <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
@@ -56,6 +95,9 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
+    <Reference Include="TgaLib, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TgaLib.1.0.1\lib\net461\TgaLib.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GameObjects\SimpleModel.cs" />
@@ -123,6 +165,7 @@
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\InvertColors.cs" />
     <Compile Include="Rendering\PostProcessing\Blur.cs" />
     <Compile Include="Rendering\PostProcessing\RenderToScreen.cs" />
@@ -131,6 +174,7 @@
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
     <Compile Include="Rendering\Processing\Renderer.cs" />
     <Compile Include="Rendering\Processing\RenderManager.cs" />
+    <Compile Include="Rendering\Processing\LightRenderer.cs" />
     <Compile Include="Rendering\Processing\ShadowRenderer.cs" />
     <Compile Include="Rendering\Processing\SkyboxRenderer.cs" />
     <Compile Include="Rendering\Processing\ForwardRenderer.cs" />
@@ -142,6 +186,7 @@
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Vertices\TextureVertex.cs" />
     <Compile Include="Rendering\Vertices\JointVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />
@@ -164,6 +209,8 @@
     <Compile Include="Scripting\BehaviorTrees\Node.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\StimResponse\Response.cs" />
+    <Compile Include="Scripting\BehaviorTrees\StimResponse\Stimulus.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
@@ -183,16 +230,16 @@
     <None Include="Rendering\Shaders\Geometry\geometry-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
     <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\point-shadow-geometry-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\point-shadow-skinning-vertex-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\spot-shadow-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\point-shadow-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-geometry-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-skinning-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\spot-shadow-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-fragment-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\light-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\point-light-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\spot-shadow-skinning-vertex-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\spot-shadow-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\spot-shadow-skinning-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\spot-shadow-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\spot-light-fragment-shader.glsl" />
-    <None Include="Rendering\Shaders\Lighting\point-shadow-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Lighting\stencil-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Miscellaneous\invert.glsl" />
     <None Include="Rendering\Shaders\MotionBlur\mb_myBlur.glsl" />
@@ -212,12 +259,13 @@
     <None Include="Rendering\Shaders\Simple\simple-vertex-shader.glsl" />
     <None Include="Rendering\Shaders\Skybox\skybox_frag.glsl" />
     <None Include="Rendering\Shaders\Skybox\skybox_vert.glsl" />
+    <None Include="Rendering\Shaders\Text\text_fragment.glsl" />
+    <None Include="Rendering\Shaders\Text\text_vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Shaders\DepthOfField\" />
     <Folder Include="Rendering\Shaders\HDR\" />
     <Folder Include="Rendering\Shaders\Lens\" />
-    <Folder Include="Rendering\Shaders\Shadows\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\AssimpNet.3.3.2\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" />

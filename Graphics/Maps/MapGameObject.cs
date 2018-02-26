@@ -62,7 +62,7 @@ namespace Graphics.Maps
 
             if (Rotation != null)
             {
-                gameObject.Model.Rotation = Rotation;
+                gameObject.Model.OriginalRotation = Rotation;
             }
 
             if (Scale != null)

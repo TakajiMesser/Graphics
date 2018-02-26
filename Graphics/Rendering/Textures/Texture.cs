@@ -12,6 +12,7 @@ using System.Drawing.Imaging;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using System.IO;
 using DevILSharp;
+using FreeImageAPI;
 
 namespace Graphics.Rendering.Textures
 {
@@ -89,6 +90,12 @@ namespace Graphics.Rendering.Textures
             SetTextureParameters();
         }
 
+        public void Load(Byte[] pixels)
+        {
+            Specify(pixels);
+            SetTextureParameters();
+        }
+
         public void Load(IntPtr pixels)
         {
             Specify(pixels);
@@ -100,6 +107,36 @@ namespace Graphics.Rendering.Textures
             for (var i = 0; i < _maxMipMapLevels + 1; i++)
             {
                 GL.ClearTexImage(_handle, i, PixelFormat, PixelType, IntPtr.Zero);
+            }
+        }
+
+        private void Specify(Byte[] pixels)
+        {
+            switch (Target)
+            {
+                case TextureTarget.Texture1D:
+                    GL.TexImage1D(Target, 0, PixelInternalFormat, Width, 0, PixelFormat, PixelType, pixels);
+                    break;
+                case TextureTarget.Texture2D:
+                    GL.TexImage2D(Target, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
+                    break;
+                case TextureTarget.Texture2DArray:
+                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
+                    break;
+                case TextureTarget.TextureCubeMap:
+                    for (var i = 0; i < Depth; i++)
+                    {
+                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
+                    }
+                    break;
+                case TextureTarget.TextureCubeMapArray:
+                    GL.TexStorage3D((TextureTarget3d)Target, _maxMipMapLevels + 1, (SizedInternalFormat)PixelInternalFormat, Width, Height, Depth * 6);
+                    break;
+                case TextureTarget.Texture3D:
+                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
+                    break;
+                default:
+                    throw new NotImplementedException("Cannot specify texture target " + Target);
             }
         }
 
@@ -206,10 +243,11 @@ namespace Graphics.Rendering.Textures
         {
             switch (Path.GetExtension(path))
             {
-                
                 case ".jpg":
                 case ".png":
                     return LoadFromBitmap(path, enableMipMap, enableAnisotrophy);
+                //case ".tga":
+                    //return LoadFromTGA(path, enableMipMap, enableAnisotrophy);
                 default:
                     return null;
                     var image = DevILSharp.Image.Load(path);
@@ -244,16 +282,16 @@ namespace Graphics.Rendering.Textures
             }
         }
 
-        public static Texture LoadFromBitmap(string path, bool enableMipMap, bool enableAnisotrophy)
+        public static Texture LoadFromBitmap(string path, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
-            Bitmap bitmap = new Bitmap(path);
+            var bitmap = new Bitmap(path);
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
             var texture = new Texture(bitmap.Width, bitmap.Height, 1)
             {
                 Target = TextureTarget.Texture2D,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
+                MinFilter = minFilter,
+                MagFilter = magFilter,
                 WrapMode = TextureWrapMode.Repeat,
                 EnableMipMap = enableMipMap,
                 EnableAnisotropy = enableAnisotrophy
@@ -271,6 +309,11 @@ namespace Graphics.Rendering.Textures
                     texture.PixelFormat = PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
+                case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgba;
+                    texture.PixelFormat = PixelFormat.Bgra;
+                    texture.PixelType = PixelType.UnsignedByte;
+                    break;
             }
 
             texture.Bind();
@@ -280,6 +323,80 @@ namespace Graphics.Rendering.Textures
             bitmap.Dispose();
 
             return texture;
+        }
+
+        public static Texture LoadFromTGA(string path, bool enableMipMap, bool enableAnisotrophy)
+        {
+            var bitmap = FreeImage.LoadEx(path, FREE_IMAGE_LOAD_FLAGS.TARGA_LOAD_RGB888);
+            var scan = new Scanline<byte>(bitmap);
+
+            var texture = new Texture((int)FreeImage.GetWidth(bitmap), (int)FreeImage.GetHeight(bitmap), 1)
+            {
+                Target = TextureTarget.Texture2D,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Repeat,
+                EnableMipMap = enableMipMap,
+                EnableAnisotropy = enableAnisotrophy
+            };
+
+            /*switch (data.PixelFormat)
+            {
+                case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.ColorIndex;
+                    texture.PixelType = PixelType.Bitmap;
+                    break;
+                case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.Bgr;
+                    texture.PixelType = PixelType.UnsignedByte;
+                    break;
+            }*/
+
+            texture.Bind();
+            texture.Load(scan.Data);
+
+            //bitmap.UnlockBits(data);
+            //bitmap.Dispose();
+
+            return texture;
+
+            /*using (var reader = new BinaryReader(File.Open(path, FileMode.Open)))
+            {
+                var image = new TgaLib.TgaImage(reader);
+
+                var texture = new Texture(image.Header.Width, image.Header.Height, 1)
+                {
+                    Target = TextureTarget.Texture2D,
+                    MinFilter = TextureMinFilter.Linear,
+                    MagFilter = TextureMagFilter.Linear,
+                    WrapMode = TextureWrapMode.Repeat,
+                    EnableMipMap = enableMipMap,
+                    EnableAnisotropy = enableAnisotrophy
+                };
+
+                //image.Header.ImageType
+
+                /*switch (image.PixelFormat)
+                {
+                    case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:*/
+                        texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                        texture.PixelFormat = PixelFormat.ColorIndex;
+                        texture.PixelType = PixelType.Bitmap;
+                        /*break;
+                    case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
+                        texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                        texture.PixelFormat = PixelFormat.Bgr;
+                        texture.PixelType = PixelType.UnsignedByte;
+                        break;
+                }*/
+
+                /*texture.Bind();
+                texture.Load(image.ImageBytes);
+
+                return texture;
+            }*/
         }
 
         public static Texture LoadFromFile(List<string> paths, TextureTarget target, bool enableMipMap, bool enableAnisotrophy)

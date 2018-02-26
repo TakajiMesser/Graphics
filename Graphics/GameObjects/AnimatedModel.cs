@@ -20,6 +20,7 @@ using Graphics.Rendering.Vertices;
 using OpenTK.Graphics;
 using Graphics.Materials;
 using Graphics.Utilities;
+using System.IO;
 
 namespace Graphics.GameObjects
 {
@@ -32,7 +33,7 @@ namespace Graphics.GameObjects
 
         private Matrix4 _globalInverseTransform;
 
-        public AnimatedModel(Assimp.Scene scene, TextureManager textureManager)
+        public AnimatedModel(string filePath, Assimp.Scene scene, TextureManager textureManager)
         {
             Animator.AnimationEnd += (s, args) => Animator.CurrentAnimation = Animator.Animations.First();
             Animator.Animate += (s, args) =>
@@ -100,7 +101,7 @@ namespace Graphics.GameObjects
 
                 Meshes.Add(new JointMesh(vertices, material, mesh.GetIndices().ToList())
                 {
-                    TextureMapping = new TexturePaths(scene.Materials[mesh.MaterialIndex]).ToTextureMapping(textureManager)
+                    TextureMapping = new TexturePaths(scene.Materials[mesh.MaterialIndex], Path.GetDirectoryName(filePath)).ToTextureMapping(textureManager)
                 });
             }
 
