@@ -115,69 +115,10 @@ namespace Graphics.Rendering.Processing
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
-        public void LightPass(Resolution resolution, DeferredRenderer deferredRenderer, Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects, ShadowRenderer shadowRenderer)
-        {
-            // Clear final texture from last frame
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _frameBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-
-            foreach (var light in lights)
-            {
-                var lightMesh = GetMeshForLight(light);
-                StencilPass(resolution, light, camera, lightMesh);
-
-                GL.Disable(EnableCap.Blend);
-                shadowRenderer.Render(resolution, camera, light, brushes, gameObjects);
-                GL.Enable(EnableCap.Blend);
-
-                var lightProgram = GetProgramForLight(light);
-                DrawLight(resolution, deferredRenderer, light, camera, lightMesh, light is PointLight ? shadowRenderer.PointDepthCubeMap : shadowRenderer.SpotDepthTexture, lightProgram);
-            }
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-
-            GL.Disable(EnableCap.StencilTest);
-            GL.Disable(EnableCap.Blend);
-        }
-
-        public void LightPass(Resolution resolution, DeferredRenderer deferredRenderer, Camera camera, IEnumerable<Light> lights, Texture pointShadows, Texture spotShadows)
-        {
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-
-            foreach (var light in lights)
-            {
-                var lightMesh = GetMeshForLight(light);
-                StencilPass(resolution, light, camera, lightMesh);
-
-                var lightProgram = GetProgramForLight(light);
-                var shadowTexture = light is PointLight ? pointShadows : spotShadows;
-                DrawLight(resolution, deferredRenderer, light, camera, lightMesh, shadowTexture, lightProgram);
-            }
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-
-            GL.Disable(EnableCap.StencilTest);
-            GL.Disable(EnableCap.Blend);
-        }
-
         public void StencilPass(Resolution resolution, Light light, Camera camera, SimpleMesh mesh)
         {
             _stencilProgram.Use();
-
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _frameBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.None);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             GL.DepthMask(false);
             GL.Enable(EnableCap.DepthTest);
@@ -194,16 +135,12 @@ namespace Graphics.Rendering.Processing
             mesh.Draw();
         }
 
-        private void DrawLight(Resolution resolution, DeferredRenderer deferredRenderer, Light light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
+        public void LightPass(Resolution resolution, DeferredRenderer deferredRenderer, Light light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
             program.Use();
 
-            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, deferredRenderer.GBuffer._handle);
-            //GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _frameBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
+            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, deferredRenderer.GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Disable(EnableCap.DepthTest);
@@ -224,7 +161,7 @@ namespace Graphics.Rendering.Processing
             mesh.Draw();
         }
 
-        private SimpleMesh GetMeshForLight(Light light)
+        public SimpleMesh GetMeshForLight(Light light)
         {
             if (light is PointLight)
             {
@@ -240,7 +177,7 @@ namespace Graphics.Rendering.Processing
             }
         }
 
-        private ShaderProgram GetProgramForLight(Light light)
+        public ShaderProgram GetProgramForLight(Light light)
         {
             if (light is PointLight)
             {

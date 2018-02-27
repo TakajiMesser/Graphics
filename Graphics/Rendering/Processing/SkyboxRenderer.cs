@@ -60,14 +60,9 @@ namespace Graphics.Rendering.Processing
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
-            //GL.ClearColor(Color4.Purple);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
-
             int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
             int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
 
-            //GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.CullFace(CullFaceMode.Front);
             GL.DepthFunc(DepthFunction.Lequal);

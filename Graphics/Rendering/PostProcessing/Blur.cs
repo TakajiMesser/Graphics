@@ -92,9 +92,7 @@ namespace Graphics.Rendering.PostProcessing
             _blurProgram.Use();
             _frameBuffer.Draw();
 
-            GL.ClearColor(Color4.Purple);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             _blurProgram.BindTexture(scene, "sceneTexture", 0);
             _blurProgram.BindTexture(velocity, "velocityTexture", 1);

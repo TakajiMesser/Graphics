@@ -28,6 +28,9 @@ namespace Graphics.Rendering.PostProcessing
         public const int GLYPH_HEIGHT = 32;
         public const int X_SPACING = 4;
 
+        public static string FONT_PATH = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\GraphicsTest\Resources\Fonts\Roboto-Regular.ttf";
+
+        public Texture FontTexture { get; protected set; }
         public Texture FinalTexture { get; protected set; }
 
         private ShaderProgram _textProgram;
@@ -60,6 +63,10 @@ namespace Graphics.Rendering.PostProcessing
             };
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
+
+            var bitmapPath = Path.GetDirectoryName(FONT_PATH) + "\\" + Path.GetFileNameWithoutExtension(FONT_PATH) + ".png";
+            SaveFontBitmap(FONT_PATH, bitmapPath, 14);
+            FontTexture = Texture.LoadFromBitmap(bitmapPath, false, false);
         }
 
         protected override void LoadBuffers()
@@ -112,7 +119,7 @@ namespace Graphics.Rendering.PostProcessing
             }
         }
 
-        public void RenderText(Texture fontTexture, string text, int x, int y)
+        public void RenderText(string text, int x, int y)
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactorSrc.SrcAlpha, BlendingFactorDest.OneMinusSrcAlpha);
@@ -120,8 +127,8 @@ namespace Graphics.Rendering.PostProcessing
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            var uStep = (float)GLYPH_WIDTH / fontTexture.Width;
-            var vStep = (float)GLYPH_HEIGHT / fontTexture.Height;
+            var uStep = (float)GLYPH_WIDTH / FontTexture.Width;
+            var vStep = (float)GLYPH_HEIGHT / FontTexture.Height;
 
             _vertexBuffer.Clear();
             for (var i = 0; i < text.Length; i++)
@@ -159,7 +166,7 @@ namespace Graphics.Rendering.PostProcessing
             }
 
             _textProgram.Use();
-            _textProgram.BindTexture(fontTexture, "textureSampler", 0);
+            _textProgram.BindTexture(FontTexture, "textureSampler", 0);
             _textProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
 
             _vertexArray.Bind();

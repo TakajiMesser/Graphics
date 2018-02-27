@@ -62,9 +62,11 @@ namespace Graphics.Rendering.Processing
             {
                 gameObject.Model.Load(_deferredRenderer._geometryProgram);
             }
+
+            GL.ClearColor(Color4.Black);
         }
 
-        public void ResizeTextures()
+        public void Resize()
         {
             _forwardRenderer.ResizeTextures(Resolution);
             _deferredRenderer.ResizeTextures(Resolution);
@@ -79,28 +81,49 @@ namespace Graphics.Rendering.Processing
 
         public void RenderFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects, double frequency)
         {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-            //_forwardRenderer.Render(_textureManager, _camera, _brushes, _gameObjects);
-            //_skyboxRenderer.Render(_camera, _forwardRenderer._frameBuffer);
-
             _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
-            //_shadowRenderer.Render(_camera, _lights, _brushes, _gameObjects);
-            //_deferredRenderer.LightPass(_camera, _lights, _shadowRenderer.PointDepthCubeMap, _shadowRenderer.SpotDepthTexture);
-            _deferredRenderer.LightPass(Resolution, camera, lights, brushes, gameObjects, _shadowRenderer);
 
-            //_skyboxRenderer.SkyTexture = _shadowRenderer.PointDepthCubeMap;
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            foreach (var light in lights)
+            {
+                var lightMesh = _lightRenderer.GetMeshForLight(light);
+                _lightRenderer.StencilPass(Resolution, light, camera, lightMesh);
+
+                GL.Disable(EnableCap.Blend);
+                _shadowRenderer.Render(Resolution, camera, light, brushes, gameObjects);
+                GL.Enable(EnableCap.Blend);
+
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+                var lightProgram = _lightRenderer.GetProgramForLight(light);
+                var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
+                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
+            }
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);
+
             _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
 
             // Read from GBuffer's final texture, so that we can post-process it
-            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _lightRenderer._frameBuffer._handle);
-            //GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-            //var texture = _lightRenderer.FinalTexture;
             GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.ReadBuffer(ReadBufferMode.ColorAttachment6);
             var texture = _deferredRenderer.FinalTexture;
@@ -109,15 +132,11 @@ namespace Graphics.Rendering.Processing
 
             //_invertRenderer.Render(texture);
             _blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
-            //_renderToScreen.Render(_blurRenderer.FinalTexture);
-
-            var fontPath = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\GraphicsTest\Resources\Fonts\Roboto-Regular.ttf";
-            var bitmapPath = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\GraphicsTest\Resources\Fonts\Roboto-Regular.png";
-            _textRenderer.SaveFontBitmap(fontPath, bitmapPath, 14);
-
-            var fontTexture = Texture.LoadFromBitmap(bitmapPath, false, false);
+            texture = _blurRenderer.FinalTexture;
+            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
             _renderToScreen.Render(texture);
-            _textRenderer.RenderText(fontTexture, "FPS: " + frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _textRenderer.RenderText("FPS: " + frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
     }
 }

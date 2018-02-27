@@ -91,9 +91,7 @@ namespace Graphics.Rendering.PostProcessing
             _invertProgram.Use();
             _frameBuffer.Draw();
 
-            GL.ClearColor(Color4.Purple);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             _invertProgram.BindTexture(texture, "sceneTexture", 0);
 

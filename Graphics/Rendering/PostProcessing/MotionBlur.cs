@@ -128,7 +128,6 @@ namespace Graphics.Rendering.PostProcessing
         private void ApplyMotionBlur(Texture depth, Texture scene, float fps)
         {
             _blurProgram.Use();
-            GL.Viewport(0, 0, FinalTexture.Width, FinalTexture.Height);
 
             int fpsLocation = _blurProgram.GetUniformLocation("fps_scaler");
             GL.Uniform1(fpsLocation, fps);
