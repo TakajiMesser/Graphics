@@ -17,6 +17,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
 using GameWindow = Graphics.GameObjects.GameWindow;
+using System.Diagnostics;
+using MappingTool.Controls;
 
 namespace MappingTool
 {
@@ -28,16 +30,45 @@ namespace MappingTool
         private Map _map;
         private string _mapPath;
         private GameWindow _gameWindow;
+        private ProjectTreeView _projectTree = new ProjectTreeView();
+        private DockableGameWindow _perspectiveView;
+        //private DocWindowCollection _docWindows;
 
         public MainWindow()
         {
+            PresentationTraceSources.DataBindingSource.Listeners.Add(new ConsoleTraceListener());
+            PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
+
             InitializeComponent();
 
-            var item = new TreeViewItem()
+            /*var item = new TreeViewItem()
             {
                 Header = "Project"
             };
-            ProjectTree.Add(item);
+            ProjectTree.Add(item);*/
+        }
+
+        private void OnLoaded(object sender, EventArgs e)
+        {
+            DockManager.ParentWindow = this;
+            DockManager2.ParentWindow = this;
+
+            _projectTree.DockManager = DockManager2;
+            //_projectTree.Show();
+            _projectTree.ShowAsDocument();
+
+            NewCommand_Executed(this, null);
+
+            /*_docWindows = new DocWindowCollection()
+            {
+                DockManager = new DockingLibrary.DockManager()//DockManager
+            };*/
+        }
+
+        private void OnClosing(object sender, EventArgs e)
+        {
+            //Properties.Settings.Default.DockingLayoutState = DockManager.GetLayoutAsXml();
+            //Properties.Settings.Default.Save();
         }
 
         private void NewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -45,9 +76,42 @@ namespace MappingTool
             e.CanExecute = true;
         }
 
+        private bool ContainsDocument(string title)
+        {
+            foreach (DockingLibrary.DocumentContent doc in DockManager.Documents)
+            {
+                if (string.Compare(doc.Title, title, true) == 0)
+                {
+                    return true;
+                }
+            }
+                
+            return false;
+        }
+
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog()
+            //< local:DocWindowCollection DockPanel.Dock = "Top" x: Name = "DocWindows" />
+            //_docWindows.AddDocument();
+            var titleBuilder = new StringBuilder("Document");
+
+            int i = 1;
+            while (ContainsDocument(titleBuilder.ToString() + i))
+            {
+                i++;
+            }
+            titleBuilder.Append(i);
+
+            var doc = new DocWindow()
+            {
+                DockManager = DockManager,
+                Title = titleBuilder.ToString()
+            };
+            doc.ShowAsDocument();
+
+            //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));
+
+            /*var dialog = new OpenFileDialog()
             {
                 CheckPathExists = true,
                 DefaultExt = "map"
@@ -59,9 +123,9 @@ namespace MappingTool
                 _map.Save(dialog.FileName);
 
                 _mapPath = dialog.FileName;
-                RunButton.IsEnabled = true;
+                //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "MappingTool";
-            }
+            }*/
         }
 
         private void OpenCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e)
@@ -86,8 +150,11 @@ namespace MappingTool
                 _map = Map.Load(dialog.FileName);
 
                 _mapPath = dialog.FileName;
-                RunButton.IsEnabled = true;
+                //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "MappingTool";
+
+                _perspectiveView = new DockableGameWindow(_mapPath, DockManager);
+                _perspectiveView.ShowAsDocument();
             }
         }
 
@@ -121,7 +188,7 @@ namespace MappingTool
                 _map.Save(dialog.FileName);
 
                 _mapPath = dialog.FileName;
-                RunButton.IsEnabled = true;
+                //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "MappingTool";
             }
         }
@@ -139,6 +206,7 @@ namespace MappingTool
         {
             _gameWindow?.Close();
             base.OnClosing(e);
+            Application.Current.Shutdown();
         }
     }
 }

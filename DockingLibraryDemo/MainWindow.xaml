@@ -1,0 +1,35 @@
+﻿<Window x:Class="DockingLibraryDemo.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="DockingLibraryDemo" Height="600" Width="600"
+	xmlns:custom="clr-namespace:DockingLibrary;assembly=DockingLibrary" Loaded="OnLoaded" Closing="OnClosing"
+    >
+	<DockPanel>
+		<Menu DockPanel.Dock="Top">
+			<MenuItem Header="File">
+				<MenuItem Header="New" Click="NewDocument"/>
+				<MenuItem Header="Exit" Click="ExitApplication"/>
+			</MenuItem>
+			<MenuItem Header="Edit"/>
+			<MenuItem Header="Window">
+				<MenuItem Header="Explorer" Click="ShowExplorerWindow"/>
+				<MenuItem Header="Output" Click="ShowOutputWindow"/>
+				<MenuItem Header="Property" Click="ShowPropertyWindow"/>
+				<MenuItem Header="ToDoList" Click="ShowListWindow"/>
+			</MenuItem>
+			<MenuItem Header="?"/>
+		</Menu>
+		<ToolBar DockPanel.Dock="Top">
+			<Button>OK</Button>
+			  </ToolBar>
+		<Grid>
+			<Grid.ColumnDefinitions>
+				<ColumnDefinition Width="*"/>
+				<ColumnDefinition Width="*"/>
+			</Grid.ColumnDefinitions>
+			<custom:DockManager Name ="dockManager" Grid.Column="0" Background="Red"/>
+			<custom:DockManager Name ="dockManager2" Grid.Column="1" Background="Blue"/>
+		</Grid>
+	</DockPanel>
+
+</Window>

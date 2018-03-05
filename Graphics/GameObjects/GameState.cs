@@ -25,8 +25,7 @@ namespace Graphics.GameObjects
 {
     public class GameState
     {
-        private GameWindow _window;
-        private InputState _inputState = new InputState();
+        internal InputState _inputState = new InputState();
 
         private RenderManager _renderManager;
         private TextureManager _textureManager = new TextureManager();
@@ -40,18 +39,23 @@ namespace Graphics.GameObjects
         private QuadTree _brushQuads;
         private QuadTree _lightQuads;
 
-        public GameState(Map map, GameWindow window)
+        public GameState(Map map, Resolution resolution)
         {
-            _window = window;
-
+            _renderManager = new RenderManager(resolution);
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
 
-            _renderManager = new RenderManager(window.Resolution);
-            //_renderManager.Load(_brushes, _gameObjects);
-            _window.Resized += (s, e) => _renderManager.Resize();
+            LoadMap(map, resolution);
+        }
 
-            _camera = map.Camera.ToCamera(window.Resolution);
+        public void Resize()
+        {
+            _renderManager.Resize();
+        }
+
+        private void LoadMap(Map map, Resolution resolution)
+        {
+            _camera = map.Camera.ToCamera(resolution);
 
             _gameObjectQuads = new QuadTree(0, map.Boundaries);
             _brushQuads = new QuadTree(0, map.Boundaries);
@@ -107,7 +111,7 @@ namespace Graphics.GameObjects
                 {
                     _camera.AttachToGameObject(gameObject, true, true);
                 }
-                
+
                 _gameObjects.Add(gameObject);
             }
 
@@ -169,12 +173,14 @@ namespace Graphics.GameObjects
             PollForInput();
         }
 
+        public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
+
         public void RenderFrame()
         {
-            _renderManager.RenderFrame(_textureManager, _camera, _lights, _brushes, _gameObjects, _window.Frequency);
+            _renderManager.RenderFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
         }
 
-        private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState(), _window);
+        private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
 
         public void SaveToFile(string path)
         {

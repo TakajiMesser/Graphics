@@ -1,0 +1,16 @@
+﻿<custom:DockableContent x:Class="DockingLibraryDemo.ExplorerWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    Title="Explore window" Height="300" Width="300" Icon="\Icons\View_tree.ico"
+	xmlns:custom="clr-namespace:DockingLibrary;assembly=DockingLibrary"
+    >
+
+	<DockPanel LastChildFill="True">
+		<StackPanel DockPanel.Dock="Bottom">
+			<TextBlock Text="{Binding ElementName=_lstRecents, Path=SelectedItem.FileName}"/>
+			<TextBlock Text="{Binding ElementName=_lstRecents, Path=SelectedItem.Path}"/>
+		</StackPanel>
+		<ListBox Name="_lstRecents" IsSynchronizedWithCurrentItem="True"/>
+	</DockPanel>
+
+</custom:DockableContent>

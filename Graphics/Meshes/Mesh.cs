@@ -70,7 +70,7 @@ namespace Graphics.Meshes
         public void ClearLights() => _lightBuffer.Clear();
         public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
 
-        public void Draw(ShaderProgram program, TextureManager textureManager)
+        public void Draw(ShaderProgram program, TextureManager textureManager = null)
         {
             if (textureManager != null && TextureMapping != null)
             {

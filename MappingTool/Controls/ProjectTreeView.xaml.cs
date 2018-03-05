@@ -18,7 +18,7 @@ namespace MappingTool.Controls
     /// <summary>
     /// Interaction logic for ProjectTreeView.xaml
     /// </summary>
-    public partial class ProjectTreeView : Popup
+    public partial class ProjectTreeView : DockingLibrary.DockableContent
     {
         public ProjectTreeView()
         {
@@ -27,7 +27,7 @@ namespace MappingTool.Controls
 
         public void Add(TreeViewItem item)
         {
-            Tree.Items.Add(item);
+            //Tree.Items.Add(item);
         }
     }
 }

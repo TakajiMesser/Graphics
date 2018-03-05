@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OpenTK.Input;
 using OpenTK;
 using Graphics.Utilities;
+using System.Drawing;
 
 namespace Graphics.Inputs
 {
@@ -37,19 +38,30 @@ namespace Graphics.Inputs
                 ? _mouseState.Wheel
                 : _previousMouseState.Wheel - _mouseState.Wheel;
 
-        public void UpdateState(KeyboardState keyState, MouseState mouseState, GameWindow window)
+        public void UpdateState(Point mouseLocation)
+        {
+            _previousMouseDevice = _mouseDevice;
+            /*_mouseDevice = new MouseDevice()
+            {
+                a
+            };*/
+        }
+
+        public void UpdateState(GameWindow window)
+        {
+            _previousMouseDevice = _mouseDevice;
+            _mouseDevice = window.Mouse;
+            WindowWidth = window.Width;
+            WindowHeight = window.Height;
+        }
+
+        public void UpdateState(KeyboardState keyState, MouseState mouseState)
         {
             _previousKeyState = _keyState;
             _keyState = keyState;
 
             _previousMouseState = _mouseState;
             _mouseState = mouseState;
-
-            _previousMouseDevice = _mouseDevice;
-            _mouseDevice = window.Mouse;
-
-            WindowWidth = window.Width;
-            WindowHeight = window.Height;
         }
 
         public bool IsPressed(Input input)

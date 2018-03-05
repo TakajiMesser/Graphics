@@ -25,9 +25,11 @@ namespace Graphics.Rendering.Processing
     public class RenderManager
     {
         public Resolution Resolution { get; private set; }
+        public double Frequency { get; internal set; }
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
+        private WireframeRenderer _wireframeRenderer = new WireframeRenderer();
         private ShadowRenderer _shadowRenderer = new ShadowRenderer();
         private LightRenderer _lightRenderer = new LightRenderer();
         private SkyboxRenderer _skyboxRenderer = new SkyboxRenderer();
@@ -45,6 +47,7 @@ namespace Graphics.Rendering.Processing
 
             _forwardRenderer.Load(Resolution);
             _deferredRenderer.Load(Resolution);
+            _wireframeRenderer.Load(Resolution);
             _shadowRenderer.Load(Resolution);
             _lightRenderer.Load(Resolution);
             _skyboxRenderer.Load(Resolution);
@@ -79,7 +82,42 @@ namespace Graphics.Rendering.Processing
             _renderToScreen.ResizeTextures(Resolution);
         }
 
-        public void RenderFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects, double frequency)
+        public void RenderFrame(Camera camera, List<Brush> brushes, List<GameObject> gameObjects, double frequency)
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            _wireframeRenderer.WireframePass(Resolution, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+            _wireframeRenderer.JointWireframePass(Resolution, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
+
+            // Read from GBuffer's final texture, so that we can post-process it
+            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
+            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
+            var texture = _deferredRenderer.ColorTexture;
+
+            GL.Disable(EnableCap.DepthTest);
+
+            //_invertRenderer.Render(texture);
+            _blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
+            texture = _blurRenderer.FinalTexture;
+            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
+            _renderToScreen.Render(texture);
+            _textRenderer.RenderText("FPS: " + frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+        }
+
+        public void RenderFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -124,8 +162,8 @@ namespace Graphics.Rendering.Processing
             _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
 
             // Read from GBuffer's final texture, so that we can post-process it
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment6);
+            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
+            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
             var texture = _deferredRenderer.FinalTexture;
 
             GL.Disable(EnableCap.DepthTest);
@@ -136,7 +174,7 @@ namespace Graphics.Rendering.Processing
             //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
             //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
             _renderToScreen.Render(texture);
-            _textRenderer.RenderText("FPS: " + frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
     }
 }

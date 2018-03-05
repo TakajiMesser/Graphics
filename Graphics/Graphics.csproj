@@ -82,13 +82,17 @@
       <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="OpenTK, Version=2.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.2.0.0\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -98,8 +102,13 @@
     <Reference Include="TgaLib, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\TgaLib.1.0.1\lib\net461\TgaLib.dll</HintPath>
     </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="GameObjects\GamePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="GameObjects\SimpleModel.cs" />
     <Compile Include="GameObjects\Model.cs" />
     <Compile Include="GameObjects\Brush.cs" />
@@ -172,6 +181,7 @@
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\WireframeRenderer.cs" />
     <Compile Include="Rendering\Processing\Renderer.cs" />
     <Compile Include="Rendering\Processing\RenderManager.cs" />
     <Compile Include="Rendering\Processing\LightRenderer.cs" />
@@ -261,6 +271,10 @@
     <None Include="Rendering\Shaders\Skybox\skybox_vert.glsl" />
     <None Include="Rendering\Shaders\Text\text_fragment.glsl" />
     <None Include="Rendering\Shaders\Text\text_vertex.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-fragment.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-skinning-vertex.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-geometry.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-vertex.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Shaders\DepthOfField\" />

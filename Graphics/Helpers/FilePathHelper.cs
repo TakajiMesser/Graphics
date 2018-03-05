@@ -40,6 +40,11 @@ namespace Graphics.Helpers
         public static string SIMPLE_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Simple\simple-vertex-shader.glsl";
         public static string SIMPLE_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Simple\simple-fragment-shader.glsl";
 
+        public static string WIREFRAME_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Wireframe\wireframe-vertex.glsl";
+        public static string WIREFRAME_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Wireframe\wireframe-skinning-vertex.glsl";
+        public static string WIREFRAME_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Wireframe\wireframe-geometry.glsl";
+        public static string WIREFRAME_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Wireframe\wireframe-fragment.glsl";
+
         public static string GEOMETRY_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-vertex-shader.glsl";
         public static string GEOMETRY_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-skinning-vertex-shader.glsl";
         public static string GEOMETRY_TESS_CONTROL_SHADER_PATH = SOLUTION_DIRECTORY + @"\Graphics\Rendering\Shaders\Geometry\geometry-tess-control-shader.glsl";

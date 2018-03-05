@@ -40,9 +40,7 @@ namespace Graphics.GameObjects
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
 
-        public double Frequency { get; private set; }
         public Resolution Resolution { get; private set; }
-        public EventHandler Resized;
 
         public GameWindow(string mapPath) : base(1280, 720,
             GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default,
@@ -57,8 +55,7 @@ namespace Graphics.GameObjects
             {
                 if (_frequencies.Count > 0)
                 {
-                    Frequency = _frequencies.Average();
-                    Console.WriteLine("FPS: " + Frequency);
+                    _gameState?.SetFrequency(_frequencies.Average());
                     _frequencies.Clear();
                 }
             };
@@ -69,7 +66,7 @@ namespace Graphics.GameObjects
         {
             Resolution.Width = Width;
             Resolution.Height = Height;
-            Resized?.Invoke(this, new EventArgs());
+            _gameState?.Resize();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -80,7 +77,7 @@ namespace Graphics.GameObjects
 
             var loadedMap = Map.Load(_mapPath);
 
-            _gameState = new GameState(loadedMap, this);
+            _gameState = new GameState(loadedMap, Resolution);
             _gameState.Initialize();
         }
 
@@ -160,6 +157,8 @@ namespace Graphics.GameObjects
             _keyState = Keyboard.GetState();
             _mouseState = Mouse.GetState();
             _mouse = Mouse;
+
+            _gameState?._inputState.UpdateState(this);
         }
     }
 }
