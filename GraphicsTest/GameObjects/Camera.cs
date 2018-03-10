@@ -1,6 +1,6 @@
-﻿using Graphics.Maps;
-using Graphics.Rendering.Matrices;
-using Graphics.Utilities;
+﻿using TakoEngine.Maps;
+using TakoEngine.Rendering.Matrices;
+using TakoEngine.Utilities;
 using GraphicsTest.Helpers;
 using OpenTK;
 using System;

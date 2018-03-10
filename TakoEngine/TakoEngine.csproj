@@ -1,0 +1,292 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{016D7A9D-C5D9-4D7F-A6E5-7753CC8832FE}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TakoEngine</RootNamespace>
+    <AssemblyName>TakoEngine</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
+    </Reference>
+    <Reference Include="DevILSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevILSharp.0.1.2\lib\net45\DevILSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="FreeImageNET-PCL, Version=3.17.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\FreeImageNET-PCL.3.17.1\lib\portable45-net45+win8+wpa81\FreeImageNET-PCL.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+    <Reference Include="TgaLib, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\TgaLib.1.0.1\lib\net461\TgaLib.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="WindowsFormsIntegration" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="GameObjects\GamePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="GameObjects\SimpleModel.cs" />
+    <Compile Include="GameObjects\Model.cs" />
+    <Compile Include="GameObjects\Brush.cs" />
+    <Compile Include="GameObjects\Camera\PerspectiveCamera.cs" />
+    <Compile Include="GameObjects\Camera\OrthographicCamera.cs" />
+    <Compile Include="GameObjects\Camera\Camera.cs" />
+    <Compile Include="GameObjects\AnimatedModel.cs" />
+    <Compile Include="GameObjects\GameProperty.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="GameObjects\GameState.cs" />
+    <Compile Include="GameObjects\GameWindow.cs" />
+    <Compile Include="Helpers\GeometryHelper.cs" />
+    <Compile Include="Helpers\FilePathHelper.cs" />
+    <Compile Include="Helpers\MathHelper.cs" />
+    <Compile Include="Helpers\VertexHelper.cs" />
+    <Compile Include="Inputs\InputState.cs" />
+    <Compile Include="Inputs\Input.cs" />
+    <Compile Include="Inputs\InputMapping.cs" />
+    <Compile Include="Lighting\DirectionalLight.cs" />
+    <Compile Include="Lighting\SpotLight.cs" />
+    <Compile Include="Lighting\PointLight.cs" />
+    <Compile Include="Lighting\Light.cs" />
+    <Compile Include="Maps\MapCamera.cs" />
+    <Compile Include="Maps\MapBrush.cs" />
+    <Compile Include="Maps\MapGameObject.cs" />
+    <Compile Include="Maps\Map.cs" />
+    <Compile Include="Materials\Material.cs" />
+    <Compile Include="Meshes\JointMesh.cs" />
+    <Compile Include="Meshes\SimpleMesh.cs" />
+    <Compile Include="Outputs\Audio.cs" />
+    <Compile Include="Outputs\Display.cs" />
+    <Compile Include="Outputs\Resolution.cs" />
+    <Compile Include="Physics\Collision\BoundingCircle.cs" />
+    <Compile Include="Physics\Collision\Quad.cs" />
+    <Compile Include="Physics\Raycasting\LineSegment.cs" />
+    <Compile Include="Physics\Raycasting\Circle.cs" />
+    <Compile Include="Physics\Raycasting\Ray3.cs" />
+    <Compile Include="Physics\Raycasting\RaycastHit.cs" />
+    <Compile Include="Physics\Raycasting\Raycast.cs" />
+    <Compile Include="Rendering\Animations\Animator.cs" />
+    <Compile Include="Rendering\Animations\Animation.cs" />
+    <Compile Include="Rendering\Animations\MeshTransforms.cs" />
+    <Compile Include="Rendering\Animations\JointIndex.cs" />
+    <Compile Include="Rendering\Animations\JointTransform.cs" />
+    <Compile Include="Rendering\Animations\Joint.cs" />
+    <Compile Include="Rendering\Buffers\RenderBuffer.cs" />
+    <Compile Include="Rendering\Buffers\FrameBuffer.cs" />
+    <Compile Include="Rendering\Buffers\UniformBuffer.cs" />
+    <Compile Include="Rendering\Buffers\ShaderStorageBuffer.cs" />
+    <Compile Include="Rendering\Matrices\ProjectionMatrix.cs" />
+    <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
+    <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
+    <Compile Include="Meshes\MeshManager.cs" />
+    <Compile Include="Meshes\MeshTriangle.cs" />
+    <Compile Include="Meshes\Mesh.cs" />
+    <Compile Include="Physics\Collision\QuadTree.cs" />
+    <Compile Include="Physics\Collision\Bounds.cs" />
+    <Compile Include="Physics\Collision\BoundingBox.cs" />
+    <Compile Include="Physics\Collision\BoundingSphere.cs" />
+    <Compile Include="Rendering\Animations\KeyFrame.cs" />
+    <Compile Include="Rendering\Buffers\IBindable.cs" />
+    <Compile Include="Rendering\Buffers\LightBuffer.cs" />
+    <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
+    <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
+    <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
+    <Compile Include="Rendering\PostProcessing\InvertColors.cs" />
+    <Compile Include="Rendering\PostProcessing\Blur.cs" />
+    <Compile Include="Rendering\PostProcessing\RenderToScreen.cs" />
+    <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
+    <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
+    <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\WireframeRenderer.cs" />
+    <Compile Include="Rendering\Processing\Renderer.cs" />
+    <Compile Include="Rendering\Processing\RenderManager.cs" />
+    <Compile Include="Rendering\Processing\LightRenderer.cs" />
+    <Compile Include="Rendering\Processing\ShadowRenderer.cs" />
+    <Compile Include="Rendering\Processing\SkyboxRenderer.cs" />
+    <Compile Include="Rendering\Processing\ForwardRenderer.cs" />
+    <Compile Include="Rendering\Processing\DeferredRenderer.cs" />
+    <Compile Include="Rendering\Shaders\Shader.cs" />
+    <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\TexturePaths.cs" />
+    <Compile Include="Rendering\Textures\TextureMapping.cs" />
+    <Compile Include="Rendering\Textures\TextureManager.cs" />
+    <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Vertices\TextureVertex.cs" />
+    <Compile Include="Rendering\Vertices\JointVertex.cs" />
+    <Compile Include="Rendering\Vertices\IVertex.cs" />
+    <Compile Include="Rendering\Vertices\Vertex.cs" />
+    <Compile Include="Rendering\Vertices\VertexArray.cs" />
+    <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
+    <Compile Include="Scripting\BehaviorTrees\BehaviorContext.cs" />
+    <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
+    <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\ParallelNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\InlineConditionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\ConditionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\RepeaterNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\FunctionNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\InlineNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Node.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />
+    <Compile Include="Scripting\BehaviorTrees\StimResponse\Response.cs" />
+    <Compile Include="Scripting\BehaviorTrees\StimResponse\Stimulus.cs" />
+    <Compile Include="Scripting\Script.cs" />
+    <Compile Include="Scripting\Director.cs" />
+    <Compile Include="Utilities\ArrayExtensions.cs" />
+    <Compile Include="Utilities\LINQExtensions.cs" />
+    <Compile Include="Utilities\AssimpExtensions.cs" />
+    <Compile Include="Utilities\VectorExtensions.cs" />
+    <Compile Include="Utilities\MathExtensions.cs" />
+    <Compile Include="Utilities\UnitConversions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <None Include="Rendering\Shaders\Geometry\geometry-skinning-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-tess-control-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl" />
+    <None Include="Rendering\Shaders\Geometry\geometry-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-geometry-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-skinning-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\spot-shadow-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\light-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\point-light-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\spot-shadow-skinning-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\spot-shadow-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\spot-light-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Shadows\point-shadow-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Lighting\stencil-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Miscellaneous\invert.glsl" />
+    <None Include="Rendering\Shaders\MotionBlur\mb_myBlur.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_cube_array.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_3D.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_2D_array.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_2D_fragment.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_2D_vertex.glsl" />
+    <None Include="Rendering\Shaders\RenderToScreen\render_1D.glsl" />
+    <None Include="Rendering\Shaders\MotionBlur\mb_blur.glsl" />
+    <None Include="Rendering\Shaders\MotionBlur\mb_dilate.glsl" />
+    <None Include="Rendering\Shaders\ForwardRendering\forward-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\ForwardRendering\forward-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Simple\simple-fragment-shader.glsl" />
+    <None Include="Rendering\Shaders\Simple\simple-vertex-shader.glsl" />
+    <None Include="Rendering\Shaders\Skybox\skybox_frag.glsl" />
+    <None Include="Rendering\Shaders\Skybox\skybox_vert.glsl" />
+    <None Include="Rendering\Shaders\Text\text_fragment.glsl" />
+    <None Include="Rendering\Shaders\Text\text_vertex.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-fragment.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-skinning-vertex.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-geometry.glsl" />
+    <None Include="Rendering\Shaders\Wireframe\wireframe-vertex.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Rendering\Shaders\DepthOfField\" />
+    <Folder Include="Rendering\Shaders\HDR\" />
+    <Folder Include="Rendering\Shaders\Lens\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\AssimpNet.3.3.2\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.3.3.2\build\AssimpNet.targets'))" />
+  </Target>
+</Project>

@@ -142,9 +142,9 @@
     <None Include="Resources\Meshes\Square.obj" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Graphics\Graphics.csproj">
+    <ProjectReference Include="..\TakoEngine\TakoEngine.csproj">
       <Project>{016D7A9D-C5D9-4D7F-A6E5-7753CC8832FE}</Project>
-      <Name>Graphics</Name>
+      <Name>TakoEngine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

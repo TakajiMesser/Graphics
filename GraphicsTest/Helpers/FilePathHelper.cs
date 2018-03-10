@@ -1,6 +1,6 @@
-﻿using Graphics.Meshes;
-using Graphics.Utilities;
-using Graphics.Rendering.Vertices;
+﻿using TakoEngine.Meshes;
+using TakoEngine.Utilities;
+using TakoEngine.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace GraphicsTest.Helpers
     /// </summary>
     public static class FilePathHelper
     {
-        private static string SOLUTION_DIRECTORY = Directory.GetCurrentDirectory() + @"\..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\Graphics";
+        private static string SOLUTION_DIRECTORY = Directory.GetCurrentDirectory() + @"\..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine";
 
         #region Maps
         public static string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Maps\TestMap.map";

@@ -1,9 +1,9 @@
-﻿using Graphics.Maps;
-using Graphics.Rendering.Textures;
-using Graphics.Scripting.BehaviorTrees;
-using Graphics.Scripting.BehaviorTrees.Composites;
-using Graphics.Scripting.BehaviorTrees.Decorators;
-using Graphics.Scripting.BehaviorTrees.Leaves;
+﻿using TakoEngine.Maps;
+using TakoEngine.Rendering.Textures;
+using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.BehaviorTrees.Composites;
+using TakoEngine.Scripting.BehaviorTrees.Decorators;
+using TakoEngine.Scripting.BehaviorTrees.Leaves;
 using GraphicsTest.Behaviors.Player;
 using GraphicsTest.Helpers;
 using OpenTK;

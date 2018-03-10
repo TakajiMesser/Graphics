@@ -1,0 +1,9 @@
+﻿<dock:DockableContent x:Class="SauceEditor.DocWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" 
+    Title="Doc">
+    <Grid>
+        <TextBox></TextBox>
+    </Grid>
+</dock:DockableContent>

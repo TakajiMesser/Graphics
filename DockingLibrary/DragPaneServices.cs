@@ -53,10 +53,10 @@ namespace DockingLibrary
             FloatingWindow = window;
             _offset = offset;
 
-            if (_offset.X >= FloatingWindow.Width)
+            /*if (_offset.X >= FloatingWindow.Width)
             {
                 _offset.X = FloatingWindow.Width / 2;
-            }
+            }*/
 
             FloatingWindow.Left = point.X - _offset.X;
             FloatingWindow.Top = point.Y - _offset.Y;

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameWindow = Graphics.GameObjects.GameWindow;
+using GameWindow = TakoEngine.GameObjects.GameWindow;
 
 namespace GraphicsTest
 {

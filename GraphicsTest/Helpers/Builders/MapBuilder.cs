@@ -1,15 +1,15 @@
-﻿using Graphics.GameObjects;
-using Graphics.Lighting;
-using Graphics.Maps;
-using Graphics.Rendering.Matrices;
-using Graphics.Utilities;
+﻿using TakoEngine.GameObjects;
+using TakoEngine.Lighting;
+using TakoEngine.Maps;
+using TakoEngine.Rendering.Matrices;
+using TakoEngine.Utilities;
 using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Graphics.Rendering.Textures;
+using TakoEngine.Rendering.Textures;
 using GraphicsTest.GameObjects;
 
 namespace GraphicsTest.Helpers.Builders

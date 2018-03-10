@@ -713,7 +713,7 @@ namespace DockingLibrary
                 if (CaptureMouse())
                 {
                     floatingWindow.Owner = ParentWindow;
-                    DragPaneServices.StartDrag(floatingWindow, point, offset);
+                    DragPaneServices.StartDrag(floatingWindow, PointToWPF(point), offset);//PointToWPF(offset));
                     
                     return true;
                 }

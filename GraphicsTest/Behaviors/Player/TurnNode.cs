@@ -1,13 +1,13 @@
-﻿using Graphics.Scripting.BehaviorTrees.Leaves;
+﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Graphics.Scripting.BehaviorTrees;
-using Graphics.Physics.Raycasting;
+using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Physics.Raycasting;
 using OpenTK;
-using Graphics.GameObjects;
+using TakoEngine.GameObjects;
 using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
