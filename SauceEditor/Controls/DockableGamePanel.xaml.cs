@@ -47,7 +47,7 @@ namespace SauceEditor.Controls
             {
                 Child = GamePanel
             };
-            Grid.Children.Add(host);
+            MainDock.Children.Add(host);
         }
 
         protected override void OnInitialized(EventArgs e)

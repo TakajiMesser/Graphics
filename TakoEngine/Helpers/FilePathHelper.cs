@@ -34,57 +34,58 @@ namespace TakoEngine.Helpers
         #endregion
 
         #region Shaders
-        public static string FORWARD_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\ForwardRendering\forward-vertex-shader.glsl";
-        public static string FORWARD_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\ForwardRendering\forward-fragment-shader.glsl";
+        public static string DEFERRED_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.vert";
+        public static string DEFERRED_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred-skinning.vert";
+        public static string DEFERRED_TESS_CONTROL_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.tesc";
+        public static string DEFERRED_TESS_EVAL_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.tese";
+        public static string DEFERRED_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.geom";
+        public static string DEFERRED_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.frag";
 
-        public static string SIMPLE_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Simple\simple-vertex-shader.glsl";
-        public static string SIMPLE_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Simple\simple-fragment-shader.glsl";
+        public static string FORWARD_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Forward\forward.vert";
+        public static string FORWARD_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Forward\forward.frag";
 
-        public static string WIREFRAME_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe-vertex.glsl";
-        public static string WIREFRAME_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe-skinning-vertex.glsl";
-        public static string WIREFRAME_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe-geometry.glsl";
-        public static string WIREFRAME_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe-fragment.glsl";
+        public static string STENCIL_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\stencil.vert";
+        public static string LIGHT_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\light.vert";
+        public static string POINT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\point-light.frag";
+        public static string SPOT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\spot-light.frag";
 
-        public static string GEOMETRY_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Geometry\geometry-vertex-shader.glsl";
-        public static string GEOMETRY_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Geometry\geometry-skinning-vertex-shader.glsl";
-        public static string GEOMETRY_TESS_CONTROL_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Geometry\geometry-tess-control-shader.glsl";
-        public static string GEOMETRY_TESS_EVAL_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Geometry\geometry-tess-eval-shader.glsl";
-        public static string GEOMETRY_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Geometry\geometry-shader.glsl";
-        public static string GEOMETRY_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Geometry\geometry-fragment-shader.glsl";
+        public static string INVERT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Miscellaneous\invert.frag";
 
-        public static string STENCIL_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\stencil-vertex-shader.glsl";
-        public static string LIGHT_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\light-vertex-shader.glsl";
-        public static string POINT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\point-light-fragment-shader.glsl";
-        public static string SPOT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\spot-light-fragment-shader.glsl";
+        public static string MY_BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\MotionBlur\myBlur.frag";
+        public static string BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\MotionBlur\blur.frag";
+        public static string DILATE_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\MotionBlur\dilate.frag";
 
-        public static string POINT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow-vertex-shader.glsl";
-        public static string POINT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow-skinning-vertex-shader.glsl";
-        public static string POINT_SHADOW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow-geometry-shader.glsl";
-        public static string POINT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow-fragment-shader.glsl";
-        public static string SPOT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\spot-shadow-vertex-shader.glsl";
-        public static string SPOT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\spot-shadow-skinning-vertex-shader.glsl";
-        public static string SPOT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\spot-shadow-fragment-shader.glsl";
+        public static string RENDER_1D_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-1D.frag";
+        public static string RENDER_2D_ARRAY_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-2D-array.frag";
+        public static string RENDER_2D_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-2D.frag";
+        public static string RENDER_2D_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-2D.vert";
+        public static string RENDER_3D_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-3D.frag";
+        public static string RENDER_CUBE_ARRAY_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-cube-array.frag";
+        public static string RENDER_CUBE_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-cube.frag";
+        public static string RENDER_CUBE_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-cube.vert";
 
-        public static string MY_BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\MotionBlur\mb_myBlur.glsl";
-        public static string BLUR_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\MotionBlur\mb_blur.glsl";
-        public static string DILATE_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\MotionBlur\mb_dilate.glsl";
+        public static string POINT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow.vert";
+        public static string POINT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow-skinning.vert";
+        public static string POINT_SHADOW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow.geom";
+        public static string POINT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow.frag";
+        public static string SPOT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\spot-shadow.vert";
+        public static string SPOT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\spot-shadow-skinning.vert";
+        public static string SPOT_SHADOW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\spot-shadow.frag";
 
-        public static string INVERT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Miscellaneous\invert.glsl";
+        public static string SIMPLE_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Simple\simple.vert";
+        public static string SIMPLE_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Simple\simple.frag";
 
-        public static string RENDER_1D_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_1D.glsl";
-        public static string RENDER_2D_ARRAY_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_2D_array.glsl";
-        public static string RENDER_2D_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_2D_fragment.glsl";
-        public static string RENDER_2D_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_2D_vertex.glsl";
-        public static string RENDER_3D_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_3D.glsl";
-        public static string RENDER_CUBE_ARRAY_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_cube_array.glsl";
-        public static string RENDER_CUBE_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_cube_fragment.glsl";
-        public static string RENDER_CUBE_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render_cube_vertex.glsl";
+        public static string SKYBOX_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox.vert";
+        public static string SKYBOX_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox.frag";
 
-        public static string TEXT_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Text\text_vertex.glsl";
-        public static string TEXT_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Text\text_fragment.glsl";
+        public static string TEXT_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Text\text.vert";
+        public static string TEXT_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Text\text.frag";
 
-        public static string SKYBOX_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox_vert.glsl";
-        public static string SKYBOX_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox_frag.glsl";
+        public static string WIREFRAME_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.vert";
+        public static string WIREFRAME_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe-skinning.vert";
+        public static string WIREFRAME_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.geom";
+        public static string WIREFRAME_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.frag";
+        
         #endregion
     }
 }

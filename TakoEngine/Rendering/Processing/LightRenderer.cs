@@ -163,33 +163,27 @@ namespace TakoEngine.Rendering.Processing
 
         public SimpleMesh GetMeshForLight(Light light)
         {
-            if (light is PointLight)
+            switch (light)
             {
-                return _pointLightMesh;
-            }
-            else if (light is SpotLight)
-            {
-                return _spotLightMesh;
-            }
-            else
-            {
-                return null;
+                case PointLight p:
+                    return _pointLightMesh;
+                case SpotLight s:
+                    return _spotLightMesh;
+                default:
+                    throw new NotImplementedException("Could not handle light type " + light.GetType());
             }
         }
 
         public ShaderProgram GetProgramForLight(Light light)
         {
-            if (light is PointLight)
+            switch (light)
             {
-                return _pointLightProgram;
-            }
-            else if (light is SpotLight)
-            {
-                return _spotLightProgram;
-            }
-            else
-            {
-                return null;
+                case PointLight p:
+                    return _pointLightProgram;
+                case SpotLight s:
+                    return _spotLightProgram;
+                default:
+                    throw new NotImplementedException("Could not handle light type " + light.GetType());
             }
         }
     }

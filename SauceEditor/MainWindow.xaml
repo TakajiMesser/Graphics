@@ -26,6 +26,12 @@
                 <MenuItem Header="Exit" />
             </MenuItem>
         </Menu>
+        <ToolBarTray DockPanel.Dock="Top">
+            <ToolBar>
+                <Button Command="Undo" Content="Undo"/>
+                <Button Command="Redo" Content="Redo"/>
+            </ToolBar>
+        </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="4*"/>

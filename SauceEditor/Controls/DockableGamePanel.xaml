@@ -7,7 +7,10 @@
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" 
         mc:Ignorable="d"
         Title="DockableGameWindow" Loaded="OnLoaded">
-    <Grid Name="Grid">
-        
-    </Grid>
+    <DockPanel Name="MainDock">
+        <ToolBar DockPanel.Dock="Top">
+            <Button Command="Undo" Content="Undo"/>
+            <Button Command="Redo" Content="Redo"/>
+        </ToolBar>
+    </DockPanel>
 </dock:DockableContent>
