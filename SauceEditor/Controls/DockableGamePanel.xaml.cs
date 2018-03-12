@@ -38,16 +38,15 @@ namespace SauceEditor.Controls
                 Dock = System.Windows.Forms.DockStyle.Fill
             };
 
-            //control.Parent = (Window)this;
-            //GameWindow.WindowInfo.Handle;
-            //Grid.Children.Add(GamePanel.ActiveControl);
-
-            //GamePanel.Run(60.0f, 0.0f);
             var host = new System.Windows.Forms.Integration.WindowsFormsHost
             {
                 Child = GamePanel
             };
             MainDock.Children.Add(host);
+
+            // Default to wireframe rendering
+            WireframeButton.IsEnabled = false;
+            GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Wireframe;
         }
 
         protected override void OnInitialized(EventArgs e)
@@ -55,7 +54,6 @@ namespace SauceEditor.Controls
             base.OnInitialized(e);
             //DockManager.ParentWindow = this;
             //Grid.Children.Add(GameWindow);
-            
         }
 
         private void OnLoaded(object sender, EventArgs e)
@@ -67,6 +65,30 @@ namespace SauceEditor.Controls
         {
             //GamePanel?.Close();
             base.OnClosing(e);
+        }
+
+        private void WireframeButton_Click(object sender, RoutedEventArgs e)
+        {
+            WireframeButton.IsEnabled = false;
+            DiffuseButton.IsEnabled = true;
+            LitButton.IsEnabled = true;
+            GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Wireframe;
+        }
+
+        private void DiffuseButton_Click(object sender, RoutedEventArgs e)
+        {
+            WireframeButton.IsEnabled = true;
+            DiffuseButton.IsEnabled = false;
+            LitButton.IsEnabled = true;
+            GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Diffuse;
+        }
+
+        private void LitButton_Click(object sender, RoutedEventArgs e)
+        {
+            WireframeButton.IsEnabled = true;
+            DiffuseButton.IsEnabled = true;
+            LitButton.IsEnabled = false;
+            GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Lit;
         }
     }
 }

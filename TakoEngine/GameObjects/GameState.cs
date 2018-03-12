@@ -175,15 +175,13 @@ namespace TakoEngine.GameObjects
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 
-        public void RenderFrame()
-        {
-            _renderManager.RenderFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
-        }
+        public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
 
-        public void RenderWireframe()
-        {
-            _renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
-        }
+        public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _gameObjects);
+
+        public void RenderLitFrame() => _renderManager.RenderLitFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
+
+        public void RenderFullFrame() => _renderManager.RenderFullFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
 

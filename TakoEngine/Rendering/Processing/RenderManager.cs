@@ -22,6 +22,14 @@ using System.Threading.Tasks;
 
 namespace TakoEngine.Rendering.Processing
 {
+    public enum RenderModes
+    {
+        Wireframe,
+        Diffuse,
+        Lit,
+        Full
+    }
+
     public class RenderManager
     {
         public Resolution Resolution { get; private set; }
@@ -120,7 +128,110 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
 
-        public void RenderFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<GameObject> gameObjects)
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+
+            /*GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);*/
+
+            _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
+
+            // Read from GBuffer's final texture, so that we can post-process it
+            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
+            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
+            var texture = _deferredRenderer.ColorTexture;
+
+            GL.Disable(EnableCap.DepthTest);
+
+            //_invertRenderer.Render(texture);
+            //_blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
+            //texture = _blurRenderer.FinalTexture;
+            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
+            _renderToScreen.Render(texture);
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+        }
+
+        public void RenderLitFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            foreach (var light in lights)
+            {
+                var lightMesh = _lightRenderer.GetMeshForLight(light);
+                _lightRenderer.StencilPass(Resolution, light, camera, lightMesh);
+
+                GL.Disable(EnableCap.Blend);
+                _shadowRenderer.Render(Resolution, camera, light, brushes, gameObjects);
+                GL.Enable(EnableCap.Blend);
+
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+                var lightProgram = _lightRenderer.GetProgramForLight(light);
+                var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
+                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
+            }
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);
+
+            _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
+
+            // Read from GBuffer's final texture, so that we can post-process it
+            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
+            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
+            var texture = _deferredRenderer.FinalTexture;
+
+            GL.Disable(EnableCap.DepthTest);
+
+            //_invertRenderer.Render(texture);
+            //_blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
+            //texture = _blurRenderer.FinalTexture;
+            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
+            _renderToScreen.Render(texture);
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+        }
+
+        public void RenderFullFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);

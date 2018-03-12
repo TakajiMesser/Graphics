@@ -68,6 +68,7 @@ namespace SauceEditor
             {
                 DockManager = new DockingLibrary.DockManager()//DockManager
             };*/
+            //System.Windows.Forms.Cursor.Hide();
         }
 
         private void OnClosing(object sender, EventArgs e)

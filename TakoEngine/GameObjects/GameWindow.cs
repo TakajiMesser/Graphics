@@ -98,7 +98,7 @@ namespace TakoEngine.GameObjects
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _gameState.RenderFrame();
+            _gameState.RenderFullFrame();
 
             GL.UseProgram(0);
             SwapBuffers();

@@ -9,8 +9,9 @@
         Title="DockableGameWindow" Loaded="OnLoaded">
     <DockPanel Name="MainDock">
         <ToolBar DockPanel.Dock="Top">
-            <Button Command="Undo" Content="Undo"/>
-            <Button Command="Redo" Content="Redo"/>
+            <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
+            <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
+            <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>
         </ToolBar>
     </DockPanel>
 </dock:DockableContent>

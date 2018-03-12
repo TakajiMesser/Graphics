@@ -7,9 +7,7 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
-//layout(location = 0) in vec3 vPosition;
-
-noperspective out vec3 gWireframeDistance;
+noperspective out vec3 gEdgeDistance;
 
 void main()
 {
@@ -24,15 +22,15 @@ void main()
     float hb = abs(c * sin(alpha));
     float hc = abs(b * sin(alpha));
 
-    gWireframeDistance = vec3(ha, 0, 0);
+    gEdgeDistance = vec3(ha, 0, 0);
     gl_Position = gl_in[0].gl_Position;
     EmitVertex();
 
-    gWireframeDistance = vec3(0, hb, 0);
+    gEdgeDistance = vec3(0, hb, 0);
     gl_Position = gl_in[1].gl_Position;
     EmitVertex();
 
-    gWireframeDistance = vec3(0, 0, hc);
+    gEdgeDistance = vec3(0, 0, hc);
     gl_Position = gl_in[2].gl_Position;
     EmitVertex();
 
@@ -48,21 +46,32 @@ void main()
         wireframePoints[i] = clipPositions[i].xy / clipPositions[i].w;
     }
     
-    vec2 v0 = wireframePoints[2] - wireframePoints[1];
+    float a = length(wireframePoints[1] - wireframePoints[2]);
+    float b = length(wireframePoints[2] - wireframePoints[0]);
+    float c = length(wireframePoints[1] - wireframePoints[0]);
+
+    vec2 v0 = wireframePoints[1] - wireframePoints[2];
     vec2 v1 = wireframePoints[2] - wireframePoints[0];
     vec2 v2 = wireframePoints[1] - wireframePoints[0];
 
     float area = abs(v1.x * v2.y - v1.y * v2.x);
 
-    gWireframeDistance = vec3(area / length(v0)) * vec3(1.0, 0.0, 0.0);
+    float ha = area / a;
+    float hb = area / b;
+    float hc = area / c;
+
+    gEdgeDistance = vec3(ha, 0, 0);
+    //gl_Position = gl_in[0].gl_Position;
     gl_Position = clipPositions[0];
     EmitVertex();
 
-    gWireframeDistance = vec3(area / length(v1)) * vec3(0.0, 1.0, 0.0);
+    gEdgeDistance = vec3(0, hb, 0);
+    //gl_Position = gl_in[1].gl_Position;
     gl_Position = clipPositions[1];
     EmitVertex();
 
-    gWireframeDistance = vec3(area / length(v2)) * vec3(0.0, 0.0, 1.0);
+    gEdgeDistance = vec3(0, 0, hc);
+    //gl_Position = gl_in[2].gl_Position;
     gl_Position = clipPositions[2];
     EmitVertex();
 
