@@ -25,6 +25,8 @@ namespace SauceEditor.Controls
     {
         public GamePanel GamePanel { get; set; }
 
+        private System.Drawing.Point _cursorLocation;
+
         public DockableGamePanel()
         {
             InitializeComponent();
@@ -36,6 +38,19 @@ namespace SauceEditor.Controls
             GamePanel = new GamePanel(mapPath)
             {
                 Dock = System.Windows.Forms.DockStyle.Fill
+            };
+            GamePanel.ChangeCursorVisibility += (s, args) =>
+            {
+                if (args.ShowCursor)
+                {
+                    System.Windows.Forms.Cursor.Position = _cursorLocation;
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => System.Windows.Forms.Cursor.Show());
+                }
+                else
+                {
+                    _cursorLocation = System.Windows.Forms.Cursor.Position;
+                    System.Windows.Application.Current.Dispatcher.Invoke(() => System.Windows.Forms.Cursor.Hide());
+                }
             };
 
             var host = new System.Windows.Forms.Integration.WindowsFormsHost

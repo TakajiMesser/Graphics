@@ -32,6 +32,16 @@ using TakoEngine.Utilities;
 
 namespace TakoEngine.GameObjects
 {
+    public class CursorEventArgs : EventArgs
+    {
+        public bool ShowCursor { get; private set; }
+
+        public CursorEventArgs(bool showCursor)
+        {
+            ShowCursor = showCursor;
+        }
+    }
+
     public class GamePanel : OpenTK.GLControl
     {
         public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
@@ -43,6 +53,8 @@ namespace TakoEngine.GameObjects
         public EventHandler Resized;
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
+
+        public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
 
         private string _mapPath;
         private GameState _gameState;
@@ -74,11 +86,13 @@ namespace TakoEngine.GameObjects
                     {
                         if (value)
                         {
-                            Cursor.Show();
+                            //Cursor.Show();
+                            ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(true));
                         }
                         else
                         {
-                            Cursor.Hide();
+                            //Cursor.Hide();
+                            ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(false));
                             //Cursor.Position = new Point(0, 0);
                         }
 

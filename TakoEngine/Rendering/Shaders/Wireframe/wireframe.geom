@@ -34,7 +34,7 @@ void main()
     gl_Position = gl_in[2].gl_Position;
     EmitVertex();
 
-    EndPrimitive();
+    //EndPrimitive();
 
     /*vec4[3] clipPositions;
     vec2[3] wireframePoints;
