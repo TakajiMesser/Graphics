@@ -1,29 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System.IO;
-using TakoEngine;
-using TakoEngine.Meshes;
-using TakoEngine.GameObjects;
-using System.Runtime.InteropServices;
 using OpenTK.Input;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Helpers;
-using TakoEngine.Maps;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Scripting.BehaviorTrees;
-using TakoEngine.Rendering.PostProcessing;
-using TakoEngine.Outputs;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
+using System.Linq;
 using System.Timers;
+using TakoEngine.Helpers;
+using TakoEngine.Maps;
+using TakoEngine.Outputs;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities
 {
     public class GameWindow : OpenTK.GameWindow
     {

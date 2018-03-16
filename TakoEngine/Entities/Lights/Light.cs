@@ -1,20 +1,25 @@
-﻿using TakoEngine.GameObjects;
+﻿using OpenTK;
+using System;
+using System.Runtime.Serialization;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Shaders;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TakoEngine.Lighting
+namespace TakoEngine.Entities.Lights
 {
-    public abstract class Light : GameEntity
+    public abstract class Light : IEntity
     {
+        public int ID { get; set; }
+
+        public Vector3 Position { get; set; }
+        public Quaternion Rotation { get; set; }
+
+        [IgnoreDataMember]
+        public Vector3 Scale
+        {
+            get => throw new NotImplementedException(); //_viewMatrix.Scale;
+            set => throw new NotImplementedException(); //_viewMatrix.Scale = value;
+        }
+
         private float _intensity;
 
         public Vector3 Color { get; set; }

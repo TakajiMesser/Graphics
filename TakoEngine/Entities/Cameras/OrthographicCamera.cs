@@ -1,17 +1,8 @@
-﻿using OpenTK;
-using OpenTK.Input;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Inputs;
-using TakoEngine.Rendering.Matrices;
+﻿using TakoEngine.Inputs;
 using TakoEngine.Outputs;
+using TakoEngine.Rendering.Matrices;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities.Cameras
 {
     public class OrthographicCamera : Camera
     {

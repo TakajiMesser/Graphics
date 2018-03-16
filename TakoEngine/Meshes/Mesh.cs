@@ -1,19 +1,12 @@
-﻿using TakoEngine.Lighting;
+﻿using OpenTK.Graphics;
+using System;
+using System.Collections.Generic;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Materials;
 using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TakoEngine.Meshes
 {

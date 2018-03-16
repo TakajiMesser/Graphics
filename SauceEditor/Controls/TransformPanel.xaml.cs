@@ -36,6 +36,13 @@ namespace SauceEditor.Controls
             get => (string)GetValue(LabelProperty);
             set => SetValue(LabelProperty, value);
         }
+
+        public void SetValues(Vector3 values)
+        {
+            X.Value = values.X;
+            Y.Value = values.Y;
+            Z.Value = values.Z;
+        }
     }
 
     public class TransformChangedEventArgs : EventArgs

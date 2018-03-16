@@ -1,35 +1,45 @@
 ﻿using OpenTK;
-using OpenTK.Input;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Rendering.Shaders;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Inputs;
-using TakoEngine.Rendering.Matrices;
 using TakoEngine.Outputs;
-using TakoEngine.Lighting;
+using TakoEngine.Rendering.Matrices;
+using TakoEngine.Rendering.Shaders;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities.Cameras
 {
-    public abstract class Camera
+    public abstract class Camera : IEntity
     {
-        private string _name;
-        public ViewMatrix _viewMatrix = new ViewMatrix();
-        internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
-
-        protected float _distance;
-
-        public GameObject AttachedObject { get; private set; }
-        public Vector3 AttachedTranslation { get; protected set; }
+        public int ID { get; set; }
 
         public Vector3 Position
         {
             get => _viewMatrix.Translation;
             set => _viewMatrix.Translation = value;
         }
+
+        public Quaternion Rotation
+        {
+            get => throw new NotImplementedException();// _viewMatrix.;
+            set => throw new NotImplementedException(); //_viewMatrix.Rotation = value;
+        }
+
+        public Vector3 Scale
+        {
+            get => throw new NotImplementedException(); //_viewMatrix.Scale;
+            set => throw new NotImplementedException(); //_viewMatrix.Scale = value;
+        }
+
+        public IEntity AttachedEntity { get; private set; }
+        public Vector3 AttachedTranslation { get; protected set; }
+
+        private string _name;
+        public ViewMatrix _viewMatrix = new ViewMatrix();
+        internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
+
+        protected float _distance;
         public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
 
         public Camera(string name, Resolution resolution)
@@ -38,28 +48,28 @@ namespace TakoEngine.GameObjects
             _projectionMatrix.Resolution = resolution;
         }
 
-        public void AttachToGameObject(GameObject gameObject, bool attachTranslation, bool attachRotation)
+        public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {
-            AttachedObject = gameObject;
+            AttachedEntity = entity;
 
             // Determine the original distance from the attached object, based on the current camera position
-            AttachedTranslation = gameObject.Model.Position - Position;
+            AttachedTranslation = entity.Position - Position;
             _distance = AttachedTranslation.Length;
         }
 
-        public void DetachFromGameObject()
+        public void DetachFromEntity()
         {
-            AttachedObject = null;
+            AttachedEntity = null;
             AttachedTranslation = Vector3.Zero;
             _distance = 0.0f;
         }
 
         public void OnUpdateFrame()
         {
-            if (AttachedObject != null)
+            if (AttachedEntity != null)
             {
-                Position = AttachedObject.Model.Position - AttachedTranslation;
-                _viewMatrix.LookAt = AttachedObject.Model.Position;
+                Position = AttachedEntity.Position - AttachedTranslation;
+                _viewMatrix.LookAt = AttachedEntity.Position;
             }
         }
 

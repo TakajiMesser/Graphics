@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace GraphicsTest.GameObjects
 {
-    public class Enemy : MapGameObject
+    public class Enemy : MapActor
     {
         public const string NAME = "Enemy";
 

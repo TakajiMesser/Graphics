@@ -19,7 +19,7 @@ namespace GraphicsTest.GameObjects
         public Camera()
         {
             Name = NAME;
-            AttachedGameObjectName = "Player";
+            AttachedActorName = "Player";
             Position = new Vector3(0.0f, 0.0f, 20.0f);
             Type = ProjectionTypes.Perspective;
             FieldOfViewY = UnitConversions.ToRadians(45.0f);

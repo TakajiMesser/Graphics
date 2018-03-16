@@ -1,16 +1,10 @@
-﻿using TakoEngine.Helpers;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System.IO;
+using TakoEngine.Helpers;
 using TakoEngine.Outputs;
-using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TakoEngine.Rendering.PostProcessing
 {

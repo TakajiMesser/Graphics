@@ -1,9 +1,4 @@
-﻿using TakoEngine.GameObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using TakoEngine.Entities;
 
 namespace TakoEngine.Scripting
 {
@@ -11,7 +6,7 @@ namespace TakoEngine.Scripting
     /// The director class issues commands to game objects, by requesting them from the GameState
     /// 
     /// </summary>
-    public class Director : GameObject
+    public class Director : Actor
     {
         private GameState _gameState;
 

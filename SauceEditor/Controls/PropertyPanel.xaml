@@ -7,9 +7,10 @@
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
         mc:Ignorable="d" Title="Properties">
     <StackPanel Orientation="Vertical">
-        <local:TransformPanel Grid.Row="0" Label="Position"/>
-        <local:TransformPanel Grid.Row="1" Label="Rotation"/>
-        <local:TransformPanel Grid.Row="2" Label="Scale"/>
+        <Label Name="Title" FontSize="16"/>
+        <local:TransformPanel x:Name="PositionTransform" Grid.Row="0" Label="Position"/>
+        <local:TransformPanel x:Name="RotationTransform" Grid.Row="1" Label="Rotation"/>
+        <local:TransformPanel x:Name="ScaleTransform" Grid.Row="2" Label="Scale"/>
     </StackPanel>
     <!--<TreeView Name="Tree">
         

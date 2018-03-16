@@ -1,18 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Input;
-using OpenTK.Graphics.OpenGL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Rendering.Shaders;
 using TakoEngine.Inputs;
-using TakoEngine.Rendering.Matrices;
-using TakoEngine.Utilities;
 using TakoEngine.Outputs;
+using TakoEngine.Rendering.Matrices;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities.Cameras
 {
     public class PerspectiveCamera : Camera
     {
@@ -85,6 +78,7 @@ namespace TakoEngine.GameObjects
                 {
                     currentAngles.X += mouseDelta.X;
                     currentAngles.Y += mouseDelta.Y;
+                    CurrentAngles = currentAngles;
                     //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
                     CalculateTranslation();

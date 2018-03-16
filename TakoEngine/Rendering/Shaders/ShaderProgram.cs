@@ -1,9 +1,7 @@
-﻿using TakoEngine.Rendering.Textures;
-using TakoEngine.Rendering.Vertices;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
-using System.Linq;
+using TakoEngine.Rendering.Textures;
 
 namespace TakoEngine.Rendering.Shaders
 {

@@ -1,18 +1,9 @@
-﻿using TakoEngine.Rendering.Shaders;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
 using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Utilities;
-using TakoEngine.GameObjects;
 using TakoEngine.Outputs;
+using TakoEngine.Rendering.Shaders;
 
-namespace TakoEngine.Lighting
+namespace TakoEngine.Entities.Lights
 {
     /// <summary>
     /// This struct is used by the Forward Renderer, in a uniform buffer
@@ -35,9 +26,7 @@ namespace TakoEngine.Lighting
 
     public class SpotLight : Light
     {
-        public Vector3 Position { get; set; }
         public float Radius { get; set; }
-        public Quaternion Rotation { get; set; }
         public float Height { get; set; }
 
         public Vector3 Direction => (new Vector4(0.0f, 0.0f, -Height, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;

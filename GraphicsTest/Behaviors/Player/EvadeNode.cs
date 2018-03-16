@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TakoEngine.Scripting.BehaviorTrees;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
-using TakoEngine.GameObjects;
+using TakoEngine.Entities;
 using TakoEngine.Utilities;
 using System.Runtime.Serialization;
 

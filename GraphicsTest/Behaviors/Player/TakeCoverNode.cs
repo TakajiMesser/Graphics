@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TakoEngine.Scripting.BehaviorTrees;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
-using TakoEngine.GameObjects;
+using TakoEngine.Entities;
 using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
@@ -34,7 +34,7 @@ namespace GraphicsTest.Behaviors.Player
         public override BehaviorStatuses Behavior(BehaviorContext context)
         {
             // TODO - Filter gameobjects and brushes based on "coverable" property
-            var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+            var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
 
             if (Raycast.TryCircleCast(new Circle(context.Position, CoverDistance), filteredColliders, out RaycastHit hit))
             {

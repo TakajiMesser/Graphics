@@ -1,19 +1,8 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Helpers;
-using TakoEngine.Inputs;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Physics.Raycasting;
+﻿using System.Runtime.Serialization;
+using System.Xml;
 using TakoEngine.Scripting.BehaviorTrees.Composites;
 using TakoEngine.Scripting.BehaviorTrees.Decorators;
 using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace TakoEngine.Scripting.BehaviorTrees
 {

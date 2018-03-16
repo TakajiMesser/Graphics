@@ -1,12 +1,7 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Meshes;
-using TakoEngine.Rendering.Vertices;
-using OpenTK;
+﻿using OpenTK;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Entities;
 
 namespace TakoEngine.Physics.Collision
 {
@@ -14,9 +9,9 @@ namespace TakoEngine.Physics.Collision
     {
         public float Radius { get; set; }
 
-        public BoundingSphere(GameObject gameObject) : base(gameObject)
+        public BoundingSphere(Actor actor) : base(actor)
         {
-            var maxDistanceSquared = gameObject.Model.Vertices.Select(v => v.LengthSquared).Max();
+            var maxDistanceSquared = actor.Model.Vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 

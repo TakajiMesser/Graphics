@@ -1,13 +1,7 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Meshes;
-using TakoEngine.Rendering.Vertices;
-using TakoEngine.Utilities;
-using OpenTK;
+﻿using OpenTK;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Entities;
 
 namespace TakoEngine.Physics.Collision
 {
@@ -21,9 +15,9 @@ namespace TakoEngine.Physics.Collision
         public float MinY => Center.Y - Height / 2.0f;
         public float MaxY => Center.Y + Height / 2.0f;
 
-        public BoundingBox(GameObject gameObject) : base(gameObject)
+        public BoundingBox(Actor actor) : base(actor)
         {
-            var vertices = gameObject.Model.Vertices.Select(v => Matrix4.CreateScale(gameObject.Model.Scale) * Matrix4.CreateFromQuaternion(gameObject.Model.Rotation) * new Vector4(v, 1.0f));
+            var vertices = actor.Model.Vertices.Select(v => Matrix4.CreateScale(actor.Model.Scale) * Matrix4.CreateFromQuaternion(actor.Model.Rotation) * new Vector4(v, 1.0f));
 
             var minX = vertices.Select(v => v.X).Min();
             var maxX = vertices.Select(v => v.X).Max();

@@ -1,14 +1,4 @@
-﻿using TakoEngine.Materials;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace TakoEngine.Meshes
+﻿namespace TakoEngine.Meshes
 {
     public struct MeshTriangle
     {

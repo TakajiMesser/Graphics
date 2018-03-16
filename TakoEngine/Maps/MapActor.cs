@@ -1,23 +1,14 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Meshes;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Rendering.Vertices;
-using TakoEngine.Scripting.BehaviorTrees;
-using OpenTK;
-using System;
+﻿using OpenTK;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+using TakoEngine.Entities;
+using TakoEngine.Entities.Models;
+using TakoEngine.Physics.Collision;
+using TakoEngine.Rendering.Textures;
+using TakoEngine.Scripting.BehaviorTrees;
 
 namespace TakoEngine.Maps
 {
-    public class MapGameObject
+    public class MapActor
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
@@ -30,18 +21,18 @@ namespace TakoEngine.Maps
         public bool HasCollision { get; set; }
         //public ICollider Collider { get; set; }
 
-        public GameObject ToGameObject(TextureManager textureManager)
+        public Actor ToActor(TextureManager textureManager)
         {
-            var gameObject = new GameObject(Name);
+            var actor = new Actor(Name);
 
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
-                gameObject.Model = Model.LoadFromFile(ModelFilePath, textureManager);
+                actor.Model = Model.LoadFromFile(ModelFilePath, textureManager);
             }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))
             {
-                gameObject.Behaviors = new BehaviorTree()
+                actor.Behaviors = new BehaviorTree()
                 {
                     RootNode = Node.Load(BehaviorFilePath)
                 };
@@ -51,33 +42,33 @@ namespace TakoEngine.Maps
             {
                 foreach (var property in Properties)
                 {
-                    gameObject.Properties.Add(property.Name, property);
+                    actor.Properties.Add(property.Name, property);
                 }
             }
 
             if (Position != null)
             {
-                gameObject.Model.Position = Position;
+                actor.Model.Position = Position;
             }
 
             if (Rotation != null)
             {
-                gameObject.Model.OriginalRotation = Rotation;
+                actor.Model.OriginalRotation = Rotation;
             }
 
             if (Scale != null)
             {
-                gameObject.Model.Scale = Scale;
+                actor.Model.Scale = Scale;
             }
 
-            gameObject.Model.AddTestColors();
+            actor.Model.AddTestColors();
 
-            gameObject.HasCollision = HasCollision;
-            gameObject.Bounds = gameObject.Name == "Player"
-                ? (Bounds)new BoundingCircle(gameObject)
-                : new BoundingBox(gameObject);
+            actor.HasCollision = HasCollision;
+            actor.Bounds = actor.Name == "Player"
+                ? (Bounds)new BoundingCircle(actor)
+                : new BoundingBox(actor);
 
-            return gameObject;
+            return actor;
         }
     }
 }

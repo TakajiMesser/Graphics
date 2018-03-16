@@ -1,5 +1,5 @@
 ﻿using DockingLibrary;
-using TakoEngine.GameObjects;
+using TakoEngine.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +25,8 @@ namespace SauceEditor.Controls
     {
         public GamePanel GamePanel { get; set; }
 
+        public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
+
         private System.Drawing.Point _cursorLocation;
 
         public DockableGamePanel()
@@ -39,6 +41,7 @@ namespace SauceEditor.Controls
             {
                 Dock = System.Windows.Forms.DockStyle.Fill
             };
+            GamePanel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
             GamePanel.ChangeCursorVisibility += (s, args) =>
             {
                 if (args.ShowCursor)

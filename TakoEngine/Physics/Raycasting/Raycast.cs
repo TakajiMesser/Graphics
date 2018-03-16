@@ -1,10 +1,6 @@
-﻿using TakoEngine.Physics.Collision;
-using OpenTK;
-using System;
+﻿using OpenTK;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Physics.Collision;
 
 namespace TakoEngine.Physics.Raycasting
 {

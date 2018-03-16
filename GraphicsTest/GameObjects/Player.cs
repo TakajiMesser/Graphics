@@ -16,7 +16,7 @@ using System.Threading.Tasks;
 
 namespace GraphicsTest.GameObjects
 {
-    public class Player : MapGameObject
+    public class Player : MapActor
     {
         public const string NAME = "Player";
 

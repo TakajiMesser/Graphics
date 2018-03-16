@@ -1,24 +1,15 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Helpers;
-using TakoEngine.Lighting;
-using TakoEngine.Meshes;
-using TakoEngine.Outputs;
-using TakoEngine.Rendering.Buffers;
-using TakoEngine.Rendering.Matrices;
-using TakoEngine.Rendering.PostProcessing;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Rendering.Vertices;
-using TakoEngine.Utilities;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Entities;
+using TakoEngine.Entities.Cameras;
+using TakoEngine.Entities.Lights;
+using TakoEngine.Entities.Models;
+using TakoEngine.Outputs;
+using TakoEngine.Rendering.PostProcessing;
+using TakoEngine.Rendering.Textures;
 
 namespace TakoEngine.Rendering.Processing
 {
@@ -50,7 +41,7 @@ namespace TakoEngine.Rendering.Processing
 
         public RenderManager(Resolution resolution) => Resolution = resolution;
 
-        public void Load(IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects, IEnumerable<string> skyboxTexturePaths)
+        public void Load(IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects, IEnumerable<string> skyboxTexturePaths)
         {
             _skyboxRenderer.SetTextures(skyboxTexturePaths);
 
@@ -71,9 +62,9 @@ namespace TakoEngine.Rendering.Processing
                 brush.Load(_deferredRenderer._geometryProgram);
             }
 
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                gameObject.Model.Load(_deferredRenderer._geometryProgram);
+                actor.Model.Load(_deferredRenderer._geometryProgram);
             }
 
             GL.ClearColor(Color4.Black);
@@ -94,7 +85,7 @@ namespace TakoEngine.Rendering.Processing
             _renderToScreen.ResizeTextures(Resolution);
         }
 
-        public void RenderEntityIDs(Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderEntityIDs(Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> gameObjects)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -111,7 +102,7 @@ namespace TakoEngine.Rendering.Processing
 
         public int GetEntityIDFromPoint(Vector2 point) => _selectionRenderer.GetEntityIDFromPoint(point);
 
-        public void RenderWireframe(Camera camera, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderWireframe(Camera camera, List<Brush> brushes, List<Actor> gameObjects)
         {
             //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -148,7 +139,7 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
 
-        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> gameObjects)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -191,7 +182,7 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
 
-        public void RenderLitFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderLitFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> gameObjects)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -251,7 +242,7 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
 
-        public void RenderFullFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        public void RenderFullFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> gameObjects)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);

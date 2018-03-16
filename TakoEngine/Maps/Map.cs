@@ -1,15 +1,9 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Helpers;
-using TakoEngine.Lighting;
-using TakoEngine.Physics.Collision;
-using OpenTK;
-using System;
+﻿using OpenTK;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml;
+using TakoEngine.Entities.Lights;
+using TakoEngine.Physics.Collision;
 
 namespace TakoEngine.Maps
 {
@@ -21,7 +15,7 @@ namespace TakoEngine.Maps
     {
         public Quad Boundaries { get; private set; }
         public MapCamera Camera { get; set; }
-        public List<MapGameObject> GameObjects { get; set; } = new List<MapGameObject>();
+        public List<MapActor> Actors { get; set; } = new List<MapActor>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
         public List<Light> Lights { get; set; } = new List<Light>();
         public List<string> SkyboxTextureFilePaths { get; set; }

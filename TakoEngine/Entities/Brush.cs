@@ -1,32 +1,44 @@
-﻿using TakoEngine.Lighting;
-using TakoEngine.Materials;
-using System;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL;
-using TakoEngine.Rendering.Buffers;
-using TakoEngine.Rendering.Shaders;
-using OpenTK.Graphics;
-using OpenTK;
-using TakoEngine.Physics.Collision;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Helpers;
-using TakoEngine.Rendering.Vertices;
-using TakoEngine.GameObjects;
-using TakoEngine.Rendering.Matrices;
+using TakoEngine.Materials;
 using TakoEngine.Meshes;
+using TakoEngine.Physics.Collision;
+using TakoEngine.Rendering.Matrices;
+using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
+using TakoEngine.Rendering.Vertices;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities
 {
     /// <summary>
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : GameEntity
+    public class Brush : IEntity
     {
-        private ModelMatrix _modelMatrix = new ModelMatrix();
+        public int ID { get; set; }
+
+        public Vector3 Position
+        {
+            get => _modelMatrix.Translation;
+            set => _modelMatrix.Translation = value;
+        }
+
+        public Quaternion Rotation
+        {
+            get => _modelMatrix.Rotation;
+            set => _modelMatrix.Rotation = value;
+        }
+
+        public Vector3 Scale
+        {
+            get => _modelMatrix.Scale;
+            set => _modelMatrix.Scale = value;
+        }
 
         public Mesh<Vertex> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
@@ -34,15 +46,17 @@ namespace TakoEngine.GameObjects
         public bool HasCollision { get; set; } = true;
         public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
 
+        private ModelMatrix _modelMatrix = new ModelMatrix();
+
         public Brush(List<Vertex> vertices, Material material, List<int> triangleIndices)
         {
             Mesh = new Mesh<Vertex>(vertices, material, triangleIndices);
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
-        public GameObject ToGameObject()
+        public Actor ToActor()
         {
-            var gameObject = new GameObject("wall2")
+            var actor = new Actor("wall2")
             {
                 //Mesh = Mesh,
                 Bounds = Bounds,
@@ -51,9 +65,9 @@ namespace TakoEngine.GameObjects
                 //Position = new Vector3(0, 0, 0)
             };
 
-            gameObject.Bounds.AttachedObject = gameObject;
+            actor.Bounds.AttachedEntity = actor;
 
-            return gameObject;
+            return actor;
         }
 
         public void ClearLights() => Mesh.ClearLights();

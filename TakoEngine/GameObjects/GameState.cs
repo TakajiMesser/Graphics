@@ -1,27 +1,19 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Maps;
-using TakoEngine.Physics.Collision;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Input;
-using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Rendering.Shaders;
+using TakoEngine.Entities.Cameras;
+using TakoEngine.Entities.Lights;
+using TakoEngine.Entities.Models;
 using TakoEngine.Inputs;
-using TakoEngine.Lighting;
-using System.IO;
-using TakoEngine.Helpers;
-using TakoEngine.Rendering.PostProcessing;
+using TakoEngine.Maps;
 using TakoEngine.Outputs;
+using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Processing;
 using TakoEngine.Rendering.Textures;
-using System.Drawing;
-using System.Drawing.Imaging;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities
 {
     public class GameState
     {
@@ -31,7 +23,7 @@ namespace TakoEngine.GameObjects
         private TextureManager _textureManager = new TextureManager();
 
         internal Camera _camera;
-        private List<GameObject> _gameObjects = new List<GameObject>();
+        private List<Actor> _actors = new List<Actor>();
         private List<Brush> _brushes = new List<Brush>();
         private List<Light> _lights = new List<Light>();
 
@@ -76,26 +68,26 @@ namespace TakoEngine.GameObjects
                 {
                     _brushQuads.Insert(brush.Bounds);
                 }
-                brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedObject is PointLight).Select(c => (PointLight)c.AttachedObject));
+                brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedEntity is PointLight).Select(c => (PointLight)c.AttachedEntity));
 
                 brush.Mesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
 
                 AddEntity(brush);
             }
 
-            foreach (var mapObject in map.GameObjects)
+            foreach (var mapActor in map.Actors)
             {
-                var gameObject = mapObject.ToGameObject(_textureManager);
-                //gameObject.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
+                var actor = mapActor.ToActor(_textureManager);
+                //actor.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
-                switch (gameObject.Model)
+                switch (actor.Model)
                 {
                     case SimpleModel s:
                         for (var i = 0; i < s.Meshes.Count; i++)
                         {
-                            if (i < mapObject.TexturesPaths.Count)
+                            if (i < mapActor.TexturesPaths.Count)
                             {
-                                s.Meshes[i].TextureMapping = mapObject.TexturesPaths[i].ToTextureMapping(_textureManager);
+                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(_textureManager);
                             }
                         }
                         break;
@@ -103,28 +95,28 @@ namespace TakoEngine.GameObjects
                     case AnimatedModel a:
                         for (var i = 0; i < a.Meshes.Count; i++)
                         {
-                            if (i < mapObject.TexturesPaths.Count)
+                            if (i < mapActor.TexturesPaths.Count)
                             {
-                                a.Meshes[i].TextureMapping = mapObject.TexturesPaths[i].ToTextureMapping(_textureManager);
+                                a.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(_textureManager);
                             }
                         }
                         break;
                 }
 
-                if (gameObject.Name == map.Camera.AttachedGameObjectName)
+                if (map.Camera.AttachedActorName == actor.Name)
                 {
-                    _camera.AttachToGameObject(gameObject, true, true);
+                    _camera.AttachToEntity(actor, true, false);
                 }
 
-                AddEntity(gameObject);
+                AddEntity(actor);
             }
 
-            _renderManager.Load(_brushes, _gameObjects, map.SkyboxTextureFilePaths);
+            _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
         }
 
         private int _nextAvailableID = 1;
 
-        public GameEntity GetEntityForPoint(Vector2 point)
+        public IEntity GetEntityForPoint(Vector2 point)
         {
             int id = _renderManager.GetEntityIDFromPoint(point);
             if (id > 0)
@@ -137,13 +129,13 @@ namespace TakoEngine.GameObjects
             }
         }
 
-        public GameObject GetByName(string name) => _gameObjects.First(g => g.Name == name);
-        public GameEntity GetByID(int id)
+        public Actor GetByName(string name) => _actors.First(g => g.Name == name);
+        public IEntity GetByID(int id)
         {
-            var gameObject = _gameObjects.FirstOrDefault(g => g.ID == id);
-            if (gameObject != null)
+            var actor = _actors.FirstOrDefault(g => g.ID == id);
+            if (actor != null)
             {
-                return gameObject;
+                return actor;
             }
             else
             {
@@ -167,7 +159,7 @@ namespace TakoEngine.GameObjects
             }
         }
 
-        public void AddEntity(GameEntity entity)
+        public void AddEntity(IEntity entity)
         {
             // Assign an ID
             if (entity.ID == 0)
@@ -178,11 +170,11 @@ namespace TakoEngine.GameObjects
 
             switch (entity)
             {
-                case GameObject gameObject:
-                    if (string.IsNullOrEmpty(gameObject.Name)) throw new ArgumentException("GameObject must have a name defined");
-                    if (_gameObjects.Any(g => g.Name == gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
+                case Actor actor:
+                    if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
+                    if (_actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
 
-                    _gameObjects.Add(gameObject);
+                    _actors.Add(actor);
                     break;
                 case Brush brush:
                     _brushes.Add(brush);
@@ -195,9 +187,9 @@ namespace TakoEngine.GameObjects
 
         public void Initialize()
         {
-            foreach (var gameObject in _gameObjects)
+            foreach (var actor in _actors)
             {
-                gameObject.OnInitialization();
+                actor.OnInitialization();
             }
         }
 
@@ -205,9 +197,9 @@ namespace TakoEngine.GameObjects
         {
             _camera.OnHandleInput(_inputState);
 
-            foreach (var gameObject in _gameObjects)
+            foreach (var actor in _actors)
             {
-                gameObject.OnHandleInput(_inputState, _camera);
+                actor.OnHandleInput(_inputState, _camera);
             }
         }
 
@@ -215,22 +207,22 @@ namespace TakoEngine.GameObjects
         {
             // Update the gameobject colliders every frame, since they could have moved
             _gameObjectQuads.Clear();
-            _gameObjectQuads.InsertRange(_gameObjects.Select(g => g.Bounds).Where(c => c != null));
+            _gameObjectQuads.InsertRange(_actors.Select(g => g.Bounds).Where(c => c != null));
 
             // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
-            foreach (var gameObject in _gameObjects)
+            foreach (var actor in _actors)
             {
-                gameObject.ClearLights();
-                gameObject.AddPointLights(_lightQuads.Retrieve(gameObject.Bounds)
-                    .Where(c => c.AttachedObject is PointLight)
-                    .Select(c => (PointLight)c.AttachedObject));
+                actor.ClearLights();
+                actor.AddPointLights(_lightQuads.Retrieve(actor.Bounds)
+                    .Where(c => c.AttachedEntity is PointLight)
+                    .Select(c => (PointLight)c.AttachedEntity));
 
-                var filteredColliders = _brushQuads.Retrieve(gameObject.Bounds)
+                var filteredColliders = _brushQuads.Retrieve(actor.Bounds)
                     .Concat(_gameObjectQuads
-                        .Retrieve(gameObject.Bounds)
-                            .Where(c => ((GameObject)c.AttachedObject).Name != gameObject.Name));
+                        .Retrieve(actor.Bounds)
+                            .Where(c => ((Actor)c.AttachedEntity).Name != actor.Name));
 
-                gameObject.OnUpdateFrame(filteredColliders);
+                actor.OnUpdateFrame(filteredColliders);
             }
 
             _camera.OnUpdateFrame();
@@ -240,15 +232,15 @@ namespace TakoEngine.GameObjects
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 
-        public void RenderEntityIDs() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _gameObjects);
+        public void RenderEntityIDs() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _actors);
 
-        public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
+        public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _actors);
 
-        public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _gameObjects);
+        public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _actors);
 
-        public void RenderLitFrame() => _renderManager.RenderLitFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
+        public void RenderLitFrame() => _renderManager.RenderLitFrame(_textureManager, _camera, _lights, _brushes, _actors);
 
-        public void RenderFullFrame() => _renderManager.RenderFullFrame(_textureManager, _camera, _lights, _brushes, _gameObjects);
+        public void RenderFullFrame() => _renderManager.RenderFullFrame(_textureManager, _camera, _lights, _brushes, _actors);
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
 

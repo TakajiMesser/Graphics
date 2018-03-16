@@ -1,10 +1,8 @@
-﻿using TakoEngine.Utilities;
-using OpenTK;
+﻿using OpenTK;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Utilities;
 
 namespace TakoEngine.Rendering.Animations
 {

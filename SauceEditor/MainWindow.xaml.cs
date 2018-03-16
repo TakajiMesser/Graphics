@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.ComponentModel;
-using GameWindow = TakoEngine.GameObjects.GameWindow;
+using GameWindow = TakoEngine.Entities.GameWindow;
 using System.Diagnostics;
 using SauceEditor.Controls;
 
@@ -161,6 +161,10 @@ namespace SauceEditor
 
                 _perspectiveView = new DockableGamePanel(_mapPath, DockManager);
                 _perspectiveView.ShowAsDocument();
+                _perspectiveView.EntitySelectionChanged += (s, args) =>
+                {
+                    _propertyPanel.Entity = args.Entity;
+                };
             }
         }
 

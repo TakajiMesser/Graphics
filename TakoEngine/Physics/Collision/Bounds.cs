@@ -1,33 +1,29 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Lighting;
-using OpenTK;
+﻿using OpenTK;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Entities;
+using TakoEngine.Entities.Lights;
 
 namespace TakoEngine.Physics.Collision
 {
     public abstract class Bounds
     {
-        public object AttachedObject { get; set; }
+        public IEntity AttachedEntity { get; set; }
         public Vector3 Center { get; set; }
 
-        public Bounds(GameObject gameObject)
+        public Bounds(Actor actor)
         {
-            AttachedObject = gameObject;
-            Center = gameObject.Model.Position;
+            AttachedEntity = actor;
+            Center = actor.Model.Position;
         }
 
         public Bounds(Brush brush)
         {
-            AttachedObject = brush;
+            AttachedEntity = brush;
         }
 
         public Bounds(Light light)
         {
-            AttachedObject = light;
+            AttachedEntity = light;
 
             switch (light)
             {

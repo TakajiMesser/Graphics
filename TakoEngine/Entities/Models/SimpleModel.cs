@@ -1,27 +1,16 @@
-﻿using TakoEngine.Inputs;
-using TakoEngine.Meshes;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Rendering.Matrices;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Scripting.BehaviorTrees;
-using OpenTK;
-using OpenTK.Input;
-using System;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using TakoEngine.Lighting;
-using TakoEngine.Rendering.Textures;
-using OpenTK.Graphics.OpenGL;
-using TakoEngine.Rendering.Vertices;
-using OpenTK.Graphics;
-using System.IO;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Materials;
+using TakoEngine.Meshes;
+using TakoEngine.Rendering.Shaders;
+using TakoEngine.Rendering.Textures;
+using TakoEngine.Rendering.Vertices;
 using TakoEngine.Utilities;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities.Models
 {
     public class SimpleModel : Model
     {

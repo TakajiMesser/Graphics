@@ -1,36 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System.IO;
-using TakoEngine;
-using TakoEngine.Meshes;
-using TakoEngine.GameObjects;
-using System.Runtime.InteropServices;
 using OpenTK.Input;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Helpers;
-using TakoEngine.Maps;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Scripting.BehaviorTrees;
-using TakoEngine.Rendering.PostProcessing;
-using TakoEngine.Outputs;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
-using System.Timers;
-using System.Windows.Threading;
+using System.Linq;
 using System.Windows.Forms;
 using TakoEngine.Inputs;
+using TakoEngine.Maps;
+using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Lighting;
 using TakoEngine.Utilities;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities
 {
     public class CursorEventArgs : EventArgs
     {
@@ -44,9 +27,9 @@ namespace TakoEngine.GameObjects
 
     public class EntitySelectedEventArgs : EventArgs
     {
-        public GameEntity Entity { get; private set; }
+        public IEntity Entity { get; private set; }
 
-        public EntitySelectedEventArgs(GameEntity entity)
+        public EntitySelectedEventArgs(IEntity entity)
         {
             Entity = entity;
         }
@@ -176,7 +159,7 @@ namespace TakoEngine.GameObjects
 
             _gameState = new GameState(loadedMap, Resolution);
             _gameState.Initialize();
-            _gameState._camera.DetachFromGameObject();
+            _gameState._camera.DetachFromEntity();
 
             // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
             _gameState._camera._viewMatrix.Up = Vector3.UnitZ;

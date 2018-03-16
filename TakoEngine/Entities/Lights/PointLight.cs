@@ -1,19 +1,11 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Meshes;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Utilities;
-using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TakoEngine.Lighting
+namespace TakoEngine.Entities.Lights
 {
     /// <summary>
     /// This struct is used by the Forward Renderer, in a uniform buffer
@@ -36,7 +28,6 @@ namespace TakoEngine.Lighting
 
     public class PointLight : Light
     {
-        public Vector3 Position { get; set; }
         public float Radius { get; set; }
 
         public Matrix4 GetView(TextureTarget target)

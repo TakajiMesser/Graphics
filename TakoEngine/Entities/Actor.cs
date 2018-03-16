@@ -1,29 +1,41 @@
-﻿using TakoEngine.Inputs;
-using TakoEngine.Meshes;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Rendering.Matrices;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Scripting.BehaviorTrees;
-using OpenTK;
-using OpenTK.Input;
-using System;
+﻿using OpenTK;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Diagnostics;
-using TakoEngine.Lighting;
+using TakoEngine.Entities.Cameras;
+using TakoEngine.Entities.Lights;
+using TakoEngine.Entities.Models;
+using TakoEngine.Inputs;
+using TakoEngine.Physics.Collision;
+using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
-using OpenTK.Graphics.OpenGL;
-using TakoEngine.Rendering.Vertices;
+using TakoEngine.Scripting.BehaviorTrees;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities
 {
-    public class GameObject : GameEntity
+    public class Actor : IEntity
     {
-        //public int ID { get; private set; }
+        public int ID { get; set; }
         public string Name { get; private set; }
         public Model Model { get; set; }
+
+        public Vector3 Position
+        {
+            get => Model.Position;
+            set => Model.Position = value;
+        }
+
+        public Quaternion Rotation
+        {
+            get => Model.Rotation;
+            set => Model.Rotation = value;
+        }
+
+        public Vector3 Scale
+        {
+            get => Model.Scale;
+            set => Model.Scale = value;
+        }
+
         public BehaviorTree Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
@@ -31,7 +43,7 @@ namespace TakoEngine.GameObjects
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
 
-        public GameObject(string name)
+        public Actor(string name)
         {
             Name = name;
         }
@@ -48,7 +60,7 @@ namespace TakoEngine.GameObjects
         {
             if (Behaviors != null)
             {
-                Behaviors.Context.GameObjectName = Name;
+                Behaviors.Context.ActorName = Name;
                 Behaviors.Context.Bounds = Bounds;
 
                 foreach (var property in Properties)
@@ -113,14 +125,14 @@ namespace TakoEngine.GameObjects
 
                 foreach (var collider in colliders)
                 {
-                    if (collider.AttachedObject is GameObject g)
+                    if (collider.AttachedEntity is Actor a)
                     {
-                        if (!g.HasCollision)
+                        if (!a.HasCollision)
                         {
                             continue;
                         }
                     }
-                    else if (collider.AttachedObject is Brush b)
+                    else if (collider.AttachedEntity is Brush b)
                     {
                         if (!b.HasCollision)
                         {

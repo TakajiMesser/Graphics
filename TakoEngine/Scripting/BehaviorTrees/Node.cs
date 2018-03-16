@@ -1,13 +1,7 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Composites;
-using TakoEngine.Scripting.BehaviorTrees.Decorators;
-using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.Serialization;
 using System.Xml;
+using TakoEngine.Scripting.BehaviorTrees.Composites;
+using TakoEngine.Scripting.BehaviorTrees.Decorators;
 
 namespace TakoEngine.Scripting.BehaviorTrees
 {

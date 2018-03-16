@@ -106,19 +106,17 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="GameObjects\GameEntity.cs" />
-    <Compile Include="GameObjects\GamePanel.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="GameObjects\SimpleModel.cs" />
-    <Compile Include="GameObjects\Model.cs" />
-    <Compile Include="GameObjects\Brush.cs" />
-    <Compile Include="GameObjects\Camera\PerspectiveCamera.cs" />
-    <Compile Include="GameObjects\Camera\OrthographicCamera.cs" />
-    <Compile Include="GameObjects\Camera\Camera.cs" />
-    <Compile Include="GameObjects\AnimatedModel.cs" />
+    <Compile Include="Entities\IEntity.cs" />
+    <Compile Include="GameObjects\GamePanel.cs" />
+    <Compile Include="Entities\Models\SimpleModel.cs" />
+    <Compile Include="Entities\Models\Model.cs" />
+    <Compile Include="Entities\Brush.cs" />
+    <Compile Include="Entities\Cameras\PerspectiveCamera.cs" />
+    <Compile Include="Entities\Cameras\OrthographicCamera.cs" />
+    <Compile Include="Entities\Cameras\Camera.cs" />
+    <Compile Include="Entities\Models\AnimatedModel.cs" />
     <Compile Include="GameObjects\GameProperty.cs" />
-    <Compile Include="GameObjects\GameObject.cs" />
+    <Compile Include="Entities\Actor.cs" />
     <Compile Include="GameObjects\GameState.cs" />
     <Compile Include="GameObjects\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
@@ -128,13 +126,13 @@
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
     <Compile Include="Inputs\InputMapping.cs" />
-    <Compile Include="Lighting\DirectionalLight.cs" />
-    <Compile Include="Lighting\SpotLight.cs" />
-    <Compile Include="Lighting\PointLight.cs" />
-    <Compile Include="Lighting\Light.cs" />
+    <Compile Include="Entities\Lights\DirectionalLight.cs" />
+    <Compile Include="Entities\Lights\SpotLight.cs" />
+    <Compile Include="Entities\Lights\PointLight.cs" />
+    <Compile Include="Entities\Lights\Light.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />
-    <Compile Include="Maps\MapGameObject.cs" />
+    <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Materials\Material.cs" />
     <Compile Include="Meshes\JointMesh.cs" />

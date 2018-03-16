@@ -1,17 +1,7 @@
-﻿using TakoEngine.Inputs;
-using TakoEngine.Meshes;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Rendering.Shaders;
-using OpenTK;
-using OpenTK.Input;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System;
 using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace TakoEngine.GameObjects
+namespace TakoEngine.Entities
 {
     [DataContract]
     public class GameProperty

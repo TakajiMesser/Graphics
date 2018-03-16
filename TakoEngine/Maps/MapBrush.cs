@@ -1,19 +1,12 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Helpers;
-using TakoEngine.Materials;
-using TakoEngine.Meshes;
-using TakoEngine.Physics.Collision;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Rendering.Vertices;
-using OpenTK;
-using System;
+﻿using OpenTK;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
+using TakoEngine.Entities;
+using TakoEngine.Helpers;
+using TakoEngine.Materials;
+using TakoEngine.Physics.Collision;
+using TakoEngine.Rendering.Textures;
+using TakoEngine.Rendering.Vertices;
 
 namespace TakoEngine.Maps
 {

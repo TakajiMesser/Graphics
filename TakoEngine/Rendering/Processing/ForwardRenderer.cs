@@ -1,19 +1,15 @@
-﻿using TakoEngine.GameObjects;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using System.Collections.Generic;
+using System.IO;
+using TakoEngine.Entities;
+using TakoEngine.Entities.Cameras;
 using TakoEngine.Helpers;
-using TakoEngine.Meshes;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TakoEngine.Rendering.Processing
 {
@@ -110,7 +106,7 @@ namespace TakoEngine.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void Render(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects)
         {
             _program.Use();
             _frameBuffer.Draw();
@@ -126,9 +122,9 @@ namespace TakoEngine.Rendering.Processing
                 brush.Draw(_program, textureManager);
             }
 
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                gameObject.Draw(_program, textureManager);
+                actor.Draw(_program, textureManager);
             }
         }
 
@@ -165,26 +161,26 @@ namespace TakoEngine.Rendering.Processing
             }
         }
 
-        private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)
+        private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> gameObjects)
         {
             // Don't render meshes that are not in the camera's view
 
-            // Using the position of the gameObject, determine if we should render the mesh
+            // Using the position of the actor, determine if we should render the mesh
             // We will also need a bounding sphere or bounding box from the mesh to determine this
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                Vector3 position = gameObject.Model.Position;
+                Vector3 position = actor.Model.Position;
             }
 
             return gameObjects;
         }
 
-        private IEnumerable<GameObject> PerformOcclusionCulling(IEnumerable<GameObject> gameObjects)
+        private IEnumerable<Actor> PerformOcclusionCulling(IEnumerable<Actor> gameObjects)
         {
             // Don't render meshes that are obscured by closer meshes
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                Vector3 position = gameObject.Model.Position;
+                Vector3 position = actor.Model.Position;
             }
 
             return gameObjects;

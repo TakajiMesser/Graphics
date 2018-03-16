@@ -1,16 +1,10 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Lighting;
-using TakoEngine.Maps;
-using TakoEngine.Rendering.Matrices;
-using TakoEngine.Utilities;
+﻿using GraphicsTest.GameObjects;
 using OpenTK;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Entities.Lights;
+using TakoEngine.Maps;
 using TakoEngine.Rendering.Textures;
-using GraphicsTest.GameObjects;
+using TakoEngine.Utilities;
 
 namespace GraphicsTest.Helpers.Builders
 {
@@ -23,8 +17,8 @@ namespace GraphicsTest.Helpers.Builders
                 Camera = new GraphicsTest.GameObjects.Camera()
             };
 
-            map.GameObjects.Add(new Player());
-            map.GameObjects.Add(new Enemy());
+            map.Actors.Add(new Player());
+            map.Actors.Add(new Enemy());
 
             var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 50.0f, 50.0f);
             //floor = MapBrush.RectangularPrism(new Vector3(0.0f, 0.0f, -2.5f), 50.0f, 50.0f, 1.0f);

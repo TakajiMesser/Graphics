@@ -1,39 +1,28 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Helpers;
+﻿using OpenTK;
+using System.Collections.Generic;
+using TakoEngine.Entities.Cameras;
 using TakoEngine.Inputs;
 using TakoEngine.Physics.Collision;
-using TakoEngine.Physics.Raycasting;
-using TakoEngine.Scripting.BehaviorTrees.Composites;
-using TakoEngine.Scripting.BehaviorTrees.Decorators;
-using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace TakoEngine.Scripting.BehaviorTrees
 {
     public class BehaviorContext
     {
-        // Values set by the GameObject
-        public string GameObjectName { get; internal set; }
+        // Values set by the Actor
+        public string ActorName { get; internal set; }
         public Bounds Bounds { get; internal set; }
         public IEnumerable<Bounds> Colliders { get; internal set; }
         public InputState InputState { get; internal set; }
         public InputMapping InputMapping { get; internal set; }
         public Camera Camera { get; internal set; }
 
-        // Values set by the GameObject, or altered by Behavior Nodes
+        // Values set by the Actor, or altered by Behavior Nodes
         public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Quaternion QRotation { get; set; } = Quaternion.Identity;
         public Vector3 Scale { get; set; }
 
-        // Values set by Behavior Nodes, and RESET by the GameObject
+        // Values set by Behavior Nodes, and RESET by the Actor
         public Vector3 Translation { get; set; }
 
         public Dictionary<string, object> PropertiesByName { get; protected set; } = new Dictionary<string, object>();

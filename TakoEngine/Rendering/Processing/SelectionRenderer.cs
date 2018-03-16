@@ -1,23 +1,14 @@
-﻿using TakoEngine.GameObjects;
-using TakoEngine.Helpers;
-using TakoEngine.Lighting;
-using TakoEngine.Meshes;
-using TakoEngine.Outputs;
-using TakoEngine.Rendering.Buffers;
-using TakoEngine.Rendering.Matrices;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Rendering.Vertices;
-using TakoEngine.Utilities;
-using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Entities;
+using TakoEngine.Entities.Cameras;
+using TakoEngine.Helpers;
+using TakoEngine.Outputs;
+using TakoEngine.Rendering.Buffers;
+using TakoEngine.Rendering.Shaders;
+using TakoEngine.Rendering.Textures;
 
 namespace TakoEngine.Rendering.Processing
 {
@@ -124,7 +115,7 @@ namespace TakoEngine.Rendering.Processing
             };
         }
 
-        public void SelectionPass(Resolution resolution, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void SelectionPass(Resolution resolution, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects)
         {
             _selectionProgram.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
@@ -143,14 +134,14 @@ namespace TakoEngine.Rendering.Processing
                 brush.Draw(_selectionProgram);
             }
 
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                _selectionProgram.SetUniform("id", GetColorFromID(gameObject.ID));
-                gameObject.Draw(_selectionProgram);
+                _selectionProgram.SetUniform("id", GetColorFromID(actor.ID));
+                actor.Draw(_selectionProgram);
             }
         }
 
-        public void JointSelectionPass(Resolution resolution, Camera camera, IEnumerable<GameObject> gameObjects)
+        public void JointSelectionPass(Resolution resolution, Camera camera, IEnumerable<Actor> gameObjects)
         {
             _jointSelectionProgram.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
@@ -161,33 +152,33 @@ namespace TakoEngine.Rendering.Processing
 
             camera.Draw(_jointSelectionProgram);
 
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                _jointSelectionProgram.SetUniform("id", GetColorFromID(gameObject.ID));
-                gameObject.Draw(_jointSelectionProgram);
+                _jointSelectionProgram.SetUniform("id", GetColorFromID(actor.ID));
+                actor.Draw(_jointSelectionProgram);
             }
         }
 
-        private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)
+        private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> gameObjects)
         {
             // Don't render meshes that are not in the camera's view
 
-            // Using the position of the gameObject, determine if we should render the mesh
+            // Using the position of the actor, determine if we should render the mesh
             // We will also need a bounding sphere or bounding box from the mesh to determine this
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                Vector3 position = gameObject.Model.Position;
+                Vector3 position = actor.Model.Position;
             }
 
             return gameObjects;
         }
 
-        private IEnumerable<GameObject> PerformOcclusionCulling(IEnumerable<GameObject> gameObjects)
+        private IEnumerable<Actor> PerformOcclusionCulling(IEnumerable<Actor> gameObjects)
         {
             // Don't render meshes that are obscured by closer meshes
-            foreach (var gameObject in gameObjects)
+            foreach (var actor in gameObjects)
             {
-                Vector3 position = gameObject.Model.Position;
+                Vector3 position = actor.Model.Position;
             }
 
             return gameObjects;

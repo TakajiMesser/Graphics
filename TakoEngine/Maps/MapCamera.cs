@@ -1,15 +1,7 @@
-﻿using TakoEngine.GameObjects;
+﻿using OpenTK;
+using TakoEngine.Entities.Cameras;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Matrices;
-using TakoEngine.Rendering.Shaders;
-using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 
 namespace TakoEngine.Maps
 {
@@ -17,7 +9,7 @@ namespace TakoEngine.Maps
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
-        public string AttachedGameObjectName { get; set; }
+        public string AttachedActorName { get; set; }
         public ProjectionTypes Type { get; set; }
 
         /// <summary>

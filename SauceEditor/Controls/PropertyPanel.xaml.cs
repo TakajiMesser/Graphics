@@ -12,8 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using TakoEngine.GameObjects;
-using Brush = TakoEngine.GameObjects.Brush;
+using TakoEngine.Entities;
+using Brush = TakoEngine.Entities.Brush;
 
 namespace SauceEditor.Controls
 {
@@ -22,24 +22,40 @@ namespace SauceEditor.Controls
     /// </summary>
     public partial class PropertyPanel : DockingLibrary.DockableContent
     {
-        private GameObject _gameObject;
-        private Brush _brush;
+        private IEntity _entity;
+        public IEntity Entity
+        {
+            get => _entity;
+            set
+            {
+                _entity = value;
+
+                if (_entity != null)
+                {
+                    Title.Content = _entity.ID;
+                    if (_entity is Actor actor)
+                    {
+                        Title.Content += " " + actor.Name;
+                    }
+
+                    PositionTransform.SetValues(_entity.Position);
+                    //RotationTransform.SetValues(_entity.Rotation.)
+                    ScaleTransform.SetValues(_entity.Scale);
+                }
+                else
+                {
+                    Title.Content = "";
+
+                    PositionTransform.IsEnabled = false;
+                    RotationTransform.IsEnabled = false;
+                    ScaleTransform.IsEnabled = false;
+                }
+            }
+        }
 
         public PropertyPanel()
         {
             InitializeComponent();
-        }
-
-        public void SetGameObject(GameObject gameObject)
-        {
-            _brush = null;
-            _gameObject = gameObject;
-        }
-
-        public void SetBrush(Brush brush)
-        {
-            _gameObject = null;
-            _brush = brush;
         }
     }
 }

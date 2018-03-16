@@ -1,15 +1,9 @@
-﻿using TakoEngine.Lighting;
-using TakoEngine.Rendering.Shaders;
-using TakoEngine.Rendering.Textures;
-using OpenTK.Graphics;
+﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Rendering.Textures;
 
 namespace TakoEngine.Rendering.Buffers
 {

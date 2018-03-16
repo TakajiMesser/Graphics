@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 using TakoEngine.Scripting.BehaviorTrees;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
-using TakoEngine.GameObjects;
+using TakoEngine.Entities;
 using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
@@ -52,7 +52,7 @@ namespace GraphicsTest.Behaviors.Player
 
                         if (translation != Vector3.Zero)
                         {
-                            var filteredColliders = context.Colliders.Where(c => c.AttachedObject.GetType() == typeof(Brush));
+                            var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
                             var borderPoint = context.Bounds.GetBorder(translation);
