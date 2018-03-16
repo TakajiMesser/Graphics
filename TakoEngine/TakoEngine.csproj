@@ -228,6 +228,7 @@
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
+    <Compile Include="Utilities\OpenTKExtensions.cs" />
     <Compile Include="Utilities\VectorExtensions.cs" />
     <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />

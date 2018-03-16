@@ -132,6 +132,12 @@ namespace TakoEngine.Rendering.Shaders
             GL.Uniform3(location, vector);
         }
 
+        public void SetUniform(string name, Vector4 vector)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform4(location, vector);
+        }
+
         public void SetUniform(string name, float value)
         {
             int location = GetUniformLocation(name);

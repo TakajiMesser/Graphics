@@ -84,6 +84,24 @@ namespace TakoEngine.Rendering.Textures
             Depth = depth;
         }
 
+        public Vector4 ReadPixelColor(int x, int y)
+        {
+            var bytes = new byte[4];
+
+            if (x <= Width && y <= Height)
+            {
+                GL.ReadPixels(x, y, 1, 1, PixelFormat, PixelType, bytes);
+            }
+
+            return new Vector4()
+            {
+                X = (int)bytes[0],
+                Y = (int)bytes[1],
+                Z = (int)bytes[2],
+                W = (int)bytes[3]
+            };
+        }
+
         public void ReserveMemory()
         {
             Specify(IntPtr.Zero);

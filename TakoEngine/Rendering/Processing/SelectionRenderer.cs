@@ -67,7 +67,7 @@ namespace TakoEngine.Rendering.Processing
                 EnableAnisotropy = false,
                 PixelInternalFormat = PixelInternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
-                PixelType = PixelType.Float,
+                PixelType = PixelType.UnsignedByte,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
@@ -102,6 +102,28 @@ namespace TakoEngine.Rendering.Processing
             GBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
+        public int GetEntityIDFromPoint(Vector2 point)
+        {
+            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, GBuffer._handle);
+            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+
+            var color = FinalTexture.ReadPixelColor((int)point.X, (int)point.Y);
+
+            return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
+        }
+
+        private Vector4 GetColorFromID(int id)
+        {
+            return new Vector4()
+            {
+                X = ((id & 0x000000FF) >> 0) / 255.0f,
+                Y = ((id & 0x0000FF00) >> 8) / 255.0f,
+                Z = ((id & 0x00FF0000) >> 16) / 255.0f,
+                W = 1.0f
+            };
+        }
+
         public void SelectionPass(Resolution resolution, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
             _selectionProgram.Use();
@@ -110,11 +132,6 @@ namespace TakoEngine.Rendering.Processing
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            /*GL.DepthMask(false);
-            GL.Disable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
-            GL.Disable(EnableCap.CullFace);*/
-
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
 
@@ -122,13 +139,13 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                _selectionProgram.SetUniform("id", brush.ID / 100.0f);
+                _selectionProgram.SetUniform("id", GetColorFromID(brush.ID));
                 brush.Draw(_selectionProgram);
             }
 
             foreach (var gameObject in gameObjects)
             {
-                _selectionProgram.SetUniform("id", gameObject.ID / 100.0f);
+                _selectionProgram.SetUniform("id", GetColorFromID(gameObject.ID));
                 gameObject.Draw(_selectionProgram);
             }
         }
@@ -146,7 +163,7 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var gameObject in gameObjects)
             {
-                _jointSelectionProgram.SetUniform("id", gameObject.ID / 100.0f);
+                _jointSelectionProgram.SetUniform("id", GetColorFromID(gameObject.ID));
                 gameObject.Draw(_jointSelectionProgram);
             }
         }

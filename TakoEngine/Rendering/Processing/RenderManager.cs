@@ -102,12 +102,14 @@ namespace TakoEngine.Rendering.Processing
             _selectionRenderer.SelectionPass(Resolution, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
             _selectionRenderer.JointSelectionPass(Resolution, camera, gameObjects.Where(g => g.Model is AnimatedModel));
 
-            var texture = _selectionRenderer.FinalTexture;
+            //var texture = _selectionRenderer.FinalTexture;
 
-            GL.Disable(EnableCap.DepthTest);
+            //GL.Disable(EnableCap.DepthTest);
 
-            _renderToScreen.Render(texture);
+            //_renderToScreen.Render(texture);
         }
+
+        public int GetEntityIDFromPoint(Vector2 point) => _selectionRenderer.GetEntityIDFromPoint(point);
 
         public void RenderWireframe(Camera camera, List<Brush> brushes, List<GameObject> gameObjects)
         {

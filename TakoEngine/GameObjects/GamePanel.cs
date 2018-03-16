@@ -42,6 +42,16 @@ namespace TakoEngine.GameObjects
         }
     }
 
+    public class EntitySelectedEventArgs : EventArgs
+    {
+        public GameEntity Entity { get; private set; }
+
+        public EntitySelectedEventArgs(GameEntity entity)
+        {
+            Entity = entity;
+        }
+    }
+
     public class GamePanel : OpenTK.GLControl
     {
         public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
@@ -55,14 +65,16 @@ namespace TakoEngine.GameObjects
         public bool IsCameraMoving { get; private set; }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
+        public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
 
         private string _mapPath;
         private GameState _gameState;
         private bool _invalidated = false;
 
-        private Vector3 CurrentAngles { get; set; } = new Vector3();
+        private Vector3 _currentAngles = new Vector3();
 
         internal InputState _inputState = new InputState();
+        private Point _mouseLocation;
 
         private System.Timers.Timer _timer = new System.Timers.Timer();
         private System.Timers.Timer _fpsTimer = new System.Timers.Timer(1000);
@@ -126,6 +138,8 @@ namespace TakoEngine.GameObjects
 
         private void Timer_Tick(object sender, EventArgs e)
         {
+            _timer.Stop();
+
             OnUpdateFrame();
 
             if (_invalidated)
@@ -133,6 +147,8 @@ namespace TakoEngine.GameObjects
                 Invalidate();
                 _invalidated = false;
             }
+
+            _timer.Start();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -185,12 +201,15 @@ namespace TakoEngine.GameObjects
             {
                 case RenderModes.Wireframe:
                     _gameState.RenderWireframe();
+                    _gameState.RenderEntityIDs();
                     break;
                 case RenderModes.Diffuse:
                     _gameState.RenderDiffuseFrame();
+                    _gameState.RenderEntityIDs();
                     break;
                 case RenderModes.Lit:
                     _gameState.RenderLitFrame();
+                    _gameState.RenderEntityIDs();
                     break;
                 case RenderModes.Full:
                     _gameState.RenderFullFrame();
@@ -220,28 +239,28 @@ namespace TakoEngine.GameObjects
 
         private void CalculateDirection()
         {
-            var horizontal = Math.Cos(CurrentAngles.Y);
-            var vertical = Math.Sin(CurrentAngles.Y);
+            var horizontal = Math.Cos(_currentAngles.Y);
+            var vertical = Math.Sin(_currentAngles.Y);
 
             _gameState._camera._viewMatrix.LookAt = _gameState._camera.Position + new Vector3()
             {
-                X = (float)(horizontal * Math.Sin(CurrentAngles.X)),
-                Y = (float)(horizontal * Math.Cos(CurrentAngles.X)),
+                X = (float)(horizontal * Math.Sin(_currentAngles.X)),
+                Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
                 Z = -(float)vertical
             };
         }
 
         private void CalculateUp()
         {
-            var yAngle = CurrentAngles.Y - (float)Math.PI / 2.0f;
+            var yAngle = _currentAngles.Y - (float)Math.PI / 2.0f;
 
             var horizontal = Math.Cos(yAngle);
             var vertical = Math.Sin(yAngle);
 
             _gameState._camera._viewMatrix.Up = new Vector3()
             {
-                X = (float)(horizontal * Math.Sin(CurrentAngles.X)),
-                Y = (float)(horizontal * Math.Cos(CurrentAngles.X)),
+                X = (float)(horizontal * Math.Sin(_currentAngles.X)),
+                Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
                 Z = -(float)vertical
             };
         }
@@ -271,13 +290,13 @@ namespace TakoEngine.GameObjects
                 //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _gameState._inputState.MouseDelta.Y * 0.02f;
                 _gameState._camera.Position -= translation;
 
-                var currentAngles = CurrentAngles;
+                var currentAngles = _currentAngles;
                 var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
 
                 if (mouseDelta != Vector2.Zero)
                 {
                     currentAngles.X += mouseDelta.X;
-                    CurrentAngles = currentAngles;
+                    _currentAngles = currentAngles;
 
                     CalculateDirection();
                 }
@@ -292,7 +311,7 @@ namespace TakoEngine.GameObjects
                     || (_gameState._inputState.IsHeld(new Input(MouseButton.Right)) && IsCameraMoving))
             {
                 // Right mouse button allows "turning"
-                var currentAngles = CurrentAngles;
+                var currentAngles = _currentAngles;
                 var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
 
                 if (mouseDelta != Vector2.Zero)
@@ -300,15 +319,26 @@ namespace TakoEngine.GameObjects
                     currentAngles.X += mouseDelta.X;
                     currentAngles.Y += mouseDelta.Y;
                     currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-                    CurrentAngles = currentAngles;
+                    _currentAngles = currentAngles;
 
                     CalculateDirection();
                     CalculateUp();
                 }
-                
+
                 IsCameraMoving = true;
                 IsCursorVisible = false;
                 _invalidated = true;
+            }
+            else if (_gameState._inputState.IsPressed(new Input(MouseButton.Middle)) && IsMouseInPanel)
+            {
+                Invoke(new Action(() =>
+                {
+                    var point = PointToClient(System.Windows.Forms.Cursor.Position);
+                    var mouseCoordinates = new Vector2(point.X - Location.X, Height - point.Y - Location.Y);
+
+                    var entity = _gameState.GetEntityForPoint(mouseCoordinates);
+                    EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(entity));
+                }));
             }
             else
             {
@@ -316,8 +346,6 @@ namespace TakoEngine.GameObjects
                 IsCursorVisible = true;
             }
         }
-
-        private Point _mouseLocation;
 
         protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {

@@ -124,6 +124,19 @@ namespace TakoEngine.GameObjects
 
         private int _nextAvailableID = 1;
 
+        public GameEntity GetEntityForPoint(Vector2 point)
+        {
+            int id = _renderManager.GetEntityIDFromPoint(point);
+            if (id > 0)
+            {
+                return GetByID(id);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public GameObject GetByName(string name) => _gameObjects.First(g => g.Name == name);
         public GameEntity GetByID(int id)
         {
@@ -227,7 +240,9 @@ namespace TakoEngine.GameObjects
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 
-        public void RenderWireframe() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _gameObjects);//_renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
+        public void RenderEntityIDs() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _gameObjects);
+
+        public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
 
         public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _gameObjects);
 
