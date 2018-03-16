@@ -64,6 +64,16 @@ namespace SauceEditor.Controls
             GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Wireframe;
         }
 
+        protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
+        {
+            if (!GamePanel.IsCursorVisible || GamePanel.IsCameraMoving)
+            {
+                System.Windows.Forms.Cursor.Position = _cursorLocation;
+            }
+            
+            base.OnMouseLeave(e);
+        }
+
         protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
@@ -88,6 +98,7 @@ namespace SauceEditor.Controls
             DiffuseButton.IsEnabled = true;
             LitButton.IsEnabled = true;
             GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Wireframe;
+            GamePanel.Invalidate();
         }
 
         private void DiffuseButton_Click(object sender, RoutedEventArgs e)
@@ -96,6 +107,7 @@ namespace SauceEditor.Controls
             DiffuseButton.IsEnabled = false;
             LitButton.IsEnabled = true;
             GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Diffuse;
+            GamePanel.Invalidate();
         }
 
         private void LitButton_Click(object sender, RoutedEventArgs e)
@@ -104,6 +116,7 @@ namespace SauceEditor.Controls
             DiffuseButton.IsEnabled = true;
             LitButton.IsEnabled = false;
             GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Lit;
+            GamePanel.Invalidate();
         }
     }
 }

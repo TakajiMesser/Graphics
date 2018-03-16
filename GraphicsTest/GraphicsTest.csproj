@@ -94,6 +94,7 @@
     <Compile Include="GameObjects\Enemy.cs" />
     <Compile Include="GameObjects\Player.cs" />
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\Builders\ProjectBuilder.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

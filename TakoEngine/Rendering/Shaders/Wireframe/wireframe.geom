@@ -6,11 +6,20 @@ layout(triangle_strip, max_vertices = 3) out;
 uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
+//uniform mat4 viewportMatrix;
 
-noperspective out vec3 gEdgeDistance;
+smooth out vec3 gEdgeDistance;
 
 void main()
 {
+    //vec p0 = vec3(viewportMatrix * (gl_in[0].gl_Position / gl_in[0].gl_Position.w));
+    //vec p1 = vec3(viewportMatrix * (gl_in[1].gl_Position / gl_in[1].gl_Position.w));
+    //vec p2 = vec3(viewportMatrix * (gl_in[2].gl_Position / gl_in[2].gl_Position.w));
+
+    //float a = length(p1 - p2);
+    //float b = length(p2 - p0);
+    //float c = length(p1 - p0);
+
     float a = length(gl_in[1].gl_Position.xyz - gl_in[2].gl_Position.xyz);
     float b = length(gl_in[2].gl_Position.xyz - gl_in[0].gl_Position.xyz);
     float c = length(gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz);
@@ -34,7 +43,7 @@ void main()
     gl_Position = gl_in[2].gl_Position;
     EmitVertex();
 
-    //EndPrimitive();
+    EndPrimitive();
 
     /*vec4[3] clipPositions;
     vec2[3] wireframePoints;

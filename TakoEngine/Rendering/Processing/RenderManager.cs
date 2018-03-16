@@ -41,6 +41,7 @@ namespace TakoEngine.Rendering.Processing
         private ShadowRenderer _shadowRenderer = new ShadowRenderer();
         private LightRenderer _lightRenderer = new LightRenderer();
         private SkyboxRenderer _skyboxRenderer = new SkyboxRenderer();
+        private SelectionRenderer _selectionRenderer = new SelectionRenderer();
 
         private Blur _blurRenderer = new Blur();
         private InvertColors _invertRenderer = new InvertColors();
@@ -59,6 +60,7 @@ namespace TakoEngine.Rendering.Processing
             _shadowRenderer.Load(Resolution);
             _lightRenderer.Load(Resolution);
             _skyboxRenderer.Load(Resolution);
+            _selectionRenderer.Load(Resolution);
             _blurRenderer.Load(Resolution);
             _invertRenderer.Load(Resolution);
             _textRenderer.Load(Resolution);
@@ -85,10 +87,26 @@ namespace TakoEngine.Rendering.Processing
             _shadowRenderer.ResizeTextures(Resolution);
             _lightRenderer.ResizeTextures(Resolution);
             _skyboxRenderer.ResizeTextures(Resolution);
+            _selectionRenderer.ResizeTextures(Resolution);
             _blurRenderer.ResizeTextures(Resolution);
             _invertRenderer.ResizeTextures(Resolution);
             _textRenderer.ResizeTextures(Resolution);
             _renderToScreen.ResizeTextures(Resolution);
+        }
+
+        public void RenderEntityIDs(Camera camera, List<Light> lights, List<Brush> brushes, List<GameObject> gameObjects)
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            _selectionRenderer.SelectionPass(Resolution, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
+            _selectionRenderer.JointSelectionPass(Resolution, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+
+            var texture = _selectionRenderer.FinalTexture;
+
+            GL.Disable(EnableCap.DepthTest);
+
+            _renderToScreen.Render(texture);
         }
 
         public void RenderWireframe(Camera camera, List<Brush> brushes, List<GameObject> gameObjects)

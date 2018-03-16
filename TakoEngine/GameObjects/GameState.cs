@@ -61,7 +61,11 @@ namespace TakoEngine.GameObjects
             _brushQuads = new QuadTree(0, map.Boundaries);
             _lightQuads = new QuadTree(0, map.Boundaries);
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
-            _lights.AddRange(map.Lights);
+
+            foreach (var mapLight in map.Lights)
+            {
+                AddEntity(mapLight);
+            }
 
             foreach (var mapBrush in map.Brushes)
             {
@@ -76,7 +80,7 @@ namespace TakoEngine.GameObjects
 
                 brush.Mesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
 
-                _brushes.Add(brush);
+                AddEntity(brush);
             }
 
             foreach (var mapObject in map.GameObjects)
@@ -112,20 +116,68 @@ namespace TakoEngine.GameObjects
                     _camera.AttachToGameObject(gameObject, true, true);
                 }
 
-                _gameObjects.Add(gameObject);
+                AddEntity(gameObject);
             }
 
             _renderManager.Load(_brushes, _gameObjects, map.SkyboxTextureFilePaths);
         }
 
+        private int _nextAvailableID = 1;
+
         public GameObject GetByName(string name) => _gameObjects.First(g => g.Name == name);
-
-        public void AddGameObject(GameObject gameObject)
+        public GameEntity GetByID(int id)
         {
-            if (string.IsNullOrEmpty(gameObject.Name)) throw new ArgumentException("GameObject must have a name defined");
-            if (_gameObjects.Any(g => g.Name == gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
+            var gameObject = _gameObjects.FirstOrDefault(g => g.ID == id);
+            if (gameObject != null)
+            {
+                return gameObject;
+            }
+            else
+            {
+                var brush = _brushes.FirstOrDefault(b => b.ID == id);
+                if (brush != null)
+                {
+                    return brush;
+                }
+                else
+                {
+                    var light = _lights.FirstOrDefault(l => l.ID == id);
+                    if (light != null)
+                    {
+                        return light;
+                    }
+                    else
+                    {
+                        throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+                    }
+                }
+            }
+        }
 
-            _gameObjects.Add(gameObject);
+        public void AddEntity(GameEntity entity)
+        {
+            // Assign an ID
+            if (entity.ID == 0)
+            {
+                entity.ID = _nextAvailableID;
+                _nextAvailableID++;
+            }
+
+            switch (entity)
+            {
+                case GameObject gameObject:
+                    if (string.IsNullOrEmpty(gameObject.Name)) throw new ArgumentException("GameObject must have a name defined");
+                    if (_gameObjects.Any(g => g.Name == gameObject.Name)) throw new ArgumentException("GameObject must have a unique name");
+
+                    _gameObjects.Add(gameObject);
+                    break;
+                case Brush brush:
+                    _brushes.Add(brush);
+                    break;
+                case Light light:
+                    _lights.Add(light);
+                    break;
+            }
         }
 
         public void Initialize()
@@ -175,7 +227,7 @@ namespace TakoEngine.GameObjects
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 
-        public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
+        public void RenderWireframe() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _gameObjects);//_renderManager.RenderWireframe(_camera, _brushes, _gameObjects);
 
         public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _gameObjects);
 

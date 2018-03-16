@@ -21,30 +21,29 @@ using System.Threading.Tasks;
 
 namespace TakoEngine.Rendering.Processing
 {
-    public class WireframeRenderer : Renderer
+    /// <summary>
+    /// Renders all game entities to a texture, with their colors reflecting their given ID's
+    /// </summary>
+    public class SelectionRenderer : Renderer
     {
-        public float LineThickness { get; set; } = 0.01f;
-
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
         public FrameBuffer GBuffer { get; private set; } = new FrameBuffer();
 
-        internal ShaderProgram _wireframeProgram;
-        internal ShaderProgram _jointWireframeProgram;
+        internal ShaderProgram _selectionProgram;
+        internal ShaderProgram _jointSelectionProgram;
 
         protected override void LoadPrograms()
         {
-            _wireframeProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.WIREFRAME_VERTEX_SHADER_PATH)),
-                new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.WIREFRAME_GEOMETRY_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.WIREFRAME_FRAGMENT_SHADER_PATH))
+            _selectionProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SELECTION_VERTEX_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SELECTION_FRAGMENT_PATH))
             );
 
-            _jointWireframeProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.WIREFRAME_SKINNING_VERTEX_SHADER_PATH)),
-                new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.WIREFRAME_GEOMETRY_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.WIREFRAME_FRAGMENT_SHADER_PATH))
+            _jointSelectionProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SELECTION_SKINNING_VERTEX_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SELECTION_FRAGMENT_PATH))
             );
         }
 
@@ -103,63 +102,53 @@ namespace TakoEngine.Rendering.Processing
             GBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void WireframePass(Resolution resolution, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
+        public void SelectionPass(Resolution resolution, Camera camera, IEnumerable<Brush> brushes, IEnumerable<GameObject> gameObjects)
         {
-            // Clear final texture from last frame
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
-
-            _wireframeProgram.Use();
+            _selectionProgram.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
 
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            GL.DepthMask(false);
+            /*GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
-            GL.Disable(EnableCap.CullFace);
+            GL.Disable(EnableCap.CullFace);*/
 
-            //GL.PolygonMode(MaterialFace.FrontAndBack, WireFrame ? PolygonMode.Line : PolygonMode.Fill);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
 
-            camera.Draw(_wireframeProgram);
-            //var viewport = Matrix4.
-            //_wireframeProgram.SetUniform("viewportMatrix", 0.0f);
-            _wireframeProgram.SetUniform("lineThickness", LineThickness);
+            camera.Draw(_selectionProgram);
 
             foreach (var brush in brushes)
             {
-                brush.Draw(_wireframeProgram);
+                _selectionProgram.SetUniform("id", brush.ID / 100.0f);
+                brush.Draw(_selectionProgram);
             }
 
             foreach (var gameObject in gameObjects)
             {
-                gameObject.Draw(_wireframeProgram);
+                _selectionProgram.SetUniform("id", gameObject.ID / 100.0f);
+                gameObject.Draw(_selectionProgram);
             }
         }
 
-        public void JointWireframePass(Resolution resolution, Camera camera, IEnumerable<GameObject> gameObjects)
+        public void JointSelectionPass(Resolution resolution, Camera camera, IEnumerable<GameObject> gameObjects)
         {
-            _jointWireframeProgram.Use();
+            _jointSelectionProgram.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
 
-            GL.Disable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
+            GL.Enable(EnableCap.CullFace);
 
-            //GL.PolygonMode(MaterialFace.FrontAndBack, WireFrame ? PolygonMode.Line : PolygonMode.Fill);
-
-            camera.Draw(_jointWireframeProgram);
-            _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
+            camera.Draw(_jointSelectionProgram);
 
             foreach (var gameObject in gameObjects)
             {
-                gameObject.Draw(_jointWireframeProgram);
+                _jointSelectionProgram.SetUniform("id", gameObject.ID / 100.0f);
+                gameObject.Draw(_jointSelectionProgram);
             }
-
-            GL.Enable(EnableCap.CullFace);
         }
 
         private IEnumerable<GameObject> PerformFrustumCulling(IEnumerable<GameObject> gameObjects)

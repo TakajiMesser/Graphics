@@ -12,6 +12,8 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using TakoEngine.GameObjects;
+using Brush = TakoEngine.GameObjects.Brush;
 
 namespace SauceEditor.Controls
 {
@@ -20,14 +22,24 @@ namespace SauceEditor.Controls
     /// </summary>
     public partial class PropertyPanel : DockingLibrary.DockableContent
     {
+        private GameObject _gameObject;
+        private Brush _brush;
+
         public PropertyPanel()
         {
             InitializeComponent();
         }
 
-        public void Add(TreeViewItem item)
+        public void SetGameObject(GameObject gameObject)
         {
-            //Tree.Items.Add(item);
+            _brush = null;
+            _gameObject = gameObject;
+        }
+
+        public void SetBrush(Brush brush)
+        {
+            _gameObject = null;
+            _brush = brush;
         }
     }
 }

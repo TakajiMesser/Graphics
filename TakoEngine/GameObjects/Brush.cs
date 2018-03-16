@@ -24,7 +24,7 @@ namespace TakoEngine.GameObjects
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush
+    public class Brush : GameEntity
     {
         private ModelMatrix _modelMatrix = new ModelMatrix();
 

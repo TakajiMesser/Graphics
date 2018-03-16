@@ -5,16 +5,12 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Controls"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
-        mc:Ignorable="d"
-        Title="Properties" Height="300" Width="300">
-    <Grid>
-        <ListBox Name="list">
-            <ListBoxItem >Item1</ListBoxItem>
-            <ListBoxItem >Item2</ListBoxItem>
-            <ListBoxItem >Item3</ListBoxItem>
-            <ListBoxItem >Item4</ListBoxItem>
-        </ListBox>
-    </Grid>
+        mc:Ignorable="d" Title="Properties">
+    <StackPanel Orientation="Vertical">
+        <local:TransformPanel Grid.Row="0" Label="Position"/>
+        <local:TransformPanel Grid.Row="1" Label="Rotation"/>
+        <local:TransformPanel Grid.Row="2" Label="Scale"/>
+    </StackPanel>
     <!--<TreeView Name="Tree">
         
     </TreeView>-->

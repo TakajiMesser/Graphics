@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace TakoEngine.Lighting
 {
-    public abstract class Light
+    public abstract class Light : GameEntity
     {
         private float _intensity;
 

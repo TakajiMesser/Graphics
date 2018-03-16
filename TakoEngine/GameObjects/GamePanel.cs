@@ -58,6 +58,7 @@ namespace TakoEngine.GameObjects
 
         private string _mapPath;
         private GameState _gameState;
+        private bool _invalidated = false;
 
         private Vector3 CurrentAngles { get; set; } = new Vector3();
 
@@ -126,7 +127,12 @@ namespace TakoEngine.GameObjects
         private void Timer_Tick(object sender, EventArgs e)
         {
             OnUpdateFrame();
-            Invalidate();
+
+            if (_invalidated)
+            {
+                Invalidate();
+                _invalidated = false;
+            }
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -255,6 +261,7 @@ namespace TakoEngine.GameObjects
                 _gameState._camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
                 IsCameraMoving = true;
                 IsCursorVisible = false;
+                _invalidated = true;
             }
             else if ((_gameState._inputState.IsPressed(new Input(MouseButton.Left)) && IsMouseInPanel)
                     || (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && IsCameraMoving))
@@ -279,6 +286,7 @@ namespace TakoEngine.GameObjects
 
                 IsCameraMoving = true;
                 IsCursorVisible = false;
+                _invalidated = true;
             }
             else if ((_gameState._inputState.IsPressed(new Input(MouseButton.Right)) && IsMouseInPanel)
                     || (_gameState._inputState.IsHeld(new Input(MouseButton.Right)) && IsCameraMoving))
@@ -300,6 +308,7 @@ namespace TakoEngine.GameObjects
                 
                 IsCameraMoving = true;
                 IsCursorVisible = false;
+                _invalidated = true;
             }
             else
             {

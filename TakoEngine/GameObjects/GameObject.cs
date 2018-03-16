@@ -19,7 +19,7 @@ using TakoEngine.Rendering.Vertices;
 
 namespace TakoEngine.GameObjects
 {
-    public class GameObject
+    public class GameObject : GameEntity
     {
         //public int ID { get; private set; }
         public string Name { get; private set; }

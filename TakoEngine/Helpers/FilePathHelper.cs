@@ -64,6 +64,10 @@ namespace TakoEngine.Helpers
         public static string RENDER_CUBE_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-cube.frag";
         public static string RENDER_CUBE_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\RenderToScreen\render-cube.vert";
 
+        public static string SELECTION_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\selection.vert";
+        public static string SELECTION_SKINNING_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\selection-skinning.vert";
+        public static string SELECTION_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\selection.frag";
+
         public static string POINT_SHADOW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow.vert";
         public static string POINT_SHADOW_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow-skinning.vert";
         public static string POINT_SHADOW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Shadows\point-shadow.geom";
