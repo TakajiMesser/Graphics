@@ -151,10 +151,8 @@ namespace SauceEditor
 
                 _perspectiveView = new DockableGamePanel(_mapPath, DockManager);
                 _perspectiveView.ShowAsDocument();
-                _perspectiveView.EntitySelectionChanged += (s, args) =>
-                {
-                    _propertyPanel.Entity = args.Entity;
-                };
+                _perspectiveView.EntitySelectionChanged += (s, args) => _propertyPanel.Entity = args.Entity;
+                _propertyPanel.TransformChanged += (s, args) => _perspectiveView.GamePanel.Invalidate();
             }
         }
 

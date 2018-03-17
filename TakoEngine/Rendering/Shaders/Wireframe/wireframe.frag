@@ -1,6 +1,7 @@
 ﻿#version 440
 
 uniform float lineThickness;
+uniform vec4 lineColor;
 
 smooth in vec3 gEdgeDistance;
 
@@ -37,7 +38,7 @@ void main()
         color.xyz = innerLineColor + outerLineColor;
         color.w = 1.0;*/
 
-        color = vec4(1.0);
+        color = lineColor;
     }
 
     /*float innerEdgeIntensity = exp2(-1.0 * distance * distance);

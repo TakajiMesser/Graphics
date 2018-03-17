@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -53,9 +54,41 @@ namespace SauceEditor.Controls
             }
         }
 
+        public event EventHandler<TransformChangedEventArgs> TransformChanged;
+
         public PropertyPanel()
         {
             InitializeComponent();
+
+            PositionTransform.TransformChanged += (s, args) =>
+            {
+                if (_entity != null)
+                {
+                    _entity.Position = args.Transform;
+                }
+                
+                TransformChanged?.Invoke(this, args);
+            };
+
+            RotationTransform.TransformChanged += (s, args) =>
+            {
+                if (_entity != null)
+                {
+                    _entity.Rotation = Quaternion.FromEulerAngles(args.Transform);
+                }
+
+                TransformChanged?.Invoke(this, args);
+            };
+
+            ScaleTransform.TransformChanged += (s, args) =>
+            {
+                if (_entity != null)
+                {
+                    _entity.Scale = args.Transform;
+                }
+
+                TransformChanged?.Invoke(this, args);
+            };
         }
     }
 }

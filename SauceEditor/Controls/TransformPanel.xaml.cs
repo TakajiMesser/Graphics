@@ -29,6 +29,10 @@ namespace SauceEditor.Controls
         {
             DataContext = this;
             InitializeComponent();
+
+            X.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(args.NewValue, Y.Value, Z.Value)));
+            Y.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(X.Value, args.NewValue, Z.Value)));
+            Z.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(X.Value, Y.Value, args.NewValue)));
         }
 
         public string Label
@@ -42,18 +46,6 @@ namespace SauceEditor.Controls
             X.Value = values.X;
             Y.Value = values.Y;
             Z.Value = values.Z;
-        }
-    }
-
-    public class TransformChangedEventArgs : EventArgs
-    {
-        public string Name { get; private set; }
-        public Vector3 Transform { get; private set; }
-
-        public TransformChangedEventArgs(string name, Vector3 transform)
-        {
-            Name = name;
-            Transform = transform;
         }
     }
 }

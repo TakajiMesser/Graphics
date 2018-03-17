@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using TakoEngine.Entities;
 using TakoEngine.Inputs;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
@@ -26,6 +27,8 @@ namespace TakoEngine.Game
         public EventHandler Resized;
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
+
+        public IEntity SelectedEntity { get; private set; }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
@@ -179,6 +182,11 @@ namespace TakoEngine.Game
                     break;
             }
 
+            if (SelectedEntity != null)
+            {
+                _gameState.RenderSelection(SelectedEntity);
+            }
+
             GL.UseProgram(0);
             SwapBuffers();
         }
@@ -294,13 +302,15 @@ namespace TakoEngine.Game
             }
             else if (_gameState._inputState.IsPressed(new Input(MouseButton.Middle)) && IsMouseInPanel)
             {
+                _invalidated = true;
+
                 Invoke(new Action(() =>
                 {
                     var point = PointToClient(System.Windows.Forms.Cursor.Position);
                     var mouseCoordinates = new Vector2(point.X - Location.X, Height - point.Y - Location.Y);
 
-                    var entity = _gameState.GetEntityForPoint(mouseCoordinates);
-                    EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(entity));
+                    SelectedEntity = _gameState.GetEntityForPoint(mouseCoordinates);
+                    EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
                 }));
             }
             else

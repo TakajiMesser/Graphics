@@ -1,6 +1,7 @@
 ﻿using DockingLibrary;
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Windows;
 using TakoEngine.Game;
 
@@ -34,13 +35,23 @@ namespace SauceEditor.Controls
             {
                 if (args.ShowCursor)
                 {
-                    System.Windows.Forms.Cursor.Position = _cursorLocation;
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => System.Windows.Forms.Cursor.Show());
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        //System.Windows.Forms.Cursor.Clip = Rectangle.Empty;
+                        System.Windows.Forms.Cursor.Position = _cursorLocation;
+                        System.Windows.Forms.Cursor.Show();
+                    });
                 }
                 else
                 {
-                    _cursorLocation = System.Windows.Forms.Cursor.Position;
-                    System.Windows.Application.Current.Dispatcher.Invoke(() => System.Windows.Forms.Cursor.Hide());
+                    System.Windows.Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        //var bounds = RenderTransform.TransformBounds(new Rect(RenderSize));
+                        //System.Windows.Forms.Cursor.Clip = new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
+                        //System.Windows.Forms.Cursor.Clip = new Rectangle((int)Top, (int)Left, (int)Width, (int)Height);
+                        _cursorLocation = System.Windows.Forms.Cursor.Position;
+                        System.Windows.Forms.Cursor.Hide();
+                    });
                 }
             };
 

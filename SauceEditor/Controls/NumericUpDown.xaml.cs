@@ -29,6 +29,8 @@ namespace SauceEditor.Controls
         public readonly static DependencyProperty MaxValueProperty = DependencyProperty.Register("MaxValue", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty MinValueProperty = DependencyProperty.Register("MinValue", typeof(float), typeof(NumericUpDown));
 
+        public event EventHandler<ValueChangedEventArgs> ValueChanged;
+
         public NumericUpDown()
         {
             DataContext = this;
@@ -39,7 +41,11 @@ namespace SauceEditor.Controls
         public float Value
         {
             get => (float)GetValue(ValueProperty);
-            set => SetValue(ValueProperty, value);
+            set
+            {
+                ValueChanged?.Invoke(this, new ValueChangedEventArgs(Value, value));
+                SetValue(ValueProperty, value);
+            }
         }
 
         public string Label

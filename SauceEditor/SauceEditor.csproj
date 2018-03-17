@@ -112,6 +112,8 @@
     <Compile Include="Controls\TransformPanel.xaml.cs">
       <DependentUpon>TransformPanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\TransformChangedEventArgs.cs" />
+    <Compile Include="Controls\ValueChangedEventArgs.cs" />
     <Compile Include="DocWindow.xaml.cs">
       <DependentUpon>DocWindow.xaml</DependentUpon>
     </Compile>

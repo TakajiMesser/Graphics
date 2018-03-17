@@ -235,6 +235,8 @@ namespace TakoEngine.Game
 
         public void RenderEntityIDs() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _actors);
 
+        public void RenderSelection(IEntity entity) => _renderManager.RenderSelection(_camera, entity);
+
         public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _actors);
 
         public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _actors);
