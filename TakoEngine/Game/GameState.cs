@@ -3,6 +3,7 @@ using OpenTK.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
@@ -13,7 +14,7 @@ using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Processing;
 using TakoEngine.Rendering.Textures;
 
-namespace TakoEngine.Entities
+namespace TakoEngine.Game
 {
     public class GameState
     {

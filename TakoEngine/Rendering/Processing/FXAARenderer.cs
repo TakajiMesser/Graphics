@@ -1,0 +1,142 @@
+﻿using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using System.Collections.Generic;
+using System.IO;
+using TakoEngine.Entities;
+using TakoEngine.Entities.Cameras;
+using TakoEngine.Helpers;
+using TakoEngine.Outputs;
+using TakoEngine.Rendering.Buffers;
+using TakoEngine.Rendering.Shaders;
+using TakoEngine.Rendering.Textures;
+using TakoEngine.Rendering.Vertices;
+using TakoEngine.Utilities;
+
+namespace TakoEngine.Rendering.Processing
+{
+    /// <summary>
+    /// Renders all game entities to a texture, with their colors reflecting their given ID's
+    /// </summary>
+    public class FXAARenderer : Renderer
+    {
+        public Texture FinalTexture { get; protected set; }
+
+        private ShaderProgram _fxaaProgram;
+
+        private int _vertexArrayHandle;
+        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
+        protected FrameBuffer _frameBuffer = new FrameBuffer();
+
+        protected override void LoadPrograms()
+        {
+            _fxaaProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.FXAA_VERTEX_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.FXAA_FRAGMENT_PATH))
+            );
+        }
+
+        public override void ResizeTextures(Resolution resolution)
+        {
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
+        }
+
+        protected override void LoadTextures(Resolution resolution)
+        {
+            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2D,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                PixelFormat = PixelFormat.Rgba,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();
+        }
+
+        protected override void LoadBuffers()
+        {
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            _frameBuffer.AttachAttachments();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+
+            _vertexArrayHandle = GL.GenVertexArray();
+            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.AddVertices(new[]
+            {
+                new Vector3(1.0f, 1.0f, 0.0f),
+                new Vector3(-1.0f, 1.0f, 0.0f),
+                new Vector3(-1.0f, -1.0f, 0.0f),
+                new Vector3(1.0f, -1.0f, 0.0f)
+            });
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
+            attribute.Set(_fxaaProgram.GetAttributeLocation("vPosition"));
+
+            GL.BindVertexArray(0);
+            _vertexBuffer.Unbind();
+        }
+
+        public void Render(Texture texture)
+        {
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _frameBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
+
+            GL.ClearColor(Color4.Black);
+            GL.Clear(ClearBufferMask.ColorBufferBit);
+            GL.Viewport(0, 0, texture.Width, texture.Height);
+
+            _fxaaProgram.Use();
+            _fxaaProgram.BindTexture(texture, "filterTexture", 0);
+            _fxaaProgram.SetUniform("texelStep", Vector2.One);
+            _fxaaProgram.SetUniform("maxThreshold", 100.0f);
+            _fxaaProgram.SetUniform("mulReduction", 1.0f / 8.0f);
+            _fxaaProgram.SetUniform("minReduction", 1.0f / 128.0f);
+            _fxaaProgram.SetUniform("maxSpan", 8.0f);
+
+            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.Bind();
+
+            _vertexBuffer.DrawQuads();
+
+            GL.BindVertexArray(0);
+            _vertexBuffer.Unbind();
+        }
+
+        private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> gameObjects)
+        {
+            // Don't render meshes that are not in the camera's view
+
+            // Using the position of the actor, determine if we should render the mesh
+            // We will also need a bounding sphere or bounding box from the mesh to determine this
+            foreach (var actor in gameObjects)
+            {
+                Vector3 position = actor.Model.Position;
+            }
+
+            return gameObjects;
+        }
+
+        private IEnumerable<Actor> PerformOcclusionCulling(IEnumerable<Actor> gameObjects)
+        {
+            // Don't render meshes that are obscured by closer meshes
+            foreach (var actor in gameObjects)
+            {
+                Vector3 position = actor.Model.Position;
+            }
+
+            return gameObjects;
+        }
+    }
+}

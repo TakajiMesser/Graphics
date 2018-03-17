@@ -107,7 +107,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\IEntity.cs" />
-    <Compile Include="GameObjects\GamePanel.cs" />
+    <Compile Include="Game\EntitySelectedEventArgs.cs" />
+    <Compile Include="Game\CursorEventArgs.cs" />
+    <Compile Include="Game\GamePanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Entities\Models\SimpleModel.cs" />
     <Compile Include="Entities\Models\Model.cs" />
     <Compile Include="Entities\Brush.cs" />
@@ -115,10 +119,10 @@
     <Compile Include="Entities\Cameras\OrthographicCamera.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
     <Compile Include="Entities\Models\AnimatedModel.cs" />
-    <Compile Include="GameObjects\GameProperty.cs" />
+    <Compile Include="Game\GameProperty.cs" />
     <Compile Include="Entities\Actor.cs" />
-    <Compile Include="GameObjects\GameState.cs" />
-    <Compile Include="GameObjects\GameWindow.cs" />
+    <Compile Include="Game\GameState.cs" />
+    <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
@@ -180,6 +184,7 @@
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\FXAARenderer.cs" />
     <Compile Include="Rendering\Processing\SelectionRenderer.cs" />
     <Compile Include="Rendering\Processing\WireframeRenderer.cs" />
     <Compile Include="Rendering\Processing\Renderer.cs" />
@@ -241,6 +246,9 @@
     <None Include="Rendering\Shaders\Deferred\deferred.frag" />
     <None Include="Rendering\Shaders\Deferred\deferred.tese" />
     <None Include="Rendering\Shaders\Deferred\deferred.geom" />
+    <None Include="Rendering\Shaders\FXAA\fxaa-skinning.vert" />
+    <None Include="Rendering\Shaders\FXAA\fxaa.frag" />
+    <None Include="Rendering\Shaders\FXAA\fxaa.vert" />
     <None Include="Rendering\Shaders\Selection\selection-skinning.vert" />
     <None Include="Rendering\Shaders\Selection\selection.frag" />
     <None Include="Rendering\Shaders\Selection\selection.vert" />

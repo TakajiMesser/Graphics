@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace TakoEngine.Entities
+namespace TakoEngine.Game
 {
     [DataContract]
     public class GameProperty

@@ -13,29 +13,9 @@ using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
 using TakoEngine.Utilities;
 
-namespace TakoEngine.Entities
+namespace TakoEngine.Game
 {
-    public class CursorEventArgs : EventArgs
-    {
-        public bool ShowCursor { get; private set; }
-
-        public CursorEventArgs(bool showCursor)
-        {
-            ShowCursor = showCursor;
-        }
-    }
-
-    public class EntitySelectedEventArgs : EventArgs
-    {
-        public IEntity Entity { get; private set; }
-
-        public EntitySelectedEventArgs(IEntity entity)
-        {
-            Entity = entity;
-        }
-    }
-
-    public class GamePanel : OpenTK.GLControl
+    public class GamePanel : GLControl
     {
         public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
         public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;

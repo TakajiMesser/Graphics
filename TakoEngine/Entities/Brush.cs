@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using TakoEngine.Entities.Lights;
+using TakoEngine.Game;
 using TakoEngine.Helpers;
 using TakoEngine.Materials;
 using TakoEngine.Meshes;

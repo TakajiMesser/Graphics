@@ -34,6 +34,7 @@ namespace TakoEngine.Rendering.Processing
         private SkyboxRenderer _skyboxRenderer = new SkyboxRenderer();
         private SelectionRenderer _selectionRenderer = new SelectionRenderer();
 
+        private FXAARenderer _fxaaRenderer = new FXAARenderer();
         private Blur _blurRenderer = new Blur();
         private InvertColors _invertRenderer = new InvertColors();
         private TextRenderer _textRenderer = new TextRenderer();
@@ -52,6 +53,7 @@ namespace TakoEngine.Rendering.Processing
             _lightRenderer.Load(Resolution);
             _skyboxRenderer.Load(Resolution);
             _selectionRenderer.Load(Resolution);
+            _fxaaRenderer.Load(Resolution);
             _blurRenderer.Load(Resolution);
             _invertRenderer.Load(Resolution);
             _textRenderer.Load(Resolution);
@@ -79,6 +81,7 @@ namespace TakoEngine.Rendering.Processing
             _lightRenderer.ResizeTextures(Resolution);
             _skyboxRenderer.ResizeTextures(Resolution);
             _selectionRenderer.ResizeTextures(Resolution);
+            _fxaaRenderer.ResizeTextures(Resolution);
             _blurRenderer.ResizeTextures(Resolution);
             _invertRenderer.ResizeTextures(Resolution);
             _textRenderer.ResizeTextures(Resolution);
@@ -130,6 +133,8 @@ namespace TakoEngine.Rendering.Processing
 
             GL.Disable(EnableCap.DepthTest);
 
+            _fxaaRenderer.Render(texture);
+            texture = _fxaaRenderer.FinalTexture;
             //_invertRenderer.Render(texture);
             //_blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
             //texture = _blurRenderer.FinalTexture;

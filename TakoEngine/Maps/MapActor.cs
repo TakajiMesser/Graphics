@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Models;
+using TakoEngine.Game;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Scripting.BehaviorTrees;

@@ -12,7 +12,7 @@ using TakoEngine.Helpers;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
 
-namespace TakoEngine.Entities
+namespace TakoEngine.Game
 {
     public class GameWindow : OpenTK.GameWindow
     {
@@ -32,8 +32,7 @@ namespace TakoEngine.Entities
         public Resolution Resolution { get; private set; }
 
         public GameWindow(string mapPath) : base(1280, 720,
-            GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default,
-            DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+            GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
 

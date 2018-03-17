@@ -34,6 +34,10 @@ namespace TakoEngine.Helpers
         public static string FORWARD_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Forward\forward.vert";
         public static string FORWARD_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Forward\forward.frag";
 
+        public static string FXAA_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\FXAA\fxaa.vert";
+        public static string FXAA_SKINNING_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\FXAA\fxaa-skinning.vert";
+        public static string FXAA_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\FXAA\fxaa.frag";
+
         public static string STENCIL_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\stencil.vert";
         public static string LIGHT_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\light.vert";
         public static string POINT_LIGHT_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Lighting\point-light.frag";

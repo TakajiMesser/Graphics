@@ -4,6 +4,7 @@ using System.Linq;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
+using TakoEngine.Game;
 using TakoEngine.Inputs;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Shaders;
