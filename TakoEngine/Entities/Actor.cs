@@ -25,6 +25,17 @@ namespace TakoEngine.Entities
             set => Model.Position = value;
         }
 
+        private Vector3 _originalRotation;
+        public Vector3 OriginalRotation
+        {
+            get => _originalRotation;
+            set
+            {
+                _originalRotation = value;
+                Model._modelMatrix.Rotation = Quaternion.FromEulerAngles(value);
+            }
+        }
+
         public Quaternion Rotation
         {
             get => Model.Rotation;

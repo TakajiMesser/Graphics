@@ -37,10 +37,11 @@ namespace SauceEditor.Controls
                     if (_entity is Actor actor)
                     {
                         Title.Content += " " + actor.Name;
+                        //RotationTransform.SetValues(actor.Model.OriginalRotation);
                     }
 
                     PositionTransform.SetValues(_entity.Position);
-                    //RotationTransform.SetValues(_entity.Rotation.)
+                    RotationTransform.SetValues(_entity.OriginalRotation);
                     ScaleTransform.SetValues(_entity.Scale);
                 }
                 else
@@ -74,7 +75,14 @@ namespace SauceEditor.Controls
             {
                 if (_entity != null)
                 {
-                    _entity.Rotation = Quaternion.FromEulerAngles(args.Transform);
+                    //_entity.Rotation = Quaternion.FromEulerAngles(args.Transform);
+                    _entity.OriginalRotation = args.Transform;
+
+                    if (_entity is Actor actor)
+                    {
+                        //actor.Model._modelMatrix.Rotation
+                        //actor.Model.OriginalRotation = args.Transform;
+                    }
                 }
 
                 TransformChanged?.Invoke(this, args);

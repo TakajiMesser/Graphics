@@ -11,6 +11,7 @@ namespace TakoEngine.Entities.Lights
         public int ID { get; set; }
 
         public Vector3 Position { get; set; }
+        public Vector3 OriginalRotation { get; set; }
         public Quaternion Rotation { get; set; }
 
         [IgnoreDataMember]

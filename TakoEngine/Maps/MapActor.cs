@@ -13,8 +13,9 @@ namespace TakoEngine.Maps
     {
         public string Name { get; set; }
         public Vector3 Position { get; set; }
-        public Quaternion Rotation { get; set; }
+        public Vector3 Rotation { get; set; }
         public Vector3 Scale { get; set; }
+        public Vector3 Orientation { get; set; }
         public string ModelFilePath { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
         public string BehaviorFilePath { get; set; }
@@ -54,12 +55,17 @@ namespace TakoEngine.Maps
 
             if (Rotation != null)
             {
-                actor.Model.OriginalRotation = Rotation;
+                actor.OriginalRotation = Rotation;
             }
 
             if (Scale != null)
             {
                 actor.Model.Scale = Scale;
+            }
+
+            if (Orientation != null)
+            {
+                actor.Model.Orientation = Quaternion.FromEulerAngles(Orientation);
             }
 
             actor.Model.AddTestColors();

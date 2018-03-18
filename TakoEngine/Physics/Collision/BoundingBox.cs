@@ -38,12 +38,12 @@ namespace TakoEngine.Physics.Collision
             var maxY = brush.Vertices.Select(v => v.Y).Max();
             Height = maxY - minY;
 
-            Center = new Vector3()
+            /*Center = new Vector3()
             {
                 X = (maxX + minX) / 2.0f,
                 Y = (maxY + minY) / 2.0f,
                 Z = brush.Vertices.Select(v => v.Z).Average()
-            };
+            };*/
         }
 
         public override bool CollidesWith(Vector3 point) => (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);

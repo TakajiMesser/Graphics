@@ -34,7 +34,8 @@ namespace GraphicsTest.GameObjects
             Name = NAME;
             Position = new Vector3(0.0f, 0.0f, -1.0f);
             Scale = Vector3.One;
-            Rotation = Quaternion.Identity;
+            Rotation = Vector3.Zero;
+            Orientation = Vector3.Zero;
             ModelFilePath = FilePathHelper.PLAYER_MESH_PATH;
 
             TexturesPaths.Add(new TexturePaths()

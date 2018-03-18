@@ -20,6 +20,8 @@ namespace TakoEngine.Entities.Cameras
             set => _viewMatrix.Translation = value;
         }
 
+        public Vector3 OriginalRotation { get; set; }
+
         public Quaternion Rotation
         {
             get => throw new NotImplementedException();// _viewMatrix.;

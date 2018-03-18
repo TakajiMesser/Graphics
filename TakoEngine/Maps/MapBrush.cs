@@ -12,6 +12,10 @@ namespace TakoEngine.Maps
 {
     public class MapBrush
     {
+        public Vector3 Position { get; set; } = Vector3.Zero;
+        public Vector3 Rotation { get; set; } = Vector3.Zero;
+        public Vector3 Scale { get; set; } = Vector3.One;
+
         public List<Vertex> Vertices { get; set; } = new List<Vertex>();
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
@@ -22,6 +26,9 @@ namespace TakoEngine.Maps
         {
             var brush = new Brush(Vertices, Material, TriangleIndices)
             {
+                Position = Position,
+                OriginalRotation = Rotation,
+                Scale = Scale,
                 HasCollision = HasCollision
             };
             brush.Bounds = new BoundingBox(brush);
@@ -36,11 +43,12 @@ namespace TakoEngine.Maps
             {
                 Vertices = new List<Vertex>
                 {
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
-                    new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
-                    new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
+                    new Vertex(new Vector3(-width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
+                    new Vertex(new Vector3(-width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
+                    new Vertex(new Vector3(width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
+                    new Vertex(new Vector3(width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
                 },
+                Position = center,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = new List<int>()
                 {
@@ -53,14 +61,14 @@ namespace TakoEngine.Maps
         {
             var vertices = new List<Vector3>
             {
-                new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f),
-                new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f),
-                new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f),
-                new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f),
-                new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z - depth / 2.0f),
-                new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z - depth / 2.0f),
-                new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z + depth / 2.0f),
-                new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z + depth / 2.0f)
+                new Vector3(-width / 2.0f, -height / 2.0f, -depth / 2.0f),
+                new Vector3(-width / 2.0f, height / 2.0f, -depth / 2.0f),
+                new Vector3(-width / 2.0f, -height / 2.0f, depth / 2.0f),
+                new Vector3(-width / 2.0f, height / 2.0f, depth / 2.0f),
+                new Vector3(width / 2.0f, -height / 2.0f, -depth / 2.0f),
+                new Vector3(width / 2.0f, height / 2.0f, -depth / 2.0f),
+                new Vector3(width / 2.0f, -height / 2.0f, depth / 2.0f),
+                new Vector3(width / 2.0f, height / 2.0f, depth / 2.0f)
             };
 
             var uvs = new List<Vector2>
@@ -155,6 +163,7 @@ namespace TakoEngine.Maps
 
             return new MapBrush()
             {
+                Position = center,
                 Vertices = verticies,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices

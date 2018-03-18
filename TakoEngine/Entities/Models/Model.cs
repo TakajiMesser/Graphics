@@ -12,7 +12,13 @@ namespace TakoEngine.Entities.Models
         internal ModelMatrix _modelMatrix = new ModelMatrix();
 
         public abstract List<Vector3> Vertices { get; }
-        public Quaternion OriginalRotation { get; set; } = Quaternion.Identity;
+
+        /// <summary>
+        /// All models are assumed to have their "forward" direction in the positive Y direction.
+        /// If the model is oriented in a different direction, this quaternion should orient it from the assumed direction to the correct one.
+        /// If the model is already oriented correctly, this should be the quaternion identity.
+        /// </summary>
+        public Quaternion Orientation { get; set; } = Quaternion.Identity;
 
         public Vector3 Position
         {
@@ -22,8 +28,8 @@ namespace TakoEngine.Entities.Models
 
         public Quaternion Rotation
         {
-            get => OriginalRotation * _modelMatrix.Rotation;
-            set => _modelMatrix.Rotation = OriginalRotation * value;
+            get => Orientation * _modelMatrix.Rotation;
+            set => _modelMatrix.Rotation = Orientation * value;
         }
 
         public Vector3 Scale

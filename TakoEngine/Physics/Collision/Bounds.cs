@@ -19,6 +19,7 @@ namespace TakoEngine.Physics.Collision
         public Bounds(Brush brush)
         {
             AttachedEntity = brush;
+            Center = brush.Position;
         }
 
         public Bounds(Light light)

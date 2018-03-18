@@ -31,7 +31,8 @@ namespace GraphicsTest.GameObjects
             Name = NAME;
             Position = new Vector3(5.0f, 5.0f, -1.0f);
             Scale = 0.04f * Vector3.One;
-            Rotation = Quaternion.FromEulerAngles(90.0f, 0.0f, 0.0f);
+            Rotation = Vector3.Zero;
+            Orientation = new Vector3(90.0f, 0.0f, 0.0f);
             ModelFilePath = FilePathHelper.BOB_LAMP_MESH_PATH;
 
             /*TexturesPaths.Add(new TexturePaths()

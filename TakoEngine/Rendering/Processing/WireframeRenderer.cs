@@ -148,7 +148,7 @@ namespace TakoEngine.Rendering.Processing
 
         public void SelectionPass(Camera camera, IEntity entity)
         {
-            var lineColor = new Vector4(0.6f, 0.6f, 0.0f, 1.0f);
+            var lineColor = new Vector4(0.8f, 0.8f, 0.1f, 1.0f);
 
             switch (entity)
             {
