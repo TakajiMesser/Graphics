@@ -19,9 +19,9 @@ using Brush = TakoEngine.Entities.Brush;
 namespace SauceEditor.Controls
 {
     /// <summary>
-    /// Interaction logic for PropertyPanel.xaml
+    /// Interaction logic for PropertyWindow.xaml
     /// </summary>
-    public partial class PropertyPanel : DockingLibrary.DockableContent
+    public partial class PropertyWindow : DockingLibrary.DockableContent
     {
         private IEntity _entity;
         public IEntity Entity
@@ -33,33 +33,21 @@ namespace SauceEditor.Controls
 
                 if (_entity != null)
                 {
-                    Title.Content = _entity.ID;
-                    if (_entity is Actor actor)
-                    {
-                        Title.Content += " " + actor.Name;
-                        //RotationTransform.SetValues(actor.Model.OriginalRotation);
-                    }
-
-                    PositionTransform.SetValues(_entity.Position);
-                    RotationTransform.SetValues(_entity.OriginalRotation);
-                    ScaleTransform.SetValues(_entity.Scale);
+                    SetProperties();
                 }
                 else
                 {
-                    Title.Content = "";
-
-                    PositionTransform.IsEnabled = false;
-                    RotationTransform.IsEnabled = false;
-                    ScaleTransform.IsEnabled = false;
+                    ClearProperties();
                 }
             }
         }
 
         public event EventHandler<TransformChangedEventArgs> TransformChanged;
 
-        public PropertyPanel()
+        public PropertyWindow()
         {
             InitializeComponent();
+            ClearProperties();
 
             PositionTransform.TransformChanged += (s, args) =>
             {
@@ -75,14 +63,7 @@ namespace SauceEditor.Controls
             {
                 if (_entity != null)
                 {
-                    //_entity.Rotation = Quaternion.FromEulerAngles(args.Transform);
                     _entity.OriginalRotation = args.Transform;
-
-                    if (_entity is Actor actor)
-                    {
-                        //actor.Model._modelMatrix.Rotation
-                        //actor.Model.OriginalRotation = args.Transform;
-                    }
                 }
 
                 TransformChanged?.Invoke(this, args);
@@ -97,6 +78,43 @@ namespace SauceEditor.Controls
 
                 TransformChanged?.Invoke(this, args);
             };
+        }
+
+        private void SetProperties()
+        {
+            ClearProperties();
+            EntityType.Content = _entity.GetType().Name;
+
+            PropertyGrid.Visibility = Visibility.Visible;
+            IDTextbox.Text = _entity.ID.ToString();
+
+            if (_entity is Actor actor)
+            {
+                PropertyGrid.RowDefinitions[1].Height = GridLength.Auto;
+                NameTextBox.Text = actor.Name;
+            }
+
+            PositionTransform.Visibility = Visibility.Visible;
+            PositionTransform.SetValues(_entity.Position);
+
+            RotationTransform.Visibility = Visibility.Visible;
+            RotationTransform.SetValues(_entity.OriginalRotation);
+
+            ScaleTransform.Visibility = Visibility.Visible;
+            ScaleTransform.SetValues(_entity.Scale);
+        }
+
+        private void ClearProperties()
+        {
+            EntityType.Content = "No Properties to Show";
+
+            PropertyGrid.Visibility = Visibility.Hidden;
+
+            PropertyGrid.RowDefinitions[1].Height = new GridLength(0);
+
+            PositionTransform.Visibility = Visibility.Hidden;
+            RotationTransform.Visibility = Visibility.Hidden;
+            ScaleTransform.Visibility = Visibility.Collapsed;
         }
     }
 }

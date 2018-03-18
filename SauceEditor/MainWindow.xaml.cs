@@ -21,7 +21,7 @@ namespace SauceEditor
         private string _mapPath;
         private GameWindow _gameWindow;
         private ProjectTreeView _projectTree = new ProjectTreeView();
-        private PropertyPanel _propertyPanel = new PropertyPanel();
+        private PropertyWindow _propertyPanel = new PropertyWindow();
         private DockableGamePanel _perspectiveView;
         //private DocWindowCollection _docWindows;
 

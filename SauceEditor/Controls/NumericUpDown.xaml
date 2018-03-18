@@ -10,13 +10,13 @@
             <ImageBrush x:Key="UpButtonImage" ImageSource="/SauceEditor;component/Images/DockTop.png" Stretch="UniformToFill"/>
             <ImageBrush x:Key="DownButtonImage" ImageSource="/SauceEditor;component/Images/DockBottom.png" Stretch="UniformToFill"/>
         </StackPanel.Resources>
-        <Label Content="{Binding Label}" FontSize="16"/>
+        <Label Content="{Binding Label}" FontSize="14"/>
         <DockPanel>
             <StackPanel DockPanel.Dock="Right" Orientation="Vertical">
                 <RepeatButton Name="UpButton" MinWidth="20" MinHeight="20" Background="{StaticResource UpButtonImage}" Click="UpButton_Click"/>
                 <RepeatButton Name="DownButton" MinWidth="20" MinHeight="20" Background="{StaticResource DownButtonImage}" Click="DownButton_Click"/>
             </StackPanel>
-            <TextBox Name="ValueText" FontSize="20" Text="{Binding Value, StringFormat={}{0:0.00}}"/>
+            <TextBox Name="ValueText" FontSize="16" Text="{Binding Value, StringFormat={}{0:0.00}}"/>
         </DockPanel>
     </StackPanel>
 </UserControl>

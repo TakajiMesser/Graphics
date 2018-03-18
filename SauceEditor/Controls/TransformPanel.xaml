@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SauceEditor.Controls"
              mc:Ignorable="d" >
     <StackPanel Orientation="Vertical">
-        <Label Content="{Binding Label}" FontSize="24"/>
+        <Label Content="{Binding Label}" FontSize="16"/>
         <StackPanel Orientation="Horizontal">
             <local:NumericUpDown x:Name="X" Grid.Column="0" Label="X" Margin="4, 2, 2, 4"/>
             <local:NumericUpDown x:Name="Y" Grid.Column="1" Label="Y" Margin="4, 2, 2, 4"/>

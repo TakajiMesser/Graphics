@@ -103,8 +103,8 @@
     <Compile Include="Controls\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\PropertyPanel.xaml.cs">
-      <DependentUpon>PropertyPanel.xaml</DependentUpon>
+    <Compile Include="Controls\PropertyWindow.xaml.cs">
+      <DependentUpon>PropertyWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProjectTreeView.xaml.cs">
       <DependentUpon>ProjectTreeView.xaml</DependentUpon>
@@ -129,7 +129,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\PropertyPanel.xaml">
+    <Page Include="Controls\PropertyWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
