@@ -80,7 +80,7 @@ namespace TakoEngine.Rendering.PostProcessing
             FinalTexture.ReserveMemory();
         }
 
-        public void Render(Resolution resolution, Texture texture)
+        public void Render(Texture texture)
         {
             _invertProgram.Use();
             _frameBuffer.Draw();

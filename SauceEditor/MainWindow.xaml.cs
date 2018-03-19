@@ -41,14 +41,14 @@ namespace SauceEditor
 
         private void OnLoaded(object sender, EventArgs e)
         {
-            DockManager.ParentWindow = this;
-            DockManager2.ParentWindow = this;
+            MainDockManager.ParentWindow = this;
+            SideDockManager.ParentWindow = this;
 
-            _projectTree.DockManager = DockManager2;
+            _projectTree.DockManager = SideDockManager;
             //_projectTree.Show();
             _projectTree.ShowAsDocument();
 
-            _propertyPanel.DockManager = DockManager2;
+            _propertyPanel.DockManager = SideDockManager;
             //_propertyPanel.Show();
             _propertyPanel.ShowAsDocument();
 
@@ -74,7 +74,7 @@ namespace SauceEditor
 
         private bool ContainsDocument(string title)
         {
-            foreach (DockingLibrary.DocumentContent doc in DockManager.Documents)
+            foreach (DockingLibrary.DocumentContent doc in MainDockManager.Documents)
             {
                 if (string.Compare(doc.Title, title, true) == 0)
                 {
@@ -100,7 +100,7 @@ namespace SauceEditor
 
             var doc = new DocWindow()
             {
-                DockManager = DockManager,
+                DockManager = MainDockManager,
                 Title = titleBuilder.ToString()
             };
             doc.ShowAsDocument();
@@ -149,9 +149,13 @@ namespace SauceEditor
                 //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
 
-                _perspectiveView = new DockableGamePanel(_mapPath, DockManager);
+                PlayButton.Visibility = Visibility.Visible;
+
+                _perspectiveView = new DockableGamePanel(_mapPath, MainDockManager);
                 _perspectiveView.ShowAsDocument();
                 _perspectiveView.EntitySelectionChanged += (s, args) => _propertyPanel.Entity = args.Entity;
+                _perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
+
                 _propertyPanel.TransformChanged += (s, args) => _perspectiveView.GamePanel.Invalidate();
             }
         }
@@ -205,6 +209,15 @@ namespace SauceEditor
             _gameWindow?.Close();
             base.OnClosing(e);
             Application.Current.Shutdown();
+        }
+
+        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        {
+            _gameWindow = new GameWindow(_mapPath)
+            {
+                VSync = VSyncMode.Adaptive
+            };
+            _gameWindow.Run(60.0, 0.0);
         }
     }
 }

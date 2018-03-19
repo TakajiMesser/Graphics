@@ -18,40 +18,61 @@ namespace TakoEngine.Game
 {
     public class GameState
     {
+        private Resolution _resolution;
         internal InputState _inputState = new InputState();
-
         private RenderManager _renderManager;
         private TextureManager _textureManager = new TextureManager();
+        private int _nextAvailableID = 1;
 
         internal Camera _camera;
         private List<Actor> _actors = new List<Actor>();
         private List<Brush> _brushes = new List<Brush>();
         private List<Light> _lights = new List<Light>();
 
-        private QuadTree _gameObjectQuads;
+        private QuadTree _actorQuads;
         private QuadTree _brushQuads;
         private QuadTree _lightQuads;
 
-        public GameState(Map map, Resolution resolution)
+        public GameState(Resolution resolution)
         {
+            _resolution = resolution;
             _renderManager = new RenderManager(resolution);
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
-
-            LoadMap(map, resolution);
         }
 
-        public void Resize()
+        public void LoadMap(Map map)
         {
-            _renderManager.Resize();
+            _camera = map.Camera.ToCamera(_resolution);
+
+            LoadLightsFromMap(map);
+            LoadBrushesFromMap(map);
+            LoadActorsFromMap(map);
+
+            _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
         }
 
-        private void LoadMap(Map map, Resolution resolution)
+        public void LoadMapForEditor(Map map)
         {
-            _camera = map.Camera.ToCamera(resolution);
+            // Eventually, we will want to actually load the map camera as an actor, so that we can manipulate it
+            _camera = map.Camera.ToCamera(_resolution);
 
-            _gameObjectQuads = new QuadTree(0, map.Boundaries);
-            _brushQuads = new QuadTree(0, map.Boundaries);
+            // We will want to load the map lights as actors as well, so that we can manipulate them
+            LoadLightsFromMap(map);
+            LoadBrushesFromMap(map);
+            LoadActorsFromMap(map);
+
+            _camera.DetachFromEntity();
+
+            // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
+            _camera._viewMatrix.Up = Vector3.UnitZ;
+            _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
+
+            _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
+        }
+
+        private void LoadLightsFromMap(Map map)
+        {
             _lightQuads = new QuadTree(0, map.Boundaries);
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
 
@@ -59,27 +80,34 @@ namespace TakoEngine.Game
             {
                 AddEntity(mapLight);
             }
+        }
+
+        private void LoadBrushesFromMap(Map map)
+        {
+            _brushQuads = new QuadTree(0, map.Boundaries);
 
             foreach (var mapBrush in map.Brushes)
             {
                 var brush = mapBrush.ToBrush();
-                //brush.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
                 if (brush.HasCollision)
                 {
                     _brushQuads.Insert(brush.Bounds);
                 }
                 brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedEntity is PointLight).Select(c => (PointLight)c.AttachedEntity));
-
                 brush.Mesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
 
                 AddEntity(brush);
             }
+        }
+
+        private void LoadActorsFromMap(Map map)
+        {
+            _actorQuads = new QuadTree(0, map.Boundaries);
 
             foreach (var mapActor in map.Actors)
             {
                 var actor = mapActor.ToActor(_textureManager);
-                //actor.Model.Mesh.Load(_renderManager._deferredRenderer._geometryProgram);
 
                 switch (actor.Model)
                 {
@@ -111,11 +139,7 @@ namespace TakoEngine.Game
 
                 AddEntity(actor);
             }
-
-            _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
         }
-
-        private int _nextAvailableID = 1;
 
         public IEntity GetEntityForPoint(Vector2 point)
         {
@@ -131,6 +155,7 @@ namespace TakoEngine.Game
         }
 
         public Actor GetByName(string name) => _actors.First(g => g.Name == name);
+
         public IEntity GetByID(int id)
         {
             var actor = _actors.FirstOrDefault(g => g.ID == id);
@@ -162,7 +187,7 @@ namespace TakoEngine.Game
 
         public void AddEntity(IEntity entity)
         {
-            // Assign an ID
+            // Assign a unique ID
             if (entity.ID == 0)
             {
                 entity.ID = _nextAvailableID;
@@ -174,7 +199,6 @@ namespace TakoEngine.Game
                 case Actor actor:
                     if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
                     if (_actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
-
                     _actors.Add(actor);
                     break;
                 case Brush brush:
@@ -207,8 +231,8 @@ namespace TakoEngine.Game
         public void UpdateFrame()
         {
             // Update the gameobject colliders every frame, since they could have moved
-            _gameObjectQuads.Clear();
-            _gameObjectQuads.InsertRange(_actors.Select(g => g.Bounds).Where(c => c != null));
+            _actorQuads.Clear();
+            _actorQuads.InsertRange(_actors.Select(g => g.Bounds).Where(c => c != null));
 
             // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
             foreach (var actor in _actors)
@@ -219,7 +243,7 @@ namespace TakoEngine.Game
                     .Select(c => (PointLight)c.AttachedEntity));
 
                 var filteredColliders = _brushQuads.Retrieve(actor.Bounds)
-                    .Concat(_gameObjectQuads
+                    .Concat(_actorQuads
                         .Retrieve(actor.Bounds)
                             .Where(c => ((Actor)c.AttachedEntity).Name != actor.Name));
 
@@ -230,6 +254,8 @@ namespace TakoEngine.Game
 
             PollForInput();
         }
+
+        public void Resize() => _renderManager.Resize();
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 
@@ -247,14 +273,8 @@ namespace TakoEngine.Game
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
 
-        public void SaveToFile(string path)
-        {
-            throw new NotImplementedException();
-        }
+        public void SaveToFile(string path) => throw new NotImplementedException();
 
-        public static GameState LoadFromFile(string path)
-        {
-            throw new NotImplementedException();
-        }
+        public static GameState LoadFromFile(string path) => throw new NotImplementedException();
     }
 }

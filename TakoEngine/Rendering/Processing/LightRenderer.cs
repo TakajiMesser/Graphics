@@ -107,7 +107,7 @@ namespace TakoEngine.Rendering.Processing
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
-        public void StencilPass(Resolution resolution, Light light, Camera camera, SimpleMesh mesh)
+        public void StencilPass(Light light, Camera camera, SimpleMesh mesh)
         {
             _stencilProgram.Use();
             GL.DrawBuffer(DrawBufferMode.None);

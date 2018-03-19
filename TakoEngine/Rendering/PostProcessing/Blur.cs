@@ -81,7 +81,7 @@ namespace TakoEngine.Rendering.PostProcessing
             FinalTexture.ReserveMemory();
         }
 
-        public void Render(Resolution resolution, Texture scene, Texture velocity, float fps)
+        public void Render(Texture scene, Texture velocity, float fps)
         {
             _blurProgram.Use();
             _frameBuffer.Draw();

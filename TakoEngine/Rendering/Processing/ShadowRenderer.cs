@@ -115,7 +115,7 @@ namespace TakoEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects)
+        public void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _pointShadowProgram.Use();
 
@@ -142,7 +142,7 @@ namespace TakoEngine.Rendering.Processing
                 brush.Draw(_pointShadowProgram);
             }
 
-            foreach (var actor in gameObjects)
+            foreach (var actor in actors)
             {
                 actor.Draw(_pointShadowProgram);
             }
@@ -150,7 +150,7 @@ namespace TakoEngine.Rendering.Processing
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        public void PointLightJointPass(Camera camera, PointLight light, IEnumerable<Actor> gameObjects)
+        public void PointLightJointPass(Camera camera, PointLight light, IEnumerable<Actor> actors)
         {
             _pointShadowJointProgram.Use();
 
@@ -172,7 +172,7 @@ namespace TakoEngine.Rendering.Processing
             _pointShadowJointProgram.SetUniform("lightRadius", light.Radius);
             _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
             // Draw all geometry, but only the positions
-            foreach (var actor in gameObjects)
+            foreach (var actor in actors)
             {
                 actor.Draw(_pointShadowJointProgram);
             }
@@ -180,7 +180,7 @@ namespace TakoEngine.Rendering.Processing
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightPass(Resolution resolution, Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects)
+        private void SpotLightPass(Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _spotShadowProgram.Use();
 
@@ -194,7 +194,6 @@ namespace TakoEngine.Rendering.Processing
             GL.CullFace(CullFaceMode.Back);
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             // Draw camera from the spot light's perspective
             camera.DrawFromLight(_spotShadowProgram, light);
@@ -205,7 +204,7 @@ namespace TakoEngine.Rendering.Processing
                 brush.Draw(_spotShadowProgram);
             }
 
-            foreach (var actor in gameObjects)
+            foreach (var actor in actors)
             {
                 actor.Draw(_spotShadowProgram);
             }
@@ -213,7 +212,7 @@ namespace TakoEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightJointPass(Resolution resolution, Camera camera, SpotLight light, IEnumerable<Actor> gameObjects)
+        private void SpotLightJointPass(Camera camera, SpotLight light, IEnumerable<Actor> actors)
         {
             _spotShadowJointProgram.Use();
 
@@ -227,13 +226,12 @@ namespace TakoEngine.Rendering.Processing
             GL.CullFace(CullFaceMode.Back);
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             //GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
             // Draw camera from the spot light's perspective
             camera.DrawFromLight(_spotShadowJointProgram, light);
 
             // Draw all geometry, but only the positions
-            foreach (var actor in gameObjects)
+            foreach (var actor in actors)
             {
                 actor.Draw(_spotShadowJointProgram);
             }
@@ -241,17 +239,17 @@ namespace TakoEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        public void Render(Resolution resolution, Camera camera, Light light, IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects)
+        public void Render(Camera camera, Light light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             switch (light)
             {
                 case PointLight pLight:
-                    PointLightPass(camera, pLight, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-                    PointLightJointPass(camera, pLight, gameObjects.Where(g => g.Model is AnimatedModel));
+                    PointLightPass(camera, pLight, brushes, actors.Where(g => g.Model is SimpleModel));
+                    PointLightJointPass(camera, pLight, actors.Where(g => g.Model is AnimatedModel));
                     break;
                 case SpotLight sLight:
-                    SpotLightPass(resolution, camera, sLight, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-                    SpotLightJointPass(resolution, camera, sLight, gameObjects.Where(g => g.Model is AnimatedModel));
+                    SpotLightPass(camera, sLight, brushes, actors.Where(g => g.Model is SimpleModel));
+                    SpotLightJointPass(camera, sLight, actors.Where(g => g.Model is AnimatedModel));
                     break;
             }
         }

@@ -13,6 +13,7 @@ using TakoEngine.Maps;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
 using TakoEngine.Utilities;
+using Timer = System.Timers.Timer;
 
 namespace TakoEngine.Game
 {
@@ -24,10 +25,8 @@ namespace TakoEngine.Game
         public RenderModes RenderMode { get; set; }
         public double Frequency { get; private set; }
         public Resolution Resolution { get; private set; }
-        public EventHandler Resized;
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
-
         public IEntity SelectedEntity { get; private set; }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
@@ -36,15 +35,10 @@ namespace TakoEngine.Game
         private string _mapPath;
         private GameState _gameState;
         private bool _invalidated = false;
-
         private Vector3 _currentAngles = new Vector3();
-
         internal InputState _inputState = new InputState();
         private Point _mouseLocation;
-
-        private System.Timers.Timer _timer = new System.Timers.Timer();
-        private System.Timers.Timer _fpsTimer = new System.Timers.Timer(1000);
-        private List<double> _frequencies = new List<double>();
+        private Timer _pollTimer = new Timer();
 
         private object _cursorLock = new object();
         private bool _isCursorVisible = true;
@@ -88,25 +82,17 @@ namespace TakoEngine.Game
             _mapPath = mapPath;
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
-            _fpsTimer.Elapsed += (s, e) =>
-            {
-                if (_frequencies.Count > 0)
-                {
-                    _gameState?.SetFrequency(_frequencies.Average());
-                    _frequencies.Clear();
-                }
-            };
-            _fpsTimer.Start();
-
-            _timer.Interval = 16.67;
-            _timer.Elapsed += Timer_Tick;
+            _pollTimer.Interval = 16.67;
+            _pollTimer.Elapsed += Timer_Tick;
         }
 
         private void Timer_Tick(object sender, EventArgs e)
         {
-            _timer.Stop();
+            _pollTimer.Stop();
 
-            OnUpdateFrame();
+            // Handle user input, then poll their input for handling on the following frame
+            HandleInput();
+            PollForInput();
 
             if (_invalidated)
             {
@@ -114,7 +100,7 @@ namespace TakoEngine.Game
                 _invalidated = false;
             }
 
-            _timer.Start();
+            _pollTimer.Start();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -138,31 +124,17 @@ namespace TakoEngine.Game
         {
             Location = new Point(0, 0);
 
-            var loadedMap = Map.Load(_mapPath);
+            var map = Map.Load(_mapPath);
 
-            _gameState = new GameState(loadedMap, Resolution);
+            _gameState = new GameState(Resolution);
+            _gameState.LoadMapForEditor(map);
             _gameState.Initialize();
-            _gameState._camera.DetachFromEntity();
 
-            // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
-            _gameState._camera._viewMatrix.Up = Vector3.UnitZ;
-            _gameState._camera._viewMatrix.LookAt = _gameState._camera.Position + Vector3.UnitY;
-
-            _timer.Start();
-        }
-
-        protected void OnUpdateFrame()
-        {
-            // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
-            HandleInput();
-            //_gameState._inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
-            PollForInput();
+            _pollTimer.Start();
         }
 
         protected void OnRenderFrame()
         {
-            _frequencies.Add(Frequency);
-
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:

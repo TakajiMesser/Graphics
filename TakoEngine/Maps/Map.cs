@@ -8,7 +8,7 @@ using TakoEngine.Physics.Collision;
 namespace TakoEngine.Maps
 {
     /// <summary>
-    /// A map should consist of a collection of static brushes, gameObjects, a camera, and/or a player (cutscenes and menu's won't have a player)
+    /// A map should consist of a collection of static brushes, actors, a camera, and/or a player (cutscenes and menu's won't have a player)
     /// 
     /// </summary>
     public class Map

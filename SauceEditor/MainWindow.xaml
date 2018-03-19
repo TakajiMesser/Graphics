@@ -7,7 +7,7 @@
         xmlns:controls="clr-namespace:SauceEditor.Controls"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
-        Title="MainWindow" Height="600" Width="600" WindowState="Maximized">
+        Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
     <Window.CommandBindings>
         <CommandBinding Command="New" CanExecute="NewCommand_CanExecute" Executed="NewCommand_Executed" />
         <CommandBinding Command="Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
@@ -30,6 +30,7 @@
             <ToolBar>
                 <Button Command="Undo" Content="Undo"/>
                 <Button Command="Redo" Content="Redo"/>
+                <Button Name="PlayButton" Content="Play" Click="PlayButton_Click" Visibility="Hidden"/>
             </ToolBar>
         </ToolBarTray>
         <Grid>
@@ -37,8 +38,8 @@
                 <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
-            <dock:DockManager Name ="DockManager" Grid.Column="0"/>
-            <dock:DockManager Name ="DockManager2" Grid.Column="1"/>
+            <dock:DockManager Name ="MainDockManager" Grid.Column="0"/>
+            <dock:DockManager Name ="SideDockManager" Grid.Column="1"/>
         </Grid>
 
         <!--<DockPanel DockPanel.Dock="Top">

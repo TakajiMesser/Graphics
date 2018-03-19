@@ -63,9 +63,10 @@ namespace TakoEngine.Game
             //WindowState = WindowState.Maximized;
             //Size = new System.Drawing.Size(1280, 720);
 
-            var loadedMap = Map.Load(_mapPath);
+            var map = Map.Load(_mapPath);
 
-            _gameState = new GameState(loadedMap, Resolution);
+            _gameState = new GameState(Resolution);
+            _gameState.LoadMap(map);
             _gameState.Initialize();
         }
 

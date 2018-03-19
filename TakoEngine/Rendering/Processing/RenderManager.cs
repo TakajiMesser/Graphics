@@ -42,7 +42,7 @@ namespace TakoEngine.Rendering.Processing
 
         public RenderManager(Resolution resolution) => Resolution = resolution;
 
-        public void Load(IEnumerable<Brush> brushes, IEnumerable<Actor> gameObjects, IEnumerable<string> skyboxTexturePaths)
+        public void Load(IEnumerable<Brush> brushes, IEnumerable<Actor> actors, IEnumerable<string> skyboxTexturePaths)
         {
             _skyboxRenderer.SetTextures(skyboxTexturePaths);
 
@@ -64,7 +64,7 @@ namespace TakoEngine.Rendering.Processing
                 brush.Load(_deferredRenderer._geometryProgram);
             }
 
-            foreach (var actor in gameObjects)
+            foreach (var actor in actors)
             {
                 actor.Model.Load(_deferredRenderer._geometryProgram);
             }
@@ -88,13 +88,13 @@ namespace TakoEngine.Rendering.Processing
             _renderToScreen.ResizeTextures(Resolution);
         }
 
-        public void RenderEntityIDs(Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> gameObjects)
+        public void RenderEntityIDs(Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> actors)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(Resolution, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-            _selectionRenderer.JointSelectionPass(Resolution, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+            _selectionRenderer.SelectionPass(camera, brushes, actors.Where(g => g.Model is SimpleModel));
+            _selectionRenderer.JointSelectionPass(camera, actors.Where(g => g.Model is AnimatedModel));
         }
 
         public int GetEntityIDFromPoint(Vector2 point) => _selectionRenderer.GetEntityIDFromPoint(point);
@@ -107,51 +107,25 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Always);
-            //GL.Viewport(0, 0, texture.Width, texture.Height);
 
             _wireframeRenderer.SelectionPass(camera, entity);
         }
 
-        public void RenderWireframe(Camera camera, List<Brush> brushes, List<Actor> gameObjects)
+        public void RenderWireframe(Camera camera, List<Brush> brushes, List<Actor> actors)
         {
-            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _wireframeRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            //GL.Disable(EnableCap.DepthTest);
-
-            /*GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);*/
-
-            _wireframeRenderer.WireframePass(Resolution, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-            _wireframeRenderer.JointWireframePass(Resolution, camera, gameObjects.Where(g => g.Model is AnimatedModel));
-
-            //GL.Enable(EnableCap.CullFace);
-            //GL.CullFace(CullFaceMode.Back);
-
-            //_skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
-
-            // Read from GBuffer's final texture, so that we can post-process it
-            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
-            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
-            var texture = _wireframeRenderer.FinalTexture;
+            _wireframeRenderer.WireframePass(camera, brushes, actors.Where(g => g.Model is SimpleModel));
+            _wireframeRenderer.JointWireframePass(camera, actors.Where(g => g.Model is AnimatedModel));
 
             GL.Disable(EnableCap.DepthTest);
 
-            _fxaaRenderer.Render(texture);
-            texture = _fxaaRenderer.FinalTexture;
-            //_invertRenderer.Render(texture);
-            //_blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
-            //texture = _blurRenderer.FinalTexture;
-            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
-            _renderToScreen.Render(texture);
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _fxaaRenderer.Render(_wireframeRenderer.FinalTexture);
+            _renderToScreen.Render(_fxaaRenderer.FinalTexture);
         }
 
-        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> gameObjects)
+        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> actors)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -162,39 +136,17 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, brushes, actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, actors.Where(g => g.Model is AnimatedModel));
 
-            /*GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-
-            GL.Disable(EnableCap.StencilTest);
-            GL.Disable(EnableCap.Blend);*/
-
-            _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
-
-            // Read from GBuffer's final texture, so that we can post-process it
-            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
-            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
-            var texture = _deferredRenderer.ColorTexture;
+            _skyboxRenderer.Render(camera, _deferredRenderer.GBuffer);
 
             GL.Disable(EnableCap.DepthTest);
 
-            //_invertRenderer.Render(texture);
-            //_blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
-            //texture = _blurRenderer.FinalTexture;
-            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
-            _renderToScreen.Render(texture);
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _renderToScreen.Render(_deferredRenderer.ColorTexture);
         }
 
-        public void RenderLitFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> gameObjects)
+        public void RenderLitFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> actors)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -205,38 +157,35 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, brushes, actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, actors.Where(g => g.Model is AnimatedModel));
 
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            RenderLights(camera, lights, brushes, actors);
 
-            foreach (var light in lights)
-            {
-                var lightMesh = _lightRenderer.GetMeshForLight(light);
-                _lightRenderer.StencilPass(Resolution, light, camera, lightMesh);
+            _skyboxRenderer.Render(camera, _deferredRenderer.GBuffer);
 
-                GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(Resolution, camera, light, brushes, gameObjects);
-                GL.Enable(EnableCap.Blend);
+            GL.Disable(EnableCap.DepthTest);
 
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            _renderToScreen.Render(_deferredRenderer.FinalTexture);
+        }
 
-                var lightProgram = _lightRenderer.GetProgramForLight(light);
-                var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
-                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
-            }
+        public void RenderFullFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> actors)
+        {
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
 
-            GL.Disable(EnableCap.StencilTest);
-            GL.Disable(EnableCap.Blend);
+            _deferredRenderer.GeometryPass(textureManager, camera, brushes, actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, actors.Where(g => g.Model is AnimatedModel));
 
-            _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
+            RenderLights(camera, lights, brushes, actors);
+
+            _skyboxRenderer.Render(camera, _deferredRenderer.GBuffer);
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
@@ -246,72 +195,42 @@ namespace TakoEngine.Rendering.Processing
             GL.Disable(EnableCap.DepthTest);
 
             //_invertRenderer.Render(texture);
-            //_blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
-            //texture = _blurRenderer.FinalTexture;
-            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
-            _renderToScreen.Render(texture);
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
-        }
-
-        public void RenderFullFrame(TextureManager textureManager, Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> gameObjects)
-        {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-
-            _deferredRenderer.GeometryPass(Resolution, textureManager, camera, brushes, gameObjects.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(Resolution, textureManager, camera, gameObjects.Where(g => g.Model is AnimatedModel));
-
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
-
-            foreach (var light in lights)
-            {
-                var lightMesh = _lightRenderer.GetMeshForLight(light);
-                _lightRenderer.StencilPass(Resolution, light, camera, lightMesh);
-
-                GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(Resolution, camera, light, brushes, gameObjects);
-                GL.Enable(EnableCap.Blend);
-
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-                var lightProgram = _lightRenderer.GetProgramForLight(light);
-                var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
-                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
-            }
-
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-
-            GL.Disable(EnableCap.StencilTest);
-            GL.Disable(EnableCap.Blend);
-
-            _skyboxRenderer.Render(Resolution, camera, _deferredRenderer.GBuffer);
-
-            // Read from GBuffer's final texture, so that we can post-process it
-            //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
-            //GL.ReadBuffer(ReadBufferMode.ColorAttachment1);
-            var texture = _deferredRenderer.FinalTexture;
-
-            GL.Disable(EnableCap.DepthTest);
-
-            //_invertRenderer.Render(texture);
-            _blurRenderer.Render(Resolution, texture, _deferredRenderer.VelocityTexture, 60.0f);
+            _blurRenderer.Render(texture, _deferredRenderer.VelocityTexture, 60.0f);
             texture = _blurRenderer.FinalTexture;
-            //GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            //_renderToScreen.Render(_deferredRenderer.VelocityTexture);
+
             _renderToScreen.Render(texture);
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+        }
+
+        private void RenderLights(Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> actors)
+        {
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+
+            foreach (var light in lights)
+            {
+                var lightMesh = _lightRenderer.GetMeshForLight(light);
+                _lightRenderer.StencilPass(light, camera, lightMesh);
+
+                GL.Disable(EnableCap.Blend);
+                _shadowRenderer.Render(camera, light, brushes, actors);
+                GL.Enable(EnableCap.Blend);
+
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+                var lightProgram = _lightRenderer.GetProgramForLight(light);
+                var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
+                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
+            }
+
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+
+            GL.Disable(EnableCap.StencilTest);
+            GL.Disable(EnableCap.Blend);
         }
     }
 }
