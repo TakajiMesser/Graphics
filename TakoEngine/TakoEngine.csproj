@@ -139,9 +139,9 @@
     <Compile Include="Maps\MapBrush.cs" />
     <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
-    <Compile Include="Materials\Material.cs" />
-    <Compile Include="Meshes\JointMesh.cs" />
-    <Compile Include="Meshes\SimpleMesh.cs" />
+    <Compile Include="Rendering\Materials\Material.cs" />
+    <Compile Include="Rendering\Meshes\JointMesh.cs" />
+    <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />
     <Compile Include="Outputs\Resolution.cs" />
@@ -165,9 +165,9 @@
     <Compile Include="Rendering\Matrices\ProjectionMatrix.cs" />
     <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
     <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
-    <Compile Include="Meshes\MeshManager.cs" />
-    <Compile Include="Meshes\MeshTriangle.cs" />
-    <Compile Include="Meshes\Mesh.cs" />
+    <Compile Include="Rendering\Meshes\MeshManager.cs" />
+    <Compile Include="Rendering\Meshes\MeshTriangle.cs" />
+    <Compile Include="Rendering\Meshes\Mesh.cs" />
     <Compile Include="Physics\Collision\QuadTree.cs" />
     <Compile Include="Physics\Collision\Bounds.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />

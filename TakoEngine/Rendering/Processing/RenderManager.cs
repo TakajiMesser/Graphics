@@ -7,7 +7,6 @@ using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
-using TakoEngine.Helpers;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.PostProcessing;
 using TakoEngine.Rendering.Textures;

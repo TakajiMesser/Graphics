@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using TakoEngine.Entities;
 using TakoEngine.Helpers;
-using TakoEngine.Materials;
 using TakoEngine.Physics.Collision;
+using TakoEngine.Rendering.Materials;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
 

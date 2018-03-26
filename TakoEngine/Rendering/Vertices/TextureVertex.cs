@@ -1,13 +1,5 @@
-﻿using TakoEngine.Materials;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using OpenTK;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace TakoEngine.Rendering.Vertices
 {

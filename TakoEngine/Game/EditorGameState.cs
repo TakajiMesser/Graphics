@@ -7,7 +7,6 @@ using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
-using TakoEngine.Helpers;
 using TakoEngine.Inputs;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;

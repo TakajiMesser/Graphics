@@ -3,15 +3,15 @@ using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
 using TakoEngine.Entities.Lights;
-using TakoEngine.Materials;
 using TakoEngine.Rendering.Animations;
 using TakoEngine.Rendering.Buffers;
+using TakoEngine.Rendering.Materials;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
 using TakoEngine.Utilities;
 
-namespace TakoEngine.Meshes
+namespace TakoEngine.Rendering.Meshes
 {
     public class JointMesh : IDisposable
     {

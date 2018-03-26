@@ -1,4 +1,4 @@
-﻿namespace TakoEngine.Meshes
+﻿namespace TakoEngine.Rendering.Meshes
 {
     public struct MeshTriangle
     {

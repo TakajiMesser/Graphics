@@ -2,13 +2,13 @@
 using System;
 using System.Collections.Generic;
 using TakoEngine.Entities.Lights;
-using TakoEngine.Materials;
 using TakoEngine.Rendering.Buffers;
+using TakoEngine.Rendering.Materials;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
 
-namespace TakoEngine.Meshes
+namespace TakoEngine.Rendering.Meshes
 {
     public class Mesh<T> : IDisposable where T : struct
     {

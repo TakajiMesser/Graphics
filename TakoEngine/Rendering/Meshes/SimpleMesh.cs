@@ -9,7 +9,7 @@ using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Vertices;
 using TakoEngine.Utilities;
 
-namespace TakoEngine.Meshes
+namespace TakoEngine.Rendering.Meshes
 {
     public class SimpleMesh : IDisposable
     {

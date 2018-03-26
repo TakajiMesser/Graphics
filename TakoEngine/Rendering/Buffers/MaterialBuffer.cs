@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
-using TakoEngine.Materials;
+using TakoEngine.Rendering.Materials;
 
 namespace TakoEngine.Rendering.Buffers
 {

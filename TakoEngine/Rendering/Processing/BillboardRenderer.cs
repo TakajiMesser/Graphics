@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
 using System.IO;
@@ -13,7 +12,6 @@ using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
-using TakoEngine.Utilities;
 
 namespace TakoEngine.Rendering.Processing
 {
