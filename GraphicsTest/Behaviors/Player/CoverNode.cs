@@ -1,10 +1,9 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using TakoEngine.Entities;
@@ -12,16 +11,10 @@ using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
 {
-    [DataContract]
-    public class CoverNode : LeafNode
+    public class CoverNode : Node
     {
-        [DataMember]
         public float CoverSpeed { get; set; }
-
-        [DataMember]
         public float EnterCoverSpeed { get; set; }
-
-        [DataMember]
         public float CoverDistance { get; set; }
 
         public CoverNode(float coverSpeed, float enterCoverSpeed, float coverDistance)
@@ -31,7 +24,7 @@ namespace GraphicsTest.Behaviors.Player
             CoverDistance = coverDistance;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             if (context.ContainsVariable("coverDirection"))
             {
@@ -74,10 +67,10 @@ namespace GraphicsTest.Behaviors.Player
                     }
                 }
 
-                return BehaviorStatuses.Success;
+                return BehaviorStatus.Success;
             }
 
-            return BehaviorStatuses.Failure;
+            return BehaviorStatus.Failure;
         }
     }
 }

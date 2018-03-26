@@ -97,11 +97,14 @@ namespace SauceEditor.Controls
             PositionTransform.Visibility = Visibility.Visible;
             PositionTransform.SetValues(_entity.Position);
 
-            RotationTransform.Visibility = Visibility.Visible;
-            RotationTransform.SetValues(_entity.OriginalRotation);
+            if (_entity is Actor || _entity is Brush)
+            {
+                RotationTransform.Visibility = Visibility.Visible;
+                RotationTransform.SetValues(_entity.OriginalRotation);
 
-            ScaleTransform.Visibility = Visibility.Visible;
-            ScaleTransform.SetValues(_entity.Scale);
+                ScaleTransform.Visibility = Visibility.Visible;
+                ScaleTransform.SetValues(_entity.Scale);
+            }
         }
 
         private void ClearProperties()

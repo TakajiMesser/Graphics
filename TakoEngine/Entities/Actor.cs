@@ -9,7 +9,7 @@ using TakoEngine.Inputs;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 
 namespace TakoEngine.Entities
 {
@@ -48,7 +48,7 @@ namespace TakoEngine.Entities
             set => Model.Scale = value;
         }
 
-        public BehaviorTree Behaviors { get; set; }
+        public Behavior Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
 

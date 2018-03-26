@@ -1,10 +1,9 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
+﻿using TakoEngine.Scripting.Behaviors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using TakoEngine.Entities;
@@ -13,13 +12,9 @@ using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
 {
-    [DataContract]
-    public class EvadeNode : LeafNode
+    public class EvadeNode : Node
     {
-        [DataMember]
         public float EvadeSpeed { get; set; }
-
-        [DataMember]
         public int TickCount { get; set; }
 
         public EvadeNode(float evadeSpeed, int tickCount)
@@ -28,7 +23,7 @@ namespace GraphicsTest.Behaviors.Player
             TickCount = tickCount;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
@@ -45,7 +40,7 @@ namespace GraphicsTest.Behaviors.Player
                     // If this angle is greater than or equal to 90 degrees, let the evade take place
                     if (angle < (float)Math.PI / 2.0f)
                     {
-                        return BehaviorStatuses.Failure;
+                        return BehaviorStatus.Failure;
                     }
                     else
                     {
@@ -72,7 +67,7 @@ namespace GraphicsTest.Behaviors.Player
                     context.SetVariable("evadeTranslation", evadeTranslation);
                     context.SetVariable("nEvadeTicks", nEvadeTicks);
 
-                    return BehaviorStatuses.Success;
+                    return BehaviorStatus.Success;
                 }
             }
 
@@ -87,7 +82,7 @@ namespace GraphicsTest.Behaviors.Player
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
                 context.Translation = evadeTranslation;
 
-                return BehaviorStatuses.Success;
+                return BehaviorStatus.Success;
             }
             else if (nEvadeTicks > TickCount)
             {
@@ -97,10 +92,10 @@ namespace GraphicsTest.Behaviors.Player
                 context.Rotation = new Vector3(context.Rotation.X, 0.0f, context.Rotation.Z);
                 context.Scale = Vector3.One;
 
-                return BehaviorStatuses.Failure;
+                return BehaviorStatus.Failure;
             }
 
-            return BehaviorStatuses.Failure;
+            return BehaviorStatus.Failure;
         }
     }
 }

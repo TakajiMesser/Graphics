@@ -4,19 +4,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 using OpenTK;
 using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors
 {
-    [DataContract]
-    public class MoveToNode : LeafNode
+    public class MoveToNode : Node
     {
-        [DataMember]
         public Vector3 Destination { get; private set; }
-
-        [DataMember]
         public float Speed { get; private set; }
 
         public MoveToNode(Vector3 destination, float speed)
@@ -25,13 +21,13 @@ namespace GraphicsTest.Behaviors
             Speed = speed;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             var difference = Destination - context.Position;
 
             if (difference == Vector3.Zero)
             {
-                return BehaviorStatuses.Success;
+                return BehaviorStatus.Success;
             }
             else if (difference.Length < Speed)
             {
@@ -42,7 +38,7 @@ namespace GraphicsTest.Behaviors
                 context.Translation = difference.Normalized() * Speed;
             }
 
-            return BehaviorStatuses.Running;
+            return BehaviorStatus.Running;
         }
     }
 }

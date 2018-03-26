@@ -121,6 +121,7 @@
     <Compile Include="Entities\Models\AnimatedModel.cs" />
     <Compile Include="Game\GameProperty.cs" />
     <Compile Include="Entities\Actor.cs" />
+    <Compile Include="Game\EditorGameState.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
@@ -184,6 +185,7 @@
     <Compile Include="Rendering\PostProcessing\MotionBlur.cs" />
     <Compile Include="Rendering\PostProcessing\PostProcess.cs" />
     <Compile Include="Rendering\PreProcessing\PreProcess.cs" />
+    <Compile Include="Rendering\Processing\BillboardRenderer.cs" />
     <Compile Include="Rendering\Processing\FXAARenderer.cs" />
     <Compile Include="Rendering\Processing\SelectionRenderer.cs" />
     <Compile Include="Rendering\Processing\WireframeRenderer.cs" />
@@ -201,12 +203,27 @@
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Vertices\ColorVertex.cs" />
     <Compile Include="Rendering\Vertices\TextureVertex.cs" />
     <Compile Include="Rendering\Vertices\JointVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex.cs" />
     <Compile Include="Rendering\Vertices\Vertex.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
+    <Compile Include="Scripting\Behaviors\BehaviorContext.cs" />
+    <Compile Include="Scripting\Behaviors\BehaviorExtensions.cs" />
+    <Compile Include="Scripting\Behaviors\BehaviorInterruptedEventArgs.cs" />
+    <Compile Include="Scripting\Behaviors\BehaviorCompletedEventArgs.cs" />
+    <Compile Include="Scripting\Behaviors\Behavior.cs" />
+    <Compile Include="Scripting\Behaviors\Decorators\ConditionNode.cs" />
+    <Compile Include="Scripting\Behaviors\Leaves\InlineLeafNode.cs" />
+    <Compile Include="Scripting\Behaviors\Decorators\InlineConditionNode.cs" />
+    <Compile Include="Scripting\Behaviors\Decorators\DecoratorNode.cs" />
+    <Compile Include="Scripting\Behaviors\Composites\ParallelNode.cs" />
+    <Compile Include="Scripting\Behaviors\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\Behaviors\Composites\SequenceNode.cs" />
+    <Compile Include="Scripting\Behaviors\Composites\CompositeNode.cs" />
+    <Compile Include="Scripting\Behaviors\Node.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorContext.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
     <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
@@ -224,10 +241,13 @@
     <Compile Include="Scripting\BehaviorTrees\Node.cs" />
     <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
     <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\StimResponse\Response.cs" />
-    <Compile Include="Scripting\BehaviorTrees\StimResponse\Stimulus.cs" />
+    <Compile Include="Scripting\Properties\IAlertProperty.cs" />
+    <Compile Include="Scripting\Properties\Property.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
+    <Compile Include="Scripting\StimResponse\Response.cs" />
+    <Compile Include="Scripting\StimResponse\StimulusReceivedEventArgs.cs" />
+    <Compile Include="Scripting\StimResponse\Stimulus.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
@@ -240,6 +260,12 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\Billboard\billboard-selection.geom" />
+    <None Include="Rendering\Shaders\Billboard\billboard-selection.vert" />
+    <None Include="Rendering\Shaders\Billboard\billboard-selection.frag" />
+    <None Include="Rendering\Shaders\Billboard\billboard.frag" />
+    <None Include="Rendering\Shaders\Billboard\billboard.geom" />
+    <None Include="Rendering\Shaders\Billboard\billboard.vert" />
     <None Include="Rendering\Shaders\Deferred\deferred-skinning.vert" />
     <None Include="Rendering\Shaders\Deferred\deferred.vert" />
     <None Include="Rendering\Shaders\Deferred\deferred.tesc" />
@@ -287,11 +313,21 @@
     <None Include="Rendering\Shaders\Wireframe\wireframe-skinning.vert" />
     <None Include="Rendering\Shaders\Wireframe\wireframe.geom" />
     <None Include="Rendering\Shaders\Wireframe\wireframe.vert" />
+    <None Include="Resources\Meshes\Cone.obj" />
+    <None Include="Resources\Meshes\Cube.obj" />
+    <None Include="Resources\Meshes\GenericMaterial.mtl" />
+    <None Include="Resources\Meshes\Sphere.obj" />
+    <None Include="Resources\Meshes\Square.obj" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Rendering\Shaders\DepthOfField\" />
     <Folder Include="Rendering\Shaders\HDR\" />
     <Folder Include="Rendering\Shaders\Lens\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Textures\point-light.png" />
+    <Content Include="Resources\Textures\spot-light.png" />
+    <Content Include="Resources\Textures\directional-light.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\AssimpNet.3.3.2\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" />

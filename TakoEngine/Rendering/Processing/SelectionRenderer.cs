@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Helpers;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Buffers;
@@ -104,17 +105,6 @@ namespace TakoEngine.Rendering.Processing
             return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
         }
 
-        private Vector4 GetColorFromID(int id)
-        {
-            return new Vector4()
-            {
-                X = ((id & 0x000000FF) >> 0) / 255.0f,
-                Y = ((id & 0x0000FF00) >> 8) / 255.0f,
-                Z = ((id & 0x00FF0000) >> 16) / 255.0f,
-                W = 1.0f
-            };
-        }
-
         public void SelectionPass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _selectionProgram.Use();
@@ -158,6 +148,14 @@ namespace TakoEngine.Rendering.Processing
                 actor.Draw(_jointSelectionProgram);
             }
         }
+
+        public static Vector4 GetColorFromID(int id) => new Vector4()
+        {
+            X = ((id & 0x000000FF) >> 0) / 255.0f,
+            Y = ((id & 0x0000FF00) >> 8) / 255.0f,
+            Z = ((id & 0x00FF0000) >> 16) / 255.0f,
+            W = 1.0f
+        };
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)
         {

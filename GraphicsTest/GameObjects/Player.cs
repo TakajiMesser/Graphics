@@ -20,15 +20,6 @@ namespace GraphicsTest.GameObjects
     {
         public const string NAME = "Player";
 
-        public const float WALK_SPEED = 0.1f;
-        public const float RUN_SPEED = 0.15f;
-        public const float CREEP_SPEED = 0.04f;
-        public const float EVADE_SPEED = 0.175f;
-        public const float COVER_SPEED = 0.1f;
-        public const float ENTER_COVER_SPEED = 0.12f;
-        public const float COVER_DISTANCE = 5.0f;
-        public const int EVADE_TICK_COUNT = 20;
-
         public Player()
         {
             Name = NAME;
@@ -61,7 +52,10 @@ namespace GraphicsTest.GameObjects
 
         private void SaveBehaviorTree()
         {
-            var rootNode = new SelectorNode(
+            var behavior = new PlayerBehavior();
+            behavior.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
+
+            /*var rootNode = new SelectorNode(
                 new SelectorNode(
                     new SelectorNode(
                         new EvadeNode(EVADE_SPEED, EVADE_TICK_COUNT),
@@ -90,7 +84,7 @@ namespace GraphicsTest.GameObjects
                 )
             );
 
-            rootNode.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
+            rootNode.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);*/
         }
     }
 }

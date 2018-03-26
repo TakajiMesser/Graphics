@@ -8,6 +8,8 @@ namespace TakoEngine.Rendering.Buffers
 {
     public class VertexBuffer<T> : IDisposable, IBindable where T : struct
     {
+        public int Count => _vertices.Count;
+
         private readonly int _handle;
         private readonly int _vertexSize;
         private List<T> _vertices = new List<T>();

@@ -1,15 +1,13 @@
 ﻿using OpenTK;
 using System;
 using System.Runtime.Serialization;
-using TakoEngine.Scripting.BehaviorTrees;
-using TakoEngine.Scripting.BehaviorTrees.Leaves;
+using TakoEngine.Scripting.Behaviors;
 
 namespace GraphicsTest.Behaviors.Player
 {
-    [DataContract]
-    public class TurnNode : LeafNode
+    public class TurnNode : Node
     {
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
@@ -33,7 +31,7 @@ namespace GraphicsTest.Behaviors.Player
                 context.Rotation = new Vector3(turnAngle, context.Rotation.Y, context.Rotation.Z);
             }
 
-            return BehaviorStatuses.Success;
+            return BehaviorStatus.Success;
         }
     }
 }

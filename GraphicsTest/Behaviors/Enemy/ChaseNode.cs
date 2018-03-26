@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Entities;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
@@ -12,16 +12,10 @@ using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Enemy
 {
-    [DataContract]
-    public class ChaseNode : LeafNode
+    public class ChaseNode : Node
     {
-        [DataMember]
         public float ViewAngle { get; set; }
-
-        [DataMember]
         public float ViewDistance { get; set; }
-
-        [DataMember]
         public string Target { get; set; }
 
         public ChaseNode(float viewAngle, float viewDistance, string target)
@@ -31,7 +25,7 @@ namespace GraphicsTest.Behaviors.Enemy
             Target = target;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             var player = context.Colliders.FirstOrDefault(c => c.AttachedEntity.GetType() == typeof(Actor) && ((Actor)c.AttachedEntity).Name == "Player");
 
@@ -73,7 +67,7 @@ namespace GraphicsTest.Behaviors.Enemy
                 }
             }
 
-            return BehaviorStatuses.Failure;
+            return BehaviorStatus.Failure;
         }
     }
 }

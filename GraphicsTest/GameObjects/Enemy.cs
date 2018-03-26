@@ -21,11 +21,6 @@ namespace GraphicsTest.GameObjects
     {
         public const string NAME = "Enemy";
 
-        public const float WALK_SPEED = 0.1f;
-        public const float VIEW_ANGLE = 1.0472f;
-        public const float VIEW_DISTANCE = 5.0f;
-        public const int FULL_ALERT_TICKS = 120;
-
         public Enemy()
         {
             Name = NAME;
@@ -79,7 +74,10 @@ namespace GraphicsTest.GameObjects
 
         private void SaveBehaviorTree()
         {
-            var rootNode = new SelectorNode(
+            var behavior = new EnemyBehavior();
+            behavior.Save(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
+
+            /*var rootNode = new SelectorNode(
                 new RepeaterNode(
                     new IsPlayerInSightNode(VIEW_ANGLE, VIEW_DISTANCE,
                         new IsAtFullAlert(FULL_ALERT_TICKS,
@@ -108,7 +106,7 @@ namespace GraphicsTest.GameObjects
                 )
             );
 
-            rootNode.Save(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
+            rootNode.Save(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);*/
         }
     }
 }

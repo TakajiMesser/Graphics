@@ -47,11 +47,9 @@ namespace TakoEngine.Rendering.Processing
             _cubeMesh = SimpleMesh.LoadFromFile(FilePathHelper.CUBE_MESH_PATH, _program);
         }
 
-        public void Render(Camera camera, FrameBuffer gBuffer)
+        public void Render(Camera camera)
         {
             _program.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, gBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
             int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
             int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);

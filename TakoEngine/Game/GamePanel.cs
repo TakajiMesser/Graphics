@@ -33,7 +33,7 @@ namespace TakoEngine.Game
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
 
         private string _mapPath;
-        private GameState _gameState;
+        private EditorGameState _gameState;
         private bool _invalidated = false;
         private Vector3 _currentAngles = new Vector3();
         internal InputState _inputState = new InputState();
@@ -126,8 +126,8 @@ namespace TakoEngine.Game
 
             var map = Map.Load(_mapPath);
 
-            _gameState = new GameState(Resolution);
-            _gameState.LoadMapForEditor(map);
+            _gameState = new EditorGameState(Resolution);
+            _gameState.LoadMap(map);
             _gameState.Initialize();
 
             _pollTimer.Start();

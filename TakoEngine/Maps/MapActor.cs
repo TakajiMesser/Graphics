@@ -5,6 +5,7 @@ using TakoEngine.Entities.Models;
 using TakoEngine.Game;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Textures;
+using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Scripting.BehaviorTrees;
 
 namespace TakoEngine.Maps
@@ -34,10 +35,7 @@ namespace TakoEngine.Maps
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))
             {
-                actor.Behaviors = new BehaviorTree()
-                {
-                    RootNode = Node.Load(BehaviorFilePath)
-                };
+                actor.Behaviors = Behavior.Load(BehaviorFilePath);
             }
 
             if (Properties != null)

@@ -11,19 +11,31 @@ namespace TakoEngine.Helpers
 
         public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Screenshots\";
 
+        #region Textures
+        public static string POINT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\point-light.png";
+        public static string SPOT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\spot-light.png";
+        public static string DIRECTIONAL_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\directional-light.png";
+        #endregion
+
         #region Meshes
-        public static string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Square.obj";
-        public static string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Cube.obj";
-        public static string SPHERE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Sphere.obj";
-        public static string CONE_MESH_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\Cone.obj";
+        public static string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Meshes\Square.obj";
+        public static string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Meshes\Cube.obj";
+        public static string SPHERE_MESH_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Meshes\Sphere.obj";
+        public static string CONE_MESH_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Meshes\Cone.obj";
         #endregion
 
         #region Materials
-        public static string GENERIC_MATERIAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\GenericMaterial.mtl";
-        public static string SHINY_MATERIAL_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Meshes\ShinyMaterial.mtl";
+        public static string GENERIC_MATERIAL_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Meshes\GenericMaterial.mtl";
         #endregion
 
         #region Shaders
+        public static string BILLBOARD_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard.vert";
+        public static string BILLBOARD_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard.geom";
+        public static string BILLBOARD_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard.frag";
+        public static string BILLBOARD_SELECTION_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard-selection.vert";
+        public static string BILLBOARD_SELECTION_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard-selection.geom";
+        public static string BILLBOARD_SELECTION_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard-selection.frag";
+
         public static string DEFERRED_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.vert";
         public static string DEFERRED_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred-skinning.vert";
         public static string DEFERRED_TESS_CONTROL_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Deferred\deferred.tesc";

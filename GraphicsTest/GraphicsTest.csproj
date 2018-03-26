@@ -80,12 +80,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behaviors\Enemy\PatrolNode.cs" />
+    <Compile Include="Behaviors\Enemy\EnemyBehavior.cs" />
     <Compile Include="Behaviors\Enemy\IsAtFullAlert.cs" />
     <Compile Include="Behaviors\Enemy\ChaseNode.cs" />
     <Compile Include="Behaviors\Enemy\TurnTowardsNode.cs" />
     <Compile Include="Behaviors\Enemy\IsPlayerInSightNode.cs" />
     <Compile Include="Behaviors\MoveToNode.cs" />
     <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
+    <Compile Include="Behaviors\Player\PlayerBehavior.cs" />
+    <Compile Include="Behaviors\Player\PlayerStim.cs" />
     <Compile Include="Behaviors\Player\TurnNode.cs" />
     <Compile Include="Behaviors\Player\MoveNode.cs" />
     <Compile Include="Behaviors\Player\EvadeNode.cs" />
@@ -133,14 +137,9 @@
     <None Include="Resources\Fonts\RobotoCondensed-LightItalic.ttf" />
     <None Include="Resources\Fonts\RobotoCondensed-Regular.ttf" />
     <None Include="Resources\Maps\TestMap.map" />
-    <None Include="Resources\Meshes\Cone.obj" />
-    <None Include="Resources\Meshes\Cube.obj" />
     <None Include="Resources\Meshes\Enemy.obj" />
     <None Include="Resources\Meshes\Floor.obj" />
-    <None Include="Resources\Meshes\GenericMaterial.mtl" />
     <None Include="Resources\Meshes\Player.obj" />
-    <None Include="Resources\Meshes\Sphere.obj" />
-    <None Include="Resources\Meshes\Square.obj" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TakoEngine\TakoEngine.csproj">

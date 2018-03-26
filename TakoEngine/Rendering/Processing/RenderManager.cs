@@ -7,6 +7,7 @@ using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
+using TakoEngine.Helpers;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.PostProcessing;
 using TakoEngine.Rendering.Textures;
@@ -33,6 +34,7 @@ namespace TakoEngine.Rendering.Processing
         private LightRenderer _lightRenderer = new LightRenderer();
         private SkyboxRenderer _skyboxRenderer = new SkyboxRenderer();
         private SelectionRenderer _selectionRenderer = new SelectionRenderer();
+        private BillboardRenderer _billboardRenderer = new BillboardRenderer();
 
         private FXAARenderer _fxaaRenderer = new FXAARenderer();
         private Blur _blurRenderer = new Blur();
@@ -53,6 +55,7 @@ namespace TakoEngine.Rendering.Processing
             _lightRenderer.Load(Resolution);
             _skyboxRenderer.Load(Resolution);
             _selectionRenderer.Load(Resolution);
+            _billboardRenderer.Load(Resolution);
             _fxaaRenderer.Load(Resolution);
             _blurRenderer.Load(Resolution);
             _invertRenderer.Load(Resolution);
@@ -81,6 +84,7 @@ namespace TakoEngine.Rendering.Processing
             _lightRenderer.ResizeTextures(Resolution);
             _skyboxRenderer.ResizeTextures(Resolution);
             _selectionRenderer.ResizeTextures(Resolution);
+            _billboardRenderer.ResizeTextures(Resolution);
             _fxaaRenderer.ResizeTextures(Resolution);
             _blurRenderer.ResizeTextures(Resolution);
             _invertRenderer.ResizeTextures(Resolution);
@@ -88,13 +92,14 @@ namespace TakoEngine.Rendering.Processing
             _renderToScreen.ResizeTextures(Resolution);
         }
 
-        public void RenderEntityIDs(Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> actors)
+        public void RenderEntityIDs(Camera camera, List<Brush> brushes, List<Actor> actors, List<Light> lights)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _selectionRenderer.SelectionPass(camera, brushes, actors.Where(g => g.Model is SimpleModel));
             _selectionRenderer.JointSelectionPass(camera, actors.Where(g => g.Model is AnimatedModel));
+            _billboardRenderer.RenderLightSelections(camera, lights);
         }
 
         public int GetEntityIDFromPoint(Vector2 point) => _selectionRenderer.GetEntityIDFromPoint(point);
@@ -111,7 +116,7 @@ namespace TakoEngine.Rendering.Processing
             _wireframeRenderer.SelectionPass(camera, entity);
         }
 
-        public void RenderWireframe(Camera camera, List<Brush> brushes, List<Actor> actors)
+        public void RenderWireframe(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> actors, List<Light> lights)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _wireframeRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -119,13 +124,15 @@ namespace TakoEngine.Rendering.Processing
             _wireframeRenderer.WireframePass(camera, brushes, actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(camera, actors.Where(g => g.Model is AnimatedModel));
 
+            _billboardRenderer.RenderLights(camera, lights);
+
             GL.Disable(EnableCap.DepthTest);
 
             _fxaaRenderer.Render(_wireframeRenderer.FinalTexture);
             _renderToScreen.Render(_fxaaRenderer.FinalTexture);
         }
 
-        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> actors)
+        public void RenderDiffuseFrame(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> actors, List<Light> lights)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -139,7 +146,11 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.GeometryPass(textureManager, camera, brushes, actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(textureManager, camera, actors.Where(g => g.Model is AnimatedModel));
 
-            _skyboxRenderer.Render(camera, _deferredRenderer.GBuffer);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment1);
+
+            _skyboxRenderer.Render(camera);
+            _billboardRenderer.RenderLights(camera, lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -159,10 +170,13 @@ namespace TakoEngine.Rendering.Processing
 
             _deferredRenderer.GeometryPass(textureManager, camera, brushes, actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(textureManager, camera, actors.Where(g => g.Model is AnimatedModel));
-
             RenderLights(camera, lights, brushes, actors);
 
-            _skyboxRenderer.Render(camera, _deferredRenderer.GBuffer);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+
+            _skyboxRenderer.Render(camera);
+            _billboardRenderer.RenderLights(camera, lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -185,7 +199,10 @@ namespace TakoEngine.Rendering.Processing
 
             RenderLights(camera, lights, brushes, actors);
 
-            _skyboxRenderer.Render(camera, _deferredRenderer.GBuffer);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+
+            _skyboxRenderer.Render(camera);
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);

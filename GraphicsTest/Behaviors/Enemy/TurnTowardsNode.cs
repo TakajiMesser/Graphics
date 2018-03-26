@@ -1,10 +1,9 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Entities;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
@@ -12,10 +11,9 @@ using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Enemy
 {
-    [DataContract]
-    public class TurnTowardsNode : LeafNode
+    public class TurnTowardsNode : Node
     {
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             if (context.Translation != Vector3.Zero)
             {
@@ -25,7 +23,7 @@ namespace GraphicsTest.Behaviors.Enemy
                 context.Rotation = new Vector3(turnAngle, context.Rotation.Y, context.Rotation.Z);
             }
 
-            return BehaviorStatuses.Success;
+            return BehaviorStatus.Success;
         }
     }
 }

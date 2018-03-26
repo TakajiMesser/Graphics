@@ -7,6 +7,7 @@ using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
+using TakoEngine.Helpers;
 using TakoEngine.Inputs;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
@@ -48,25 +49,6 @@ namespace TakoEngine.Game
             LoadLightsFromMap(map);
             LoadBrushesFromMap(map);
             LoadActorsFromMap(map);
-
-            _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
-        }
-
-        public void LoadMapForEditor(Map map)
-        {
-            // Eventually, we will want to actually load the map camera as an actor, so that we can manipulate it
-            _camera = map.Camera.ToCamera(_resolution);
-
-            // We will want to load the map lights as actors as well, so that we can manipulate them
-            LoadLightsFromMap(map);
-            LoadBrushesFromMap(map);
-            LoadActorsFromMap(map);
-
-            _camera.DetachFromEntity();
-
-            // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
-            _camera._viewMatrix.Up = Vector3.UnitZ;
-            _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
 
             _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
         }
@@ -138,19 +120,6 @@ namespace TakoEngine.Game
                 }
 
                 AddEntity(actor);
-            }
-        }
-
-        public IEntity GetEntityForPoint(Vector2 point)
-        {
-            int id = _renderManager.GetEntityIDFromPoint(point);
-            if (id > 0)
-            {
-                return GetByID(id);
-            }
-            else
-            {
-                return null;
             }
         }
 
@@ -258,16 +227,6 @@ namespace TakoEngine.Game
         public void Resize() => _renderManager.Resize();
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
-
-        public void RenderEntityIDs() => _renderManager.RenderEntityIDs(_camera, _lights, _brushes, _actors);
-
-        public void RenderSelection(IEntity entity) => _renderManager.RenderSelection(_camera, entity);
-
-        public void RenderWireframe() => _renderManager.RenderWireframe(_camera, _brushes, _actors);
-
-        public void RenderDiffuseFrame() => _renderManager.RenderDiffuseFrame(_textureManager, _camera, _brushes, _actors);
-
-        public void RenderLitFrame() => _renderManager.RenderLitFrame(_textureManager, _camera, _lights, _brushes, _actors);
 
         public void RenderFullFrame() => _renderManager.RenderFullFrame(_textureManager, _camera, _lights, _brushes, _actors);
 

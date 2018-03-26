@@ -1,10 +1,9 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using TakoEngine.Entities;
@@ -12,16 +11,10 @@ using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
 {
-    [DataContract]
-    public class MoveNode : LeafNode
+    public class MoveNode : Node
     {
-        [DataMember]
         public float RunSpeed { get; set; }
-
-        [DataMember]
         public float CreepSpeed { get; set; }
-
-        [DataMember]
         public float WalkSpeed { get; set; }
 
         public MoveNode(float runSpeed, float creepSpeed, float walkSpeed)
@@ -31,7 +24,7 @@ namespace GraphicsTest.Behaviors.Player
             WalkSpeed = walkSpeed;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             var speed = context.InputState.IsHeld(context.InputMapping.Run)
                 ? RunSpeed
@@ -72,7 +65,7 @@ namespace GraphicsTest.Behaviors.Player
             }
 
             context.Translation = translation;
-            return BehaviorStatuses.Success;
+            return BehaviorStatus.Success;
         }
     }
 }

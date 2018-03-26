@@ -1,10 +1,9 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
+using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using TakoEngine.Entities;
@@ -12,16 +11,10 @@ using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors.Player
 {
-    [DataContract]
-    public class TakeCoverNode : LeafNode
+    public class TakeCoverNode : Node
     {
-        [DataMember]
         public float CoverSpeed { get; set; }
-
-        [DataMember]
         public float EnterCoverSpeed { get; set; }
-
-        [DataMember]
         public float CoverDistance { get; set; }
 
         public TakeCoverNode(float coverSpeed, float enterCoverSpeed, float coverDistance)
@@ -31,7 +24,7 @@ namespace GraphicsTest.Behaviors.Player
             CoverDistance = coverDistance;
         }
 
-        public override BehaviorStatuses Behavior(BehaviorContext context)
+        public override BehaviorStatus Tick(BehaviorContext context)
         {
             // TODO - Filter gameobjects and brushes based on "coverable" property
             var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
@@ -46,10 +39,10 @@ namespace GraphicsTest.Behaviors.Player
                 context.QRotation = new Quaternion(turnAngle + (float)Math.PI, 0.0f, 0.0f);
                 context.Rotation = new Vector3(turnAngle + (float)Math.PI, context.Rotation.Y, context.Rotation.Z);
 
-                return BehaviorStatuses.Success;
+                return BehaviorStatus.Success;
             }
 
-            return BehaviorStatuses.Failure;
+            return BehaviorStatus.Failure;
         }
     }
 }
