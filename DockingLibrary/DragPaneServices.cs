@@ -21,7 +21,6 @@ namespace DockingLibrary
 
         private List<IDropSurface> _surfaces = new List<IDropSurface>();
         private List<IDropSurface> _surfacesWithDragOver = new List<IDropSurface>();
-
         private Point _offset;
 
         public DragPaneServices(DockManager owner)
@@ -47,11 +46,18 @@ namespace DockingLibrary
         //    StartDrag(new FloatingWindow(_pane), point);
         //}
 
+        /// <summary>
+        /// Begin dragging the pane.
+        /// </summary>
+        /// <param name="window"></param>
+        /// <param name="point">The point to start the window at, in screen coordinates.</param>
+        /// <param name="offset">The distance between the current point and the top left of the window.</param>
         public void StartDrag(FloatingWindow window, Point point, Point offset)
         {
             DockablePane = window.HostedPane;
             FloatingWindow = window;
             _offset = offset;
+            //_offset = new Point();
 
             /*if (_offset.X >= FloatingWindow.Width)
             {
@@ -76,18 +82,25 @@ namespace DockingLibrary
         {
             if (FloatingWindow != null)
             {
-                FloatingWindow.Left = point.X - _offset.X;
-                FloatingWindow.Top = point.Y - _offset.Y;
+                var position = PresentationSource.FromVisual(DockManager).CompositionTarget.TransformFromDevice.Transform(point);
 
-                List<IDropSurface> enteringSurfaces = new List<IDropSurface>();
+                FloatingWindow.Left = position.X - _offset.X;
+                FloatingWindow.Top = position.Y - _offset.Y;
+
+                var enteringSurfaces = new List<IDropSurface>();
+
                 foreach (IDropSurface surface in _surfaces)
                 {
                     if (surface.SurfaceRectangle.Contains(point))
                     {
                         if (!_surfacesWithDragOver.Contains(surface))
+                        {
                             enteringSurfaces.Add(surface);
+                        }
                         else
+                        {
                             surface.OnDragOver(point);
+                        }
                     }
                     else if (_surfacesWithDragOver.Contains(surface))
                     {

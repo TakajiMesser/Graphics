@@ -11,19 +11,10 @@ namespace TakoEngine.Entities.Lights
         public int ID { get; set; }
 
         public Vector3 Position { get; set; }
-        public Vector3 OriginalRotation { get; set; }
-        public Quaternion Rotation { get; set; }
-
-        [IgnoreDataMember]
-        public Vector3 Scale
-        {
-            get => throw new NotImplementedException(); //_viewMatrix.Scale;
-            set => throw new NotImplementedException(); //_viewMatrix.Scale = value;
-        }
 
         private float _intensity;
 
-        public Vector3 Color { get; set; }
+        public Vector4 Color { get; set; }
         public float Intensity
         {
             get => _intensity;
@@ -37,6 +28,6 @@ namespace TakoEngine.Entities.Lights
         }
 
         public abstract void DrawForStencilPass(ShaderProgram program);
-        public abstract void DrawForLightPass(Resolution resolution, ShaderProgram program);
+        public abstract void DrawForLightPass(ShaderProgram program);
     }
 }

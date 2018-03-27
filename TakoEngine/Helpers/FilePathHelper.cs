@@ -15,6 +15,9 @@ namespace TakoEngine.Helpers
         public static string POINT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\point-light.png";
         public static string SPOT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\spot-light.png";
         public static string DIRECTIONAL_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\directional-light.png";
+        public static string SELECTED_POINT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\selected-point-light.png";
+        public static string SELECTED_SPOT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\selected-spot-light.png";
+        public static string SELECTED_DIRECTIONAL_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\selected-directional-light.png";
         #endregion
 
         #region Meshes

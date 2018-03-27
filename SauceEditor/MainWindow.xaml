@@ -17,13 +17,48 @@
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Command="New" />
-                <MenuItem Command="Open" />
-                <Separator />
+                <MenuItem Command="New">
+                    <MenuItem Header="Project"/>
+                    <MenuItem Header="Map"/>
+                    <MenuItem Header="Model"/>
+                    <MenuItem Header="Behavior"/>
+                </MenuItem>
+                <MenuItem Command="Open">
+                    <MenuItem Header="Project"/>
+                    <MenuItem Header="Map"/>
+                    <MenuItem Header="Model"/>
+                    <MenuItem Header="Behavior"/>
+                </MenuItem>
+                <Separator/>
                 <MenuItem Command="Save" />
                 <MenuItem Command="SaveAs" />
-                <Separator />
+                <MenuItem Header="Save All" />
+                <Separator/>
+                <MenuItem Header="Close" />
+                <MenuItem Header="Close All" />
+                <Separator/>
                 <MenuItem Header="Exit" />
+            </MenuItem>
+            <MenuItem Header="_Edit">
+                <MenuItem Command="Undo"/>
+                <MenuItem Command="Redo"/>
+                <Separator/>
+                <MenuItem Command="Cut"/>
+                <MenuItem Command="Copy"/>
+                <MenuItem Command="Paste"/>
+                <MenuItem Command="Delete"/>
+            </MenuItem>
+            <MenuItem Header="_View">
+
+            </MenuItem>
+            <MenuItem Header="_Project">
+
+            </MenuItem>
+            <MenuItem Header="_Window">
+
+            </MenuItem>
+            <MenuItem Header="_Help">
+
             </MenuItem>
         </Menu>
         <ToolBarTray DockPanel.Dock="Top">

@@ -4,10 +4,12 @@ using System.Collections.Generic;
 using System.IO;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Entities.Models;
 using TakoEngine.Helpers;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Buffers;
+using TakoEngine.Rendering.Meshes;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 
@@ -148,36 +150,45 @@ namespace TakoEngine.Rendering.Processing
 
         public void SelectionPass(Camera camera, IEntity entity)
         {
-            var lineColor = new Vector4(0.8f, 0.8f, 0.1f, 1.0f);
+            var program = (entity is Actor actor && actor.Model is AnimatedModel) ? _jointWireframeProgram : _wireframeProgram;
+            program.Use();
+
+            camera.Draw(program);
+            program.SetUniform("lineThickness", SelectedLineThickness);
+            program.SetUniform("lineColor", new Vector4(0.8f, 0.8f, 0.1f, 1.0f));
 
             switch (entity)
             {
-                case Brush brush:
-                    _wireframeProgram.Use();
-                    camera.Draw(_wireframeProgram);
-                    _wireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
-                    _wireframeProgram.SetUniform("lineColor", lineColor);
-                    brush.Draw(_wireframeProgram);
+                case Brush b:
+                    b.Draw(_wireframeProgram);
                     break;
-                case Actor actor:
-                    if (actor.Model is SimpleModel)
-                    {
-                        _wireframeProgram.Use();
-                        camera.Draw(_wireframeProgram);
-                        _wireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
-                        _wireframeProgram.SetUniform("lineColor", lineColor);
-                        actor.Draw(_wireframeProgram);
-                    }
-                    else if (actor.Model is AnimatedModel)
-                    {
-                        _jointWireframeProgram.Use();
-                        camera.Draw(_jointWireframeProgram);
-                        _jointWireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
-                        _jointWireframeProgram.SetUniform("lineColor", lineColor);
-                        actor.Draw(_jointWireframeProgram);
-                    }
+                case Actor a:
+                    a.Draw(_wireframeProgram);
+                    break;
+                case Light l:
                     break;
             }
+        }
+
+        public void SelectionPass(Camera camera, Light light, SimpleMesh mesh)
+        {
+            _wireframeProgram.Use();
+
+            camera.Draw(_wireframeProgram);
+            _wireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
+            _wireframeProgram.SetUniform("lineColor", new Vector4(0.8f, 0.8f, 0.1f, 1.0f));
+
+            switch (light)
+            {
+                case PointLight p:
+                    _wireframeProgram.SetUniform("modelMatrix", Matrix4.Identity * Matrix4.CreateScale(p.Radius) * Matrix4.CreateTranslation(p.Position));
+                    break;
+                case SpotLight s:
+                    _wireframeProgram.SetUniform("modelMatrix", s.Model);
+                    break;
+            }
+
+            mesh.Draw();
         }
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)

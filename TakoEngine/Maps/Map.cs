@@ -18,7 +18,7 @@ namespace TakoEngine.Maps
         public List<MapActor> Actors { get; set; } = new List<MapActor>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
         public List<Light> Lights { get; set; } = new List<Light>();
-        public List<string> SkyboxTextureFilePaths { get; set; }
+        public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();
 
         public Map()
         {

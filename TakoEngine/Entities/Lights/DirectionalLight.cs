@@ -4,23 +4,11 @@ using TakoEngine.Rendering.Shaders;
 
 namespace TakoEngine.Entities.Lights
 {
-    /// <summary>
-    /// This struct is used by the Forward Renderer, in a uniform buffer
-    /// </summary>
-    public struct DLight
-    {
-        public Vector3 Color { get; private set; }
-        public float Intensity { get; private set; }
-
-        public DLight(Vector3 color, float intensity)
-        {
-            Color = color;
-            Intensity = intensity;
-        }
-    }
-
     public class DirectionalLight : Light
     {
+        public Vector3 OriginalRotation { get; set; }
+        public Quaternion Rotation { get; set; }
+
         public Vector3 Direction => (new Vector4(0.0f, 0.0f, -1.0f, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;
         public Matrix4 View => Matrix4.LookAt(Vector3.Zero, Vector3.Zero + Direction.Normalized(), Vector3.UnitZ);
 
@@ -40,7 +28,7 @@ namespace TakoEngine.Entities.Lights
             program.SetUniform("lightIntensity", Intensity);*/
         }
 
-        public override void DrawForLightPass(Resolution resolution, ShaderProgram program)
+        public override void DrawForLightPass(ShaderProgram program)
         {
             /*var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
             program.SetUniform("modelMatrix", model);
@@ -51,6 +39,6 @@ namespace TakoEngine.Entities.Lights
             program.SetUniform("lightIntensity", Intensity);*/
         }
 
-        public DLight ToStruct() => new DLight(Color, Intensity);
+        public DLight ToStruct() => new DLight(Color.Xyz, Intensity);
     }
 }

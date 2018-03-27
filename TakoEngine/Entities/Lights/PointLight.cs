@@ -7,28 +7,11 @@ using TakoEngine.Utilities;
 
 namespace TakoEngine.Entities.Lights
 {
-    /// <summary>
-    /// This struct is used by the Forward Renderer, in a uniform buffer
-    /// </summary>
-    public struct PLight
-    {
-        public Vector3 Position { get; private set; }
-        public float Radius { get; private set; }
-        public Vector3 Color { get; private set; }
-        public float Intensity { get; private set; }
-
-        public PLight(Vector3 position, float radius, Vector3 color, float intensity)
-        {
-            Position = position;
-            Radius = radius;
-            Color = color;
-            Intensity = intensity;
-        }
-    }
-
     public class PointLight : Light
     {
         public float Radius { get; set; }
+
+        public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
 
         public Matrix4 GetView(TextureTarget target)
         {
@@ -51,11 +34,6 @@ namespace TakoEngine.Entities.Lights
             }
         }
 
-        public Matrix4 GetProjection(Resolution resolution)
-        {
-            return Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
-        }
-
         public override void DrawForStencilPass(ShaderProgram program)
         {
             var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
@@ -67,17 +45,17 @@ namespace TakoEngine.Entities.Lights
             program.SetUniform("lightIntensity", Intensity);
         }
 
-        public override void DrawForLightPass(Resolution resolution, ShaderProgram program)
+        public override void DrawForLightPass(ShaderProgram program)
         {
             var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
             program.SetUniform("modelMatrix", model);
 
             program.SetUniform("lightPosition", Position);
             program.SetUniform("lightRadius", Radius);
-            program.SetUniform("lightColor", Color);
+            program.SetUniform("lightColor", Color.Xyz);
             program.SetUniform("lightIntensity", Intensity);
         }
 
-        public PLight ToStruct() => new PLight(Position, Radius, Color, Intensity);
+        public PLight ToStruct() => new PLight(Position, Radius, Color.Xyz, Intensity);
     }
 }

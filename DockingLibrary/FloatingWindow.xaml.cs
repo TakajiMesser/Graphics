@@ -32,6 +32,9 @@ namespace DockingLibrary
         private const int SC_MOVE = 0xF010;
         private const int WM_SYSCOMMAND = 0x0112;
 
+        private HwndSource _hwndSource;
+        private HwndSourceHook _wndProcHandler;
+
         internal readonly FloatingWindowHostedPane HostedPane;
         //public readonly DockablePane ReferencedPane;
 
@@ -47,7 +50,7 @@ namespace DockingLibrary
             #endregion
         }
 
-        void HostedPane_OnTitleChanged(object sender, EventArgs e)
+        private void HostedPane_OnTitleChanged(object sender, EventArgs e)
         {
             Title = HostedPane.Title;
         }
@@ -57,15 +60,11 @@ namespace DockingLibrary
             HostedPane.ReferencedPane.SaveFloatingWindowSizeAndPosition(this);
             HostedPane.ReferencedPane.OnTitleChanged -= new EventHandler(HostedPane_OnTitleChanged);
             HostedPane.Close();
-            
-            if (_hwndSource != null)
-                _hwndSource.RemoveHook(_wndProcHandler);
+
+            _hwndSource?.RemoveHook(_wndProcHandler);
 
             base.OnClosing(e);
         }
-
-        HwndSource _hwndSource;
-        HwndSourceHook _wndProcHandler;
 
         protected void OnLoaded(object sender, EventArgs e)
         {
@@ -74,15 +73,8 @@ namespace DockingLibrary
             _wndProcHandler = new HwndSourceHook(HookHandler);
             _hwndSource.AddHook(_wndProcHandler);
         }
-        
 
-        private IntPtr HookHandler(
-            IntPtr hwnd,
-            int msg,
-            IntPtr wParam,
-            IntPtr lParam,
-            ref bool handled
-        )
+        private IntPtr HookHandler(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
         {
             handled = false;
 
@@ -98,8 +90,10 @@ namespace DockingLibrary
                         short x = (short)((lParam.ToInt32() & 0xFFFF));
                         short y = (short)((lParam.ToInt32() >> 16));
 
+                        var point = PresentationSource.FromVisual(HostedPane.ReferencedPane.DockManager).CompositionTarget.TransformFromDevice.Transform(new Point(x, y));
+                        var offset = new Point(point.X - Left, point.Y - Top);
 
-                        HostedPane.ReferencedPane.DockManager.Drag(this, new Point(x, y), new Point(x - Left, y - Top));
+                        HostedPane.ReferencedPane.DockManager.Drag(this, point, offset);
 
                         handled = true;
                     }
@@ -107,10 +101,9 @@ namespace DockingLibrary
                 case WM_NCLBUTTONDBLCLK:
                     if (HostedPane.ReferencedPane.State == PaneState.DockableWindow && wParam.ToInt32() == HTCAPTION)
                     {
-                        //
                         HostedPane.ReferencedPane.ChangeState(PaneState.Docked);
                         HostedPane.ReferencedPane.Show();
-                        this.Close();
+                        Close();
 
                         handled = true;
                     }
@@ -133,13 +126,10 @@ namespace DockingLibrary
                 case WM_NCRBUTTONUP:
                     if (wParam.ToInt32() == HTCAPTION)
                     {
-
                         handled = true;
                     }
                     break;
-                
             }
-            
 
             return IntPtr.Zero;
         }

@@ -51,7 +51,6 @@ namespace TakoEngine.Entities
         public Behavior Behaviors { get; set; }
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
 

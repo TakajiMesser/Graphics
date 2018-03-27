@@ -14,6 +14,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using TakoEngine.Entities;
+using TakoEngine.Entities.Lights;
+using SauceEditor.Utilities;
 using Brush = TakoEngine.Entities.Brush;
 
 namespace SauceEditor.Controls
@@ -61,9 +63,13 @@ namespace SauceEditor.Controls
 
             RotationTransform.TransformChanged += (s, args) =>
             {
-                if (_entity != null)
+                if (_entity != null && _entity is Actor actor)
                 {
-                    _entity.OriginalRotation = args.Transform;
+                    actor.OriginalRotation = args.Transform;
+                }
+                else if (_entity != null && _entity is Brush brush)
+                {
+                    brush.OriginalRotation = args.Transform;
                 }
 
                 TransformChanged?.Invoke(this, args);
@@ -71,12 +77,24 @@ namespace SauceEditor.Controls
 
             ScaleTransform.TransformChanged += (s, args) =>
             {
-                if (_entity != null)
+                if (_entity != null && _entity is Actor actor)
                 {
-                    _entity.Scale = args.Transform;
+                    actor.Scale = args.Transform;
+                }
+                else if (_entity != null && _entity is Brush brush)
+                {
+                    brush.Scale = args.Transform;
                 }
 
                 TransformChanged?.Invoke(this, args);
+            };
+
+            ColorPick.SelectedColorChanged += (s, args) =>
+            {
+                if (_entity != null && _entity is Light light)
+                {
+                    light.Color = args.NewValue.Value.ToVector4();
+                }
             };
         }
 
@@ -88,22 +106,34 @@ namespace SauceEditor.Controls
             PropertyGrid.Visibility = Visibility.Visible;
             IDTextbox.Text = _entity.ID.ToString();
 
+            PositionTransform.Visibility = Visibility.Visible;
+            PositionTransform.SetValues(_entity.Position);
+
             if (_entity is Actor actor)
             {
                 PropertyGrid.RowDefinitions[1].Height = GridLength.Auto;
                 NameTextBox.Text = actor.Name;
-            }
 
-            PositionTransform.Visibility = Visibility.Visible;
-            PositionTransform.SetValues(_entity.Position);
-
-            if (_entity is Actor || _entity is Brush)
-            {
                 RotationTransform.Visibility = Visibility.Visible;
-                RotationTransform.SetValues(_entity.OriginalRotation);
+                RotationTransform.SetValues(actor.OriginalRotation);
 
                 ScaleTransform.Visibility = Visibility.Visible;
-                ScaleTransform.SetValues(_entity.Scale);
+                ScaleTransform.SetValues(actor.Scale);
+            }
+
+            if (_entity is Brush brush)
+            {
+                RotationTransform.Visibility = Visibility.Visible;
+                RotationTransform.SetValues(brush.OriginalRotation);
+
+                ScaleTransform.Visibility = Visibility.Visible;
+                ScaleTransform.SetValues(brush.Scale);
+            }
+
+            if (_entity is Light light)
+            {
+                ColorPick.Visibility = Visibility.Visible;
+                ColorPick.SelectedColor = light.Color.ToColor();
             }
         }
 
@@ -117,7 +147,8 @@ namespace SauceEditor.Controls
 
             PositionTransform.Visibility = Visibility.Hidden;
             RotationTransform.Visibility = Visibility.Hidden;
-            ScaleTransform.Visibility = Visibility.Collapsed;
+            ScaleTransform.Visibility = Visibility.Hidden;
+            ColorPick.Visibility = Visibility.Hidden;
         }
     }
 }

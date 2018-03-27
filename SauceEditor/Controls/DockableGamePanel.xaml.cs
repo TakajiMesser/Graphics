@@ -3,6 +3,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows;
+using System.Windows.Input;
 using TakoEngine.Game;
 
 namespace SauceEditor.Controls
@@ -17,16 +18,19 @@ namespace SauceEditor.Controls
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
 
         private System.Drawing.Point _cursorLocation;
+        private System.Windows.Forms.Integration.WindowsFormsHost _host;
 
         public DockableGamePanel()
         {
             InitializeComponent();
         }
 
-        public DockableGamePanel(string mapPath, DockManager dockManager) : base(dockManager)
+        IInputElement _previousCapture;
+
+        public DockableGamePanel(DockManager dockManager) : base(dockManager)
         {
             InitializeComponent();
-            GamePanel = new GamePanel(mapPath)
+            GamePanel = new GamePanel()
             {
                 Dock = System.Windows.Forms.DockStyle.Fill
             };
@@ -40,6 +44,7 @@ namespace SauceEditor.Controls
                         //System.Windows.Forms.Cursor.Clip = Rectangle.Empty;
                         System.Windows.Forms.Cursor.Position = _cursorLocation;
                         System.Windows.Forms.Cursor.Show();
+                        //Mouse.Capture(_previousCapture);
                     });
                 }
                 else
@@ -49,21 +54,35 @@ namespace SauceEditor.Controls
                         //var bounds = RenderTransform.TransformBounds(new Rect(RenderSize));
                         //System.Windows.Forms.Cursor.Clip = new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
                         //System.Windows.Forms.Cursor.Clip = new Rectangle((int)Top, (int)Left, (int)Width, (int)Height);
+                        //Visibility = Visibility.Visible;
+                        //IsEnabled = true;
+                        if (_host != null)
+                        {
+                            //_previousCapture = Mouse.Captured;
+                            //Mouse.Capture(_host);
+                        }
+
                         _cursorLocation = System.Windows.Forms.Cursor.Position;
                         System.Windows.Forms.Cursor.Hide();
                     });
                 }
             };
 
-            var host = new System.Windows.Forms.Integration.WindowsFormsHost
+            _host = new System.Windows.Forms.Integration.WindowsFormsHost
             {
                 Child = GamePanel
             };
-            MainDock.Children.Add(host);
+            MainDock.Children.Add(_host);
 
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
             GamePanel.RenderMode = TakoEngine.Rendering.Processing.RenderModes.Wireframe;
+        }
+
+        protected override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            //base.OnMouseUp(e);
         }
 
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
@@ -72,8 +91,9 @@ namespace SauceEditor.Controls
             {
                 System.Windows.Forms.Cursor.Position = _cursorLocation;
             }
-            
-            base.OnMouseLeave(e);
+
+            e.Handled = true;
+            //base.OnMouseLeave(e);
         }
 
         protected override void OnInitialized(EventArgs e)

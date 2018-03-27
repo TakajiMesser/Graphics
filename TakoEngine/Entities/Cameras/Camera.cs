@@ -88,14 +88,14 @@ namespace TakoEngine.Entities.Cameras
             var shadowViews = new List<Matrix4>();
             for (var i = 0; i < 6; i++)
             {
-                shadowViews.Add(light.GetView(TextureTarget.TextureCubeMapPositiveX + i) * light.GetProjection(_projectionMatrix.Resolution));
+                shadowViews.Add(light.GetView(TextureTarget.TextureCubeMapPositiveX + i) * light.Projection);
             }
             program.SetUniform(ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
         }
 
         public void DrawFromLight(ShaderProgram program, PointLight light, TextureTarget target)
         {
-            program.SetUniform(ProjectionMatrix.NAME, light.GetProjection(_projectionMatrix.Resolution));
+            program.SetUniform(ProjectionMatrix.NAME, light.Projection);
             program.SetUniform(ViewMatrix.NAME, light.GetView(target));
         }
 

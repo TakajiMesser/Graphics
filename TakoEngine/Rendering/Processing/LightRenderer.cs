@@ -149,7 +149,7 @@ namespace TakoEngine.Rendering.Processing
             camera.Draw(program);
             program.SetUniform("cameraPosition", camera.Position);
 
-            light.DrawForLightPass(resolution, program);
+            light.DrawForLightPass(program);
             mesh.Draw();
         }
 

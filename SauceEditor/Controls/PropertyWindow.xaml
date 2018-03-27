@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Controls"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d" Title="Properties">
     <StackPanel Orientation="Vertical">
         <Label Name="EntityType" FontSize="14"/>
@@ -47,6 +48,9 @@
             </Border>
             <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
                 <local:TransformPanel x:Name="ScaleTransform" Label="Scale"/>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
+                <xctk:ColorPicker x:Name="ColorPick"/>
             </Border>
         </Grid>
     </StackPanel>

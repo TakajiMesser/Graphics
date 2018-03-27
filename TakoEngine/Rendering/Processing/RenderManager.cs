@@ -112,7 +112,17 @@ namespace TakoEngine.Rendering.Processing
             GL.Disable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Always);
 
-            _wireframeRenderer.SelectionPass(camera, entity);
+            if (entity is Light light)
+            {
+                var lightMesh = _lightRenderer.GetMeshForLight(light);
+                _wireframeRenderer.SelectionPass(camera, light, lightMesh);
+                _billboardRenderer.RenderSelection(camera, light);
+                // Let Billboard Renderer know to render this light with a special texture
+            }
+            else
+            {
+                _wireframeRenderer.SelectionPass(camera, entity);
+            }
         }
 
         public void RenderWireframe(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> actors, List<Light> lights)
@@ -122,6 +132,10 @@ namespace TakoEngine.Rendering.Processing
 
             _wireframeRenderer.WireframePass(camera, brushes, actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(camera, actors.Where(g => g.Model is AnimatedModel));
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.DepthFunc(DepthFunction.Less);
 
             _billboardRenderer.RenderLights(camera, lights);
 

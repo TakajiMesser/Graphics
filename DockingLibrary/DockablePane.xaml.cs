@@ -107,7 +107,7 @@ namespace DockingLibrary
         /// <summary>
         /// Drag starting point
         /// </summary>
-        Point ptStartDrag;
+        private Point ptStartDrag;
 
         /// <summary>
         /// Event raised when title is changed
@@ -438,8 +438,10 @@ namespace DockingLibrary
         /// </summary>
         public override void Hide()
         {
-            foreach (DockableContent content in Contents)
+            foreach (var content in Contents)
+            {
                 RemoveVisibleContent(content);
+            }
 
             ChangeState(PaneState.Hidden);
             base.Hide();
@@ -452,7 +454,6 @@ namespace DockingLibrary
         public override  void Close()
         {
             Hide();
-
             base.Close();
         }
 
@@ -462,9 +463,8 @@ namespace DockingLibrary
         public virtual void FloatingWindow()
         {
             ChangeState(PaneState.FloatingWindow); 
-            
 
-            FloatingWindow wnd = new FloatingWindow(this);
+            var wnd = new FloatingWindow(this);
             SetFloatingWindowSizeAndPosition(wnd);
 
             wnd.Owner = DockManager.ParentWindow;
@@ -476,7 +476,7 @@ namespace DockingLibrary
         /// </summary>
         public virtual void DockableWindow()
         {
-            FloatingWindow wnd = new FloatingWindow(this);
+            var wnd = new FloatingWindow(this);
             SetFloatingWindowSizeAndPosition(wnd);
 
             ChangeState(PaneState.DockableWindow);
@@ -565,11 +565,12 @@ namespace DockingLibrary
         /// </summary>
         public void AutoHide()
         {
-            foreach (DockableContent content in Contents)
+            foreach (var content in Contents)
+            {
                 RemoveVisibleContent(content);
+            }  
 
             ChangeState(PaneState.AutoHide);
-
             DockManager.DragPaneServices.Unregister(this);
         }
 
@@ -583,23 +584,25 @@ namespace DockingLibrary
             base.OnRenderSizeChanged(sizeInfo);
         }
 
-
         /// <summary>
         /// Save current pane size
         /// </summary>
         public override void SaveSize()
         {
-            if (IsHidden)
-                return;
+            if (!IsHidden)
+            {
+                if (Dock == Dock.Left || Dock == Dock.Right)
+                {
+                    PaneWidth = ActualWidth > 150 ? ActualWidth : 150;
+                }
+                else
+                {
+                    PaneHeight = ActualHeight > 150 ? ActualHeight : 150;
+                }
 
-            if (Dock == Dock.Left || Dock == Dock.Right)
-                PaneWidth = ActualWidth > 150 ? ActualWidth : 150;
-            else
-                PaneHeight = ActualHeight > 150 ? ActualHeight : 150;
-
-            base.SaveSize();
+                base.SaveSize();
+            }
         }
-
 
         Point ptFloatingWindow = new Point(0,0);
         Size sizeFloatingWindow = new Size(300, 300);
@@ -607,10 +610,14 @@ namespace DockingLibrary
         internal void SaveFloatingWindowSizeAndPosition(Window fw)
         {
             if (!double.IsNaN(fw.Left) && !double.IsNaN(fw.Top))
+            {
                 ptFloatingWindow = new Point(fw.Left, fw.Top);
+            }
             
             if (!double.IsNaN(fw.Width) && !double.IsNaN(fw.Height))
+            {
                 sizeFloatingWindow = new Size(fw.Width, fw.Height);
+            }
         }
 
         internal void SetFloatingWindowSizeAndPosition(FloatingWindow fw)
@@ -624,13 +631,7 @@ namespace DockingLibrary
         /// <summary>
         /// Get swith options context menu
         /// </summary>
-        internal ContextMenu OptionsMenu
-        {
-            get 
-            {
-                return btnMenu.ContextMenu;
-            }
-        }
+        internal ContextMenu OptionsMenu => btnMenu.ContextMenu;
 
         /// <summary>
         /// Handles user click on OptionsMenu
@@ -641,31 +642,44 @@ namespace DockingLibrary
         protected virtual void OnDockingMenu(object sender, EventArgs e)
         {
             if (sender == menuTabbedDocument)
+            {
                 TabbedDocument();
+            }
+            
             if (sender == menuFloatingWindow)
+            {
                 FloatingWindow();
+            }
+            
             if (sender == menuDockedWindow)
+            {
                 DockableWindow();
-
+            }
 
             if (sender == menuAutoHide)
             {
                 if (menuAutoHide.IsChecked)
+                {
                     ChangeState(PaneState.Docked);
+                }
                 else
+                {
                     AutoHide();
+                }
             }
+
             if (sender == menuClose)
             {
                 Close(ActiveContent);
             }
         }
+
         /// <summary>
         /// Show switch options menu
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void OnBtnMenuMouseDown(object sender, RoutedEventArgs e)
+        private void OnBtnMenuMouseDown(object sender, RoutedEventArgs e)
         {
             btnMenu.ContextMenu.IsOpen = true;
             e.Handled = true;
@@ -676,12 +690,16 @@ namespace DockingLibrary
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
-        void OnBtnAutoHideMouseDown(object sender, RoutedEventArgs e)
+        private void OnBtnAutoHideMouseDown(object sender, RoutedEventArgs e)
         {
             if (State == PaneState.AutoHide)
+            {
                 ChangeState(PaneState.Docked);
+            }
             else
+            {
                 AutoHide();
+            }
 
             e.Handled = true;
         }
@@ -806,7 +824,7 @@ namespace DockingLibrary
 
                 if (Contents[tbcContents.Items.IndexOf(item)] is DockableContent contentToDrag)
                 {
-                    DragContent(contentToDrag, e.GetPosition(DockManager), e.GetPosition(item));
+                    DragContent(contentToDrag, PointToScreen(e.GetPosition(DockManager)), e.GetPosition(item));
                 } 
             }
         }

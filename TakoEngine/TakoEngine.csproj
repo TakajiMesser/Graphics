@@ -107,6 +107,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\IEntity.cs" />
+    <Compile Include="Entities\Lights\SLight.cs" />
+    <Compile Include="Entities\Lights\DLight.cs" />
+    <Compile Include="Entities\Lights\PLight.cs" />
     <Compile Include="Game\EntitySelectedEventArgs.cs" />
     <Compile Include="Game\CursorEventArgs.cs" />
     <Compile Include="Game\GamePanel.cs">
@@ -326,6 +329,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\Textures\point-light.png" />
+    <Content Include="Resources\Textures\selected-directional-light.png" />
+    <Content Include="Resources\Textures\selected-point-light.png" />
+    <Content Include="Resources\Textures\selected-spot-light.png" />
     <Content Include="Resources\Textures\spot-light.png" />
     <Content Include="Resources\Textures\directional-light.png" />
   </ItemGroup>

@@ -151,7 +151,11 @@ namespace SauceEditor
 
                 PlayButton.Visibility = Visibility.Visible;
 
-                _perspectiveView = new DockableGamePanel(_mapPath, MainDockManager);
+                _perspectiveView = new DockableGamePanel(MainDockManager);
+
+                _perspectiveView.GamePanel.LoadFromMap(_mapPath);
+                //_perspectiveView.GamePanel.LoadFromModel(dialog.FileName);
+
                 _perspectiveView.ShowAsDocument();
                 _perspectiveView.EntitySelectionChanged += (s, args) => _propertyPanel.Entity = args.Entity;
                 _perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;

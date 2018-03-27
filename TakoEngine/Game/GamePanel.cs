@@ -5,7 +5,7 @@ using OpenTK.Input;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
+using System.IO;
 using System.Windows.Forms;
 using TakoEngine.Entities;
 using TakoEngine.Inputs;
@@ -32,7 +32,8 @@ namespace TakoEngine.Game
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
 
-        private string _mapPath;
+        private Map _map;
+
         private EditorGameState _gameState;
         private bool _invalidated = false;
         private Vector3 _currentAngles = new Vector3();
@@ -75,18 +76,80 @@ namespace TakoEngine.Game
             }
         }
 
-        public GamePanel(string mapPath) : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
 
-            _mapPath = mapPath;
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
             _pollTimer.Interval = 16.67;
-            _pollTimer.Elapsed += Timer_Tick;
+            _pollTimer.Elapsed += PollTimer_Elapsed;
         }
 
-        private void Timer_Tick(object sender, EventArgs e)
+        public void LoadFromMap(string mapPath)
+        {
+            _map = Map.Load(mapPath);
+
+            if (_gameState != null)
+            {
+                _gameState.LoadMap(_map);
+                _gameState.Initialize();
+                _pollTimer.Start();
+            }
+        }
+
+        public void LoadFromModel(string modelPath)
+        {
+            _map = new Map();
+
+            /*_map.SkyboxTextureFilePaths = new List<string>
+            {
+                FilePathHelper.SPACE_01_TEXTURE_PATH,
+                FilePathHelper.SPACE_02_TEXTURE_PATH,
+                FilePathHelper.SPACE_03_TEXTURE_PATH,
+                FilePathHelper.SPACE_04_TEXTURE_PATH,
+                FilePathHelper.SPACE_05_TEXTURE_PATH,
+                FilePathHelper.SPACE_06_TEXTURE_PATH,
+            };*/
+
+            var mainActor = new MapActor()
+            {
+                Name = Path.GetFileNameWithoutExtension(modelPath),
+                ModelFilePath = modelPath
+            };
+
+            _map.Actors.Add(mainActor);
+            _map.Camera = new MapCamera()
+            {
+                AttachedActorName = mainActor.Name,
+                Position = new Vector3(5.0f, 5.0f, 5.0f),
+                Type = Rendering.Matrices.ProjectionTypes.Perspective,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            };
+
+            if (_gameState != null)
+            {
+                _gameState.LoadMap(_map);
+                _gameState.Initialize();
+                _pollTimer.Start();
+            }
+        }
+
+        protected override void OnLoad(EventArgs e)
+        {
+            Location = new Point(0, 0);
+
+            _gameState = new EditorGameState(Resolution);
+
+            if (_map != null)
+            {
+                _gameState.LoadMap(_map);
+                _gameState.Initialize();
+                _pollTimer.Start();
+            }
+        }
+
+        private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             _pollTimer.Stop();
 
@@ -118,19 +181,6 @@ namespace TakoEngine.Game
                 Resolution.Height = Height;
                 _gameState?.Resize();
             }
-        }
-
-        protected override void OnLoad(EventArgs e)
-        {
-            Location = new Point(0, 0);
-
-            var map = Map.Load(_mapPath);
-
-            _gameState = new EditorGameState(Resolution);
-            _gameState.LoadMap(map);
-            _gameState.Initialize();
-
-            _pollTimer.Start();
         }
 
         protected void OnRenderFrame()

@@ -713,7 +713,11 @@ namespace DockingLibrary
                 if (CaptureMouse())
                 {
                     floatingWindow.Owner = ParentWindow;
-                    DragPaneServices.StartDrag(floatingWindow, PointToWPF(point), offset);//PointToWPF(offset));
+                    //DragPaneServices.StartDrag(floatingWindow, PointToWPF(point), offset);//PointToWPF(offset));
+                    //var wpfPoint = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice.Transform(point);
+                    //var wpfOffset = new Point(wpfPoint.X - offset.X, wpfPoint.Y - offset.Y);
+                    //var wpfOffset = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice.Transform(offset);
+                    DragPaneServices.StartDrag(floatingWindow, point, offset);
                     
                     return true;
                 }
@@ -743,7 +747,13 @@ namespace DockingLibrary
         {
             if (IsMouseCaptured)
             {
-                DragPaneServices.MoveDrag(PointToWPF(e.GetPosition(this)));
+                var position = e.GetPosition(this);
+                var point = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice.Transform(position);
+                var transformedPoint = PointToScreen(point);
+                var screenCoordinates = PointToScreen(position);
+
+                DragPaneServices.MoveDrag(screenCoordinates);
+                //DragPaneServices.MoveDrag(PointToWPF(e.GetPosition(this)));
             }
         }
 
@@ -757,7 +767,12 @@ namespace DockingLibrary
         {
             if (IsMouseCaptured)
             {
-                DragPaneServices.EndDrag(PointToWPF(e.GetPosition(this)));
+                var position = e.GetPosition(this);
+                var point = PresentationSource.FromVisual(this).CompositionTarget.TransformFromDevice.Transform(position);
+                var transformedPoint = PointToScreen(point);
+                var screenCoordinates = PointToScreen(position);
+
+                DragPaneServices.EndDrag(screenCoordinates);
                 ReleaseMouseCapture();
             }
         }

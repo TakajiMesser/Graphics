@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Helpers;
 using TakoEngine.Outputs;
@@ -36,7 +37,10 @@ namespace TakoEngine.Rendering.Processing
 
         protected override void LoadTextures(Resolution resolution)
         {
-            SkyTexture = Texture.LoadFromFile(_texturePaths, TextureTarget.TextureCubeMap, true, true);
+            if (_texturePaths.Any())
+            {
+                SkyTexture = Texture.LoadFromFile(_texturePaths, TextureTarget.TextureCubeMap, true, true);
+            }
         }
 
         public override void ResizeTextures(Resolution resolution) { }
@@ -48,23 +52,26 @@ namespace TakoEngine.Rendering.Processing
 
         public void Render(Camera camera)
         {
-            _program.Use();
+            if (SkyTexture != null)
+            {
+                _program.Use();
 
-            int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
-            int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
+                int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
+                int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
 
-            GL.Enable(EnableCap.DepthTest);
-            GL.CullFace(CullFaceMode.Front);
-            GL.DepthFunc(DepthFunction.Lequal);
+                GL.Enable(EnableCap.DepthTest);
+                GL.CullFace(CullFaceMode.Front);
+                GL.DepthFunc(DepthFunction.Lequal);
 
-            _program.BindTexture(SkyTexture, "mainTexture", 0);
+                _program.BindTexture(SkyTexture, "mainTexture", 0);
 
-            camera.Draw(_program);
-            _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
-            _cubeMesh.Draw();
+                camera.Draw(_program);
+                _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
+                _cubeMesh.Draw();
 
-            GL.CullFace((CullFaceMode)oldCullFaceMode);
-            GL.DepthFunc((DepthFunction)oldDepthFunc);
+                GL.CullFace((CullFaceMode)oldCullFaceMode);
+                GL.DepthFunc((DepthFunction)oldDepthFunc);
+            }
         }
     }
 }

@@ -181,6 +181,7 @@ namespace DockingLibrary
             }
             
         }
+
         void OnTabItemMouseMove(object sender, MouseEventArgs e)
         {
             FrameworkElement senderElement = sender as FrameworkElement;
@@ -198,13 +199,15 @@ namespace DockingLibrary
                 
                 if (contentToDrag != null)
                 {
-                    DragContent(contentToDrag, e.GetPosition(DockManager), e.GetPosition(item));
+                    DragContent(contentToDrag, PointToScreen(e.GetPosition(DockManager)), e.GetPosition(item));
+                    //DragContent(contentToDrag, PointToScreen(e.GetPosition(DockManager)), PointToScreen(e.GetPosition(item)));
                     //DragContent(contentToDrag, e.GetPosition(DockManager), new Point(0.0, 0.0));
                 } 
                 
                 e.Handled = true;
             }
         }
+
         void OnTabItemMouseUp(object sender, MouseButtonEventArgs e)
         {
             FrameworkElement senderElement = sender as FrameworkElement;

@@ -12,6 +12,7 @@ using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
+using TakoEngine.Utilities;
 
 namespace TakoEngine.Rendering.Processing
 {
@@ -27,9 +28,14 @@ namespace TakoEngine.Rendering.Processing
 
         private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
         private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
+
         private Texture _pointLightTexture;
         private Texture _spotLightTexture;
         private Texture _directionalLightTexture;
+
+        private Texture _selectedPointLightTexture;
+        private Texture _selectedSpotLightTexture;
+        private Texture _selectedDirectionalLightTexture;
 
         protected override void LoadPrograms()
         {
@@ -81,6 +87,10 @@ namespace TakoEngine.Rendering.Processing
             _pointLightTexture = Texture.LoadFromFile(FilePathHelper.POINT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
             _spotLightTexture = Texture.LoadFromFile(FilePathHelper.SPOT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
             _directionalLightTexture = Texture.LoadFromFile(FilePathHelper.DIRECTIONAL_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
+
+            _selectedPointLightTexture = Texture.LoadFromFile(FilePathHelper.SELECTED_POINT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
+            _selectedSpotLightTexture = Texture.LoadFromFile(FilePathHelper.SELECTED_SPOT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
+            _selectedDirectionalLightTexture = Texture.LoadFromFile(FilePathHelper.SELECTED_DIRECTIONAL_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
         }
 
         public void RenderEntities(Camera camera, IEnumerable<IEntity> entities, Texture texture)
@@ -126,6 +136,29 @@ namespace TakoEngine.Rendering.Processing
 
             _billboardProgram.BindTexture(_directionalLightTexture, "mainTexture", 0);
             DrawLights(lights.Where(l => l is DirectionalLight));
+        }
+
+        public void RenderSelection(Camera camera, Light light)
+        {
+            _billboardProgram.Use();
+
+            camera.Draw(_billboardProgram);
+            _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
+
+            switch (light)
+            {
+                case PointLight p:
+                    _billboardProgram.BindTexture(_selectedPointLightTexture, "mainTexture", 0);
+                    break;
+                case SpotLight s:
+                    _billboardProgram.BindTexture(_selectedSpotLightTexture, "mainTexture", 0);
+                    break;
+                case DirectionalLight d:
+                    _billboardProgram.BindTexture(_selectedDirectionalLightTexture, "mainTexture", 0);
+                    break;
+            }
+
+            DrawLights(light.Yield());
         }
 
         public void RenderLightSelections(Camera camera, IEnumerable<Light> lights)
