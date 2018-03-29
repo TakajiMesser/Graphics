@@ -207,6 +207,7 @@
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
     <Compile Include="Rendering\Vertices\ColorVertex.cs" />
+    <Compile Include="Rendering\Vertices\Simple2DVertex.cs" />
     <Compile Include="Rendering\Vertices\TextureVertex.cs" />
     <Compile Include="Rendering\Vertices\JointVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex.cs" />

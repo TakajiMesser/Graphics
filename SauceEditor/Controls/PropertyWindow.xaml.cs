@@ -17,6 +17,7 @@ using TakoEngine.Entities;
 using TakoEngine.Entities.Lights;
 using SauceEditor.Utilities;
 using Brush = TakoEngine.Entities.Brush;
+using SauceEditor.Controls.Transform;
 
 namespace SauceEditor.Controls
 {
@@ -114,24 +115,29 @@ namespace SauceEditor.Controls
                 PropertyGrid.RowDefinitions[1].Height = GridLength.Auto;
                 NameTextBox.Text = actor.Name;
 
+                PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
                 RotationTransform.Visibility = Visibility.Visible;
                 RotationTransform.SetValues(actor.OriginalRotation);
 
+                PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
                 ScaleTransform.Visibility = Visibility.Visible;
                 ScaleTransform.SetValues(actor.Scale);
             }
 
             if (_entity is Brush brush)
             {
+                PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
                 RotationTransform.Visibility = Visibility.Visible;
                 RotationTransform.SetValues(brush.OriginalRotation);
 
+                PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
                 ScaleTransform.Visibility = Visibility.Visible;
                 ScaleTransform.SetValues(brush.Scale);
             }
 
             if (_entity is Light light)
             {
+                PropertyGrid.RowDefinitions[5].Height = GridLength.Auto;
                 ColorPick.Visibility = Visibility.Visible;
                 ColorPick.SelectedColor = light.Color.ToColor();
             }
@@ -146,8 +152,14 @@ namespace SauceEditor.Controls
             PropertyGrid.RowDefinitions[1].Height = new GridLength(0);
 
             PositionTransform.Visibility = Visibility.Hidden;
+
+            PropertyGrid.RowDefinitions[3].Height = new GridLength(0);
             RotationTransform.Visibility = Visibility.Hidden;
+
+            PropertyGrid.RowDefinitions[4].Height = new GridLength(0);
             ScaleTransform.Visibility = Visibility.Hidden;
+
+            PropertyGrid.RowDefinitions[5].Height = new GridLength(0);
             ColorPick.Visibility = Visibility.Hidden;
         }
     }

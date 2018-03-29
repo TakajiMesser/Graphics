@@ -31,6 +31,8 @@ namespace SauceEditor.Controls
 
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
 
+        private Point _cursorStart = new Point();
+
         public NumericUpDown()
         {
             DataContext = this;
@@ -78,14 +80,42 @@ namespace SauceEditor.Controls
             set => SetValue(MinValueProperty, value);
         }
 
+        private void UpButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _cursorStart = Mouse.GetPosition(this);
+        }
+
+        private void DownButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _cursorStart = Mouse.GetPosition(this);
+        }
+
         private void UpButton_Click(object sender, RoutedEventArgs e)
         {
-            Value += Step;
+            var point = Mouse.GetPosition(this);
+
+            var step = Step;
+            var dy = (float)(_cursorStart.Y - point.Y);
+            if (dy > 0)
+            {
+                step *= dy;
+            }
+
+            Value += step;
         }
 
         private void DownButton_Click(object sender, RoutedEventArgs e)
         {
-            Value -= Step;
+            var point = Mouse.GetPosition(this);
+
+            var step = Step;
+            var dy = (float)(point.Y - _cursorStart.Y);
+            if (dy > 0)
+            {
+                step *= dy;
+            }
+
+            Value -= step;
         }
     }
 }

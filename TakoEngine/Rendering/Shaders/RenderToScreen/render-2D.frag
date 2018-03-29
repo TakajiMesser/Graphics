@@ -9,6 +9,7 @@ out vec4 color;
 
 void main()
 {
+    //color = vec4(1);
 	vec4 tex = texture(textureSampler, fUV);
     
 	color = vec4((channel < 0) ? tex : vec4(tex[channel]));

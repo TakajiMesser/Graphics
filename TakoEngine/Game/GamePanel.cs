@@ -12,6 +12,7 @@ using TakoEngine.Inputs;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
+using TakoEngine.Rendering.Textures;
 using TakoEngine.Utilities;
 using Timer = System.Timers.Timer;
 
@@ -25,6 +26,7 @@ namespace TakoEngine.Game
         public RenderModes RenderMode { get; set; }
         public double Frequency { get; private set; }
         public Resolution Resolution { get; private set; }
+        public Resolution PanelSize { get; private set; }
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
         public IEntity SelectedEntity { get; private set; }
@@ -79,6 +81,7 @@ namespace TakoEngine.Game
         public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
+            PanelSize = new Resolution(Width, Height);
 
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
@@ -92,7 +95,7 @@ namespace TakoEngine.Game
 
             if (_gameState != null)
             {
-                _gameState.LoadMap(_map);
+                _gameState.LoadMap(_map, true);
                 _gameState.Initialize();
                 _pollTimer.Start();
             }
@@ -102,23 +105,32 @@ namespace TakoEngine.Game
         {
             _map = new Map();
 
-            /*_map.SkyboxTextureFilePaths = new List<string>
+            /*mainActor.TexturesPaths.Add(new TexturePaths()
             {
-                FilePathHelper.SPACE_01_TEXTURE_PATH,
-                FilePathHelper.SPACE_02_TEXTURE_PATH,
-                FilePathHelper.SPACE_03_TEXTURE_PATH,
-                FilePathHelper.SPACE_04_TEXTURE_PATH,
-                FilePathHelper.SPACE_05_TEXTURE_PATH,
-                FilePathHelper.SPACE_06_TEXTURE_PATH,
-            };*/
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
+                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH
+            });
+
+            mainActor.TexturesPaths.Add(new TexturePaths()
+            {
+                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
+                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH
+            });*/
 
             var mainActor = new MapActor()
             {
                 Name = Path.GetFileNameWithoutExtension(modelPath),
-                ModelFilePath = modelPath
+                ModelFilePath = modelPath,
+                Position = new Vector3(0.0f, 0.0f, 0.0f),
+                Scale = Vector3.One,
+                Rotation = Vector3.Zero,
+                Orientation = Vector3.Zero,
+                HasCollision = true
             };
-
             _map.Actors.Add(mainActor);
+
             _map.Camera = new MapCamera()
             {
                 AttachedActorName = mainActor.Name,
@@ -129,7 +141,7 @@ namespace TakoEngine.Game
 
             if (_gameState != null)
             {
-                _gameState.LoadMap(_map);
+                _gameState.LoadMap(_map, false);
                 _gameState.Initialize();
                 _pollTimer.Start();
             }
@@ -139,11 +151,11 @@ namespace TakoEngine.Game
         {
             Location = new Point(0, 0);
 
-            _gameState = new EditorGameState(Resolution);
+            _gameState = new EditorGameState(Resolution, PanelSize);
 
             if (_map != null)
             {
-                _gameState.LoadMap(_map);
+                _gameState.LoadMap(_map, false);
                 _gameState.Initialize();
                 _pollTimer.Start();
             }
@@ -175,11 +187,17 @@ namespace TakoEngine.Game
 
         protected override void OnResize(EventArgs e)
         {
-            if (Resolution != null)
+            /*if (Resolution != null)
             {
                 Resolution.Width = Width;
                 Resolution.Height = Height;
                 _gameState?.Resize();
+            }*/
+            if (PanelSize != null)
+            {
+                PanelSize.Width = Width;
+                PanelSize.Height = Height;
+                _gameState?.ResizeWindow();
             }
         }
 

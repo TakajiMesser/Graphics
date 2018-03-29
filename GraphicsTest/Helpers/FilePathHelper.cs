@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using System;
 
 namespace GraphicsTest.Helpers
 {
@@ -7,7 +7,7 @@ namespace GraphicsTest.Helpers
     /// </summary>
     public static class FilePathHelper
     {
-        private static string SOLUTION_DIRECTORY = Directory.GetCurrentDirectory() + @"\..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine";
+        private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine";
 
         #region Maps
         public static string MAP_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Maps\TestMap.map";

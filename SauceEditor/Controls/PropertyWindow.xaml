@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Controls"
+        xmlns:transform="clr-namespace:SauceEditor.Controls.Transform"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d" Title="Properties">
@@ -27,6 +28,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0">
                 <Label Content="ID" Margin="4"/>
@@ -35,26 +37,35 @@
                 <TextBox Name="IDTextbox" IsReadOnly="True"/>
             </Border>
             <Border Grid.Row="1" Grid.Column="0">
-                <Label Name="NameLabel" Content="Name" Margin="4"/>
+                <Label Content="Name" Margin="4"/>
             </Border>
             <Border Grid.Row="1" Grid.Column="1">
                 <TextBox Name="NameTextBox" IsReadOnly="True"/>
             </Border>
-            <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="2">
-                <local:TransformPanel x:Name="PositionTransform" Label="Position"/>
+            <Border Grid.Row="2" Grid.Column="0">
+                <Label Content="Position" Margin="4"/>
             </Border>
-            <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2">
-                <local:TransformPanel x:Name="RotationTransform" Label="Rotation"/>
+            <Border Grid.Row="2" Grid.Column="1">
+                <transform:TransformPanel x:Name="PositionTransform"/>
             </Border>
-            <Border Grid.Row="4" Grid.Column="0" Grid.ColumnSpan="2">
-                <local:TransformPanel x:Name="ScaleTransform" Label="Scale"/>
+            <Border Grid.Row="3" Grid.Column="0">
+                <Label Content="Rotation" Margin="4"/>
             </Border>
-            <Border Grid.Row="5" Grid.Column="0" Grid.ColumnSpan="2">
-                <xctk:ColorPicker x:Name="ColorPick"/>
+            <Border Grid.Row="3" Grid.Column="1">
+                <transform:TransformPanel x:Name="RotationTransform"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="0">
+                <Label Content="Scale" Margin="4"/>
+            </Border>
+            <Border Grid.Row="4" Grid.Column="1">
+                <transform:TransformPanel x:Name="ScaleTransform"/>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="0">
+                <Label Name="ColorLabel" Content="Color" Margin="4"/>
+            </Border>
+            <Border Grid.Row="5" Grid.Column="1">
+                <xctk:ColorPicker x:Name="ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
             </Border>
         </Grid>
     </StackPanel>
-    <!--<TreeView Name="Tree">
-        
-    </TreeView>-->
 </dock:DockableContent>

@@ -30,32 +30,23 @@ namespace DockingLibrary
             get
             {
                 if (tbcDocuments.SelectedContent == null)
+                {
                     return null;
+                }
 
                 return Documents[tbcDocuments.SelectedIndex] as DocumentContent;
             }
         }
-
-        //public override DockManager DockManager
-        //{
-        //    get
-        //    {
-        //        return base.DockManager;
-        //    }
-        //    set
-        //    {
-        //        base.DockManager = value;
-
-        //        Show();
-        //    }
-        //}
 
         public new ManagedContent ActiveContent
         {
             get
             {
                 if (tbcDocuments.SelectedContent == null)
+                {
                     return null;
+                }
+
                 return Documents[tbcDocuments.SelectedIndex];
             }
             set

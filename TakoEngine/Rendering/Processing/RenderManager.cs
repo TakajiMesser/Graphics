@@ -24,6 +24,7 @@ namespace TakoEngine.Rendering.Processing
     public class RenderManager
     {
         public Resolution Resolution { get; private set; }
+        public Resolution WindowSize { get; private set; }
         public double Frequency { get; internal set; }
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
@@ -41,7 +42,11 @@ namespace TakoEngine.Rendering.Processing
         private TextRenderer _textRenderer = new TextRenderer();
         private RenderToScreen _renderToScreen = new RenderToScreen();
 
-        public RenderManager(Resolution resolution) => Resolution = resolution;
+        public RenderManager(Resolution resolution, Resolution windowSize)
+        {
+            Resolution = resolution;
+            WindowSize = windowSize;
+        }
 
         public void Load(IEnumerable<Brush> brushes, IEnumerable<Actor> actors, IEnumerable<string> skyboxTexturePaths)
         {
@@ -59,7 +64,7 @@ namespace TakoEngine.Rendering.Processing
             _blurRenderer.Load(Resolution);
             _invertRenderer.Load(Resolution);
             _textRenderer.Load(Resolution);
-            _renderToScreen.Load(Resolution);
+            _renderToScreen.Load(WindowSize);
 
             foreach (var brush in brushes)
             {
@@ -74,7 +79,7 @@ namespace TakoEngine.Rendering.Processing
             GL.ClearColor(Color4.Black);
         }
 
-        public void Resize()
+        public void ResizeResolution()
         {
             _forwardRenderer.ResizeTextures(Resolution);
             _deferredRenderer.ResizeTextures(Resolution);
@@ -88,7 +93,11 @@ namespace TakoEngine.Rendering.Processing
             _blurRenderer.ResizeTextures(Resolution);
             _invertRenderer.ResizeTextures(Resolution);
             _textRenderer.ResizeTextures(Resolution);
-            _renderToScreen.ResizeTextures(Resolution);
+        }
+
+        public void ResizeWindow()
+        {
+            _renderToScreen.ResizeTextures(WindowSize);
         }
 
         public void RenderEntityIDs(Camera camera, List<Brush> brushes, List<Actor> actors, List<Light> lights)

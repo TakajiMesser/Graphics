@@ -17,11 +17,11 @@ namespace SauceEditor.Structure
         /// <summary>
         /// All paths should be relative to the project location
         /// </summary>
-        public List<string> MapPaths { get; set; }
-        public List<string> ModelPaths { get; set; }
-        public List<string> BehaviorPaths { get; set; }
-        public List<string> TexturePaths { get; set; }
-        public List<string> AudioPaths { get; set; }
+        public List<string> MapPaths { get; set; } = new List<string>();
+        public List<string> ModelPaths { get; set; } = new List<string>();
+        public List<string> BehaviorPaths { get; set; } = new List<string>();
+        public List<string> TexturePaths { get; set; } = new List<string>();
+        public List<string> AudioPaths { get; set; } = new List<string>();
 
         public void Save(string path)
         {

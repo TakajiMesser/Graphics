@@ -18,12 +18,6 @@ namespace TakoEngine.Entities.Lights
         public Matrix4 View => Matrix4.LookAt(Position, Position + Direction.Normalized(), Vector3.UnitZ);
         public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView((float)Math.Atan2(Radius, Height) * 2.0f, 1.0f, 0.1f, Height);
 
-        public Matrix4 GetProjection(Resolution resolution)
-        {
-            var fovY = (float)Math.Atan2(Radius, Height) * 2.0f;
-            return Matrix4.CreatePerspectiveFieldOfView(fovY, 1.0f, 0.1f, Height);
-        }
-
         public override void DrawForStencilPass(ShaderProgram program)
         {
             program.SetUniform("modelMatrix", Model);

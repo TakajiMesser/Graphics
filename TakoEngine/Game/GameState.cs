@@ -34,10 +34,10 @@ namespace TakoEngine.Game
         private QuadTree _brushQuads;
         private QuadTree _lightQuads;
 
-        public GameState(Resolution resolution)
+        public GameState(Resolution resolution, Resolution windowSize)
         {
             _resolution = resolution;
-            _renderManager = new RenderManager(resolution);
+            _renderManager = new RenderManager(resolution, windowSize);
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
         }
@@ -224,7 +224,8 @@ namespace TakoEngine.Game
             PollForInput();
         }
 
-        public void Resize() => _renderManager.Resize();
+        public void ResizeResolution() => _renderManager.ResizeResolution();
+        public void ResizeWindow() => _renderManager.ResizeWindow();
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 

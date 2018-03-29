@@ -26,9 +26,8 @@ namespace TakoEngine.Rendering.PostProcessing
         private ShaderProgram _renderCubeProgram;
         private ShaderProgram _renderCubeArrayProgram;
 
-        private int _vertexArrayHandle;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
-        protected FrameBuffer _frameBuffer = new FrameBuffer();
+        private VertexArray<Simple2DVertex> _vertexArray = new VertexArray<Simple2DVertex>();
+        private VertexBuffer<Simple2DVertex> _vertexBuffer = new VertexBuffer<Simple2DVertex>();
 
         protected override void LoadPrograms()
         {
@@ -63,28 +62,33 @@ namespace TakoEngine.Rendering.PostProcessing
 
         protected override void LoadBuffers()
         {
-            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _vertexBuffer.Bind();
+            _vertexArray.Load(_render2DProgram);
+            _vertexBuffer.Unbind();
 
-            _vertexArrayHandle = GL.GenVertexArray();
-            GL.BindVertexArray(_vertexArrayHandle);
-            _vertexBuffer.AddVertices(new[]
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertex(new Simple2DVertex()
             {
+                Position = new Vector2(1.0f, 1.0f)
+            });
+            _vertexBuffer.AddVertex(new Simple2DVertex()
+            {
+                Position = new Vector2(-1.0f, 1.0f)
+            });
+            _vertexBuffer.AddVertex(new Simple2DVertex()
+            {
+                Position = new Vector2(-1.0f, -1.0f)
+            });
+            _vertexBuffer.AddVertex(new Simple2DVertex()
+            {
+                Position = new Vector2(1.0f, -1.0f)
+            });
+
+            /*_vertexBuffer.AddVertices(
                 new Vector3(1.0f, 1.0f, 0.0f),
                 new Vector3(-1.0f, 1.0f, 0.0f),
                 new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f)
-            });
-            _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
-
-            var attribute = new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vector3>(), 0);
-            attribute.Set(_render2DProgram.GetAttributeLocation("vPosition"));
-
-            GL.BindVertexArray(0);
-            _vertexBuffer.Unbind();
+                new Vector3(1.0f, -1.0f, 0.0f));*/
         }
 
         public override void ResizeTextures(Resolution resolution)
@@ -101,7 +105,7 @@ namespace TakoEngine.Rendering.PostProcessing
 
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
-            GL.Viewport(0, 0, texture.Width, texture.Height);
+            GL.Viewport(0, 0, FinalTexture.Width, FinalTexture.Height);
 
             switch (texture.Target)
             {
@@ -126,12 +130,13 @@ namespace TakoEngine.Rendering.PostProcessing
                     throw new NotImplementedException("Cannot render texture target type " + texture.Target);
             }
 
-            GL.BindVertexArray(_vertexArrayHandle);
+            _vertexArray.Bind();
             _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
 
             _vertexBuffer.DrawQuads();
 
-            GL.BindVertexArray(0);
+            _vertexArray.Unbind();
             _vertexBuffer.Unbind();
         }
     }

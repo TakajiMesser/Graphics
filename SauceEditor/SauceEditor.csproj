@@ -115,22 +115,25 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\SauceCommands.cs" />
     <Compile Include="Controls\DockableGamePanel.xaml.cs">
       <DependentUpon>DockableGamePanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Controls\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Controls\ProjectTree\MapEventArgs.cs" />
     <Compile Include="Controls\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\PropertyWindow.xaml.cs">
       <DependentUpon>PropertyWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\ProjectTreeView.xaml.cs">
+    <Compile Include="Controls\ProjectTree\ProjectTreeView.xaml.cs">
       <DependentUpon>ProjectTreeView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TransformPanel.xaml.cs">
+    <Compile Include="Controls\Transform\TransformPanel.xaml.cs">
       <DependentUpon>TransformPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Controls\TransformChangedEventArgs.cs" />
+    <Compile Include="Controls\Transform\TransformChangedEventArgs.cs" />
     <Compile Include="Controls\ValueChangedEventArgs.cs" />
     <Compile Include="DocWindow.xaml.cs">
       <DependentUpon>DocWindow.xaml</DependentUpon>
@@ -152,11 +155,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Controls\ProjectTreeView.xaml">
+    <Page Include="Controls\ProjectTree\ProjectTreeView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Controls\TransformPanel.xaml">
+    <Page Include="Controls\Transform\TransformPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

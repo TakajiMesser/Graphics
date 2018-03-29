@@ -33,51 +33,35 @@ namespace TakoEngine.Game
         private QuadTree _brushQuads;
         private QuadTree _lightQuads;
 
-        public EditorGameState(Resolution resolution)
+        public EditorGameState(Resolution resolution, Resolution windowSize)
         {
             _resolution = resolution;
-            _renderManager = new RenderManager(resolution);
+            _renderManager = new RenderManager(resolution, windowSize);
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
         }
 
-        public void LoadMap(Map map)
+        public void LoadMap(Map map, bool detachCamera)
         {
             // Eventually, we will want to actually load the map camera as an actor, so that we can manipulate it
             _camera = map.Camera.ToCamera(_resolution);
 
-            // We will want to load the map lights as actors as well, so that we can manipulate them
             LoadLightsFromMap(map);
-            /*_lightQuads = new QuadTree(0, map.Boundaries);
-            _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
-            for (var i = 0; i < map.Lights.Count; i++)
-            {
-                var actor = new Actor("light" + i)
-                {
-                    Model = Model.LoadFromFile(FilePathHelper.CUBE_MESH_PATH, _textureManager)
-                };
-
-                ((SimpleModel)actor.Model).Meshes.First().TextureMapping = new TextureMapping()
-                {
-                    DiffuseMapID = _textureManager.AddTexture(FilePathHelper.LIGHT_MESH_PATH)
-                };
-
-                actor.Model.Position = map.Lights[i].Position;
-                //actor.OriginalRotation = map.Lights[i].Rotation;
-                //actor.Model.Scale = map.Lights[i].Scale;
-                actor.HasCollision = false;
-
-                AddEntity(actor);
-            }*/
-
             LoadBrushesFromMap(map);
             LoadActorsFromMap(map);
 
-            _camera.DetachFromEntity();
+            if (detachCamera)
+            {
+                _camera.DetachFromEntity();
 
-            // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
-            _camera._viewMatrix.Up = Vector3.UnitZ;
-            _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
+                // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
+                _camera._viewMatrix.Up = Vector3.UnitZ;
+                _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
+            }
+            else
+            {
+                _camera._viewMatrix.Up = Vector3.UnitZ;
+            }
 
             _renderManager.Load(_brushes, _actors, map.SkyboxTextureFilePaths);
         }
@@ -191,26 +175,20 @@ namespace TakoEngine.Game
             {
                 return actor;
             }
-            else
+
+            var brush = _brushes.FirstOrDefault(b => b.ID == id);
+            if (brush != null)
             {
-                var brush = _brushes.FirstOrDefault(b => b.ID == id);
-                if (brush != null)
-                {
-                    return brush;
-                }
-                else
-                {
-                    var light = _lights.FirstOrDefault(l => l.ID == id);
-                    if (light != null)
-                    {
-                        return light;
-                    }
-                    else
-                    {
-                        throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-                    }
-                }
+                return brush;
             }
+
+            var light = _lights.FirstOrDefault(l => l.ID == id);
+            if (light != null)
+            {
+                return light;
+            }
+
+            throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
         }
 
         public void AddEntity(IEntity entity)
@@ -283,7 +261,8 @@ namespace TakoEngine.Game
             PollForInput();
         }
 
-        public void Resize() => _renderManager.Resize();
+        public void ResizeResolution() => _renderManager.ResizeResolution();
+        public void ResizeWindow() => _renderManager.ResizeWindow();
 
         public void SetFrequency(double frequency) => _renderManager.Frequency = frequency;
 
@@ -300,9 +279,5 @@ namespace TakoEngine.Game
         public void RenderFullFrame() => _renderManager.RenderFullFrame(_textureManager, _camera, _lights, _brushes, _actors);
 
         private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
-
-        public void SaveToFile(string path) => throw new NotImplementedException();
-
-        public static GameState LoadFromFile(string path) => throw new NotImplementedException();
     }
 }

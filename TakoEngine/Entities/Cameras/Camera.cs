@@ -101,7 +101,7 @@ namespace TakoEngine.Entities.Cameras
 
         public void DrawFromLight(ShaderProgram program, SpotLight light)
         {
-            program.SetUniform(ProjectionMatrix.NAME, light.GetProjection(_projectionMatrix.Resolution));
+            program.SetUniform(ProjectionMatrix.NAME, light.Projection);
             program.SetUniform(ViewMatrix.NAME, light.View);
         }
     }

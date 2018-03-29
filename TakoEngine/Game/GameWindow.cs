@@ -16,6 +16,9 @@ namespace TakoEngine.Game
 {
     public class GameWindow : OpenTK.GameWindow
     {
+        public Resolution Resolution { get; private set; }
+        public Resolution WindowSize { get; private set; }
+
         private string _mapPath;
 
         private GameState _gameState;
@@ -29,12 +32,11 @@ namespace TakoEngine.Game
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
 
-        public Resolution Resolution { get; private set; }
-
         public GameWindow(string mapPath) : base(1280, 720,
             GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
+            WindowSize = new Resolution(Width, Height);
 
             _mapPath = mapPath;
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
@@ -52,9 +54,12 @@ namespace TakoEngine.Game
 
         protected override void OnResize(EventArgs e)
         {
-            Resolution.Width = Width;
-            Resolution.Height = Height;
-            _gameState?.Resize();
+            WindowSize.Width = Width;
+            WindowSize.Height = Height;
+            _gameState?.ResizeWindow();
+            //Resolution.Width = Width;
+            //Resolution.Height = Height;
+            //_gameState?.Resize();
         }
 
         protected override void OnLoad(EventArgs e)
@@ -65,7 +70,7 @@ namespace TakoEngine.Game
 
             var map = Map.Load(_mapPath);
 
-            _gameState = new GameState(Resolution);
+            _gameState = new GameState(Resolution, WindowSize);
             _gameState.LoadMap(map);
             _gameState.Initialize();
         }

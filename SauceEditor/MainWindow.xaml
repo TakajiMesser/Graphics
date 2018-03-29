@@ -8,25 +8,33 @@
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
         Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
+    <Window.Resources>
+        <RoutedUICommand x:Key="OpenProjectCommand" Text="Open Project"/>
+        <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
+        <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
+        <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
+    </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="New" CanExecute="NewCommand_CanExecute" Executed="NewCommand_Executed" />
-        <CommandBinding Command="Open" CanExecute="OpenCommand_CanExecute" Executed="OpenCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenProjectCommand}"  CanExecute="OpenProjectCommand_CanExecute"  Executed="OpenProjectCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenMapCommand}"  CanExecute="OpenMapCommand_CanExecute" Executed="OpenMapCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenModelCommand}"  CanExecute="OpenModelCommand_CanExecute" Executed="OpenModelCommand_Executed" />
         <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
         <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
     </Window.CommandBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
-                <MenuItem Command="New">
+                <MenuItem Header="New">
                     <MenuItem Header="Project"/>
                     <MenuItem Header="Map"/>
                     <MenuItem Header="Model"/>
                     <MenuItem Header="Behavior"/>
                 </MenuItem>
-                <MenuItem Command="Open">
-                    <MenuItem Header="Project"/>
-                    <MenuItem Header="Map"/>
-                    <MenuItem Header="Model"/>
+                <MenuItem Header="Open">
+                    <MenuItem Header="Project" Command="{StaticResource OpenProjectCommand}"/>
+                    <MenuItem Header="Map" Command="{StaticResource OpenMapCommand}"/>
+                    <MenuItem Header="Model" Command="{StaticResource OpenModelCommand}"/>
                     <MenuItem Header="Behavior"/>
                 </MenuItem>
                 <Separator/>

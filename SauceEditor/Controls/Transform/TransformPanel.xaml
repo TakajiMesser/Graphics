@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="SauceEditor.Controls.TransformPanel"
+﻿<UserControl x:Class="SauceEditor.Controls.Transform.TransformPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:SauceEditor.Controls"
              mc:Ignorable="d" >
     <StackPanel Orientation="Vertical">
-        <Label Content="{Binding Label}" FontSize="16"/>
+        <Label Name="Title" Content="{Binding Label}" Visibility="Collapsed" FontSize="16"/>
         <StackPanel Orientation="Horizontal">
             <local:NumericUpDown x:Name="X" Grid.Column="0" Label="X" Margin="4, 2, 2, 4"/>
             <local:NumericUpDown x:Name="Y" Grid.Column="1" Label="Y" Margin="4, 2, 2, 4"/>

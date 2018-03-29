@@ -69,6 +69,17 @@ namespace DockingLibrary
         /// <remarks>If no document is present or a dockable content is active in the Documents pane return null</remarks>
         public DocumentContent ActiveDocument => gridDocking.DocumentsPane.ActiveDocument;
 
+        public DockableContent ActiveContent
+        {
+            set
+            {
+                if (Contents.Contains(value))
+                {
+                    gridDocking.DocumentsPane.ActiveContent = value;
+                }
+            }
+        }
+
         /// <summary>
         /// Add dockable content to layout management
         /// </summary>

@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SauceEditor.Controls
+namespace SauceEditor.Controls.Transform
 {
     /// <summary>
     /// Interaction logic for TransformPanel.xaml
@@ -38,7 +38,11 @@ namespace SauceEditor.Controls
         public string Label
         {
             get => (string)GetValue(LabelProperty);
-            set => SetValue(LabelProperty, value);
+            set
+            {
+                Title.Visibility = !string.IsNullOrEmpty(value) ? Visibility.Visible : Visibility.Collapsed;
+                SetValue(LabelProperty, value);
+            }
         }
 
         public void SetValues(Vector3 values)
