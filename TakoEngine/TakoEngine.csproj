@@ -126,7 +126,6 @@
     <Compile Include="Entities\Models\AnimatedModel.cs" />
     <Compile Include="Game\GameProperty.cs" />
     <Compile Include="Entities\Actor.cs" />
-    <Compile Include="Game\EditorGameState.cs" />
     <Compile Include="Game\GameState.cs" />
     <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
@@ -250,9 +249,9 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
-    <None Include="Rendering\Shaders\Billboard\arrow.frag" />
-    <None Include="Rendering\Shaders\Billboard\arrow.geom" />
-    <None Include="Rendering\Shaders\Billboard\arrow.vert" />
+    <None Include="Rendering\Shaders\Selection\arrow.frag" />
+    <None Include="Rendering\Shaders\Selection\arrow.geom" />
+    <None Include="Rendering\Shaders\Selection\arrow.vert" />
     <None Include="Rendering\Shaders\Billboard\billboard-selection.geom" />
     <None Include="Rendering\Shaders\Billboard\billboard-selection.vert" />
     <None Include="Rendering\Shaders\Billboard\billboard-selection.frag" />

@@ -86,17 +86,17 @@ void main()
     vec3 xDirection = vec3(1.0, 0.0, 0.0);
     vec3 perpendicular = cross(toCamera, xDirection);
     vec4 color = vec4(1.0, 0.0, 0.0, 1.0);
-    drawArrow(viewProjectionMatrix, position, color, xDirection, perpendicular);
+    drawArrow(viewProjectionMatrix, position, color, xDirection, normalize(perpendicular));
 
     vec3 yDirection = vec3(0.0, 1.0, 0.0);
     perpendicular = cross(toCamera, yDirection);
     color = vec4(0.0, 1.0, 0.0, 1.0);
-    drawArrow(viewProjectionMatrix, position, color, yDirection, perpendicular);
+    drawArrow(viewProjectionMatrix, position, color, yDirection, normalize(perpendicular));
 
     vec3 zDirection = vec3(0.0, 0.0, 1.0);
     perpendicular = cross(toCamera, zDirection);
     color = vec4(0.0, 0.0, 1.0, 1.0);
-    drawArrow(viewProjectionMatrix, position, color, zDirection, perpendicular);
+    drawArrow(viewProjectionMatrix, position, color, zDirection, normalize(perpendicular));
 
     color = vec4(1.0, 1.0, 0.0, 1.0);
     drawBetween(viewProjectionMatrix, position, color, xDirection, yDirection);

@@ -11,6 +11,7 @@ using System.Timers;
 using TakoEngine.Helpers;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
+using TakoEngine.Rendering.Processing;
 
 namespace TakoEngine.Game
 {
@@ -22,6 +23,8 @@ namespace TakoEngine.Game
         private string _mapPath;
 
         private GameState _gameState;
+        private RenderManager _renderManager;
+
         private KeyboardState _keyState;
         private KeyboardState _previousKeyState;
         private MouseState _mouseState;
@@ -45,18 +48,17 @@ namespace TakoEngine.Game
             {
                 if (_frequencies.Count > 0)
                 {
-                    _gameState?.SetFrequency(_frequencies.Average());
+                    _renderManager.Frequency = _frequencies.Average();
                     _frequencies.Clear();
                 }
             };
-            _fpsTimer.Start();
         }
 
         protected override void OnResize(EventArgs e)
         {
             WindowSize.Width = Width;
             WindowSize.Height = Height;
-            _gameState?.ResizeWindow();
+            _renderManager?.ResizeWindow();
             //Resolution.Width = Width;
             //Resolution.Height = Height;
             //_gameState?.Resize();
@@ -70,9 +72,14 @@ namespace TakoEngine.Game
 
             var map = Map.Load(_mapPath);
 
-            _gameState = new GameState(Resolution, WindowSize);
+            _gameState = new GameState(Resolution);
             _gameState.LoadMap(map);
             _gameState.Initialize();
+
+            _renderManager = new RenderManager(Resolution, WindowSize);
+            _renderManager.Load(_gameState, map);
+
+            _fpsTimer.Start();
         }
 
         //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;
@@ -92,7 +99,7 @@ namespace TakoEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _gameState.RenderFullFrame();
+            _renderManager.RenderFullFrame(_gameState);
 
             GL.UseProgram(0);
             SwapBuffers();
