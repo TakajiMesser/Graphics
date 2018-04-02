@@ -153,18 +153,7 @@ namespace TakoEngine.Game
             }
         }
 
-        public IEntity GetEntityForPoint(Vector2 point)
-        {
-            int id = _renderManager.GetEntityIDFromPoint(point);
-            if (id > 0)
-            {
-                return GetByID(id);
-            }
-            else
-            {
-                return null;
-            }
-        }
+        public int GetEntityForPoint(Vector2 point) => _renderManager.GetEntityIDFromPoint(point);
 
         public Actor GetByName(string name) => _actors.First(g => g.Name == name);
 
@@ -198,6 +187,12 @@ namespace TakoEngine.Game
             {
                 entity.ID = _nextAvailableID;
                 _nextAvailableID++;
+
+                if (_nextAvailableID == SelectionRenderer.RED_ID || _nextAvailableID == SelectionRenderer.GREEN_ID || _nextAvailableID == SelectionRenderer.BLUE_ID
+                    || _nextAvailableID == SelectionRenderer.CYAN_ID || _nextAvailableID == SelectionRenderer.MAGENTA_ID || _nextAvailableID == SelectionRenderer.YELLOW_ID)
+                {
+                    _nextAvailableID++;
+                }
             }
 
             switch (entity)

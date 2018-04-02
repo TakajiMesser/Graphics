@@ -22,7 +22,7 @@ namespace GraphicsTest.Behaviors.Enemy
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Position;
+            var difference = Destination - context.Actor.Position;
 
             if (difference == Vector3.Zero)
             {

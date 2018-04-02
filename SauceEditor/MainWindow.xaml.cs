@@ -27,7 +27,6 @@ namespace SauceEditor
         private ProjectTreeView _projectTree = new ProjectTreeView();
         private PropertyWindow _propertyPanel = new PropertyWindow();
         private DockableGamePanel _perspectiveView;
-        //private DocWindowCollection _docWindows;
 
         public MainWindow()
         {
@@ -71,7 +70,6 @@ namespace SauceEditor
             _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
 
             _propertyPanel.DockManager = SideDockManager;
-            //_propertyPanel.Show();
             _propertyPanel.ShowAsDocument();
 
             SideDockManager.ActiveContent = _projectTree;
@@ -96,28 +94,47 @@ namespace SauceEditor
             return false;
         }
 
+        private void NewMap()
+        {
+
+        }
+
+        private void NewModel()
+        {
+
+        }
+
+        private void NewBehavior()
+        {
+
+        }
+
+        private void NewTexture()
+        {
+
+        }
+
+        private void NewAudio()
+        {
+
+        }
+
         private void OpenMap(string filePath)
         {
             _map = Map.Load(filePath);
-
             _mapPath = filePath;
-            //RunButton.IsEnabled = true;
-            //Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
 
             PlayButton.Visibility = Visibility.Visible;
 
             _perspectiveView = new DockableGamePanel(MainDockManager);
-
             _perspectiveView.GamePanel.LoadFromMap(_mapPath);
-            //_perspectiveView.GamePanel.LoadFromModel(dialog.FileName);
-
-            _perspectiveView.ShowAsDocument();
             _perspectiveView.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entity;
                 SideDockManager.ActiveContent = _propertyPanel;
             };
             _perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
+            _perspectiveView.ShowAsDocument();
 
             _propertyPanel.TransformChanged += (s, args) => _perspectiveView.GamePanel.Invalidate();
         }
@@ -128,14 +145,13 @@ namespace SauceEditor
 
             var modelView = new DockableGamePanel(MainDockManager);
             modelView.GamePanel.LoadFromModel(filePath);
-            //_perspectiveView.GamePanel.LoadFromModel(dialog.FileName);
-            modelView.ShowAsDocument();
             modelView.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entity;
                 SideDockManager.ActiveContent = _propertyPanel;
             };
             modelView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
+            modelView.ShowAsDocument();
 
             _propertyPanel.TransformChanged += (s, args) => modelView.GamePanel.Invalidate();
         }
@@ -155,17 +171,21 @@ namespace SauceEditor
 
         }
 
-        private void NewCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void NewProjectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void NewMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void NewModelCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void NewBehaviorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+
         private void OpenProjectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
         private void OpenMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
         private void OpenModelCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void OpenBehaviorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+
         private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
         private void SaveAsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            //< local:DocWindowCollection DockPanel.Dock = "Top" x: Name = "DocWindows" />
-            //_docWindows.AddDocument();
             var titleBuilder = new StringBuilder("Document");
 
             int i = 1;
@@ -183,22 +203,26 @@ namespace SauceEditor
             doc.ShowAsDocument();
 
             //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));
+        }
 
-            /*var dialog = new OpenFileDialog()
-            {
-                CheckPathExists = true,
-                DefaultExt = "map"
-            };
+        private void NewProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
 
-            if (dialog.ShowDialog() == true)
-            {
-                _map = new Map();
-                _map.Save(dialog.FileName);
+        }
 
-                _mapPath = dialog.FileName;
-                //RunButton.IsEnabled = true;
-                Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-            }*/
+        private void NewMapCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void NewModelCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
+        }
+
+        private void NewBehaviorCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+
         }
 
         private void OpenProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -256,6 +280,25 @@ namespace SauceEditor
             {
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
                 OpenModel(dialog.FileName);
+            }
+        }
+
+        private void OpenBehaviorCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog()
+            {
+                CheckFileExists = true,
+                CheckPathExists = true,
+                DefaultExt = "bhv",
+                InitialDirectory = string.IsNullOrEmpty(_mapPath)
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
+                    : System.IO.Path.GetDirectoryName(_mapPath)
+            };
+
+            if (dialog.ShowDialog() == true)
+            {
+                Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
+                OpenBehavior(dialog.FileName);
             }
         }
 

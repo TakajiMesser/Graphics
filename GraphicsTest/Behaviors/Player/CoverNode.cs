@@ -8,6 +8,7 @@ using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using TakoEngine.Entities;
 using System.Runtime.Serialization;
+using TakoEngine.Physics.Collision;
 
 namespace GraphicsTest.Behaviors.Player
 {
@@ -48,8 +49,8 @@ namespace GraphicsTest.Behaviors.Player
                             var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
-                            var borderPoint = context.Bounds.GetBorder(translation);
-
+                            var borderPoint = context.Actor.Bounds.GetBorder(translation);
+                            
                             // TODO - Dynamically determine how far the raycast should be
                             var boundWidth = 2.0f;
 

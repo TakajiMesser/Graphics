@@ -60,6 +60,9 @@ namespace TakoEngine.Inputs
             _mouseState = mouseState;
         }
 
+        /// <summary>
+        /// Determines if this input was triggered this frame but was NOT triggered last frame.
+        /// </summary>
         public bool IsPressed(Input input)
         {
             switch (input.Type)
@@ -108,6 +111,9 @@ namespace TakoEngine.Inputs
             }
         }
 
+        /// <summary>
+        /// Determines if this input was triggered this frame.
+        /// </summary>
         public bool IsHeld(Input input)
         {
             switch (input.Type)

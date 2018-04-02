@@ -1,14 +1,6 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Scripting.BehaviorTrees;
-using TakoEngine.Entities;
-using TakoEngine.Physics.Raycasting;
-using System.Runtime.Serialization;
-using TakoEngine.Scripting.BehaviorTrees.Decorators;
+﻿using System.Runtime.Serialization;
+using TakoEngine.Scripting.Behaviors;
+using TakoEngine.Scripting.Behaviors.Decorators;
 
 namespace GraphicsTest.Behaviors.Enemy
 {

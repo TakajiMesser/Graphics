@@ -6,7 +6,6 @@ using TakoEngine.Game;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Scripting.Behaviors;
-using TakoEngine.Scripting.BehaviorTrees;
 
 namespace TakoEngine.Maps
 {

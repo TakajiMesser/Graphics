@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Inputs;
 using TakoEngine.Physics.Collision;
@@ -13,15 +14,13 @@ namespace TakoEngine.Scripting.Behaviors
     public class BehaviorContext
     {
         // Values set by the Actor
-        public string ActorName { get; internal set; }
-        public Bounds Bounds { get; internal set; }
+        public Actor Actor { get; internal set; }
         public IEnumerable<Bounds> Colliders { get; internal set; }
         public InputState InputState { get; internal set; }
         public InputMapping InputMapping { get; internal set; }
         public Camera Camera { get; internal set; }
 
         // Values set by the Actor, or altered by Behavior Nodes
-        public Vector3 Position { get; set; }
         public Vector3 Rotation { get; set; }
         public Quaternion QRotation { get; set; } = Quaternion.Identity;
         public Vector3 Scale { get; set; }

@@ -32,6 +32,9 @@ namespace TakoEngine.Helpers
         #endregion
 
         #region Shaders
+        public static string ARROW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\arrow.vert";
+        public static string ARROW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\arrow.geom";
+        public static string ARROW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\arrow.frag";
         public static string BILLBOARD_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard.vert";
         public static string BILLBOARD_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard.geom";
         public static string BILLBOARD_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Billboard\billboard.frag";

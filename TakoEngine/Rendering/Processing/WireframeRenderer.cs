@@ -155,7 +155,7 @@ namespace TakoEngine.Rendering.Processing
 
             camera.Draw(program);
             program.SetUniform("lineThickness", SelectedLineThickness);
-            program.SetUniform("lineColor", new Vector4(0.8f, 0.8f, 0.1f, 1.0f));
+            program.SetUniform("lineColor", new Vector4(0.7f, 0.7f, 0.1f, 1.0f));
 
             switch (entity)
             {

@@ -5,7 +5,7 @@ using TakoEngine.Rendering.Shaders;
 
 namespace TakoEngine.Entities.Lights
 {
-    public class SpotLight : Light
+    public class SpotLight : Light, IRotate
     {
         public float Radius { get; set; }
         public float Height { get; set; }

@@ -13,7 +13,7 @@ using TakoEngine.Scripting.Behaviors;
 
 namespace TakoEngine.Entities
 {
-    public class Actor : IEntity
+    public class Actor : IEntity, ICollidable, IRotate
     {
         public int ID { get; set; }
         public string Name { get; private set; }
@@ -71,8 +71,7 @@ namespace TakoEngine.Entities
         {
             if (Behaviors != null)
             {
-                Behaviors.Context.ActorName = Name;
-                Behaviors.Context.Bounds = Bounds;
+                Behaviors.Context.Actor = this;
 
                 foreach (var property in Properties)
                 {
@@ -98,7 +97,6 @@ namespace TakoEngine.Entities
         {
             if (Behaviors != null)
             {
-                Behaviors.Context.Position = Model.Position;
                 //Behaviors.Context.Rotation = Rotation;
                 Behaviors.Context.Scale = Model.Scale;
                 Behaviors.Context.Colliders = colliders;

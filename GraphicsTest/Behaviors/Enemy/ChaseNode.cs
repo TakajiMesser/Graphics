@@ -1,14 +1,8 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Entities;
 using TakoEngine.Physics.Raycasting;
-using OpenTK;
-using System.Runtime.Serialization;
+using TakoEngine.Scripting.Behaviors;
 
 namespace GraphicsTest.Behaviors.Enemy
 {
@@ -33,7 +27,7 @@ namespace GraphicsTest.Behaviors.Enemy
             {
                 var playerPosition = ((Actor)player.AttachedEntity).Model.Position;
 
-                var playerDirection = playerPosition - context.Position;
+                var playerDirection = playerPosition - context.Actor.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
                 var angleDifference = (playerAngle - context.Rotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
@@ -46,7 +40,7 @@ namespace GraphicsTest.Behaviors.Enemy
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the player
                     // TODO - Filter colliders by their ability to obstruct vision
-                    if (Raycast.TryRaycast(new Ray3(context.Position, playerDirection, ViewDistance), context.Colliders, out RaycastHit hit))
+                    if (Raycast.TryRaycast(new Ray3(context.Actor.Position, playerDirection, ViewDistance), context.Colliders, out RaycastHit hit))
                     {
                         if (hit.Collider.AttachedEntity.GetType() == typeof(Actor) && ((Actor)hit.Collider.AttachedEntity).Name == "Player")
                         {

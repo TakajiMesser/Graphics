@@ -1,18 +1,8 @@
-﻿using TakoEngine.Maps;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Scripting.BehaviorTrees;
-using TakoEngine.Scripting.BehaviorTrees.Composites;
-using TakoEngine.Scripting.BehaviorTrees.Decorators;
-using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using GraphicsTest.Behaviors.Player;
+﻿using GraphicsTest.Behaviors.Player;
 using GraphicsTest.Helpers;
 using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
-using System.Text;
-using System.Threading.Tasks;
+using TakoEngine.Maps;
+using TakoEngine.Rendering.Textures;
 
 namespace GraphicsTest.GameObjects
 {

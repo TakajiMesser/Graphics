@@ -10,6 +10,7 @@ using TakoEngine.Outputs;
 using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
+using TakoEngine.Rendering.Vertices;
 
 namespace TakoEngine.Rendering.Processing
 {
@@ -18,6 +19,13 @@ namespace TakoEngine.Rendering.Processing
     /// </summary>
     public class SelectionRenderer : Renderer
     {
+        public const int RED_ID = 255;
+        public const int GREEN_ID = 65280;
+        public const int BLUE_ID = 16711680;
+        public const int CYAN_ID = 16776960;
+        public const int MAGENTA_ID = 16711935;
+        public const int YELLOW_ID = 65535;
+
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
@@ -25,6 +33,10 @@ namespace TakoEngine.Rendering.Processing
 
         internal ShaderProgram _selectionProgram;
         internal ShaderProgram _jointSelectionProgram;
+        private ShaderProgram _arrowProgram;
+
+        private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
+        private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
 
         protected override void LoadPrograms()
         {
@@ -36,6 +48,12 @@ namespace TakoEngine.Rendering.Processing
             _jointSelectionProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SELECTION_SKINNING_VERTEX_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SELECTION_FRAGMENT_PATH))
+            );
+
+            _arrowProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.ARROW_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.ARROW_GEOMETRY_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.ARROW_FRAGMENT_SHADER_PATH))
             );
         }
 
@@ -85,6 +103,10 @@ namespace TakoEngine.Rendering.Processing
 
         protected override void LoadBuffers()
         {
+            _vertexBuffer.Bind();
+            _vertexArray.Load(_arrowProgram);
+            _vertexBuffer.Unbind();
+
             GBuffer.Clear();
             GBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             GBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
@@ -147,6 +169,30 @@ namespace TakoEngine.Rendering.Processing
                 _jointSelectionProgram.SetUniform("id", GetColorFromID(actor.ID));
                 actor.Draw(_jointSelectionProgram);
             }
+        }
+
+        public void RenderArrows(Camera camera, Vector3 position)
+        {
+            _arrowProgram.Use();
+
+            camera.Draw(_arrowProgram);
+            _arrowProgram.SetUniform("cameraPosition", camera.Position);
+
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertex(new ColorVertex()
+            {
+                Position = position,
+                Color = new Vector4()
+            });
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
         }
 
         public static Vector4 GetColorFromID(int id) => new Vector4()

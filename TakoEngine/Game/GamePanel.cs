@@ -27,12 +27,15 @@ namespace TakoEngine.Game
         public double Frequency { get; private set; }
         public Resolution Resolution { get; private set; }
         public Resolution PanelSize { get; private set; }
+        public IEntity SelectedEntity { get; private set; }
+        public SelectionTypes SelectionType { get; private set; }
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
-        public IEntity SelectedEntity { get; private set; }
+        public bool IsSelectionTransforming { get; private set; }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
+        public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
 
         private Map _map;
 
@@ -187,12 +190,13 @@ namespace TakoEngine.Game
 
         protected override void OnResize(EventArgs e)
         {
-            /*if (Resolution != null)
+            if (Resolution != null)
             {
                 Resolution.Width = Width;
                 Resolution.Height = Height;
-                _gameState?.Resize();
-            }*/
+                _gameState?.ResizeResolution();
+            }
+
             if (PanelSize != null)
             {
                 PanelSize.Width = Width;
@@ -342,20 +346,94 @@ namespace TakoEngine.Game
             }
             else if (_gameState._inputState.IsPressed(new Input(MouseButton.Middle)) && IsMouseInPanel)
             {
-                _invalidated = true;
-
                 Invoke(new Action(() =>
                 {
                     var point = PointToClient(System.Windows.Forms.Cursor.Position);
                     var mouseCoordinates = new Vector2(point.X - Location.X, Height - point.Y - Location.Y);
 
-                    SelectedEntity = _gameState.GetEntityForPoint(mouseCoordinates);
-                    EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
+                    var id = _gameState.GetEntityForPoint(mouseCoordinates);
+
+                    switch (id)
+                    {
+                        case SelectionRenderer.RED_ID:
+                            IsSelectionTransforming = true;
+                            SelectionType = SelectionTypes.Red;
+                            break;
+
+                        case SelectionRenderer.GREEN_ID:
+                            IsSelectionTransforming = true;
+                            SelectionType = SelectionTypes.Green;
+                            break;
+
+                        case SelectionRenderer.BLUE_ID:
+                            IsSelectionTransforming = true;
+                            SelectionType = SelectionTypes.Blue;
+                            break;
+
+                        case SelectionRenderer.CYAN_ID:
+                            IsSelectionTransforming = true;
+                            SelectionType = SelectionTypes.Cyan;
+                            break;
+
+                        case SelectionRenderer.MAGENTA_ID:
+                            IsSelectionTransforming = true;
+                            SelectionType = SelectionTypes.Magenta;
+                            break;
+
+                        case SelectionRenderer.YELLOW_ID:
+                            IsSelectionTransforming = true;
+                            SelectionType = SelectionTypes.Yellow;
+                            break;
+
+                        default:
+                            _invalidated = true;
+                            SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
+                            EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
+                            break;
+                    }
                 }));
+            }
+            else if (_gameState._inputState.IsHeld(new Input(MouseButton.Middle)) && IsSelectionTransforming)
+            {
+                var position = SelectedEntity.Position;
+
+                // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
+                switch (SelectionType)
+                {
+                    case SelectionTypes.Red:
+                        position.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Green:
+                        position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Blue:
+                        position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Cyan:
+                        position.Y += _gameState._inputState.MouseDelta.X * 0.002f;
+                        position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Magenta:
+                        position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        position.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        break;
+                    case SelectionTypes.Yellow:
+                        position.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                }
+
+                _invalidated = true;
+                IsCursorVisible = false;
+                SelectedEntity.Position = position;
+
+                Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
+                
             }
             else
             {
                 IsCameraMoving = false;
+                IsSelectionTransforming = false;
                 IsCursorVisible = true;
             }
         }

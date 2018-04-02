@@ -1,12 +1,5 @@
-﻿using TakoEngine.Scripting.BehaviorTrees.Leaves;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OpenTK;
 using TakoEngine.Scripting.Behaviors;
-using OpenTK;
-using System.Runtime.Serialization;
 
 namespace GraphicsTest.Behaviors
 {
@@ -23,7 +16,7 @@ namespace GraphicsTest.Behaviors
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Position;
+            var difference = Destination - context.Actor.Position;
 
             if (difference == Vector3.Zero)
             {

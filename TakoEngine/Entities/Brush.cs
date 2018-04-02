@@ -19,7 +19,7 @@ namespace TakoEngine.Entities
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : IEntity
+    public class Brush : IEntity, ICollidable, IRotate
     {
         public int ID { get; set; }
 

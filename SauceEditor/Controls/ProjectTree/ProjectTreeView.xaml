@@ -7,6 +7,28 @@
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
         mc:Ignorable="d"
         Title="Project Tree" Height="300" Width="300">
+    <Window.Resources>
+        <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
+        
+        <ContextMenu x:Key="MapMenu">
+            <MenuItem Header="Open Map" Command="{StaticResource OpenMapCommand}"/>
+        </ContextMenu>
+        <ContextMenu x:Key="ModelMenu">
+            <MenuItem Header="Open Model"/>
+        </ContextMenu>
+        <ContextMenu x:Key="BehaviorMenu">
+            <MenuItem Header="Open Behavior"/>
+        </ContextMenu>
+        <ContextMenu x:Key="TextureMenu">
+            <MenuItem Header="Open Texture"/>
+        </ContextMenu>
+        <ContextMenu x:Key="AudioMenu">
+            <MenuItem Header="Open Audio"/>
+        </ContextMenu>
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource OpenMapCommand}" CanExecute="OpenMapCommand_CanExecute" Executed="OpenMapCommand_Executed" />
+    </Window.CommandBindings>
     <Grid>
         <TreeView Name="Tree">
 

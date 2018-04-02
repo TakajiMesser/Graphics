@@ -126,12 +126,23 @@ namespace TakoEngine.Rendering.Processing
                 var lightMesh = _lightRenderer.GetMeshForLight(light);
                 _wireframeRenderer.SelectionPass(camera, light, lightMesh);
                 _billboardRenderer.RenderSelection(camera, light);
-                // Let Billboard Renderer know to render this light with a special texture
             }
             else
             {
+                // TODO - Find out why selection appears to be updating ahead of entity
                 _wireframeRenderer.SelectionPass(camera, entity);
             }
+
+            // Render the RGB arrows over the selection
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.DepthFunc(DepthFunction.Less);
+            _selectionRenderer.RenderArrows(camera, entity.Position);
+
+            // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+            GL.DepthFunc(DepthFunction.Less);
+            _selectionRenderer.RenderArrows(camera, entity.Position);
         }
 
         public void RenderWireframe(TextureManager textureManager, Camera camera, List<Brush> brushes, List<Actor> actors, List<Light> lights)

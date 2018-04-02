@@ -29,9 +29,9 @@ namespace GraphicsTest.Behaviors.Player
             // TODO - Filter gameobjects and brushes based on "coverable" property
             var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
 
-            if (Raycast.TryCircleCast(new Circle(context.Position, CoverDistance), filteredColliders, out RaycastHit hit))
+            if (Raycast.TryCircleCast(new Circle(context.Actor.Position, CoverDistance), filteredColliders, out RaycastHit hit))
             {
-                var vectorBetween = hit.Intersection - context.Position;
+                var vectorBetween = hit.Intersection - context.Actor.Position;
                 context.SetVariable("coverDirection", vectorBetween.Xy);
                 context.SetVariable("coverDistance", vectorBetween.Length);
 

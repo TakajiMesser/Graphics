@@ -9,33 +9,48 @@
         mc:Ignorable="d"
         Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
     <Window.Resources>
+        <RoutedUICommand x:Key="NewProjectCommand" Text="New Project"/>
+        <RoutedUICommand x:Key="NewMapCommand" Text="New Map"/>
+        <RoutedUICommand x:Key="NewModelCommand" Text="New Model"/>
+        <RoutedUICommand x:Key="NewBehaviorCommand" Text="New Behavior"/>
+        
         <RoutedUICommand x:Key="OpenProjectCommand" Text="Open Project"/>
         <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
         <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
         <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
     </Window.Resources>
     <Window.CommandBindings>
-        <CommandBinding Command="New" CanExecute="NewCommand_CanExecute" Executed="NewCommand_Executed" />
-        <CommandBinding Command="{StaticResource OpenProjectCommand}"  CanExecute="OpenProjectCommand_CanExecute"  Executed="OpenProjectCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewProjectCommand}"  CanExecute="NewProjectCommand_CanExecute" Executed="NewProjectCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewMapCommand}"  CanExecute="NewMapCommand_CanExecute" Executed="NewMapCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewModelCommand}"  CanExecute="NewModelCommand_CanExecute" Executed="NewModelCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewBehaviorCommand}"  CanExecute="NewBehaviorCommand_CanExecute" Executed="NewBehaviorCommand_Executed" />
+        
+        <CommandBinding Command="{StaticResource OpenProjectCommand}"  CanExecute="OpenProjectCommand_CanExecute" Executed="OpenProjectCommand_Executed" />
         <CommandBinding Command="{StaticResource OpenMapCommand}"  CanExecute="OpenMapCommand_CanExecute" Executed="OpenMapCommand_Executed" />
         <CommandBinding Command="{StaticResource OpenModelCommand}"  CanExecute="OpenModelCommand_CanExecute" Executed="OpenModelCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenBehaviorCommand}"  CanExecute="OpenBehaviorCommand_CanExecute" Executed="OpenBehaviorCommand_Executed" />
+        
         <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
         <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
     </Window.CommandBindings>
+    <Window.InputBindings>
+        <KeyBinding Command="{Binding Path=NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding Path=OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>
+    </Window.InputBindings>
     <DockPanel>
         <Menu DockPanel.Dock="Top">
             <MenuItem Header="_File">
                 <MenuItem Header="New">
-                    <MenuItem Header="Project"/>
-                    <MenuItem Header="Map"/>
-                    <MenuItem Header="Model"/>
-                    <MenuItem Header="Behavior"/>
+                    <MenuItem Header="Project" Command="{StaticResource NewProjectCommand}"/>
+                    <MenuItem Header="Map" Command="{StaticResource NewMapCommand}"/>
+                    <MenuItem Header="Model" Command="{StaticResource NewModelCommand}"/>
+                    <MenuItem Header="Behavior" Command="{StaticResource NewBehaviorCommand}"/>
                 </MenuItem>
                 <MenuItem Header="Open">
                     <MenuItem Header="Project" Command="{StaticResource OpenProjectCommand}"/>
                     <MenuItem Header="Map" Command="{StaticResource OpenMapCommand}"/>
                     <MenuItem Header="Model" Command="{StaticResource OpenModelCommand}"/>
-                    <MenuItem Header="Behavior"/>
+                    <MenuItem Header="Behavior" Command="{StaticResource OpenBehaviorCommand}"/>
                 </MenuItem>
                 <Separator/>
                 <MenuItem Command="Save" />
@@ -84,43 +99,5 @@
             <dock:DockManager Name ="MainDockManager" Grid.Column="0"/>
             <dock:DockManager Name ="SideDockManager" Grid.Column="1"/>
         </Grid>
-
-        <!--<DockPanel DockPanel.Dock="Top">
-            <controls:ProjectTreeView x:Name ="ProjectTree" DockPanel.Dock="Left" MinWidth="200">
-            </controls:ProjectTreeView>
-
-            <TabControl>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Overview" Foreground="Blue" />
-                        </StackPanel>
-                    </TabItem.Header>
-                    <Grid Width="Auto" Height="Auto">
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="Auto"/>
-                            <RowDefinition Height="*"/>
-                        </Grid.RowDefinitions>
-                        <Label Grid.Row="0" Content="Content goes here..." />
-                        <Button Name="RunButton" IsEnabled="false" HorizontalAlignment="Left" Grid.Row="1" Content="Run Map" Click="RunButton_Click"/>
-                    </Grid>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Red" Foreground="Red" />
-                        </StackPanel>
-                    </TabItem.Header>
-                </TabItem>
-                <TabItem>
-                    <TabItem.Header>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Green" Foreground="Green" />
-                        </StackPanel>
-                    </TabItem.Header>
-                </TabItem>
-            </TabControl>
-        </DockPanel>-->
     </DockPanel>
 </Window>

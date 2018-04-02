@@ -106,10 +106,12 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\IRotate.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\TransformSelectedEventArgs.cs" />
     <Compile Include="Game\EntitySelectedEventArgs.cs" />
     <Compile Include="Game\CursorEventArgs.cs" />
     <Compile Include="Game\GamePanel.cs">
@@ -142,6 +144,7 @@
     <Compile Include="Maps\MapBrush.cs" />
     <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
+    <Compile Include="Physics\Collision\ICollidable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\JointMesh.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
@@ -228,23 +231,6 @@
     <Compile Include="Scripting\Behaviors\Composites\SequenceNode.cs" />
     <Compile Include="Scripting\Behaviors\Composites\CompositeNode.cs" />
     <Compile Include="Scripting\Behaviors\Node.cs" />
-    <Compile Include="Scripting\BehaviorTrees\BehaviorContext.cs" />
-    <Compile Include="Scripting\BehaviorTrees\BehaviorTree.cs" />
-    <Compile Include="Scripting\BehaviorTrees\BehaviorTreeExtensions.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Composites\CompositeNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Composites\ParallelNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Composites\SelectorNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\InlineConditionNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\ConditionNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\RepeaterNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\LoopNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\InverterNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Decorators\DecoratorNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Leaves\FunctionNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Leaves\InlineNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Node.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Leaves\LeafNode.cs" />
-    <Compile Include="Scripting\BehaviorTrees\Composites\SequenceNode.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
     <Compile Include="Scripting\Properties\Property.cs" />
     <Compile Include="Scripting\Script.cs" />
@@ -264,6 +250,9 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\Billboard\arrow.frag" />
+    <None Include="Rendering\Shaders\Billboard\arrow.geom" />
+    <None Include="Rendering\Shaders\Billboard\arrow.vert" />
     <None Include="Rendering\Shaders\Billboard\billboard-selection.geom" />
     <None Include="Rendering\Shaders\Billboard\billboard-selection.vert" />
     <None Include="Rendering\Shaders\Billboard\billboard-selection.frag" />
