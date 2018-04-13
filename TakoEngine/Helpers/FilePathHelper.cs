@@ -76,6 +76,12 @@ namespace TakoEngine.Helpers
         public static string ARROW_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\arrow.vert";
         public static string ARROW_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\arrow.geom";
         public static string ARROW_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\arrow.frag";
+        public static string ROTATION_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\rotation.vert";
+        public static string ROTATION_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\rotation.geom";
+        public static string ROTATION_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\rotation.frag";
+        public static string SCALE_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\scale.vert";
+        public static string SCALE_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\scale.geom";
+        public static string SCALE_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\scale.frag";
         public static string SELECTION_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\selection.vert";
         public static string SELECTION_SKINNING_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\selection-skinning.vert";
         public static string SELECTION_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Selection\selection.frag";
@@ -93,6 +99,8 @@ namespace TakoEngine.Helpers
 
         public static string SKYBOX_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox.vert";
         public static string SKYBOX_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox.frag";
+        public static string SKYBOX_2D_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox2D.vert";
+        public static string SKYBOX_2D_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Skybox\skybox2D.frag";
 
         public static string TEXT_VERTEX_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Text\text.vert";
         public static string TEXT_FRAGMENT_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Text\text.frag";

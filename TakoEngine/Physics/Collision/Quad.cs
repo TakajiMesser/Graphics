@@ -8,6 +8,8 @@ namespace TakoEngine.Physics.Collision
         public Vector3 Min { get; set; }
         public Vector3 Max { get; set; }
 
+        public float Length => (Max - Min).Length;
+
         public Quad(Vector3 min, Vector3 max)
         {
             Min = min;

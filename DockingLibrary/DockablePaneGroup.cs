@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -32,50 +33,31 @@ namespace DockingLibrary
         /// Pane directly attached
         /// </summary>
         public Pane AttachedPane { get; private set; }
-
-        DockablePaneGroup _firstChildGroup;
+        public Docks Dock { get; private set; }
+        public DockablePaneGroup ParentGroup { get; internal set; }
 
         public DockablePaneGroup FirstChildGroup
         {
-            get { return _firstChildGroup; }
+            get => _firstChildGroup;
             set
             {
                 _firstChildGroup = value;
-                value._parentGroup = this;
+                _firstChildGroup.ParentGroup = this;
             }
         }
-
-        DockablePaneGroup _secondChildGroup;
 
         public DockablePaneGroup SecondChildGroup
         {
-            get { return _secondChildGroup; }
+            get => _secondChildGroup;
             set
             {
                 _secondChildGroup = value;
-                value._parentGroup = this;
+                _secondChildGroup.ParentGroup = this;
             }
         }
 
-
-        DockablePaneGroup _parentGroup;
-
-        public DockablePaneGroup ParentGroup
-        {
-            get { return _parentGroup; }
-            internal set 
-            {
-                _parentGroup = value;
-            }
-
-        }
-
-        Dock _dock;
-
-        public Dock Dock
-        {
-            get { return _dock; }
-        }
+        private DockablePaneGroup _firstChildGroup;
+        private DockablePaneGroup _secondChildGroup;
 
         /// <summary>
         /// Needed only for deserialization
@@ -94,27 +76,32 @@ namespace DockingLibrary
         /// <summary>
         /// Create a group with no panes
         /// </summary>
-        public DockablePaneGroup(DockablePaneGroup firstGroup, DockablePaneGroup secondGroup, Dock groupDock)
+        public DockablePaneGroup(DockablePaneGroup firstGroup, DockablePaneGroup secondGroup, Docks groupDock)
         {
             FirstChildGroup = firstGroup;
             SecondChildGroup = secondGroup;
-            _dock = groupDock;
+            Dock = groupDock;
         }
 
         public Pane GetPaneFromContent(DockableContent content)
         {
             if (AttachedPane != null && AttachedPane.Contents.Contains(content))
+            {
                 return AttachedPane;
-
-            if (FirstChildGroup != null)
+            }
+            else if (FirstChildGroup != null)
             {
                 Pane pane = FirstChildGroup.GetPaneFromContent(content);
                 if (pane != null)
+                {
                     return pane;
+                }
             }
 
             if (SecondChildGroup != null)
+            {
                 return SecondChildGroup.GetPaneFromContent(content);
+            }
 
             return null;
         }
@@ -124,9 +111,13 @@ namespace DockingLibrary
             get 
             {
                 if (AttachedPane != null)
+                {
                     return AttachedPane.IsHidden;
-
-                return FirstChildGroup.IsHidden && SecondChildGroup.IsHidden;
+                }
+                else
+                {
+                    return FirstChildGroup.IsHidden && SecondChildGroup.IsHidden;
+                }
             }
         }
 
@@ -135,13 +126,19 @@ namespace DockingLibrary
             get
             {
                 if (AttachedPane != null)
+                {
                     return new GridLength(AttachedPane.PaneWidth, GridUnitType.Pixel);
+                }
                 else
                 {
-                    if (Dock == Dock.Left || Dock == Dock.Right)
-                        return new GridLength(FirstChildGroup.GroupWidth.Value+SecondChildGroup.GroupWidth.Value+4, GridUnitType.Pixel);
+                    if (Dock == Docks.Left || Dock == Docks.Right)
+                    {
+                        return new GridLength(FirstChildGroup.GroupWidth.Value + SecondChildGroup.GroupWidth.Value + 4, GridUnitType.Pixel);
+                    }
                     else
+                    {
                         return FirstChildGroup.GroupWidth;
+                    }  
                 }
             }
         }
@@ -151,58 +148,262 @@ namespace DockingLibrary
             get
             {
                 if (AttachedPane != null)
+                {
                     return new GridLength(AttachedPane.PaneHeight, GridUnitType.Pixel);
+                } 
                 else
                 {
-                    if (Dock == Dock.Top || Dock == Dock.Bottom)
+                    if (Dock == Docks.Top || Dock == Docks.Bottom)
+                    {
                         return new GridLength(FirstChildGroup.GroupHeight.Value + SecondChildGroup.GroupHeight.Value + 4, GridUnitType.Pixel);
+                    } 
                     else
+                    {
                         return FirstChildGroup.GroupHeight;
+                    }
                 }
             }
         }
 
         public void Arrange(Grid grid)
         {
-            if (AttachedPane != null)//AttachedPane.IsHidden)
+            if (AttachedPane != null && AttachedPane.Parent == null)//AttachedPane.IsHidden)
+            {
                 grid.Children.Add(AttachedPane);
-            else if (FirstChildGroup.IsHidden && !SecondChildGroup.IsHidden)
+            }
+            else if (FirstChildGroup != null && SecondChildGroup != null && FirstChildGroup.IsHidden && !SecondChildGroup.IsHidden)
+            {
                 SecondChildGroup.Arrange(grid);
-            else if (!FirstChildGroup.IsHidden && SecondChildGroup.IsHidden)
+            }
+            else if (FirstChildGroup != null && SecondChildGroup != null && !FirstChildGroup.IsHidden && SecondChildGroup.IsHidden)
+            {
                 FirstChildGroup.Arrange(grid);
+            }
             else
             {
-                if (Dock == Dock.Left || Dock == Dock.Right)
+                grid.RowDefinitions.Add(new RowDefinition()
+                {
+                    Height = new GridLength(1, GridUnitType.Star) 
+                });
+                grid.ColumnDefinitions.Add(new ColumnDefinition()
+                {
+                    Width = new GridLength(1, GridUnitType.Star)
+                });
+
+                if (Dock == Docks.None)
+                {
+                    var firstChildGrid = new Grid()
+                    {
+                        Margin = new Thickness(0, 0, 4, 0)
+                    };
+                    firstChildGrid.SetValue(Grid.ColumnProperty, 0);
+                    FirstChildGroup.Arrange(firstChildGrid);
+                    grid.Children.Add(firstChildGrid);
+                }
+
+                if (Dock.HasFlag(Docks.Bottom) && Dock.HasFlag(Docks.Right))
+                {
+                    var firstChildGrid = new Grid()
+                    {
+                        Margin = new Thickness(0, 0, 4, 0)
+                    };
+                    firstChildGrid.SetValue(Grid.ColumnProperty, 0);
+                    FirstChildGroup.Arrange(firstChildGrid);
+
+                    var child = firstChildGrid.Children
+                            .Cast<UIElement>()
+                            .First(e => Grid.GetRow(e) == firstChildGrid.RowDefinitions.Count - 1
+                                && Grid.GetColumn(e) == firstChildGrid.ColumnDefinitions.Count - 1);
+                    var childGrid = child as Grid;
+
+                    if (firstChildGrid.RowDefinitions.Count > firstChildGrid.ColumnDefinitions.Count)
+                    {
+                        childGrid.RowDefinitions.Add(new RowDefinition());
+                        childGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                        
+                        childGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                        childGrid.ColumnDefinitions[childGrid.ColumnDefinitions.Count - 1].Width = new GridLength(0, GridUnitType.Auto);
+
+                        var splitter = new GridSplitter
+                        {
+                            Width = 4,
+                            HorizontalAlignment = HorizontalAlignment.Right,
+                            VerticalAlignment = VerticalAlignment.Stretch,
+                            ResizeBehavior = GridResizeBehavior.PreviousAndNext
+                        };
+                        splitter.SetValue(Grid.ColumnProperty, childGrid.ColumnDefinitions.Count - 1);
+                        childGrid.Children.Add(splitter);
+
+                        childGrid.ColumnDefinitions.Add(new ColumnDefinition());
+                        SecondChildGroup.AttachedPane.SetValue(Grid.ColumnProperty, childGrid.ColumnDefinitions.Count - 1);
+                        SecondChildGroup.AttachedPane.SetValue(Grid.RowProperty, childGrid.RowDefinitions.Count - 1);
+
+                        childGrid.Children.Add(SecondChildGroup.AttachedPane);
+                    }
+
+                    grid.Children.Add(firstChildGrid);
+                    return;
+                }
+
+                if (Dock.HasFlag(Docks.Left))
+                {
+                    grid.ColumnDefinitions.Add(new ColumnDefinition());
+                    grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);// FirstChildGroup.GroupWidth;
+                    grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star);
+
+                    var firstChildGrid = new Grid()
+                    {
+                        Margin = new Thickness(0, 0, 4, 0)
+                    };
+                    firstChildGrid.SetValue(Grid.ColumnProperty, 0);
+                    FirstChildGroup.Arrange(firstChildGrid);
+                    grid.Children.Add(firstChildGrid);
+
+                    var secondChildGrid = new Grid();
+                    secondChildGrid.SetValue(Grid.ColumnProperty, 1);
+                    //secondChildGrid.Margin = (Dock == Dock.Right) ? new Thickness(0, 0, 4, 0) : new Thickness();
+                    SecondChildGroup.Arrange(secondChildGrid);
+                    grid.Children.Add(secondChildGrid);
+
+                    var splitter = new GridSplitter
+                    {
+                        Width = 4,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Stretch
+                    };
+                    grid.Children.Add(splitter);
+                }
+
+                if (Dock.HasFlag(Docks.Top))
+                {
+                    grid.RowDefinitions.Add(new RowDefinition());
+                    //grid.RowDefinitions[0].Height = (Dock == Dock.Top) ? new GridLength(AttachedPane.PaneHeight) : new GridLength(1, GridUnitType.Star);
+                    //grid.RowDefinitions[1].Height = (Dock == Dock.Bottom) ? new GridLength(AttachedPane.PaneHeight) : new GridLength(1, GridUnitType.Star);
+                    grid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);// FirstChildGroup.GroupHeight;
+                    grid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star);
+
+                    grid.RowDefinitions[0].MinHeight = 50;
+                    grid.RowDefinitions[1].MinHeight = 50;
+
+                    var firstChildGrid = new Grid();
+                    //firstChildGrid.SetValue(Grid.RowProperty, (Dock == Dock.Bottom) ? 1 : 0);
+                    firstChildGrid.SetValue(Grid.RowProperty, 0);
+                    //firstChildGrid.Margin = (Dock == Dock.Bottom) ? new Thickness(0, 0, 0, 4) : new Thickness();
+                    firstChildGrid.Margin = new Thickness(0, 0, 0, 4);
+                    FirstChildGroup.Arrange(firstChildGrid);
+                    grid.Children.Add(firstChildGrid);
+
+                    var secondChildGrid = new Grid();
+                    //secondChildGrid.SetValue(Grid.RowProperty, (Dock == Dock.Top) ? 1 : 0);
+                    secondChildGrid.SetValue(Grid.RowProperty, 1);
+                    //secondChildGrid.Margin = (Dock == Dock.Bottom) ? new Thickness(0, 0, 0, 4) : new Thickness();
+                    SecondChildGroup.Arrange(secondChildGrid);
+                    grid.Children.Add(secondChildGrid);
+
+                    //AttachedPane.SetValue(Grid.RowProperty, (Dock == Dock.Bottom) ? 1 : 0);
+                    //AttachedPane.Margin = (Dock == Dock.Top) ? new Thickness(0, 0, 0, 4) : new Thickness();
+                    //grid.Children.Add(AttachedPane);
+
+                    var splitter = new GridSplitter
+                    {
+                        Height = 4,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Bottom
+                    };
+                    grid.Children.Add(splitter);
+                }
+
+                if (Dock.HasFlag(Docks.Right))
+                {
+                    grid.ColumnDefinitions.Add(new ColumnDefinition());
+                    grid.ColumnDefinitions[0].Width = new GridLength(1, GridUnitType.Star);
+                    grid.ColumnDefinitions[1].Width = new GridLength(1, GridUnitType.Star); //SecondChildGroup.GroupWidth;
+
+                    var firstChildGrid = new Grid()
+                    {
+                        Margin = new Thickness(0, 0, 4, 0)
+                    };
+                    firstChildGrid.SetValue(Grid.ColumnProperty, 0);
+                    FirstChildGroup.Arrange(firstChildGrid);
+                    grid.Children.Add(firstChildGrid);
+
+                    var secondChildGrid = new Grid();
+                    secondChildGrid.SetValue(Grid.ColumnProperty, 1);
+                    //secondChildGrid.Margin = (Dock == Dock.Right) ? new Thickness(0, 0, 4, 0) : new Thickness();
+                    SecondChildGroup.Arrange(secondChildGrid);
+                    grid.Children.Add(secondChildGrid);
+
+                    var splitter = new GridSplitter
+                    {
+                        Width = 4,
+                        HorizontalAlignment = HorizontalAlignment.Right,
+                        VerticalAlignment = VerticalAlignment.Stretch
+                    };
+                    grid.Children.Add(splitter);
+                }
+
+                if (Dock.HasFlag(Docks.Bottom))
+                {
+                    grid.RowDefinitions.Add(new RowDefinition());
+                    //grid.RowDefinitions[0].Height = (Dock == Dock.Top) ? new GridLength(AttachedPane.PaneHeight) : new GridLength(1, GridUnitType.Star);
+                    //grid.RowDefinitions[1].Height = (Dock == Dock.Bottom) ? new GridLength(AttachedPane.PaneHeight) : new GridLength(1, GridUnitType.Star);
+                    grid.RowDefinitions[0].Height = new GridLength(1, GridUnitType.Star);
+                    grid.RowDefinitions[1].Height = new GridLength(1, GridUnitType.Star); //SecondChildGroup.GroupHeight;
+
+                    grid.RowDefinitions[0].MinHeight = 50;
+                    grid.RowDefinitions[1].MinHeight = 50;
+
+                    var firstChildGrid = new Grid();
+                    //firstChildGrid.SetValue(Grid.RowProperty, (Dock == Dock.Bottom) ? 1 : 0);
+                    firstChildGrid.SetValue(Grid.RowProperty, 0);
+                    //firstChildGrid.Margin = (Dock == Dock.Bottom) ? new Thickness(0, 0, 0, 4) : new Thickness();
+                    firstChildGrid.Margin = new Thickness(0, 0, 0, 4);
+                    FirstChildGroup.Arrange(firstChildGrid);
+                    grid.Children.Add(firstChildGrid);
+
+                    var secondChildGrid = new Grid();
+                    //secondChildGrid.SetValue(Grid.RowProperty, (Dock == Dock.Top) ? 1 : 0);
+                    secondChildGrid.SetValue(Grid.RowProperty, 1);
+                    //secondChildGrid.Margin = (Dock == Dock.Bottom) ? new Thickness(0, 0, 0, 4) : new Thickness();
+                    SecondChildGroup.Arrange(secondChildGrid);
+                    grid.Children.Add(secondChildGrid);
+
+                    //AttachedPane.SetValue(Grid.RowProperty, (Dock == Dock.Bottom) ? 1 : 0);
+                    //AttachedPane.Margin = (Dock == Dock.Top) ? new Thickness(0, 0, 0, 4) : new Thickness();
+                    //grid.Children.Add(AttachedPane);
+
+                    var splitter = new GridSplitter
+                    {
+                        Height = 4,
+                        HorizontalAlignment = HorizontalAlignment.Stretch,
+                        VerticalAlignment = VerticalAlignment.Bottom
+                    };
+                    grid.Children.Add(splitter);
+                }
+
+                /*if (Dock == Docks.Left || Dock == Docks.Right)
                 {
                     grid.RowDefinitions.Add(new RowDefinition());
                     grid.ColumnDefinitions.Add(new ColumnDefinition());
                     grid.ColumnDefinitions.Add(new ColumnDefinition());
                     //grid.ColumnDefinitions[0].Width = (Dock == Dock.Left) ? new GridLength(AttachedPane.PaneWidth) : new GridLength(1, GridUnitType.Star);
                     //grid.ColumnDefinitions[1].Width = (Dock == Dock.Right) ? new GridLength(AttachedPane.PaneWidth) : new GridLength(1, GridUnitType.Star);
-                    grid.ColumnDefinitions[0].Width = (Dock == Dock.Left) ? FirstChildGroup.GroupWidth : new GridLength(1, GridUnitType.Star);
-                    grid.ColumnDefinitions[1].Width = (Dock == Dock.Right) ? SecondChildGroup.GroupWidth : new GridLength(1, GridUnitType.Star);
-                    
-                    //grid.ColumnDefinitions[0].MinWidth = 50;
-                    //grid.ColumnDefinitions[1].MinWidth = 50;
+                    grid.ColumnDefinitions[0].Width = (Dock == Docks.Left) ? FirstChildGroup.GroupWidth : new GridLength(1, GridUnitType.Star);
+                    grid.ColumnDefinitions[1].Width = (Dock == Docks.Right) ? SecondChildGroup.GroupWidth : new GridLength(1, GridUnitType.Star);
 
-
-                    Grid firstChildGrid = new Grid();
+                    var firstChildGrid = new Grid();
                     firstChildGrid.SetValue(Grid.ColumnProperty, 0);
                     firstChildGrid.Margin = new Thickness(0, 0, 4, 0);
                     FirstChildGroup.Arrange(firstChildGrid);
                     grid.Children.Add(firstChildGrid);
 
-                    Grid secondChildGrid = new Grid();
+                    var secondChildGrid = new Grid();
                     secondChildGrid.SetValue(Grid.ColumnProperty, 1);
                     //secondChildGrid.Margin = (Dock == Dock.Right) ? new Thickness(0, 0, 4, 0) : new Thickness();
                     SecondChildGroup.Arrange(secondChildGrid);
                     grid.Children.Add(secondChildGrid);
 
-                    //AttachedPane.SetValue(Grid.ColumnProperty, (Dock == Dock.Right) ? 1 : 0);
-                    //AttachedPane.Margin = (Dock == Dock.Left) ? new Thickness(0, 0, 4, 0) : new Thickness();
-                    //grid.Children.Add(AttachedPane);
-
-                    GridSplitter splitter = new GridSplitter
+                    var splitter = new GridSplitter
                     {
                         Width = 4,
                         HorizontalAlignment = HorizontalAlignment.Right,
@@ -217,13 +418,13 @@ namespace DockingLibrary
                     grid.RowDefinitions.Add(new RowDefinition());
                     //grid.RowDefinitions[0].Height = (Dock == Dock.Top) ? new GridLength(AttachedPane.PaneHeight) : new GridLength(1, GridUnitType.Star);
                     //grid.RowDefinitions[1].Height = (Dock == Dock.Bottom) ? new GridLength(AttachedPane.PaneHeight) : new GridLength(1, GridUnitType.Star);
-                    grid.RowDefinitions[0].Height = (Dock == Dock.Top) ? FirstChildGroup.GroupHeight : new GridLength(1, GridUnitType.Star);
-                    grid.RowDefinitions[1].Height = (Dock == Dock.Bottom) ? SecondChildGroup.GroupHeight : new GridLength(1, GridUnitType.Star);
+                    grid.RowDefinitions[0].Height = (Dock == Docks.Top) ? FirstChildGroup.GroupHeight : new GridLength(1, GridUnitType.Star);
+                    grid.RowDefinitions[1].Height = (Dock == Docks.Bottom) ? SecondChildGroup.GroupHeight : new GridLength(1, GridUnitType.Star);
                     
                     grid.RowDefinitions[0].MinHeight = 50;
                     grid.RowDefinitions[1].MinHeight = 50;
 
-                    Grid firstChildGrid = new Grid();
+                    var firstChildGrid = new Grid();
                     //firstChildGrid.SetValue(Grid.RowProperty, (Dock == Dock.Bottom) ? 1 : 0);
                     firstChildGrid.SetValue(Grid.RowProperty, 0);
                     //firstChildGrid.Margin = (Dock == Dock.Bottom) ? new Thickness(0, 0, 0, 4) : new Thickness();
@@ -231,7 +432,7 @@ namespace DockingLibrary
                     FirstChildGroup.Arrange(firstChildGrid);
                     grid.Children.Add(firstChildGrid);
 
-                    Grid secondChildGrid = new Grid();
+                    var secondChildGrid = new Grid();
                     //secondChildGrid.SetValue(Grid.RowProperty, (Dock == Dock.Top) ? 1 : 0);
                     secondChildGrid.SetValue(Grid.RowProperty, 1);
                     //secondChildGrid.Margin = (Dock == Dock.Bottom) ? new Thickness(0, 0, 0, 4) : new Thickness();
@@ -242,14 +443,14 @@ namespace DockingLibrary
                     //AttachedPane.Margin = (Dock == Dock.Top) ? new Thickness(0, 0, 0, 4) : new Thickness();
                     //grid.Children.Add(AttachedPane);
 
-                    GridSplitter splitter = new GridSplitter
+                    var splitter = new GridSplitter
                     {
                         Height = 4,
                         HorizontalAlignment = HorizontalAlignment.Stretch,
                         VerticalAlignment = VerticalAlignment.Bottom
                     };
                     grid.Children.Add(splitter);
-                }
+                }*/
             }
         }
 
@@ -495,15 +696,19 @@ namespace DockingLibrary
 
         public DockablePaneGroup AddPane(DockablePane pane)
         {
-            switch (pane.Dock)
+            if (pane.Dock.HasFlag(Docks.Left) || pane.Dock.HasFlag(Docks.Top))
             {
-                case Dock.Right:
-                case Dock.Bottom:
-                    return new DockablePaneGroup(this, new DockablePaneGroup(pane), pane.Dock);
-                    
-                case Dock.Left:
-                case Dock.Top:
-                    return new DockablePaneGroup(new DockablePaneGroup(pane), this, pane.Dock);
+                return new DockablePaneGroup(new DockablePaneGroup(pane), this, pane.Dock);
+            }
+
+            if (pane.Dock.HasFlag(Docks.Right) || pane.Dock.HasFlag(Docks.Bottom))
+            {
+                return new DockablePaneGroup(this, new DockablePaneGroup(pane), pane.Dock);
+            }
+
+            if (pane.Dock == Docks.None)
+            {
+                return new DockablePaneGroup(pane);
             }
 
             return null;
@@ -595,7 +800,7 @@ namespace DockingLibrary
                 if (group != null)
                 {
                     FirstChildGroup = group;
-                    group._parentGroup = this;
+                    group.ParentGroup = this;
                     return null;
                 }
 
@@ -604,7 +809,7 @@ namespace DockingLibrary
                 if (group != null)
                 {
                     SecondChildGroup = group;
-                    group._parentGroup = this;
+                    group.ParentGroup = this;
                     return null;
                 }
             }
@@ -646,7 +851,7 @@ namespace DockingLibrary
         public void Serialize(XmlDocument doc, XmlNode parentNode)
         {
             parentNode.Attributes.Append(doc.CreateAttribute("Dock"));
-            parentNode.Attributes["Dock"].Value = _dock.ToString();
+            parentNode.Attributes["Dock"].Value = Dock.ToString();
 
             if (AttachedPane != null)
             {
@@ -683,7 +888,7 @@ namespace DockingLibrary
 
         public void Deserialize(DockManager managerToAttach, System.Xml.XmlNode node, GetContentFromTypeString getObjectHandler)
         {
-            _dock = (Dock)Enum.Parse(typeof(Dock), node.Attributes["Dock"].Value);
+            Dock = (Docks)Enum.Parse(typeof(Docks), node.Attributes["Dock"].Value);
 
             if (node.ChildNodes[0].Name == "DockablePane")
             {
@@ -701,13 +906,13 @@ namespace DockingLibrary
             {
                 _firstChildGroup = new DockablePaneGroup
                 {
-                    _parentGroup = this
+                    ParentGroup = this
                 };
                 _firstChildGroup.Deserialize(managerToAttach, node.ChildNodes[0].ChildNodes[0], getObjectHandler);
 
                 _secondChildGroup = new DockablePaneGroup
                 {
-                    _parentGroup = this
+                    ParentGroup = this
                 };
                 _secondChildGroup.Deserialize(managerToAttach, node.ChildNodes[0].ChildNodes[1], getObjectHandler);
             }

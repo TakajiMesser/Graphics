@@ -1,17 +1,21 @@
-﻿<dock:DockableContent x:Class="SauceEditor.Controls.DockableGamePanel"
+﻿<dock:DockableContent x:Class="SauceEditor.Controls.GamePanels.DockableGamePanel"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Controls"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" 
+        xmlns:tako="clr-namespace:TakoEngine.Game;assembly=TakoEngine"
         mc:Ignorable="d"
-        Title="DockableGameWindow" Loaded="OnLoaded">
+        Loaded="OnLoaded">
     <DockPanel Name="MainDock">
         <ToolBar DockPanel.Dock="Top">
             <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
             <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
             <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>
         </ToolBar>
+        <WindowsFormsHost>
+            <tako:GamePanel x:Name="Panel" Dock="Fill"></tako:GamePanel>
+        </WindowsFormsHost>
     </DockPanel>
 </dock:DockableContent>

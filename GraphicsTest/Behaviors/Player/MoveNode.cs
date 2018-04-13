@@ -46,22 +46,22 @@ namespace GraphicsTest.Behaviors.Player
 
             if (context.InputState.IsHeld(context.InputMapping.ItemSlot1))
             {
-                context.Rotation = new Vector3(context.Rotation.X, context.Rotation.Y + 0.1f, context.Rotation.Z);
+                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y + 0.1f, context.EulerRotation.Z);
             }
 
             if (context.InputState.IsHeld(context.InputMapping.ItemSlot2))
             {
-                context.Rotation = new Vector3(context.Rotation.X, context.Rotation.Y - 0.1f, context.Rotation.Z);
+                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y - 0.1f, context.EulerRotation.Z);
             }
 
             if (context.InputState.IsHeld(context.InputMapping.ItemSlot3))
             {
-                context.Rotation = new Vector3(context.Rotation.X, context.Rotation.Y, context.Rotation.Z + 0.1f);
+                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z + 0.1f);
             }
 
             if (context.InputState.IsHeld(context.InputMapping.ItemSlot4))
             {
-                context.Rotation = new Vector3(context.Rotation.X, context.Rotation.Y, context.Rotation.Z - 0.1f);
+                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }
 
             context.Translation = translation;

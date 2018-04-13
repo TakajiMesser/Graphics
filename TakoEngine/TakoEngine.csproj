@@ -106,11 +106,13 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\IScale.cs" />
     <Compile Include="Entities\IRotate.cs" />
     <Compile Include="Entities\IEntity.cs" />
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\TransformModeEventArgs.cs" />
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
     <Compile Include="Game\EntitySelectedEventArgs.cs" />
     <Compile Include="Game\CursorEventArgs.cs" />
@@ -249,6 +251,12 @@
   <ItemGroup>
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Rendering\Shaders\Selection\scale.frag" />
+    <None Include="Rendering\Shaders\Selection\scale.geom" />
+    <None Include="Rendering\Shaders\Selection\scale.vert" />
+    <None Include="Rendering\Shaders\Selection\rotation.frag" />
+    <None Include="Rendering\Shaders\Selection\rotation.geom" />
+    <None Include="Rendering\Shaders\Selection\rotation.vert" />
     <None Include="Rendering\Shaders\Selection\arrow.frag" />
     <None Include="Rendering\Shaders\Selection\arrow.geom" />
     <None Include="Rendering\Shaders\Selection\arrow.vert" />
@@ -297,6 +305,8 @@
     <None Include="Rendering\Shaders\Forward\forward.vert" />
     <None Include="Rendering\Shaders\Simple\simple.frag" />
     <None Include="Rendering\Shaders\Simple\simple.vert" />
+    <None Include="Rendering\Shaders\Skybox\skybox2D.frag" />
+    <None Include="Rendering\Shaders\Skybox\skybox2D.vert" />
     <None Include="Rendering\Shaders\Skybox\skybox.frag" />
     <None Include="Rendering\Shaders\Skybox\skybox.vert" />
     <None Include="Rendering\Shaders\Text\text.frag" />

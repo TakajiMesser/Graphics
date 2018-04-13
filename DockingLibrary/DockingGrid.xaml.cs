@@ -20,6 +20,11 @@ namespace DockingLibrary
 
     public partial class DockingGrid : System.Windows.Controls.UserControl, ILayoutSerializable
     {
+        public DocumentsPane DocumentsPane { get; private set; }
+
+        //Creates a root group with a DocumentsPane
+        private DockablePaneGroup _rootGroup;
+
         public DockingGrid()
         {
             InitializeComponent();
@@ -27,19 +32,9 @@ namespace DockingLibrary
 
         internal void AttachDockManager(DockManager dockManager)
         {
-            _docsPane = new DocumentsPane(dockManager);
+            DocumentsPane = new DocumentsPane(dockManager);
             _rootGroup = new DockablePaneGroup(DocumentsPane);
             ArrangeLayout();
-        }
-        
-        //Creates a root group with a DocumentsPane
-        DockablePaneGroup _rootGroup;
-
-        DocumentsPane _docsPane;
-
-        public DocumentsPane DocumentsPane
-        {
-            get { return _docsPane; }
         }
 
         internal void AttachPaneEvents(DockablePane pane)
@@ -97,7 +92,7 @@ namespace DockingLibrary
                 Console.WriteLine(group.AttachedPane.ToString() + " {null}");
         }
 
-        public void Add(DockablePane pane, Pane relativePane, Dock relativeDock)
+        public void Add(DockablePane pane, Pane relativePane, Docks relativeDock)
         {
             Console.WriteLine("Add(...)");
             AttachPaneEvents(pane);
@@ -106,8 +101,8 @@ namespace DockingLibrary
 
             switch (relativeDock)
             {
-                case Dock.Right:
-                case Dock.Bottom:
+                case Docks.Right:
+                case Docks.Bottom:
                     {
                         if (group == _rootGroup)
                         {
@@ -121,8 +116,8 @@ namespace DockingLibrary
                         }
                     }
                     break;
-                case Dock.Left:
-                case Dock.Top:
+                case Docks.Left:
+                case Docks.Top:
                     {
                         if (group == _rootGroup)
                         {
@@ -156,7 +151,7 @@ namespace DockingLibrary
             ArrangeLayout();
         }
 
-        public void MoveTo(DockablePane sourcePane, Pane destinationPane, Dock relativeDock)
+        public void MoveTo(DockablePane sourcePane, Pane destinationPane, Docks relativeDock)
         {
             Remove(sourcePane);
             Add(sourcePane, destinationPane, relativeDock);

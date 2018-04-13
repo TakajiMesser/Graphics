@@ -36,8 +36,8 @@ namespace GraphicsTest.Behaviors.Player
                 context.SetVariable("coverDistance", vectorBetween.Length);
 
                 float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
-                context.QRotation = new Quaternion(turnAngle + (float)Math.PI, 0.0f, 0.0f);
-                context.Rotation = new Vector3(turnAngle + (float)Math.PI, context.Rotation.Y, context.Rotation.Z);
+                context.Actor.Rotation = new Quaternion(turnAngle + (float)Math.PI, 0.0f, 0.0f);
+                context.EulerRotation = new Vector3(turnAngle + (float)Math.PI, context.EulerRotation.Y, context.EulerRotation.Z);
 
                 return BehaviorStatus.Success;
             }

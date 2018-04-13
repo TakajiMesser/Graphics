@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Diagnostics;
+using DockingLibrary;
 
 namespace DockingLibraryDemo
 {
@@ -47,7 +48,7 @@ namespace DockingLibraryDemo
             {
                 //Show PropertyWindow docked to the top border
                 propertyWindow.DockManager = dockManager2;
-                propertyWindow.Show(Dock.Left);
+                propertyWindow.Show(Docks.Left);
 
                 //Show ExplorerWindow docked to the right border as default
                 explorerWindow.DockManager = dockManager2;

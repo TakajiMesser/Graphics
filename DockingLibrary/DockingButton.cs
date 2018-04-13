@@ -57,7 +57,7 @@ namespace DockingLibrary
 
             DockableContentProperty = DependencyProperty.Register("DockableContent", typeof(DockableContent), typeof(DockingButton));
             DockingButtonGroupProperty = DependencyProperty.Register("DockingButtonGroup", typeof(DockingButtonGroup), typeof(DockingButton));
-            DockProperty = DependencyProperty.Register("Dock", typeof(Dock), typeof(DockingButton));
+            DockProperty = DependencyProperty.Register("Dock", typeof(Docks), typeof(DockingButton));
         }
 
         public static DependencyProperty DockableContentProperty;
@@ -82,9 +82,9 @@ namespace DockingLibrary
 
         public static DependencyProperty DockProperty;
 
-        public Dock Dock
+        public Docks Dock
         {
-            get => (Dock)GetValue(DockProperty);
+            get => (Docks)GetValue(DockProperty);
             set => SetValue(DockProperty, value);
         }
     }

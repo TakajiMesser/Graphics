@@ -13,6 +13,16 @@ using System.Windows.Shapes;
 
 namespace DockingLibrary
 {
+    [Flags]
+    public enum Docks
+    {
+        None = 0,
+        Left = 1,
+        Top = 2,
+        Right = 4,
+        Bottom = 8
+    }
+
     /// <summary>
     /// Rappresents a content embeddable in a dockable pane or in a documents pane
     /// </summary>
@@ -23,7 +33,7 @@ namespace DockingLibrary
         /// </summary>
         public new string Title
         {
-            get { return base.Title; }
+            get => base.Title;
             set
             {
                 base.Title = value;
@@ -37,7 +47,7 @@ namespace DockingLibrary
         /// <summary>
         /// Show this content
         /// </summary>
-        /// <remarks>Show this content in a dockable pane. If no pane was previuosly created, it creates a new one with default right dock. </remarks>
+        /// <remarks>Show this content in a dockable pane. If no pane was previously created, it creates a new one with default right dock. </remarks>
         public override void Show()
         {
             if (ContainerPane != null)
@@ -46,15 +56,28 @@ namespace DockingLibrary
             }
             else
             {
-                Show(Dock.Right);
+                //Show(Docks.Right);
+                if (ContainerPane == null)
+                {
+                    ContainerPane = new DockablePane(DockManager);
+                    ContainerPane.Add(this);
+                    ContainerPane.Show();
+
+                    DockManager.Add(ContainerPane as DockablePane);
+                }
+                else
+                {
+                    ContainerPane.Show(this);
+                    ContainerPane.Show();
+                }
             }
         }
 
         /// <summary>
         /// Show this content
         /// </summary>
-        /// <remarks>Show this content in a dockable pane. If no pane was previuosly created, it creates a new one with passed initial dock. </remarks>
-        public void Show(Dock dock)
+        /// <remarks>Show this content in a dockable pane. If no pane was previously created, it creates a new one with passed initial dock. </remarks>
+        public void Show(Docks dock)
         {
             if (ContainerPane == null)
             {
@@ -90,7 +113,7 @@ namespace DockingLibrary
         /// <remarks>If container pane doesn't contain any more content, it is automaticly hidden.</remarks>
         public virtual new void Hide() => ContainerPane.Hide(this);
 
-        public virtual void ChangeDock(Dock dock) { }
+        public virtual void ChangeDock(Docks dock) { }
 
         public virtual void Float() { }
 

@@ -115,9 +115,16 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Commands\ICommand.cs" />
+    <Compile Include="Commands\CommandEventArgs.cs" />
+    <Compile Include="Commands\CommandStack.cs" />
+    <Compile Include="Commands\Command.cs" />
     <Compile Include="Commands\SauceCommands.cs" />
-    <Compile Include="Controls\DockableGamePanel.xaml.cs">
+    <Compile Include="Controls\GamePanels\DockableGamePanel.xaml.cs">
       <DependentUpon>DockableGamePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\GamePanels\GamePanelManager.xaml.cs">
+      <DependentUpon>GamePanelManager.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProjectTree\ItemSelectedEventArgs.cs" />
     <Compile Include="Controls\ProjectTree\MapEventArgs.cs" />
@@ -134,6 +141,7 @@
       <DependentUpon>TransformPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\Transform\TransformChangedEventArgs.cs" />
+    <Compile Include="Controls\EntityUpdatedEventArgs.cs" />
     <Compile Include="Controls\ValueChangedEventArgs.cs" />
     <Compile Include="DocWindow.xaml.cs">
       <DependentUpon>DocWindow.xaml</DependentUpon>
@@ -143,7 +151,11 @@
     </Compile>
     <Compile Include="Structure\GameProject.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
-    <Page Include="Controls\DockableGamePanel.xaml">
+    <Page Include="Controls\GamePanels\DockableGamePanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\GamePanels\GamePanelManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

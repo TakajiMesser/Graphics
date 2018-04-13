@@ -43,23 +43,17 @@ namespace DockingLibrary
         /// <summary>
         /// Returns a documents list
         /// </summary>
-        public DocumentContent[] Documents
+        public IEnumerable<DocumentContent> Documents
         {
             get
             {
-                var docs = new DocumentContent[gridDocking.DocumentsPane.Documents.Count - gridDocking.DocumentsPane.Contents.Count];
-
-                int i = 0;
                 foreach (var content in gridDocking.DocumentsPane.Documents)
                 {
                     if (content is DocumentContent)
                     {
-                        docs[i++] = content as DocumentContent;
+                        yield return content as DocumentContent;
                     }
                 }
-
-                //gridDocking.DocumentsPane.Documents.CopyTo(docs);
-                return docs;
             }
         }
 
@@ -240,7 +234,7 @@ namespace DockingLibrary
 
             foreach (var content in pane.Contents)
             {
-                DockingButton btn = new DockingButton
+                var btn = new DockingButton
                 {
                     DockableContent = content,
                     DockingButtonGroup = buttonGroup
@@ -264,7 +258,7 @@ namespace DockingLibrary
         /// <param name="group">Group to add</param>
         private void AddDockingButtons(DockingButtonGroup group)
         {
-            foreach (DockingButton btn in group.Buttons)
+            foreach (var btn in group.Buttons)
             {
                 btn.MouseEnter += new MouseEventHandler(OnShowAutoHidePane);
             }
@@ -277,7 +271,7 @@ namespace DockingLibrary
 
             switch (group.Dock)
             {
-                case Dock.Left:
+                case Docks.Left:
                     foreach (var btn in group.Buttons)
                     {
                         btn.LayoutTransform = new RotateTransform(90);
@@ -285,7 +279,7 @@ namespace DockingLibrary
                     }
                     btnPanelLeft.Children.Add(br);
                     break;
-                case Dock.Right:
+                case Docks.Right:
                     foreach (var btn in group.Buttons)
                     {
                         btn.LayoutTransform = new RotateTransform(90);
@@ -293,14 +287,14 @@ namespace DockingLibrary
                     }
                     btnPanelRight.Children.Add(br);
                     break;
-                case Dock.Top:
+                case Docks.Top:
                     foreach (var btn in group.Buttons)
                     {
                         btnPanelTop.Children.Add(btn);
                     }
                     btnPanelTop.Children.Add(br);
                     break;
-                case Dock.Bottom:
+                case Docks.Bottom:
                     foreach (var btn in group.Buttons)
                     {
                         btnPanelBottom.Children.Add(btn);
@@ -316,27 +310,29 @@ namespace DockingLibrary
         /// <param name="group">Group to remove</param>
         private void RemoveDockingButtons(DockingButtonGroup group)
         {
-            foreach (DockingButton btn in group.Buttons)
+            foreach (var btn in group.Buttons)
+            {
                 btn.MouseEnter -= new MouseEventHandler(OnShowAutoHidePane);
-
+            }
+            
             switch (group.Dock)
             {
-                case Dock.Left:
+                case Docks.Left:
                     btnPanelLeft.Children.RemoveAt(btnPanelLeft.Children.IndexOf(group.Buttons[group.Buttons.Count - 1]) + 1);
                     foreach (DockingButton btn in group.Buttons)
                         btnPanelLeft.Children.Remove(btn);
                     break;
-                case Dock.Right:
+                case Docks.Right:
                     btnPanelRight.Children.RemoveAt(btnPanelRight.Children.IndexOf(group.Buttons[group.Buttons.Count - 1]) + 1);
                     foreach (DockingButton btn in group.Buttons)
                         btnPanelRight.Children.Remove(btn);
                     break;
-                case Dock.Top:
+                case Docks.Top:
                     btnPanelTop.Children.RemoveAt(btnPanelTop.Children.IndexOf(group.Buttons[group.Buttons.Count - 1]) + 1);
                     foreach (DockingButton btn in group.Buttons)
                         btnPanelTop.Children.Remove(btn);
                     break;
-                case Dock.Bottom:
+                case Docks.Bottom:
                     btnPanelBottom.Children.RemoveAt(btnPanelBottom.Children.IndexOf(group.Buttons[group.Buttons.Count - 1]) + 1);
                     foreach (DockingButton btn in group.Buttons)
                         btnPanelBottom.Children.Remove(btn);
@@ -396,8 +392,8 @@ namespace DockingLibrary
 
                 switch (_currentButton.DockingButtonGroup.Dock)
                 {
-                    case Dock.Left:
-                    case Dock.Right:
+                    case Docks.Left:
+                    case Docks.Right:
                         if (_tempPaneAnimation != null)
                             pane.PaneWidth = _lengthAnimation;
                         else 
@@ -405,8 +401,8 @@ namespace DockingLibrary
                         length = _tempPane.Width;
                         right_left = true;
                         break;
-                    case Dock.Top:
-                    case Dock.Bottom:
+                    case Docks.Top:
+                    case Docks.Bottom:
                         if (_tempPaneAnimation != null)
                             pane.PaneHeight = _lengthAnimation;
                         else
@@ -457,22 +453,22 @@ namespace DockingLibrary
 
             switch (_currentButton.DockingButtonGroup.Dock)
             {
-                case Dock.Left:
+                case Docks.Left:
                     splitter = new DockPanelSplitter(_tempPane, null, SplitOrientation.Vertical);
                     length = pane.PaneWidth;
                     right_left = true;
                     break;
-                case Dock.Right:
+                case Docks.Right:
                     splitter = new DockPanelSplitter(null, _tempPane, SplitOrientation.Vertical);
                     length = pane.PaneWidth;
                     right_left = true;
                     break;
-                case Dock.Top:
+                case Docks.Top:
                     splitter = new DockPanelSplitter(_tempPane, null, SplitOrientation.Horizontal);
                     length = pane.PaneHeight;
                     right_left = false;
                     break;
-                case Dock.Bottom:
+                case Docks.Bottom:
                     splitter = new DockPanelSplitter(null, _tempPane, SplitOrientation.Horizontal);
                     length = pane.PaneHeight;
                     right_left = false;
@@ -508,12 +504,12 @@ namespace DockingLibrary
             {
                 switch (_currentButton.DockingButtonGroup.Dock)
                 {
-                    case Dock.Left:
-                    case Dock.Right:
+                    case Docks.Left:
+                    case Docks.Right:
                         pane.PaneWidth = _tempPane.PaneWidth;
                         break;
-                    case Dock.Top:
-                    case Dock.Bottom:
+                    case Docks.Top:
+                    case Docks.Bottom:
                         pane.PaneHeight = _tempPane.PaneHeight;
                         break;
                 }
@@ -689,7 +685,7 @@ namespace DockingLibrary
         /// <param name="sourcePane">Source pane to move</param>
         /// <param name="destinationPane">Relative pane</param>
         /// <param name="relativeDock"></param>
-        internal void MoveTo(DockablePane sourcePane, Pane destinationPane, Dock relativeDock)
+        internal void MoveTo(DockablePane sourcePane, Pane destinationPane, Docks relativeDock)
         {
             gridDocking.MoveTo(sourcePane, destinationPane, relativeDock);
         }
@@ -857,7 +853,6 @@ namespace DockingLibrary
             _overlayWindow.Owner = null;
             _overlayWindow.Hide();
             ParentWindow.Activate();
-            
         }
 
         /// <summary>

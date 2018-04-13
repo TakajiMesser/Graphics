@@ -18,7 +18,7 @@ namespace DockingLibrary
         public readonly DockablePane ReferencedPane;
         public readonly DockableContent ReferencedContent;
 
-        public OverlayDockablePane(DockManager dockManager, DockableContent content, Dock initialDock) : base(dockManager, initialDock)
+        public OverlayDockablePane(DockManager dockManager, DockableContent content, Docks initialDock) : base(dockManager, initialDock)
         {
             btnAutoHide.LayoutTransform = new RotateTransform(90);
             ReferencedPane = content.ContainerPane as DockablePane;

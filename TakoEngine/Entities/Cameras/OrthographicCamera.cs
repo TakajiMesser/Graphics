@@ -9,6 +9,12 @@ namespace TakoEngine.Entities.Cameras
         public const float ZNEAR = -10.0f;
         public const float ZFAR = 10.0f;
 
+        public float Width
+        {
+            get => _projectionMatrix.Width;
+            set => _projectionMatrix.Width = value;
+        }
+
         public OrthographicCamera(string name, Resolution resolution, float startingWidth) : base(name, resolution)
         {
             _projectionMatrix.Type = ProjectionTypes.Orthographic;

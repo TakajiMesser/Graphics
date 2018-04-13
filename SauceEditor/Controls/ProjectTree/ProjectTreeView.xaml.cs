@@ -29,6 +29,7 @@ namespace SauceEditor.Controls.ProjectTree
         public event EventHandler<ItemSelectedEventArgs> AudioSelected;
 
         private GameProject _project;
+        private string _projectPath;
 
         public ProjectTreeView()
         {
@@ -47,7 +48,9 @@ namespace SauceEditor.Controls.ProjectTree
 
         public void OpenProject(string filePath)
         {
+            _projectPath = filePath;
             _project = GameProject.Load(filePath);
+
             Tree.Items.Clear();
 
             var root = new TreeViewItem()
@@ -84,8 +87,8 @@ namespace SauceEditor.Controls.ProjectTree
                 map.MouseRightButtonDown += (s, args) =>
                 {
                     var item = s as TreeViewItem;
-                    //item.IsSelected = true;
-                    item.ContextMenu = FindResource("MapMenu") as ContextMenu;
+                    item.IsSelected = true;
+                    item.ContextMenu = Tree.FindResource("MapMenu") as ContextMenu;
                 };
                 maps.Items.Add(map);
             }
@@ -202,12 +205,13 @@ namespace SauceEditor.Controls.ProjectTree
             return audios;
         }
 
+        private void OpenMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+
         private void OpenMapCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var selectedItem = sender as MenuItem;
-            //MapSelected?.Invoke(this, new ItemSelectedEventArgs(mapPath));
+            var item = e.Source as TreeViewItem;
+            var fileName = Path.Combine(Path.GetDirectoryName(_projectPath), (string)item.Header);
+            MapSelected?.Invoke(this, new ItemSelectedEventArgs(fileName));
         }
-
-        private void OpenMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
     }
 }

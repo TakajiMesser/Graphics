@@ -53,7 +53,7 @@ namespace DockingLibrary
         /// <summary>
         /// Current docking border
         /// </summary>
-        public Dock Dock { get; private set; } = Dock.Right;
+        public Docks Dock { get; private set; } = Docks.None;
 
         /// <summary>
         /// Active visible content
@@ -121,8 +121,8 @@ namespace DockingLibrary
         /// </summary>
         public event EventHandler OnDockChanged;
 
-        public DockablePane(DockManager dockManager) : this(dockManager, Dock.Right) { }
-        public DockablePane(DockManager dockManager, Dock initialDock) : base(dockManager)
+        public DockablePane(DockManager dockManager) : base(dockManager) => InitializeComponent();
+        public DockablePane(DockManager dockManager, Docks initialDock) : base(dockManager)
         {
             Dock = initialDock;
             InitializeComponent();
@@ -338,8 +338,8 @@ namespace DockingLibrary
 
         protected virtual void AddItem(DockableContent content)
         {
-            TabItem item = new TabItem();
-            DockPanel tabPanel = new DockPanel();
+            var item = new TabItem();
+            var tabPanel = new DockPanel();
 
             //SetTabItemHeader(item, content);
 
@@ -358,10 +358,7 @@ namespace DockingLibrary
             RefreshTitle();
         }
 
-        private void Item_GotFocus(object sender, RoutedEventArgs e)
-        {
-            Console.WriteLine("GotFocus");
-        }
+        private void Item_GotFocus(object sender, RoutedEventArgs e) => Console.WriteLine("GotFocus");
 
         protected virtual void RemoveItem(DockableContent content)
         {
@@ -424,11 +421,16 @@ namespace DockingLibrary
         /// </summary>
         public override void Show()
         {
-            foreach (DockableContent content in Contents)
+            foreach (var content in Contents)
+            {
                 Show(content);
+            }
+            
 
             if (State == PaneState.AutoHide || State == PaneState.Hidden)
+            {
                 ChangeState(PaneState.Docked);
+            }
 
             base.Show();
         }
@@ -505,7 +507,7 @@ namespace DockingLibrary
         /// </summary>
         /// <param name="destinationPane"></param>
         /// <param name="relativeDock"></param>
-        internal void MoveTo(Pane destinationPane, Dock relativeDock)
+        internal void MoveTo(Pane destinationPane, Docks relativeDock)
         {
             if (destinationPane is DockablePane dockableDestPane)
             {
@@ -544,7 +546,7 @@ namespace DockingLibrary
         /// Change dock border
         /// </summary>
         /// <param name="dock">New dock border</param>
-        public void ChangeDock(Dock dock)
+        public void ChangeDock(Docks dock)
         {
             //if (dock != _dock)
             {
@@ -591,7 +593,7 @@ namespace DockingLibrary
         {
             if (!IsHidden)
             {
-                if (Dock == Dock.Left || Dock == Dock.Right)
+                if (Dock == Docks.Left || Dock == Docks.Right)
                 {
                     PaneWidth = ActualWidth > 150 ? ActualWidth : 150;
                 }
@@ -868,7 +870,7 @@ namespace DockingLibrary
         {
             base.Deserialize(managerToAttach, node, getObjectHandler);
 
-            Dock = (Dock)Enum.Parse(typeof(Dock), node.Attributes["Dock"].Value);
+            Dock = (Docks)Enum.Parse(typeof(Docks), node.Attributes["Dock"].Value);
             State = (PaneState)Enum.Parse(typeof(PaneState), node.Attributes["State"].Value);
             _lastState = (PaneState)Enum.Parse(typeof(PaneState), node.Attributes["LastState"].Value);
 

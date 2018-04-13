@@ -1,7 +1,9 @@
 ﻿using GraphicsTest.Helpers;
 using Microsoft.Win32;
 using OpenTK;
+using SauceEditor.Commands;
 using SauceEditor.Controls;
+using SauceEditor.Controls.GamePanels;
 using SauceEditor.Controls.ProjectTree;
 using SauceEditor.Structure;
 using System;
@@ -11,6 +13,7 @@ using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using TakoEngine.Game;
 using TakoEngine.Maps;
 using GameWindow = TakoEngine.Game.GameWindow;
 
@@ -21,12 +24,16 @@ namespace SauceEditor
     /// </summary>
     public partial class MainWindow : Window
     {
+        public CommandStack CommandStack { get; set; } = new CommandStack();
+
         private Map _map;
         private string _mapPath;
-        private GameWindow _gameWindow;
+        
         private ProjectTreeView _projectTree = new ProjectTreeView();
         private PropertyWindow _propertyPanel = new PropertyWindow();
-        private DockableGamePanel _perspectiveView;
+        private GamePanelManager _gamePanelManager;
+
+        private GameWindow _gameWindow;
 
         public MainWindow()
         {
@@ -125,35 +132,40 @@ namespace SauceEditor
             _mapPath = filePath;
 
             PlayButton.Visibility = Visibility.Visible;
-
-            _perspectiveView = new DockableGamePanel(MainDockManager);
-            _perspectiveView.GamePanel.LoadFromMap(_mapPath);
-            _perspectiveView.EntitySelectionChanged += (s, args) =>
+            _gamePanelManager = new GamePanelManager(MainDockManager, _mapPath);
+            _gamePanelManager.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
+            _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entity;
                 SideDockManager.ActiveContent = _propertyPanel;
             };
-            _perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            _perspectiveView.ShowAsDocument();
+            _gamePanelManager.ShowAsDocument();
 
-            _propertyPanel.TransformChanged += (s, args) => _perspectiveView.GamePanel.Invalidate();
+            _propertyPanel.EntityUpdated += (s, args) =>
+            {
+                _gamePanelManager.UpdateEntity(args.Entity);
+                /*_perspectiveView.Panel.Invalidate();
+                _xView.Panel.Invalidate();
+                _yView.Panel.Invalidate();
+                _zView.Panel.Invalidate();*/
+            };
         }
 
         private void OpenModel(string filePath)
         {
             PlayButton.Visibility = Visibility.Visible;
 
-            var modelView = new DockableGamePanel(MainDockManager);
-            modelView.GamePanel.LoadFromModel(filePath);
+            /*var modelView = new DockableGamePanel(MainDockManager);
+            modelView.Panel.LoadFromModel(filePath);
             modelView.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entity;
                 SideDockManager.ActiveContent = _propertyPanel;
             };
             modelView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            modelView.ShowAsDocument();
+            modelView.ShowAsDocument();*/
 
-            _propertyPanel.TransformChanged += (s, args) => modelView.GamePanel.Invalidate();
+            //_propertyPanel.TransformChanged += (s, args) => modelView.Panel.Invalidate();
         }
 
         private void OpenBehavior(string filePath)
@@ -231,6 +243,7 @@ namespace SauceEditor
             {
                 CheckFileExists = true,
                 CheckPathExists = true,
+                Filter = "Project Files|*.pro",
                 DefaultExt = GameProject.FILE_EXTENSION,
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
                     ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
@@ -252,6 +265,7 @@ namespace SauceEditor
                 CheckFileExists = true,
                 CheckPathExists = true,
                 DefaultExt = "map",
+                Filter = "Map Files|*.map",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
                     ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
@@ -270,7 +284,7 @@ namespace SauceEditor
             {
                 CheckFileExists = true,
                 CheckPathExists = true,
-                DefaultExt = "map",
+                DefaultExt = "obj",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
                     ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
@@ -329,9 +343,23 @@ namespace SauceEditor
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
+            _gamePanelManager.IsEnabled = false;
+            /*_perspectiveView.Panel.Enabled = false;
+            _xView.Panel.Enabled = false;
+            _yView.Panel.Enabled = false;
+            _zView.Panel.Enabled = false;*/
+
             _gameWindow = new GameWindow(_mapPath)
             {
                 VSync = VSyncMode.Adaptive
+            };
+            _gameWindow.Closed += (s, args) =>
+            {
+                _gamePanelManager.IsEnabled = true;
+                /*_perspectiveView.Panel.Enabled = true;
+                _xView.Panel.Enabled = true;
+                _yView.Panel.Enabled = true;
+                _zView.Panel.Enabled = true;*/
             };
             _gameWindow.Run(60.0, 0.0);
         }

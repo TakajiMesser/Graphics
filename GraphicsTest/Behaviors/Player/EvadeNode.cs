@@ -59,9 +59,8 @@ namespace GraphicsTest.Behaviors.Player
 
                     var angle = (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X);
 
-                    context.QRotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
-                    context.Rotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), context.Rotation.Y, context.Rotation.Z);
-                    //context.Scale = new Vector3(1.0f, 0.5f, 1.0f);
+                    context.Actor.Rotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
+                    context.EulerRotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), context.EulerRotation.Y, context.EulerRotation.Z);
                     context.Translation = evadeTranslation;
 
                     context.SetVariable("evadeTranslation", evadeTranslation);
@@ -75,9 +74,9 @@ namespace GraphicsTest.Behaviors.Player
             {
                 var evadeTranslation = context.GetVariable<Vector3>("evadeTranslation");
 
-                context.QRotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), 2.0f * (float)Math.PI / TickCount * nEvadeTicks);
-                context.QRotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
-                context.Rotation = new Vector3(context.Rotation.X, 2.0f * (float)Math.PI / TickCount * nEvadeTicks, context.Rotation.Z);
+                context.Actor.Rotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), 2.0f * (float)Math.PI / TickCount * nEvadeTicks);
+                context.Actor.Rotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
+                context.EulerRotation = new Vector3(context.EulerRotation.X, 2.0f * (float)Math.PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
                 nEvadeTicks++;
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
                 context.Translation = evadeTranslation;
@@ -88,9 +87,8 @@ namespace GraphicsTest.Behaviors.Player
             {
                 nEvadeTicks = 0;
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
-                context.QRotation = Quaternion.Identity;
-                context.Rotation = new Vector3(context.Rotation.X, 0.0f, context.Rotation.Z);
-                context.Scale = Vector3.One;
+                context.Actor.Rotation = Quaternion.Identity;
+                context.EulerRotation = new Vector3(context.EulerRotation.X, 0.0f, context.EulerRotation.Z);
 
                 return BehaviorStatus.Failure;
             }

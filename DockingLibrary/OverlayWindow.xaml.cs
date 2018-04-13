@@ -142,21 +142,21 @@ namespace DockingLibrary
         internal bool OnDrop(Button btnDock, Point point)
         {
             if (btnDock == btnDockBottom)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Dock.Bottom);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Docks.Bottom);
             else if (btnDock == btnDockLeft)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Dock.Left);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Docks.Left);
             else if (btnDock == btnDockRight)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Dock.Right);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Docks.Right);
             else if (btnDock == btnDockTop)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Dock.Top);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.ChangeDock(Docks.Top);
             else if (btnDock == btnDockPaneTop)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Dock.Top);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Docks.Top);
             else if (btnDock == btnDockPaneBottom)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Dock.Bottom);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Docks.Bottom);
             else if (btnDock == btnDockPaneLeft)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Dock.Left);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Docks.Left);
             else if (btnDock == btnDockPaneRight)
-                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Dock.Right);
+                DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveTo(CurrentDropPane, Docks.Right);
             else if (btnDock == btnDockPaneInto)
             {
                 DockManager.DragPaneServices.FloatingWindow.HostedPane.ReferencedPane.MoveInto(CurrentDropPane);

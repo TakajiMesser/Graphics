@@ -13,19 +13,21 @@ namespace TakoEngine.Scripting.Behaviors
 {
     public class BehaviorContext
     {
-        // Values set by the Actor
+        /// <summary>
+        /// The actor that this behavior belongs to
+        /// </summary>
         public Actor Actor { get; internal set; }
+
+        /// <summary>
+        /// The set of colliders within range of this actor
+        /// </summary>
         public IEnumerable<Bounds> Colliders { get; internal set; }
+
+        public Camera Camera { get; internal set; }
         public InputState InputState { get; internal set; }
         public InputMapping InputMapping { get; internal set; }
-        public Camera Camera { get; internal set; }
 
-        // Values set by the Actor, or altered by Behavior Nodes
-        public Vector3 Rotation { get; set; }
-        public Quaternion QRotation { get; set; } = Quaternion.Identity;
-        public Vector3 Scale { get; set; }
-
-        // Values set by Behavior Nodes, and RESET by the Actor
+        public Vector3 EulerRotation { get; set; }
         public Vector3 Translation { get; set; }
 
         public Dictionary<string, object> PropertiesByName { get; protected set; } = new Dictionary<string, object>();

@@ -14,6 +14,13 @@ using TakoEngine.Rendering.Vertices;
 
 namespace TakoEngine.Rendering.Processing
 {
+    public enum TransformModes
+    {
+        Translate,
+        Rotate,
+        Scale
+    }
+
     /// <summary>
     /// Renders all game entities to a texture, with their colors reflecting their given ID's
     /// </summary>
@@ -31,9 +38,11 @@ namespace TakoEngine.Rendering.Processing
 
         public FrameBuffer GBuffer { get; private set; } = new FrameBuffer();
 
-        internal ShaderProgram _selectionProgram;
-        internal ShaderProgram _jointSelectionProgram;
-        private ShaderProgram _arrowProgram;
+        private ShaderProgram _selectionProgram;
+        private ShaderProgram _jointSelectionProgram;
+        private ShaderProgram _translateProgram;
+        private ShaderProgram _rotateProgram;
+        private ShaderProgram _scaleProgram;
 
         private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
         private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
@@ -50,10 +59,22 @@ namespace TakoEngine.Rendering.Processing
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SELECTION_FRAGMENT_PATH))
             );
 
-            _arrowProgram = new ShaderProgram(
+            _translateProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.ARROW_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.ARROW_GEOMETRY_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.ARROW_FRAGMENT_SHADER_PATH))
+            );
+
+            _rotateProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.ROTATION_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.ROTATION_GEOMETRY_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.ROTATION_FRAGMENT_SHADER_PATH))
+            );
+
+            _scaleProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.SCALE_VERTEX_SHADER_PATH)),
+                new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.SCALE_GEOMETRY_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.SCALE_FRAGMENT_SHADER_PATH))
             );
         }
 
@@ -104,7 +125,7 @@ namespace TakoEngine.Rendering.Processing
         protected override void LoadBuffers()
         {
             _vertexBuffer.Bind();
-            _vertexArray.Load(_arrowProgram);
+            _vertexArray.Load(_translateProgram);
             _vertexBuffer.Unbind();
 
             GBuffer.Clear();
@@ -171,12 +192,60 @@ namespace TakoEngine.Rendering.Processing
             }
         }
 
-        public void RenderArrows(Camera camera, Vector3 position)
+        public void RenderTranslationArrows(Camera camera, Vector3 position)
         {
-            _arrowProgram.Use();
+            _translateProgram.Use();
 
-            camera.Draw(_arrowProgram);
-            _arrowProgram.SetUniform("cameraPosition", camera.Position);
+            camera.Draw(_translateProgram);
+            _translateProgram.SetUniform("cameraPosition", camera.Position);
+
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertex(new ColorVertex()
+            {
+                Position = position,
+                Color = new Vector4()
+            });
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+        }
+
+        public void RenderRotationRings(Camera camera, Vector3 position)
+        {
+            _rotateProgram.Use();
+
+            camera.Draw(_rotateProgram);
+            _rotateProgram.SetUniform("cameraPosition", camera.Position);
+
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertex(new ColorVertex()
+            {
+                Position = position,
+                Color = new Vector4()
+            });
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+        }
+
+        public void RenderScaleLines(Camera camera, Vector3 position)
+        {
+            _scaleProgram.Use();
+
+            camera.Draw(_scaleProgram);
+            _scaleProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
             _vertexBuffer.AddVertex(new ColorVertex()

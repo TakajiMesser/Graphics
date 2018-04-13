@@ -30,7 +30,7 @@ namespace GraphicsTest.Behaviors.Enemy
                 var playerDirection = playerPosition - context.Actor.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
-                var angleDifference = (playerAngle - context.Rotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
+                var angleDifference = (playerAngle - context.EulerRotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
                 if (angleDifference < -Math.PI)
                 {
                     angleDifference += (float)(2 * Math.PI);

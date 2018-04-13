@@ -14,16 +14,9 @@ namespace TakoEngine.Scripting.Behaviors
         public BehaviorContext Context { get; private set; } = new BehaviorContext();
 
         [OnDeserialized]
-        private void OnDeserialized(StreamingContext c)
-        {
-            Context = new BehaviorContext();
-        }
+        private void OnDeserialized(StreamingContext c) => Context = new BehaviorContext();
 
-        public virtual BehaviorStatus Tick()
-        {
-            var root = RootStack.Peek();
-            return root.Tick(Context);
-        }
+        public virtual BehaviorStatus Tick() => RootStack.Peek().Tick(Context);
 
         public void Save(string path)
         {

@@ -13,7 +13,7 @@ using TakoEngine.Scripting.Behaviors;
 
 namespace TakoEngine.Entities
 {
-    public class Actor : IEntity, ICollidable, IRotate
+    public class Actor : IEntity, ICollidable, IRotate, IScale
     {
         public int ID { get; set; }
         public string Name { get; private set; }
@@ -98,7 +98,6 @@ namespace TakoEngine.Entities
             if (Behaviors != null)
             {
                 //Behaviors.Context.Rotation = Rotation;
-                Behaviors.Context.Scale = Model.Scale;
                 Behaviors.Context.Colliders = colliders;
 
                 foreach (var property in Properties.Where(p => !p.Value.IsConstant))
@@ -121,8 +120,7 @@ namespace TakoEngine.Entities
                 }
 
                 //Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
-                Model.Rotation = Behaviors.Context.QRotation;
-                Model.Scale = Behaviors.Context.Scale;
+                //Model.Rotation = Behaviors.Context.QRotation;
             }
         }
 
@@ -134,57 +132,47 @@ namespace TakoEngine.Entities
 
                 foreach (var collider in colliders)
                 {
-                    if (collider.AttachedEntity is Actor a)
+                    if (collider.AttachedEntity is ICollidable collidable && collidable.HasCollision)
                     {
-                        if (!a.HasCollision)
+                        switch (collider)
                         {
-                            continue;
-                        }
-                    }
-                    else if (collider.AttachedEntity is Brush b)
-                    {
-                        if (!b.HasCollision)
-                        {
-                            continue;
-                        }
-                    }
+                            case BoundingCircle circle:
+                                if (Bounds.CollidesWith(circle))
+                                {
+                                    // Correct the X translation
+                                    Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
+                                    if (Bounds.CollidesWith(circle))
+                                    {
+                                        translation.X = 0;
+                                    }
 
-                    if (collider.GetType() == typeof(BoundingCircle))
-                    {
-                        if (Bounds.CollidesWith((BoundingCircle)collider))
-                        {
-                            // Correct the X translation
-                            Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
-                            if (Bounds.CollidesWith((BoundingCircle)collider))
-                            {
-                                translation.X = 0;
-                            }
+                                    // Correct the Y translation
+                                    Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
+                                    if (Bounds.CollidesWith(circle))
+                                    {
+                                        translation.Y = 0;
+                                    }
+                                }
+                                break;
 
-                            // Correct the Y translation
-                            Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
-                            if (Bounds.CollidesWith((BoundingCircle)collider))
-                            {
-                                translation.Y = 0;
-                            }
-                        }
-                    }
-                    else if (collider.GetType() == typeof(BoundingBox))
-                    {
-                        if (Bounds.CollidesWith((BoundingBox)collider))
-                        {
-                            // Correct the X translation
-                            Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
-                            if (Bounds.CollidesWith((BoundingBox)collider))
-                            {
-                                translation.X = 0;
-                            }
+                            case BoundingBox box:
+                                if (Bounds.CollidesWith(box))
+                                {
+                                    // Correct the X translation
+                                    Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
+                                    if (Bounds.CollidesWith(box))
+                                    {
+                                        translation.X = 0;
+                                    }
 
-                            // Correct the Y translation
-                            Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
-                            if (Bounds.CollidesWith((BoundingBox)collider))
-                            {
-                                translation.Y = 0;
-                            }
+                                    // Correct the Y translation
+                                    Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
+                                    if (Bounds.CollidesWith(box))
+                                    {
+                                        translation.Y = 0;
+                                    }
+                                }
+                                break;
                         }
                     }
                 }

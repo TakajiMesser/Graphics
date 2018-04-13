@@ -27,8 +27,8 @@ namespace GraphicsTest.Behaviors.Player
                 // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
                 turnAngle += (float)Math.Atan2(context.Camera._viewMatrix.Up.Y, context.Camera._viewMatrix.Up.X) - (float)Math.PI / 2.0f;
 
-                context.QRotation = new Quaternion(turnAngle, 0.0f, 0.0f);
-                context.Rotation = new Vector3(turnAngle, context.Rotation.Y, context.Rotation.Z);
+                context.Actor.Rotation = new Quaternion(turnAngle, 0.0f, 0.0f);
+                context.EulerRotation = new Vector3(turnAngle, context.EulerRotation.Y, context.EulerRotation.Z);
             }
 
             return BehaviorStatus.Success;

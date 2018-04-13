@@ -8,6 +8,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 using TakoEngine.Entities;
+using TakoEngine.Entities.Cameras;
 using TakoEngine.Inputs;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
@@ -18,17 +19,29 @@ using Timer = System.Timers.Timer;
 
 namespace TakoEngine.Game
 {
+    public enum ViewTypes
+    {
+        X,
+        Y,
+        Z,
+        Perspective
+    }
+
     public class GamePanel : GLControl
     {
         public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
         public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;
 
-        public RenderModes RenderMode { get; set; }
-        public double Frequency { get; private set; }
         public Resolution Resolution { get; private set; }
         public Resolution PanelSize { get; private set; }
+        public double Frequency { get; private set; }
+        public ViewTypes ViewType { get; set; }
+
+        public RenderModes RenderMode { get; set; }
+        public TransformModes TransformMode { get; set; }
         public IEntity SelectedEntity { get; private set; }
         public SelectionTypes SelectionType { get; private set; }
+
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
         public bool IsSelectionTransforming { get; private set; }
@@ -36,15 +49,14 @@ namespace TakoEngine.Game
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
         public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
+        public event EventHandler<TransformModeEventArgs> TransformModeChanged;
 
         private Map _map;
-
         private GameState _gameState;
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
         private Vector3 _currentAngles = new Vector3();
-        internal InputState _inputState = new InputState();
         private Point _mouseLocation;
         private Timer _pollTimer = new Timer();
 
@@ -65,18 +77,7 @@ namespace TakoEngine.Game
                 {
                     if (value != _isCursorVisible)
                     {
-                        if (value)
-                        {
-                            //Cursor.Show();
-                            ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(true));
-                        }
-                        else
-                        {
-                            //Cursor.Hide();
-                            ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(false));
-                            //Cursor.Position = new Point(0, 0);
-                        }
-
+                        ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(value));
                         _isCursorVisible = value;
                     }
                 }
@@ -94,36 +95,9 @@ namespace TakoEngine.Game
             _pollTimer.Elapsed += PollTimer_Elapsed;
         }
 
-        public void LoadFromMap(string mapPath)
-        {
-            _map = Map.Load(mapPath);
-
-            if (_gameState != null)
-            {
-                _gameState.LoadMap(_map);
-                _gameState.DetachCamera();
-                _gameState.Initialize();
-                _pollTimer.Start();
-            }
-        }
-
         public void LoadFromModel(string modelPath)
         {
-            _map = new Map();
-
-            /*mainActor.TexturesPaths.Add(new TexturePaths()
-            {
-                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
-                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH
-            });
-
-            mainActor.TexturesPaths.Add(new TexturePaths()
-            {
-                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH,
-                SpecularMapFilePath = FilePathHelper.BRICK_01_S_TEXTURE_PATH
-            });*/
+            /*_map = new Map();
 
             var mainActor = new MapActor()
             {
@@ -150,24 +124,118 @@ namespace TakoEngine.Game
                 _gameState.LoadMap(_map);
                 _gameState.Initialize();
                 _pollTimer.Start();
-            }
+            }*/
         }
 
         protected override void OnLoad(EventArgs e)
         {
             Location = new Point(0, 0);
-
             _gameState = new GameState(Resolution);
             _renderManager = new RenderManager(Resolution, PanelSize);
-            
+
             if (_map != null)
             {
-                _gameState.LoadMap(_map);
-                _gameState.DetachCamera();
-                _gameState.Initialize();
-                _renderManager.Load(_gameState, _map);
-                _pollTimer.Start();
+                LoadGameState();
             }
+        }
+
+        /*public void LoadGameState(GameState gameState, Map map)
+        {
+            _gameState = gameState;
+            _map = map;
+
+            _renderManager = new RenderManager(Resolution, PanelSize);
+            _renderManager.Load(gameState, map);
+            //_pollTimer.Start();
+        }*/
+
+        public void LoadFromMap(string filePath)
+        {
+            _map = Map.Load(filePath);
+
+            /*using (var window = new NativeWindow())
+            {
+                var glContext = new GraphicsContext(GraphicsMode.Default, window.WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
+                glContext.MakeCurrent(window.WindowInfo);
+                (glContext as IGraphicsContextInternal).LoadAll();
+            }*/
+
+            if (_gameState != null)
+            {
+                LoadGameState();
+            }
+            //_gameState.LoadMap(_map);
+            //_gameState.Camera.DetachFromEntity();
+            //_gameState.Initialize();
+            //LoadGameState();
+        }
+
+        private void LoadGameState()
+        {
+            switch (ViewType)
+            {
+                case ViewTypes.X:
+                    _map.Camera = new MapCamera()
+                    {
+                        Type = Rendering.Matrices.ProjectionTypes.Orthographic,
+                        Position = Vector3.UnitX * -10.0f,//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
+                        StartingWidth = 20.0f
+                    };
+                    break;
+                case ViewTypes.Y:
+                    _map.Camera = new MapCamera()
+                    {
+                        Type = Rendering.Matrices.ProjectionTypes.Orthographic,
+                        Position = Vector3.UnitY * -10.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
+                        StartingWidth = 20.0f
+                    };
+                    break;
+                case ViewTypes.Z:
+                    _map.Camera = new MapCamera()
+                    {
+                        Type = Rendering.Matrices.ProjectionTypes.Orthographic,
+                        Position = Vector3.UnitZ * 10.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
+                        StartingWidth = 20.0f
+                    };
+                    break;
+            }
+
+            _gameState.LoadMap(_map);
+            _gameState.Camera.DetachFromEntity();
+
+            _gameState.Initialize();
+            _renderManager.Load(_gameState, _map);
+            _pollTimer.Start();
+
+            switch (ViewType)
+            {
+                case ViewTypes.Perspective:
+                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
+                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
+                    break;
+                case ViewTypes.X:
+                    _currentAngles = new Vector3(90.0f, 0.0f, 0.0f);
+                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
+                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitX;
+                    break;
+                case ViewTypes.Y:
+                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
+                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
+                    break;
+                case ViewTypes.Z:
+                    _currentAngles = new Vector3(0.0f, 90.0f, 0.0f);
+                    _gameState.Camera._viewMatrix.Up = Vector3.UnitY;
+                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position - Vector3.UnitZ;
+                    break;
+            }
+        }
+
+        public void SelectEntity(IEntity entity)
+        {
+            SelectedEntity = (entity != null) ? _gameState.GetByID(entity.ID) : null;
+            _invalidated = true;
         }
 
         private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
@@ -175,7 +243,17 @@ namespace TakoEngine.Game
             _pollTimer.Stop();
 
             // Handle user input, then poll their input for handling on the following frame
-            HandleInput();
+            if (IsHandleCreated)
+            {
+                Invoke(new Action(() =>
+                {
+                    if (Focused)
+                    {
+                        HandleInput();
+                    }
+                }));
+            }
+
             PollForInput();
 
             if (_invalidated)
@@ -189,9 +267,12 @@ namespace TakoEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            base.OnPaint(e);
-            MakeCurrent();
-            OnRenderFrame();
+            if (Enabled && _renderManager != null)
+            {
+                base.OnPaint(e);
+                MakeCurrent();
+                OnRenderFrame();
+            }
         }
 
         protected override void OnResize(EventArgs e)
@@ -234,7 +315,7 @@ namespace TakoEngine.Game
 
             if (SelectedEntity != null)
             {
-                _renderManager.RenderSelection(_gameState.Camera, SelectedEntity);
+                _renderManager.RenderSelection(_gameState.Camera, SelectedEntity, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -303,8 +384,8 @@ namespace TakoEngine.Game
                 IsCursorVisible = false;
                 _invalidated = true;
             }
-            else if ((_gameState._inputState.IsPressed(new Input(MouseButton.Left)) && IsMouseInPanel)
-                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && IsCameraMoving))
+            else if (ViewType == ViewTypes.Perspective && ((_gameState._inputState.IsPressed(new Input(MouseButton.Left)) && IsMouseInPanel)
+                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && IsCameraMoving)))
             {
                 // Left mouse button allows "moving"
                 var translation = (_gameState.Camera._viewMatrix.LookAt - _gameState.Camera.Position) * _gameState._inputState.MouseDelta.Y * 0.02f;
@@ -328,8 +409,8 @@ namespace TakoEngine.Game
                 IsCursorVisible = false;
                 _invalidated = true;
             }
-            else if ((_gameState._inputState.IsPressed(new Input(MouseButton.Right)) && IsMouseInPanel)
-                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Right)) && IsCameraMoving))
+            else if (ViewType == ViewTypes.Perspective && ((_gameState._inputState.IsPressed(new Input(MouseButton.Right)) && IsMouseInPanel)
+                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Right)) && IsCameraMoving)))
             {
                 // Right mouse button allows "turning"
                 var currentAngles = _currentAngles;
@@ -350,6 +431,14 @@ namespace TakoEngine.Game
                 IsCursorVisible = false;
                 _invalidated = true;
             }
+            else if (ViewType != ViewTypes.Perspective && (_gameState._inputState.MouseWheelDelta > 0 || _gameState._inputState.MouseWheelDelta < 0) && (IsMouseInPanel || IsCameraMoving))
+            {
+                // Mouse wheel adjusts zoom level
+                var camera = _gameState.Camera as OrthographicCamera;
+                camera.Width += _gameState._inputState.MouseWheelDelta;
+
+                _invalidated = true;
+            }
             else if (_gameState._inputState.IsPressed(new Input(MouseButton.Middle)) && IsMouseInPanel)
             {
                 Invoke(new Action(() =>
@@ -359,82 +448,69 @@ namespace TakoEngine.Game
 
                     var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
 
-                    switch (id)
+                    if (SelectedEntity == null || SelectedEntity.ID != id)
                     {
-                        case SelectionRenderer.RED_ID:
-                            IsSelectionTransforming = true;
-                            SelectionType = SelectionTypes.Red;
-                            break;
+                        switch (id)
+                        {
+                            case SelectionRenderer.RED_ID:
+                                IsSelectionTransforming = true;
+                                SelectionType = SelectionTypes.Red;
+                                break;
 
-                        case SelectionRenderer.GREEN_ID:
-                            IsSelectionTransforming = true;
-                            SelectionType = SelectionTypes.Green;
-                            break;
+                            case SelectionRenderer.GREEN_ID:
+                                IsSelectionTransforming = true;
+                                SelectionType = SelectionTypes.Green;
+                                break;
 
-                        case SelectionRenderer.BLUE_ID:
-                            IsSelectionTransforming = true;
-                            SelectionType = SelectionTypes.Blue;
-                            break;
+                            case SelectionRenderer.BLUE_ID:
+                                IsSelectionTransforming = true;
+                                SelectionType = SelectionTypes.Blue;
+                                break;
 
-                        case SelectionRenderer.CYAN_ID:
-                            IsSelectionTransforming = true;
-                            SelectionType = SelectionTypes.Cyan;
-                            break;
+                            case SelectionRenderer.CYAN_ID:
+                                IsSelectionTransforming = true;
+                                SelectionType = SelectionTypes.Cyan;
+                                break;
 
-                        case SelectionRenderer.MAGENTA_ID:
-                            IsSelectionTransforming = true;
-                            SelectionType = SelectionTypes.Magenta;
-                            break;
+                            case SelectionRenderer.MAGENTA_ID:
+                                IsSelectionTransforming = true;
+                                SelectionType = SelectionTypes.Magenta;
+                                break;
 
-                        case SelectionRenderer.YELLOW_ID:
-                            IsSelectionTransforming = true;
-                            SelectionType = SelectionTypes.Yellow;
-                            break;
+                            case SelectionRenderer.YELLOW_ID:
+                                IsSelectionTransforming = true;
+                                SelectionType = SelectionTypes.Yellow;
+                                break;
 
-                        default:
-                            _invalidated = true;
-                            SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
-                            EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
-                            break;
+                            default:
+                                _invalidated = true;
+                                SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
+                                EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
+                                break;
+                        }
                     }
                 }));
             }
             else if (_gameState._inputState.IsHeld(new Input(MouseButton.Middle)) && IsSelectionTransforming)
             {
-                var position = SelectedEntity.Position;
-
                 // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
-                switch (SelectionType)
+                switch (TransformMode)
                 {
-                    case SelectionTypes.Red:
-                        position.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    case TransformModes.Translate:
+                        HandleEntityTranslation();
                         break;
-                    case SelectionTypes.Green:
-                        position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    case TransformModes.Rotate:
+                        HandleEntityRotation();
                         break;
-                    case SelectionTypes.Blue:
-                        position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Cyan:
-                        position.Y += _gameState._inputState.MouseDelta.X * 0.002f;
-                        position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Magenta:
-                        position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
-                        position.X += _gameState._inputState.MouseDelta.X * 0.002f;
-                        break;
-                    case SelectionTypes.Yellow:
-                        position.X += _gameState._inputState.MouseDelta.X * 0.002f;
-                        position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    case TransformModes.Scale:
+                        HandleEntityScale();
                         break;
                 }
-
+                
                 _invalidated = true;
                 IsCursorVisible = false;
-                SelectedEntity.Position = position;
-
-                Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
                 
+                Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
             }
             else
             {
@@ -444,14 +520,110 @@ namespace TakoEngine.Game
             }
         }
 
-        protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+        private void HandleEntityTranslation()
         {
-            _mouseLocation = e.Location;
+            var position = SelectedEntity.Position;
+
+            switch (SelectionType)
+            {
+                case SelectionTypes.Red:
+                    position.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    break;
+                case SelectionTypes.Green:
+                    position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    break;
+                case SelectionTypes.Blue:
+                    position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    break;
+                case SelectionTypes.Cyan:
+                    position.Y += _gameState._inputState.MouseDelta.X * 0.002f;
+                    position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    break;
+                case SelectionTypes.Magenta:
+                    position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    position.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                    break;
+                case SelectionTypes.Yellow:
+                    position.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                    position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    break;
+            }
+
+            SelectedEntity.Position = position;
         }
 
-        private void PollForInput()
+        private void HandleEntityRotation()
         {
-            _gameState._inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
+            if (SelectedEntity is IRotate rotater)
+            {
+                var rotation = rotater.OriginalRotation;
+
+                switch (SelectionType)
+                {
+                    case SelectionTypes.Red:
+                        rotation.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Green:
+                        rotation.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Blue:
+                        rotation.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Cyan:
+                        rotation.Y += _gameState._inputState.MouseDelta.X * 0.002f;
+                        rotation.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Magenta:
+                        rotation.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        rotation.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        break;
+                    case SelectionTypes.Yellow:
+                        rotation.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        rotation.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                }
+
+                rotater.OriginalRotation = rotation;
+            }
         }
+
+        private void HandleEntityScale()
+        {
+            if (SelectedEntity is IScale scaler)
+            {
+                var scale = scaler.Scale;
+
+                switch (SelectionType)
+                {
+                    case SelectionTypes.Red:
+                        scale.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Green:
+                        scale.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Blue:
+                        scale.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Cyan:
+                        scale.Y += _gameState._inputState.MouseDelta.X * 0.002f;
+                        scale.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                    case SelectionTypes.Magenta:
+                        scale.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        scale.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        break;
+                    case SelectionTypes.Yellow:
+                        scale.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        scale.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        break;
+                }
+
+                scaler.Scale = scale;
+            }
+        }
+
+        protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e) => _mouseLocation = e.Location;
+
+        private void PollForInput() => _gameState._inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
     }
 }

@@ -114,7 +114,7 @@ namespace TakoEngine.Rendering.Processing
 
         public int GetEntityIDFromPoint(Vector2 point) => _selectionRenderer.GetEntityIDFromPoint(point);
 
-        public void RenderSelection(Camera camera, IEntity entity)
+        public void RenderSelection(Camera camera, IEntity entity, TransformModes transformMode)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -138,13 +138,37 @@ namespace TakoEngine.Rendering.Processing
             // Render the RGB arrows over the selection
             GL.Clear(ClearBufferMask.DepthBufferBit);
             GL.DepthFunc(DepthFunction.Less);
-            _selectionRenderer.RenderArrows(camera, entity.Position);
+
+            switch (transformMode)
+            {
+                case TransformModes.Translate:
+                    _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
+                    break;
+                case TransformModes.Rotate:
+                    _selectionRenderer.RenderRotationRings(camera, entity.Position);
+                    break;
+                case TransformModes.Scale:
+                    _selectionRenderer.RenderScaleLines(camera, entity.Position);
+                    break;
+            }
 
             // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
             GL.Clear(ClearBufferMask.DepthBufferBit);
             GL.DepthFunc(DepthFunction.Less);
-            _selectionRenderer.RenderArrows(camera, entity.Position);
+
+            switch (transformMode)
+            {
+                case TransformModes.Translate:
+                    _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
+                    break;
+                case TransformModes.Rotate:
+                    _selectionRenderer.RenderRotationRings(camera, entity.Position);
+                    break;
+                case TransformModes.Scale:
+                    _selectionRenderer.RenderScaleLines(camera, entity.Position);
+                    break;
+            }
         }
 
         public void RenderWireframe(GameState gameState)
@@ -184,8 +208,9 @@ namespace TakoEngine.Rendering.Processing
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment1);
 
-            _skyboxRenderer.Render(gameState.Camera);
+            
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
+            _skyboxRenderer.Render(gameState.Camera);
 
             GL.Disable(EnableCap.DepthTest);
 

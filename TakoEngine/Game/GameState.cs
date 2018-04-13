@@ -50,15 +50,6 @@ namespace TakoEngine.Game
             LoadActorsFromMap(map);
         }
 
-        public void DetachCamera()
-        {
-            Camera.DetachFromEntity();
-
-            // Set camera to default position when _horizontalAngle = 0 and _verticalAngle = 0
-            Camera._viewMatrix.Up = Vector3.UnitZ;
-            Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
-        }
-
         private void LoadLightsFromMap(Map map)
         {
             _lightQuads = new QuadTree(0, map.Boundaries);
@@ -163,8 +154,8 @@ namespace TakoEngine.Game
         public virtual void AddEntity(IEntity entity)
         {
             // Assign a unique ID
-            if (entity.ID == 0)
-            {
+            //if (entity.ID == 0)
+            //{
                 entity.ID = _nextAvailableID;
                 _nextAvailableID++;
 
@@ -173,7 +164,7 @@ namespace TakoEngine.Game
                 {
                     _nextAvailableID++;
                 }
-            }
+            //}
 
             switch (entity)
             {

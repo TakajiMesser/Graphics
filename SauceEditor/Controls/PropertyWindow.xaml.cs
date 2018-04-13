@@ -45,7 +45,7 @@ namespace SauceEditor.Controls
             }
         }
 
-        public event EventHandler<TransformChangedEventArgs> TransformChanged;
+        public event EventHandler<EntityUpdatedEventArgs> EntityUpdated;
 
         public PropertyWindow()
         {
@@ -57,9 +57,8 @@ namespace SauceEditor.Controls
                 if (_entity != null)
                 {
                     _entity.Position = args.Transform;
+                    EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
                 }
-                
-                TransformChanged?.Invoke(this, args);
             };
 
             RotationTransform.TransformChanged += (s, args) =>
@@ -73,7 +72,7 @@ namespace SauceEditor.Controls
                     brush.OriginalRotation = args.Transform;
                 }
 
-                TransformChanged?.Invoke(this, args);
+                EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
             };
 
             ScaleTransform.TransformChanged += (s, args) =>
@@ -87,7 +86,7 @@ namespace SauceEditor.Controls
                     brush.Scale = args.Transform;
                 }
 
-                TransformChanged?.Invoke(this, args);
+                EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
             };
 
             ColorPick.SelectedColorChanged += (s, args) =>
@@ -96,6 +95,8 @@ namespace SauceEditor.Controls
                 {
                     light.Color = args.NewValue.Value.ToVector4();
                 }
+
+                EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
             };
         }
 

@@ -1,5 +1,7 @@
 ﻿using OpenTK;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.Serialization;
 using System.Xml;
 using TakoEngine.Entities.Lights;
@@ -13,19 +15,63 @@ namespace TakoEngine.Maps
     /// </summary>
     public class Map
     {
-        public Quad Boundaries { get; private set; }
         public MapCamera Camera { get; set; }
         public List<MapActor> Actors { get; set; } = new List<MapActor>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
         public List<Light> Lights { get; set; } = new List<Light>();
         public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();
 
-        public Map()
+        [IgnoreDataMember]
+        public Quad Boundaries { get; private set; }
+
+        public Map() { }
+
+        private void CalculateBounds()
         {
             Boundaries = new Quad()
             {
-                Min = new Vector3(-100.0f, -100.0f, 0.0f),
-                Max = new Vector3(100.0f, 100.0f, 0.0f)
+                Min = new Vector3
+                {
+                    X = new float[]
+                    {
+                        Actors.Min(a => a.Position.X),
+                        Brushes.Min(b => b.Position.X),
+                        Lights.Min(l => l.Position.X)
+                    }.Min(),
+                        Y = new float[]
+                    {
+                        Actors.Min(a => a.Position.Y),
+                        Brushes.Min(b => b.Position.Y),
+                        Lights.Min(l => l.Position.Y)
+                    }.Min(),
+                        Z = new float[]
+                    {
+                        Actors.Min(a => a.Position.Z),
+                        Brushes.Min(b => b.Position.Z),
+                        Lights.Min(l => l.Position.Z)
+                    }.Min()
+                },
+                Max = new Vector3
+                {
+                    X = new float[]
+                    {
+                        Actors.Max(a => a.Position.X),
+                        Brushes.Max(b => b.Position.X),
+                        Lights.Max(l => l.Position.X)
+                    }.Max(),
+                    Y = new float[]
+                    {
+                        Actors.Max(a => a.Position.Y),
+                        Brushes.Max(b => b.Position.Y),
+                        Lights.Max(l => l.Position.Y)
+                    }.Max(),
+                    Z = new float[]
+                    {
+                        Actors.Max(a => a.Position.Z),
+                        Brushes.Max(b => b.Position.Z),
+                        Lights.Max(l => l.Position.Z)
+                    }.Max()
+                }
             };
         }
 
@@ -43,7 +89,10 @@ namespace TakoEngine.Maps
             using (var reader = XmlReader.Create(path))
             {
                 var serializer = new NetDataContractSerializer();
-                return serializer.ReadObject(reader, true) as Map;
+                var map = serializer.ReadObject(reader, true) as Map;
+
+                map.CalculateBounds();
+                return map;
             }
         }
     }

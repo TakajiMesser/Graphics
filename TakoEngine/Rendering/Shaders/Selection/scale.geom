@@ -1,10 +1,10 @@
 ﻿#version 400
 
-const float LINE_WIDTH = 0.1;
-const float BETWEEN_WIDTH = 0.05;
+const float LINE_WIDTH = 0.05;
+const float BETWEEN_WIDTH = 0.025;
 
 layout(points) in;
-layout(triangle_strip, max_vertices = 45) out;
+layout(triangle_strip, max_vertices = 48) out;
 
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
@@ -35,16 +35,20 @@ void drawArrow(mat4 viewProjectionMatrix, vec3 position, vec4 color, vec3 direct
 
     EndPrimitive();
 
-    position -= perpendicular * LINE_WIDTH * 1.5;
+    position -= perpendicular * LINE_WIDTH * 3.0;
     gl_Position = viewProjectionMatrix * vec4(position, 1.0);
     EmitVertex();
 
-    position += perpendicular * LINE_WIDTH * 2;
+    position += direction * LINE_WIDTH * 3.0;
     gl_Position = viewProjectionMatrix * vec4(position, 1.0);
     EmitVertex();
 
-    position -= perpendicular * LINE_WIDTH;
-    position += direction * LINE_WIDTH * 1.5;
+    position += perpendicular * LINE_WIDTH * 3.0;
+    position -= direction * LINE_WIDTH * 3.0;
+    gl_Position = viewProjectionMatrix * vec4(position, 1.0);
+    EmitVertex();
+
+    position += direction * LINE_WIDTH * 3.0;
     gl_Position = viewProjectionMatrix * vec4(position, 1.0);
     EmitVertex();
 
