@@ -207,7 +207,6 @@ namespace TakoEngine.Rendering.Processing
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment1);
-
             
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
             _skyboxRenderer.Render(gameState.Camera);

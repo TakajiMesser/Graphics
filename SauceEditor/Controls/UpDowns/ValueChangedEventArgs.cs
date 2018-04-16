@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SauceEditor.Controls
+namespace SauceEditor.Controls.UpDowns
 {
     public class ValueChangedEventArgs : EventArgs
     {

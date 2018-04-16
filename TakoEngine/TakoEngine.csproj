@@ -112,6 +112,11 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\GameSettings\GameplaySettings.cs" />
+    <Compile Include="Game\GameSettings\ControlSettings.cs" />
+    <Compile Include="Game\GameSettings\AudioSettings.cs" />
+    <Compile Include="Game\GameSettings\VideoSettings.cs" />
+    <Compile Include="Game\GameSettings\Settings.cs" />
     <Compile Include="Game\TransformModeEventArgs.cs" />
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
     <Compile Include="Game\EntitySelectedEventArgs.cs" />

@@ -47,19 +47,19 @@ namespace GraphicsTest.Behaviors.Enemy
                 ),*/
                 new SequenceNode(
                     new ParallelNode(
-                        new MoveToNode(new Vector3(5.0f, 5.0f, -1.0f), WALK_SPEED),
+                        new MoveToNode(new Vector3(5.0f, 5.0f, -1.5f), WALK_SPEED),
                         new TurnTowardsNode()
                     ),
                     new ParallelNode(
-                        new MoveToNode(new Vector3(5.0f, -5.0f, -1.0f), WALK_SPEED),
+                        new MoveToNode(new Vector3(5.0f, -5.0f, -1.5f), WALK_SPEED),
                         new TurnTowardsNode()
                     ),
                     new ParallelNode(
-                        new MoveToNode(new Vector3(-5.0f, -5.0f, -1.0f), WALK_SPEED),
+                        new MoveToNode(new Vector3(-5.0f, -5.0f, -1.5f), WALK_SPEED),
                         new TurnTowardsNode()
                     ),
                     new ParallelNode(
-                        new MoveToNode(new Vector3(-5.0f, 5.0f, -1.0f), WALK_SPEED),
+                        new MoveToNode(new Vector3(-5.0f, 5.0f, -1.5f), WALK_SPEED),
                         new TurnTowardsNode()
                     )
                 )

@@ -120,7 +120,7 @@ namespace TakoEngine.Rendering.Processing
                 _2DProgram.SetUniform(ProjectionMatrix.NAME, projection);
 
                 var originalDirection = new Vector3(0.0f, 0.0f, -1.0f);
-                var direction = camera._viewMatrix.LookAt - camera._viewMatrix.Translation;
+                var direction = (camera._viewMatrix.LookAt - camera._viewMatrix.Translation).Normalized();
 
                 var cosTheta = Vector3.Dot(originalDirection, direction);
                 var rotationAxis = Vector3.Cross(originalDirection, direction);

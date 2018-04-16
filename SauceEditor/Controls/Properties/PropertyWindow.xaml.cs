@@ -19,7 +19,7 @@ using SauceEditor.Utilities;
 using Brush = TakoEngine.Entities.Brush;
 using SauceEditor.Controls.Transform;
 
-namespace SauceEditor.Controls
+namespace SauceEditor.Controls.Properties
 {
     /// <summary>
     /// Interaction logic for PropertyWindow.xaml

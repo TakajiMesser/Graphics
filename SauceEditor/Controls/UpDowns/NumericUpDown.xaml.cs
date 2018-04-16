@@ -15,7 +15,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SauceEditor.Controls
+namespace SauceEditor.Controls.UpDowns
 {
     /// <summary>
     /// Interaction logic for NumericUpDown.xaml

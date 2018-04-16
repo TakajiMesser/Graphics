@@ -88,6 +88,8 @@ namespace SauceEditor.Controls.GamePanels
             InitializeComponent();
             Open(mapPath);
 
+            Title = System.IO.Path.GetFileNameWithoutExtension(mapPath);
+
             TransformMode = TransformModes.Translate;
         }
 

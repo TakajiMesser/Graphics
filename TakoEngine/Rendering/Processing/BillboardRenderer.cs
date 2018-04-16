@@ -126,7 +126,7 @@ namespace TakoEngine.Rendering.Processing
             _billboardProgram.Use();
 
             camera.Draw(_billboardProgram);
-            _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
+            _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardProgram.BindTexture(_pointLightTexture, "mainTexture", 0);
             DrawLights(lights.Where(l => l is PointLight));
@@ -143,7 +143,7 @@ namespace TakoEngine.Rendering.Processing
             _billboardProgram.Use();
 
             camera.Draw(_billboardProgram);
-            _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
+            _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             switch (light)
             {

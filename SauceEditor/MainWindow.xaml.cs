@@ -5,6 +5,7 @@ using SauceEditor.Commands;
 using SauceEditor.Controls;
 using SauceEditor.Controls.GamePanels;
 using SauceEditor.Controls.ProjectTree;
+using SauceEditor.Controls.Properties;
 using SauceEditor.Structure;
 using System;
 using System.ComponentModel;
@@ -32,7 +33,6 @@ namespace SauceEditor
         private ProjectTreeView _projectTree = new ProjectTreeView();
         private PropertyWindow _propertyPanel = new PropertyWindow();
         private GamePanelManager _gamePanelManager;
-
         private GameWindow _gameWindow;
 
         public MainWindow()
@@ -133,7 +133,11 @@ namespace SauceEditor
 
             PlayButton.Visibility = Visibility.Visible;
             _gamePanelManager = new GamePanelManager(MainDockManager, _mapPath);
-            _gamePanelManager.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
+            _gamePanelManager.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entity;
@@ -141,14 +145,7 @@ namespace SauceEditor
             };
             _gamePanelManager.ShowAsDocument();
 
-            _propertyPanel.EntityUpdated += (s, args) =>
-            {
-                _gamePanelManager.UpdateEntity(args.Entity);
-                /*_perspectiveView.Panel.Invalidate();
-                _xView.Panel.Invalidate();
-                _yView.Panel.Invalidate();
-                _zView.Panel.Invalidate();*/
-            };
+            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
         }
 
         private void OpenModel(string filePath)
@@ -195,6 +192,7 @@ namespace SauceEditor
 
         private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
         private void SaveAsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+        private void SaveAllCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
@@ -219,7 +217,11 @@ namespace SauceEditor
 
         private void NewProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
+            var dialog = new FileNameDialog();
+            if (dialog.ShowDialog() == true)
+            {
 
+            }
         }
 
         private void NewMapCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -339,6 +341,12 @@ namespace SauceEditor
                 //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
             }
+        }
+
+        private void SaveAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _map?.Save(_mapPath);
+            _projectTree?.SaveProject();
         }
 
         private void PlayButton_Click(object sender, RoutedEventArgs e)

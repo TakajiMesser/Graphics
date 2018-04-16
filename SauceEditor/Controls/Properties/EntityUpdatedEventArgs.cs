@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TakoEngine.Entities;
 
-namespace SauceEditor.Controls
+namespace SauceEditor.Controls.Properties
 {
     public class EntityUpdatedEventArgs : EventArgs
     {
