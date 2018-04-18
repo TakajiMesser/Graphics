@@ -98,7 +98,7 @@ namespace TakoEngine.Rendering.Processing
             _billboardProgram.Use();
             _billboardProgram.BindTexture(texture, "mainTexture", 0);
 
-            camera.Draw(_billboardProgram);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -125,7 +125,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _billboardProgram.Use();
 
-            camera.Draw(_billboardProgram);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardProgram.BindTexture(_pointLightTexture, "mainTexture", 0);
@@ -142,7 +142,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _billboardProgram.Use();
 
-            camera.Draw(_billboardProgram);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             switch (light)
@@ -165,7 +165,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _billboardSelectionProgram.Use();
 
-            camera.Draw(_billboardSelectionProgram);
+            camera.SetUniforms(_billboardSelectionProgram);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardSelectionProgram.BindTexture(_pointLightTexture, "mainTexture", 0);

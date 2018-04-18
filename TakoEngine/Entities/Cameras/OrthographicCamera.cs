@@ -6,8 +6,8 @@ namespace TakoEngine.Entities.Cameras
 {
     public class OrthographicCamera : Camera
     {
-        public const float ZNEAR = -10.0f;
-        public const float ZFAR = 10.0f;
+        public const float ZNEAR = -100.0f;
+        public const float ZFAR = 100.0f;
 
         public float Width
         {
@@ -15,12 +15,10 @@ namespace TakoEngine.Entities.Cameras
             set => _projectionMatrix.Width = value;
         }
 
-        public OrthographicCamera(string name, Resolution resolution, float startingWidth) : base(name, resolution)
+        public OrthographicCamera(string name, Resolution resolution, float zNear, float zFar, float startingWidth) : base(name, resolution, zNear, zFar)
         {
             _projectionMatrix.Type = ProjectionTypes.Orthographic;
             _projectionMatrix.Width = startingWidth;
-            _projectionMatrix.ZNear = ZNEAR;
-            _projectionMatrix.ZFar = ZFAR;
         }
 
         public override void OnHandleInput(InputState inputState)

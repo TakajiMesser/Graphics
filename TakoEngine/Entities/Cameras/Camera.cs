@@ -20,20 +20,6 @@ namespace TakoEngine.Entities.Cameras
             set => _viewMatrix.Translation = value;
         }
 
-        public Vector3 OriginalRotation { get; set; }
-
-        public Quaternion Rotation
-        {
-            get => throw new NotImplementedException();// _viewMatrix.;
-            set => throw new NotImplementedException(); //_viewMatrix.Rotation = value;
-        }
-
-        public Vector3 Scale
-        {
-            get => throw new NotImplementedException(); //_viewMatrix.Scale;
-            set => throw new NotImplementedException(); //_viewMatrix.Scale = value;
-        }
-
         public IEntity AttachedEntity { get; private set; }
         public Vector3 AttachedTranslation { get; protected set; }
 
@@ -44,11 +30,15 @@ namespace TakoEngine.Entities.Cameras
         protected float _distance;
         public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
 
-        public Camera(string name, Resolution resolution)
+        public Camera(string name, Resolution resolution, float zNear, float zFar)
         {
             _name = name;
             _projectionMatrix.Resolution = resolution;
+            _projectionMatrix.ZNear = zNear;
+            _projectionMatrix.ZFar = zFar;
         }
+
+        public void Resize(Resolution resolution) => _projectionMatrix.Resolution = resolution;
 
         public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {
@@ -77,13 +67,13 @@ namespace TakoEngine.Entities.Cameras
 
         public abstract void OnHandleInput(InputState inputState);
 
-        public void Draw(ShaderProgram program)
+        public void SetUniforms(ShaderProgram program)
         {
             _viewMatrix.Set(program);
             _projectionMatrix.Set(program);
         }
 
-        public void DrawFromLight(ShaderProgram program, PointLight light)
+        public void SetUniforms(ShaderProgram program, PointLight light)
         {
             var shadowViews = new List<Matrix4>();
             for (var i = 0; i < 6; i++)
@@ -93,13 +83,7 @@ namespace TakoEngine.Entities.Cameras
             program.SetUniform(ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
         }
 
-        public void DrawFromLight(ShaderProgram program, PointLight light, TextureTarget target)
-        {
-            program.SetUniform(ProjectionMatrix.NAME, light.Projection);
-            program.SetUniform(ViewMatrix.NAME, light.GetView(target));
-        }
-
-        public void DrawFromLight(ShaderProgram program, SpotLight light)
+        public void SetUniforms(ShaderProgram program, SpotLight light)
         {
             program.SetUniform(ProjectionMatrix.NAME, light.Projection);
             program.SetUniform(ViewMatrix.NAME, light.View);

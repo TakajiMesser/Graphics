@@ -225,9 +225,9 @@ namespace TakoEngine.Rendering.Processing
         public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             // Clear final texture from last frame
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-            GL.Clear(ClearBufferMask.ColorBufferBit);
+            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
+            //GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            //GL.Clear(ClearBufferMask.ColorBufferBit);
 
             _geometryProgram.Use();
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
@@ -248,7 +248,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
 
-            camera.Draw(_geometryProgram);
+            camera.SetUniforms(_geometryProgram);
             _geometryProgram.SetUniform("cameraPosition", camera.Position);
 
             foreach (var brush in brushes)
@@ -281,7 +281,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
 
-            camera.Draw(_jointGeometryProgram);
+            camera.SetUniforms(_jointGeometryProgram);
 
             foreach (var actor in actors)
             {

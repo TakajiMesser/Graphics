@@ -23,7 +23,7 @@ namespace TakoEngine.Rendering.PostProcessing
         public const int GLYPH_HEIGHT = 32;
         public const int X_SPACING = 4;
 
-        public static string FONT_PATH = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\GraphicsTest\Resources\Fonts\Roboto-Regular.ttf";
+        public static string FONT_PATH = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\Jidai\Resources\Fonts\Roboto-Regular.ttf";
 
         public Texture FontTexture { get; protected set; }
         public Texture FinalTexture { get; protected set; }

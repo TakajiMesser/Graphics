@@ -14,7 +14,7 @@
             <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
             <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>
         </ToolBar>
-        <WindowsFormsHost>
+        <WindowsFormsHost x:Name="PanelHost">
             <tako:GamePanel x:Name="Panel" Dock="Fill"></tako:GamePanel>
         </WindowsFormsHost>
     </DockPanel>

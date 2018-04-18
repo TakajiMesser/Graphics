@@ -133,7 +133,7 @@ namespace TakoEngine.Rendering.Processing
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
             // Draw camera from the point light's perspective
-            camera.DrawFromLight(_pointShadowProgram, light);
+            camera.SetUniforms(_pointShadowProgram, light);
             _pointShadowProgram.SetUniform("lightRadius", light.Radius);
             _pointShadowProgram.SetUniform("lightPosition", light.Position);
             // Draw all geometry, but only the positions
@@ -168,7 +168,7 @@ namespace TakoEngine.Rendering.Processing
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
             // Draw camera from the point light's perspective
-            camera.DrawFromLight(_pointShadowJointProgram, light);
+            camera.SetUniforms(_pointShadowJointProgram, light);
             _pointShadowJointProgram.SetUniform("lightRadius", light.Radius);
             _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
             // Draw all geometry, but only the positions
@@ -196,7 +196,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // Draw camera from the spot light's perspective
-            camera.DrawFromLight(_spotShadowProgram, light);
+            camera.SetUniforms(_spotShadowProgram, light);
 
             // Draw all geometry, but only the positions
             foreach (var brush in brushes)
@@ -228,7 +228,7 @@ namespace TakoEngine.Rendering.Processing
             //GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // Draw camera from the spot light's perspective
-            camera.DrawFromLight(_spotShadowJointProgram, light);
+            camera.SetUniforms(_spotShadowJointProgram, light);
 
             // Draw all geometry, but only the positions
             foreach (var actor in actors)

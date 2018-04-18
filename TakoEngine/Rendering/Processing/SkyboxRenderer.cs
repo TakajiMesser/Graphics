@@ -57,7 +57,10 @@ namespace TakoEngine.Rendering.Processing
             }
         }
 
-        public override void ResizeTextures(Resolution resolution) { }
+        public override void ResizeTextures(Resolution resolution)
+        {
+            
+        }
 
         protected override void LoadBuffers()
         {
@@ -93,7 +96,7 @@ namespace TakoEngine.Rendering.Processing
 
                 _program.BindTexture(SkyTexture, "mainTexture", 0);
 
-                camera.Draw(_program);
+                camera.SetUniforms(_program);
                 _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
                 _cubeMesh.Draw();
 
@@ -116,10 +119,14 @@ namespace TakoEngine.Rendering.Processing
 
                 //camera.Draw(_2DProgram);
                 camera._viewMatrix.Set(_2DProgram);
-                var projection = Matrix4.CreateOrthographic(1.0f, 1.0f, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);
+                //camera._projectionMatrix.Set(_2DProgram);
+                var width = camera._projectionMatrix.Width;
+                width = 1.0f;
+                var height = width / camera._projectionMatrix.Resolution.AspectRatio;
+                var projection = Matrix4.CreateOrthographic(width, height, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);
                 _2DProgram.SetUniform(ProjectionMatrix.NAME, projection);
 
-                var originalDirection = new Vector3(0.0f, 0.0f, -1.0f);
+                var originalDirection = -Vector3.UnitZ;
                 var direction = (camera._viewMatrix.LookAt - camera._viewMatrix.Translation).Normalized();
 
                 var cosTheta = Vector3.Dot(originalDirection, direction);

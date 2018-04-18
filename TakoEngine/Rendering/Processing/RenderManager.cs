@@ -87,8 +87,8 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.ResizeTextures(Resolution);
             _wireframeRenderer.ResizeTextures(Resolution);
             _shadowRenderer.ResizeTextures(Resolution);
-            _lightRenderer.ResizeTextures(Resolution);
             _skyboxRenderer.ResizeTextures(Resolution);
+            _lightRenderer.ResizeTextures(Resolution);
             _selectionRenderer.ResizeTextures(Resolution);
             _billboardRenderer.ResizeTextures(Resolution);
             _fxaaRenderer.ResizeTextures(Resolution);
@@ -178,6 +178,9 @@ namespace TakoEngine.Rendering.Processing
 
             _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
+            //GL.Disable(EnableCap.DepthTest);
+            //GL.DepthMask(false);
+            //_wireframeRenderer.RenderGridLines(gameState.Camera);
 
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
@@ -207,13 +210,14 @@ namespace TakoEngine.Rendering.Processing
 
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
             GL.DrawBuffer(DrawBufferMode.ColorAttachment1);
-            
+
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
             _skyboxRenderer.Render(gameState.Camera);
 
             GL.Disable(EnableCap.DepthTest);
 
             _renderToScreen.Render(_deferredRenderer.ColorTexture);
+            //_renderToScreen.Render(_selectionRenderer.FinalTexture);
         }
 
         public void RenderLitFrame(GameState gameState)

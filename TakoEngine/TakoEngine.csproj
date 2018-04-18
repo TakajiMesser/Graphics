@@ -316,6 +316,9 @@
     <None Include="Rendering\Shaders\Skybox\skybox.vert" />
     <None Include="Rendering\Shaders\Text\text.frag" />
     <None Include="Rendering\Shaders\Text\text.vert" />
+    <None Include="Rendering\Shaders\Wireframe\grid.frag" />
+    <None Include="Rendering\Shaders\Wireframe\grid.geom" />
+    <None Include="Rendering\Shaders\Wireframe\grid.vert" />
     <None Include="Rendering\Shaders\Wireframe\wireframe.frag" />
     <None Include="Rendering\Shaders\Wireframe\wireframe-skinning.vert" />
     <None Include="Rendering\Shaders\Wireframe\wireframe.geom" />

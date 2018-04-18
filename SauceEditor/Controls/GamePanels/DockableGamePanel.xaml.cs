@@ -1,10 +1,11 @@
 ﻿using DockingLibrary;
-using GraphicsTest.GameObjects;
+using Jidai.GameObjects;
 using OpenTK;
 using SauceEditor.Commands;
 using System;
 using System.ComponentModel;
 using System.Drawing;
+using System.Timers;
 using System.Windows;
 using System.Windows.Input;
 using TakoEngine.Entities.Cameras;
@@ -40,7 +41,7 @@ namespace SauceEditor.Controls.GamePanels
             Panel.ViewType = viewType;
             //_gameState = gameState;
 
-            switch (ViewType)
+            /*switch (ViewType)
             {
                 case ViewTypes.X:
                     _camera = new OrthographicCamera("MainCamera", new TakoEngine.Outputs.Resolution((int)Width, (int)Height), 20.0f)
@@ -66,7 +67,7 @@ namespace SauceEditor.Controls.GamePanels
                     _camera._viewMatrix.Up = Vector3.UnitY;
                     _camera._viewMatrix.LookAt = _camera.Position - Vector3.UnitZ;
                     break;
-            }
+            }*/
 
             /*switch (ViewType)
             {
@@ -81,10 +82,86 @@ namespace SauceEditor.Controls.GamePanels
             //Panel.TransformModeChanged += GamePanel_TransformModeChanged;
             Panel.ChangeCursorVisibility += GamePanel_ChangeCursorVisibility;
 
+            //Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
+            //Panel.MouseDown += Panel_MouseDown;
+            //Panel.MouseUp += Panel_MouseUp;
+
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
             Panel.RenderMode = RenderModes.Wireframe;
         }
+
+        private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            _timer.Start();
+            _held = false;
+
+            _timer.Elapsed += (s, args) =>
+            {
+                _held = true;
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Panel.Capture = true;
+                    //System.Windows.Forms.Cursor.Clip = Rectangle.Empty;
+                    _cursorLocation = System.Windows.Forms.Cursor.Position;
+                    System.Windows.Forms.Cursor.Hide();
+                    //Mouse.Capture(_previousCapture);
+                });
+                
+            };
+        }
+
+        private void Panel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            _timer.Stop();
+
+            if (_held)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    Panel.Capture = false;
+                    System.Windows.Forms.Cursor.Position = _cursorLocation;
+                    System.Windows.Forms.Cursor.Show();
+                });
+            }
+            else
+            {
+                var point = e.Location;
+                Panel.SelectEntity(point);
+            }
+        }
+
+        public const double MOUSE_HOLD_SECONDS = 1000;
+        private Timer _timer = new Timer(MOUSE_HOLD_SECONDS);
+        private bool _held = false;
+
+        /*private void PanelHost_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _timer.Start();
+            _held = false;
+
+            _timer.Elapsed += (s, args) =>
+            {
+                _held = true;
+
+                if (PanelHost.CaptureMouse())
+                {
+
+                }
+            };
+        }
+
+        private void PanelHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _timer.Stop();
+            PanelHost.ReleaseMouseCapture();
+
+            if (!_held)
+            {
+                var point = e.GetPosition(PanelHost);
+                Panel.SelectEntity(point);
+            }
+        }*/
 
         /*public void LoadGameState(GameState gameState, Map map)
         {

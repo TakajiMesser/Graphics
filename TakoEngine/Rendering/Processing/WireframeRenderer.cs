@@ -12,6 +12,7 @@ using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Meshes;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
+using TakoEngine.Rendering.Vertices;
 
 namespace TakoEngine.Rendering.Processing
 {
@@ -27,6 +28,10 @@ namespace TakoEngine.Rendering.Processing
 
         internal ShaderProgram _wireframeProgram;
         internal ShaderProgram _jointWireframeProgram;
+        internal ShaderProgram _gridProgram;
+
+        private VertexArray<Simple2DVertex> _vertexArray = new VertexArray<Simple2DVertex>();
+        private VertexBuffer<Simple2DVertex> _vertexBuffer = new VertexBuffer<Simple2DVertex>();
 
         protected override void LoadPrograms()
         {
@@ -40,6 +45,12 @@ namespace TakoEngine.Rendering.Processing
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.WIREFRAME_SKINNING_VERTEX_SHADER_PATH)),
                 new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.WIREFRAME_GEOMETRY_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.WIREFRAME_FRAGMENT_SHADER_PATH))
+            );
+
+            _gridProgram = new ShaderProgram(
+                new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.GRID_VERTEX_SHADER_PATH)),
+                //new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.GRID_GEOMETRY_SHADER_PATH)),
+                new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.GRID_FRAGMENT_SHADER_PATH))
             );
         }
 
@@ -96,6 +107,16 @@ namespace TakoEngine.Rendering.Processing
             GBuffer.Bind(FramebufferTarget.Framebuffer);
             GBuffer.AttachAttachments();
             GBuffer.Unbind(FramebufferTarget.Framebuffer);
+
+            _vertexBuffer.Bind();
+            _vertexArray.Load(_gridProgram);
+            _vertexBuffer.Unbind();
+
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, 1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, 1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, -1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, -1.0f)));
         }
 
         public void WireframePass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
@@ -111,7 +132,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Disable(EnableCap.Blend);
             GL.Disable(EnableCap.CullFace);
 
-            camera.Draw(_wireframeProgram);
+            camera.SetUniforms(_wireframeProgram);
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", Vector4.One);
 
@@ -136,7 +157,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
 
-            camera.Draw(_jointWireframeProgram);
+            camera.SetUniforms(_jointWireframeProgram);
             _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
             _jointWireframeProgram.SetUniform("lineColor", Vector4.One);
 
@@ -148,12 +169,29 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.CullFace);
         }
 
+        public void RenderGridLines(Camera camera)
+        {
+            _gridProgram.Use();
+
+            camera.SetUniforms(_gridProgram);
+            _gridProgram.SetUniform("cameraPosition", camera.Position);
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            _vertexBuffer.DrawQuads();
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+        }
+
         public void SelectionPass(Camera camera, IEntity entity)
         {
             var program = (entity is Actor actor && actor.Model is AnimatedModel) ? _jointWireframeProgram : _wireframeProgram;
             program.Use();
 
-            camera.Draw(program);
+            camera.SetUniforms(program);
             program.SetUniform("lineThickness", SelectedLineThickness);
             program.SetUniform("lineColor", new Vector4(0.7f, 0.7f, 0.1f, 1.0f));
 
@@ -174,7 +212,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _wireframeProgram.Use();
 
-            camera.Draw(_wireframeProgram);
+            camera.SetUniforms(_wireframeProgram);
             _wireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
             _wireframeProgram.SetUniform("lineColor", new Vector4(0.8f, 0.8f, 0.1f, 1.0f));
 

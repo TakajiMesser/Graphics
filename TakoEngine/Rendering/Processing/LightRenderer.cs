@@ -122,7 +122,7 @@ namespace TakoEngine.Rendering.Processing
             GL.StencilOpSeparate(StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
             GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
 
-            camera.Draw(_stencilProgram);
+            camera.SetUniforms(_stencilProgram);
             light.DrawForStencilPass(_stencilProgram);
             mesh.Draw();
         }
@@ -146,7 +146,7 @@ namespace TakoEngine.Rendering.Processing
             program.BindTexture(deferredRenderer.SpecularTexture, "specularMap", 4);
             program.BindTexture(shadowMap, "shadowMap", 5);
 
-            camera.Draw(program);
+            camera.SetUniforms(program);
             program.SetUniform("cameraPosition", camera.Position);
 
             light.DrawForLightPass(program);

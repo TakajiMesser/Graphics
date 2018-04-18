@@ -159,7 +159,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
 
-            camera.Draw(_selectionProgram);
+            camera.SetUniforms(_selectionProgram);
 
             foreach (var brush in brushes)
             {
@@ -183,7 +183,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
 
-            camera.Draw(_jointSelectionProgram);
+            camera.SetUniforms(_jointSelectionProgram);
 
             foreach (var actor in actors)
             {
@@ -196,7 +196,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _translateProgram.Use();
 
-            camera.Draw(_translateProgram);
+            camera.SetUniforms(_translateProgram);
             _translateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -220,7 +220,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _rotateProgram.Use();
 
-            camera.Draw(_rotateProgram);
+            camera.SetUniforms(_rotateProgram);
             _rotateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -244,7 +244,7 @@ namespace TakoEngine.Rendering.Processing
         {
             _scaleProgram.Use();
 
-            camera.Draw(_scaleProgram);
+            camera.SetUniforms(_scaleProgram);
             _scaleProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();

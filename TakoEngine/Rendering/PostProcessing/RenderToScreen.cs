@@ -67,28 +67,10 @@ namespace TakoEngine.Rendering.PostProcessing
             _vertexBuffer.Unbind();
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new Simple2DVertex()
-            {
-                Position = new Vector2(1.0f, 1.0f)
-            });
-            _vertexBuffer.AddVertex(new Simple2DVertex()
-            {
-                Position = new Vector2(-1.0f, 1.0f)
-            });
-            _vertexBuffer.AddVertex(new Simple2DVertex()
-            {
-                Position = new Vector2(-1.0f, -1.0f)
-            });
-            _vertexBuffer.AddVertex(new Simple2DVertex()
-            {
-                Position = new Vector2(1.0f, -1.0f)
-            });
-
-            /*_vertexBuffer.AddVertices(
-                new Vector3(1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f));*/
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, 1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, 1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, -1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, -1.0f)));
         }
 
         public override void ResizeTextures(Resolution resolution)

@@ -9,7 +9,7 @@ namespace TakoEngine.Helpers
     {
         private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"\..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine";
 
-        public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\GraphicsTest\Resources\Screenshots\";
+        public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Screenshots\";
 
         #region Textures
         public static string POINT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\point-light.png";
@@ -109,7 +109,10 @@ namespace TakoEngine.Helpers
         public static string WIREFRAME_SKINNING_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe-skinning.vert";
         public static string WIREFRAME_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.geom";
         public static string WIREFRAME_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.frag";
-        
+        public static string GRID_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\grid.vert";
+        public static string GRID_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\grid.geom";
+        public static string GRID_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\grid.frag";
+
         #endregion
     }
 }

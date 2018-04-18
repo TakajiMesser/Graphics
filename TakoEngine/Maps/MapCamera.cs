@@ -11,6 +11,8 @@ namespace TakoEngine.Maps
         public Vector3 Position { get; set; }
         public string AttachedActorName { get; set; }
         public ProjectionTypes Type { get; set; }
+        public float ZNear { get; set; }
+        public float ZFar { get; set; }
 
         /// <summary>
         /// Only relevant for orthographic cameras
@@ -25,8 +27,8 @@ namespace TakoEngine.Maps
         public Camera ToCamera(Resolution resolution)
         {
             var camera = Type == ProjectionTypes.Orthographic
-                ? (Camera)new OrthographicCamera(Name, resolution, StartingWidth)
-                : new PerspectiveCamera(Name, resolution, FieldOfViewY);
+                ? (Camera)new OrthographicCamera(Name, resolution, ZNear, ZFar, StartingWidth)
+                : new PerspectiveCamera(Name, resolution, ZNear, ZFar, FieldOfViewY);
 
             if (Position != null)
             {

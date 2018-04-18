@@ -115,7 +115,7 @@ namespace TakoEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
-            camera.Draw(_program);
+            camera.SetUniforms(_program);
 
             foreach (var brush in brushes)
             {

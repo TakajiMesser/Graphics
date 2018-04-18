@@ -1,4 +1,4 @@
-﻿using GraphicsTest.Helpers;
+﻿using Jidai.Helpers;
 using Microsoft.Win32;
 using OpenTK;
 using SauceEditor.Commands;
@@ -248,7 +248,7 @@ namespace SauceEditor
                 Filter = "Project Files|*.pro",
                 DefaultExt = GameProject.FILE_EXTENSION,
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -269,7 +269,7 @@ namespace SauceEditor
                 DefaultExt = "map",
                 Filter = "Map Files|*.map",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -288,7 +288,7 @@ namespace SauceEditor
                 CheckPathExists = true,
                 DefaultExt = "obj",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -307,7 +307,7 @@ namespace SauceEditor
                 CheckPathExists = true,
                 DefaultExt = "bhv",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\GraphicsTest\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
