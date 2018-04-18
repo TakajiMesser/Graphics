@@ -20,7 +20,7 @@ namespace TakoEngine.Rendering.PostProcessing
 
         private int _vertexArrayHandle;
         private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
-        protected FrameBuffer _frameBuffer = new FrameBuffer();
+        private FrameBuffer _frameBuffer = new FrameBuffer();
 
         protected override void LoadPrograms()
         {
@@ -83,10 +83,10 @@ namespace TakoEngine.Rendering.PostProcessing
 
         public void Render(Texture scene, Texture velocity, float fps)
         {
-            _blurProgram.Use();
-            _frameBuffer.Draw();
-
+            _frameBuffer.BindAndDraw();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+
+            _blurProgram.Use();
 
             _blurProgram.BindTexture(scene, "sceneTexture", 0);
             _blurProgram.BindTexture(velocity, "velocityTexture", 1);

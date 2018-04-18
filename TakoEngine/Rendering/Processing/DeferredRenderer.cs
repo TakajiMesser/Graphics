@@ -23,10 +23,10 @@ namespace TakoEngine.Rendering.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        public FrameBuffer GBuffer { get; private set; } = new FrameBuffer();
+        private FrameBuffer _frameBuffer = new FrameBuffer();
 
-        internal ShaderProgram _geometryProgram;
-        internal ShaderProgram _jointGeometryProgram;
+        private ShaderProgram _geometryProgram;
+        private ShaderProgram _jointGeometryProgram;
 
         protected override void LoadPrograms()
         {
@@ -207,31 +207,37 @@ namespace TakoEngine.Rendering.Processing
 
         protected override void LoadBuffers()
         {
-            GBuffer.Clear();
-            GBuffer.Add(FramebufferAttachment.ColorAttachment0, PositionTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment1, ColorTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment2, NormalTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment3, DiffuseMaterialTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment4, SpecularTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment5, VelocityTexture);
-            GBuffer.Add(FramebufferAttachment.ColorAttachment6, FinalTexture);
-            GBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+            _frameBuffer.Clear();
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, PositionTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment1, ColorTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment2, NormalTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment3, DiffuseMaterialTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment4, SpecularTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment5, VelocityTexture);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment6, FinalTexture);
+            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
 
-            GBuffer.Bind(FramebufferTarget.Framebuffer);
-            GBuffer.AttachAttachments();
-            GBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            _frameBuffer.AttachAttachments();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void LoadEntities(IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
-            // Clear final texture from last frame
-            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            //GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
-            //GL.Clear(ClearBufferMask.ColorBufferBit);
+            foreach (var brush in brushes)
+            {
+                brush.Load(_geometryProgram);
+            }
 
-            _geometryProgram.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffers(7, new DrawBuffersEnum[]
+            foreach (var actor in actors)
+            {
+                actor.Model.Load(_geometryProgram);
+            }
+        }
+
+        public void BindForGeometryWriting()
+        {
+            _frameBuffer.BindAndDraw(new DrawBuffersEnum[]
             {
                 DrawBuffersEnum.ColorAttachment0,
                 DrawBuffersEnum.ColorAttachment1,
@@ -241,12 +247,25 @@ namespace TakoEngine.Rendering.Processing
                 DrawBuffersEnum.ColorAttachment5,
                 DrawBuffersEnum.ColorAttachment6
             });
-
+            
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            //GL.Disable(EnableCap.CullFace);
             GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
+            GL.DepthMask(true);
+            GL.DepthFunc(DepthFunction.Less);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            //GL.Disable(EnableCap.CullFace);
+        }
+
+        public void BindForBillboardWriting()
+        {
+            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
+        }
+
+        public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        {
+            _geometryProgram.Use();
 
             camera.SetUniforms(_geometryProgram);
             _geometryProgram.SetUniform("cameraPosition", camera.Position);
@@ -265,21 +284,6 @@ namespace TakoEngine.Rendering.Processing
         public void JointGeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Actor> actors)
         {
             _jointGeometryProgram.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffers(7, new DrawBuffersEnum[]
-            {
-                DrawBuffersEnum.ColorAttachment0,
-                DrawBuffersEnum.ColorAttachment1,
-                DrawBuffersEnum.ColorAttachment2,
-                DrawBuffersEnum.ColorAttachment3,
-                DrawBuffersEnum.ColorAttachment4,
-                DrawBuffersEnum.ColorAttachment5,
-                DrawBuffersEnum.ColorAttachment6
-            });
-
-            GL.Disable(EnableCap.CullFace);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
 
             camera.SetUniforms(_jointGeometryProgram);
 

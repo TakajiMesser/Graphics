@@ -24,12 +24,11 @@ namespace TakoEngine.Rendering.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        public FrameBuffer GBuffer { get; private set; } = new FrameBuffer();
+        private ShaderProgram _wireframeProgram;
+        private ShaderProgram _jointWireframeProgram;
+        private ShaderProgram _gridProgram;
 
-        internal ShaderProgram _wireframeProgram;
-        internal ShaderProgram _jointWireframeProgram;
-        internal ShaderProgram _gridProgram;
-
+        private FrameBuffer _frameBuffer = new FrameBuffer();
         private VertexArray<Simple2DVertex> _vertexArray = new VertexArray<Simple2DVertex>();
         private VertexBuffer<Simple2DVertex> _vertexBuffer = new VertexBuffer<Simple2DVertex>();
 
@@ -100,13 +99,13 @@ namespace TakoEngine.Rendering.Processing
 
         protected override void LoadBuffers()
         {
-            GBuffer.Clear();
-            GBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            GBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+            _frameBuffer.Clear();
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
 
-            GBuffer.Bind(FramebufferTarget.Framebuffer);
-            GBuffer.AttachAttachments();
-            GBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            _frameBuffer.AttachAttachments();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
 
             _vertexBuffer.Bind();
             _vertexArray.Load(_gridProgram);
@@ -119,18 +118,20 @@ namespace TakoEngine.Rendering.Processing
             _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, -1.0f)));
         }
 
-        public void WireframePass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void BindForWriting()
         {
-            _wireframeProgram.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
+            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.DepthMask(false);
             GL.Disable(EnableCap.DepthTest);
             GL.Disable(EnableCap.Blend);
             GL.Disable(EnableCap.CullFace);
+        }
+
+        public void WireframePass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        {
+            _wireframeProgram.Use();
 
             camera.SetUniforms(_wireframeProgram);
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
@@ -150,12 +151,6 @@ namespace TakoEngine.Rendering.Processing
         public void JointWireframePass(Camera camera, IEnumerable<Actor> actors)
         {
             _jointWireframeProgram.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            GL.Disable(EnableCap.CullFace);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Disable(EnableCap.Blend);
 
             camera.SetUniforms(_jointWireframeProgram);
             _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
@@ -165,8 +160,6 @@ namespace TakoEngine.Rendering.Processing
             {
                 actor.Draw(_jointWireframeProgram);
             }
-
-            GL.Enable(EnableCap.CullFace);
         }
 
         public void RenderGridLines(Camera camera)

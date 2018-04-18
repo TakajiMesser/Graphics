@@ -23,9 +23,9 @@ namespace TakoEngine.Rendering.Processing
 
         private ShaderProgram _fxaaProgram;
 
+        private FrameBuffer _frameBuffer = new FrameBuffer();
         private int _vertexArrayHandle;
         private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
-        protected FrameBuffer _frameBuffer = new FrameBuffer();
 
         protected override void LoadPrograms()
         {
@@ -86,14 +86,17 @@ namespace TakoEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void Render(Texture texture)
+        public void BindForWriting()
         {
+            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
             GL.Disable(EnableCap.DepthTest);
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _frameBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
+        }
+
+        public void Render(Texture texture)
+        {
+            BindForWriting();
             GL.Viewport(0, 0, texture.Width, texture.Height);
 
             _fxaaProgram.Use();

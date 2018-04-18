@@ -21,13 +21,13 @@ namespace TakoEngine.Rendering.Processing
         public Texture PointDepthCubeMap { get; protected set; }
         public Texture SpotDepthTexture { get; protected set; }
 
-        internal ShaderProgram _pointShadowProgram;
-        internal ShaderProgram _pointShadowJointProgram;
-        internal ShaderProgram _spotShadowProgram;
-        internal ShaderProgram _spotShadowJointProgram;
+        private ShaderProgram _pointShadowProgram;
+        private ShaderProgram _pointShadowJointProgram;
+        private ShaderProgram _spotShadowProgram;
+        private ShaderProgram _spotShadowJointProgram;
 
-        internal FrameBuffer _pointFrameBuffer = new FrameBuffer();
-        internal FrameBuffer _spotFrameBuffer = new FrameBuffer();
+        private FrameBuffer _pointFrameBuffer = new FrameBuffer();
+        private FrameBuffer _spotFrameBuffer = new FrameBuffer();
 
         protected override void LoadPrograms()
         {
@@ -115,22 +115,37 @@ namespace TakoEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void BindForPointShadowDrawing()
         {
-            _pointShadowProgram.Use();
-
-            _pointFrameBuffer.Bind(FramebufferTarget.DrawFramebuffer);
-            _pointFrameBuffer.Draw(DrawBuffersEnum.None);
+            _pointFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
 
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.StencilTest);
-            
+
             GL.Clear(ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
             GL.Enable(EnableCap.CullFace);
             GL.CullFace(CullFaceMode.Back);
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
+        }
+
+        public void BindForSpotlightShadowDrawing()
+        {
+            _spotFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
+
+            GL.DepthMask(true);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.StencilTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.CullFace(CullFaceMode.Back);
+            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
+            GL.Clear(ClearBufferMask.DepthBufferBit);
+        }
+
+        public void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        {
+            _pointShadowProgram.Use();
 
             // Draw camera from the point light's perspective
             camera.SetUniforms(_pointShadowProgram, light);
@@ -146,26 +161,11 @@ namespace TakoEngine.Rendering.Processing
             {
                 actor.Draw(_pointShadowProgram);
             }
-
-            _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         public void PointLightJointPass(Camera camera, PointLight light, IEnumerable<Actor> actors)
         {
             _pointShadowJointProgram.Use();
-
-            _pointFrameBuffer.Bind(FramebufferTarget.DrawFramebuffer);
-            _pointFrameBuffer.Draw(DrawBuffersEnum.None);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.StencilTest);
-
-            //GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, SHADOW_SIZE, SHADOW_SIZE);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
 
             // Draw camera from the point light's perspective
             camera.SetUniforms(_pointShadowJointProgram, light);
@@ -183,17 +183,6 @@ namespace TakoEngine.Rendering.Processing
         private void SpotLightPass(Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _spotShadowProgram.Use();
-
-            _spotFrameBuffer.Bind(FramebufferTarget.DrawFramebuffer);
-            _spotFrameBuffer.Draw(DrawBuffersEnum.None);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
-            GL.Clear(ClearBufferMask.DepthBufferBit);
 
             // Draw camera from the spot light's perspective
             camera.SetUniforms(_spotShadowProgram, light);
@@ -216,17 +205,6 @@ namespace TakoEngine.Rendering.Processing
         {
             _spotShadowJointProgram.Use();
 
-            _spotFrameBuffer.Bind(FramebufferTarget.DrawFramebuffer);
-            _spotFrameBuffer.Draw(DrawBuffersEnum.None);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.StencilTest);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
-            GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
-            //GL.Clear(ClearBufferMask.DepthBufferBit);
-
             // Draw camera from the spot light's perspective
             camera.SetUniforms(_spotShadowJointProgram, light);
 
@@ -244,10 +222,12 @@ namespace TakoEngine.Rendering.Processing
             switch (light)
             {
                 case PointLight pLight:
+                    BindForPointShadowDrawing();
                     PointLightPass(camera, pLight, brushes, actors.Where(g => g.Model is SimpleModel));
                     PointLightJointPass(camera, pLight, actors.Where(g => g.Model is AnimatedModel));
                     break;
                 case SpotLight sLight:
+                    BindForSpotlightShadowDrawing();
                     SpotLightPass(camera, sLight, brushes, actors.Where(g => g.Model is SimpleModel));
                     SpotLightJointPass(camera, sLight, actors.Where(g => g.Model is AnimatedModel));
                     break;

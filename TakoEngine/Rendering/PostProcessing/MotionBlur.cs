@@ -130,7 +130,7 @@ namespace TakoEngine.Rendering.PostProcessing
             _blurProgram.BindTexture(depth, "depth", 2);
 
             // Pass 1
-            _frameBuffer.Draw();
+            _frameBuffer.BindAndDraw();
 
             _blurProgram.BindTexture(scene, "source", 0);
 

@@ -32,7 +32,7 @@ namespace TakoEngine.Rendering.PostProcessing
 
         private VertexBuffer<TextureVertex> _vertexBuffer = new VertexBuffer<TextureVertex>();
         private VertexArray<TextureVertex> _vertexArray = new VertexArray<TextureVertex>();
-        protected FrameBuffer _frameBuffer = new FrameBuffer();
+        private FrameBuffer _frameBuffer = new FrameBuffer();
 
         protected override void LoadPrograms()
         {

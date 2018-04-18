@@ -109,7 +109,7 @@ namespace TakoEngine.Rendering.Processing
         public void Render(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _program.Use();
-            _frameBuffer.Draw();
+            _frameBuffer.BindAndDraw();
 
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);

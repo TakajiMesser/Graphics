@@ -14,15 +14,10 @@ namespace TakoEngine.Rendering.Processing
 {
     public class LightRenderer : Renderer
     {
-        public Texture DepthStencilTexture { get; protected set; }
-        public Texture FinalTexture { get; protected set; }
-
-        internal ShaderProgram _stencilProgram;
-        internal ShaderProgram _pointLightProgram;
-        internal ShaderProgram _spotLightProgram;
-        internal ShaderProgram _simpleProgram;
-
-        private FrameBuffer _frameBuffer = new FrameBuffer();
+        private ShaderProgram _stencilProgram;
+        private ShaderProgram _pointLightProgram;
+        private ShaderProgram _spotLightProgram;
+        private ShaderProgram _simpleProgram;
 
         private SimpleMesh _pointLightMesh;
         private SimpleMesh _spotLightMesh;
@@ -51,18 +46,18 @@ namespace TakoEngine.Rendering.Processing
 
         public override void ResizeTextures(Resolution resolution)
         {
-            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
+            /*DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
             DepthStencilTexture.Bind();
             DepthStencilTexture.ReserveMemory();
 
             FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.ReserveMemory();*/
         }
 
         protected override void LoadTextures(Resolution resolution)
         {
-            DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
+            /*DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 EnableMipMap = false,
@@ -90,18 +85,18 @@ namespace TakoEngine.Rendering.Processing
                 WrapMode = TextureWrapMode.Clamp
             };
             FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.ReserveMemory();*/
         }
 
         protected override void LoadBuffers()
         {
-            _frameBuffer.Clear();
+            /*_frameBuffer.Clear();
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
 
             _frameBuffer.Bind(FramebufferTarget.Framebuffer);
             _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);*/
 
             _pointLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
@@ -130,9 +125,6 @@ namespace TakoEngine.Rendering.Processing
         public void LightPass(Resolution resolution, DeferredRenderer deferredRenderer, Light light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
             program.Use();
-
-            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, deferredRenderer.GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
 
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Disable(EnableCap.DepthTest);

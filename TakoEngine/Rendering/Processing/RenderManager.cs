@@ -68,15 +68,7 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.Load(Resolution);
             _renderToScreen.Load(WindowSize);
 
-            foreach (var brush in gameState.Brushes)
-            {
-                brush.Load(_deferredRenderer._geometryProgram);
-            }
-
-            foreach (var actor in gameState.Actors)
-            {
-                actor.Model.Load(_deferredRenderer._geometryProgram);
-            }
+            _deferredRenderer.LoadEntities(gameState.Brushes, gameState.Actors);
 
             GL.ClearColor(Color4.Black);
         }
@@ -97,14 +89,12 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.ResizeTextures(Resolution);
         }
 
-        public void ResizeWindow()
-        {
-            _renderToScreen.ResizeTextures(WindowSize);
-        }
+        public void ResizeWindow() => _renderToScreen.ResizeTextures(WindowSize);
 
         public void RenderEntityIDs(GameState gameState)
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
+            _selectionRenderer.BindForWriting();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _selectionRenderer.SelectionPass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
@@ -112,7 +102,11 @@ namespace TakoEngine.Rendering.Processing
             _billboardRenderer.RenderLightSelections(gameState.Camera, gameState.Lights);
         }
 
-        public int GetEntityIDFromPoint(Vector2 point) => _selectionRenderer.GetEntityIDFromPoint(point);
+        public int GetEntityIDFromPoint(Vector2 point)
+        {
+            _selectionRenderer.BindForReading();
+            return _selectionRenderer.GetEntityIDFromPoint(point);
+        }
 
         public void RenderSelection(Camera camera, IEntity entity, TransformModes transformMode)
         {
@@ -153,7 +147,7 @@ namespace TakoEngine.Rendering.Processing
             }
 
             // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _selectionRenderer.GBuffer._handle);
+            _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.DepthBufferBit);
             GL.DepthFunc(DepthFunction.Less);
 
@@ -173,7 +167,7 @@ namespace TakoEngine.Rendering.Processing
 
         public void RenderWireframe(GameState gameState)
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _wireframeRenderer.GBuffer._handle);
+            _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
@@ -182,6 +176,7 @@ namespace TakoEngine.Rendering.Processing
             //GL.DepthMask(false);
             //_wireframeRenderer.RenderGridLines(gameState.Camera);
 
+            GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
@@ -196,20 +191,13 @@ namespace TakoEngine.Rendering.Processing
 
         public void RenderDiffuseFrame(GameState gameState)
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
 
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment1);
+            _deferredRenderer.BindForBillboardWriting();
 
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
             _skyboxRenderer.Render(gameState.Camera);
@@ -222,21 +210,14 @@ namespace TakoEngine.Rendering.Processing
 
         public void RenderLitFrame(GameState gameState)
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
 
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
             RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
 
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            _deferredRenderer.BindForBillboardWriting();
 
             _skyboxRenderer.Render(gameState.Camera);
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
@@ -248,22 +229,15 @@ namespace TakoEngine.Rendering.Processing
 
         public void RenderFullFrame(GameState gameState)
         {
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+            _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            GL.DepthMask(true);
-            GL.Enable(EnableCap.DepthTest);
-            GL.DepthFunc(DepthFunction.Less);
-            GL.Enable(EnableCap.CullFace);
-            GL.CullFace(CullFaceMode.Back);
 
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
             RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
 
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment6);
+            _deferredRenderer.BindForBillboardWriting();
 
             _skyboxRenderer.Render(gameState.Camera);
 
@@ -298,7 +272,7 @@ namespace TakoEngine.Rendering.Processing
                 _shadowRenderer.Render(camera, light, brushes, actors);
                 GL.Enable(EnableCap.Blend);
 
-                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, _deferredRenderer.GBuffer._handle);
+                _deferredRenderer.BindForBillboardWriting();
                 GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);

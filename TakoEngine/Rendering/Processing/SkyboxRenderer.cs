@@ -21,8 +21,8 @@ namespace TakoEngine.Rendering.Processing
     {
         public Texture SkyTexture2D { get; protected set; }
         public Texture SkyTexture { get; protected set; }
-        
-        internal ShaderProgram _program;
+
+        private ShaderProgram _program;
         private ShaderProgram _2DProgram;
 
         private SimpleMesh _cubeMesh;

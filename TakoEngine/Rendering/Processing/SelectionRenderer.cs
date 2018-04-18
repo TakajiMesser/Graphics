@@ -36,14 +36,13 @@ namespace TakoEngine.Rendering.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        public FrameBuffer GBuffer { get; private set; } = new FrameBuffer();
-
         private ShaderProgram _selectionProgram;
         private ShaderProgram _jointSelectionProgram;
         private ShaderProgram _translateProgram;
         private ShaderProgram _rotateProgram;
         private ShaderProgram _scaleProgram;
 
+        private FrameBuffer _frameBuffer = new FrameBuffer();
         private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
         private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
 
@@ -128,36 +127,37 @@ namespace TakoEngine.Rendering.Processing
             _vertexArray.Load(_translateProgram);
             _vertexBuffer.Unbind();
 
-            GBuffer.Clear();
-            GBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            GBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+            _frameBuffer.Clear();
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
 
-            GBuffer.Bind(FramebufferTarget.Framebuffer);
-            GBuffer.AttachAttachments();
-            GBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            _frameBuffer.AttachAttachments();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+        }
+
+        public void BindForReading()
+        {
+            _frameBuffer.BindAndRead(ReadBufferMode.ColorAttachment0);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+        }
+
+        public void BindForWriting()
+        {
+            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
+            GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
         }
 
         public int GetEntityIDFromPoint(Vector2 point)
         {
-            GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, GBuffer._handle);
-            GL.ReadBuffer(ReadBufferMode.ColorAttachment0);
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
-
             var color = FinalTexture.ReadPixelColor((int)point.X, (int)point.Y);
-
             return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
         }
 
         public void SelectionPass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _selectionProgram.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
 
             camera.SetUniforms(_selectionProgram);
 
@@ -177,11 +177,6 @@ namespace TakoEngine.Rendering.Processing
         public void JointSelectionPass(Camera camera, IEnumerable<Actor> actors)
         {
             _jointSelectionProgram.Use();
-            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, GBuffer._handle);
-            GL.DrawBuffer(DrawBufferMode.ColorAttachment0);
-
-            GL.Enable(EnableCap.DepthTest);
-            GL.Enable(EnableCap.CullFace);
 
             camera.SetUniforms(_jointSelectionProgram);
 

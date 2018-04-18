@@ -9,15 +9,12 @@ namespace TakoEngine.Rendering.Buffers
 {
     public class FrameBuffer : IDisposable
     {
-        internal readonly int _handle;
+        private readonly int _handle;
 
-        internal Dictionary<FramebufferAttachment, Texture> _textures = new Dictionary<FramebufferAttachment, Texture>();
-        internal Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
+        private Dictionary<FramebufferAttachment, Texture> _textures = new Dictionary<FramebufferAttachment, Texture>();
+        private Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
 
-        public FrameBuffer()
-        {
-            _handle = GL.GenFramebuffer();
-        }
+        public FrameBuffer() => _handle = GL.GenFramebuffer();
 
         public void Add(FramebufferAttachment attachment, Texture texture) => _textures.Add(attachment, texture);
         public void Add(FramebufferAttachment attachment, RenderBuffer renderBuffer) => _renderBuffers.Add(attachment, renderBuffer);
@@ -50,7 +47,7 @@ namespace TakoEngine.Rendering.Buffers
         public void Bind(FramebufferTarget target) => GL.BindFramebuffer(target, _handle);
         public void Unbind(FramebufferTarget target) => GL.BindFramebuffer(target, 0);
 
-        public void Draw()
+        public void BindAndDraw()
         {
             Bind(FramebufferTarget.DrawFramebuffer);
 
@@ -65,10 +62,16 @@ namespace TakoEngine.Rendering.Buffers
             }
         }
 
-        public void Draw(params DrawBuffersEnum[] colorBuffers)
+        public void BindAndDraw(params DrawBuffersEnum[] colorBuffers)
         {
             Bind(FramebufferTarget.DrawFramebuffer);
             GL.DrawBuffers(colorBuffers.Length, colorBuffers);
+        }
+
+        public void BindAndRead(ReadBufferMode readBuffer)
+        {
+            Bind(FramebufferTarget.ReadFramebuffer);
+            GL.ReadBuffer(readBuffer);
         }
 
         #region IDisposable Support
