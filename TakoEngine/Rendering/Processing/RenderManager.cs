@@ -197,10 +197,10 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
-            _deferredRenderer.BindForBillboardWriting();
-
-            _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
+            _deferredRenderer.BindForDiffuseWriting();
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
             _skyboxRenderer.Render(gameState.Camera);
+            _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -217,8 +217,8 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
             RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
 
-            _deferredRenderer.BindForBillboardWriting();
-
+            _deferredRenderer.BindForLitWriting();
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
             _skyboxRenderer.Render(gameState.Camera);
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
 
@@ -237,8 +237,8 @@ namespace TakoEngine.Rendering.Processing
 
             RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
 
-            _deferredRenderer.BindForBillboardWriting();
-
+            _deferredRenderer.BindForLitWriting();
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
             _skyboxRenderer.Render(gameState.Camera);
 
             // Read from GBuffer's final texture, so that we can post-process it
@@ -272,7 +272,7 @@ namespace TakoEngine.Rendering.Processing
                 _shadowRenderer.Render(camera, light, brushes, actors);
                 GL.Enable(EnableCap.Blend);
 
-                _deferredRenderer.BindForBillboardWriting();
+                _deferredRenderer.BindForLitWriting();
                 GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);

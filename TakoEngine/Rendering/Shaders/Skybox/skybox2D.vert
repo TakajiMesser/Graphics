@@ -13,7 +13,5 @@ void main()
     vec4 position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
 
     gl_Position = position.xyww;
-
-    //fUV = vPosition;
     fUV = vec2((vPosition.x + 1.0) * 0.5, (vPosition.y + 1.0) * 0.5);
 }

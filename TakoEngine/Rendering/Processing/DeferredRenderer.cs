@@ -258,7 +258,12 @@ namespace TakoEngine.Rendering.Processing
             //GL.Disable(EnableCap.CullFace);
         }
 
-        public void BindForBillboardWriting()
+        public void BindForDiffuseWriting()
+        {
+            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment1);
+        }
+
+        public void BindForLitWriting()
         {
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
         }

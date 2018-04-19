@@ -120,8 +120,8 @@ namespace TakoEngine.Rendering.Processing
                 //camera.Draw(_2DProgram);
                 camera._viewMatrix.Set(_2DProgram);
                 //camera._projectionMatrix.Set(_2DProgram);
-                var width = camera._projectionMatrix.Width;
-                width = 1.0f;
+                //var width = camera._projectionMatrix.Width;
+                var width = 0.8f;
                 var height = width / camera._projectionMatrix.Resolution.AspectRatio;
                 var projection = Matrix4.CreateOrthographic(width, height, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);
                 _2DProgram.SetUniform(ProjectionMatrix.NAME, projection);
