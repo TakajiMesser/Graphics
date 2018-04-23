@@ -267,5 +267,44 @@ namespace SauceEditor.Controls.GamePanels
         private void RotateButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Rotate;
 
         private void ScaleButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Scale;
+
+        private void ViewComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            var selectedItem = ViewComboBox.SelectedItem as ComboBoxItem;
+            
+            switch (selectedItem.Content)
+            {
+                case "All":
+                    _perspectiveView.Show();
+                    _xView.Show();
+                    _yView.Show();
+                    _zView.Show();
+                    break;
+                case "Perspective":
+                    _zView.Hide();
+                    _yView.Hide();
+                    _xView.Hide();
+                    _perspectiveView.Show();
+                    break;
+                case "X":
+                    _zView.Hide();
+                    _yView.Hide();
+                    _perspectiveView.Hide();
+                    _xView.Show();
+                    break;
+                case "Y":
+                    _zView.Hide();
+                    _xView.Hide();
+                    _perspectiveView.Hide();
+                    _yView.Show();
+                    break;
+                case "Z":
+                    _yView.Hide();
+                    _xView.Hide();
+                    _perspectiveView.Hide();
+                    _zView.Show();
+                    break;
+            }
+        }
     }
 }

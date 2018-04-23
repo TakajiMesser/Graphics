@@ -45,6 +45,7 @@ namespace TakoEngine.Game
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
         public bool IsSelectionTransforming { get; private set; }
+        public bool Loaded { get; private set; }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
@@ -58,7 +59,7 @@ namespace TakoEngine.Game
         private bool _invalidated = false;
         private Vector3 _currentAngles = new Vector3();
         private Point _mouseLocation;
-        private Timer _pollTimer = new Timer();
+        //private Timer _pollTimer = new Timer();
 
         private object _cursorLock = new object();
         private bool _isCursorVisible = true;
@@ -91,8 +92,10 @@ namespace TakoEngine.Game
 
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
-            _pollTimer.Interval = 16.67;
-            _pollTimer.Elapsed += PollTimer_Elapsed;
+            //_pollTimer.Interval = 16.67;
+            //_pollTimer.Elapsed += PollTimer_Elapsed;
+            _pollTimer2.Interval = 16.67;
+            _pollTimer2.Elapsed += PollTimer2_Elapsed;
         }
 
         public void LoadFromModel(string modelPath)
@@ -213,7 +216,7 @@ namespace TakoEngine.Game
 
             _gameState.Initialize();
             _renderManager.Load(_gameState, _map);
-            _pollTimer.Start();
+            //_pollTimer.Start();
 
             switch (ViewType)
             {
@@ -238,20 +241,23 @@ namespace TakoEngine.Game
                     _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position - Vector3.UnitZ;
                     break;
             }
+
+            Loaded = true;
         }
 
         public void SelectEntity(IEntity entity)
         {
             SelectedEntity = (entity != null) ? _gameState.GetByID(entity.ID) : null;
-            _invalidated = true;
+            RenderFrame();
+            //_invalidated = true;
         }
 
-        private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            _pollTimer.Stop();
+        //private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        //{
+            //_pollTimer.Stop();
 
             // Handle user input, then poll their input for handling on the following frame
-            if (IsHandleCreated)
+            /*if (IsHandleCreated)
             {
                 Invoke(new Action(() =>
                 {
@@ -262,24 +268,23 @@ namespace TakoEngine.Game
                 }));
             }
 
-            PollForInput();
+            PollForInput();*/
 
-            if (_invalidated)
+            /*if (_invalidated)
             {
                 Invalidate();
                 _invalidated = false;
             }
 
             _pollTimer.Start();
-        }
+        }*/
 
         protected override void OnPaint(PaintEventArgs e)
         {
             if (Enabled && _renderManager != null)
             {
                 base.OnPaint(e);
-                MakeCurrent();
-                OnRenderFrame();
+                RenderFrame();
             }
         }
 
@@ -300,8 +305,10 @@ namespace TakoEngine.Game
             }
         }
 
-        protected void OnRenderFrame()
+        private void RenderFrame()
         {
+            MakeCurrent();
+
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:
@@ -412,12 +419,21 @@ namespace TakoEngine.Game
             }
         }*/
 
-        protected override void OnMouseWheel(System.Windows.Forms.MouseEventArgs e)
+        /*protected override void OnMouseWheel(System.Windows.Forms.MouseEventArgs e)
         {
             if (_gameState.Camera is OrthographicCamera camera)
             {
                 camera.Width -= e.Delta * 0.01f;
                 _invalidated = true;
+            }
+        }*/
+
+        public void Zoom(int wheelDelta)
+        {
+            if (_gameState.Camera is OrthographicCamera camera)
+            {
+                camera.Width -= wheelDelta * 0.01f;
+                RenderFrame();
             }
         }
 
@@ -425,8 +441,10 @@ namespace TakoEngine.Game
         {
             /*var point = PointToClient(System.Windows.Forms.Cursor.Position);
             var mouseCoordinates = new Vector2(point.X - Location.X, Height - point.Y - Location.Y);*/
-            var mouseCoordinates = new Vector2(coordinates.X - Location.X, Height - coordinates.Y - Location.Y);
+            var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
 
+            RenderFrame();
+            //_renderManager.RenderEntityIDs(_gameState);
             var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
 
             if (SelectedEntity == null || SelectedEntity.ID != id)
@@ -464,18 +482,60 @@ namespace TakoEngine.Game
                         break;
 
                     default:
-                        _invalidated = true;
+                        //_invalidated = true;
                         SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
                         EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
+                        RenderFrame();
                         break;
                 }
             }
         }
 
+        public bool IsDragging { get; private set; }
+        private Timer _pollTimer2 = new Timer();
+
+        public void StartDrag()
+        {
+            IsDragging = true;
+            _pollTimer2.Start();
+        }
+
+        private void PollTimer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            // Handle user input, then poll their input for handling on the following frame
+            /*if (IsHandleCreated)
+            {
+                Invoke(new Action(() =>
+                {
+                    if (Focused)
+                    {
+                        
+                    }
+                }));
+            }*/
+
+            HandleInput();
+            PollForInput();
+            //RenderFrame();
+            if (_invalidated)
+            {
+                Invalidate();
+                _invalidated = false;
+            }
+        }
+
+        public void EndDrag()
+        {
+            IsDragging = false;
+            _gameState._inputState.ClearState();
+            _pollTimer2.Stop();
+        }
+
         private void HandleInput()
         {
-            if ((_gameState._inputState.IsPressed(new Input(MouseButton.Left)) && _gameState._inputState.IsPressed(new Input(MouseButton.Right)) && IsMouseInPanel)
-                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && _gameState._inputState.IsHeld(new Input(MouseButton.Right)) && IsCameraMoving))
+            _invalidated = true;
+
+            if (_gameState._inputState.IsHeld(new Input(MouseButton.Left), new Input(MouseButton.Right)))
             {
                 // Both mouse buttons allow "strafing"
                 var right = Vector3.Cross(_gameState.Camera._viewMatrix.Up, _gameState.Camera._viewMatrix.LookAt - _gameState.Camera.Position).Normalized();
@@ -485,66 +545,62 @@ namespace TakoEngine.Game
 
                 _gameState.Camera.Position -= verticalTranslation + horizontalTranslation;
                 _gameState.Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
-                IsCameraMoving = true;
-                IsCursorVisible = false;
+
+                //IsCursorVisible = false;
                 _invalidated = true;
             }
-            else if (ViewType == ViewTypes.Perspective && ((_gameState._inputState.IsPressed(new Input(MouseButton.Left)) && IsMouseInPanel)
-                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && IsCameraMoving)))
+            else
             {
-                // Left mouse button allows "moving"
-                var translation = (_gameState.Camera._viewMatrix.LookAt - _gameState.Camera.Position) * _gameState._inputState.MouseDelta.Y * 0.02f;
-                //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _gameState._inputState.MouseDelta.Y * 0.02f;
-                _gameState.Camera.Position -= translation;
-
-                var currentAngles = _currentAngles;
-                var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
-
-                if (mouseDelta != Vector2.Zero)
+                if (ViewType == ViewTypes.Perspective)
                 {
-                    currentAngles.X += mouseDelta.X;
-                    _currentAngles = currentAngles;
+                    if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)))
+                    {
+                        // Left mouse button allows "moving"
+                        var translation = (_gameState.Camera._viewMatrix.LookAt - _gameState.Camera.Position) * _gameState._inputState.MouseDelta.Y * 0.02f;
+                        //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _gameState._inputState.MouseDelta.Y * 0.02f;
+                        _gameState.Camera.Position -= translation;
 
-                    CalculateDirection();
+                        var currentAngles = _currentAngles;
+                        var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
+
+                        if (mouseDelta != Vector2.Zero)
+                        {
+                            currentAngles.X += mouseDelta.X;
+                            _currentAngles = currentAngles;
+
+                            CalculateDirection();
+                        }
+
+                        CalculateUp();
+
+                        //IsCursorVisible = false;
+                        _invalidated = true;
+                    }
+                    else if (_gameState._inputState.IsHeld(new Input(MouseButton.Right)))
+                    {
+                        // Right mouse button allows "turning"
+                        var currentAngles = _currentAngles;
+                        var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
+
+                        if (mouseDelta != Vector2.Zero)
+                        {
+                            currentAngles.X += mouseDelta.X;
+                            currentAngles.Y += mouseDelta.Y;
+                            currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                            _currentAngles = currentAngles;
+
+                            CalculateDirection();
+                            CalculateUp();
+                        }
+
+                        IsCameraMoving = true;
+                        //IsCursorVisible = false;
+                        _invalidated = true;
+                    }
                 }
-
-                CalculateUp();
-
-                IsCameraMoving = true;
-                IsCursorVisible = false;
-                _invalidated = true;
             }
-            else if (ViewType == ViewTypes.Perspective && ((_gameState._inputState.IsPressed(new Input(MouseButton.Right)) && IsMouseInPanel)
-                    || (_gameState._inputState.IsHeld(new Input(MouseButton.Right)) && IsCameraMoving)))
-            {
-                // Right mouse button allows "turning"
-                var currentAngles = _currentAngles;
-                var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
 
-                if (mouseDelta != Vector2.Zero)
-                {
-                    currentAngles.X += mouseDelta.X;
-                    currentAngles.Y += mouseDelta.Y;
-                    currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-                    _currentAngles = currentAngles;
-
-                    CalculateDirection();
-                    CalculateUp();
-                }
-
-                IsCameraMoving = true;
-                IsCursorVisible = false;
-                _invalidated = true;
-            }
-            else if (_gameState._inputState.IsPressed(new Input(MouseButton.Middle)) && IsMouseInPanel)
-            {
-                Invoke(new Action(() =>
-                {
-                    var point = PointToClient(System.Windows.Forms.Cursor.Position);
-                    SelectEntity(point);
-                }));
-            }
-            else if (_gameState._inputState.IsHeld(new Input(MouseButton.Middle)) && IsSelectionTransforming)
+            if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && IsSelectionTransforming)
             {
                 // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
                 switch (TransformMode)
@@ -561,15 +617,14 @@ namespace TakoEngine.Game
                 }
                 
                 _invalidated = true;
-                IsCursorVisible = false;
+                //IsCursorVisible = false;
                 
                 Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
             }
             else
             {
-                IsCameraMoving = false;
                 IsSelectionTransforming = false;
-                IsCursorVisible = true;
+                //IsCursorVisible = true;
             }
         }
 

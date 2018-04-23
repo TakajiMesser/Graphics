@@ -2,16 +2,17 @@
 using OpenTK.Input;
 using System;
 using System.Drawing;
+using System.Linq;
 using TakoEngine.Utilities;
 
 namespace TakoEngine.Inputs
 {
     public class InputState
     {
-        private KeyboardState _keyState;
-        private KeyboardState _previousKeyState;
-        private MouseState _mouseState;
-        private MouseState _previousMouseState;
+        private KeyboardState? _keyState;
+        private KeyboardState? _previousKeyState;
+        private MouseState? _mouseState;
+        private MouseState? _previousMouseState;
         private MouseDevice _mouseDevice;
         private MouseDevice _previousMouseDevice;
 
@@ -22,7 +23,7 @@ namespace TakoEngine.Inputs
 
         public Vector2 MouseDelta => _mouseState == null || _previousMouseState == null
             ? Vector2.Zero
-            : new Vector2(_mouseState.X, _mouseState.Y) - new Vector2(_previousMouseState.X, _previousMouseState.Y);
+            : new Vector2(_mouseState.Value.X, _mouseState.Value.Y) - new Vector2(_previousMouseState.Value.X, _previousMouseState.Value.Y);
 
         public bool IsMouseInWindow => _mouseDevice != null
             ? (_mouseDevice.X.IsBetween(0, WindowWidth) && _mouseDevice.Y.IsBetween(0, WindowHeight))
@@ -31,8 +32,8 @@ namespace TakoEngine.Inputs
         public int MouseWheelDelta => _mouseState == null
             ? 0
             : _previousMouseState == null
-                ? _mouseState.Wheel
-                : _previousMouseState.Wheel - _mouseState.Wheel;
+                ? _mouseState.Value.Wheel
+                : _previousMouseState.Value.Wheel - _mouseState.Value.Wheel;
 
         public void UpdateState(Point mouseLocation)
         {
@@ -60,6 +61,18 @@ namespace TakoEngine.Inputs
             _mouseState = mouseState;
         }
 
+        public void ClearState()
+        {
+            _previousKeyState = null;
+            _keyState = null;
+            _previousMouseState = null;
+            _mouseState = null;
+            _mouseDevice = null;
+            _previousMouseDevice = null;
+        }
+
+        public bool IsPressed(params Input[] inputs) => inputs.All(i => IsPressed(i));
+
         /// <summary>
         /// Determines if this input was triggered this frame but was NOT triggered last frame.
         /// </summary>
@@ -72,12 +85,12 @@ namespace TakoEngine.Inputs
                     {
                         if (_previousKeyState != null)
                         {
-                            return _previousKeyState.IsKeyUp((Key)input.PrimaryInput) && _previousKeyState.IsKeyUp((Key)input.SecondaryInput)
-                                && (_keyState.IsKeyDown((Key)input.PrimaryInput) || _keyState.IsKeyDown((Key)input.SecondaryInput));
+                            return _previousKeyState.Value.IsKeyUp((Key)input.PrimaryInput) && _previousKeyState.Value.IsKeyUp((Key)input.SecondaryInput)
+                                && (_keyState.Value.IsKeyDown((Key)input.PrimaryInput) || _keyState.Value.IsKeyDown((Key)input.SecondaryInput));
                         }
                         else
                         {
-                            return _keyState.IsKeyDown((Key)input.PrimaryInput) || _keyState.IsKeyDown((Key)input.SecondaryInput);
+                            return _keyState.Value.IsKeyDown((Key)input.PrimaryInput) || _keyState.Value.IsKeyDown((Key)input.SecondaryInput);
                         }
                     }
                     else
@@ -90,15 +103,15 @@ namespace TakoEngine.Inputs
                     {
                         if (_previousMouseState != null)
                         {
-                            return (!input.HasPrimaryMouseInput || _previousMouseState.IsButtonUp((MouseButton)input.PrimaryInput))
-                                && (!input.HasSecondaryMouseInput || _previousMouseState.IsButtonUp((MouseButton)input.SecondaryInput))
-                                && (input.HasPrimaryMouseInput && (_mouseState.IsButtonDown((MouseButton)input.PrimaryInput))
-                                    || (input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput)));
+                            return (!input.HasPrimaryMouseInput || _previousMouseState.Value.IsButtonUp((MouseButton)input.PrimaryInput))
+                                && (!input.HasSecondaryMouseInput || _previousMouseState.Value.IsButtonUp((MouseButton)input.SecondaryInput))
+                                && (input.HasPrimaryMouseInput && (_mouseState.Value.IsButtonDown((MouseButton)input.PrimaryInput))
+                                    || (input.HasSecondaryMouseInput && _mouseState.Value.IsButtonDown((MouseButton)input.SecondaryInput)));
                         }
                         else
                         {
-                            return (input.HasPrimaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.PrimaryInput))
-                                || (input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput));
+                            return (input.HasPrimaryMouseInput && _mouseState.Value.IsButtonDown((MouseButton)input.PrimaryInput))
+                                || (input.HasSecondaryMouseInput && _mouseState.Value.IsButtonDown((MouseButton)input.SecondaryInput));
                         }
                     }
                     else
@@ -111,6 +124,8 @@ namespace TakoEngine.Inputs
             }
         }
 
+        public bool IsHeld(params Input[] inputs) => inputs.All(i => IsHeld(i));
+
         /// <summary>
         /// Determines if this input was triggered this frame.
         /// </summary>
@@ -120,13 +135,13 @@ namespace TakoEngine.Inputs
             {
                 case InputType.Key:
                     return (_keyState != null)
-                        ? _keyState.IsKeyDown((Key)input.PrimaryInput) || _keyState.IsKeyDown((Key)input.SecondaryInput)
+                        ? _keyState.Value.IsKeyDown((Key)input.PrimaryInput) || _keyState.Value.IsKeyDown((Key)input.SecondaryInput)
                         : false;
 
                 case InputType.Mouse:
                     return (_mouseState != null)
-                        ? (input.HasPrimaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.PrimaryInput))
-                            || (input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput))
+                        ? (input.HasPrimaryMouseInput && _mouseState.Value.IsButtonDown((MouseButton)input.PrimaryInput))
+                            || (input.HasSecondaryMouseInput && _mouseState.Value.IsButtonDown((MouseButton)input.SecondaryInput))
                         : false;
 
                 default:
@@ -141,9 +156,9 @@ namespace TakoEngine.Inputs
                 case InputType.Key:
                     if (_keyState != null && _previousKeyState != null)
                     {
-                        return (_previousKeyState.IsKeyDown((Key)input.PrimaryInput) || _previousKeyState.IsKeyDown((Key)input.SecondaryInput))
-                                && _keyState.IsKeyUp((Key)input.PrimaryInput)
-                                && _keyState.IsKeyUp((Key)input.SecondaryInput);
+                        return (_previousKeyState.Value.IsKeyDown((Key)input.PrimaryInput) || _previousKeyState.Value.IsKeyDown((Key)input.SecondaryInput))
+                                && _keyState.Value.IsKeyUp((Key)input.PrimaryInput)
+                                && _keyState.Value.IsKeyUp((Key)input.SecondaryInput);
                     }
                     else
                     {
@@ -153,10 +168,10 @@ namespace TakoEngine.Inputs
                 case InputType.Mouse:
                     if (_mouseState != null && _previousMouseState != null)
                     {
-                        return ((input.HasPrimaryMouseInput && _previousMouseState.IsButtonDown((MouseButton)input.PrimaryInput))
-                            || (input.HasSecondaryMouseInput && _previousMouseState.IsButtonDown((MouseButton)input.SecondaryInput)))
-                                && (!input.HasPrimaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.PrimaryInput))
-                                && (!input.HasSecondaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.SecondaryInput));
+                        return ((input.HasPrimaryMouseInput && _previousMouseState.Value.IsButtonDown((MouseButton)input.PrimaryInput))
+                            || (input.HasSecondaryMouseInput && _previousMouseState.Value.IsButtonDown((MouseButton)input.SecondaryInput)))
+                                && (!input.HasPrimaryMouseInput || _mouseState.Value.IsButtonUp((MouseButton)input.PrimaryInput))
+                                && (!input.HasSecondaryMouseInput || _mouseState.Value.IsButtonUp((MouseButton)input.SecondaryInput));
                     }
                     else
                     {

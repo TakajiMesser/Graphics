@@ -13,6 +13,14 @@
             <Button Name="TranslateButton" Content="Translate" Click="TranslateButton_Click"/>
             <Button Name="RotateButton" Content="Rotate" Click="RotateButton_Click"/>
             <Button Name="ScaleButton" Content="Scale" Click="ScaleButton_Click"/>
+            <Separator/>
+            <ComboBox Name="ViewComboBox" SelectionChanged="ViewComboBox_SelectionChanged">
+                <ComboBoxItem IsSelected="True">All</ComboBoxItem>
+                <ComboBoxItem>Perspective</ComboBoxItem>
+                <ComboBoxItem>X</ComboBoxItem>
+                <ComboBoxItem>Y</ComboBoxItem>
+                <ComboBoxItem>Z</ComboBoxItem>
+            </ComboBox>
         </ToolBar>
         <dock:DockManager Name ="MainDockManager" Grid.Column="0"/>
     </DockPanel>
