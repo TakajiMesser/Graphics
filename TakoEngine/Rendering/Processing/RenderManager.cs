@@ -28,6 +28,7 @@ namespace TakoEngine.Rendering.Processing
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
         public double Frequency { get; internal set; }
+        public bool IsLoaded { get; private set; }
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -69,8 +70,9 @@ namespace TakoEngine.Rendering.Processing
             _renderToScreen.Load(WindowSize);
 
             _deferredRenderer.LoadEntities(gameState.Brushes, gameState.Actors);
-
             GL.ClearColor(Color4.Black);
+
+            IsLoaded = true;
         }
 
         public void ResizeResolution()

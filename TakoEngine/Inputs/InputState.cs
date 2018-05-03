@@ -19,7 +19,9 @@ namespace TakoEngine.Inputs
         public int WindowWidth { get; set; }
         public int WindowHeight { get; set; }
 
-        public Vector2 MouseCoordinates => new Vector2(_mouseDevice.X, _mouseDevice.Y);
+        public Vector2? MouseCoordinates => _mouseDevice != null
+            ? new Vector2(_mouseDevice.X, _mouseDevice.Y)
+            : (Vector2?)null;
 
         public Vector2 MouseDelta => _mouseState == null || _previousMouseState == null
             ? Vector2.Zero
@@ -34,15 +36,6 @@ namespace TakoEngine.Inputs
             : _previousMouseState == null
                 ? _mouseState.Value.Wheel
                 : _previousMouseState.Value.Wheel - _mouseState.Value.Wheel;
-
-        public void UpdateState(Point mouseLocation)
-        {
-            _previousMouseDevice = _mouseDevice;
-            /*_mouseDevice = new MouseDevice()
-            {
-                a
-            };*/
-        }
 
         public void UpdateState(GameWindow window)
         {

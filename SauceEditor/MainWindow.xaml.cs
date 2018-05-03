@@ -6,6 +6,7 @@ using SauceEditor.Controls;
 using SauceEditor.Controls.GamePanels;
 using SauceEditor.Controls.ProjectTree;
 using SauceEditor.Controls.Properties;
+using SauceEditor.Controls.Tools;
 using SauceEditor.Structure;
 using System;
 using System.ComponentModel;
@@ -31,6 +32,7 @@ namespace SauceEditor
         private string _mapPath;
         
         private ProjectTreeView _projectTree = new ProjectTreeView();
+        private ToolsWindow _toolPanel = new ToolsWindow();
         private PropertyWindow _propertyPanel = new PropertyWindow();
         private GamePanelManager _gamePanelManager;
         private GameWindow _gameWindow;
@@ -75,6 +77,9 @@ namespace SauceEditor
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
             _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
+
+            _toolPanel.DockManager = SideDockManager;
+            _toolPanel.ShowAsDocument();
 
             _propertyPanel.DockManager = SideDockManager;
             _propertyPanel.ShowAsDocument();

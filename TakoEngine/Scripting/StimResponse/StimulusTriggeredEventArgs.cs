@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace TakoEngine.Scripting.StimResponse
 {
-    public class StimulusReceivedEventArgs : EventArgs
+    public class StimulusTriggeredEventArgs : EventArgs
     {
         public Stimulus Stimulus { get; private set; }
 
-        public StimulusReceivedEventArgs(Stimulus stimulus)
+        public StimulusTriggeredEventArgs(Stimulus stimulus)
         {
             Stimulus = stimulus;
         }

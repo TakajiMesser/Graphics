@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using TakoEngine.Scripting.StimResponse;
 
 namespace TakoEngine.Scripting.Behaviors
 {
@@ -12,11 +13,28 @@ namespace TakoEngine.Scripting.Behaviors
     {
         public Stack<Node> RootStack { get; private set; } = new Stack<Node>();
         public BehaviorContext Context { get; private set; } = new BehaviorContext();
+        public List<Response> Responses { get; private set; } = new List<Response>();
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext c) => Context = new BehaviorContext();
 
-        public virtual BehaviorStatus Tick() => RootStack.Peek().Tick(Context);
+        public virtual BehaviorStatus Tick()
+        {
+            foreach (var response in Responses)
+            {
+                response.Tick(Context);
+            }
+
+            var root = RootStack.Peek();
+            var rootStatus = root.Tick(Context);
+
+            if (rootStatus.IsComplete())
+            {
+                RootStack.Pop();
+            }
+
+            return rootStatus;
+        }
 
         public void Save(string path)
         {

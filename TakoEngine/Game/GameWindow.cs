@@ -58,7 +58,11 @@ namespace TakoEngine.Game
         {
             WindowSize.Width = Width;
             WindowSize.Height = Height;
-            _renderManager?.ResizeWindow();
+
+            if (_renderManager != null && _renderManager.IsLoaded)
+            {
+                _renderManager.ResizeWindow();
+            }
             //Resolution.Width = Width;
             //Resolution.Height = Height;
             //_gameState?.Resize();

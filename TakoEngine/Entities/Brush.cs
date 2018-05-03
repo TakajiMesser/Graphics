@@ -12,6 +12,7 @@ using TakoEngine.Rendering.Meshes;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
+using TakoEngine.Scripting.StimResponse;
 
 namespace TakoEngine.Entities
 {
@@ -19,7 +20,7 @@ namespace TakoEngine.Entities
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : IEntity, ICollidable, IRotate, IScale
+    public class Brush : IEntity, IStimulate, ICollidable, IRotate, IScale
     {
         public int ID { get; set; }
 
@@ -45,6 +46,8 @@ namespace TakoEngine.Entities
 
         public Mesh<Vertex> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
+        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
+
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
         public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();

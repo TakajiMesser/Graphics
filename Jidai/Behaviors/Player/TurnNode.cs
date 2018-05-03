@@ -22,7 +22,7 @@ namespace Jidai.Behaviors.Player
                 };
 
                 var vectorBetween = context.InputState.MouseCoordinates - screenCoordinates;
-                float turnAngle = -(float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+                float turnAngle = -(float)Math.Atan2(vectorBetween.Value.Y, vectorBetween.Value.X);
 
                 // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
                 turnAngle += (float)Math.Atan2(context.Camera._viewMatrix.Up.Y, context.Camera._viewMatrix.Up.X) - (float)Math.PI / 2.0f;
@@ -33,5 +33,7 @@ namespace Jidai.Behaviors.Player
 
             return BehaviorStatus.Success;
         }
+
+        public override void Reset() { }
     }
 }

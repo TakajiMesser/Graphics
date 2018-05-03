@@ -6,6 +6,7 @@ using TakoEngine.Game;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Scripting.Behaviors;
+using TakoEngine.Scripting.StimResponse;
 
 namespace TakoEngine.Maps
 {
@@ -19,6 +20,7 @@ namespace TakoEngine.Maps
         public string ModelFilePath { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
         public string BehaviorFilePath { get; set; }
+        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<GameProperty> Properties { get; set; }
         public bool HasCollision { get; set; }
         //public ICollider Collider { get; set; }
@@ -36,6 +38,8 @@ namespace TakoEngine.Maps
             {
                 actor.Behaviors = Behavior.Load(BehaviorFilePath);
             }
+
+            actor.Stimuli.AddRange(Stimuli);
 
             if (Properties != null)
             {

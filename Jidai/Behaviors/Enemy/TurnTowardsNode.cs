@@ -8,6 +8,7 @@ using TakoEngine.Entities;
 using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using System.Runtime.Serialization;
+using TakoEngine.Utilities;
 
 namespace Jidai.Behaviors.Enemy
 {
@@ -25,5 +26,7 @@ namespace Jidai.Behaviors.Enemy
 
             return BehaviorStatus.Success;
         }
+
+        public override void Reset() { }
     }
 }

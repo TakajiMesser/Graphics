@@ -89,7 +89,6 @@
     <Compile Include="Behaviors\MoveToNode.cs" />
     <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
     <Compile Include="Behaviors\Player\PlayerBehavior.cs" />
-    <Compile Include="Behaviors\Player\PlayerStim.cs" />
     <Compile Include="Behaviors\Player\TurnNode.cs" />
     <Compile Include="Behaviors\Player\MoveNode.cs" />
     <Compile Include="Behaviors\Player\EvadeNode.cs" />

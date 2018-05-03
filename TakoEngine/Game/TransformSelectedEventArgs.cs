@@ -5,6 +5,7 @@ namespace TakoEngine.Game
 {
     public enum SelectionTypes
     {
+        None,
         Red,
         Green,
         Blue,

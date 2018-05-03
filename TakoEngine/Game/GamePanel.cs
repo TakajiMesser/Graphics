@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
@@ -44,8 +45,7 @@ namespace TakoEngine.Game
 
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
-        public bool IsSelectionTransforming { get; private set; }
-        public bool Loaded { get; private set; }
+        public bool IsLoaded { get; private set; }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
@@ -140,8 +140,6 @@ namespace TakoEngine.Game
             {
                 LoadGameState();
             }
-
-            _mouseHeldTimer.Elapsed += MouseHeldTimer_Elapsed;
         }
 
         /*public void LoadGameState(GameState gameState, Map map)
@@ -211,11 +209,19 @@ namespace TakoEngine.Game
                     break;
             }
 
-            _gameState.LoadMap(_map);
+            //Invoke((MethodInvoker)delegate
+            //{
+                _gameState.LoadMap(_map);
+            //});
+            
             _gameState.Camera.DetachFromEntity();
 
             _gameState.Initialize();
-            _renderManager.Load(_gameState, _map);
+            //Invoke((MethodInvoker)delegate
+            //{
+                _renderManager.Load(_gameState, _map);
+            //});
+
             //_pollTimer.Start();
 
             switch (ViewType)
@@ -242,42 +248,14 @@ namespace TakoEngine.Game
                     break;
             }
 
-            Loaded = true;
+            IsLoaded = true;
         }
 
         public void SelectEntity(IEntity entity)
         {
             SelectedEntity = (entity != null) ? _gameState.GetByID(entity.ID) : null;
             RenderFrame();
-            //_invalidated = true;
         }
-
-        //private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        //{
-            //_pollTimer.Stop();
-
-            // Handle user input, then poll their input for handling on the following frame
-            /*if (IsHandleCreated)
-            {
-                Invoke(new Action(() =>
-                {
-                    if (Focused)
-                    {
-                        HandleInput();
-                    }
-                }));
-            }
-
-            PollForInput();*/
-
-            /*if (_invalidated)
-            {
-                Invalidate();
-                _invalidated = false;
-            }
-
-            _pollTimer.Start();
-        }*/
 
         protected override void OnPaint(PaintEventArgs e)
         {
@@ -294,14 +272,22 @@ namespace TakoEngine.Game
             {
                 Resolution.Width = Width;
                 Resolution.Height = Height;
-                _renderManager?.ResizeResolution();
+
+                if (_renderManager != null && _renderManager.IsLoaded)
+                {
+                    _renderManager.ResizeResolution();
+                }
             }
 
             if (PanelSize != null)
             {
                 PanelSize.Width = Width;
                 PanelSize.Height = Height;
-                _renderManager?.ResizeWindow();
+
+                if (_renderManager != null && _renderManager.IsLoaded)
+                {
+                    _renderManager.ResizeWindow();
+                }
             }
         }
 
@@ -382,52 +368,6 @@ namespace TakoEngine.Game
             };
         }
 
-        private bool _isMouseHeld = false;
-        private Timer _mouseHeldTimer = new Timer(1000);
-
-        private void MouseHeldTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
-        {
-            _isMouseHeld = true;
-        }
-
-        /*protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
-        {
-            base.OnMouseDown(e);
-            //Console.WriteLine("MouseDown");
-
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
-            {
-                _mouseHeldTimer.Start();
-            }
-        }
-
-        protected override void OnMouseUp(System.Windows.Forms.MouseEventArgs e)
-        {
-            base.OnMouseUp(e);
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right)
-            {
-                _mouseHeldTimer.Stop();
-
-                if (_isMouseHeld)
-                {
-                    _isMouseHeld = false;
-                }
-                else
-                {
-                    SelectEntity(e.Location);
-                }
-            }
-        }*/
-
-        /*protected override void OnMouseWheel(System.Windows.Forms.MouseEventArgs e)
-        {
-            if (_gameState.Camera is OrthographicCamera camera)
-            {
-                camera.Width -= e.Delta * 0.01f;
-                _invalidated = true;
-            }
-        }*/
-
         public void Zoom(int wheelDelta)
         {
             if (_gameState.Camera is OrthographicCamera camera)
@@ -439,55 +379,17 @@ namespace TakoEngine.Game
 
         public void SelectEntity(Point coordinates)
         {
-            /*var point = PointToClient(System.Windows.Forms.Cursor.Position);
-            var mouseCoordinates = new Vector2(point.X - Location.X, Height - point.Y - Location.Y);*/
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
 
             RenderFrame();
-            //_renderManager.RenderEntityIDs(_gameState);
             var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
 
-            if (SelectedEntity == null || SelectedEntity.ID != id)
+            if ((SelectedEntity == null || SelectedEntity.ID != id) && !SelectionRenderer.IsReservedID(id))
             {
-                switch (id)
-                {
-                    case SelectionRenderer.RED_ID:
-                        IsSelectionTransforming = true;
-                        SelectionType = SelectionTypes.Red;
-                        break;
-
-                    case SelectionRenderer.GREEN_ID:
-                        IsSelectionTransforming = true;
-                        SelectionType = SelectionTypes.Green;
-                        break;
-
-                    case SelectionRenderer.BLUE_ID:
-                        IsSelectionTransforming = true;
-                        SelectionType = SelectionTypes.Blue;
-                        break;
-
-                    case SelectionRenderer.CYAN_ID:
-                        IsSelectionTransforming = true;
-                        SelectionType = SelectionTypes.Cyan;
-                        break;
-
-                    case SelectionRenderer.MAGENTA_ID:
-                        IsSelectionTransforming = true;
-                        SelectionType = SelectionTypes.Magenta;
-                        break;
-
-                    case SelectionRenderer.YELLOW_ID:
-                        IsSelectionTransforming = true;
-                        SelectionType = SelectionTypes.Yellow;
-                        break;
-
-                    default:
-                        //_invalidated = true;
-                        SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
-                        EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
-                        RenderFrame();
-                        break;
-                }
+                //_invalidated = true;
+                SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
+                EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
+                RenderFrame();
             }
         }
 
@@ -503,17 +405,6 @@ namespace TakoEngine.Game
         private void PollTimer2_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             // Handle user input, then poll their input for handling on the following frame
-            /*if (IsHandleCreated)
-            {
-                Invoke(new Action(() =>
-                {
-                    if (Focused)
-                    {
-                        
-                    }
-                }));
-            }*/
-
             HandleInput();
             PollForInput();
             //RenderFrame();
@@ -528,12 +419,18 @@ namespace TakoEngine.Game
         {
             IsDragging = false;
             _gameState._inputState.ClearState();
+            SelectionType = SelectionTypes.None;
             _pollTimer2.Stop();
         }
 
         private void HandleInput()
         {
             _invalidated = true;
+
+            if (_gameState._inputState.IsReleased(new Input(MouseButton.Left)))
+            {
+                SelectionType = SelectionTypes.None;
+            }
 
             if (_gameState._inputState.IsHeld(new Input(MouseButton.Left), new Input(MouseButton.Right)))
             {
@@ -551,6 +448,40 @@ namespace TakoEngine.Game
             }
             else
             {
+                if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)))
+                {
+                    if (SelectionType != SelectionTypes.None)
+                    {
+                        // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
+                        switch (TransformMode)
+                        {
+                            case TransformModes.Translate:
+                                HandleEntityTranslation();
+                                break;
+                            case TransformModes.Rotate:
+                                HandleEntityRotation();
+                                break;
+                            case TransformModes.Scale:
+                                HandleEntityScale();
+                                break;
+                        }
+
+                        _invalidated = true;
+                        //IsCursorVisible = false;
+
+                        Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
+                    }
+                    else
+                    {
+                        var coordinates = _gameState._inputState.MouseCoordinates;
+                        if (coordinates.HasValue)
+                        {
+                            var id = _renderManager.GetEntityIDFromPoint(coordinates.Value);
+                            SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
+                        }
+                    }
+                }
+
                 if (ViewType == ViewTypes.Perspective)
                 {
                     if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)))
@@ -598,33 +529,6 @@ namespace TakoEngine.Game
                         _invalidated = true;
                     }
                 }
-            }
-
-            if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)) && IsSelectionTransforming)
-            {
-                // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
-                switch (TransformMode)
-                {
-                    case TransformModes.Translate:
-                        HandleEntityTranslation();
-                        break;
-                    case TransformModes.Rotate:
-                        HandleEntityRotation();
-                        break;
-                    case TransformModes.Scale:
-                        HandleEntityScale();
-                        break;
-                }
-                
-                _invalidated = true;
-                //IsCursorVisible = false;
-                
-                Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
-            }
-            else
-            {
-                IsSelectionTransforming = false;
-                //IsCursorVisible = true;
             }
         }
 

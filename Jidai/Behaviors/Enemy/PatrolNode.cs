@@ -47,5 +47,7 @@ namespace Jidai.Behaviors.Enemy
 
             return BehaviorStatus.Running;
         }
+
+        public override void Reset() { }
     }
 }

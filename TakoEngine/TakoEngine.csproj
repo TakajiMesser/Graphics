@@ -106,6 +106,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\IStimulate.cs" />
     <Compile Include="Entities\IScale.cs" />
     <Compile Include="Entities\IRotate.cs" />
     <Compile Include="Entities\IEntity.cs" />
@@ -229,6 +230,7 @@
     <Compile Include="Scripting\Behaviors\BehaviorCompletedEventArgs.cs" />
     <Compile Include="Scripting\Behaviors\Behavior.cs" />
     <Compile Include="Scripting\Behaviors\Decorators\ConditionNode.cs" />
+    <Compile Include="Scripting\Behaviors\Decorators\RepeaterNode.cs" />
     <Compile Include="Scripting\Behaviors\Leaves\InlineLeafNode.cs" />
     <Compile Include="Scripting\Behaviors\Decorators\InlineConditionNode.cs" />
     <Compile Include="Scripting\Behaviors\Decorators\DecoratorNode.cs" />
@@ -237,17 +239,20 @@
     <Compile Include="Scripting\Behaviors\Composites\SequenceNode.cs" />
     <Compile Include="Scripting\Behaviors\Composites\CompositeNode.cs" />
     <Compile Include="Scripting\Behaviors\Node.cs" />
+    <Compile Include="Scripting\Meters\MeterTriggeredEventArgs.cs" />
+    <Compile Include="Scripting\Meters\Meter.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
     <Compile Include="Scripting\Properties\Property.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
     <Compile Include="Scripting\StimResponse\Response.cs" />
-    <Compile Include="Scripting\StimResponse\StimulusReceivedEventArgs.cs" />
+    <Compile Include="Scripting\StimResponse\StimulusTriggeredEventArgs.cs" />
     <Compile Include="Scripting\StimResponse\Stimulus.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Utilities\OpenTKExtensions.cs" />
+    <Compile Include="Utilities\QuaternionExtensions.cs" />
     <Compile Include="Utilities\VectorExtensions.cs" />
     <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />

@@ -10,10 +10,11 @@ using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Scripting.Behaviors;
+using TakoEngine.Scripting.StimResponse;
 
 namespace TakoEngine.Entities
 {
-    public class Actor : IEntity, ICollidable, IRotate, IScale
+    public class Actor : IEntity, IStimulate, ICollidable, IRotate, IScale
     {
         public int ID { get; set; }
         public string Name { get; private set; }
@@ -49,8 +50,10 @@ namespace TakoEngine.Entities
         }
 
         public Behavior Behaviors { get; set; }
+        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public InputMapping InputMapping { get; set; } = new InputMapping();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
+
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
 

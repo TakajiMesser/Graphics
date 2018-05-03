@@ -4,13 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TakoEngine.Scripting.StimResponse
+namespace TakoEngine.Scripting.Meters
 {
-    public enum Stimulus
+    public class MeterTriggeredEventArgs : EventArgs
     {
-        Player,
-        Guard,
-        Fire,
-        Water
+        
     }
 }

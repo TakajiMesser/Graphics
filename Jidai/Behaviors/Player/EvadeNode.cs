@@ -9,6 +9,7 @@ using OpenTK;
 using TakoEngine.Entities;
 using TakoEngine.Utilities;
 using System.Runtime.Serialization;
+using TakoEngine.Helpers;
 
 namespace Jidai.Behaviors.Player
 {
@@ -29,7 +30,7 @@ namespace Jidai.Behaviors.Player
 
             if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
             {
-                var evadeTranslation = context.GetTranslation(EvadeSpeed);
+                var evadeTranslation = GeometryHelper.GetTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
 
                 if (evadeTranslation != Vector3.Zero)
                 {
@@ -51,7 +52,7 @@ namespace Jidai.Behaviors.Player
 
             if (nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
             {
-                var evadeTranslation = context.GetTranslation(EvadeSpeed);
+                var evadeTranslation = GeometryHelper.GetTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
 
                 if (evadeTranslation != Vector3.Zero)
                 {
@@ -95,5 +96,7 @@ namespace Jidai.Behaviors.Player
 
             return BehaviorStatus.Failure;
         }
+
+        public override void Reset() { }
     }
 }

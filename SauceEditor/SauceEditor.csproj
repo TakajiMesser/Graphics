@@ -130,6 +130,9 @@
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Controls\Tools\ToolsWindow.xaml.cs">
+      <DependentUpon>ToolsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\UpDowns\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
@@ -164,6 +167,10 @@
     <Page Include="Controls\ProjectTree\FileNameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Tools\ToolsWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\UpDowns\NumericUpDown.xaml">
       <SubType>Designer</SubType>

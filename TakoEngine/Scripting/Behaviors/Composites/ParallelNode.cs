@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TakoEngine.Scripting.Behaviors.Composites
 {
+    /// <summary>
+    /// Ticks all children forward simultaneously. Returns failure as soon as one child fails. Returns success once all children have succeeded.
+    /// </summary>
     public class ParallelNode : CompositeNode
     {
         public ParallelNode(IEnumerable<Node> nodes) : base(nodes) { }

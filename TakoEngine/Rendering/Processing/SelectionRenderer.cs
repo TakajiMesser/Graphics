@@ -5,6 +5,7 @@ using System.IO;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Entities.Lights;
+using TakoEngine.Game;
 using TakoEngine.Helpers;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Buffers;
@@ -290,6 +291,29 @@ namespace TakoEngine.Rendering.Processing
             }
 
             return actors;
+        }
+
+        public static bool IsReservedID(int id) => id == RED_ID || id == GREEN_ID || id == BLUE_ID || id == CYAN_ID || id == MAGENTA_ID || id == YELLOW_ID;
+
+        public static SelectionTypes GetSelectionTypeFromID(int id)
+        {
+            switch (id)
+            {
+                case RED_ID:
+                    return SelectionTypes.Red;
+                case GREEN_ID:
+                    return SelectionTypes.Green;
+                case BLUE_ID:
+                    return SelectionTypes.Blue;
+                case CYAN_ID:
+                    return SelectionTypes.Cyan;
+                case MAGENTA_ID:
+                    return SelectionTypes.Magenta;
+                case YELLOW_ID:
+                    return SelectionTypes.Yellow;
+                default:
+                    return SelectionTypes.None;
+            }
         }
     }
 }

@@ -8,6 +8,7 @@ using TakoEngine.Physics.Raycasting;
 using OpenTK;
 using TakoEngine.Entities;
 using System.Runtime.Serialization;
+using TakoEngine.Helpers;
 
 namespace Jidai.Behaviors.Player
 {
@@ -32,7 +33,7 @@ namespace Jidai.Behaviors.Player
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = context.GetTranslation(speed);
+            var translation = GeometryHelper.GetTranslation(context.Camera, speed, context.InputState, context.InputMapping);
 
             if (context.InputState.IsHeld(context.InputMapping.In))
             {
@@ -67,5 +68,7 @@ namespace Jidai.Behaviors.Player
             context.Translation = translation;
             return BehaviorStatus.Success;
         }
+
+        public override void Reset() { }
     }
 }

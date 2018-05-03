@@ -6,45 +6,26 @@ using System.Text;
 using System.Threading.Tasks;
 using TakoEngine.Scripting.Behaviors;
 using TakoEngine.Scripting.Behaviors.Composites;
+using TakoEngine.Scripting.Behaviors.Decorators;
+using TakoEngine.Scripting.Meters;
 using TakoEngine.Scripting.Properties;
+using TakoEngine.Scripting.StimResponse;
 
 namespace Jidai.Behaviors.Enemy
 {
-    public class EnemyBehavior : Behavior, IAlertProperty
+    public class EnemyBehavior : Behavior
     {
         public const float WALK_SPEED = 0.1f;
+        public const float CHASE_SPEED = 0.15f;
         public const float VIEW_ANGLE = 1.0472f;
         public const float VIEW_DISTANCE = 5.0f;
         public const int FULL_ALERT_TICKS = 120;
         
-        public int Alertness
-        {
-            get => _alertness;
-            set
-            {
-                _alertness = value;
-
-                if (_alertness > 100)
-                {
-                    Alerted?.Invoke(this, new BehaviorInterruptedEventArgs(new ChaseNode(VIEW_ANGLE, VIEW_DISTANCE, "Player")));
-                }
-            }
-        }
-        public event EventHandler<BehaviorInterruptedEventArgs> Alerted;
-
-        private int _alertness = 0;
+        private Meter _alertMeter;
 
         public EnemyBehavior()
         {
-            var rootNode = new SelectorNode(
-                /*new RepeaterNode(
-                    new IsPlayerInSightNode(VIEW_ANGLE, VIEW_DISTANCE,
-                        new IsAtFullAlert(FULL_ALERT_TICKS,
-                            // TODO - Chase Player
-                            new InlineLeafNode(c => BehaviorStatus.Success)
-                        )
-                    )
-                ),*/
+            var rootNode = new RepeaterNode(
                 new SequenceNode(
                     new ParallelNode(
                         new MoveToNode(new Vector3(5.0f, 5.0f, -1.5f), WALK_SPEED),
@@ -67,14 +48,36 @@ namespace Jidai.Behaviors.Enemy
 
             RootStack.Push(rootNode);
 
-            Alerted += EnemyBehavior_Alerted;
+            _alertMeter = new Meter()
+            {
+                ResetOnTrigger = false,
+                TriggerValue = 120
+            };
+            _alertMeter.Triggered += AlertMeter_Triggered;
+
+            var response = new Response(Stimulus.Player)
+            {
+                TriggerOnContact = true,
+                TriggerOnSight = true,
+                SightAngle = 50.0f,
+                SightDistance = 20.0f
+            };
+            response.Triggered += Response_Triggered;
+            Responses.Add(response);
         }
 
-        private void EnemyBehavior_Alerted(object sender, BehaviorInterruptedEventArgs e)
+        private void AlertMeter_Triggered(object sender, MeterTriggeredEventArgs e)
         {
-            // When alerted, replace the root node with another node, in order to "interrupt" our current action
-            // HOWEVER, we need to keep a reference to the node that we WERE on before the interruption so that we can gracefully return
-            RootStack.Push(e.NewRootNode);
+            var newRoot = new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player");
+            RootStack.Push(newRoot);
+        }
+
+        private void Response_Triggered(object sender, StimulusTriggeredEventArgs e)
+        {
+            if (_alertMeter.Value < _alertMeter.TriggerValue)
+            {
+                _alertMeter.Increment();
+            }
         }
 
         public override BehaviorStatus Tick()

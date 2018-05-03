@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Linq;
 using TakoEngine.Entities;
 using TakoEngine.Physics.Raycasting;
@@ -8,12 +9,14 @@ namespace Jidai.Behaviors.Enemy
 {
     public class ChaseNode : Node
     {
+        public float Speed { get; set; }
         public float ViewAngle { get; set; }
         public float ViewDistance { get; set; }
         public string Target { get; set; }
 
-        public ChaseNode(float viewAngle, float viewDistance, string target)
+        public ChaseNode(float speed, float viewAngle, float viewDistance, string target)
         {
+            Speed = speed;
             ViewAngle = viewAngle;
             ViewDistance = viewDistance;
             Target = target;
@@ -25,10 +28,25 @@ namespace Jidai.Behaviors.Enemy
 
             if (player != null)
             {
-                var playerPosition = ((Actor)player.AttachedEntity).Model.Position;
+                var playerPosition = ((Actor)player.AttachedEntity).Position;
+                var difference = playerPosition - context.Actor.Position;
 
-                var playerDirection = playerPosition - context.Actor.Position;
-                float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
+                if (difference.Length < 3.0f)// == Vector3.Zero)
+                {
+                    return BehaviorStatus.Success;
+                }
+                else if (difference.Length < Speed)
+                {
+                    context.Translation = difference;
+                }
+                else
+                {
+                    context.Translation = difference.Normalized() * Speed;
+                }
+
+                return BehaviorStatus.Running;
+
+                /*float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
                 var angleDifference = (playerAngle - context.EulerRotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
                 if (angleDifference < -Math.PI)
@@ -47,21 +65,14 @@ namespace Jidai.Behaviors.Enemy
                             //return true;
                         }
                     }
-                }
+                }*/
             }
-
-            if (context.ContainsVariable("nAlertTicks"))
+            else
             {
-                int nAlertTicks = context.GetVariable<int>("nAlertTicks");
-
-                if (nAlertTicks > 0)
-                {
-                    nAlertTicks--;
-                    context.SetVariable("nAlertTicks", nAlertTicks);
-                }
+                return BehaviorStatus.Failure;
             }
-
-            return BehaviorStatus.Failure;
         }
+
+        public override void Reset() { }
     }
 }

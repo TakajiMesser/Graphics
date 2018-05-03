@@ -8,6 +8,7 @@ using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
 using TakoEngine.Inputs;
 using TakoEngine.Physics.Collision;
+using TakoEngine.Scripting.StimResponse;
 
 namespace TakoEngine.Scripting.Behaviors
 {
@@ -51,38 +52,6 @@ namespace TakoEngine.Scripting.Behaviors
             {
                 VariablesByName.Remove(name);
             }
-        }
-
-        public Vector3 GetTranslation(float speed)
-        {
-            Vector3 translation = new Vector3();
-
-            // Project the "Up" vector of the camera's view onto the XY plane, since that is what we restrict our movement translation to
-            var flattenedUp = Camera._viewMatrix.Up.Xy;
-            var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
-            var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
-
-            if (InputState.IsHeld(InputMapping.Forward))
-            {
-                translation += up.Normalized() * speed;
-            }
-
-            if (InputState.IsHeld(InputMapping.Left))
-            {
-                translation -= right.Normalized() * speed;
-            }
-
-            if (InputState.IsHeld(InputMapping.Backward))
-            {
-                translation -= up.Normalized() * speed;
-            }
-
-            if (InputState.IsHeld(InputMapping.Right))
-            {
-                translation += right.Normalized() * speed;
-            }
-
-            return translation;
         }
     }
 }

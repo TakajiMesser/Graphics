@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace TakoEngine.Scripting.Behaviors.Composites
 {
+    /// <summary>
+    /// Attempts to tick each child forward. Returns success once all children have finished. Returns failure if any child fails.
+    /// </summary>
     public class SequenceNode : CompositeNode
     {
         private int _currentIndex = 0;
@@ -21,18 +24,22 @@ namespace TakoEngine.Scripting.Behaviors.Composites
                     _currentIndex++;
                     if (_currentIndex >= Children.Count)
                     {
-                        _currentIndex = 0;
                         OnCompleted(new BehaviorCompletedEventArgs(BehaviorStatus.Success));
                         return BehaviorStatus.Success;
                     }
                     break;
                 case BehaviorStatus.Failure:
-                    _currentIndex = 0;
                     OnCompleted(new BehaviorCompletedEventArgs(BehaviorStatus.Failure));
                     return BehaviorStatus.Failure;
             }
 
             return BehaviorStatus.Running;
+        }
+
+        public override void Reset()
+        {
+            _currentIndex = 0;
+            base.Reset();
         }
     }
 }

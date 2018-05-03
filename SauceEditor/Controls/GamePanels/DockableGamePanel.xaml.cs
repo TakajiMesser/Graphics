@@ -35,55 +35,13 @@ namespace SauceEditor.Controls.GamePanels
         private bool _leftMouseButtonDown = false;
         private bool _rightMouseButtonDown = false;
 
-        public DockableGamePanel()
-        {
-            InitializeComponent();
-        }
-
+        public DockableGamePanel() => InitializeComponent();
         public DockableGamePanel(DockManager dockManager, ViewTypes viewType/*, GameState gameState*/) : base(dockManager)
         {
             InitializeComponent();
 
             _mouseHoldtimer.Elapsed += MouseHoldtimer_Elapsed;
             Panel.ViewType = viewType;
-            //_gameState = gameState;
-
-            /*switch (ViewType)
-            {
-                case ViewTypes.X:
-                    _camera = new OrthographicCamera("MainCamera", new TakoEngine.Outputs.Resolution((int)Width, (int)Height), 20.0f)
-                    {
-                        Position = Vector3.UnitX * -10.0f
-                    };
-                    _camera._viewMatrix.Up = Vector3.UnitZ;
-                    _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitX;
-                    break;
-                case ViewTypes.Y:
-                    _camera = new OrthographicCamera("MainCamera", new TakoEngine.Outputs.Resolution((int)Width, (int)Height), 20.0f)
-                    {
-                        Position = Vector3.UnitY * -10.0f
-                    };
-                    _camera._viewMatrix.Up = Vector3.UnitZ;
-                    _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
-                    break;
-                case ViewTypes.Z:
-                    _camera = new OrthographicCamera("MainCamera", new TakoEngine.Outputs.Resolution((int)Width, (int)Height), 20.0f)
-                    {
-                        Position = Vector3.UnitZ * 10.0f
-                    };
-                    _camera._viewMatrix.Up = Vector3.UnitY;
-                    _camera._viewMatrix.LookAt = _camera.Position - Vector3.UnitZ;
-                    break;
-            }*/
-
-            /*switch (ViewType)
-            {
-                case ViewTypes.Perspective:
-                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
-                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
-                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
-                    break;
-            }*/
 
             Panel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
             //Panel.TransformModeChanged += GamePanel_TransformModeChanged;
@@ -94,98 +52,9 @@ namespace SauceEditor.Controls.GamePanels
             Panel.MouseUp += Panel_MouseUp;
             //Panel.MouseMove += Panel_MouseMove;
 
-            //PanelHost.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
-            //PanelHost.MouseLeftButtonDown += PanelHost_MouseLeftButtonDown;
-            //PanelHost.MouseRightButtonDown += PanelHost_MouseRightButtonDown;
-            //PanelHost.MouseLeftButtonUp += PanelHost_MouseLeftButtonUp;
-            //PanelHost.MouseRightButtonUp += PanelHost_MouseRightButtonUp;
-
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
             Panel.RenderMode = RenderModes.Wireframe;
-        }
-
-        private void PanelHost_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Mouse.Capture(PanelHost);
-            _leftMouseButtonDown = true;
-
-            if (_rightMouseButtonDown)
-            {
-                if (!Panel.IsDragging)
-                {
-                    Panel.StartDrag();
-                }
-            }
-            else
-            {
-                _mouseHoldtimer.Start();
-            }
-        }
-
-        private void PanelHost_MouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            Mouse.Capture(PanelHost);
-            _rightMouseButtonDown = true;
-
-            _mouseHoldtimer.Stop();
-
-            if (!Panel.IsDragging)
-            {
-                Panel.StartDrag();
-            }
-        }
-
-        private void PanelHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            _leftMouseButtonDown = false;
-
-            //if (!_leftMouseButtonDown && !_rightMouseButtonDown)
-            if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
-            {
-                _mouseHoldtimer.Stop();
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    PanelHost.ReleaseMouseCapture();
-                    Panel.EndDrag();
-                    //Panel.Capture = false;
-                    //System.Windows.Forms.Cursor.Position = _cursorLocation;
-                    //System.Windows.Forms.Cursor.Show();
-                });
-
-                if (/*!Panel.IsDragging && */Panel.Loaded)
-                {
-                    var point = e.MouseDevice.GetPosition(PanelHost);
-                    //Panel.SelectEntity(point);
-                }
-            }
-        }
-
-        private void PanelHost_MouseRightButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            _rightMouseButtonDown = false;
-
-            //if (!_leftMouseButtonDown && !_rightMouseButtonDown)
-            if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
-            {
-                _mouseHoldtimer.Stop();
-
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    PanelHost.ReleaseMouseCapture();
-                    Panel.EndDrag();
-                    //Panel.Capture = false;
-                    //System.Windows.Forms.Cursor.Position = _cursorLocation;
-                    //System.Windows.Forms.Cursor.Show();
-                });
-
-                if (/*!Panel.IsDragging && */Panel.Loaded)
-                {
-                    var point = e.MouseDevice.GetPosition(PanelHost);
-                    //Panel.SelectEntity(point);
-                }
-            }
         }
 
         private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -201,7 +70,8 @@ namespace SauceEditor.Controls.GamePanels
                     {
                         if (!Panel.IsDragging)
                         {
-                            //_cursorLocation = System.Windows.Forms.Cursor.Position;
+                            _cursorLocation = System.Windows.Forms.Cursor.Position;
+                            System.Windows.Forms.Cursor.Hide();
                             Panel.StartDrag();
                         }
                     }
@@ -216,7 +86,8 @@ namespace SauceEditor.Controls.GamePanels
 
                     if (!Panel.IsDragging)
                     {
-                        //_cursorLocation = System.Windows.Forms.Cursor.Position;
+                        _cursorLocation = System.Windows.Forms.Cursor.Position;
+                        System.Windows.Forms.Cursor.Hide();
                         Panel.StartDrag();
                     }
                     break;
@@ -233,8 +104,8 @@ namespace SauceEditor.Controls.GamePanels
                 {
                     //Panel.Capture = true;
                     //System.Windows.Forms.Cursor.Clip = Rectangle.Empty;
-                    //_cursorLocation = System.Windows.Forms.Cursor.Position;
-                    //System.Windows.Forms.Cursor.Hide();
+                    _cursorLocation = System.Windows.Forms.Cursor.Position;
+                    System.Windows.Forms.Cursor.Hide();
                     Panel.Capture = true;
                     //Mouse.Capture(PanelHost);
                     Panel.StartDrag();
@@ -242,6 +113,8 @@ namespace SauceEditor.Controls.GamePanels
                 //Mouse.Capture(_previousCapture);
             });
         }
+
+        //private object _mouseLock = new object();
 
         private void Panel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
@@ -259,21 +132,24 @@ namespace SauceEditor.Controls.GamePanels
             if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
             {
                 _mouseHoldtimer.Stop();
+                _leftMouseButtonDown = false;
+                _rightMouseButtonDown = false;
 
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    Panel.Capture = false; //PanelHost.ReleaseMouseCapture();
-                    Panel.EndDrag();
-                    //Panel.Capture = false;
-                    //System.Windows.Forms.Cursor.Position = _cursorLocation;
-                    //System.Windows.Forms.Cursor.Show();
-                });
-
-                if (/*!Panel.IsDragging && */Panel.Loaded)
-                {
-                    var point = e.Location;
-                    Panel.SelectEntity(point);
-                }
+                //lock (_mouseLock)
+                //{
+                    if (Panel.IsDragging)
+                    {
+                        Panel.Capture = false; //PanelHost.ReleaseMouseCapture();
+                        System.Windows.Forms.Cursor.Show();
+                        System.Windows.Forms.Cursor.Position = _cursorLocation;
+                        Panel.EndDrag();
+                    }
+                    else if (Panel.IsLoaded)
+                    {
+                        var point = e.Location;
+                        Panel.SelectEntity(point);
+                    }
+                //}
             }
         }
 

@@ -33,5 +33,7 @@ namespace Jidai.Behaviors
 
             return BehaviorStatus.Running;
         }
+
+        public override void Reset() { }
     }
 }

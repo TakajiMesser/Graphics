@@ -30,5 +30,7 @@ namespace Jidai.Behaviors.Enemy
                 return false;
             }
         }
+
+        public override void Reset() { }
     }
 }

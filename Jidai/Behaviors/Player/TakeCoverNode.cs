@@ -44,5 +44,7 @@ namespace Jidai.Behaviors.Player
 
             return BehaviorStatus.Failure;
         }
+
+        public override void Reset() { }
     }
 }

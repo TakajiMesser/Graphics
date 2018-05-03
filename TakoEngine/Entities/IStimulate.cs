@@ -4,9 +4,8 @@ using TakoEngine.Scripting.StimResponse;
 
 namespace TakoEngine.Entities
 {
-    public interface IEntity
+    public interface IStimulate
     {
-        int ID { get; set; }
-        Vector3 Position { get; set; }
+        List<Stimulus> Stimuli { get; }
     }
 }

@@ -1,9 +1,15 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using TakoEngine.Entities;
+using TakoEngine.Physics.Collision;
+using TakoEngine.Physics.Raycasting;
 using TakoEngine.Scripting.Behaviors;
+using TakoEngine.Scripting.Meters;
+using TakoEngine.Utilities;
 
 namespace TakoEngine.Scripting.StimResponse
 {
@@ -11,56 +17,136 @@ namespace TakoEngine.Scripting.StimResponse
     {
         public Stimulus Stimulus { get; private set; }
 
+        public bool TriggerOnContact { get; set; }
+        public bool TriggerOnProximity { get; set; }
+        public bool TriggerOnSight { get; set; }
+
+        /// <summary>
+        /// The distance to check for proximity stimuli
+        /// </summary>
+        public double Radius { get; set; }
+
+        /// <summary>
+        /// The distance to check for sight stimuli
+        /// </summary>
+        public double SightDistance { get; set; }
+
+        /// <summary>
+        /// The angle to check for sight stimuli
+        /// </summary>
+        public double SightAngle { get; set; }
+
         /// <summary>
         /// How often to check for a received stimulus (in ticks)
         /// </summary>
-        public int CheckFrequency { get; set; } = 1;
+        public int CheckFrequency
+        {
+            get => _tickMeter.TriggerValue;
+            set => _tickMeter.TriggerValue = value;
+        }
 
-        public event EventHandler<StimulusReceivedEventArgs> StimulusReceived;
+        public event EventHandler<StimulusTriggeredEventArgs> Triggered;
 
-        private int _tick = 0;
+        private Meter _tickMeter = new Meter();
 
         public Response(Stimulus stimulus)
         {
             Stimulus = stimulus;
+            CheckFrequency = 1;
+            //_tickMeter.ResetOnTrigger = true;
         }
 
-        public void Tick(BehaviorContext context)
+        public virtual void Tick(BehaviorContext context)
         {
-            _tick++;
+            _tickMeter.Increment();
 
-            if (_tick >= CheckFrequency)
+            if (_tickMeter.IsTriggered)
             {
-                _tick = 0;
+                _tickMeter.Reset();
 
-                switch (Stimulus.StimType)
+                // Filter colliders by those that are stimuli, and those that aren't
+                var stimuliColliders = new List<Bounds>();
+
+                foreach (var collider in context.Colliders)
                 {
-                    case StimType.Contact:
-                        CheckForContactStimulus(context);
-                        break;
-                    case StimType.Radius:
-                        CheckForRadiusStimulus(context);
-                        break;
-                    case StimType.Sight:
-                        CheckForSightStimulus(context);
-                        break;
+                    if (collider.AttachedEntity is IStimulate stimulator && stimulator.Stimuli.Contains(Stimulus))
+                    {
+                        stimuliColliders.Add(collider);
+                    }
+                }
+
+                if (TriggerOnContact && HasContactStimulus(context.Actor, stimuliColliders))
+                {
+                    Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
+                }
+                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders))
+                {
+                    Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
+                }
+                else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.Colliders))
+                {
+                    Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
             }
         }
 
-        private void CheckForContactStimulus(BehaviorContext context)
+        private bool HasContactStimulus(Actor actor, IEnumerable<Bounds> stimuliColliders)
         {
-
+            foreach (var collider in stimuliColliders)
+            {
+                if (actor.Bounds.CollidesWith(collider))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
         }
 
-        private void CheckForRadiusStimulus(BehaviorContext context)
+        private bool HasProximityStimulus(Actor actor, IEnumerable<Bounds> stimuliColliders)
         {
+            foreach (var collider in stimuliColliders)
+            {
+                var distance = (actor.Bounds.Center - collider.Center).Length;
+                if (distance <= Radius)
+                {
+                    return true;
+                }
+            }
 
+            return false;
         }
 
-        private void CheckForSightStimulus(BehaviorContext context)
+        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<Bounds> stimuliColliders, IEnumerable<Bounds> colliders)
         {
+            foreach (var collider in stimuliColliders)
+            {
+                var stimulusDirection = (collider.Center - actor.Bounds.Center).Normalized();
+                //var stimulusQuaternion = Quaternion.FromEulerAngles(stimulusDirection);
 
+                stimulusDirection.Z = 0.0f;
+                //var actorDirection = actor.Rotation * Vector3.UnitX;
+                var actorDirection = Quaternion.FromEulerAngles(eulerRotation) * Vector3.UnitX;
+                var angleDifference = actorDirection.AngleBetween(stimulusDirection);
+                //var angleDifference = eulerRotation.AngleBetween(stimulusDirection);
+
+                //var angleDifference = actor.Rotation.AngleBetween(stimulusQuaternion);
+
+                if (UnitConversions.ToDegrees(Math.Abs(angleDifference)) <= SightAngle / 2.0f)
+                {
+                    // Perform a raycast to see if any other colliders obstruct our view of the stimulus
+                    // TODO - Filter colliders by their ability to obstruct vision
+                    if (Raycast.TryRaycast(new Ray3(actor.Position, stimulusDirection, (float)SightDistance), colliders, out RaycastHit hit))
+                    {
+                        if (hit.Collider == collider)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }

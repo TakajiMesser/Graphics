@@ -9,6 +9,7 @@ using OpenTK;
 using TakoEngine.Entities;
 using System.Runtime.Serialization;
 using TakoEngine.Physics.Collision;
+using TakoEngine.Helpers;
 
 namespace Jidai.Behaviors.Player
 {
@@ -42,7 +43,7 @@ namespace Jidai.Behaviors.Player
                     if (context.GetVariable<float>("coverDistance") < 0.1f)
                     {
                         // Handle movement while in cover here
-                        var translation = context.GetTranslation(CoverSpeed);
+                        var translation = GeometryHelper.GetTranslation(context.Camera, CoverSpeed, context.InputState, context.InputMapping);
 
                         if (translation != Vector3.Zero)
                         {
@@ -73,5 +74,7 @@ namespace Jidai.Behaviors.Player
 
             return BehaviorStatus.Failure;
         }
+
+        public override void Reset() { }
     }
 }

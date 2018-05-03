@@ -37,6 +37,8 @@ namespace Jidai.GameObjects
             BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH;
             HasCollision = true;
 
+            Stimuli.Add(TakoEngine.Scripting.StimResponse.Stimulus.Player);
+
             SaveBehaviorTree();
         }
 
@@ -44,37 +46,6 @@ namespace Jidai.GameObjects
         {
             var behavior = new PlayerBehavior();
             behavior.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
-
-            /*var rootNode = new SelectorNode(
-                new SelectorNode(
-                    new SelectorNode(
-                        new EvadeNode(EVADE_SPEED, EVADE_TICK_COUNT),
-                        new SelectorNode(
-                            new InlineConditionNode(c => c.InputState.IsPressed(c.InputMapping.Cover),
-                                new TakeCoverNode(COVER_SPEED, ENTER_COVER_SPEED, COVER_DISTANCE)
-                            ),
-                            new InlineConditionNode(c => c.InputState.IsHeld(c.InputMapping.Cover),
-                                new CoverNode(COVER_SPEED, ENTER_COVER_SPEED, COVER_DISTANCE)
-                            ),
-                            new InlineConditionNode(c => c.InputState.IsReleased(c.InputMapping.Cover),
-                                new InlineLeafNode(c =>
-                                {
-                                    c.RemoveVariableIfExists("coverDirection");
-                                    c.RemoveVariableIfExists("coverDistance");
-
-                                    return BehaviorStatuses.Success;
-                                })
-                            )
-                        )
-                    ),
-                    new SequenceNode(
-                        new MoveNode(RUN_SPEED, CREEP_SPEED, WALK_SPEED),
-                        new TurnNode()
-                    )
-                )
-            );
-
-            rootNode.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);*/
         }
     }
 }

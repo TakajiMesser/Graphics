@@ -48,7 +48,18 @@ namespace TakoEngine.Physics.Collision
 
         public override bool CollidesWith(Vector3 point) => (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);
 
-        public override bool CollidesWith(Bounds collider) => throw new NotImplementedException();
+        public override bool CollidesWith(Bounds collider)
+        {
+            switch (collider)
+            {
+                case BoundingCircle c:
+                    return CollidesWith(c);
+                case BoundingBox b:
+                    return CollidesWith(b);
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         public override bool CollidesWith(BoundingCircle boundingCircle) => HasCollision(boundingCircle, this);
 

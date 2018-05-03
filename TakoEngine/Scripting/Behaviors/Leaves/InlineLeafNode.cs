@@ -16,5 +16,7 @@ namespace TakoEngine.Scripting.Behaviors.Leaves
         }
 
         public override BehaviorStatus Tick(BehaviorContext context) => Action(context);
+
+        public override void Reset() { }
     }
 }

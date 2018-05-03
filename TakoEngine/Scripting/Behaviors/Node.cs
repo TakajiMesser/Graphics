@@ -13,5 +13,7 @@ namespace TakoEngine.Scripting.Behaviors
         protected virtual void OnCompleted(BehaviorCompletedEventArgs e) => Completed?.Invoke(this, e);
 
         public abstract BehaviorStatus Tick(BehaviorContext context);
+
+        public abstract void Reset();
     }
 }
