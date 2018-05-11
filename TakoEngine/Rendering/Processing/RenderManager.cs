@@ -172,6 +172,7 @@ namespace TakoEngine.Rendering.Processing
             _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
+            _wireframeRenderer.RenderGridLines(gameState.Camera);
             _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
             //GL.Disable(EnableCap.DepthTest);

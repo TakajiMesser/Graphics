@@ -3,6 +3,7 @@
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+uniform float cameraWidth;
 uniform vec3 cameraPosition;
 
 in vec2 vPosition;

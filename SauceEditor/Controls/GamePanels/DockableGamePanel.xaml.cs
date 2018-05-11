@@ -22,11 +22,11 @@ namespace SauceEditor.Controls.GamePanels
     /// </summary>
     public partial class DockableGamePanel : DockableContent
     {
-        public const double MOUSE_HOLD_MILLISECONDS = 500;
+        public const double MOUSE_HOLD_MILLISECONDS = 250;
 
         public ViewTypes ViewType => Panel.ViewType;
 
-        public event EventHandler<CommandEventArgs> CommandExecuted;
+        //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
 
         private System.Drawing.Point _cursorLocation;
@@ -48,13 +48,58 @@ namespace SauceEditor.Controls.GamePanels
             Panel.ChangeCursorVisibility += GamePanel_ChangeCursorVisibility;
 
             Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
-            Panel.MouseDown += Panel_MouseDown;
-            Panel.MouseUp += Panel_MouseUp;
+            //Panel.MouseDown += Panel_MouseDown;
+            //Panel.MouseUp += Panel_MouseUp;
             //Panel.MouseMove += Panel_MouseMove;
 
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
             Panel.RenderMode = RenderModes.Wireframe;
+        }
+
+        private void PanelHost_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _leftMouseButtonDown = true;
+            if (Mouse.RightButton != MouseButtonState.Pressed)
+            {
+                _mouseHoldtimer.Start();
+            }
+        }
+
+        private void PanelHost_PreviewMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _rightMouseButtonDown = true;
+
+            _mouseHoldtimer.Stop();
+            BeginDrag();
+        }
+
+        private void PanelHost_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _leftMouseButtonDown = false;
+            _mouseHoldtimer.Stop();
+        }
+
+        private void PanelHost_PreviewMouseRightButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            _rightMouseButtonDown = false;
+        }
+
+        private void BeginDrag()
+        {
+            _cursorLocation = System.Windows.Forms.Cursor.Position;
+            System.Windows.Forms.Cursor.Hide();
+            Panel.Capture = true;
+            //Mouse.Capture(PanelHost);
+            Panel.StartDrag();
+        }
+
+        private void EndDrag()
+        {
+            Panel.Capture = false; //PanelHost.ReleaseMouseCapture();
+            System.Windows.Forms.Cursor.Show();
+            System.Windows.Forms.Cursor.Position = _cursorLocation;
+            Panel.EndDrag();
         }
 
         private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -64,7 +109,7 @@ namespace SauceEditor.Controls.GamePanels
             switch (e.Button)
             {
                 case System.Windows.Forms.MouseButtons.Left:
-                    _leftMouseButtonDown = true;
+                    //_leftMouseButtonDown = true;
 
                     if (_rightMouseButtonDown)
                     {
@@ -121,7 +166,7 @@ namespace SauceEditor.Controls.GamePanels
             switch (e.Button)
             {
                 case System.Windows.Forms.MouseButtons.Left:
-                    _leftMouseButtonDown = false;
+                    //_leftMouseButtonDown = false;
                     break;
                 case System.Windows.Forms.MouseButtons.Right:
                     _rightMouseButtonDown = false;
@@ -132,7 +177,7 @@ namespace SauceEditor.Controls.GamePanels
             if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
             {
                 _mouseHoldtimer.Stop();
-                _leftMouseButtonDown = false;
+                //_leftMouseButtonDown = false;
                 _rightMouseButtonDown = false;
 
                 //lock (_mouseLock)
@@ -240,23 +285,6 @@ namespace SauceEditor.Controls.GamePanels
                 }
             });
         }*/
-
-        protected override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            e.Handled = true;
-            //base.OnMouseUp(e);
-        }
-
-        protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
-        {
-            if (!Panel.IsCursorVisible || Panel.IsCameraMoving)
-            {
-                System.Windows.Forms.Cursor.Position = _cursorLocation;
-            }
-
-            e.Handled = true;
-            //base.OnMouseLeave(e);
-        }
 
         protected override void OnInitialized(EventArgs e)
         {

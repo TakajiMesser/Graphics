@@ -167,6 +167,7 @@ namespace TakoEngine.Rendering.Processing
             _gridProgram.Use();
 
             camera.SetUniforms(_gridProgram);
+            //_gridProgram.SetUniform("cameraWidth", camera.);
             _gridProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexArray.Bind();

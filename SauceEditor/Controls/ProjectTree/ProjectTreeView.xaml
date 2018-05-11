@@ -22,8 +22,9 @@
         <RoutedUICommand x:Key="DeleteCommand" Text="Delete"/>
         <RoutedUICommand x:Key="RenameCommand" Text="Rename"/>
     </Window.Resources>
-    <Grid>
-        <TreeView Name="Tree">
+    <StackPanel Orientation="Vertical">
+        <Label Name="ProjectType" FontSize="14"/>
+        <TreeView Name="Tree" BorderBrush="Transparent">
             <TreeView.CommandBindings>
                 <CommandBinding Command="{StaticResource AddMapCommand}" CanExecute="AddMapCommand_CanExecute" Executed="AddMapCommand_Executed" />
                 <CommandBinding Command="{StaticResource AddModelCommand}" CanExecute="AddModelCommand_CanExecute" Executed="AddModelCommand_Executed" />
@@ -36,7 +37,7 @@
                 <CommandBinding Command="{StaticResource OpenBehaviorCommand}" CanExecute="OpenBehaviorCommand_CanExecute" Executed="OpenBehaviorCommand_Executed" />
                 <CommandBinding Command="{StaticResource OpenTextureCommand}" CanExecute="OpenTextureCommand_CanExecute" Executed="OpenTextureCommand_Executed" />
                 <CommandBinding Command="{StaticResource OpenAudioCommand}" CanExecute="OpenAudioCommand_CanExecute" Executed="OpenAudioCommand_Executed" />
-                
+
                 <CommandBinding Command="{StaticResource ExcludeCommand}" CanExecute="ExcludeCommand_CanExecute" Executed="ExcludeCommand_Executed" />
                 <CommandBinding Command="{StaticResource DeleteCommand}" CanExecute="DeleteCommand_CanExecute" Executed="DeleteCommand_Executed" />
                 <CommandBinding Command="{StaticResource RenameCommand}" CanExecute="RenameCommand_CanExecute" Executed="RenameCommand_Executed" />
@@ -94,5 +95,5 @@
                 </ContextMenu>
             </TreeView.Resources>
         </TreeView>
-    </Grid>
+    </StackPanel>
 </dock:DockableContent>

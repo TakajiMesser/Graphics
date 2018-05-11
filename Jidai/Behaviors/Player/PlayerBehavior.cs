@@ -19,7 +19,9 @@ namespace Jidai.Behaviors.Player
         public const float COVER_DISTANCE = 5.0f;
         public const int EVADE_TICK_COUNT = 20;
 
-        public PlayerBehavior()
+        public PlayerBehavior() : base() { }
+
+        protected override void SetRootNodes()
         {
             var rootNode = new RepeaterNode(
                 new SelectorNode(
@@ -36,17 +38,6 @@ namespace Jidai.Behaviors.Player
             RootStack.Push(rootNode);
         }
 
-        public override BehaviorStatus Tick()
-        {
-            // Check if player is in line-of-sight
-            // If yes, increment the Alertness Property. If this Property rises above a threshold, fire the Alerted event.
-
-            // Continue patrolling
-            return base.Tick();
-            //var root = RootStack.Peek();
-            //return root.Tick(Context);
-
-            //return BehaviorStatus.Success;
-        }
+        protected override void SetResponses() { }
     }
 }

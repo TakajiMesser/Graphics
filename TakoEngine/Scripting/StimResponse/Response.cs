@@ -128,11 +128,12 @@ namespace TakoEngine.Scripting.StimResponse
                 //var actorDirection = actor.Rotation * Vector3.UnitX;
                 var actorDirection = Quaternion.FromEulerAngles(eulerRotation) * Vector3.UnitX;
                 var angleDifference = actorDirection.AngleBetween(stimulusDirection);
+                var angleDegrees = UnitConversions.ToDegrees(Math.Abs(angleDifference));
                 //var angleDifference = eulerRotation.AngleBetween(stimulusDirection);
 
                 //var angleDifference = actor.Rotation.AngleBetween(stimulusQuaternion);
 
-                if (UnitConversions.ToDegrees(Math.Abs(angleDifference)) <= SightAngle / 2.0f)
+                if (angleDegrees <= SightAngle / 2.0f)
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the stimulus
                     // TODO - Filter colliders by their ability to obstruct vision

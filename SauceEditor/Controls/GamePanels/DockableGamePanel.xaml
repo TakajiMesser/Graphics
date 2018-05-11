@@ -9,12 +9,23 @@
         mc:Ignorable="d"
         Loaded="OnLoaded">
     <DockPanel Name="MainDock">
+        <!--<DockPanel.Resources>
+            <Style x:Key="FocusBorder" TargetType="{x:Type Border}">
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Setter Property="BorderBrush" Value="Yellow" />
+                        <Setter Property="BorderThickness" Value="1" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Resources>-->
         <ToolBar DockPanel.Dock="Top">
             <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
             <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
             <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>
         </ToolBar>
-        <WindowsFormsHost x:Name="PanelHost">
+        <WindowsFormsHost x:Name="PanelHost" Focusable="True" PreviewMouseLeftButtonDown="PanelHost_PreviewMouseLeftButtonDown" PreviewMouseRightButtonDown="PanelHost_PreviewMouseRightButtonDown" PreviewMouseLeftButtonUp="PanelHost_PreviewMouseLeftButtonUp" PreviewMouseRightButtonUp="PanelHost_PreviewMouseRightButtonUp">
             <tako:GamePanel x:Name="Panel" Dock="Fill"></tako:GamePanel>
         </WindowsFormsHost>
     </DockPanel>

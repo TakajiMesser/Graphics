@@ -15,6 +15,9 @@ namespace TakoEngine.Scripting.Meters
 
         public event EventHandler<MeterTriggeredEventArgs> Triggered;
 
+        public Meter() { }
+        public Meter(int triggerValue) => TriggerValue = triggerValue;
+
         public void Increment(int amount = 1)
         {
             Value += amount;

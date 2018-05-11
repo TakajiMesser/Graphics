@@ -169,7 +169,7 @@ namespace TakoEngine.Maps
                 TriangleIndices = triangleIndices
             };
 
-            return new MapBrush()
+            /*return new MapBrush()
             {
                 Vertices = new List<Vertex>
                 {
@@ -187,7 +187,7 @@ namespace TakoEngine.Maps
                 {
                     6, 7, 4, 7, 4, 5, 3, 1, 7, 1, 7, 5, 2, 3, 6, 3, 6, 7, 0, 1, 2, 1, 2, 3, 0, 2, 4, 2, 4, 6, 4, 5, 0, 5, 0, 1
                 }
-            };
+            };*/
         }
     }
 }

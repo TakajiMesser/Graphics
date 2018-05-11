@@ -15,8 +15,17 @@ namespace TakoEngine.Scripting.Behaviors
         public BehaviorContext Context { get; private set; } = new BehaviorContext();
         public List<Response> Responses { get; private set; } = new List<Response>();
 
+        public Behavior()
+        {
+            SetRootNodes();
+            SetResponses();
+        }
+
         [OnDeserialized]
         private void OnDeserialized(StreamingContext c) => Context = new BehaviorContext();
+
+        protected abstract void SetRootNodes();
+        protected abstract void SetResponses();
 
         public virtual BehaviorStatus Tick()
         {

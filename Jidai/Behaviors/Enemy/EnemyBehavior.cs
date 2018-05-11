@@ -21,9 +21,15 @@ namespace Jidai.Behaviors.Enemy
         public const float VIEW_DISTANCE = 5.0f;
         public const int FULL_ALERT_TICKS = 120;
         
-        private Meter _alertMeter;
+        private Meter _alertMeter = new Meter(120);
 
-        public EnemyBehavior()
+        public EnemyBehavior() : base()
+        {
+            _alertMeter.ResetOnTrigger = false;
+            _alertMeter.Triggered += AlertMeter_Triggered;
+        }
+
+        protected override void SetRootNodes()
         {
             var rootNode = new RepeaterNode(
                 new SequenceNode(
@@ -47,14 +53,10 @@ namespace Jidai.Behaviors.Enemy
             );
 
             RootStack.Push(rootNode);
+        }
 
-            _alertMeter = new Meter()
-            {
-                ResetOnTrigger = false,
-                TriggerValue = 120
-            };
-            _alertMeter.Triggered += AlertMeter_Triggered;
-
+        protected override void SetResponses()
+        {
             var response = new Response(Stimulus.Player)
             {
                 TriggerOnContact = true,
@@ -78,19 +80,6 @@ namespace Jidai.Behaviors.Enemy
             {
                 _alertMeter.Increment();
             }
-        }
-
-        public override BehaviorStatus Tick()
-        {
-            // Check if player is in line-of-sight
-            // If yes, increment the Alertness Property. If this Property rises above a threshold, fire the Alerted event.
-
-            // Continue patrolling
-            return base.Tick();
-            //var root = RootStack.Peek();
-            //return root.Tick(Context);
-
-            //return BehaviorStatus.Success;
         }
     }
 }

@@ -6,6 +6,7 @@ layout(triangle_strip, max_vertices = 4) out;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+uniform float cameraWidth;
 uniform vec3 cameraPosition;
 
 void main()

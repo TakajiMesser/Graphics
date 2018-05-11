@@ -91,9 +91,8 @@ namespace TakoEngine.Rendering.Shaders
                 int iLocation = GetUniformLocation(name + "[" + i + "]");
                 GL.UniformMatrix4(iLocation, false, ref matrices[i]);
             }
-            return;
 
-            int location = GetUniformLocation(name);
+            /*int location = GetUniformLocation(name);
             float[] values = new float[16 * matrices.Length];
 
             for (var i = 0; i < matrices.Length; i++)
@@ -115,7 +114,7 @@ namespace TakoEngine.Rendering.Shaders
                 }
             }
 
-            GL.UniformMatrix4(location, matrices.Length, true, values);
+            GL.UniformMatrix4(location, matrices.Length, true, values);*/
         }
 
         public void SetUniform(string name, Vector2 vector)

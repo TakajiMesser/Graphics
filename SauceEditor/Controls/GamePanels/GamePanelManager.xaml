@@ -8,7 +8,7 @@
              xmlns:local="clr-namespace:SauceEditor.Controls.GamePanels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <DockPanel Name="MainDock">
+    <DockPanel Name="MainDock" PreviewKeyDown="MainDock_PreviewKeyDown">
         <ToolBar DockPanel.Dock="Top">
             <Button Name="TranslateButton" Content="Translate" Click="TranslateButton_Click"/>
             <Button Name="RotateButton" Content="Rotate" Click="RotateButton_Click"/>

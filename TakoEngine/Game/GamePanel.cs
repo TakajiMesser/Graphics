@@ -49,8 +49,8 @@ namespace TakoEngine.Game
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
-        public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
-        public event EventHandler<TransformModeEventArgs> TransformModeChanged;
+        //public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
+        //public event EventHandler<TransformModeEventArgs> TransformModeChanged;
 
         private Map _map;
         private GameState _gameState;
@@ -96,6 +96,44 @@ namespace TakoEngine.Game
             //_pollTimer.Elapsed += PollTimer_Elapsed;
             _pollTimer2.Interval = 16.67;
             _pollTimer2.Elapsed += PollTimer2_Elapsed;
+        }
+
+        public void CenterView()
+        {
+            if (_gameState != null && SelectedEntity != null)
+            {
+                switch (ViewType)
+                {
+                    case ViewTypes.Perspective:
+                        break;
+                    case ViewTypes.X:
+                        _gameState.Camera.Position = new Vector3()
+                        {
+                            X = _gameState.Camera.Position.X,
+                            Y = SelectedEntity.Position.Y,
+                            Z = SelectedEntity.Position.Z
+                        };
+                        break;
+                    case ViewTypes.Y:
+                        _gameState.Camera.Position = new Vector3()
+                        {
+                            X = SelectedEntity.Position.X,
+                            Y = _gameState.Camera.Position.Y,
+                            Z = SelectedEntity.Position.Z
+                        };
+                        break;
+                    case ViewTypes.Z:
+                        _gameState.Camera.Position = new Vector3()
+                        {
+                            X = SelectedEntity.Position.X,
+                            Y = SelectedEntity.Position.Y,
+                            Z = _gameState.Camera.Position.Z
+                        };
+                        break;
+                }
+
+                _invalidated = true;
+            }
         }
 
         public void LoadFromModel(string modelPath)

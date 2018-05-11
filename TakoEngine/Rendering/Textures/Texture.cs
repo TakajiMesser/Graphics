@@ -268,7 +268,7 @@ namespace TakoEngine.Rendering.Textures
                     //return LoadFromTGA(path, enableMipMap, enableAnisotrophy);
                 default:
                     return null;
-                    var image = DevILSharp.Image.Load(path);
+                    /*var image = DevILSharp.Image.Load(path);
                     var texture = new Texture(image.Width, image.Height, 1)
                     {
                         Target = TextureTarget.Texture2D,
@@ -296,7 +296,7 @@ namespace TakoEngine.Rendering.Textures
 
                     image.Dispose();
 
-                    return texture;
+                    return texture;*/
             }
         }
 
@@ -398,11 +398,11 @@ namespace TakoEngine.Rendering.Textures
 
                 /*switch (image.PixelFormat)
                 {
-                    case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:*/
+                    case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
                         texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
                         texture.PixelFormat = PixelFormat.ColorIndex;
                         texture.PixelType = PixelType.Bitmap;
-                        /*break;
+                        break;
                     case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
                         texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
                         texture.PixelFormat = PixelFormat.Bgr;

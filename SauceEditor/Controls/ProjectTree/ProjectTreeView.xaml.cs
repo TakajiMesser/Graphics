@@ -35,6 +35,17 @@ namespace SauceEditor.Controls.ProjectTree
         public ProjectTreeView()
         {
             InitializeComponent();
+            ClearProject();
+        }
+
+        public void ClearProject()
+        {
+            _projectPath = null;
+            _project = null;
+
+            ProjectType.Content = "No Files to Show.";
+
+            Tree.Items.Clear();
         }
 
         public void Add(TreeViewItem item)
@@ -47,12 +58,57 @@ namespace SauceEditor.Controls.ProjectTree
             _project.Save(_projectPath);
         }
 
-        public void OpenProject(string filePath)
+        public void OpenMap(string filePath)
         {
+            ClearProject();
+
             _projectPath = filePath;
             _project = GameProject.Load(filePath);
+            ProjectType.Content = "Map";
 
-            Tree.Items.Clear();
+            var root = new TreeViewItem()
+            {
+                Header = Path.GetFileNameWithoutExtension(filePath),
+                IsExpanded = true
+            };
+
+            var maps = new TreeViewItem()
+            {
+                Header = "Maps",
+                IsExpanded = true
+            };
+
+            maps.MouseRightButtonDown += (s, args) =>
+            {
+                var item = s as TreeViewItem;
+                item.IsSelected = true;
+                item.ContextMenu = Tree.FindResource("MapsMenu") as ContextMenu;
+            };
+
+            var map = new TreeViewItem()
+            {
+                Header = Path.GetFileName(filePath)
+            };
+
+            map.MouseDoubleClick += (s, args) => MapSelected?.Invoke(this, new ItemSelectedEventArgs(filePath));
+            map.MouseRightButtonDown += (s, args) =>
+            {
+                var item = s as TreeViewItem;
+                item.IsSelected = true;
+                item.ContextMenu = Tree.FindResource("MapMenu") as ContextMenu;
+            };
+            maps.Items.Add(map);
+
+            root.Items.Add(maps);
+        }
+
+        public void OpenProject(string filePath)
+        {
+            ClearProject();
+
+            _projectPath = filePath;
+            _project = GameProject.Load(filePath);
+            ProjectType.Content = "Project";
 
             var root = new TreeViewItem()
             {

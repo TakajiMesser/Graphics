@@ -126,12 +126,22 @@ namespace SauceEditor.Controls.GamePanels
             panel.Invalidate();
         }
 
-        protected override void OnKeyDown(KeyEventArgs e)
+        private void MainDock_PreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Space)
+            switch (e.Key)
             {
-                TransformMode = (TransformModes)((int)(TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length);
+                case Key.Space:
+                    TransformMode = (TransformModes)((int)(TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length);
+                    break;
+                case Key.Home:
+                    _perspectiveView?.Panel.CenterView();
+                    _xView?.Panel.CenterView();
+                    _yView?.Panel.CenterView();
+                    _zView?.Panel.CenterView();
+                    break;
             }
+
+            e.Handled = true;
         }
 
         public void Open(string mapPath)
@@ -154,7 +164,8 @@ namespace SauceEditor.Controls.GamePanels
 
             _perspectiveView = new DockableGamePanel(MainDockManager, ViewTypes.Perspective)
             {
-                Title = "Perspective"
+                Title = "Perspective",
+                Focusable = true
             };
             _perspectiveView.Panel.LoadFromMap(mapPath);
             //_perspectiveView.LoadGameState(_gameState, _map);
@@ -181,7 +192,8 @@ namespace SauceEditor.Controls.GamePanels
 
             _xView = new DockableGamePanel(MainDockManager, ViewTypes.X)
             {
-                Title = "X"
+                Title = "X",
+                Focusable = true
             };
             //_xView.Panel.LoadFromMap(_map);
             _xView.Panel.LoadFromMap(mapPath);
@@ -209,7 +221,8 @@ namespace SauceEditor.Controls.GamePanels
 
             _yView = new DockableGamePanel(MainDockManager, ViewTypes.Y)
             {
-                Title = "Y"
+                Title = "Y",
+                Focusable = true
             };
             //_yView.Panel.LoadFromMap(_map);
             _yView.Panel.LoadFromMap(mapPath);
@@ -237,7 +250,8 @@ namespace SauceEditor.Controls.GamePanels
 
             _zView = new DockableGamePanel(MainDockManager, ViewTypes.Z)
             {
-                Title = "Z"
+                Title = "Z",
+                Focusable = true
             };
             //_zView.Panel.LoadFromMap(_map);
             _zView.Panel.LoadFromMap(mapPath);
