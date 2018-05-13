@@ -24,8 +24,10 @@
             <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
             <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
             <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>
+            <Separator/>
+            <ToggleButton Name="GridButton" Content="Grid" Checked="GridButton_Checked" Unchecked="GridButton_Unchecked"/>
         </ToolBar>
-        <WindowsFormsHost x:Name="PanelHost" Focusable="True" PreviewMouseLeftButtonDown="PanelHost_PreviewMouseLeftButtonDown" PreviewMouseRightButtonDown="PanelHost_PreviewMouseRightButtonDown" PreviewMouseLeftButtonUp="PanelHost_PreviewMouseLeftButtonUp" PreviewMouseRightButtonUp="PanelHost_PreviewMouseRightButtonUp">
+        <WindowsFormsHost x:Name="PanelHost">
             <tako:GamePanel x:Name="Panel" Dock="Fill"></tako:GamePanel>
         </WindowsFormsHost>
     </DockPanel>

@@ -110,7 +110,6 @@ namespace TakoEngine.Helpers
         public static string WIREFRAME_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.geom";
         public static string WIREFRAME_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\wireframe.frag";
         public static string GRID_VERTEX_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\grid.vert";
-        public static string GRID_GEOMETRY_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\grid.geom";
         public static string GRID_FRAGMENT_SHADER_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Rendering\Shaders\Wireframe\grid.frag";
 
         #endregion

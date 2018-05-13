@@ -9,6 +9,7 @@ using TakoEngine.Entities.Models;
 using TakoEngine.Helpers;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Buffers;
+using TakoEngine.Rendering.Matrices;
 using TakoEngine.Rendering.Meshes;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
@@ -20,6 +21,8 @@ namespace TakoEngine.Rendering.Processing
     {
         public float LineThickness { get; set; } = 0.01f;
         public float SelectedLineThickness { get; set; } = 0.02f;
+        public float GridLength { get; set; } = 100.0f;
+        public Quaternion GridRotation { get; set; } = Quaternion.Identity;
 
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
@@ -29,8 +32,7 @@ namespace TakoEngine.Rendering.Processing
         private ShaderProgram _gridProgram;
 
         private FrameBuffer _frameBuffer = new FrameBuffer();
-        private VertexArray<Simple2DVertex> _vertexArray = new VertexArray<Simple2DVertex>();
-        private VertexBuffer<Simple2DVertex> _vertexBuffer = new VertexBuffer<Simple2DVertex>();
+        private SimpleMesh _gridSquare;
 
         protected override void LoadPrograms()
         {
@@ -48,7 +50,6 @@ namespace TakoEngine.Rendering.Processing
 
             _gridProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, File.ReadAllText(FilePathHelper.GRID_VERTEX_SHADER_PATH)),
-                //new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.GRID_GEOMETRY_SHADER_PATH)),
                 new Shader(ShaderType.FragmentShader, File.ReadAllText(FilePathHelper.GRID_FRAGMENT_SHADER_PATH))
             );
         }
@@ -107,15 +108,7 @@ namespace TakoEngine.Rendering.Processing
             _frameBuffer.AttachAttachments();
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
 
-            _vertexBuffer.Bind();
-            _vertexArray.Load(_gridProgram);
-            _vertexBuffer.Unbind();
-
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, 1.0f)));
-            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, 1.0f)));
-            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, -1.0f)));
-            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, -1.0f)));
+            _gridSquare = SimpleMesh.LoadFromFile(FilePathHelper.SQUARE_MESH_PATH, _gridProgram);
         }
 
         public void BindForWriting()
@@ -167,17 +160,14 @@ namespace TakoEngine.Rendering.Processing
             _gridProgram.Use();
 
             camera.SetUniforms(_gridProgram);
-            //_gridProgram.SetUniform("cameraWidth", camera.);
-            _gridProgram.SetUniform("cameraPosition", camera.Position);
 
-            _vertexArray.Bind();
-            _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
+            var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
+            _gridProgram.SetUniform("modelMatrix", model);
 
-            _vertexBuffer.DrawQuads();
+            _gridProgram.SetUniform("thickness", 0.02f);
+            _gridProgram.SetUniform("length", GridLength);
 
-            _vertexArray.Unbind();
-            _vertexBuffer.Unbind();
+            _gridSquare.Draw();
         }
 
         public void SelectionPass(Camera camera, IEntity entity)

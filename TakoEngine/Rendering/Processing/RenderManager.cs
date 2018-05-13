@@ -29,6 +29,7 @@ namespace TakoEngine.Rendering.Processing
         public Resolution WindowSize { get; private set; }
         public double Frequency { get; internal set; }
         public bool IsLoaded { get; private set; }
+        public bool RenderGrid { get; set; }
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -167,12 +168,18 @@ namespace TakoEngine.Rendering.Processing
             }
         }
 
+        public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
+
         public void RenderWireframe(GameState gameState)
         {
             _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _wireframeRenderer.RenderGridLines(gameState.Camera);
+            if (RenderGrid)
+            {
+                _wireframeRenderer.RenderGridLines(gameState.Camera);
+            }
+
             _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
             //GL.Disable(EnableCap.DepthTest);
@@ -197,6 +204,11 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
+            if (RenderGrid)
+            {
+                //_wireframeRenderer.RenderGridLines(gameState.Camera);
+            }
+
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
@@ -208,13 +220,17 @@ namespace TakoEngine.Rendering.Processing
             GL.Disable(EnableCap.DepthTest);
 
             _renderToScreen.Render(_deferredRenderer.ColorTexture);
-            //_renderToScreen.Render(_selectionRenderer.FinalTexture);
         }
 
         public void RenderLitFrame(GameState gameState)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            if (RenderGrid)
+            {
+                _wireframeRenderer.RenderGridLines(gameState.Camera);
+            }
 
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));

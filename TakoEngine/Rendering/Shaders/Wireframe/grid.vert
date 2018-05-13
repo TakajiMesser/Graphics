@@ -1,14 +1,15 @@
 ﻿#version 440
 
+uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
-uniform float cameraWidth;
-uniform vec3 cameraPosition;
+in vec3 vPosition;
 
-in vec2 vPosition;
+out vec2 fUV;
 
 void main()
 {
-	gl_Position = vec4(vPosition.x, vPosition.y, 0.0, 1.0);
+	gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+	fUV = vPosition.xy;
 }
