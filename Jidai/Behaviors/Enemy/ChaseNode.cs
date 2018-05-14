@@ -33,7 +33,7 @@ namespace Jidai.Behaviors.Enemy
 
                 if (difference.Length < 3.0f)// == Vector3.Zero)
                 {
-                    return BehaviorStatus.Success;
+                    //return BehaviorStatus.Success;
                 }
                 else if (difference.Length < Speed)
                 {
@@ -42,6 +42,14 @@ namespace Jidai.Behaviors.Enemy
                 else
                 {
                     context.Translation = difference.Normalized() * Speed;
+                }
+
+                if (context.Translation != Vector3.Zero)
+                {
+                    float turnAngle = (float)Math.Atan2(context.Translation.Y, context.Translation.X);
+
+                    context.Actor.Rotation = new Quaternion(turnAngle, 0.0f, 0.0f);
+                    context.EulerRotation = new Vector3(turnAngle, context.EulerRotation.Y, context.EulerRotation.Z);
                 }
 
                 return BehaviorStatus.Running;

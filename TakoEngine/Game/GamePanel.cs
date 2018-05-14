@@ -114,32 +114,41 @@ namespace TakoEngine.Game
                     case ViewTypes.Perspective:
                         break;
                     case ViewTypes.X:
-                        _gameState.Camera.Position = new Vector3()
+                        var translationX = new Vector3()
                         {
-                            X = _gameState.Camera.Position.X,
-                            Y = SelectedEntity.Position.Y,
-                            Z = SelectedEntity.Position.Z
+                            X = 0.0f,
+                            Y = SelectedEntity.Position.Y - _gameState.Camera.Position.Y,
+                            Z = SelectedEntity.Position.Z - _gameState.Camera.Position.Z
                         };
+
+                        _gameState.Camera.Position += translationX;
+                        _gameState.Camera._viewMatrix.LookAt += translationX;
                         break;
                     case ViewTypes.Y:
-                        _gameState.Camera.Position = new Vector3()
+                        var translationY = new Vector3()
                         {
-                            X = SelectedEntity.Position.X,
-                            Y = _gameState.Camera.Position.Y,
-                            Z = SelectedEntity.Position.Z
+                            X = SelectedEntity.Position.X - _gameState.Camera.Position.X,
+                            Y = 0.0f,
+                            Z = SelectedEntity.Position.Z - _gameState.Camera.Position.Z
                         };
+
+                        _gameState.Camera.Position += translationY;
+                        _gameState.Camera._viewMatrix.LookAt += translationY;
                         break;
                     case ViewTypes.Z:
-                        _gameState.Camera.Position = new Vector3()
+                        var translationZ = new Vector3()
                         {
-                            X = SelectedEntity.Position.X,
-                            Y = SelectedEntity.Position.Y,
-                            Z = _gameState.Camera.Position.Z
+                            X = SelectedEntity.Position.X - _gameState.Camera.Position.X,
+                            Y = SelectedEntity.Position.Y - _gameState.Camera.Position.Y,
+                            Z = 0.0f
                         };
+
+                        _gameState.Camera.Position += translationZ;
+                        _gameState.Camera._viewMatrix.LookAt += translationZ;
                         break;
                 }
 
-                _invalidated = true;
+                Invalidate();
             }
         }
 

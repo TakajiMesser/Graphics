@@ -182,9 +182,6 @@ namespace TakoEngine.Rendering.Processing
 
             _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
-            //GL.Disable(EnableCap.DepthTest);
-            //GL.DepthMask(false);
-            //_wireframeRenderer.RenderGridLines(gameState.Camera);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
@@ -204,16 +201,19 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            if (RenderGrid)
-            {
-                //_wireframeRenderer.RenderGridLines(gameState.Camera);
-            }
-
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
             _deferredRenderer.BindForDiffuseWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            if (RenderGrid)
+            {
+                GL.Disable(EnableCap.CullFace);
+                _wireframeRenderer.RenderGridLines(gameState.Camera);
+                GL.Enable(EnableCap.CullFace);
+            }
+
             _skyboxRenderer.Render(gameState.Camera);
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
 
@@ -227,11 +227,6 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            if (RenderGrid)
-            {
-                _wireframeRenderer.RenderGridLines(gameState.Camera);
-            }
-
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
             RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
@@ -240,6 +235,13 @@ namespace TakoEngine.Rendering.Processing
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
             _skyboxRenderer.Render(gameState.Camera);
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
+
+            if (RenderGrid)
+            {
+                GL.Disable(EnableCap.CullFace);
+                _wireframeRenderer.RenderGridLines(gameState.Camera);
+                GL.Enable(EnableCap.CullFace);
+            }
 
             GL.Disable(EnableCap.DepthTest);
 
