@@ -51,7 +51,6 @@ namespace SauceEditor.Controls.GamePanels
             {
                 GridButton.IsChecked = true;
             };
-            //Panel.MouseMove += Panel_MouseMove;
 
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
@@ -64,7 +63,7 @@ namespace SauceEditor.Controls.GamePanels
             System.Windows.Forms.Cursor.Hide();
             Panel.Capture = true;
             //Mouse.Capture(PanelHost);
-            Panel.StartDrag();
+            Panel.StartDrag(_cursorLocation);
         }
 
         private void EndDrag()
@@ -77,7 +76,7 @@ namespace SauceEditor.Controls.GamePanels
 
         private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            Panel.Capture = true;//.Capture(PanelHost);
+            //Panel.Capture = true;//.Capture(PanelHost);
 
             switch (e.Button)
             {
@@ -121,6 +120,8 @@ namespace SauceEditor.Controls.GamePanels
 
         private void Panel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
         {
+            //System.Windows.Forms.Cursor.Position = _cursorLocation;
+
             if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
             {
                 _mouseHoldtimer.Stop();
@@ -250,5 +251,6 @@ namespace SauceEditor.Controls.GamePanels
 
         private void GridButton_Checked(object sender, RoutedEventArgs e) => Panel.RenderGrid = true;
         private void GridButton_Unchecked(object sender, RoutedEventArgs e) => Panel.RenderGrid = false;
+
     }
 }

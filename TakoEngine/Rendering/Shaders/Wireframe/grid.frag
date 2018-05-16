@@ -19,26 +19,43 @@ void main() {
     float ydelta = fwidth(y);
     y = smoothstep(y - ydelta, y + ydelta, thickness);
 
-	float brightness = 0.2;
+	float xy = x + y;
 
-	int xDiv = int(round(fPosition.x)) % 5;
-	float xFrac = fract(fPosition.x);
-
-	int yDiv = int(round(fPosition.y)) % 5;
-	float yFrac = fract(fPosition.y);
-
-	if ((xDiv == 0 && min(xFrac, 1.0 - xFrac) < thickness) || (yDiv == 0 && min(yFrac, 1.0 - yFrac) < thickness))
+	if (xy <= 0.0)
 	{
-		brightness = 0.8;
-	}
-
-    float c = clamp(x + y, 0.0, brightness);
-	if (c > 0.0)
-	{
-		color = vec4(c, c, c, 1.0);
+		discard;
 	}
 	else
 	{
-		discard;
+		float alpha = clamp(xy, 0.0, 1.0);
+
+		int xDiv5 = int(round(fPosition.x)) % 5;
+		int xDiv10 = int(round(fPosition.x)) % 10;
+		float xFrac = fract(fPosition.x);
+
+		int yDiv5 = int(round(fPosition.y)) % 5;
+		int yDiv10 = int(round(fPosition.y)) % 10;
+		float yFrac = fract(fPosition.y);
+
+		vec3 lineColor;
+
+		if ((int(round(fPosition.x)) == 0 && min(xFrac, 1.0 - xFrac) < thickness) || (int(round(fPosition.y)) == 0 && min(yFrac, 1.0 - yFrac) < thickness))
+		{
+			lineColor = vec3(0.8, 0.2, 0.2);
+		}
+		else if ((xDiv10 == 0 && min(xFrac, 1.0 - xFrac) < thickness) || (yDiv10 == 0 && min(yFrac, 1.0 - yFrac) < thickness))
+		{
+			lineColor = vec3(0.6, 0.2, 0.2);
+		}
+		else if ((xDiv5 == 0 && min(xFrac, 1.0 - xFrac) < thickness) || (yDiv5 == 0 && min(yFrac, 1.0 - yFrac) < thickness))
+		{
+			lineColor = vec3(0.4, 0.2, 0.2);
+		}
+		else
+		{
+			lineColor = vec3(0.2, 0.2, 0.2);
+		}
+		
+		color = vec4(lineColor, alpha);
 	}
 }

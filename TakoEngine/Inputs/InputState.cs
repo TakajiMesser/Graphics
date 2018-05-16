@@ -19,6 +19,8 @@ namespace TakoEngine.Inputs
         public int WindowWidth { get; set; }
         public int WindowHeight { get; set; }
 
+        //public bool Exists => _mouseState != null;
+
         public Vector2? MouseCoordinates => _mouseDevice != null
             ? new Vector2(_mouseDevice.X, _mouseDevice.Y)
             : (Vector2?)null;

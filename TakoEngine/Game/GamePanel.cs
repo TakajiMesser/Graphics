@@ -67,7 +67,8 @@ namespace TakoEngine.Game
 
         private bool _invalidated = false;
         private Vector3 _currentAngles = new Vector3();
-        private Point _mouseLocation;
+        private Point _currentMouseLocation;
+        private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
 
         private object _cursorLock = new object();
@@ -148,7 +149,7 @@ namespace TakoEngine.Game
                         break;
                 }
 
-                Invalidate();
+                RenderFrame();
             }
         }
 
@@ -423,8 +424,13 @@ namespace TakoEngine.Game
         {
             if (_gameState.Camera is OrthographicCamera camera)
             {
-                camera.Width -= wheelDelta * 0.01f;
-                RenderFrame();
+                var width = camera.Width - wheelDelta * 0.01f;
+
+                if (width > 0.0f)
+                {
+                    camera.Width = width;
+                    RenderFrame();
+                }
             }
         }
 
@@ -437,7 +443,6 @@ namespace TakoEngine.Game
 
             if ((SelectedEntity == null || SelectedEntity.ID != id) && !SelectionRenderer.IsReservedID(id))
             {
-                //_invalidated = true;
                 SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
                 EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
                 RenderFrame();
@@ -448,13 +453,14 @@ namespace TakoEngine.Game
         {
             Invoke(new Action(() =>
             {
-                var id = _renderManager.GetEntityIDFromPoint(new Vector2(_mouseLocation.X, Height - _mouseLocation.Y));
+                var id = _renderManager.GetEntityIDFromPoint(new Vector2(_currentMouseLocation.X, Height - _currentMouseLocation.Y));
                 SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
             }));
         }
 
-        public void StartDrag()
+        public void StartDrag(Point location)
         {
+            _startMouseLocation = location;
             IsDragging = true;
             _pollTimer.Start();
         }
@@ -464,7 +470,7 @@ namespace TakoEngine.Game
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
             PollForInput();
-            //RenderFrame();
+            
             if (_invalidated)
             {
                 Invalidate();
@@ -482,8 +488,6 @@ namespace TakoEngine.Game
 
         private void HandleInput()
         {
-            //_invalidated = true;
-
             if (_gameState._inputState.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionType = SelectionTypes.None;
@@ -522,9 +526,9 @@ namespace TakoEngine.Game
                             break;
                     }
 
-                    _invalidated = true;
                     //IsCursorVisible = false;
 
+                    Invoke(new Action(() => RenderFrame()));
                     Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
                 }
             }
@@ -679,11 +683,16 @@ namespace TakoEngine.Game
             }
         }
 
-        protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e) => _mouseLocation = e.Location;
-
-        private void PollForInput()
+        protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
         {
-            _gameState._inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
+            _currentMouseLocation = e.Location;
+
+            if (IsDragging)
+            {
+                Mouse.SetPosition(_startMouseLocation.X, _startMouseLocation.Y);
+            }
         }
+
+        private void PollForInput() => _gameState._inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
     }
 }

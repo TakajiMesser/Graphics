@@ -21,7 +21,7 @@ namespace TakoEngine.Rendering.Processing
     {
         public float LineThickness { get; set; } = 0.01f;
         public float SelectedLineThickness { get; set; } = 0.02f;
-        public float GridLength { get; set; } = 100.0f;
+        public float GridLength { get; set; } = 10000.0f;
         public Quaternion GridRotation { get; set; } = Quaternion.Identity;
 
         public Texture FinalTexture { get; protected set; }
