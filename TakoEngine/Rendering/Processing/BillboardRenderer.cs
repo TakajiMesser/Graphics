@@ -80,8 +80,7 @@ namespace TakoEngine.Rendering.Processing
         protected override void LoadBuffers()
         {
             _vertexBuffer.Bind();
-            //_vertexArray.Load(_billboardProgram);
-            _vertexArray.Load(_billboardSelectionProgram);
+            _vertexArray.Load();
             _vertexBuffer.Unbind();
 
             _pointLightTexture = Texture.LoadFromFile(FilePathHelper.POINT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);

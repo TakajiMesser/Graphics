@@ -10,31 +10,10 @@ namespace TakoEngine.Physics.Collision
         public IEntity AttachedEntity { get; set; }
         public Vector3 Center { get; set; }
 
-        public Bounds(Actor actor)
+        public Bounds(IEntity entity)
         {
-            AttachedEntity = actor;
-            Center = actor.Model.Position;
-        }
-
-        public Bounds(Brush brush)
-        {
-            AttachedEntity = brush;
-            Center = brush.Position;
-        }
-
-        public Bounds(Light light)
-        {
-            AttachedEntity = light;
-
-            switch (light)
-            {
-                case PointLight pLight:
-                    Center = pLight.Position;
-                    break;
-                case SpotLight sLight:
-                    Center = sLight.Position;
-                    break;
-            }
+            AttachedEntity = entity;
+            Center = entity.Position;
         }
 
         public abstract bool CollidesWith(Vector3 point);

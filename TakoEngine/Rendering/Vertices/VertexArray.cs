@@ -32,10 +32,10 @@ namespace TakoEngine.Rendering.Vertices
             _generated = true;
         }
 
-        public void Load(ShaderProgram program)
+        public void Load()
         {
             Bind();
-            SetVertexAttributes(program);
+            SetVertexAttributes();
             Unbind();
         }
 
@@ -83,7 +83,7 @@ namespace TakoEngine.Rendering.Vertices
             }
         }
 
-        private void SetVertexAttributes(ShaderProgram program)
+        private void SetVertexAttributes(/*ShaderProgram program*/)
         {
             // TODO - This should all either be hard-coded or determined at compile time, since doing this on the fly is pointlessly wasteful
             int stride = Marshal.SizeOf<T>();

@@ -22,7 +22,7 @@ namespace TakoEngine.Rendering.Meshes
         private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
         private VertexArray<JointVertex> _vertexArray = new VertexArray<JointVertex>();
         private Material _material;
-        private LightBuffer _lightBuffer = new LightBuffer();
+        //private LightBuffer _lightBuffer = new LightBuffer();
         private Matrix4[] _jointTransforms = ArrayExtensions.Initialize(MAX_JOINTS, Matrix4.Identity);
 
         public TextureMapping TextureMapping { get; set; }
@@ -41,13 +41,13 @@ namespace TakoEngine.Rendering.Meshes
             _material = material;
         }
 
-        public void Load(ShaderProgram program)
+        public void Load()
         {
             _vertexBuffer.Bind();
-            _vertexArray.Load(program);
+            _vertexArray.Load();
             _vertexBuffer.Unbind();
 
-            _lightBuffer.Load(program);
+            //_lightBuffer.Load(program);
         }
 
         public void ClearVertices()
@@ -66,8 +66,8 @@ namespace TakoEngine.Rendering.Meshes
             _vertexBuffer.AddVertices(_vertices);
         }
 
-        public void ClearLights() => _lightBuffer.Clear();
-        public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
+        //public void ClearLights() => _lightBuffer.Clear();
+        //public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
 
         public void SetJointTransforms(MeshTransforms transforms)
         {
@@ -94,18 +94,18 @@ namespace TakoEngine.Rendering.Meshes
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _lightBuffer.Bind();
+            //_lightBuffer.Bind();
             _indexBuffer.Bind();
 
             _vertexBuffer.Buffer();
-            _lightBuffer.Buffer();
+            //_lightBuffer.Buffer();
             _indexBuffer.Buffer();
 
             _indexBuffer.Draw();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
-            _lightBuffer.Unbind();
+            //_lightBuffer.Unbind();
             _indexBuffer.Unbind();
         }
 

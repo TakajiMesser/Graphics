@@ -5,17 +5,17 @@ using OpenTK.Input;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Windows.Forms;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
+using TakoEngine.Entities.Lights;
 using TakoEngine.Inputs;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
-using TakoEngine.Rendering.Textures;
 using TakoEngine.Utilities;
+using Brush = TakoEngine.Entities.Brush;
 using Timer = System.Timers.Timer;
 
 namespace TakoEngine.Game
@@ -26,6 +26,15 @@ namespace TakoEngine.Game
         Y,
         Z,
         Perspective
+    }
+
+    public enum Tools
+    {
+        Selector,
+        Volume,
+        Brush,
+        Mesh,
+        Texture
     }
 
     public class GamePanel : GLControl
@@ -39,8 +48,34 @@ namespace TakoEngine.Game
         public ViewTypes ViewType { get; set; }
         public RenderModes RenderMode { get; set; }
         public TransformModes TransformMode { get; set; }
-        public IEntity SelectedEntity { get; private set; }
+        public List<IEntity> SelectedEntities { get; } = new List<IEntity>();
         public SelectionTypes SelectionType { get; private set; }
+        public Tools SelectedTool
+        {
+            get => _selectedTool;
+            set
+            {
+                _selectedTool = value;
+
+                switch (_selectedTool)
+                {
+                    case Tools.Volume:
+                        _creatorVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        _gameState?.AddEntity(_creatorVolume);
+                        _creatorVolume.Mesh.Load();
+                        break;
+                    default:
+                        if (_creatorVolume != null)
+                        {
+                            _gameState?.RemoveEntityByID(_creatorVolume.ID);
+                            _creatorVolume = null;
+                        }
+                        break;
+                }
+
+                Invalidate();
+            }
+        }
 
         public bool IsMouseInPanel { get; private set; }
         public bool IsCameraMoving { get; private set; }
@@ -57,7 +92,7 @@ namespace TakoEngine.Game
         }
 
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
-        public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
+        public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         //public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
         //public event EventHandler<TransformModeEventArgs> TransformModeChanged;
 
@@ -70,6 +105,9 @@ namespace TakoEngine.Game
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
+
+        private Tools _selectedTool = Tools.Brush;
+        private Volume _creatorVolume;
 
         private object _cursorLock = new object();
         private bool _isCursorVisible = true;
@@ -108,7 +146,7 @@ namespace TakoEngine.Game
 
         public void CenterView()
         {
-            if (_gameState != null && SelectedEntity != null)
+            if (_gameState != null && SelectedEntities.Count > 0)
             {
                 switch (ViewType)
                 {
@@ -118,8 +156,8 @@ namespace TakoEngine.Game
                         var translationX = new Vector3()
                         {
                             X = 0.0f,
-                            Y = SelectedEntity.Position.Y - _gameState.Camera.Position.Y,
-                            Z = SelectedEntity.Position.Z - _gameState.Camera.Position.Z
+                            Y = SelectedEntities.Average(e => e.Position.Y) - _gameState.Camera.Position.Y,
+                            Z = SelectedEntities.Average(e => e.Position.Z) - _gameState.Camera.Position.Z
                         };
 
                         _gameState.Camera.Position += translationX;
@@ -128,9 +166,9 @@ namespace TakoEngine.Game
                     case ViewTypes.Y:
                         var translationY = new Vector3()
                         {
-                            X = SelectedEntity.Position.X - _gameState.Camera.Position.X,
+                            X = SelectedEntities.Average(e => e.Position.X) - _gameState.Camera.Position.X,
                             Y = 0.0f,
-                            Z = SelectedEntity.Position.Z - _gameState.Camera.Position.Z
+                            Z = SelectedEntities.Average(e => e.Position.Z) - _gameState.Camera.Position.Z
                         };
 
                         _gameState.Camera.Position += translationY;
@@ -139,8 +177,8 @@ namespace TakoEngine.Game
                     case ViewTypes.Z:
                         var translationZ = new Vector3()
                         {
-                            X = SelectedEntity.Position.X - _gameState.Camera.Position.X,
-                            Y = SelectedEntity.Position.Y - _gameState.Camera.Position.Y,
+                            X = SelectedEntities.Average(e => e.Position.X) - _gameState.Camera.Position.X,
+                            Y = SelectedEntities.Average(e => e.Position.Y) - _gameState.Camera.Position.Y,
                             Z = 0.0f
                         };
 
@@ -274,7 +312,7 @@ namespace TakoEngine.Game
             _gameState.Initialize();
             //Invoke((MethodInvoker)delegate
             //{
-                _renderManager.Load(_gameState, _map);
+                _renderManager.Load(_map);
             //});
 
             //_pollTimer.Start();
@@ -310,8 +348,56 @@ namespace TakoEngine.Game
 
         public void SelectEntity(IEntity entity)
         {
-            SelectedEntity = (entity != null) ? _gameState.GetByID(entity.ID) : null;
+            if (entity != null)
+            {
+                SelectedEntities.Add(entity);
+            }
+            else
+            {
+                SelectedEntities.Clear();
+            }
+            //SelectedEntity = (entity != null) ? _gameState.GetEntityByID(entity.ID) : null;
             RenderFrame();
+        }
+
+        public void SelectEntities(IEnumerable<IEntity> entities)
+        {
+            SelectedEntities.Clear();
+            SelectedEntities.AddRange(entities);
+            RenderFrame();
+        }
+
+        public void UpdateEntities(IEnumerable<IEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                var selectedEntity = _gameState.GetEntityByID(entity.ID);
+
+                if (selectedEntity != null)
+                {
+                    selectedEntity.Position = entity.Position;
+
+                    switch (entity)
+                    {
+                        case Actor actor:
+                            var selectedActor = selectedEntity as Actor;
+                            selectedActor.OriginalRotation = actor.OriginalRotation;
+                            selectedActor.Scale = actor.Scale;
+                            break;
+                        case Brush brush:
+                            var selectedBrush = selectedEntity as Brush;
+                            selectedBrush.OriginalRotation = brush.OriginalRotation;
+                            selectedBrush.Scale = brush.Scale;
+                            break;
+                        case Light light:
+                            var selectedLight = selectedEntity as Light;
+                            selectedLight.Color = light.Color;
+                            break;
+                    }
+                }
+            }
+
+            Invalidate();
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -371,9 +457,9 @@ namespace TakoEngine.Game
                     break;
             }
 
-            if (SelectedEntity != null)
+            if (SelectedEntities.Count > 0)
             {
-                _renderManager.RenderSelection(_gameState.Camera, SelectedEntity, TransformMode);
+                _renderManager.RenderSelection(_gameState.Camera, SelectedEntities, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -434,19 +520,47 @@ namespace TakoEngine.Game
             }
         }
 
-        public void SelectEntity(Point coordinates)
+        public void SelectEntity(Point coordinates, bool isMultiSelect)
         {
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
 
             RenderFrame();
             var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
 
-            if ((SelectedEntity == null || SelectedEntity.ID != id) && !SelectionRenderer.IsReservedID(id))
+            if (id > 0)
             {
-                SelectedEntity = (id > 0) ? _gameState.GetByID(id) : null;
-                EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity));
+                var entity = _gameState.GetEntityByID(id);
+
+                if (isMultiSelect && SelectedEntities.Select(e => e.ID).Contains(id))
+                {
+                    SelectedEntities.Remove(entity);
+                    EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
+                    RenderFrame();
+                }
+                else if (!SelectionRenderer.IsReservedID(id) && !SelectedEntities.Select(e => e.ID).Contains(id))
+                {
+                    if (!isMultiSelect)
+                    {
+                        SelectedEntities.Clear();
+                    }
+                    
+                    SelectedEntities.Add(entity);
+                    EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
+                    RenderFrame();
+                }
+            }
+            else if (!isMultiSelect)
+            {
+                SelectedEntities.Clear();
+
+                EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
                 RenderFrame();
             }
+        }
+
+        public void ClearSelectedEntities()
+        {
+            SelectedEntities.Clear();
         }
 
         public void SetSelectionType()
@@ -513,23 +627,25 @@ namespace TakoEngine.Game
                 if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)))
                 {
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
-                    switch (TransformMode)
+                    foreach (var entity in SelectedEntities)
                     {
-                        case TransformModes.Translate:
-                            HandleEntityTranslation();
-                            break;
-                        case TransformModes.Rotate:
-                            HandleEntityRotation();
-                            break;
-                        case TransformModes.Scale:
-                            HandleEntityScale();
-                            break;
+                        switch (TransformMode)
+                        {
+                            case TransformModes.Translate:
+                                HandleEntityTranslation(entity);
+                                break;
+                            case TransformModes.Rotate:
+                                HandleEntityRotation(entity);
+                                break;
+                            case TransformModes.Scale:
+                                HandleEntityScale(entity);
+                                break;
+                        }
                     }
 
                     //IsCursorVisible = false;
-
                     Invoke(new Action(() => RenderFrame()));
-                    Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitySelectedEventArgs(SelectedEntity))));
+                    Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities))));
                 }
             }
             else if (ViewType == ViewTypes.Perspective)
@@ -581,9 +697,9 @@ namespace TakoEngine.Game
             }
         }
 
-        private void HandleEntityTranslation()
+        private void HandleEntityTranslation(IEntity entity)
         {
-            var position = SelectedEntity.Position;
+            var position = entity.Position;
 
             switch (SelectionType)
             {
@@ -610,12 +726,12 @@ namespace TakoEngine.Game
                     break;
             }
 
-            SelectedEntity.Position = position;
+            entity.Position = position;
         }
 
-        private void HandleEntityRotation()
+        private void HandleEntityRotation(IEntity entity)
         {
-            if (SelectedEntity is IRotate rotater)
+            if (entity is IRotate rotater)
             {
                 var rotation = rotater.OriginalRotation;
 
@@ -648,9 +764,9 @@ namespace TakoEngine.Game
             }
         }
 
-        private void HandleEntityScale()
+        private void HandleEntityScale(IEntity entity)
         {
-            if (SelectedEntity is IScale scaler)
+            if (entity is IScale scaler)
             {
                 var scale = scaler.Scale;
 

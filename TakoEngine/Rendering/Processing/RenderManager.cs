@@ -52,7 +52,7 @@ namespace TakoEngine.Rendering.Processing
             WindowSize = windowSize;
         }
 
-        public void Load(GameState gameState, Map map)
+        public void Load(Map map)
         {
             _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 
@@ -70,7 +70,6 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.Load(Resolution);
             _renderToScreen.Load(WindowSize);
 
-            _deferredRenderer.LoadEntities(gameState.Brushes, gameState.Actors);
             GL.ClearColor(Color4.Black);
 
             IsLoaded = true;
@@ -111,7 +110,7 @@ namespace TakoEngine.Rendering.Processing
             return _selectionRenderer.GetEntityIDFromPoint(point);
         }
 
-        public void RenderSelection(Camera camera, IEntity entity, TransformModes transformMode)
+        public void RenderSelection(Camera camera, List<IEntity> entities, TransformModes transformMode)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -120,51 +119,59 @@ namespace TakoEngine.Rendering.Processing
             GL.Disable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Always);
 
-            if (entity is Light light)
+            for (var i = 0; i < entities.Count; i++)
             {
-                var lightMesh = _lightRenderer.GetMeshForLight(light);
-                _wireframeRenderer.SelectionPass(camera, light, lightMesh);
-                _billboardRenderer.RenderSelection(camera, light);
-            }
-            else
-            {
-                // TODO - Find out why selection appears to be updating ahead of entity
-                _wireframeRenderer.SelectionPass(camera, entity);
-            }
+                var entity = entities[i];
 
-            // Render the RGB arrows over the selection
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.DepthFunc(DepthFunction.Less);
+                if (entity is Light light)
+                {
+                    var lightMesh = _lightRenderer.GetMeshForLight(light);
+                    _wireframeRenderer.SelectionPass(camera, light, lightMesh);
+                    _billboardRenderer.RenderSelection(camera, light);
+                }
+                else
+                {
+                    // TODO - Find out why selection appears to be updating ahead of entity
+                    _wireframeRenderer.SelectionPass(camera, entity);
+                }
 
-            switch (transformMode)
-            {
-                case TransformModes.Translate:
-                    _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
-                    break;
-                case TransformModes.Rotate:
-                    _selectionRenderer.RenderRotationRings(camera, entity.Position);
-                    break;
-                case TransformModes.Scale:
-                    _selectionRenderer.RenderScaleLines(camera, entity.Position);
-                    break;
-            }
+                if (i == entities.Count - 1)
+                {
+                    // Render the RGB arrows over the selection
+                    GL.Clear(ClearBufferMask.DepthBufferBit);
+                    GL.DepthFunc(DepthFunction.Less);
 
-            // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
-            _selectionRenderer.BindForWriting();
-            GL.Clear(ClearBufferMask.DepthBufferBit);
-            GL.DepthFunc(DepthFunction.Less);
+                    switch (transformMode)
+                    {
+                        case TransformModes.Translate:
+                            _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
+                            break;
+                        case TransformModes.Rotate:
+                            _selectionRenderer.RenderRotationRings(camera, entity.Position);
+                            break;
+                        case TransformModes.Scale:
+                            _selectionRenderer.RenderScaleLines(camera, entity.Position);
+                            break;
+                    }
 
-            switch (transformMode)
-            {
-                case TransformModes.Translate:
-                    _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
-                    break;
-                case TransformModes.Rotate:
-                    _selectionRenderer.RenderRotationRings(camera, entity.Position);
-                    break;
-                case TransformModes.Scale:
-                    _selectionRenderer.RenderScaleLines(camera, entity.Position);
-                    break;
+                    // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
+                    _selectionRenderer.BindForWriting();
+                    GL.Clear(ClearBufferMask.DepthBufferBit);
+                    GL.DepthFunc(DepthFunction.Less);
+
+                    switch (transformMode)
+                    {
+                        case TransformModes.Translate:
+                            _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
+                            break;
+                        case TransformModes.Rotate:
+                            _selectionRenderer.RenderRotationRings(camera, entity.Position);
+                            break;
+                        case TransformModes.Scale:
+                            _selectionRenderer.RenderScaleLines(camera, entity.Position);
+                            break;
+                    }
+                }
             }
         }
 
@@ -180,7 +187,7 @@ namespace TakoEngine.Rendering.Processing
                 _wireframeRenderer.RenderGridLines(gameState.Camera);
             }
 
-            _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
+            _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Volumes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _wireframeRenderer.JointWireframePass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
             GL.Enable(EnableCap.CullFace);

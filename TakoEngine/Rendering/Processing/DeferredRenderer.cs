@@ -222,19 +222,6 @@ namespace TakoEngine.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void LoadEntities(IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
-        {
-            foreach (var brush in brushes)
-            {
-                brush.Load(_geometryProgram);
-            }
-
-            foreach (var actor in actors)
-            {
-                actor.Model.Load(_geometryProgram);
-            }
-        }
-
         public void BindForGeometryWriting()
         {
             _frameBuffer.BindAndDraw(new DrawBuffersEnum[]

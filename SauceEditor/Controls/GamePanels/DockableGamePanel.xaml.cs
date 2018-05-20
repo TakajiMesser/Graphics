@@ -27,7 +27,7 @@ namespace SauceEditor.Controls.GamePanels
         public ViewTypes ViewType => Panel.ViewType;
 
         //public event EventHandler<CommandEventArgs> CommandExecuted;
-        public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
+        public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
 
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
@@ -133,7 +133,7 @@ namespace SauceEditor.Controls.GamePanels
                 else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
                 {
                     var point = e.Location;
-                    Panel.SelectEntity(point);
+                    Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
                 }
             }
         }
@@ -200,10 +200,7 @@ namespace SauceEditor.Controls.GamePanels
             //Grid.Children.Add(GameWindow);
         }
 
-        private void OnLoaded(object sender, EventArgs e)
-        {
-            
-        }
+        private void OnLoaded(object sender, EventArgs e) { }
 
         protected override void OnClosing(CancelEventArgs e)
         {

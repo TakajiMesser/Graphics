@@ -72,7 +72,7 @@ namespace TakoEngine.Rendering.PostProcessing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
 
             _vertexBuffer.Bind();
-            _vertexArray.Load(_textProgram);
+            _vertexArray.Load();
             _vertexBuffer.Unbind();
         }
 

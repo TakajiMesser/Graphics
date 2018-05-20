@@ -130,6 +130,7 @@
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Controls\Tools\ToolSelectedEventArgs.cs" />
     <Compile Include="Controls\Tools\ToolsWindow.xaml.cs">
       <DependentUpon>ToolsWindow.xaml</DependentUpon>
     </Compile>

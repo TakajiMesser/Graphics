@@ -60,24 +60,8 @@ namespace TakoEngine.Entities
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
-        public Actor ToActor()
-        {
-            var actor = new Actor("wall2")
-            {
-                //Mesh = Mesh,
-                Bounds = Bounds,
-                HasCollision = HasCollision,
-                //TextureMapping = TextureMapping,
-                //Position = new Vector3(0, 0, 0)
-            };
-
-            actor.Bounds.AttachedEntity = actor;
-
-            return actor;
-        }
-
-        public void ClearLights() => Mesh.ClearLights();
-        public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
+        //public void ClearLights() => Mesh.ClearLights();
+        //public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
 
         public void AddTestColors()
         {
@@ -104,7 +88,7 @@ namespace TakoEngine.Entities
             Mesh.RefreshVertices();
         }
 
-        public void Load(ShaderProgram program) => Mesh.Load(program);
+        public void Load() => Mesh.Load();
 
         public void Draw(ShaderProgram program, TextureManager textureManager = null)
         {

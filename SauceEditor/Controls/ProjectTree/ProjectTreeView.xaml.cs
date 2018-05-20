@@ -100,6 +100,7 @@ namespace SauceEditor.Controls.ProjectTree
             maps.Items.Add(map);
 
             root.Items.Add(maps);
+            Tree.Items.Add(root);
         }
 
         public void OpenProject(string filePath)

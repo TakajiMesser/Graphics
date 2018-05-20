@@ -12,15 +12,27 @@ namespace TakoEngine.Rendering.Meshes
 {
     public class Mesh<T> : IDisposable where T : struct
     {
+        public TextureMapping TextureMapping { get; set; }
+        public List<T> Vertices => _vertices;
+
         private List<T> _vertices = new List<T>();
         private VertexBuffer<T> _vertexBuffer = new VertexBuffer<T>();
         private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
         private VertexArray<T> _vertexArray = new VertexArray<T>();
+        //private LightBuffer _lightBuffer = new LightBuffer();
         private Material _material;
-        private LightBuffer _lightBuffer = new LightBuffer();
 
-        public TextureMapping TextureMapping { get; set; }
-        public List<T> Vertices => _vertices;
+        public Mesh(List<T> vertices, List<int> triangleIndices)
+        {
+            if (triangleIndices.Count % 3 != 0)
+            {
+                throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
+            }
+
+            _vertices = vertices;
+            _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
+            _vertexBuffer.AddVertices(_vertices);
+        }
 
         public Mesh(List<T> vertices, Material material, List<int> triangleIndices)
         {
@@ -35,13 +47,13 @@ namespace TakoEngine.Rendering.Meshes
             _material = material;
         }
 
-        public void Load(ShaderProgram program)
+        public void Load()
         {
             _vertexBuffer.Bind();
-            _vertexArray.Load(program);
+            _vertexArray.Load();
             _vertexBuffer.Unbind();
 
-            _lightBuffer.Load(program);
+            //_lightBuffer.Load(program);
         }
 
         public void ClearVertices()
@@ -60,8 +72,8 @@ namespace TakoEngine.Rendering.Meshes
             _vertexBuffer.AddVertices(_vertices);
         }
 
-        public void ClearLights() => _lightBuffer.Clear();
-        public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
+        //public void ClearLights() => _lightBuffer.Clear();
+        //public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
 
         public void Draw(ShaderProgram program, TextureManager textureManager = null)
         {
@@ -74,18 +86,18 @@ namespace TakoEngine.Rendering.Meshes
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _lightBuffer.Bind();
+            //_lightBuffer.Bind();
             _indexBuffer.Bind();
 
             _vertexBuffer.Buffer();
-            _lightBuffer.Buffer();
+            //_lightBuffer.Buffer();
             _indexBuffer.Buffer();
 
             _indexBuffer.Draw();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
-            _lightBuffer.Unbind();
+            //_lightBuffer.Unbind();
             _indexBuffer.Unbind();
         }
 

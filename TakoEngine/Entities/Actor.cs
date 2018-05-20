@@ -62,13 +62,15 @@ namespace TakoEngine.Entities
             Name = name;
         }
 
+        public void Load() => Model.Load();
+
         /*On Model Position Change -> if (Bounds != null)
         {
             Bounds.Center = value;
         }*/
 
-        public void ClearLights() => Model.ClearLights();
-        public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
+        //public void ClearLights() => Model.ClearLights();
+        //public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
 
         public virtual void OnInitialization()
         {

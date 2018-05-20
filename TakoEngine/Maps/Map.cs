@@ -18,6 +18,7 @@ namespace TakoEngine.Maps
         public MapCamera Camera { get; set; }
         public List<MapActor> Actors { get; set; } = new List<MapActor>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
+        public List<MapVolume> Volumes { get; set; } = new List<MapVolume>();
         public List<Light> Lights { get; set; } = new List<Light>();
         public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();
 
@@ -36,18 +37,21 @@ namespace TakoEngine.Maps
                     {
                         Actors.Min(a => a.Position.X),
                         Brushes.Min(b => b.Position.X),
+                        //Volumes.Min(v => v.Position.X),
                         Lights.Min(l => l.Position.X)
                     }.Min(),
-                        Y = new float[]
+                    Y = new float[]
                     {
                         Actors.Min(a => a.Position.Y),
                         Brushes.Min(b => b.Position.Y),
+                        //Volumes.Min(v => v.Position.Y),
                         Lights.Min(l => l.Position.Y)
                     }.Min(),
-                        Z = new float[]
+                    Z = new float[]
                     {
                         Actors.Min(a => a.Position.Z),
                         Brushes.Min(b => b.Position.Z),
+                        //Volumes.Min(v => v.Position.Z),
                         Lights.Min(l => l.Position.Z)
                     }.Min()
                 },
@@ -57,18 +61,21 @@ namespace TakoEngine.Maps
                     {
                         Actors.Max(a => a.Position.X),
                         Brushes.Max(b => b.Position.X),
+                        //Volumes.Max(v => v.Position.X),
                         Lights.Max(l => l.Position.X)
                     }.Max(),
                     Y = new float[]
                     {
                         Actors.Max(a => a.Position.Y),
                         Brushes.Max(b => b.Position.Y),
+                        //Volumes.Max(v => v.Position.Y),
                         Lights.Max(l => l.Position.Y)
                     }.Max(),
                     Z = new float[]
                     {
                         Actors.Max(a => a.Position.Z),
                         Brushes.Max(b => b.Position.Z),
+                        //Volumes.Max(v => v.Position.Z),
                         Lights.Max(l => l.Position.Z)
                     }.Max()
                 }

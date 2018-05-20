@@ -46,6 +46,24 @@ namespace TakoEngine.Physics.Collision
             };*/
         }
 
+        public BoundingBox(Volume volume) : base(volume)
+        {
+            var minX = volume.Vertices.Select(v => v.X).Min();
+            var maxX = volume.Vertices.Select(v => v.X).Max();
+            Width = maxX - minX;
+
+            var minY = volume.Vertices.Select(v => v.Y).Min();
+            var maxY = volume.Vertices.Select(v => v.Y).Max();
+            Height = maxY - minY;
+
+            /*Center = new Vector3()
+            {
+                X = (maxX + minX) / 2.0f,
+                Y = (maxY + minY) / 2.0f,
+                Z = brush.Vertices.Select(v => v.Z).Average()
+            };*/
+        }
+
         public override bool CollidesWith(Vector3 point) => (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);
 
         public override bool CollidesWith(Bounds collider)

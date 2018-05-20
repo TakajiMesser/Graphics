@@ -21,6 +21,7 @@ using TakoEngine.Game;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
+using TakoEngine.Utilities;
 using Brush = TakoEngine.Entities.Brush;
 
 namespace SauceEditor.Controls.GamePanels
@@ -71,7 +72,7 @@ namespace SauceEditor.Controls.GamePanels
             }
         }
 
-        public event EventHandler<EntitySelectedEventArgs> EntitySelectionChanged;
+        public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
 
         private TransformModes _transformMode;
 
@@ -93,37 +94,28 @@ namespace SauceEditor.Controls.GamePanels
             TransformMode = TransformModes.Translate;
         }
 
-        public void UpdateEntity(IEntity entity)
+        public void SetSelectedTool(TakoEngine.Game.Tools tool)
         {
-            UpdateEntity(_perspectiveView.Panel, entity);
-            UpdateEntity(_xView.Panel, entity);
-            UpdateEntity(_yView.Panel, entity);
-            UpdateEntity(_zView.Panel, entity);
+            _perspectiveView.Panel.SelectedTool = tool;
+            _xView.Panel.SelectedTool = tool;
+            _yView.Panel.SelectedTool = tool;
+            _zView.Panel.SelectedTool = tool;
         }
 
-        private void UpdateEntity(GamePanel panel, IEntity entity)
+        public void UpdateEntity(IEntity entity)
         {
-            panel.SelectedEntity.Position = entity.Position;
+            _perspectiveView.Panel.UpdateEntities(entity.Yield());
+            _xView.Panel.UpdateEntities(entity.Yield());
+            _yView.Panel.UpdateEntities(entity.Yield());
+            _zView.Panel.UpdateEntities(entity.Yield());
+        }
 
-            switch (entity)
-            {
-                case Actor actor:
-                    var selectedActor = panel.SelectedEntity as Actor;
-                    selectedActor.OriginalRotation = actor.OriginalRotation;
-                    selectedActor.Scale = actor.Scale;
-                    break;
-                case Brush brush:
-                    var selectedBrush = panel.SelectedEntity as Brush;
-                    selectedBrush.OriginalRotation = brush.OriginalRotation;
-                    selectedBrush.Scale = brush.Scale;
-                    break;
-                case Light light:
-                    var selectedLight = panel.SelectedEntity as Light;
-                    selectedLight.Color = light.Color;
-                    break;
-            }
-
-            panel.Invalidate();
+        public void UpdateEntities(IEnumerable<IEntity> entities)
+        {
+            _perspectiveView.Panel.UpdateEntities(entities);
+            _xView.Panel.UpdateEntities(entities);
+            _yView.Panel.UpdateEntities(entities);
+            _zView.Panel.UpdateEntities(entities);
         }
 
         private void MainDock_PreviewKeyDown(object sender, KeyEventArgs e)
@@ -171,15 +163,15 @@ namespace SauceEditor.Controls.GamePanels
             //_perspectiveView.LoadGameState(_gameState, _map);
             _perspectiveView.EntitySelectionChanged += (s, args) =>
             {
-                _xView.Panel.SelectEntity(args.Entity);
-                _yView.Panel.SelectEntity(args.Entity);
-                _zView.Panel.SelectEntity(args.Entity);
+                _xView.Panel.SelectEntities(args.Entities);
+                _yView.Panel.SelectEntities(args.Entities);
+                _zView.Panel.SelectEntities(args.Entities);
 
-                if (args.Entity != null)
+                if (args.Entities.Count > 0)
                 {
-                    UpdateEntity(_xView.Panel, args.Entity);
-                    UpdateEntity(_yView.Panel, args.Entity);
-                    UpdateEntity(_zView.Panel, args.Entity);
+                    _xView.Panel.UpdateEntities(args.Entities);
+                    _yView.Panel.UpdateEntities(args.Entities);
+                    _zView.Panel.UpdateEntities(args.Entities);
                 }
 
                 EntitySelectionChanged?.Invoke(this, args);
@@ -200,15 +192,15 @@ namespace SauceEditor.Controls.GamePanels
             //_xView.Panel.Load += (s, args) => _xView.LoadGameState(_gameState, _map);
             _xView.EntitySelectionChanged += (s, args) =>
             {
-                _perspectiveView.Panel.SelectEntity(args.Entity);
-                _yView.Panel.SelectEntity(args.Entity);
-                _zView.Panel.SelectEntity(args.Entity);
+                _perspectiveView.Panel.SelectEntities(args.Entities);
+                _yView.Panel.SelectEntities(args.Entities);
+                _zView.Panel.SelectEntities(args.Entities);
 
-                if (args.Entity != null)
+                if (args.Entities.Count > 0)
                 {
-                    UpdateEntity(_perspectiveView.Panel, args.Entity);
-                    UpdateEntity(_yView.Panel, args.Entity);
-                    UpdateEntity(_zView.Panel, args.Entity);
+                    _perspectiveView.Panel.UpdateEntities(args.Entities);
+                    _yView.Panel.UpdateEntities(args.Entities);
+                    _zView.Panel.UpdateEntities(args.Entities);
                 }
 
                 EntitySelectionChanged?.Invoke(this, args);
@@ -229,15 +221,15 @@ namespace SauceEditor.Controls.GamePanels
             //_yView.Panel.Load += (s, args) => _yView.LoadGameState(_gameState, _map);
             _yView.EntitySelectionChanged += (s, args) =>
             {
-                _perspectiveView.Panel.SelectEntity(args.Entity);
-                _xView.Panel.SelectEntity(args.Entity);
-                _zView.Panel.SelectEntity(args.Entity);
+                _perspectiveView.Panel.SelectEntities(args.Entities);
+                _xView.Panel.SelectEntities(args.Entities);
+                _zView.Panel.SelectEntities(args.Entities);
 
-                if (args.Entity != null)
+                if (args.Entities.Count > 0)
                 {
-                    UpdateEntity(_perspectiveView.Panel, args.Entity);
-                    UpdateEntity(_xView.Panel, args.Entity);
-                    UpdateEntity(_zView.Panel, args.Entity);
+                    _perspectiveView.Panel.UpdateEntities(args.Entities);
+                    _xView.Panel.UpdateEntities(args.Entities);
+                    _zView.Panel.UpdateEntities(args.Entities);
                 }
 
                 EntitySelectionChanged?.Invoke(this, args);
@@ -258,15 +250,15 @@ namespace SauceEditor.Controls.GamePanels
             //_zView.Panel.Load += (s, args) => _zView.LoadGameState(_gameState, _map);
             _zView.EntitySelectionChanged += (s, args) =>
             {
-                _perspectiveView.Panel.SelectEntity(args.Entity);
-                _xView.Panel.SelectEntity(args.Entity);
-                _yView.Panel.SelectEntity(args.Entity);
+                _perspectiveView.Panel.SelectEntities(args.Entities);
+                _xView.Panel.SelectEntities(args.Entities);
+                _yView.Panel.SelectEntities(args.Entities);
 
-                if (args.Entity != null)
+                if (args.Entities.Count > 0)
                 {
-                    UpdateEntity(_perspectiveView.Panel, args.Entity);
-                    UpdateEntity(_xView.Panel, args.Entity);
-                    UpdateEntity(_yView.Panel, args.Entity);
+                    _perspectiveView.Panel.UpdateEntities(args.Entities);
+                    _xView.Panel.UpdateEntities(args.Entities);
+                    _yView.Panel.UpdateEntities(args.Entities);
                 }
 
                 EntitySelectionChanged?.Invoke(this, args);

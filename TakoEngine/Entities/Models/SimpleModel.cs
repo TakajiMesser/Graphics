@@ -55,9 +55,10 @@ namespace TakoEngine.Entities.Models
             }
         }
 
-        public override void Load(ShaderProgram program) => Meshes.ForEach(m => m.Load(program));
-        public override void ClearLights() => Meshes.ForEach(m => m.ClearLights());
-        public override void AddPointLights(IEnumerable<PointLight> lights) => Meshes.ForEach(m => m.AddPointLights(lights));
+        public override void Load() => Meshes.ForEach(m => m.Load());
+
+        //public override void ClearLights() => Meshes.ForEach(m => m.ClearLights());
+        //public override void AddPointLights(IEnumerable<PointLight> lights) => Meshes.ForEach(m => m.AddPointLights(lights));
 
         public override void AddTestColors()
         {

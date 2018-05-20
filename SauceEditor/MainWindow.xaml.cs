@@ -12,6 +12,7 @@ using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
@@ -80,11 +81,17 @@ namespace SauceEditor
 
             _toolPanel.DockManager = SideDockManager;
             _toolPanel.ShowAsDocument();
+            _toolPanel.ToolSelected += ToolPanel_ToolSelected;
 
             _propertyPanel.DockManager = SideDockManager;
             _propertyPanel.ShowAsDocument();
 
             SideDockManager.ActiveContent = _projectTree;
+        }
+
+        private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
+        {
+            _gamePanelManager.SetSelectedTool(e.NewTool);
         }
 
         private void OnClosing(object sender, EventArgs e)
@@ -145,7 +152,7 @@ namespace SauceEditor
             };
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
-                _propertyPanel.Entity = args.Entity;
+                _propertyPanel.Entity = args.Entities.LastOrDefault();
                 SideDockManager.ActiveContent = _propertyPanel;
             };
             _gamePanelManager.ShowAsDocument();
@@ -280,8 +287,9 @@ namespace SauceEditor
 
             if (dialog.ShowDialog() == true)
             {
+                _projectTree.OpenMap(dialog.FileName);
+                SideDockManager.ActiveContent = _projectTree;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-                OpenMap(dialog.FileName);
             }
         }
 

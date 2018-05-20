@@ -81,7 +81,7 @@ namespace TakoEngine.Game
             _gameState.Initialize();
 
             _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.Load(_gameState, map);
+            _renderManager.Load(map);
 
             _fpsTimer.Start();
         }

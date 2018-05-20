@@ -38,11 +38,11 @@ namespace TakoEngine.Entities.Models
             set => _modelMatrix.Scale = value;
         }
 
-        public abstract void Load(ShaderProgram program);
+        public abstract void Load();
         public abstract void Draw(ShaderProgram program, TextureManager textureManager);
 
-        public abstract void ClearLights();
-        public abstract void AddPointLights(IEnumerable<PointLight> lights);
+        //public abstract void ClearLights();
+        //public abstract void AddPointLights(IEnumerable<PointLight> lights);
         public abstract void AddTestColors();
 
         public static Model LoadFromFile(string filePath, TextureManager textureManager)

@@ -19,16 +19,12 @@ void main()
     }
     else
     {
-        //gl_FragColor = vec4(1.0);
-        /*float innerEdgeIntensity = exp2(-1.0 * distance * distance);
+		float innerEdgeIntensity = exp2(-1.0 * distance * distance);
         float outerEdgeIntensity = exp2(-1.0 / 20.0 * distance * distance);
 
-        vec3 innerLineColor = innerEdgeIntensity * vec3(1.0);
-        vec3 outerLineColor = (1.0 - outerEdgeIntensity) * vec3(1.0);
+		float alpha = innerEdgeIntensity + (1.0 - outerEdgeIntensity);
 
-        color.xyz = innerLineColor + outerLineColor;
-        color.w = 1.0;*/
-
-        color = lineColor;
+        color = vec4(lineColor.xyz, alpha);
+		//color = lineColor;
     }
 }

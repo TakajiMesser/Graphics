@@ -22,6 +22,7 @@ namespace TakoEngine.Game
         public Camera Camera { get; private set; }
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
+        public List<Volume> Volumes { get; } = new List<Volume>();
         public List<Light> Lights { get; } = new List<Light>();
         public TextureManager TextureManager { get; } = new TextureManager();
 
@@ -31,6 +32,7 @@ namespace TakoEngine.Game
 
         private QuadTree _actorQuads;
         private QuadTree _brushQuads;
+        private QuadTree _volumeQuads;
         private QuadTree _lightQuads;
 
         public GameState(Resolution resolution)
@@ -47,6 +49,7 @@ namespace TakoEngine.Game
 
             LoadLightsFromMap(map);
             LoadBrushesFromMap(map);
+            LoadVolumesFromMap(map);
             LoadActorsFromMap(map);
         }
 
@@ -73,10 +76,21 @@ namespace TakoEngine.Game
                 {
                     _brushQuads.Insert(brush.Bounds);
                 }
-                brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedEntity is PointLight).Select(c => (PointLight)c.AttachedEntity));
+                //brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedEntity is PointLight).Select(c => (PointLight)c.AttachedEntity));
                 brush.Mesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
 
                 AddEntity(brush);
+            }
+        }
+
+        private void LoadVolumesFromMap(Map map)
+        {
+            _volumeQuads = new QuadTree(0, map.Boundaries);
+
+            foreach (var mapVolume in map.Volumes)
+            {
+                var volume = mapVolume.ToVolume();
+                AddEntity(volume);
             }
         }
 
@@ -122,7 +136,7 @@ namespace TakoEngine.Game
 
         public Actor GetByName(string name) => Actors.First(g => g.Name == name);
 
-        public IEntity GetByID(int id)
+        public IEntity GetEntityByID(int id)
         {
             var actor = Actors.FirstOrDefault(g => g.ID == id);
             if (actor != null)
@@ -138,24 +152,32 @@ namespace TakoEngine.Game
                 }
                 else
                 {
-                    var light = Lights.FirstOrDefault(l => l.ID == id);
-                    if (light != null)
+                    var volume = Volumes.FirstOrDefault(v => v.ID == id);
+                    if (volume != null)
                     {
-                        return light;
+                        return volume;
                     }
                     else
                     {
-                        throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+                        var light = Lights.FirstOrDefault(l => l.ID == id);
+                        if (light != null)
+                        {
+                            return light;
+                        }
+                        else
+                        {
+                            throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+                        }
                     }
                 }
             }
         }
 
-        public virtual void AddEntity(IEntity entity)
+        public int AddEntity(IEntity entity)
         {
             // Assign a unique ID
-            //if (entity.ID == 0)
-            //{
+            if (entity.ID == 0)
+            {
                 entity.ID = _nextAvailableID;
                 _nextAvailableID++;
 
@@ -164,20 +186,50 @@ namespace TakoEngine.Game
                 {
                     _nextAvailableID++;
                 }
-            //}
+            }
 
             switch (entity)
             {
                 case Actor actor:
                     if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
                     if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
+
+                    actor.Load();
                     Actors.Add(actor);
                     break;
                 case Brush brush:
+                    brush.Load();
                     Brushes.Add(brush);
+                    break;
+                case Volume volume:
+                    volume.Load();
+                    Volumes.Add(volume);
                     break;
                 case Light light:
                     Lights.Add(light);
+                    break;
+            }
+
+            return entity.ID;
+        }
+
+        public void RemoveEntityByID(int id)
+        {
+            var entity = GetEntityByID(id);
+
+            switch (entity)
+            {
+                case Actor actor:
+                    Actors.Remove(actor);
+                    break;
+                case Brush brush:
+                    Brushes.Remove(brush);
+                    break;
+                case Volume volume:
+                    Volumes.Remove(volume);
+                    break;
+                case Light light:
+                    Lights.Remove(light);
                     break;
             }
         }
@@ -209,10 +261,10 @@ namespace TakoEngine.Game
             // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
             foreach (var actor in Actors)
             {
-                actor.ClearLights();
-                actor.AddPointLights(_lightQuads.Retrieve(actor.Bounds)
-                    .Where(c => c.AttachedEntity is PointLight)
-                    .Select(c => (PointLight)c.AttachedEntity));
+                //actor.ClearLights();
+                //actor.AddPointLights(_lightQuads.Retrieve(actor.Bounds)
+                //    .Where(c => c.AttachedEntity is PointLight)
+                //    .Select(c => (PointLight)c.AttachedEntity));
 
                 var filteredColliders = _brushQuads.Retrieve(actor.Bounds)
                     .Concat(_actorQuads

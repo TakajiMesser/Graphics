@@ -63,7 +63,7 @@ namespace TakoEngine.Rendering.PostProcessing
         protected override void LoadBuffers()
         {
             _vertexBuffer.Bind();
-            _vertexArray.Load(_render2DProgram);
+            _vertexArray.Load();
             _vertexBuffer.Unbind();
 
             _vertexBuffer.Clear();

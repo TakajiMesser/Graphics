@@ -19,7 +19,7 @@ namespace TakoEngine.Rendering.Processing
 {
     public class WireframeRenderer : Renderer
     {
-        public float LineThickness { get; set; } = 0.01f;
+        public float LineThickness { get; set; } = 0.02f;
         public float SelectedLineThickness { get; set; } = 0.02f;
         public float GridLength { get; set; } = 10000.0f;
         public Quaternion GridRotation { get; set; } = Quaternion.Identity;
@@ -122,7 +122,21 @@ namespace TakoEngine.Rendering.Processing
             GL.Disable(EnableCap.CullFace);
         }
 
-        public void WireframePass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void WireframePass(Camera camera, IEnumerable<Volume> volumes)
+        {
+            _wireframeProgram.Use();
+
+            camera.SetUniforms(_wireframeProgram);
+            _wireframeProgram.SetUniform("lineThickness", LineThickness);
+            _wireframeProgram.SetUniform("lineColor", Vector4.One);
+
+            foreach (var volume in volumes)
+            {
+                volume.Draw(_wireframeProgram);
+            }
+        }
+
+        public void WireframePass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Volume> volumes, IEnumerable<Actor> actors)
         {
             _wireframeProgram.Use();
 
@@ -133,6 +147,11 @@ namespace TakoEngine.Rendering.Processing
             foreach (var brush in brushes)
             {
                 brush.Draw(_wireframeProgram);
+            }
+
+            foreach (var volume in volumes)
+            {
+                volume.Draw(_wireframeProgram);
             }
 
             foreach (var actor in actors)

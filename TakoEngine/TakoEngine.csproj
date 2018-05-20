@@ -106,6 +106,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Volume.cs" />
     <Compile Include="Entities\IStimulate.cs" />
     <Compile Include="Entities\IScale.cs" />
     <Compile Include="Entities\IRotate.cs" />
@@ -120,7 +121,7 @@
     <Compile Include="Game\GameSettings\Settings.cs" />
     <Compile Include="Game\TransformModeEventArgs.cs" />
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
-    <Compile Include="Game\EntitySelectedEventArgs.cs" />
+    <Compile Include="Game\EntitiesEventArgs.cs" />
     <Compile Include="Game\CursorEventArgs.cs" />
     <Compile Include="Game\GamePanel.cs">
       <SubType>UserControl</SubType>
@@ -147,6 +148,7 @@
     <Compile Include="Entities\Lights\SpotLight.cs" />
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
+    <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />
     <Compile Include="Maps\MapActor.cs" />
@@ -216,6 +218,7 @@
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Vertices\Simple3DVertex.cs" />
     <Compile Include="Rendering\Vertices\ColorVertex.cs" />
     <Compile Include="Rendering\Vertices\Simple2DVertex.cs" />
     <Compile Include="Rendering\Vertices\TextureVertex.cs" />

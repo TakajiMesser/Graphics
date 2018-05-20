@@ -125,7 +125,7 @@ namespace TakoEngine.Rendering.Processing
         protected override void LoadBuffers()
         {
             _vertexBuffer.Bind();
-            _vertexArray.Load(_translateProgram);
+            _vertexArray.Load();
             _vertexBuffer.Unbind();
 
             _frameBuffer.Clear();
