@@ -15,9 +15,9 @@ namespace TakoEngine.Helpers
             ?? (_vertexAttributes = new List<VertexAttribute>()
             {
                 new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 0),
-                new VertexAttribute("vNormal", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 12),
-                new VertexAttribute("vTangent", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 24),
-                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 36),
+                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 12),
+                new VertexAttribute("vNormal", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 28),
+                new VertexAttribute("vTangent", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 40),
                 new VertexAttribute("vUV", 2, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 52),
                 //new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<Vertex>(), 60)
                 //new VertexAttribute("vBoneIDs", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<Vertex>(), 64),
@@ -28,9 +28,9 @@ namespace TakoEngine.Helpers
             ?? (_jointVertexAttributes = new List<VertexAttribute>()
             {
                 new VertexAttribute("vPosition", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 0),
-                new VertexAttribute("vNormal", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 12),
-                new VertexAttribute("vTangent", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 24),
-                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 36),
+                new VertexAttribute("vColor", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 12),
+                new VertexAttribute("vNormal", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 28),
+                new VertexAttribute("vTangent", 3, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 40),
                 new VertexAttribute("vUV", 2, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 52),
                 //new VertexAttribute("vMaterialIndex", 1, VertexAttribPointerType.Int, UnitConversions.SizeOf<JointVertex>(), 60),
                 new VertexAttribute("vBoneIDs", 4, VertexAttribPointerType.Float, UnitConversions.SizeOf<JointVertex>(), 60),

@@ -13,6 +13,7 @@ namespace TakoEngine.Inputs
         // Other Movement
         public Input Run { get; set; } = new Input(Key.ShiftLeft);
         public Input Crawl { get; set; } = new Input(Key.ControlLeft);
+        public Input Block { get; set; } = new Input(Key.Space);
         public Input Evade { get; set; } = new Input(Key.Space);
         public Input In { get; set; } = new Input(Key.Q);
         public Input Out { get; set; } = new Input(Key.E);

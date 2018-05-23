@@ -24,7 +24,6 @@ namespace SauceEditor.Controls.Tools
     /// <summary>
     /// Interaction logic for PropertyWindow.xaml
     /// </summary>
-    /// 
     public partial class ToolsWindow : DockingLibrary.DockableContent
     {
         public TakoEngine.Game.Tools SelectedTool { get; set; }
@@ -34,6 +33,9 @@ namespace SauceEditor.Controls.Tools
         public ToolsWindow()
         {
             InitializeComponent();
+
+            SelectButton.IsEnabled = false;
+            SelectedTool = TakoEngine.Game.Tools.Selector;
         }
 
         private void EnableAllToolButtons()

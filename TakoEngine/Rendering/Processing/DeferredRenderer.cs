@@ -245,6 +245,15 @@ namespace TakoEngine.Rendering.Processing
             //GL.Disable(EnableCap.CullFace);
         }
 
+        public void BindForTransparentWriting()
+        {
+            _frameBuffer.BindAndDraw(new DrawBuffersEnum[]
+            {
+                DrawBuffersEnum.ColorAttachment0,
+                DrawBuffersEnum.ColorAttachment1
+            });
+        }
+
         public void BindForDiffuseWriting()
         {
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment1);
@@ -271,6 +280,25 @@ namespace TakoEngine.Rendering.Processing
             {
                 actor.Draw(_geometryProgram, textureManager);
             }
+        }
+
+        public void TransparentGeometryPass(Camera camera, IEnumerable<Volume> volumes)
+        {
+            _geometryProgram.Use();
+
+            camera.SetUniforms(_geometryProgram);
+            _geometryProgram.SetUniform("cameraPosition", camera.Position);
+
+            //GL.Enable(EnableCap.Blend);
+            //GL.BlendEquation(BlendEquationMode.FuncAdd);
+           // GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
+
+            foreach (var volume in volumes)
+            {
+                volume.Draw(_geometryProgram);
+            }
+
+            //GL.Disable(EnableCap.Blend);
         }
 
         public void JointGeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Actor> actors)

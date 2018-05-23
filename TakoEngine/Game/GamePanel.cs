@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
@@ -60,7 +61,7 @@ namespace TakoEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        _creatorVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        _creatorVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                         _gameState?.AddEntity(_creatorVolume);
                         _creatorVolume.Mesh.Load();
                         break;
@@ -91,6 +92,7 @@ namespace TakoEngine.Game
             }
         }
 
+        public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         //public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
@@ -302,19 +304,14 @@ namespace TakoEngine.Game
                     break;
             }
 
-            //Invoke((MethodInvoker)delegate
-            //{
-                _gameState.LoadMap(_map);
-            //});
-            
+            //Invoke((MethodInvoker)delegate { });
+
+            _gameState.LoadMap(_map);
+
             _gameState.Camera.DetachFromEntity();
-
             _gameState.Initialize();
-            //Invoke((MethodInvoker)delegate
-            //{
-                _renderManager.Load(_map);
-            //});
 
+            _renderManager.Load(_map);
             //_pollTimer.Start();
 
             switch (ViewType)
@@ -344,6 +341,7 @@ namespace TakoEngine.Game
             }
 
             IsLoaded = true;
+            PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
         }
 
         public void SelectEntity(IEntity entity)

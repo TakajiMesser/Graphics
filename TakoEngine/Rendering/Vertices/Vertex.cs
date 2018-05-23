@@ -8,17 +8,17 @@ namespace TakoEngine.Rendering.Vertices
     public struct Vertex// : IVertex
     {
         public Vector3 Position;// { get; set; }
+        public Color4 Color;// { get; set; }
         public Vector3 Normal;// { get; set; }
         public Vector3 Tangent;// { get; set; }
-        public Color4 Color;// { get; set; }
         public Vector2 TextureCoords;// { get; set; }
 
         public Vertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
         {
             Position = position;
+            Color = new Color4();
             Normal = normal;
             Tangent = tangent;
-            Color = new Color4();
             TextureCoords = textureCoords;
         }
 
@@ -27,9 +27,9 @@ namespace TakoEngine.Rendering.Vertices
             return new Vertex()
             {
                 Position = Position,
+                Color = color,
                 Normal = Normal,
                 Tangent = Tangent,
-                Color = color,
                 TextureCoords = TextureCoords,
             };
         }

@@ -8,9 +8,9 @@ namespace TakoEngine.Rendering.Vertices
     public struct JointVertex// : IVertex
     {
         public Vector3 Position;// { get; set; }
+        public Color4 Color;// { get; set; }
         public Vector3 Normal;// { get; set; }
         public Vector3 Tangent;// { get; set; }
-        public Color4 Color;// { get; set; }
         public Vector2 TextureCoords;// { get; set; }
         public Vector4 BoneIDs;// { get; set; }
         public Vector4 BoneWeights;// { get; set; }
@@ -18,9 +18,9 @@ namespace TakoEngine.Rendering.Vertices
         public JointVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
         {
             Position = position;
+            Color = new Color4();
             Normal = normal;
             Tangent = tangent;
-            Color = new Color4();
             TextureCoords = textureCoords;
             BoneIDs = new Vector4();
             BoneWeights = new Vector4();
@@ -31,9 +31,9 @@ namespace TakoEngine.Rendering.Vertices
             return new JointVertex()
             {
                 Position = Position,
+                Color = color,
                 Normal = Normal,
                 Tangent = Tangent,
-                Color = color,
                 TextureCoords = TextureCoords,
                 BoneIDs = BoneIDs,
                 BoneWeights = BoneWeights

@@ -43,7 +43,7 @@ namespace Jidai.Behaviors.Player
                     if (context.GetVariable<float>("coverDistance") < 0.1f)
                     {
                         // Handle movement while in cover here
-                        var translation = GeometryHelper.GetTranslation(context.Camera, CoverSpeed, context.InputState, context.InputMapping);
+                        var translation = GeometryHelper.GetHeldTranslation(context.Camera, CoverSpeed, context.InputState, context.InputMapping);
 
                         if (translation != Vector3.Zero)
                         {

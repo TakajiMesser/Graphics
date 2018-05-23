@@ -87,6 +87,7 @@
     <Compile Include="Behaviors\Enemy\TurnTowardsNode.cs" />
     <Compile Include="Behaviors\Enemy\IsPlayerInSightNode.cs" />
     <Compile Include="Behaviors\MoveToNode.cs" />
+    <Compile Include="Behaviors\Player\BlockNode.cs" />
     <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
     <Compile Include="Behaviors\Player\PlayerBehavior.cs" />
     <Compile Include="Behaviors\Player\TurnNode.cs" />

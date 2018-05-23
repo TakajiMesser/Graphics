@@ -33,7 +33,7 @@ namespace Jidai.Behaviors.Player
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = GeometryHelper.GetTranslation(context.Camera, speed, context.InputState, context.InputMapping);
+            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, context.InputState, context.InputMapping);
 
             if (context.InputState.IsHeld(context.InputMapping.In))
             {

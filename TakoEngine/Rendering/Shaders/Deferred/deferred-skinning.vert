@@ -13,9 +13,9 @@ uniform mat4 previousProjectionMatrix;
 uniform mat4[MAX_JOINTS] jointTransforms;
 
 layout(location = 0) in vec3 vPosition;
-layout(location = 1) in vec3 vNormal;
-layout(location = 2) in vec3 vTangent;
-layout(location = 3) in vec4 vColor;
+layout(location = 1) in vec4 vColor;
+layout(location = 2) in vec3 vNormal;
+layout(location = 3) in vec3 vTangent;
 layout(location = 4) in vec2 vUV;
 layout(location = 5) in vec4 vBoneIDs;
 layout(location = 6) in vec4 vBoneWeights;

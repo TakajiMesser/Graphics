@@ -26,7 +26,7 @@ namespace Jidai.Behaviors.Player
             var rootNode = new RepeaterNode(
                 new SelectorNode(
                     new SelectorNode(
-                        new EvadeNode(EVADE_SPEED, EVADE_TICK_COUNT)
+                        new BlockNode(EVADE_SPEED, EVADE_TICK_COUNT)
                     ),
                     new ParallelNode(
                         new MoveNode(RUN_SPEED, CREEP_SPEED, WALK_SPEED),

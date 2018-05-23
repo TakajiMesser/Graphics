@@ -30,7 +30,7 @@ namespace Jidai.Behaviors.Player
 
             if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
             {
-                var evadeTranslation = GeometryHelper.GetTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
+                var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
 
                 if (evadeTranslation != Vector3.Zero)
                 {
@@ -52,7 +52,7 @@ namespace Jidai.Behaviors.Player
 
             if (nEvadeTicks == 0 && context.InputState.IsPressed(context.InputMapping.Evade))
             {
-                var evadeTranslation = GeometryHelper.GetTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
+                var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
 
                 if (evadeTranslation != Vector3.Zero)
                 {

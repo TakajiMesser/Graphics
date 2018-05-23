@@ -191,5 +191,13 @@ namespace TakoEngine.Rendering.Shaders
                 BindTexture(parallaxMap, "parallaxMap", 3);
             }
         }
+
+        public void UnbindTextures()
+        {
+            GL.Uniform1(GetUniformLocation("useDiffuseMap"), 0);
+            GL.Uniform1(GetUniformLocation("useNormalMap"), 0);
+            GL.Uniform1(GetUniformLocation("useSpecularMap"), 0);
+            GL.Uniform1(GetUniformLocation("useParallaxMap"), 0);
+        }
     }
 }

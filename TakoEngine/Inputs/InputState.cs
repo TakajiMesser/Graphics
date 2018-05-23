@@ -177,5 +177,23 @@ namespace TakoEngine.Inputs
                     throw new NotImplementedException("Cannot handle InputType " + Enum.GetName(typeof(Type), input.Type));
             }
         }
+
+        public void SwallowInputs(params Input[] inputs)
+        {
+            foreach (var input in inputs)
+            {
+                switch (input.Type)
+                {
+                    case InputType.Key:
+                        if (_keyState != null)
+                        {
+                            //_keyState = new KeyboardState();
+                        }
+                        break;
+                    case InputType.Mouse:
+                        break;
+                }
+            }
+        }
     }
 }

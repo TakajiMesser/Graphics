@@ -18,10 +18,11 @@ namespace TakoEngine.Maps
 
         public List<Vector3> Vertices { get; set; } = new List<Vector3>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
+        public Vector4 Color { get; set; }
 
         public Volume ToVolume()
         {
-            var volume = new Volume(Vertices, TriangleIndices)
+            var volume = new Volume(Vertices, TriangleIndices, Color)
             {
                 Position = Position,
                 OriginalRotation = Rotation,

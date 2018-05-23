@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using System.Runtime.InteropServices;
 
 namespace TakoEngine.Rendering.Vertices

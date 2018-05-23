@@ -19,7 +19,7 @@
         <Label FontSize="14">Tool Properties</Label>
         <Grid Name="PropertyGrid">
             <Grid.Resources>
-                <Style TargetType="{x:Type Border}">
+                <Style x:Key="GridBorder" TargetType="{x:Type Border}">
                     <Setter Property="BorderBrush" Value="Black" />
                     <Setter Property="BorderThickness" Value="1" />
                     <Setter Property="CornerRadius" Value="0" />

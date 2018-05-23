@@ -129,6 +129,11 @@ namespace TakoEngine.Rendering.Processing
                     _wireframeRenderer.SelectionPass(camera, light, lightMesh);
                     _billboardRenderer.RenderSelection(camera, light);
                 }
+                else if (entity is Volume volume)
+                {
+                    _wireframeRenderer.SelectionPass(camera, entity);
+                    _billboardRenderer.RenderSelection(camera, volume);
+                }
                 else
                 {
                     // TODO - Find out why selection appears to be updating ahead of entity
@@ -211,6 +216,20 @@ namespace TakoEngine.Rendering.Processing
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
 
+            _deferredRenderer.BindForTransparentWriting();
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.Disable(EnableCap.CullFace);
+            //GL.Disable(EnableCap.DepthTest);
+
+            _deferredRenderer.TransparentGeometryPass(gameState.Camera, gameState.Volumes);
+
+            //GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
+
             _deferredRenderer.BindForDiffuseWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
@@ -220,6 +239,10 @@ namespace TakoEngine.Rendering.Processing
                 _wireframeRenderer.RenderGridLines(gameState.Camera);
                 GL.Enable(EnableCap.CullFace);
             }
+
+            //GL.Disable(EnableCap.CullFace);
+            //_deferredRenderer.TransparentGeometryPass(gameState.Camera, gameState.Volumes);
+            //GL.Enable(EnableCap.CullFace);
 
             _skyboxRenderer.Render(gameState.Camera);
             _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
@@ -236,6 +259,7 @@ namespace TakoEngine.Rendering.Processing
 
             _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
             _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
+
             RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
 
             _deferredRenderer.BindForLitWriting();
@@ -249,6 +273,20 @@ namespace TakoEngine.Rendering.Processing
                 _wireframeRenderer.RenderGridLines(gameState.Camera);
                 GL.Enable(EnableCap.CullFace);
             }
+
+            _deferredRenderer.BindForTransparentWriting();
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.Disable(EnableCap.CullFace);
+            //GL.Disable(EnableCap.DepthTest);
+
+            _deferredRenderer.TransparentGeometryPass(gameState.Camera, gameState.Volumes);
+
+            //GL.Enable(EnableCap.DepthTest);
+            GL.Enable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
 
             GL.Disable(EnableCap.DepthTest);
 

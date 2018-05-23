@@ -137,6 +137,37 @@ namespace TakoEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
+        public void RenderSelection(Camera camera, Volume volume)
+        {
+            _billboardProgram.Use();
+
+            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetUniform("cameraPosition", camera.Position);
+
+            // Need to bind a texture for each selectable vertex point
+            _billboardProgram.BindTexture(_selectedPointLightTexture, "mainTexture", 0);
+
+            _vertexBuffer.Clear();
+
+            foreach (var vertex in volume.Mesh.Vertices)
+            {
+                _vertexBuffer.AddVertex(new ColorVertex()
+                {
+                    Position = vertex.Position,
+                    Color = new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)
+                });
+            }
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+        }
+
         public void RenderSelection(Camera camera, Light light)
         {
             _billboardProgram.Use();

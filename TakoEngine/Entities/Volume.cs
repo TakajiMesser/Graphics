@@ -44,7 +44,7 @@ namespace TakoEngine.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public Mesh<Simple3DVertex> Mesh { get; private set; }
+        public Mesh<ColorVertex> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
@@ -54,10 +54,10 @@ namespace TakoEngine.Entities
 
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
-        public Volume(List<Vector3> vertices, List<int> triangleIndices)
+        public Volume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color)
         {
-            var simpleVertices = vertices.Select(v => new Simple3DVertex(v)).ToList();
-            Mesh = new Mesh<Simple3DVertex>(simpleVertices, triangleIndices);
+            var simpleVertices = vertices.Select(v => new ColorVertex(v, color)).ToList();
+            Mesh = new Mesh<ColorVertex>(simpleVertices, triangleIndices);
         }
 
         public void Load() => Mesh.Load();
@@ -68,7 +68,7 @@ namespace TakoEngine.Entities
             Mesh.Draw(program);
         }
 
-        public static Volume RectangularPrism(Vector3 center, float xLength, float yLength, float zLength)
+        public static Volume RectangularPrism(Vector3 center, float xLength, float yLength, float zLength, Vector4 color)
         {
             var vertices = new List<Vector3>
             {
@@ -98,7 +98,7 @@ namespace TakoEngine.Entities
                 5, 0, 1
             };
 
-            return new Volume(vertices, triangleIndices);
+            return new Volume(vertices, triangleIndices, color);
         }
     }
 }

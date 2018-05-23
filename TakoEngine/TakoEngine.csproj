@@ -119,6 +119,7 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
+    <Compile Include="Game\PanelLoadedEventArgs.cs" />
     <Compile Include="Game\TransformModeEventArgs.cs" />
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
     <Compile Include="Game\EntitiesEventArgs.cs" />

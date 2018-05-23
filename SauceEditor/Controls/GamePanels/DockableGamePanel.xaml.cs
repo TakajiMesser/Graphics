@@ -47,7 +47,7 @@ namespace SauceEditor.Controls.GamePanels
             Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
             Panel.MouseDown += Panel_MouseDown;
             Panel.MouseUp += Panel_MouseUp;
-            Panel.Load += (s, e) =>
+            Panel.PanelLoaded += (s, e) =>
             {
                 GridButton.IsChecked = true;
             };

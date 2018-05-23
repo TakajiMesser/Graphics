@@ -7,6 +7,7 @@ using TakoEngine.Rendering.Materials;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Textures;
 using TakoEngine.Rendering.Vertices;
+using OpenTK.Graphics.OpenGL;
 
 namespace TakoEngine.Rendering.Meshes
 {
@@ -80,6 +81,10 @@ namespace TakoEngine.Rendering.Meshes
             if (textureManager != null && TextureMapping != null)
             {
                 program.BindTextures(textureManager, TextureMapping);
+            }
+            else
+            {
+                program.UnbindTextures();
             }
 
             _material.Draw(program);
