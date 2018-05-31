@@ -19,6 +19,8 @@
         <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
         
         <RoutedUICommand x:Key="SaveAllCommand" Text="Save All"/>
+
+        <RoutedUICommand x:Key="SettingsCommand" Text="Settings..."/>
     </Window.Resources>
     <Window.CommandBindings>
         <CommandBinding Command="{StaticResource NewProjectCommand}"  CanExecute="NewProjectCommand_CanExecute" Executed="NewProjectCommand_Executed" />
@@ -34,6 +36,8 @@
         <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
         <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
         <CommandBinding Command="{StaticResource SaveAllCommand}" CanExecute="SaveAllCommand_CanExecute" Executed="SaveAllCommand_Executed" />
+
+        <CommandBinding Command="{StaticResource SettingsCommand}" CanExecute="Settings_CanExecute" Executed="Settings_Executed"/>
     </Window.CommandBindings>
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
@@ -72,6 +76,8 @@
                 <MenuItem Command="Copy"/>
                 <MenuItem Command="Paste"/>
                 <MenuItem Command="Delete"/>
+                <Separator/>
+                <MenuItem Header="Settings..." Command="{StaticResource SettingsCommand}"/>
             </MenuItem>
             <MenuItem Header="_View">
 

@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
@@ -61,15 +60,14 @@ namespace TakoEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        _creatorVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
-                        _gameState?.AddEntity(_creatorVolume);
-                        _creatorVolume.Mesh.Load();
+                        _toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
+                        _gameState?.EntityManager.AddEntity(_toolVolume);
                         break;
                     default:
-                        if (_creatorVolume != null)
+                        if (_toolVolume != null)
                         {
-                            _gameState?.RemoveEntityByID(_creatorVolume.ID);
-                            _creatorVolume = null;
+                            _gameState?.EntityManager.RemoveEntityByID(_toolVolume.ID);
+                            _toolVolume = null;
                         }
                         break;
                 }
@@ -109,7 +107,7 @@ namespace TakoEngine.Game
         private Timer _pollTimer = new Timer();
 
         private Tools _selectedTool = Tools.Brush;
-        private Volume _creatorVolume;
+        private Volume _toolVolume;
 
         private object _cursorLock = new object();
         private bool _isCursorVisible = true;
@@ -369,7 +367,7 @@ namespace TakoEngine.Game
         {
             foreach (var entity in entities)
             {
-                var selectedEntity = _gameState.GetEntityByID(entity.ID);
+                var selectedEntity = _gameState.EntityManager.GetEntityByID(entity.ID);
 
                 if (selectedEntity != null)
                 {
@@ -439,19 +437,19 @@ namespace TakoEngine.Game
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:
-                    _renderManager.RenderWireframe(_gameState);
-                    _renderManager.RenderEntityIDs(_gameState);
+                    _renderManager.RenderWireframe(_gameState.Camera, _gameState.EntityManager);
+                    _renderManager.RenderEntityIDs(_gameState.Camera, _gameState.EntityManager);
                     break;
                 case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame(_gameState);
-                    _renderManager.RenderEntityIDs(_gameState);
+                    _renderManager.RenderDiffuseFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
+                    _renderManager.RenderEntityIDs(_gameState.Camera, _gameState.EntityManager);
                     break;
                 case RenderModes.Lit:
-                    _renderManager.RenderLitFrame(_gameState);
-                    _renderManager.RenderEntityIDs(_gameState);
+                    _renderManager.RenderLitFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
+                    _renderManager.RenderEntityIDs(_gameState.Camera, _gameState.EntityManager);
                     break;
-                case RenderModes.Full:
-                    _renderManager.RenderFullFrame(_gameState);
+                case RenderModes.Full:  
+                    _renderManager.RenderFullFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
                     break;
             }
 
@@ -527,7 +525,7 @@ namespace TakoEngine.Game
 
             if (id > 0)
             {
-                var entity = _gameState.GetEntityByID(id);
+                var entity = _gameState.EntityManager.GetEntityByID(id);
 
                 if (isMultiSelect && SelectedEntities.Select(e => e.ID).Contains(id))
                 {

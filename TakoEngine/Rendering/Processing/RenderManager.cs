@@ -93,16 +93,25 @@ namespace TakoEngine.Rendering.Processing
 
         public void ResizeWindow() => _renderToScreen.ResizeTextures(WindowSize);
 
-        public void RenderEntityIDs(GameState gameState)
+        public void RenderEntityIDs(Camera camera, EntityManager entityManager)
         {
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
-            _selectionRenderer.JointSelectionPass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
-            _billboardRenderer.RenderLightSelections(gameState.Camera, gameState.Lights);
+            _selectionRenderer.SelectionPass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            _selectionRenderer.JointSelectionPass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+            _billboardRenderer.RenderLightSelections(camera, entityManager.Lights);
         }
+
+        /*public void RenderEntityIDs(Volume volume)
+        {
+            _selectionRenderer.BindForWriting();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            //_selectionRenderer.SelectionPass();
+        }*/
 
         public int GetEntityIDFromPoint(Vector2 point)
         {
@@ -132,6 +141,9 @@ namespace TakoEngine.Rendering.Processing
                 else if (entity is Volume volume)
                 {
                     _wireframeRenderer.SelectionPass(camera, entity);
+                    _billboardRenderer.RenderSelection(camera, volume);
+
+                    _selectionRenderer.BindForWriting();
                     _billboardRenderer.RenderSelection(camera, volume);
                 }
                 else
@@ -182,25 +194,25 @@ namespace TakoEngine.Rendering.Processing
 
         public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
 
-        public void RenderWireframe(GameState gameState)
+        public void RenderWireframe(Camera camera, EntityManager entityManager)
         {
             _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             if (RenderGrid)
             {
-                _wireframeRenderer.RenderGridLines(gameState.Camera);
+                _wireframeRenderer.RenderGridLines(camera);
             }
 
-            _wireframeRenderer.WireframePass(gameState.Camera, gameState.Brushes, gameState.Volumes, gameState.Actors.Where(g => g.Model is SimpleModel));
-            _wireframeRenderer.JointWireframePass(gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
+            _wireframeRenderer.WireframePass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            _wireframeRenderer.JointWireframePass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
+            _billboardRenderer.RenderLights(camera, entityManager.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -208,83 +220,74 @@ namespace TakoEngine.Rendering.Processing
             _renderToScreen.Render(_fxaaRenderer.FinalTexture);
         }
 
-        public void RenderDiffuseFrame(GameState gameState)
+        public void RenderDiffuseFrame(Camera camera, EntityManager entityManager, TextureManager textureManager)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+
+            _deferredRenderer.BindForDiffuseWriting();
+
+            if (RenderGrid)
+            {
+                GL.Disable(EnableCap.CullFace);
+                _wireframeRenderer.RenderGridLines(camera);
+                GL.Enable(EnableCap.CullFace);
+            }
+
+            _skyboxRenderer.Render(camera);
+            _billboardRenderer.RenderLights(camera, entityManager.Lights);
 
             _deferredRenderer.BindForTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
-            //GL.Disable(EnableCap.DepthTest);
 
-            _deferredRenderer.TransparentGeometryPass(gameState.Camera, gameState.Volumes);
+            _deferredRenderer.TransparentGeometryPass(camera, entityManager.Volumes);
 
-            //GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
-
-            _deferredRenderer.BindForDiffuseWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            if (RenderGrid)
-            {
-                GL.Disable(EnableCap.CullFace);
-                _wireframeRenderer.RenderGridLines(gameState.Camera);
-                GL.Enable(EnableCap.CullFace);
-            }
-
-            //GL.Disable(EnableCap.CullFace);
-            //_deferredRenderer.TransparentGeometryPass(gameState.Camera, gameState.Volumes);
-            //GL.Enable(EnableCap.CullFace);
-
-            _skyboxRenderer.Render(gameState.Camera);
-            _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
             _renderToScreen.Render(_deferredRenderer.ColorTexture);
         }
 
-        public void RenderLitFrame(GameState gameState)
+        public void RenderLitFrame(Camera camera, EntityManager entityManager, TextureManager textureManager)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
 
-            RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
+            RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);
 
             _deferredRenderer.BindForLitWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            _skyboxRenderer.Render(gameState.Camera);
-            _billboardRenderer.RenderLights(gameState.Camera, gameState.Lights);
+
+            _skyboxRenderer.Render(camera);
+            _billboardRenderer.RenderLights(camera, entityManager.Lights);
 
             if (RenderGrid)
             {
                 GL.Disable(EnableCap.CullFace);
-                _wireframeRenderer.RenderGridLines(gameState.Camera);
+                _wireframeRenderer.RenderGridLines(camera);
                 GL.Enable(EnableCap.CullFace);
             }
 
-            _deferredRenderer.BindForTransparentWriting();
+            _deferredRenderer.BindForLitTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
-            //GL.Disable(EnableCap.DepthTest);
 
-            _deferredRenderer.TransparentGeometryPass(gameState.Camera, gameState.Volumes);
+            _deferredRenderer.TransparentGeometryPass(camera, entityManager.Volumes);
 
-            //GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
 
@@ -293,19 +296,19 @@ namespace TakoEngine.Rendering.Processing
             _renderToScreen.Render(_deferredRenderer.FinalTexture);
         }
 
-        public void RenderFullFrame(GameState gameState)
+        public void RenderFullFrame(Camera camera, EntityManager entityManager, TextureManager textureManager)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(gameState.TextureManager, gameState.Camera, gameState.Brushes, gameState.Actors.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(gameState.TextureManager, gameState.Camera, gameState.Actors.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
 
-            RenderLights(gameState.Camera, gameState.Lights, gameState.Brushes, gameState.Actors);
+            RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);
 
             _deferredRenderer.BindForLitWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            _skyboxRenderer.Render(gameState.Camera);
+            _skyboxRenderer.Render(camera);
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
@@ -322,7 +325,7 @@ namespace TakoEngine.Rendering.Processing
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
 
-        private void RenderLights(Camera camera, List<Light> lights, List<Brush> brushes, List<Actor> actors)
+        private void RenderLights(Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);

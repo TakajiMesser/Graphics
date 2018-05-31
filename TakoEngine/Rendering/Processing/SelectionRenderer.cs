@@ -156,7 +156,7 @@ namespace TakoEngine.Rendering.Processing
             return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
         }
 
-        public void SelectionPass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void SelectionPass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Volume> volumes, IEnumerable<Actor> actors)
         {
             _selectionProgram.Use();
 
@@ -166,6 +166,12 @@ namespace TakoEngine.Rendering.Processing
             {
                 _selectionProgram.SetUniform("id", GetColorFromID(brush.ID));
                 brush.Draw(_selectionProgram);
+            }
+
+            foreach (var volume in volumes)
+            {
+                _selectionProgram.SetUniform("id", GetColorFromID(volume.ID));
+                volume.Draw(_selectionProgram);
             }
 
             foreach (var actor in actors)

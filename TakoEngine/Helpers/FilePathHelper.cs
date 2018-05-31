@@ -12,6 +12,7 @@ namespace TakoEngine.Helpers
         public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Screenshots\";
 
         #region Textures
+        public static string VOLUME_VERTEX_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\volume-vertex.png";
         public static string POINT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\point-light.png";
         public static string SPOT_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\spot-light.png";
         public static string DIRECTIONAL_LIGHT_BILLBOARD_TEXTURE_PATH = SOLUTION_DIRECTORY + @"\TakoEngine\Resources\Textures\directional-light.png";

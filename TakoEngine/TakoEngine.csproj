@@ -106,6 +106,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\Volume.cs" />
     <Compile Include="Entities\IStimulate.cs" />
     <Compile Include="Entities\IScale.cs" />

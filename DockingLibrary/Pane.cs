@@ -128,16 +128,9 @@ namespace DockingLibrary
 
         #region Membri di IDropSurface 
 
-        public Rect SurfaceRectangle
-        {
-            get 
-            {
-                if (IsHidden)
-                    return new Rect();
-                
-                return new Rect(PointToScreen(new Point(0,0)), new Size(ActualWidth, ActualHeight)); 
-            }
-        }
+        public Rect SurfaceRectangle => (!IsHidden && IsVisible)
+            ? new Rect(PointToScreen(new Point(0, 0)), new Size(ActualWidth, ActualHeight))
+            : new Rect();
 
         public virtual void OnDragEnter(Point point)
         {

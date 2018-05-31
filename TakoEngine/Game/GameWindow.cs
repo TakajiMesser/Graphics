@@ -103,7 +103,7 @@ namespace TakoEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.RenderFullFrame(_gameState);
+            _renderManager.RenderFullFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
 
             GL.UseProgram(0);
             SwapBuffers();

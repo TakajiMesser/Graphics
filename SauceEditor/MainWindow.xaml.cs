@@ -6,6 +6,7 @@ using SauceEditor.Controls;
 using SauceEditor.Controls.GamePanels;
 using SauceEditor.Controls.ProjectTree;
 using SauceEditor.Controls.Properties;
+using SauceEditor.Controls.Settings;
 using SauceEditor.Controls.Tools;
 using SauceEditor.Structure;
 using System;
@@ -38,9 +39,13 @@ namespace SauceEditor
         private GamePanelManager _gamePanelManager;
         private GameWindow _gameWindow;
 
+        private SettingsWindow _settingsWindow;
+        private EditorSettings _settings;
+
         public MainWindow()
         {
             CreateTestProject();
+            LoadOrCreateSettings();
 
             PresentationTraceSources.DataBindingSource.Listeners.Add(new ConsoleTraceListener());
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
@@ -57,6 +62,19 @@ namespace SauceEditor
             gameProject.MapPaths.Add(FilePathHelper.MAP_PATH);
             gameProject.ModelPaths.Add(FilePathHelper.BOB_LAMP_MESH_PATH);
             gameProject.Save(Path.GetDirectoryName(FilePathHelper.MAP_PATH) + "\\" + gameProject.Name + GameProject.FILE_EXTENSION);
+        }
+
+        private void LoadOrCreateSettings()
+        {
+            if (File.Exists(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH))
+            {
+                _settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            }
+            else
+            {
+                _settings = new EditorSettings();
+                _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -91,7 +109,7 @@ namespace SauceEditor
 
         private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
         {
-            _gamePanelManager.SetSelectedTool(e.NewTool);
+            _gamePanelManager?.SetSelectedTool(e.NewTool);
         }
 
         private void OnClosing(object sender, EventArgs e)
@@ -156,8 +174,11 @@ namespace SauceEditor
                 SideDockManager.ActiveContent = _propertyPanel;
             };
             _gamePanelManager.ShowAsDocument();
+            _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
+
+
         }
 
         private void OpenModel(string filePath)
@@ -289,7 +310,9 @@ namespace SauceEditor
             {
                 _projectTree.OpenMap(dialog.FileName);
                 SideDockManager.ActiveContent = _projectTree;
+
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
+                OpenMap(dialog.FileName);
             }
         }
 
@@ -383,6 +406,19 @@ namespace SauceEditor
                 _zView.Panel.Enabled = true;*/
             };
             _gameWindow.Run(60.0, 0.0);
+        }
+
+        private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
+
+        private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
+        {
+            _settingsWindow = new SettingsWindow(_settings);
+            _settingsWindow.SettingsChanged += (s, args) =>
+            {
+                _settings = args.Settings;
+                _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            };
+            _settingsWindow.Show();
         }
     }
 }

@@ -274,6 +274,28 @@ namespace SauceEditor.Controls.GamePanels
 
         private void ScaleButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Scale;
 
+        public void SetView(Structure.ViewTypes view)
+        {
+            switch (view)
+            {
+                case Structure.ViewTypes.All:
+                    View_All.IsSelected = true;
+                    break;
+                case Structure.ViewTypes.Perspective:
+                    View_Perspective.IsSelected = true;
+                    break;
+                case Structure.ViewTypes.X:
+                    View_X.IsSelected = true;
+                    break;
+                case Structure.ViewTypes.Y:
+                    View_Y.IsSelected = true;
+                    break;
+                case Structure.ViewTypes.Z:
+                    View_Z.IsSelected = true;
+                    break;
+            }
+        }
+
         private void ViewComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var selectedItem = ViewComboBox.SelectedItem as ComboBoxItem;

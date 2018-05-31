@@ -130,6 +130,9 @@
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Controls\Settings\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Controls\Tools\ToolSelectedEventArgs.cs" />
     <Compile Include="Controls\Tools\ToolsWindow.xaml.cs">
       <DependentUpon>ToolsWindow.xaml</DependentUpon>
@@ -155,6 +158,9 @@
     <Compile Include="DocWindowCollection.xaml.cs">
       <DependentUpon>DocWindowCollection.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\FilePathHelper.cs" />
+    <Compile Include="Structure\SettingsEventArgs.cs" />
+    <Compile Include="Structure\EditorSettings.cs" />
     <Compile Include="Structure\GameProject.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
     <Page Include="Controls\GamePanels\DockableGamePanel.xaml">
@@ -166,6 +172,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Controls\ProjectTree\FileNameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Controls\Settings\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

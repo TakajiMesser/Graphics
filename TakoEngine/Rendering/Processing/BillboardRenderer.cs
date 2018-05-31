@@ -29,6 +29,8 @@ namespace TakoEngine.Rendering.Processing
         private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
         private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
 
+        private Texture _volumeVertexTexture;
+
         private Texture _pointLightTexture;
         private Texture _spotLightTexture;
         private Texture _directionalLightTexture;
@@ -82,6 +84,8 @@ namespace TakoEngine.Rendering.Processing
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
+
+            _volumeVertexTexture = Texture.LoadFromFile(FilePathHelper.VOLUME_VERTEX_TEXTURE_PATH, false, false);
 
             _pointLightTexture = Texture.LoadFromFile(FilePathHelper.POINT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
             _spotLightTexture = Texture.LoadFromFile(FilePathHelper.SPOT_LIGHT_BILLBOARD_TEXTURE_PATH, false, false);
@@ -145,7 +149,7 @@ namespace TakoEngine.Rendering.Processing
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             // Need to bind a texture for each selectable vertex point
-            _billboardProgram.BindTexture(_selectedPointLightTexture, "mainTexture", 0);
+            _billboardProgram.BindTexture(_volumeVertexTexture, "mainTexture", 0);
 
             _vertexBuffer.Clear();
 
@@ -153,7 +157,7 @@ namespace TakoEngine.Rendering.Processing
             {
                 _vertexBuffer.AddVertex(new ColorVertex()
                 {
-                    Position = vertex.Position,
+                    Position = volume.Position + vertex.Position,
                     Color = new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)
                 });
             }

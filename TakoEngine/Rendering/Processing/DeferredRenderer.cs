@@ -254,6 +254,15 @@ namespace TakoEngine.Rendering.Processing
             });
         }
 
+        public void BindForLitTransparentWriting()
+        {
+            _frameBuffer.BindAndDraw(new DrawBuffersEnum[]
+            {
+                DrawBuffersEnum.ColorAttachment0,
+                DrawBuffersEnum.ColorAttachment6
+            });
+        }
+
         public void BindForDiffuseWriting()
         {
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment1);

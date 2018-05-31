@@ -15,11 +15,11 @@
             <Button Name="ScaleButton" Content="Scale" Click="ScaleButton_Click"/>
             <Separator/>
             <ComboBox Name="ViewComboBox" SelectionChanged="ViewComboBox_SelectionChanged">
-                <ComboBoxItem IsSelected="True">All</ComboBoxItem>
-                <ComboBoxItem>Perspective</ComboBoxItem>
-                <ComboBoxItem>X</ComboBoxItem>
-                <ComboBoxItem>Y</ComboBoxItem>
-                <ComboBoxItem>Z</ComboBoxItem>
+                <ComboBoxItem Name="View_All">All</ComboBoxItem>
+                <ComboBoxItem Name="View_Perspective">Perspective</ComboBoxItem>
+                <ComboBoxItem Name="View_X">X</ComboBoxItem>
+                <ComboBoxItem Name="View_Y">Y</ComboBoxItem>
+                <ComboBoxItem Name="View_Z">Z</ComboBoxItem>
             </ComboBox>
         </ToolBar>
         <dock:DockManager Name ="MainDockManager" Grid.Column="0"/>
