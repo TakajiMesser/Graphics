@@ -7,6 +7,7 @@ The intent is to produce a library that can act as a base game library, with the
 ## Graphics
 
 This is the library where all game engine code is being stored.
+This includes all classes representing game entities, AI behavior trees, and GLSL shader files.
 
 ## GraphicsTest
 
@@ -15,5 +16,4 @@ All test resources are also stored here, such as textures, meshes, behaviors, et
 
 ## MappingTool
 
-The Ghetto beginnings of a more user-friendly mapping interface.
-Laughably useless at the moment, to be fleshed out later... 
+The beginnings of a map editor.
