@@ -29,10 +29,10 @@ namespace TakoEngine.Rendering.Processing
         private SimpleMesh _squareMesh;
         private List<string> _texturePaths = new List<string>();
 
-        public void SetTextures(IEnumerable<string> texturePath)
+        public void SetTextures(List<string> texturePaths)
         {
             _texturePaths.Clear();
-            _texturePaths.AddRange(texturePath);
+            _texturePaths.AddRange(texturePaths);
         }
 
         protected override void LoadPrograms()

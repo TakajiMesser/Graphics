@@ -19,9 +19,10 @@ namespace TakoEngine.Game
 {
     public class GameState
     {
-        public Camera Camera { get; private set; }
+        public Camera Camera { get; set; }
         public EntityManager EntityManager { get; private set; } = new EntityManager();
         public TextureManager TextureManager { get; } = new TextureManager();
+        public bool IsLoaded { get; private set; }
 
         private Resolution _resolution;
         internal InputState _inputState = new InputState();
@@ -39,14 +40,64 @@ namespace TakoEngine.Game
             TextureManager.EnableAnisotropy = true;
         }
 
-        public void LoadMap(Map map)
+        public void LoadFromEntities(EntityManager entityManager, Map map)
+        {
+            EntityManager = entityManager;
+
+            _lightQuads = new QuadTree(0, map.Boundaries);
+            _lightQuads.InsertRange(EntityManager.Lights.Select(l => new BoundingCircle(l)));
+
+            _brushQuads = new QuadTree(0, map.Boundaries);
+            _brushQuads.InsertRange(EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
+
+            _volumeQuads = new QuadTree(0, map.Boundaries);
+            _volumeQuads.InsertRange(EntityManager.Volumes.Select(v => v.Bounds));
+
+            _actorQuads = new QuadTree(0, map.Boundaries);
+
+            foreach (var mapActor in map.Actors)
+            {
+                var actor = GetActorByName(mapActor.Name);
+
+                switch (actor.Model)
+                {
+                    case SimpleModel s:
+                        for (var i = 0; i < s.Meshes.Count; i++)
+                        {
+                            if (i < mapActor.TexturesPaths.Count)
+                            {
+                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
+                            }
+                        }
+                        break;
+
+                    case AnimatedModel a:
+                        for (var i = 0; i < a.Meshes.Count; i++)
+                        {
+                            if (i < mapActor.TexturesPaths.Count)
+                            {
+                                a.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
+                            }
+                        }
+                        break;
+                }
+            }
+
+            IsLoaded = true;
+        }
+
+        public void LoadFromMap(Map map)
         {
             Camera = map.Camera.ToCamera(_resolution);
+            EntityManager.ClearEntities();
 
             LoadLightsFromMap(map);
             LoadBrushesFromMap(map);
             LoadVolumesFromMap(map);
             LoadActorsFromMap(map);
+            EntityManager.LoadEntities();
+
+            IsLoaded = true;
         }
 
         private void LoadLightsFromMap(Map map)
@@ -79,7 +130,9 @@ namespace TakoEngine.Game
         private void LoadVolumesFromMap(Map map)
         {
             _volumeQuads = new QuadTree(0, map.Boundaries);
+
             EntityManager.AddEntities(map.Volumes.Select(v => v.ToVolume()));
+            _volumeQuads.InsertRange(EntityManager.Volumes.Select(v => v.Bounds));
         }
 
         private void LoadActorsFromMap(Map map)

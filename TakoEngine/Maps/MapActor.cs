@@ -25,7 +25,7 @@ namespace TakoEngine.Maps
         public bool HasCollision { get; set; }
         //public ICollider Collider { get; set; }
 
-        public Actor ToActor(TextureManager textureManager)
+        public Actor ToActor(TextureManager textureManager = null)
         {
             var actor = new Actor(Name);
 

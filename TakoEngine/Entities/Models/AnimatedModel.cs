@@ -23,7 +23,7 @@ namespace TakoEngine.Entities.Models
 
         private Matrix4 _globalInverseTransform;
 
-        public AnimatedModel(string filePath, Assimp.Scene scene, TextureManager textureManager)
+        public AnimatedModel(string filePath, Assimp.Scene scene, TextureManager textureManager = null)
         {
             Animator.AnimationEnd += (s, args) => Animator.CurrentAnimation = Animator.Animations.First();
             Animator.Animate += (s, args) =>
@@ -89,10 +89,13 @@ namespace TakoEngine.Entities.Models
                     vertices.Add(vertex);
                 }
 
-                Meshes.Add(new JointMesh(vertices, material, mesh.GetIndices().ToList())
+                var jointMesh = new JointMesh(vertices, material, mesh.GetIndices().ToList());
+                if (textureManager != null)
                 {
-                    TextureMapping = new TexturePaths(scene.Materials[mesh.MaterialIndex], Path.GetDirectoryName(filePath)).ToTextureMapping(textureManager)
-                });
+                    jointMesh.TextureMapping = new TexturePaths(scene.Materials[mesh.MaterialIndex], Path.GetDirectoryName(filePath)).ToTextureMapping(textureManager);
+                }
+
+                Meshes.Add(jointMesh);
             }
 
             // Every bone has an offset matrix, which converts it from model-space to bone-space (animation transforms are done in bone-space)

@@ -96,7 +96,7 @@ namespace TakoEngine.Game
         //public event EventHandler<TransformSelectedEventArgs> TransformSelectionChanged;
         //public event EventHandler<TransformModeEventArgs> TransformModeChanged;
 
-        private Map _map;
+        //private Map _map;
         private GameState _gameState;
         private RenderManager _renderManager;
 
@@ -139,6 +139,9 @@ namespace TakoEngine.Game
             PanelSize = new Resolution(Width, Height);
 
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
+
+            //_gameState = new GameState(Resolution);
+            //_renderManager = new RenderManager(Resolution, PanelSize);
 
             _pollTimer.Interval = 16.67;
             _pollTimer.Elapsed += PollTimer_Elapsed;
@@ -226,13 +229,18 @@ namespace TakoEngine.Game
         protected override void OnLoad(EventArgs e)
         {
             Location = new Point(0, 0);
+
             _gameState = new GameState(Resolution);
             _renderManager = new RenderManager(Resolution, PanelSize);
+            base.OnLoad(e);
+            //Load?.Invoke(this, new EventArgs());
+            //IsLoaded = true;
+            //PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
 
-            if (_map != null)
+            /*if (_map != null)
             {
                 LoadGameState();
-            }
+            }*/
         }
 
         /*public void LoadGameState(GameState gameState, Map map)
@@ -245,101 +253,72 @@ namespace TakoEngine.Game
             //_pollTimer.Start();
         }*/
 
-        public void LoadFromMap(string filePath)
+        public void LoadFromMap(Map map)
         {
-            _map = Map.Load(filePath);
+            _gameState.LoadFromMap(map);
+            LoadCamera();
 
-            /*using (var window = new NativeWindow())
-            {
-                var glContext = new GraphicsContext(GraphicsMode.Default, window.WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
-                glContext.MakeCurrent(window.WindowInfo);
-                (glContext as IGraphicsContextInternal).LoadAll();
-            }*/
+            _renderManager.Load(map.SkyboxTextureFilePaths);
+            Invalidate();
 
-            if (_gameState != null)
-            {
-                LoadGameState();
-            }
-            //_gameState.LoadMap(_map);
-            //_gameState.Camera.DetachFromEntity();
-            //_gameState.Initialize();
-            //LoadGameState();
+            IsLoaded = true;
+            PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
         }
 
-        private void LoadGameState()
+        public void LoadFromEntities(EntityManager entities, Map map)
         {
-            switch (ViewType)
-            {
-                case ViewTypes.X:
-                    _map.Camera = new MapCamera()
-                    {
-                        Type = Rendering.Matrices.ProjectionTypes.Orthographic,
-                        Position = Vector3.UnitX * -100.0f,//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
-                        StartingWidth = 20.0f,
-                        ZNear = -1000.0f,
-                        ZFar = 1000.0f
-                    };
-                    break;
-                case ViewTypes.Y:
-                    _map.Camera = new MapCamera()
-                    {
-                        Type = Rendering.Matrices.ProjectionTypes.Orthographic,
-                        Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
-                        StartingWidth = 20.0f,
-                        ZNear = -1000.0f,
-                        ZFar = 1000.0f
-                    };
-                    break;
-                case ViewTypes.Z:
-                    _map.Camera = new MapCamera()
-                    {
-                        Type = Rendering.Matrices.ProjectionTypes.Orthographic,
-                        Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
-                        StartingWidth = 20.0f,
-                        ZNear = -1000.0f,
-                        ZFar = 1000.0f
-                    };
-                    break;
-            }
+            entities.LoadEntities();
+            _gameState.LoadFromEntities(entities, map);
+            LoadCamera();
 
-            //Invoke((MethodInvoker)delegate { });
+            _renderManager.Load(map.SkyboxTextureFilePaths);
+            Invalidate();
 
-            _gameState.LoadMap(_map);
+            IsLoaded = true;
+            PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+        }
 
-            _gameState.Camera.DetachFromEntity();
-            _gameState.Initialize();
-
-            _renderManager.Load(_map);
-            //_pollTimer.Start();
-
+        private void LoadCamera()
+        {
             switch (ViewType)
             {
                 case ViewTypes.Perspective:
+                    _gameState.Camera = new PerspectiveCamera("", Resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
+                    _gameState.Camera.DetachFromEntity();
                     _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
                     _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
                     _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
                     break;
                 case ViewTypes.X:
+                    _gameState.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    {
+                        Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
+                    };
                     _currentAngles = new Vector3(90.0f, 0.0f, 0.0f);
                     _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
                     _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitX;
                     _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
                     break;
                 case ViewTypes.Y:
+                    _gameState.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    {
+                        Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
+                    };
                     _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
                     _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
                     _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
                     _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
                     break;
                 case ViewTypes.Z:
+                    _gameState.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    {
+                        Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
+                    };
                     _currentAngles = new Vector3(0.0f, 90.0f, 0.0f);
                     _gameState.Camera._viewMatrix.Up = Vector3.UnitY;
                     _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position - Vector3.UnitZ;
                     break;
             }
-
-            IsLoaded = true;
-            PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
         }
 
         public void SelectEntity(IEntity entity)
@@ -398,7 +377,7 @@ namespace TakoEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Enabled && _renderManager != null)
+            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _gameState != null && _gameState.IsLoaded)
             {
                 base.OnPaint(e);
                 RenderFrame();

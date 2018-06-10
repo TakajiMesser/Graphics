@@ -84,7 +84,7 @@ namespace TakoEngine.Entities.Models
 
                 mesh.ClearVertices();
                 mesh.AddVertices(vertices);
-                mesh.RefreshVertices();
+                //mesh.RefreshVertices();
             }
         }
 

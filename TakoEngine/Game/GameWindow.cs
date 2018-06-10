@@ -77,11 +77,11 @@ namespace TakoEngine.Game
             var map = Map.Load(_mapPath);
 
             _gameState = new GameState(Resolution);
-            _gameState.LoadMap(map);
+            _gameState.LoadFromMap(map);
             _gameState.Initialize();
 
             _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.Load(map);
+            _renderManager.Load(map.SkyboxTextureFilePaths);
 
             _fpsTimer.Start();
         }

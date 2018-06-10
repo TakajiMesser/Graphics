@@ -45,7 +45,7 @@ namespace TakoEngine.Entities.Models
         //public abstract void AddPointLights(IEnumerable<PointLight> lights);
         public abstract void AddTestColors();
 
-        public static Model LoadFromFile(string filePath, TextureManager textureManager)
+        public static Model LoadFromFile(string filePath, TextureManager textureManager = null)
         {
             using (var importer = new Assimp.AssimpContext())
             {

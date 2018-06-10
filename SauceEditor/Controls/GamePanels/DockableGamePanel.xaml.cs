@@ -59,11 +59,14 @@ namespace SauceEditor.Controls.GamePanels
 
         private void BeginDrag()
         {
-            _cursorLocation = System.Windows.Forms.Cursor.Position;
-            System.Windows.Forms.Cursor.Hide();
-            Panel.Capture = true;
-            //Mouse.Capture(PanelHost);
-            Panel.StartDrag(_cursorLocation);
+            if (Panel.IsLoaded)
+            {
+                _cursorLocation = System.Windows.Forms.Cursor.Position;
+                System.Windows.Forms.Cursor.Hide();
+                Panel.Capture = true;
+                //Mouse.Capture(PanelHost);
+                Panel.StartDrag(_cursorLocation);
+            }
         }
 
         private void EndDrag()

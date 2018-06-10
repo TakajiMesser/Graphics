@@ -16,10 +16,11 @@ namespace TakoEngine.Rendering.Meshes
         public TextureMapping TextureMapping { get; set; }
         public List<T> Vertices => _vertices;
 
-        private List<T> _vertices = new List<T>();
-        private VertexBuffer<T> _vertexBuffer = new VertexBuffer<T>();
-        private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
-        private VertexArray<T> _vertexArray = new VertexArray<T>();
+        private List<T> _vertices;
+        private List<int> _triangleIndices;
+        private VertexBuffer<T> _vertexBuffer;
+        private VertexIndexBuffer _indexBuffer;
+        private VertexArray<T> _vertexArray;
         //private LightBuffer _lightBuffer = new LightBuffer();
         private Material _material;
 
@@ -31,8 +32,7 @@ namespace TakoEngine.Rendering.Meshes
             }
 
             _vertices = vertices;
-            _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
-            _vertexBuffer.AddVertices(_vertices);
+            _triangleIndices = triangleIndices;
         }
 
         public Mesh(List<T> vertices, Material material, List<int> triangleIndices)
@@ -43,13 +43,19 @@ namespace TakoEngine.Rendering.Meshes
             }
 
             _vertices = vertices;
-            _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
-            _vertexBuffer.AddVertices(_vertices);
+            _triangleIndices = triangleIndices;
             _material = material;
         }
 
         public void Load()
         {
+            _vertexBuffer = new VertexBuffer<T>();
+            _indexBuffer = new VertexIndexBuffer();
+            _vertexArray = new VertexArray<T>();
+
+            _vertexBuffer.AddVertices(_vertices);
+            _indexBuffer.AddIndices(_triangleIndices.ConvertAll(i => (ushort)i));
+
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();

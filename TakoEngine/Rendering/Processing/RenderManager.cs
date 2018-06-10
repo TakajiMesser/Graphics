@@ -52,9 +52,9 @@ namespace TakoEngine.Rendering.Processing
             WindowSize = windowSize;
         }
 
-        public void Load(Map map)
+        public void Load(List<string> texturePaths)
         {
-            _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
+            _skyboxRenderer.SetTextures(texturePaths);
 
             _forwardRenderer.Load(Resolution);
             _deferredRenderer.Load(Resolution);

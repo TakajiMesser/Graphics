@@ -1,28 +1,15 @@
 ﻿using DockingLibrary;
-using OpenTK;
-using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using TakoEngine.Entities;
-using TakoEngine.Entities.Lights;
 using TakoEngine.Game;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
 using TakoEngine.Rendering.Processing;
 using TakoEngine.Utilities;
-using Brush = TakoEngine.Entities.Brush;
 
 namespace SauceEditor.Controls.GamePanels
 {
@@ -76,8 +63,8 @@ namespace SauceEditor.Controls.GamePanels
 
         private TransformModes _transformMode;
 
-        //private Map _map;
-        //private GameState _gameState;
+        private Map _map;
+        private EntityManager _entityManager = new EntityManager();
 
         private DockableGamePanel _perspectiveView;
         private DockableGamePanel _xView;
@@ -140,27 +127,18 @@ namespace SauceEditor.Controls.GamePanels
         {
             Resolution = new Resolution((int)Width, (int)Height);
             
-            //_map = Map.Load(mapPath);
-
-            /*using (var window = new NativeWindow())
-            {
-                var glContext = new GraphicsContext(GraphicsMode.Default, window.WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
-                glContext.MakeCurrent(window.WindowInfo);
-                (glContext as IGraphicsContextInternal).LoadAll();
-            }
-
-            _gameState = new GameState(Resolution);
-            _gameState.LoadMap(_map);
-            _gameState.Camera.DetachFromEntity();
-            _gameState.Initialize();*/
+            _map = Map.Load(mapPath);
+            _entityManager.LoadFromMap(_map);
 
             _perspectiveView = new DockableGamePanel(MainDockManager, ViewTypes.Perspective)
             {
                 Title = "Perspective",
                 Focusable = true
             };
-            _perspectiveView.Panel.LoadFromMap(mapPath);
-            //_perspectiveView.LoadGameState(_gameState, _map);
+            _perspectiveView.Panel.Load += (s, args) =>
+            {
+                _perspectiveView.Panel.LoadFromEntities(_entityManager, _map);
+            };
             _perspectiveView.EntitySelectionChanged += (s, args) =>
             {
                 _xView.Panel.SelectEntities(args.Entities);
@@ -187,9 +165,11 @@ namespace SauceEditor.Controls.GamePanels
                 Title = "X",
                 Focusable = true
             };
+            _xView.Panel.Load += (s, args) =>
+            {
+                _xView.Panel.LoadFromEntities(_entityManager, _map);
+            };
             //_xView.Panel.LoadFromMap(_map);
-            _xView.Panel.LoadFromMap(mapPath);
-            //_xView.Panel.Load += (s, args) => _xView.LoadGameState(_gameState, _map);
             _xView.EntitySelectionChanged += (s, args) =>
             {
                 _perspectiveView.Panel.SelectEntities(args.Entities);
@@ -216,9 +196,11 @@ namespace SauceEditor.Controls.GamePanels
                 Title = "Y",
                 Focusable = true
             };
+            _yView.Panel.Load += (s, args) =>
+            {
+                _yView.Panel.LoadFromEntities(_entityManager, _map);
+            };
             //_yView.Panel.LoadFromMap(_map);
-            _yView.Panel.LoadFromMap(mapPath);
-            //_yView.Panel.Load += (s, args) => _yView.LoadGameState(_gameState, _map);
             _yView.EntitySelectionChanged += (s, args) =>
             {
                 _perspectiveView.Panel.SelectEntities(args.Entities);
@@ -245,9 +227,11 @@ namespace SauceEditor.Controls.GamePanels
                 Title = "Z",
                 Focusable = true
             };
+            _zView.Panel.Load += (s, args) =>
+            {
+                _zView.Panel.LoadFromEntities(_entityManager, _map);
+            };
             //_zView.Panel.LoadFromMap(_map);
-            _zView.Panel.LoadFromMap(mapPath);
-            //_zView.Panel.Load += (s, args) => _zView.LoadGameState(_gameState, _map);
             _zView.EntitySelectionChanged += (s, args) =>
             {
                 _perspectiveView.Panel.SelectEntities(args.Entities);

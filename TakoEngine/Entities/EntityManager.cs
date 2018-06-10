@@ -4,8 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TakoEngine.Entities.Lights;
+using TakoEngine.Maps;
 using TakoEngine.Physics.Collision;
 using TakoEngine.Rendering.Processing;
+using TakoEngine.Rendering.Textures;
 
 namespace TakoEngine.Entities
 {
@@ -19,6 +21,14 @@ namespace TakoEngine.Entities
         private int _nextAvailableID = 1;
 
         public EntityManager() { }
+
+        public void ClearEntities()
+        {
+            Actors.Clear();
+            Brushes.Clear();
+            Volumes.Clear();
+            Lights.Clear();
+        }
 
         public IEntity GetEntityByID(int id)
         {
@@ -85,16 +95,12 @@ namespace TakoEngine.Entities
                 case Actor actor:
                     if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
                     if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
-
-                    actor.Load();
                     Actors.Add(actor);
                     break;
                 case Brush brush:
-                    brush.Load();
                     Brushes.Add(brush);
                     break;
                 case Volume volume:
-                    volume.Load();
                     Volumes.Add(volume);
                     break;
                 case Light light:
@@ -124,6 +130,32 @@ namespace TakoEngine.Entities
                     Lights.Remove(light);
                     break;
             }
+        }
+
+        public void LoadEntities()
+        {
+            foreach (var actor in Actors)
+            {
+                actor.Load();
+            }
+
+            foreach (var brush in Brushes)
+            {
+                brush.Load();
+            }
+
+            foreach (var volume in Volumes)
+            {
+                volume.Load();
+            }
+        }
+
+        public void LoadFromMap(Map map)
+        {
+            AddEntities(map.Lights);
+            AddEntities(map.Brushes.Select(b => b.ToBrush()));
+            AddEntities(map.Volumes.Select(v => v.ToVolume()));
+            AddEntities(map.Actors.Select(a => a.ToActor()));
         }
     }
 }
