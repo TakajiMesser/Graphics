@@ -4,13 +4,18 @@ using System.Runtime.InteropServices;
 namespace TakoEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Simple3DVertex// : IVertex
+    public struct Simple3DVertex : IVertex
     {
-        public Vector3 Position;// { get; set; }
+        public Vector3 Position;
 
         public Simple3DVertex(Vector3 position)
         {
             Position = position;
+        }
+
+        public Simple3DVertex(float x, float y, float z)
+        {
+            Position = new Vector3(x, y, z);
         }
     }
 }

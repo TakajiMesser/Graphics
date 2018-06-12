@@ -5,15 +5,15 @@ using System.Runtime.InteropServices;
 namespace TakoEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct JointVertex// : IVertex
+    public struct JointVertex : IVertex
     {
-        public Vector3 Position;// { get; set; }
-        public Color4 Color;// { get; set; }
-        public Vector3 Normal;// { get; set; }
-        public Vector3 Tangent;// { get; set; }
-        public Vector2 TextureCoords;// { get; set; }
-        public Vector4 BoneIDs;// { get; set; }
-        public Vector4 BoneWeights;// { get; set; }
+        public Vector3 Position;
+        public Color4 Color;
+        public Vector3 Normal;
+        public Vector3 Tangent;
+        public Vector2 TextureCoords;
+        public Vector4 BoneIDs;
+        public Vector4 BoneWeights;
 
         public JointVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords)
         {

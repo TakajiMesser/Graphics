@@ -156,6 +156,8 @@
     <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Physics\Collision\ICollidable.cs" />
+    <Compile Include="Rendering\Batches\BatchManager.cs" />
+    <Compile Include="Rendering\Batches\Batch.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\JointMesh.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />

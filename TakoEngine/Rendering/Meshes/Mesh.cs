@@ -11,12 +11,11 @@ using OpenTK.Graphics.OpenGL;
 
 namespace TakoEngine.Rendering.Meshes
 {
-    public class Mesh<T> : IDisposable where T : struct
+    public class Mesh<T> : IDisposable where T : struct, IVertex
     {
         public TextureMapping TextureMapping { get; set; }
-        public List<T> Vertices => _vertices;
+        public List<T> Vertices { get; }
 
-        private List<T> _vertices;
         private List<int> _triangleIndices;
         private VertexBuffer<T> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
@@ -31,7 +30,7 @@ namespace TakoEngine.Rendering.Meshes
                 throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
             }
 
-            _vertices = vertices;
+            Vertices = vertices;
             _triangleIndices = triangleIndices;
         }
 
@@ -42,7 +41,7 @@ namespace TakoEngine.Rendering.Meshes
                 throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
             }
 
-            _vertices = vertices;
+            Vertices = vertices;
             _triangleIndices = triangleIndices;
             _material = material;
         }
@@ -53,7 +52,7 @@ namespace TakoEngine.Rendering.Meshes
             _indexBuffer = new VertexIndexBuffer();
             _vertexArray = new VertexArray<T>();
 
-            _vertexBuffer.AddVertices(_vertices);
+            _vertexBuffer.AddVertices(Vertices);
             _indexBuffer.AddIndices(_triangleIndices.ConvertAll(i => (ushort)i));
 
             _vertexBuffer.Bind();
@@ -65,18 +64,18 @@ namespace TakoEngine.Rendering.Meshes
 
         public void ClearVertices()
         {
-            _vertices.Clear();
+            Vertices.Clear();
         }
 
         public void AddVertices(IEnumerable<T> vertices)
         {
-            _vertices.AddRange(vertices);
+            Vertices.AddRange(vertices);
         }
 
         public void RefreshVertices()
         {
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(_vertices);
+            _vertexBuffer.AddVertices(Vertices);
         }
 
         //public void ClearLights() => _lightBuffer.Clear();

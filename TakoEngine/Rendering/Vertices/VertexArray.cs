@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace TakoEngine.Rendering.Vertices
 {
-    public class VertexArray<T> : IDisposable, IBindable where T : struct
+    public class VertexArray<T> : IDisposable, IBindable where T : struct, IVertex
     {
         private readonly int _handle;
         private bool _generated = false;
@@ -88,8 +88,6 @@ namespace TakoEngine.Rendering.Vertices
             // TODO - This should all either be hard-coded or determined at compile time, since doing this on the fly is pointlessly wasteful
             int stride = Marshal.SizeOf<T>();
 
-            // TODO - Replace vertex fields with properties, since struct fields are janky
-            //var properties = typeof(T).GetProperties(/*BindingFlags.Public*/);
             var fields = typeof(T).GetFields();
 
             for (var i = 0; i < fields.Length; i++)

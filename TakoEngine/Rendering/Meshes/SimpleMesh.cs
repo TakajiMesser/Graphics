@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using TakoEngine.Rendering.Buffers;
 using TakoEngine.Rendering.Shaders;
 using TakoEngine.Rendering.Vertices;
@@ -14,7 +15,7 @@ namespace TakoEngine.Rendering.Meshes
     public class SimpleMesh : IDisposable
     {
         private int _vertexArrayHandle;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
+        private VertexBuffer<Simple3DVertex> _vertexBuffer = new VertexBuffer<Simple3DVertex>();
         private VertexIndexBuffer _indexBuffer = new VertexIndexBuffer();
 
         public SimpleMesh(List<Vector3> vertices, List<int> triangleIndices, ShaderProgram program)
@@ -27,7 +28,7 @@ namespace TakoEngine.Rendering.Meshes
             _vertexArrayHandle = GL.GenVertexArray();
             GL.BindVertexArray(_vertexArrayHandle);
 
-            _vertexBuffer.AddVertices(vertices);
+            _vertexBuffer.AddVertices(vertices.Select(v => new Simple3DVertex(v)));
             _vertexBuffer.Bind();
             //_vertexBuffer.Buffer();
 

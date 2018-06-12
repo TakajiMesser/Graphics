@@ -2,11 +2,12 @@
 using OpenTK.Graphics.ES20;
 using System;
 using System.Collections.Generic;
+using TakoEngine.Rendering.Vertices;
 using TakoEngine.Utilities;
 
 namespace TakoEngine.Rendering.Buffers
 {
-    public class VertexBuffer<T> : IDisposable, IBindable where T : struct
+    public class VertexBuffer<T> : IDisposable, IBindable where T : struct, IVertex
     {
         public int Count => _vertices.Count;
 

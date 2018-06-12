@@ -19,7 +19,7 @@ namespace TakoEngine.Rendering.PostProcessing
 
         //protected ShaderProgram _program;
         private int _vertexArrayHandle;
-        private VertexBuffer<Vector3> _vertexBuffer = new VertexBuffer<Vector3>();
+        private VertexBuffer<Simple3DVertex> _vertexBuffer = new VertexBuffer<Simple3DVertex>();
         protected FrameBuffer _frameBuffer = new FrameBuffer();
 
         public PostProcess(string name, Resolution resolution)
@@ -42,10 +42,10 @@ namespace TakoEngine.Rendering.PostProcessing
             GL.BindVertexArray(_vertexArrayHandle);
             _vertexBuffer.AddVertices(new[]
             {
-                new Vector3(1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, 1.0f, 0.0f),
-                new Vector3(-1.0f, -1.0f, 0.0f),
-                new Vector3(1.0f, -1.0f, 0.0f)
+                new Simple3DVertex(1.0f, 1.0f, 0.0f),
+                new Simple3DVertex(-1.0f, 1.0f, 0.0f),
+                new Simple3DVertex(-1.0f, -1.0f, 0.0f),
+                new Simple3DVertex(1.0f, -1.0f, 0.0f)
             });
             _vertexBuffer.Bind();
             _vertexBuffer.Buffer();
