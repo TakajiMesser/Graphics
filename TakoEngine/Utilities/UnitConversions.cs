@@ -27,5 +27,6 @@ namespace TakoEngine.Utilities
         /// <typeparam name="T"></typeparam>
         /// <returns>The size, in bytes</returns>
         public static int SizeOf<T>() where T : struct => Marshal.SizeOf(typeof(T));
+        public static int SizeOf(Type type) => Marshal.SizeOf(type);
     }
 }

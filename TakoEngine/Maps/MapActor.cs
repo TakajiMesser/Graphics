@@ -69,8 +69,6 @@ namespace TakoEngine.Maps
                 actor.Model.Orientation = Quaternion.FromEulerAngles(Orientation);
             }
 
-            actor.Model.AddTestColors();
-
             actor.HasCollision = HasCollision;
             actor.Bounds = actor.Name == "Player"
                 ? (Bounds)new BoundingCircle(actor)

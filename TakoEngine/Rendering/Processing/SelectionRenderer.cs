@@ -165,19 +165,23 @@ namespace TakoEngine.Rendering.Processing
             foreach (var brush in brushes)
             {
                 _selectionProgram.SetUniform("id", GetColorFromID(brush.ID));
-                brush.Draw(_selectionProgram);
+                brush.SetUniforms(_selectionProgram);
+                brush.Draw();
             }
 
             foreach (var volume in volumes)
             {
                 _selectionProgram.SetUniform("id", GetColorFromID(volume.ID));
-                volume.Draw(_selectionProgram);
+                volume.SetUniforms(_selectionProgram);
+                volume.Draw();
             }
 
             foreach (var actor in actors)
             {
                 _selectionProgram.SetUniform("id", GetColorFromID(actor.ID));
-                actor.Draw(_selectionProgram);
+                //actor.SetUniforms(_selectionProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_selectionProgram);
             }
         }
 
@@ -190,7 +194,9 @@ namespace TakoEngine.Rendering.Processing
             foreach (var actor in actors)
             {
                 _jointSelectionProgram.SetUniform("id", GetColorFromID(actor.ID));
-                actor.Draw(_jointSelectionProgram);
+                //actor.SetUniforms(_jointSelectionProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_jointSelectionProgram);
             }
         }
 

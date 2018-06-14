@@ -282,12 +282,15 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                brush.Draw(_geometryProgram, textureManager);
+                brush.SetUniforms(_geometryProgram, textureManager);
+                brush.Draw();
             }
 
             foreach (var actor in actors)
             {
-                actor.Draw(_geometryProgram, textureManager);
+                //actor.SetUniforms(_geometryProgram, textureManager);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_geometryProgram, textureManager);
             }
         }
 
@@ -304,7 +307,8 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var volume in volumes)
             {
-                volume.Draw(_geometryProgram);
+                volume.SetUniforms(_geometryProgram);
+                volume.Draw();
             }
 
             //GL.Disable(EnableCap.Blend);
@@ -318,7 +322,9 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var actor in actors)
             {
-                actor.Draw(_jointGeometryProgram, textureManager);
+                //actor.SetUniforms(_jointGeometryProgram, textureManager);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_jointGeometryProgram, textureManager);
             }
 
             GL.Enable(EnableCap.CullFace);

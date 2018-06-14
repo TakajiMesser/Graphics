@@ -9,28 +9,55 @@ namespace TakoEngine.Rendering.Matrices
         public const string PREVIOUS_NAME = "previousViewMatrix";
         public const string SHADOW_NAME = "shadowViewMatrices";
 
-        private Matrix4 _previousMatrix;
+        public Matrix4 Matrix { get; private set; }
 
-        internal Matrix4 Matrix
+        public Vector3 Translation
         {
-            get
+            get => _translation;
+            set
             {
-                //var viewMatrix = Matrix4.LookAt(Vector3.Zero, -Vector3.UnitZ, Vector3.UnitY);
-
-                var viewMatrix = Matrix4.LookAt(Translation, LookAt, Up);
-                //viewMatrix.M41 = -Translation.X;
-                //viewMatrix.M42 = -Translation.Y;
-                //viewMatrix.M43 = -Translation.Z;
-
-                return viewMatrix;
+                _translation = value;
+                CalculateMatrix();
             }
         }
 
-        public Vector3 Translation { get; set; } = Vector3.Zero;
-        public Vector3 LookAt { get; set; } = -Vector3.UnitZ;
-        public Vector3 Up { get; set; } = Vector3.UnitY;
+        public Vector3 LookAt
+        {
+            get => _lookAt;
+            set
+            {
+                _lookAt = value;
+                CalculateMatrix();
+            }
+        }
+
+        public Vector3 Up
+        {
+            get => _up;
+            set
+            {
+                _up = value;
+                CalculateMatrix();
+            }
+        }
+
+        private Vector3 _translation = Vector3.Zero;
+        private Vector3 _lookAt = -Vector3.UnitZ;
+        private Vector3 _up = Vector3.UnitY;
+
+        private Matrix4 _previousMatrix;
 
         public ViewMatrix() { }
+        public ViewMatrix(Vector3 translation, Vector3 lookAt, Vector3 up) => Update(translation, lookAt, up);
+
+        public void Update(Vector3 translation, Vector3 lookAt, Vector3 up)
+        {
+            _translation = translation;
+            _lookAt = lookAt;
+            _up = up;
+
+            CalculateMatrix();
+        }
 
         public void Set(ShaderProgram program)
         {
@@ -39,5 +66,7 @@ namespace TakoEngine.Rendering.Matrices
 
             _previousMatrix = Matrix;
         }
+
+        private void CalculateMatrix() => Matrix = Matrix4.LookAt(Translation, LookAt, Up);
     }
 }

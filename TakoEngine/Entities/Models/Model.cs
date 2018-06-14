@@ -39,11 +39,9 @@ namespace TakoEngine.Entities.Models
         }
 
         public abstract void Load();
-        public abstract void Draw(ShaderProgram program, TextureManager textureManager);
-
-        //public abstract void ClearLights();
-        //public abstract void AddPointLights(IEnumerable<PointLight> lights);
-        public abstract void AddTestColors();
+        public abstract void Draw();
+        public abstract void SetUniforms(ShaderProgram program, TextureManager textureManager);
+        public abstract void SetUniformsAndDraw(ShaderProgram program, TextureManager textureManager);
 
         public static Model LoadFromFile(string filePath, TextureManager textureManager = null)
         {

@@ -15,10 +15,10 @@ namespace TakoEngine.Entities.Cameras
             set => _projectionMatrix.Width = value;
         }
 
-        public OrthographicCamera(string name, Resolution resolution, float zNear, float zFar, float startingWidth) : base(name, resolution, zNear, zFar)
+        public OrthographicCamera(string name, Resolution resolution, float zNear, float zFar, float startingWidth) : base(name)
         {
-            _projectionMatrix.Type = ProjectionTypes.Orthographic;
-            _projectionMatrix.Width = startingWidth;
+            _projectionMatrix = new ProjectionMatrix(ProjectionTypes.Orthographic, resolution);
+            _projectionMatrix.UpdateOrthographic(startingWidth, zNear, zFar);
         }
 
         public override void OnHandleInput(InputState inputState)

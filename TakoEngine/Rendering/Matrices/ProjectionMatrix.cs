@@ -16,38 +16,83 @@ namespace TakoEngine.Rendering.Matrices
         public const string NAME = "projectionMatrix";
         public const string PREVIOUS_NAME = "previousProjectionMatrix";
 
-        private Matrix4 _previousMatrix;
+        public Matrix4 Matrix { get; private set; }
 
-        public ProjectionTypes Type { get; set; }
-        public float Width { get; set; }
-        public float FieldOfView { get; set; }
-        public float ZNear { get; set; }
-        public float ZFar { get; set; }
+        public ProjectionTypes Type { get; }
+        public Resolution Resolution { get; }
 
-        public Resolution Resolution { get; set; }
-
-        public Matrix4 Matrix
+        public float Width
         {
-            get
+            get => _width;
+            set
             {
-                switch (Type)
-                {
-                    case ProjectionTypes.Orthographic:
-                        return Matrix4.CreateOrthographic(Width, Width / Resolution.AspectRatio, ZNear, ZFar);
-                    case ProjectionTypes.Perspective:
-                        return Matrix4.CreatePerspectiveFieldOfView(FieldOfView, Resolution.AspectRatio, ZNear, ZFar);
-                    default:
-                        throw new NotImplementedException();
-                }
+                _width = value;
+                CalculateMatrix();
             }
         }
 
-        public ProjectionMatrix() { }
-        public ProjectionMatrix(float width, float zNear, float zFar)
+        public float FieldOfView
         {
-            Width = width;
-            ZNear = zNear;
-            ZFar = zFar;
+            get => _fieldOfView;
+            set
+            {
+                _fieldOfView = value;
+                CalculateMatrix();
+            }
+        }
+
+        public float ZNear
+        {
+            get => _zNear;
+            set
+            {
+                _zNear = value;
+                CalculateMatrix();
+            }
+        }
+
+        public float ZFar
+        {
+            get => _zFar;
+            set
+            {
+                _zFar = value;
+                CalculateMatrix();
+            }
+        }
+
+        private float _width = 0.0f;
+        private float _fieldOfView = 0.0f;
+        private float _zNear = 0.0f;
+        private float _zFar = 0.0f;
+
+        private Matrix4 _previousMatrix;
+
+        public ProjectionMatrix() { }
+        public ProjectionMatrix(ProjectionTypes type, Resolution resolution)
+        {
+            Type = type;
+            Resolution = resolution;
+
+            Resolution.ResolutionChanged += (s, args) => CalculateMatrix();
+        }
+
+        public void UpdateOrthographic(float width, float zNear, float zFar)
+        {
+            _width = width;
+            _zNear = zNear;
+            _zFar = zFar;
+
+            CalculateMatrix();
+        }
+
+        public void UpdatePerspective(float fieldOfView, float zNear, float zFar)
+        {
+            _fieldOfView = fieldOfView;
+            _zNear = zNear;
+            _zFar = zFar;
+
+            CalculateMatrix();
         }
 
         public void Set(ShaderProgram program)
@@ -56,6 +101,21 @@ namespace TakoEngine.Rendering.Matrices
             program.SetUniform(PREVIOUS_NAME, _previousMatrix);
 
             _previousMatrix = Matrix;
+        }
+
+        private void CalculateMatrix()
+        {
+            switch (Type)
+            {
+                case ProjectionTypes.Orthographic:
+                    Matrix = Matrix4.CreateOrthographic(_width, _width / Resolution.AspectRatio, _zNear, _zFar);
+                    break;
+                case ProjectionTypes.Perspective:
+                    Matrix = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, Resolution.AspectRatio, _zNear, _zFar);
+                    break;
+                default:
+                    throw new NotImplementedException();
+            }
         }
     }
 }

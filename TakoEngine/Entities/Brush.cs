@@ -60,9 +60,6 @@ namespace TakoEngine.Entities
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
-        //public void ClearLights() => Mesh.ClearLights();
-        //public void AddPointLights(IEnumerable<PointLight> lights) => Mesh.AddPointLights(lights);
-
         public void AddTestColors()
         {
             var vertices = new List<Vertex>();
@@ -85,15 +82,15 @@ namespace TakoEngine.Entities
 
             Mesh.ClearVertices();
             Mesh.AddVertices(vertices);
-            //Mesh.RefreshVertices();
         }
 
         public void Load() => Mesh.Load();
+        public void Draw() => Mesh.Draw();
 
-        public void Draw(ShaderProgram program, TextureManager textureManager = null)
+        public void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
         {
             _modelMatrix.Set(program);
-            Mesh.Draw(program, textureManager);
+            Mesh.SetUniforms(program, textureManager);
         }
 
         public static Brush Rectangle(Vector3 center, float width, float height)

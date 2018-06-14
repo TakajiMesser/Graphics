@@ -11,17 +11,17 @@ using OpenTK.Graphics.OpenGL;
 
 namespace TakoEngine.Rendering.Meshes
 {
-    public class Mesh<T> : IDisposable where T : struct, IVertex
+    public class Mesh<T> : IDisposable where T : IVertex
     {
         public TextureMapping TextureMapping { get; set; }
         public List<T> Vertices { get; }
 
         private List<int> _triangleIndices;
+        private Material _material;
+
         private VertexBuffer<T> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
         private VertexArray<T> _vertexArray;
-        //private LightBuffer _lightBuffer = new LightBuffer();
-        private Material _material;
 
         public Mesh(List<T> vertices, List<int> triangleIndices)
         {
@@ -46,6 +46,33 @@ namespace TakoEngine.Rendering.Meshes
             _material = material;
         }
 
+        public void AddVertices(IEnumerable<T> vertices) => Vertices.AddRange(vertices);
+        public void ClearVertices() => Vertices.Clear();
+
+        /*public void AddTestColors()
+        {
+            var vertices = new List<Vertex>();
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                if (i % 3 == 0)
+                {
+                    vertices.Add(Vertices[i].Colored(Color4.Lime));
+                }
+                else if (i % 3 == 1)
+                {
+                    vertices.Add(Vertices[i].Colored(Color4.Red));
+                }
+                else if (i % 3 == 2)
+                {
+                    vertices.Add(Vertices[i].Colored(Color4.Blue));
+                }
+            }
+
+            ClearVertices();
+            AddVertices(vertices);
+        }*/
+
         public void Load()
         {
             _vertexBuffer = new VertexBuffer<T>();
@@ -58,30 +85,25 @@ namespace TakoEngine.Rendering.Meshes
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
-
-            //_lightBuffer.Load(program);
         }
 
-        public void ClearVertices()
+        public void Draw()
         {
-            Vertices.Clear();
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _indexBuffer.Bind();
+
+            _vertexBuffer.Buffer();
+            _indexBuffer.Buffer();
+
+            _indexBuffer.Draw();
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+            _indexBuffer.Unbind();
         }
 
-        public void AddVertices(IEnumerable<T> vertices)
-        {
-            Vertices.AddRange(vertices);
-        }
-
-        public void RefreshVertices()
-        {
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(Vertices);
-        }
-
-        //public void ClearLights() => _lightBuffer.Clear();
-        //public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
-
-        public void Draw(ShaderProgram program, TextureManager textureManager = null)
+        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
         {
             if (textureManager != null && TextureMapping != null)
             {
@@ -92,26 +114,10 @@ namespace TakoEngine.Rendering.Meshes
                 program.UnbindTextures();
             }
 
-            _material.Draw(program);
-
-            _vertexArray.Bind();
-            _vertexBuffer.Bind();
-            //_lightBuffer.Bind();
-            _indexBuffer.Bind();
-
-            _vertexBuffer.Buffer();
-            //_lightBuffer.Buffer();
-            _indexBuffer.Buffer();
-
-            _indexBuffer.Draw();
-
-            _vertexArray.Unbind();
-            _vertexBuffer.Unbind();
-            //_lightBuffer.Unbind();
-            _indexBuffer.Unbind();
+            _material.SetUniforms(program);
         }
 
-        public void SaveToFile()
+        public virtual void SaveToFile()
         {
             throw new NotImplementedException();
         }
@@ -288,7 +294,7 @@ namespace TakoEngine.Rendering.Meshes
             Dispose(false);
         }
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

@@ -14,7 +14,7 @@ using System.Reflection;
 
 namespace TakoEngine.Rendering.Vertices
 {
-    public class VertexArray<T> : IDisposable, IBindable where T : struct, IVertex
+    public class VertexArray<T> : IDisposable, IBindable where T : IVertex
     {
         private readonly int _handle;
         private bool _generated = false;

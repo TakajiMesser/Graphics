@@ -132,7 +132,8 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var volume in volumes)
             {
-                volume.Draw(_wireframeProgram);
+                volume.SetUniforms(_wireframeProgram);
+                volume.Draw();
             }
         }
 
@@ -146,17 +147,21 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                brush.Draw(_wireframeProgram);
+                brush.SetUniforms(_wireframeProgram);
+                brush.Draw();
             }
 
             foreach (var volume in volumes)
             {
-                volume.Draw(_wireframeProgram);
+                volume.SetUniforms(_wireframeProgram);
+                volume.Draw();
             }
 
             foreach (var actor in actors)
             {
-                actor.Draw(_wireframeProgram);
+                //actor.SetUniforms(_wireframeProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_wireframeProgram);
             }
         }
 
@@ -170,7 +175,9 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var actor in actors)
             {
-                actor.Draw(_jointWireframeProgram);
+                //actor.SetUniforms(_jointWireframeProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_jointWireframeProgram);
             }
         }
 
@@ -201,10 +208,13 @@ namespace TakoEngine.Rendering.Processing
             switch (entity)
             {
                 case Brush b:
-                    b.Draw(_wireframeProgram);
+                    b.SetUniforms(_wireframeProgram);
+                    b.Draw();
                     break;
                 case Actor a:
-                    a.Draw(_wireframeProgram);
+                    //a.SetUniforms(_wireframeProgram);
+                    //a.Draw();
+                    a.SetUniformsAndDraw(_wireframeProgram);
                     break;
                 case Light l:
                     break;

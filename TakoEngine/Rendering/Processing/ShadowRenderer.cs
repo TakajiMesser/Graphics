@@ -154,12 +154,15 @@ namespace TakoEngine.Rendering.Processing
             // Draw all geometry, but only the positions
             foreach (var brush in brushes)
             {
-                brush.Draw(_pointShadowProgram);
+                brush.SetUniforms(_pointShadowProgram);
+                brush.Draw();
             }
 
             foreach (var actor in actors)
             {
-                actor.Draw(_pointShadowProgram);
+                //actor.SetUniforms(_pointShadowProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_pointShadowProgram);
             }
         }
 
@@ -174,7 +177,9 @@ namespace TakoEngine.Rendering.Processing
             // Draw all geometry, but only the positions
             foreach (var actor in actors)
             {
-                actor.Draw(_pointShadowJointProgram);
+                //actor.SetUniforms(_pointShadowJointProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_pointShadowJointProgram);
             }
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
@@ -190,12 +195,15 @@ namespace TakoEngine.Rendering.Processing
             // Draw all geometry, but only the positions
             foreach (var brush in brushes)
             {
-                brush.Draw(_spotShadowProgram);
+                brush.SetUniforms(_spotShadowProgram);
+                brush.Draw();
             }
 
             foreach (var actor in actors)
             {
-                actor.Draw(_spotShadowProgram);
+                //actor.SetUniforms(_spotShadowProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_spotShadowProgram);
             }
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
@@ -211,7 +219,9 @@ namespace TakoEngine.Rendering.Processing
             // Draw all geometry, but only the positions
             foreach (var actor in actors)
             {
-                actor.Draw(_spotShadowJointProgram);
+                //actor.SetUniforms(_spotShadowJointProgram);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_spotShadowJointProgram);
             }
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);

@@ -61,11 +61,12 @@ namespace TakoEngine.Entities
         }
 
         public void Load() => Mesh.Load();
+        public void Draw() => Mesh.Draw();
 
-        public void Draw(ShaderProgram program)
+        public void SetUniforms(ShaderProgram program)
         {
             _modelMatrix.Set(program);
-            Mesh.Draw(program);
+            Mesh.SetUniforms(program);
         }
 
         public static Volume RectangularPrism(Vector3 center, float xLength, float yLength, float zLength, Vector4 color)

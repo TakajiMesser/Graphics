@@ -2,12 +2,13 @@
 using OpenTK.Graphics.ES20;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using TakoEngine.Rendering.Vertices;
 using TakoEngine.Utilities;
 
 namespace TakoEngine.Rendering.Buffers
 {
-    public class VertexBuffer<T> : IDisposable, IBindable where T : struct, IVertex
+    public class VertexBuffer<T> : IDisposable, IBindable where T : IVertex
     {
         public int Count => _vertices.Count;
 
@@ -18,7 +19,7 @@ namespace TakoEngine.Rendering.Buffers
         public VertexBuffer()
         {
             _handle = GL.GenBuffer();
-            _vertexSize = UnitConversions.SizeOf<T>();
+            _vertexSize = UnitConversions.SizeOf(typeof(T));
         }
 
         public void AddVertex(T vertex) => _vertices.Add(vertex);
@@ -30,7 +31,10 @@ namespace TakoEngine.Rendering.Buffers
 
         public void Buffer()
         {
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, _vertices.ToArray(), BufferUsageHint.StreamDraw);
+            //GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, _vertices.ToArray(), BufferUsageHint.StreamDraw);
+            var handle = GCHandle.Alloc(_vertices.ToArray(), GCHandleType.Pinned);
+            GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, handle.AddrOfPinnedObject(), BufferUsageHint.StreamDraw);
+            handle.Free();
         }
 
         public void Bind()

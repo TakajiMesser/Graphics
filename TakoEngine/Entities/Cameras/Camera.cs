@@ -13,6 +13,7 @@ namespace TakoEngine.Entities.Cameras
     public abstract class Camera : IEntity
     {
         public int ID { get; set; }
+        public string Name { get; }
 
         public Vector3 Position
         {
@@ -23,22 +24,13 @@ namespace TakoEngine.Entities.Cameras
         public IEntity AttachedEntity { get; private set; }
         public Vector3 AttachedTranslation { get; protected set; }
 
-        private string _name;
         public ViewMatrix _viewMatrix = new ViewMatrix();
         internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
 
         protected float _distance;
         public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
 
-        public Camera(string name, Resolution resolution, float zNear, float zFar)
-        {
-            _name = name;
-            _projectionMatrix.Resolution = resolution;
-            _projectionMatrix.ZNear = zNear;
-            _projectionMatrix.ZFar = zFar;
-        }
-
-        public void Resize(Resolution resolution) => _projectionMatrix.Resolution = resolution;
+        public Camera(string name) => Name = name;
 
         public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {

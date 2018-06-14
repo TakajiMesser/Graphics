@@ -10,6 +10,7 @@ using TakoEngine.Entities.Models;
 using TakoEngine.Game;
 using TakoEngine.Maps;
 using TakoEngine.Outputs;
+using TakoEngine.Rendering.Batches;
 using TakoEngine.Rendering.PostProcessing;
 using TakoEngine.Rendering.Textures;
 
@@ -30,6 +31,8 @@ namespace TakoEngine.Rendering.Processing
         public double Frequency { get; internal set; }
         public bool IsLoaded { get; private set; }
         public bool RenderGrid { get; set; }
+
+        private BatchManager _batchManager = new BatchManager();
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -302,6 +305,8 @@ namespace TakoEngine.Rendering.Processing
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            //_batchManager.AddEntities(entityManager);
+            //_batchManager.RenderBatches();
             _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
 
             RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);

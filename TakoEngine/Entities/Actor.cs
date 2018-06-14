@@ -63,6 +63,7 @@ namespace TakoEngine.Entities
         }
 
         public void Load() => Model.Load();
+        public void Draw() => Model.Draw();
 
         /*On Model Position Change -> if (Bounds != null)
         {
@@ -186,7 +187,8 @@ namespace TakoEngine.Entities
             Model.Position += translation;
         }
 
-        public virtual void Draw(ShaderProgram program, TextureManager textureManager = null) => Model.Draw(program, textureManager);
+        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager = null) => Model.SetUniforms(program, textureManager);
+        public virtual void SetUniformsAndDraw(ShaderProgram program, TextureManager textureManager = null) => Model.SetUniformsAndDraw(program, textureManager);
 
         // Define how this object's state will be saved, if desired
         public virtual void OnSaveState() { }

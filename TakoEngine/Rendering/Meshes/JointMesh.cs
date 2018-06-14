@@ -13,68 +13,13 @@ using TakoEngine.Utilities;
 
 namespace TakoEngine.Rendering.Meshes
 {
-    public class JointMesh : IDisposable
+    public class JointMesh : Mesh<JointVertex>
     {
         public const int MAX_JOINTS = 100;
 
-        private List<JointVertex> _vertices;
-        private List<int> _triangleIndices;
-        private VertexBuffer<JointVertex> _vertexBuffer;
-        private VertexIndexBuffer _indexBuffer;
-        private VertexArray<JointVertex> _vertexArray;
-        private Material _material;
-        //private LightBuffer _lightBuffer = new LightBuffer();
         private Matrix4[] _jointTransforms = ArrayExtensions.Initialize(MAX_JOINTS, Matrix4.Identity);
 
-        public TextureMapping TextureMapping { get; set; }
-        public List<JointVertex> Vertices => _vertices;
-
-        public JointMesh(List<JointVertex> vertices, Material material, List<int> triangleIndices)
-        {
-            if (triangleIndices.Count % 3 != 0)
-            {
-                throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
-            }
-
-            _vertices = vertices;
-            _triangleIndices = triangleIndices;
-            _material = material;
-        }
-
-        public void Load()
-        {
-            _vertexBuffer = new VertexBuffer<JointVertex>();
-            _indexBuffer = new VertexIndexBuffer();
-            _vertexArray = new VertexArray<JointVertex>();
-
-            _vertexBuffer.AddVertices(_vertices);
-            _indexBuffer.AddIndices(_triangleIndices.ConvertAll(i => (ushort)i));
-
-            _vertexBuffer.Bind();
-            _vertexArray.Load();
-            _vertexBuffer.Unbind();
-
-            //_lightBuffer.Load(program);
-        }
-
-        public void ClearVertices()
-        {
-            _vertices.Clear();
-        }
-
-        public void AddVertices(IEnumerable<JointVertex> vertices)
-        {
-            _vertices.AddRange(vertices);
-        }
-
-        public void RefreshVertices()
-        {
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(_vertices);
-        }
-
-        //public void ClearLights() => _lightBuffer.Clear();
-        //public void AddPointLights(IEnumerable<PointLight> lights) => _lightBuffer.AddPointLights(lights);
+        public JointMesh(List<JointVertex> vertices, Material material, List<int> triangleIndices) : base(vertices, material, triangleIndices) { }
 
         public void SetJointTransforms(MeshTransforms transforms)
         {
@@ -89,34 +34,13 @@ namespace TakoEngine.Rendering.Meshes
             }
         }
 
-        public void Draw(ShaderProgram program, TextureManager textureManager)
+        public override void SetUniforms(ShaderProgram program, TextureManager textureManager)
         {
-            if (textureManager != null && TextureMapping != null)
-            {
-                program.BindTextures(textureManager, TextureMapping);
-            }
-
+            base.SetUniforms(program, textureManager);
             program.SetUniform("jointTransforms", _jointTransforms);
-            _material.Draw(program);
-
-            _vertexArray.Bind();
-            _vertexBuffer.Bind();
-            //_lightBuffer.Bind();
-            _indexBuffer.Bind();
-
-            _vertexBuffer.Buffer();
-            //_lightBuffer.Buffer();
-            _indexBuffer.Buffer();
-
-            _indexBuffer.Draw();
-
-            _vertexArray.Unbind();
-            _vertexBuffer.Unbind();
-            //_lightBuffer.Unbind();
-            _indexBuffer.Unbind();
         }
 
-        public void SaveToFile()
+        public override void SaveToFile()
         {
             throw new NotImplementedException();
         }
@@ -274,7 +198,7 @@ namespace TakoEngine.Rendering.Meshes
         #region IDisposable Support
         private bool disposedValue = false;
 
-        protected virtual void Dispose(bool disposing)
+        protected override void Dispose(bool disposing)
         {
             if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
             {
@@ -293,7 +217,7 @@ namespace TakoEngine.Rendering.Meshes
             Dispose(false);
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             Dispose(true);
             GC.SuppressFinalize(this);

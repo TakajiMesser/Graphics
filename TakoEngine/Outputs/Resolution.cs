@@ -1,10 +1,35 @@
-﻿namespace TakoEngine.Outputs
+﻿using System;
+
+namespace TakoEngine.Outputs
 {
     public class Resolution
     {
-        public int Width { get; set; }
-        public int Height { get; set; }
-        public float AspectRatio => (float)Width / Height;
+        private int _width;
+        private int _height;
+
+        public int Width
+        {
+            get => _width;
+            set
+            {
+                _width = value;
+                ResolutionChanged?.Invoke(this, new ResolutionEventArgs(_width, _height));
+            }
+        }
+
+        public int Height
+        {
+            get => _height;
+            set
+            {
+                _height = value;
+                ResolutionChanged?.Invoke(this, new ResolutionEventArgs(_width, _height));
+            }
+        }
+
+        public float AspectRatio => (float)_width / _height;
+
+        public event EventHandler<ResolutionEventArgs> ResolutionChanged;
 
         public Resolution(int width, int height)
         {

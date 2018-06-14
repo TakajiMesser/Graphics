@@ -55,46 +55,40 @@ namespace TakoEngine.Entities.Models
             }
         }
 
-        public override void Load() => Meshes.ForEach(m => m.Load());
-
-        //public override void ClearLights() => Meshes.ForEach(m => m.ClearLights());
-        //public override void AddPointLights(IEnumerable<PointLight> lights) => Meshes.ForEach(m => m.AddPointLights(lights));
-
-        public override void AddTestColors()
+        public override void Load()
         {
             foreach (var mesh in Meshes)
             {
-                var vertices = new List<Vertex>();
-
-                for (var i = 0; i < mesh.Vertices.Count; i++)
-                {
-                    if (i % 3 == 0)
-                    {
-                        vertices.Add(mesh.Vertices[i].Colored(Color4.Lime));
-                    }
-                    else if (i % 3 == 1)
-                    {
-                        vertices.Add(mesh.Vertices[i].Colored(Color4.Red));
-                    }
-                    else if (i % 3 == 2)
-                    {
-                        vertices.Add(mesh.Vertices[i].Colored(Color4.Blue));
-                    }
-                }
-
-                mesh.ClearVertices();
-                mesh.AddVertices(vertices);
-                //mesh.RefreshVertices();
+                mesh.Load();
             }
         }
 
-        public override void Draw(ShaderProgram program, TextureManager textureManager)
+        public override void Draw()
+        {
+            foreach (var mesh in Meshes)
+            {
+                mesh.Draw();
+            }
+        }
+
+        public override void SetUniforms(ShaderProgram program, TextureManager textureManager)
         {
             _modelMatrix.Set(program);
 
             foreach (var mesh in Meshes)
             {
-                mesh.Draw(program, textureManager);
+                mesh.SetUniforms(program, textureManager);
+            }
+        }
+
+        public override void SetUniformsAndDraw(ShaderProgram program, TextureManager textureManager)
+        {
+            _modelMatrix.Set(program);
+
+            foreach (var mesh in Meshes)
+            {
+                mesh.SetUniforms(program, textureManager);
+                mesh.Draw();
             }
         }
 

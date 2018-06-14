@@ -17,10 +17,10 @@ namespace TakoEngine.Entities.Cameras
 
         private Vector3 CurrentAngles { get; set; } = new Vector3(0, -(float)Math.PI / 2.0f, 0);
 
-        public PerspectiveCamera(string name, Resolution resolution, float zNear, float zFar, float fieldOfViewY) : base(name, resolution, zNear, zFar)
+        public PerspectiveCamera(string name, Resolution resolution, float zNear, float zFar, float fieldOfViewY) : base(name)
         {
-            _projectionMatrix.Type = ProjectionTypes.Perspective;
-            _projectionMatrix.FieldOfView = fieldOfViewY;
+            _projectionMatrix = new ProjectionMatrix(ProjectionTypes.Perspective, resolution);
+            _projectionMatrix.UpdatePerspective(fieldOfViewY, zNear, zFar);
         }
 
         private void CalculateTranslation()

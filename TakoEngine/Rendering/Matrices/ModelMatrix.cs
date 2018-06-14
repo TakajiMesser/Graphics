@@ -8,21 +8,54 @@ namespace TakoEngine.Rendering.Matrices
         public const string NAME = "modelMatrix";
         public const string PREVIOUS_NAME = "previousModelMatrix";
 
+        public Matrix4 Matrix { get; private set; }
+
+        public Vector3 Translation
+        {
+            get => _translation;
+            set
+            {
+                _translation = value;
+                CalculateMatrix();
+            }
+        }
+
+        public Quaternion Rotation
+        {
+            get => _rotation;
+            set
+            {
+                _rotation = value;
+                CalculateMatrix();
+            }
+        }
+
+        public Vector3 Scale
+        {
+            get => _scale;
+            set
+            {
+                _scale = value;
+                CalculateMatrix();
+            }
+        }
+
+        private Vector3 _translation = Vector3.Zero;
+        private Quaternion _rotation = Quaternion.Identity;
+        private Vector3 _scale = Vector3.One;
+
         private Matrix4 _previousMatrix;
-        //private Matrix4 _model = Matrix4.Identity;
-
-        public Matrix4 Matrix => Matrix4.Identity * Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
-
-        public Vector3 Translation { get; set; } = Vector3.Zero;
-        public Quaternion Rotation { get; set; } = Quaternion.Identity;
-        public Vector3 Scale { get; set; } = Vector3.One;
 
         public ModelMatrix() { }
-        public ModelMatrix(Vector3 translation, Quaternion rotation, Vector3 scale)
+        public ModelMatrix(Vector3 translation, Quaternion rotation, Vector3 scale) => Update(translation, rotation, scale);
+
+        public void Update(Vector3 translation, Quaternion rotation, Vector3 scale)
         {
-            Translation = translation;
-            Rotation = rotation;
-            Scale = scale;
+            _translation = translation;
+            _rotation = rotation;
+            _scale = scale;
+
+            CalculateMatrix();
         }
 
         public void Set(ShaderProgram program)
@@ -32,5 +65,8 @@ namespace TakoEngine.Rendering.Matrices
 
             _previousMatrix = Matrix;
         }
+
+        private void CalculateMatrix() =>
+            Matrix = Matrix4.Identity * Matrix4.CreateScale(_scale) * Matrix4.CreateFromQuaternion(_rotation) * Matrix4.CreateTranslation(_translation);
     }
 }

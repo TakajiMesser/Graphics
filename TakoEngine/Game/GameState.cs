@@ -2,6 +2,7 @@
 using OpenTK.Input;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TakoEngine.Entities;
 using TakoEngine.Entities.Cameras;
@@ -55,6 +56,11 @@ namespace TakoEngine.Game
 
             _actorQuads = new QuadTree(0, map.Boundaries);
 
+            for (var i = 0; i < map.Brushes.Count; i++)
+            {
+                EntityManager.Brushes[i].Mesh.TextureMapping = map.Brushes[i].TexturesPaths.ToTextureMapping(TextureManager);
+            }
+
             foreach (var mapActor in map.Actors)
             {
                 var actor = GetActorByName(mapActor.Name);
@@ -72,11 +78,14 @@ namespace TakoEngine.Game
                         break;
 
                     case AnimatedModel a:
-                        for (var i = 0; i < a.Meshes.Count; i++)
+                        using (var importer = new Assimp.AssimpContext())
                         {
-                            if (i < mapActor.TexturesPaths.Count)
+                            var scene = importer.ImportFile(mapActor.ModelFilePath);
+                            for (var i = 0; i < a.Meshes.Count; i++)
                             {
-                                a.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
+                                a.Meshes[i].TextureMapping = (i < mapActor.TexturesPaths.Count)
+                                    ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                    : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
                             }
                         }
                         break;

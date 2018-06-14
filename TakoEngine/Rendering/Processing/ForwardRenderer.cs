@@ -119,12 +119,15 @@ namespace TakoEngine.Rendering.Processing
 
             foreach (var brush in brushes)
             {
-                brush.Draw(_program, textureManager);
+                brush.SetUniforms(_program, textureManager);
+                brush.Draw();
             }
 
             foreach (var actor in actors)
             {
-                actor.Draw(_program, textureManager);
+                //actor.SetUniforms(_program, textureManager);
+                //actor.Draw();
+                actor.SetUniformsAndDraw(_program, textureManager);
             }
         }
 

@@ -33,7 +33,7 @@ namespace TakoEngine.Rendering.Materials
             SpecularExponent = 1.0f - material.Shininess;
         }
 
-        public void Draw(ShaderProgram program)
+        public void SetUniforms(ShaderProgram program)
         {
             program.SetUniform("ambientColor", Ambient);
             program.SetUniform("diffuseColor", Diffuse);
