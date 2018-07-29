@@ -9,11 +9,11 @@ using System.Drawing;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
-using TakoEngine.Entities.Cameras;
-using TakoEngine.Game;
-using TakoEngine.Maps;
-using TakoEngine.Rendering.Processing;
-using Camera = TakoEngine.Entities.Cameras.Camera;
+using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Game;
+using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Processing;
+using Camera = SpiceEngine.Entities.Cameras.Camera;
 
 namespace SauceEditor.Controls.GamePanels
 {

@@ -67,19 +67,19 @@ namespace SauceEditor.Controls.Settings
         {
             switch (Settings.DefaultTool)
             {
-                case TakoEngine.Game.Tools.Brush:
+                case SpiceEngine.Game.Tools.Brush:
                     Tool_Brush.IsSelected = true;
                     break;
-                case TakoEngine.Game.Tools.Mesh:
+                case SpiceEngine.Game.Tools.Mesh:
                     Tool_Mesh.IsSelected = true;
                     break;
-                case TakoEngine.Game.Tools.Selector:
+                case SpiceEngine.Game.Tools.Selector:
                     Tool_Selector.IsSelected = true;
                     break;
-                case TakoEngine.Game.Tools.Texture:
+                case SpiceEngine.Game.Tools.Texture:
                     Tool_Texture.IsSelected = true;
                     break;
-                case TakoEngine.Game.Tools.Volume:
+                case SpiceEngine.Game.Tools.Volume:
                     Tool_Volume.IsSelected = true;
                     break;
             }
@@ -124,19 +124,19 @@ namespace SauceEditor.Controls.Settings
             switch (selectedItem.Content)
             {
                 case "Brush":
-                    Settings.DefaultTool = TakoEngine.Game.Tools.Brush;
+                    Settings.DefaultTool = SpiceEngine.Game.Tools.Brush;
                     break;
                 case "Mesh":
-                    Settings.DefaultTool = TakoEngine.Game.Tools.Mesh;
+                    Settings.DefaultTool = SpiceEngine.Game.Tools.Mesh;
                     break;
                 case "Selector":
-                    Settings.DefaultTool = TakoEngine.Game.Tools.Selector;
+                    Settings.DefaultTool = SpiceEngine.Game.Tools.Selector;
                     break;
                 case "Texture":
-                    Settings.DefaultTool = TakoEngine.Game.Tools.Texture;
+                    Settings.DefaultTool = SpiceEngine.Game.Tools.Texture;
                     break;
                 case "Volume":
-                    Settings.DefaultTool = TakoEngine.Game.Tools.Volume;
+                    Settings.DefaultTool = SpiceEngine.Game.Tools.Volume;
                     break;
             }
         }

@@ -1,0 +1,71 @@
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using System.Collections.Generic;
+using System.Linq;
+using SpiceEngine.Entities;
+using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Entities.Lights;
+using SpiceEngine.Game;
+
+namespace SpiceEngine.Rendering.Buffers
+{
+    public class MatrixStack
+    {
+        public const string MODEL_NAME = "ModelMatrixBlock";
+        public const int MODEL_BINDING = 1;
+
+        public const string VIEW_NAME = "ViewMatrixBlock";
+        public const int VIEW_BINDING = 2;
+
+        public const string PROJECTION_NAME = "ProjectionMatrixBlock";
+        public const int PROJECTION_BINDING = 3;
+
+        public const string MVP_NAME = "MVPMatrixBlock";
+        public const int MVP_BINDING = 4;
+
+        private MatrixBuffer _modelMatrixBuffer = new MatrixBuffer(MODEL_NAME, MODEL_BINDING);
+        private MatrixBuffer _viewMatrixBuffer = new MatrixBuffer(VIEW_NAME, VIEW_BINDING);
+        private MatrixBuffer _projectionMatrixBuffer = new MatrixBuffer(PROJECTION_NAME, PROJECTION_BINDING);
+        private MatrixBuffer _mvpMatrixBuffer = new MatrixBuffer(MVP_NAME, MVP_BINDING);
+
+        public MatrixStack() { }
+
+        public void AddEntities(GameState gameState)
+        {
+            _viewMatrixBuffer.AddMatrix(gameState.Camera.ViewMatrix);
+            _projectionMatrixBuffer.AddMatrix(gameState.Camera.ProjectionMatrix);
+
+            foreach (var actor in gameState.EntityManager.Actors)
+            {
+                _modelMatrixBuffer.AddMatrix(actor.Model.ModelMatrix);
+
+                // TODO - Confirm whether or not this multiplication order should be reversed
+                _mvpMatrixBuffer.AddMatrix(actor.Model.ModelMatrix * gameState.Camera.ViewMatrix * gameState.Camera.ProjectionMatrix);
+            }
+
+            foreach (var brush in gameState.EntityManager.Brushes)
+            {
+                _modelMatrixBuffer.AddMatrix(brush.ModelMatrix);
+
+                // TODO - Confirm whether or not this multiplication order should be reversed
+                _mvpMatrixBuffer.AddMatrix(brush.ModelMatrix * gameState.Camera.ViewMatrix * gameState.Camera.ProjectionMatrix);
+            }
+        }
+
+        public void Bind()
+        {
+            _modelMatrixBuffer.Bind();
+            _viewMatrixBuffer.Bind();
+            _projectionMatrixBuffer.Bind();
+            _mvpMatrixBuffer.Bind();
+        }
+
+        public void Clear()
+        {
+            _modelMatrixBuffer.Clear();
+            _viewMatrixBuffer.Clear();
+            _projectionMatrixBuffer.Clear();
+            _mvpMatrixBuffer.Clear();
+        }
+    }
+}

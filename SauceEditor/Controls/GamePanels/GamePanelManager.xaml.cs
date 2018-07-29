@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using TakoEngine.Entities;
-using TakoEngine.Game;
-using TakoEngine.Maps;
-using TakoEngine.Outputs;
-using TakoEngine.Rendering.Processing;
-using TakoEngine.Utilities;
+using SpiceEngine.Entities;
+using SpiceEngine.Game;
+using SpiceEngine.Maps;
+using SpiceEngine.Outputs;
+using SpiceEngine.Rendering.Processing;
+using SpiceEngine.Utilities;
 
 namespace SauceEditor.Controls.GamePanels
 {
@@ -81,7 +81,7 @@ namespace SauceEditor.Controls.GamePanels
             TransformMode = TransformModes.Translate;
         }
 
-        public void SetSelectedTool(TakoEngine.Game.Tools tool)
+        public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
             _perspectiveView.Panel.SelectedTool = tool;
             _xView.Panel.SelectedTool = tool;

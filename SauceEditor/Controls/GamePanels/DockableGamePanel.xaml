@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Controls.GamePanels"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" 
-        xmlns:tako="clr-namespace:TakoEngine.Game;assembly=TakoEngine"
+        xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
         mc:Ignorable="d"
         Loaded="OnLoaded">
     <DockPanel Name="MainDock">
@@ -28,7 +28,7 @@
             <ToggleButton Name="GridButton" Content="Grid" Checked="GridButton_Checked" Unchecked="GridButton_Unchecked"/>
         </ToolBar>
         <WindowsFormsHost x:Name="PanelHost">
-            <tako:GamePanel x:Name="Panel" Dock="Fill"></tako:GamePanel>
+            <spice:GamePanel x:Name="Panel" Dock="Fill"></spice:GamePanel>
         </WindowsFormsHost>
     </DockPanel>
 </dock:DockableContent>

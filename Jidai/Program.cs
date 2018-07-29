@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameWindow = TakoEngine.Game.GameWindow;
+using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace Jidai
 {

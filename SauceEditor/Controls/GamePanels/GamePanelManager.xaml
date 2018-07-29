@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" 
-             xmlns:tako="clr-namespace:TakoEngine.Game;assembly=TakoEngine"
+             xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
              xmlns:local="clr-namespace:SauceEditor.Controls.GamePanels"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">

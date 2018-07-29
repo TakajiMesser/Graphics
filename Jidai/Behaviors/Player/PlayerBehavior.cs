@@ -1,10 +1,10 @@
 ﻿using OpenTK;
 using System;
 using System.Runtime.Serialization;
-using TakoEngine.Scripting.Behaviors;
-using TakoEngine.Scripting.Behaviors.Composites;
-using TakoEngine.Scripting.Behaviors.Decorators;
-using TakoEngine.Scripting.Behaviors.Leaves;
+using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Behaviors.Composites;
+using SpiceEngine.Scripting.Behaviors.Decorators;
+using SpiceEngine.Scripting.Behaviors.Leaves;
 
 namespace Jidai.Behaviors.Player
 {

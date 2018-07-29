@@ -13,10 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using TakoEngine.Entities;
-using TakoEngine.Entities.Lights;
+using SpiceEngine.Entities;
+using SpiceEngine.Entities.Lights;
 using SauceEditor.Utilities;
-using Brush = TakoEngine.Entities.Brush;
+using Brush = SpiceEngine.Entities.Brush;
 using SauceEditor.Controls.Transform;
 
 namespace SauceEditor.Controls.Properties

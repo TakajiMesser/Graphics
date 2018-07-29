@@ -8,7 +8,7 @@ namespace SauceEditor.Helpers
 {
     public static class FilePathHelper
     {
-        private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine";
+        private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine";
 
         public static string SETTINGS_PATH = SOLUTION_DIRECTORY + @"\SauceEditor\EditorSettings" + SauceEditor.Structure.EditorSettings.FILE_EXTENSION;
     }

@@ -17,9 +17,9 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
-using TakoEngine.Game;
-using TakoEngine.Maps;
-using GameWindow = TakoEngine.Game.GameWindow;
+using SpiceEngine.Game;
+using SpiceEngine.Maps;
+using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace SauceEditor
 {
@@ -281,7 +281,7 @@ namespace SauceEditor
                 Filter = "Project Files|*.pro",
                 DefaultExt = GameProject.FILE_EXTENSION,
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -302,7 +302,7 @@ namespace SauceEditor
                 DefaultExt = "map",
                 Filter = "Map Files|*.map",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -324,7 +324,7 @@ namespace SauceEditor
                 CheckPathExists = true,
                 DefaultExt = "obj",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -343,7 +343,7 @@ namespace SauceEditor
                 CheckPathExists = true,
                 DefaultExt = "bhv",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\TakoEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 

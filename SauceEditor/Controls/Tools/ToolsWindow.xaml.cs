@@ -13,10 +13,10 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using TakoEngine.Entities;
-using TakoEngine.Entities.Lights;
+using SpiceEngine.Entities;
+using SpiceEngine.Entities.Lights;
 using SauceEditor.Utilities;
-using Brush = TakoEngine.Entities.Brush;
+using Brush = SpiceEngine.Entities.Brush;
 using SauceEditor.Controls.Transform;
 
 namespace SauceEditor.Controls.Tools
@@ -26,7 +26,7 @@ namespace SauceEditor.Controls.Tools
     /// </summary>
     public partial class ToolsWindow : DockingLibrary.DockableContent
     {
-        public TakoEngine.Game.Tools SelectedTool { get; set; }
+        public SpiceEngine.Game.Tools SelectedTool { get; set; }
 
         public event EventHandler<ToolSelectedEventArgs> ToolSelected;
 
@@ -35,7 +35,7 @@ namespace SauceEditor.Controls.Tools
             InitializeComponent();
 
             SelectButton.IsEnabled = false;
-            SelectedTool = TakoEngine.Game.Tools.Selector;
+            SelectedTool = SpiceEngine.Game.Tools.Selector;
         }
 
         private void EnableAllToolButtons()
@@ -54,8 +54,8 @@ namespace SauceEditor.Controls.Tools
             EnableAllToolButtons();
             SelectButton.IsEnabled = false;
 
-            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(TakoEngine.Game.Tools.Selector, SelectedTool));
-            SelectedTool = TakoEngine.Game.Tools.Selector;
+            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(SpiceEngine.Game.Tools.Selector, SelectedTool));
+            SelectedTool = SpiceEngine.Game.Tools.Selector;
         }
 
         private void VolumeButton_Click(object sender, RoutedEventArgs e)
@@ -63,8 +63,8 @@ namespace SauceEditor.Controls.Tools
             EnableAllToolButtons();
             VolumeButton.IsEnabled = false;
 
-            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(TakoEngine.Game.Tools.Volume, SelectedTool));
-            SelectedTool = TakoEngine.Game.Tools.Volume;
+            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(SpiceEngine.Game.Tools.Volume, SelectedTool));
+            SelectedTool = SpiceEngine.Game.Tools.Volume;
         }
 
         private void BrushButton_Click(object sender, RoutedEventArgs e)
@@ -72,8 +72,8 @@ namespace SauceEditor.Controls.Tools
             EnableAllToolButtons();
             BrushButton.IsEnabled = false;
 
-            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(TakoEngine.Game.Tools.Brush, SelectedTool));
-            SelectedTool = TakoEngine.Game.Tools.Brush;
+            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(SpiceEngine.Game.Tools.Brush, SelectedTool));
+            SelectedTool = SpiceEngine.Game.Tools.Brush;
         }
 
         private void MeshButton_Click(object sender, RoutedEventArgs e)
@@ -81,8 +81,8 @@ namespace SauceEditor.Controls.Tools
             EnableAllToolButtons();
             MeshButton.IsEnabled = false;
 
-            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(TakoEngine.Game.Tools.Mesh, SelectedTool));
-            SelectedTool = TakoEngine.Game.Tools.Mesh;
+            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(SpiceEngine.Game.Tools.Mesh, SelectedTool));
+            SelectedTool = SpiceEngine.Game.Tools.Mesh;
         }
 
         private void TextureButton_Click(object sender, RoutedEventArgs e)
@@ -90,8 +90,8 @@ namespace SauceEditor.Controls.Tools
             EnableAllToolButtons();
             TextureButton.IsEnabled = false;
 
-            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(TakoEngine.Game.Tools.Texture, SelectedTool));
-            SelectedTool = TakoEngine.Game.Tools.Texture;
+            ToolSelected?.Invoke(this, new ToolSelectedEventArgs(SpiceEngine.Game.Tools.Texture, SelectedTool));
+            SelectedTool = SpiceEngine.Game.Tools.Texture;
         }
     }
 }

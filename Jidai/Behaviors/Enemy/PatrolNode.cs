@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.Behaviors;
-using TakoEngine.Scripting.Properties;
+using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Properties;
 
 namespace Jidai.Behaviors.Enemy
 {

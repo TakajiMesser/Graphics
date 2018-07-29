@@ -1,10 +1,10 @@
 ﻿using Jidai.GameObjects;
 using OpenTK;
 using System.Collections.Generic;
-using TakoEngine.Entities.Lights;
-using TakoEngine.Maps;
-using TakoEngine.Rendering.Textures;
-using TakoEngine.Utilities;
+using SpiceEngine.Entities.Lights;
+using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Utilities;
 
 namespace Jidai.Helpers.Builders
 {

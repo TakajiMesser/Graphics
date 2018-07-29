@@ -4,12 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using TakoEngine.Scripting.Behaviors;
-using TakoEngine.Scripting.Behaviors.Composites;
-using TakoEngine.Scripting.Behaviors.Decorators;
-using TakoEngine.Scripting.Meters;
-using TakoEngine.Scripting.Properties;
-using TakoEngine.Scripting.StimResponse;
+using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Behaviors.Composites;
+using SpiceEngine.Scripting.Behaviors.Decorators;
+using SpiceEngine.Scripting.Meters;
+using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Scripting.StimResponse;
 
 namespace Jidai.Behaviors.Enemy
 {

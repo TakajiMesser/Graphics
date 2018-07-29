@@ -1,6 +1,6 @@
 ﻿using System.Runtime.Serialization;
-using TakoEngine.Scripting.Behaviors;
-using TakoEngine.Scripting.Behaviors.Decorators;
+using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Behaviors.Decorators;
 
 namespace Jidai.Behaviors.Enemy
 {

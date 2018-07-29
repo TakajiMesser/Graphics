@@ -1,8 +1,8 @@
 ﻿using Jidai.Behaviors.Player;
 using Jidai.Helpers;
 using OpenTK;
-using TakoEngine.Maps;
-using TakoEngine.Rendering.Textures;
+using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Textures;
 
 namespace Jidai.GameObjects
 {
@@ -37,7 +37,7 @@ namespace Jidai.GameObjects
             BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH;
             HasCollision = true;
 
-            Stimuli.Add(TakoEngine.Scripting.StimResponse.Stimulus.Player);
+            Stimuli.Add(SpiceEngine.Scripting.StimResponse.Stimulus.Player);
 
             SaveBehaviorTree();
         }
