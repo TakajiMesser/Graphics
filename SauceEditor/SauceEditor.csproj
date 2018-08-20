@@ -263,9 +263,9 @@
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
       <Name>Jidai</Name>
     </ProjectReference>
-    <ProjectReference Include="..\TakoEngine\TakoEngine.csproj">
-      <Project>{016D7A9D-C5D9-4D7F-A6E5-7753CC8832FE}</Project>
-      <Name>TakoEngine</Name>
+    <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
+      <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
+      <Name>SpiceEngine</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
