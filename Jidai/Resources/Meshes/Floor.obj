@@ -1,0 +1,11 @@
+﻿mtllib GenericMaterial.mtl
+usemtl GenericMaterial
+v -20.0 -20.0 0.0
+v -20.0 20.0 0.0
+v 20.0 -20.0 0.0
+v 20.0 20.0 0.0
+vt 0 0 0
+vn 0 0 1
+s off
+f 0/0/0 1/0/0 2/0/0
+f 1/0/0 2/0/0 3/0/0
