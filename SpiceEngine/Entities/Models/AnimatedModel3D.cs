@@ -14,16 +14,14 @@ using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Entities.Models
 {
-    public class AnimatedModel : Model3D
+    public class AnimatedModel3D : Model3D<JointVertex3D>
     {
-        public List<JointMesh> Meshes { get; private set; } = new List<JointMesh>();
-        public override List<Vector3> Vertices => Meshes.SelectMany(m => m.Vertices.Select(v => v.Position)).Distinct().ToList();
         public Animator Animator { get; set; } = new Animator();
         public Joint RootJoint { get; set; }
 
         private Matrix4 _globalInverseTransform;
 
-        public AnimatedModel(string filePath, Assimp.Scene scene, TextureManager textureManager = null)
+        public AnimatedModel3D(string filePath, Assimp.Scene scene, TextureManager textureManager = null)
         {
             Animator.AnimationEnd += (s, args) => Animator.CurrentAnimation = Animator.Animations.First();
             Animator.Animate += (s, args) =>
@@ -36,7 +34,8 @@ namespace SpiceEngine.Entities.Models
                 var meshTransforms = RootJoint.GetMeshTransforms(args.KeyFrame);
                 foreach (var transforms in meshTransforms)
                 {
-                    Meshes[transforms.MeshIndex].SetJointTransforms(transforms);
+                    var jointMesh = Meshes[transforms.MeshIndex] as JointMesh3D;
+                    jointMesh.SetJointTransforms(transforms);
                 }
             };
 
@@ -75,7 +74,7 @@ namespace SpiceEngine.Entities.Models
                     vertices.Add(new JointVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                 }
 
-                var jointMesh = new JointMesh(vertices, material, mesh.GetIndices().ToList());
+                var jointMesh = new JointMesh3D(vertices, material, mesh.GetIndices().ToList());
                 if (textureManager != null)
                 {
                     jointMesh.TextureMapping = new TexturePaths(scene.Materials[mesh.MaterialIndex], Path.GetDirectoryName(filePath)).ToTextureMapping(textureManager);
@@ -196,43 +195,6 @@ namespace SpiceEngine.Entities.Models
                 animation.KeyFrames.AddRange(keyFrames.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
 
                 Animator.Animations.Add(animation);
-            }
-        }
-
-        public override void Load()
-        {
-            foreach (var mesh in Meshes)
-            {
-                mesh.Load();
-            }
-        }
-
-        public override void Draw()
-        {
-            foreach (var mesh in Meshes)
-            {
-                mesh.Draw();
-            }
-        }
-
-        public override void SetUniforms(ShaderProgram program, TextureManager textureManager)
-        {
-            _modelMatrix.Set(program);
-
-            foreach (var mesh in Meshes)
-            {
-                mesh.SetUniforms(program, textureManager);
-            }
-        }
-
-        public override void SetUniformsAndDraw(ShaderProgram program, TextureManager textureManager)
-        {
-            _modelMatrix.Set(program);
-
-            foreach (var mesh in Meshes)
-            {
-                mesh.SetUniforms(program, textureManager);
-                mesh.Draw();
             }
         }
     }

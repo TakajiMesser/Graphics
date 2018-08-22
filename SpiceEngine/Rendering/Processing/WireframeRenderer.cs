@@ -199,7 +199,7 @@ namespace SpiceEngine.Rendering.Processing
 
         public void SelectionPass(Camera camera, IEntity entity)
         {
-            var program = (entity is Actor actor && actor.Model is AnimatedModel) ? _jointWireframeProgram : _wireframeProgram;
+            var program = (entity is Actor actor && actor.Model is AnimatedModel3D) ? _jointWireframeProgram : _wireframeProgram;
             program.Use();
 
             camera.SetUniforms(program);

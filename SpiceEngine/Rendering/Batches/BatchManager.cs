@@ -23,7 +23,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             foreach (var actor in entityManager.Actors)
             {
-                switch (actor.Model)
+                /*switch (actor.Model)
                 {
                     case SimpleModel simple:
                         simple.Meshes.SelectMany(m => m.Vertices);
@@ -31,7 +31,7 @@ namespace SpiceEngine.Rendering.Batches
                     case AnimatedModel animated:
                         animated.Meshes.SelectMany(m => m.Vertices);
                         break;
-                }
+                }*/
             }
 
             foreach (var brush in entityManager.Brushes)

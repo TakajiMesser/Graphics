@@ -12,6 +12,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -234,13 +235,13 @@ namespace SpiceEngine.Rendering.Processing
             {
                 case PointLight pLight:
                     BindForPointShadowDrawing();
-                    PointLightPass(camera, pLight, brushes, actors.Where(g => g.Model is SimpleModel));
-                    PointLightJointPass(camera, pLight, actors.Where(g => g.Model is AnimatedModel));
+                    PointLightPass(camera, pLight, brushes, actors.Where(g => g.Model is Model3D<Vertex3D>));
+                    PointLightJointPass(camera, pLight, actors.Where(g => g.Model is AnimatedModel3D));
                     break;
                 case SpotLight sLight:
                     BindForSpotlightShadowDrawing();
-                    SpotLightPass(camera, sLight, brushes, actors.Where(g => g.Model is SimpleModel));
-                    SpotLightJointPass(camera, sLight, actors.Where(g => g.Model is AnimatedModel));
+                    SpotLightPass(camera, sLight, brushes, actors.Where(g => g.Model is Model3D<Vertex3D>));
+                    SpotLightJointPass(camera, sLight, actors.Where(g => g.Model is AnimatedModel3D));
                     break;
             }
         }

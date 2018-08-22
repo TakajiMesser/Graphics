@@ -13,13 +13,13 @@ using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class JointMesh : Mesh3D<JointVertex3D>
+    public class JointMesh3D : Mesh3D<JointVertex3D>
     {
         public const int MAX_JOINTS = 100;
 
         private Matrix4[] _jointTransforms = ArrayExtensions.Initialize(MAX_JOINTS, Matrix4.Identity);
 
-        public JointMesh(List<JointVertex3D> vertices, Material material, List<int> triangleIndices) : base(vertices, material, triangleIndices) { }
+        public JointMesh3D(List<JointVertex3D> vertices, Material material, List<int> triangleIndices) : base(vertices, material, triangleIndices) { }
 
         public void SetJointTransforms(MeshTransforms transforms)
         {
@@ -212,7 +212,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        ~JointMesh()
+        ~JointMesh3D()
         {
             Dispose(false);
         }

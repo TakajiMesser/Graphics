@@ -7,6 +7,7 @@ using SpiceEngine.Physics.Collision;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.StimResponse;
+using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Maps
 {
@@ -31,7 +32,7 @@ namespace SpiceEngine.Maps
 
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
-                actor.Model = Model3D.LoadFromFile(ModelFilePath, textureManager);
+                actor.Model = Model3D<Vertex3D>.LoadFromFile(ModelFilePath, textureManager);
             }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))

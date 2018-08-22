@@ -18,7 +18,7 @@ namespace SpiceEngine.Entities
     {
         public int ID { get; set; }
         public string Name { get; private set; }
-        public Model3D Model { get; set; }
+        public IModel3D Model { get; set; }
 
         public Vector3 Position
         {
@@ -26,21 +26,16 @@ namespace SpiceEngine.Entities
             set => Model.Position = value;
         }
 
-        private Vector3 _originalRotation;
-        public Vector3 OriginalRotation
-        {
-            get => _originalRotation;
-            set
-            {
-                _originalRotation = value;
-                Model._modelMatrix.Rotation = Quaternion.FromEulerAngles(value);
-            }
-        }
-
         public Quaternion Rotation
         {
             get => Model.Rotation;
             set => Model.Rotation = value;
+        }
+
+        public Vector3 OriginalRotation
+        {
+            get => Model.OriginalRotation;
+            set => Model.OriginalRotation = value;
         }
 
         public Vector3 Scale
@@ -119,7 +114,7 @@ namespace SpiceEngine.Entities
                     Behaviors.Context.Translation = Vector3.Zero;
                 }
 
-                if (Model is AnimatedModel animated)
+                if (Model is AnimatedModel3D animated)
                 {
                     animated.Animator.CurrentAnimation = animated.Animator.Animations.First();
                     animated.Animator.Tick();

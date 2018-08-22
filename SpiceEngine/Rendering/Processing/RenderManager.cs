@@ -13,6 +13,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -102,8 +103,8 @@ namespace SpiceEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is SimpleModel));
-            _selectionRenderer.JointSelectionPass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+            _selectionRenderer.JointSelectionPass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
+            _selectionRenderer.SelectionPass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
             _billboardRenderer.RenderLightSelections(camera, entityManager.Lights);
         }
 
@@ -207,8 +208,8 @@ namespace SpiceEngine.Rendering.Processing
                 _wireframeRenderer.RenderGridLines(camera);
             }
 
-            _wireframeRenderer.WireframePass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is SimpleModel));
-            _wireframeRenderer.JointWireframePass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+            _wireframeRenderer.WireframePass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
+            _wireframeRenderer.JointWireframePass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
@@ -228,8 +229,8 @@ namespace SpiceEngine.Rendering.Processing
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
 
             _deferredRenderer.BindForDiffuseWriting();
 
@@ -265,8 +266,8 @@ namespace SpiceEngine.Rendering.Processing
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
-            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
 
             RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);
 
@@ -304,10 +305,10 @@ namespace SpiceEngine.Rendering.Processing
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is SimpleModel));
+            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
             //_batchManager.AddEntities(entityManager);
             //_batchManager.RenderBatches();
-            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel));
+            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
 
             RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);
 

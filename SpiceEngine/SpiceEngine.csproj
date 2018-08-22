@@ -107,6 +107,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Entities\EntityManager.cs" />
+    <Compile Include="Entities\Models\IModel3D.cs" />
     <Compile Include="Entities\Volume.cs" />
     <Compile Include="Entities\IStimulate.cs" />
     <Compile Include="Entities\IScale.cs" />
@@ -128,13 +129,12 @@
     <Compile Include="Game\GamePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Entities\Models\SimpleModel.cs" />
     <Compile Include="Entities\Models\Model3D.cs" />
     <Compile Include="Entities\Brush.cs" />
     <Compile Include="Entities\Cameras\PerspectiveCamera.cs" />
     <Compile Include="Entities\Cameras\OrthographicCamera.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
-    <Compile Include="Entities\Models\AnimatedModel.cs" />
+    <Compile Include="Entities\Models\AnimatedModel3D.cs" />
     <Compile Include="Game\GameProperty.cs" />
     <Compile Include="Entities\Actor.cs" />
     <Compile Include="Game\GameState.cs" />
@@ -167,7 +167,7 @@
     <Compile Include="Rendering\Buffers\MatrixBuffer.cs" />
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
-    <Compile Include="Rendering\Meshes\JointMesh.cs" />
+    <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />

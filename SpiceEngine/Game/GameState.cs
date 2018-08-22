@@ -15,6 +15,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Game
 {
@@ -67,7 +68,7 @@ namespace SpiceEngine.Game
 
                 switch (actor.Model)
                 {
-                    case SimpleModel s:
+                    case Model3D<Vertex3D> s:
                         for (var i = 0; i < s.Meshes.Count; i++)
                         {
                             if (i < mapActor.TexturesPaths.Count)
@@ -77,7 +78,7 @@ namespace SpiceEngine.Game
                         }
                         break;
 
-                    case AnimatedModel a:
+                    case AnimatedModel3D a:
                         using (var importer = new Assimp.AssimpContext())
                         {
                             var scene = importer.ImportFile(mapActor.ModelFilePath);
@@ -154,22 +155,22 @@ namespace SpiceEngine.Game
 
                 switch (actor.Model)
                 {
-                    case SimpleModel s:
-                        for (var i = 0; i < s.Meshes.Count; i++)
-                        {
-                            if (i < mapActor.TexturesPaths.Count)
-                            {
-                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
-                            }
-                        }
-                        break;
-
-                    case AnimatedModel a:
+                    case AnimatedModel3D a:
                         for (var i = 0; i < a.Meshes.Count; i++)
                         {
                             if (i < mapActor.TexturesPaths.Count)
                             {
                                 a.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
+                            }
+                        }
+                        break;
+
+                    case Model3D<Vertex3D> s:
+                        for (var i = 0; i < s.Meshes.Count; i++)
+                        {
+                            if (i < mapActor.TexturesPaths.Count)
+                            {
+                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
                             }
                         }
                         break;
