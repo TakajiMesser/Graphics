@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Simple3DVertex : IVertex
+    public struct Simple3DVertex : IVertex3D
     {
-        public Vector3 Position;
+        public Vector3 Position { get; private set; }
 
         public Simple3DVertex(Vector3 position)
         {

@@ -44,7 +44,7 @@ namespace SpiceEngine.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public Mesh<ColorVertex> Mesh { get; private set; }
+        public Mesh3D<ColorVertex3D> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
@@ -56,8 +56,8 @@ namespace SpiceEngine.Entities
 
         public Volume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color)
         {
-            var simpleVertices = vertices.Select(v => new ColorVertex(v, color)).ToList();
-            Mesh = new Mesh<ColorVertex>(simpleVertices, triangleIndices);
+            var simpleVertices = vertices.Select(v => new ColorVertex3D(v, color)).ToList();
+            Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
         }
 
         public void Load() => Mesh.Load();

@@ -1,20 +1,19 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using System.Collections.Generic;
-using System.Linq;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Entities.Models
 {
-    public class SimpleModel : Model
+    public class SimpleModel : Model3D
     {
-        public List<Mesh<Vertex>> Meshes { get; private set; } = new List<Mesh<Vertex>>();
+        public List<Mesh3D<Vertex3D>> Meshes { get; private set; } = new List<Mesh3D<Vertex3D>>();
         public override List<Vector3> Vertices => Meshes.SelectMany(m => m.Vertices.Select(v => v.Position)).Distinct().ToList();
 
         public SimpleModel() { }
@@ -23,35 +22,19 @@ namespace SpiceEngine.Entities.Models
             foreach (var mesh in scene.Meshes)
             {
                 var material = new Material(scene.Materials[mesh.MaterialIndex]);
-                var vertices = new List<Vertex>();
+                var vertices = new List<Vertex3D>();
 
                 for (var i = 0; i < mesh.VertexCount; i++)
                 {
-                    var vertex = new Vertex()
-                    {
-                        Position = mesh.Vertices[i].ToVector3(),
-                        Color = new Color4()
-                    };
+                    var position = mesh.Vertices[i].ToVector3();
+                    var normals = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3();
+                    var tangents = mesh.HasTangentBasis ? mesh.Tangents[i].ToVector3() : new Vector3();
+                    var textureCoords = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0][i].ToVector2() : new Vector2();
 
-                    if (mesh.HasNormals)
-                    {
-                        vertex.Normal = mesh.Normals[i].ToVector3();
-                    }
-
-                    if (mesh.HasTextureCoords(0))
-                    {
-                        vertex.TextureCoords = mesh.TextureCoordinateChannels[0][i].ToVector2();
-                    }
-
-                    if (mesh.HasTangentBasis)
-                    {
-                        vertex.Tangent = mesh.Tangents[i].ToVector3();
-                    }
-
-                    vertices.Add(vertex);
+                    vertices.Add(new Vertex3D(position, normals, tangents, textureCoords));
                 }
 
-                Meshes.Add(new Mesh<Vertex>(vertices, material, mesh.GetIndices().ToList()));
+                Meshes.Add(new Mesh3D<Vertex3D>(vertices, material, mesh.GetIndices().ToList()));
             }
         }
 

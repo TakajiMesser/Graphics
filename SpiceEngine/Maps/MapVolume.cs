@@ -7,6 +7,7 @@ using SpiceEngine.Physics.Collision;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using OpenTK.Graphics;
 
 namespace SpiceEngine.Maps
 {
@@ -37,12 +38,12 @@ namespace SpiceEngine.Maps
         {
             return new MapBrush()
             {
-                Vertices = new List<Vertex>
+                Vertices = new List<Vertex3D>
                 {
-                    new Vertex(new Vector3(-width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
-                    new Vertex(new Vector3(-width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
-                    new Vertex(new Vector3(width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
-                    new Vertex(new Vector3(width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
+                    new Vertex3D(new Vector3(-width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
+                    new Vertex3D(new Vector3(-width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
+                    new Vertex3D(new Vector3(width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
+                    new Vertex3D(new Vector3(width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
                 },
                 Position = center,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
@@ -113,7 +114,7 @@ namespace SpiceEngine.Maps
                 6, 6, 6, 6, 6, 6
             };
 
-            var verticies = new List<Vertex>();
+            var verticies = new List<Vertex3D>();
             var triangleIndices = new List<int>();
 
             Vector3 tangent = Vector3.Zero;
@@ -141,7 +142,7 @@ namespace SpiceEngine.Maps
 
                 var uv = uvIndices[i] > 0 ? uvs[uvIndices[i] - 1] : Vector2.Zero;
 
-                var meshVertex = new Vertex(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv);
+                var meshVertex = new Vertex3D(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords);

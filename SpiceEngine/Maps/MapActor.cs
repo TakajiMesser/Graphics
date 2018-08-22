@@ -31,7 +31,7 @@ namespace SpiceEngine.Maps
 
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
-                actor.Model = Model.LoadFromFile(ModelFilePath, textureManager);
+                actor.Model = Model3D.LoadFromFile(ModelFilePath, textureManager);
             }
 
             if (!string.IsNullOrEmpty(BehaviorFilePath))

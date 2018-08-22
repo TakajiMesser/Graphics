@@ -1,34 +1,26 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
+﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
-using SpiceEngine.Helpers;
 using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Shaders;
+using System;
 using System.Runtime.InteropServices;
-using System.Reflection;
 
 namespace SpiceEngine.Rendering.Vertices
 {
     public class VertexArray<T> : IDisposable, IBindable where T : IVertex
     {
-        private readonly int _handle;
         private bool _generated = false;
 
-        public int Handle => _handle;
+        public int Handle { get; }
 
         public VertexArray()
         {
             if (_generated)
             {
-                GL.DeleteVertexArray(_handle);
+                GL.DeleteVertexArray(Handle);
             }
 
-            _handle = GL.GenVertexArray();
+            Handle = GL.GenVertexArray();
             _generated = true;
         }
 
@@ -87,18 +79,20 @@ namespace SpiceEngine.Rendering.Vertices
         {
             // TODO - This should all either be hard-coded or determined at compile time, since doing this on the fly is pointlessly wasteful
             int stride = Marshal.SizeOf<T>();
+            int offset = 0;
 
-            var fields = typeof(T).GetFields();
+            var properties = typeof(T).GetProperties();
 
-            for (var i = 0; i < fields.Length; i++)
+            for (var i = 0; i < properties.Length; i++)
             {
                 GL.EnableVertexAttribArray(i);
 
-                int size = GetSize(fields[i].FieldType);
-                IntPtr offset = Marshal.OffsetOf<T>(fields[i].Name);
-                VertexAttribPointerType type = GetPointerType(fields[i].FieldType);
+                int size = GetSize(properties[i].PropertyType);
+                //IntPtr offset = Marshal.OffsetOf<T>(properties[i].Name);
+                VertexAttribPointerType type = GetPointerType(properties[i].PropertyType);
 
                 GL.VertexAttribPointer(i, size, type, false, stride, offset);
+                offset += size * 4;
             }
 
             /*foreach (var attribute in VertexHelper.GetAttributes<T>())
@@ -110,7 +104,7 @@ namespace SpiceEngine.Rendering.Vertices
 
         public void Bind()
         {
-            GL.BindVertexArray(_handle);
+            GL.BindVertexArray(Handle);
         }
 
         public void Unbind()
@@ -130,7 +124,7 @@ namespace SpiceEngine.Rendering.Vertices
                     // TODO: dispose managed state (managed objects).
                 }
 
-                GL.DeleteVertexArray(_handle);
+                GL.DeleteVertexArray(Handle);
                 disposedValue = true;
             }
         }

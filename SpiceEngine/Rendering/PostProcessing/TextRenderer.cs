@@ -31,8 +31,8 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         private ShaderProgram _textProgram;
 
-        private VertexBuffer<TextureVertex> _vertexBuffer = new VertexBuffer<TextureVertex>();
-        private VertexArray<TextureVertex> _vertexArray = new VertexArray<TextureVertex>();
+        private VertexBuffer<TextureVertex2D> _vertexBuffer = new VertexBuffer<TextureVertex2D>();
+        private VertexArray<TextureVertex2D> _vertexArray = new VertexArray<TextureVertex2D>();
         private FrameBuffer _frameBuffer = new FrameBuffer();
 
         protected override void LoadPrograms()
@@ -134,29 +134,10 @@ namespace SpiceEngine.Rendering.PostProcessing
                 var u = (character % GLYPHS_PER_LINE) * uStep;
                 var v = (character / GLYPHS_PER_LINE) * vStep;
 
-                _vertexBuffer.AddVertex(new TextureVertex()
-                {
-                    Position = new Vector2(x + GLYPH_WIDTH, y + GLYPH_HEIGHT),
-                    TextureCoords = new Vector2(u + uStep, v)
-                });
-
-                _vertexBuffer.AddVertex(new TextureVertex()
-                {
-                    Position = new Vector2(x, y + GLYPH_HEIGHT),
-                    TextureCoords = new Vector2(u, v)
-                });
-
-                _vertexBuffer.AddVertex(new TextureVertex()
-                {
-                    Position = new Vector2(x, y),
-                    TextureCoords = new Vector2(u, v + vStep)
-                });
-
-                _vertexBuffer.AddVertex(new TextureVertex()
-                {
-                    Position = new Vector2(x + GLYPH_WIDTH, y),
-                    TextureCoords = new Vector2(u + uStep, v + vStep)
-                });
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + GLYPH_WIDTH, y + GLYPH_HEIGHT), new Vector2(u + uStep, v)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y + GLYPH_HEIGHT), new Vector2(u, v)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y), new Vector2(u, v + vStep)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + GLYPH_WIDTH, y), new Vector2(u + uStep, v + vStep)));
 
                 x += X_SPACING + 20;
             }

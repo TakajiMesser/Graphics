@@ -45,8 +45,8 @@ namespace SpiceEngine.Rendering.Processing
         private ShaderProgram _scaleProgram;
 
         private FrameBuffer _frameBuffer = new FrameBuffer();
-        private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
-        private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
+        private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
+        private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
 
         protected override void LoadPrograms()
         {
@@ -209,11 +209,7 @@ namespace SpiceEngine.Rendering.Processing
             _translateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ColorVertex()
-            {
-                Position = position,
-                Color = new Vector4()
-            });
+            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Vector4()));
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -233,11 +229,7 @@ namespace SpiceEngine.Rendering.Processing
             _rotateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ColorVertex()
-            {
-                Position = position,
-                Color = new Vector4()
-            });
+            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Vector4()));
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -257,11 +249,7 @@ namespace SpiceEngine.Rendering.Processing
             _scaleProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ColorVertex()
-            {
-                Position = position,
-                Color = new Vector4()
-            });
+            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Vector4()));
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();

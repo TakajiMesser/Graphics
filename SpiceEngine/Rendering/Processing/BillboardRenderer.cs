@@ -27,8 +27,8 @@ namespace SpiceEngine.Rendering.Processing
         private ShaderProgram _billboardProgram;
         private ShaderProgram _billboardSelectionProgram;
 
-        private VertexArray<ColorVertex> _vertexArray = new VertexArray<ColorVertex>();
-        private VertexBuffer<ColorVertex> _vertexBuffer = new VertexBuffer<ColorVertex>();
+        private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
+        private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
 
         private Texture _volumeVertexTexture;
 
@@ -108,11 +108,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var entity in entities)
             {
-                _vertexBuffer.AddVertex(new ColorVertex()
-                {
-                    Position = entity.Position,
-                    Color = SelectionRenderer.GetColorFromID(entity.ID)
-                });
+                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(entity.ID)));
             }
 
             _vertexArray.Bind();
@@ -156,11 +152,7 @@ namespace SpiceEngine.Rendering.Processing
 
             foreach (var vertex in volume.Mesh.Vertices)
             {
-                _vertexBuffer.AddVertex(new ColorVertex()
-                {
-                    Position = volume.Position + vertex.Position,
-                    Color = new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)
-                });
+                _vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
             }
 
             _vertexArray.Bind();
@@ -218,11 +210,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var light in lights)
             {
-                _vertexBuffer.AddVertex(new ColorVertex()
-                {
-                    Position = light.Position,
-                    Color = SelectionRenderer.GetColorFromID(light.ID)
-                });
+                _vertexBuffer.AddVertex(new ColorVertex3D(light.Position, SelectionRenderer.GetColorFromID(light.ID)));
             }
 
             _vertexArray.Bind();

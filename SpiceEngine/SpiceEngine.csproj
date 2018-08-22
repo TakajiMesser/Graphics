@@ -129,7 +129,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Entities\Models\SimpleModel.cs" />
-    <Compile Include="Entities\Models\Model.cs" />
+    <Compile Include="Entities\Models\Model3D.cs" />
     <Compile Include="Entities\Brush.cs" />
     <Compile Include="Entities\Cameras\PerspectiveCamera.cs" />
     <Compile Include="Entities\Cameras\OrthographicCamera.cs" />
@@ -194,7 +194,7 @@
     <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
     <Compile Include="Rendering\Meshes\MeshManager.cs" />
     <Compile Include="Rendering\Meshes\MeshTriangle.cs" />
-    <Compile Include="Rendering\Meshes\Mesh.cs" />
+    <Compile Include="Rendering\Meshes\Mesh3D.cs" />
     <Compile Include="Physics\Collision\QuadTree.cs" />
     <Compile Include="Physics\Collision\Bounds.cs" />
     <Compile Include="Physics\Collision\BoundingBox.cs" />
@@ -230,13 +230,15 @@
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
-    <Compile Include="Rendering\Vertices\Simple3DVertex.cs" />
-    <Compile Include="Rendering\Vertices\ColorVertex.cs" />
-    <Compile Include="Rendering\Vertices\Simple2DVertex.cs" />
-    <Compile Include="Rendering\Vertices\TextureVertex.cs" />
-    <Compile Include="Rendering\Vertices\JointVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex.cs" />
-    <Compile Include="Rendering\Vertices\Vertex.cs" />
+    <Compile Include="Rendering\Vertices\IVertex2D.cs" />
+    <Compile Include="Rendering\Vertices\Simple3DVertex.cs" />
+    <Compile Include="Rendering\Vertices\ColorVertex3D.cs" />
+    <Compile Include="Rendering\Vertices\Simple2DVertex.cs" />
+    <Compile Include="Rendering\Vertices\TextureVertex2D.cs" />
+    <Compile Include="Rendering\Vertices\JointVertex3D.cs" />
+    <Compile Include="Rendering\Vertices\IVertex3D.cs" />
+    <Compile Include="Rendering\Vertices\Vertex3D.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
     <Compile Include="Scripting\Behaviors\BehaviorContext.cs" />

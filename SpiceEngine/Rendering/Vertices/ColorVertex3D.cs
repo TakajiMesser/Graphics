@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct ColorVertex : IVertex
+    public struct ColorVertex3D : IVertex3D
     {
-        public Vector3 Position;
-        public Vector4 Color;
+        public Vector3 Position { get; private set; }
+        public Vector4 Color { get; private set; }
 
-        public ColorVertex(Vector3 position, Vector4 color)
+        public ColorVertex3D(Vector3 position, Vector4 color)
         {
             Position = position;
             Color = color;

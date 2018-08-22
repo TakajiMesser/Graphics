@@ -12,7 +12,7 @@ namespace SpiceEngine.Rendering.Batches
 {
     public class BatchManager
     {
-        public List<Batch<IVertex>> _batches = new List<Batch<IVertex>>();
+        public List<Batch<IVertex3D>> _batches = new List<Batch<IVertex3D>>();
 
         public BatchManager()
         {

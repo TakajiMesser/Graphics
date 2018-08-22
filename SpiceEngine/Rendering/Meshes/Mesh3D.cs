@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class Mesh<T> : IDisposable where T : IVertex
+    public class Mesh3D<T> : IDisposable where T : IVertex3D
     {
         public TextureMapping TextureMapping { get; set; }
         public List<T> Vertices { get; }
@@ -23,7 +23,7 @@ namespace SpiceEngine.Rendering.Meshes
         private VertexIndexBuffer _indexBuffer;
         private VertexArray<T> _vertexArray;
 
-        public Mesh(List<T> vertices, List<int> triangleIndices)
+        public Mesh3D(List<T> vertices, List<int> triangleIndices)
         {
             if (triangleIndices.Count % 3 != 0)
             {
@@ -34,7 +34,7 @@ namespace SpiceEngine.Rendering.Meshes
             _triangleIndices = triangleIndices;
         }
 
-        public Mesh(List<T> vertices, Material material, List<int> triangleIndices)
+        public Mesh3D(List<T> vertices, Material material, List<int> triangleIndices)
         {
             if (triangleIndices.Count % 3 != 0)
             {
@@ -289,7 +289,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        ~Mesh()
+        ~Mesh3D()
         {
             Dispose(false);
         }

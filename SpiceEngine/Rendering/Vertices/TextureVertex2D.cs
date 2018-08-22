@@ -4,12 +4,12 @@ using System.Runtime.InteropServices;
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct TextureVertex : IVertex
+    public struct TextureVertex2D : IVertex2D
     {
-        public Vector2 Position;
-        public Vector2 TextureCoords;
+        public Vector2 Position { get; private set; }
+        public Vector2 TextureCoords { get; private set; }
 
-        public TextureVertex(Vector2 position, Vector2 textureCoords)
+        public TextureVertex2D(Vector2 position, Vector2 textureCoords)
         {
             Position = position;
             TextureCoords = textureCoords;

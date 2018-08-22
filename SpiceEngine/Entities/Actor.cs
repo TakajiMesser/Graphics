@@ -18,7 +18,7 @@ namespace SpiceEngine.Entities
     {
         public int ID { get; set; }
         public string Name { get; private set; }
-        public Model Model { get; set; }
+        public Model3D Model { get; set; }
 
         public Vector3 Position
         {

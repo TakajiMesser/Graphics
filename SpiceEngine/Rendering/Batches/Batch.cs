@@ -10,7 +10,7 @@ using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public class Batch<T> where T : IVertex
+    public class Batch<T> where T : IVertex3D
     {
         private MatrixStack _matrixStack;
 

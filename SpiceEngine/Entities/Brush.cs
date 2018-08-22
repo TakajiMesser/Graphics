@@ -44,7 +44,7 @@ namespace SpiceEngine.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public Mesh<Vertex> Mesh { get; private set; }
+        public Mesh3D<Vertex3D> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
@@ -55,15 +55,15 @@ namespace SpiceEngine.Entities
 
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
-        public Brush(List<Vertex> vertices, Material material, List<int> triangleIndices)
+        public Brush(List<Vertex3D> vertices, Material material, List<int> triangleIndices)
         {
-            Mesh = new Mesh<Vertex>(vertices, material, triangleIndices);
+            Mesh = new Mesh3D<Vertex3D>(vertices, material, triangleIndices);
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
         public void AddTestColors()
         {
-            var vertices = new List<Vertex>();
+            var vertices = new List<Vertex3D>();
 
             for (var i = 0; i < Mesh.Vertices.Count; i++)
             {
@@ -96,12 +96,12 @@ namespace SpiceEngine.Entities
 
         public static Brush Rectangle(Vector3 center, float width, float height)
         {
-            var vertices = new List<Vertex>
+            var vertices = new List<Vertex3D>
             {
-                new Vertex(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero)
+                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
+                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
+                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
+                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero)
             };
 
             var material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;

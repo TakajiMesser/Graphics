@@ -14,7 +14,7 @@ using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Entities.Models
 {
-    public class AnimatedModel : Model
+    public class AnimatedModel : Model3D
     {
         public List<JointMesh> Meshes { get; private set; } = new List<JointMesh>();
         public override List<Vector3> Vertices => Meshes.SelectMany(m => m.Vertices.Select(v => v.Position)).Distinct().ToList();
@@ -48,30 +48,16 @@ namespace SpiceEngine.Entities.Models
             foreach (var mesh in scene.Meshes)
             {
                 var material = new Material(scene.Materials[mesh.MaterialIndex]);
-                var vertices = new List<JointVertex>();
+                var vertices = new List<JointVertex3D>();
 
                 for (var i = 0; i < mesh.VertexCount; i++)
                 {
-                    var vertex = new JointVertex()
-                    {
-                        Position = mesh.Vertices[i].ToVector3(),
-                        Color = new Color4()
-                    };
-
-                    if (mesh.HasNormals)
-                    {
-                        vertex.Normal = mesh.Normals[i].ToVector3();
-                    }
-
-                    if (mesh.HasTextureCoords(0))
-                    {
-                        vertex.TextureCoords = mesh.TextureCoordinateChannels[0][i].ToVector2();
-                    }
-
-                    if (mesh.HasTangentBasis)
-                    {
-                        vertex.Tangent = mesh.Tangents[i].ToVector3();
-                    }
+                    var position = mesh.Vertices[i].ToVector3();
+                    var normals = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3();
+                    var tangents = mesh.HasTangentBasis ? mesh.Tangents[i].ToVector3() : new Vector3();
+                    var textureCoords = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0][i].ToVector2() : new Vector2();
+                    var boneIDs = new Vector4();
+                    var boneWeights = new Vector4();
 
                     if (mesh.HasBones)
                     {
@@ -81,12 +67,12 @@ namespace SpiceEngine.Entities.Models
 
                         for (var j = 0; j < 4 && j < matches.Count; j++)
                         {
-                            vertex.BoneIDs[j] = matches[j].boneIndex;
-                            vertex.BoneWeights[j] = matches[j].bone.VertexWeights.First(v => v.VertexID == i).Weight;
+                            boneIDs[j] = matches[j].boneIndex;
+                            boneWeights[j] = matches[j].bone.VertexWeights.First(v => v.VertexID == i).Weight;
                         }
                     }
 
-                    vertices.Add(vertex);
+                    vertices.Add(new JointVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                 }
 
                 var jointMesh = new JointMesh(vertices, material, mesh.GetIndices().ToList());

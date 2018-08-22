@@ -7,7 +7,7 @@ using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Entities.Models
 {
-    public abstract class Model
+    public abstract class Model3D
     {
         internal ModelMatrix _modelMatrix = new ModelMatrix();
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
@@ -44,7 +44,7 @@ namespace SpiceEngine.Entities.Models
         public abstract void SetUniforms(ShaderProgram program, TextureManager textureManager);
         public abstract void SetUniformsAndDraw(ShaderProgram program, TextureManager textureManager);
 
-        public static Model LoadFromFile(string filePath, TextureManager textureManager = null)
+        public static Model3D LoadFromFile(string filePath, TextureManager textureManager = null)
         {
             using (var importer = new Assimp.AssimpContext())
             {
@@ -56,7 +56,7 @@ namespace SpiceEngine.Entities.Models
                     | Assimp.PostProcessSteps.FlipUVs);
 
                 return scene.HasAnimations
-                    ? (Model)new AnimatedModel(filePath, scene, textureManager)
+                    ? (Model3D)new AnimatedModel(filePath, scene, textureManager)
                     : new SimpleModel(scene);
             }
         }
