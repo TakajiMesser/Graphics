@@ -262,6 +262,7 @@
     <Compile Include="Scripting\Properties\Property.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
+    <Compile Include="Scripting\States\State.cs" />
     <Compile Include="Scripting\StimResponse\Response.cs" />
     <Compile Include="Scripting\StimResponse\StimulusTriggeredEventArgs.cs" />
     <Compile Include="Scripting\StimResponse\Stimulus.cs" />

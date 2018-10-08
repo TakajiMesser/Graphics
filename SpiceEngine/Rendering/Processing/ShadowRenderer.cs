@@ -117,7 +117,7 @@ namespace SpiceEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void BindForPointShadowDrawing()
+        private void BindForPointShadowDrawing()
         {
             _pointFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
 
@@ -132,7 +132,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
         }
 
-        public void BindForSpotlightShadowDrawing()
+        private void BindForSpotShadowDrawing()
         {
             _spotFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
 
@@ -145,7 +145,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.DepthBufferBit);
         }
 
-        public void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        private void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
         {
             _pointShadowProgram.Use();
 
@@ -153,6 +153,7 @@ namespace SpiceEngine.Rendering.Processing
             camera.SetUniforms(_pointShadowProgram, light);
             _pointShadowProgram.SetUniform("lightRadius", light.Radius);
             _pointShadowProgram.SetUniform("lightPosition", light.Position);
+
             // Draw all geometry, but only the positions
             foreach (var brush in brushes)
             {
@@ -162,13 +163,11 @@ namespace SpiceEngine.Rendering.Processing
 
             foreach (var actor in actors)
             {
-                //actor.SetUniforms(_pointShadowProgram);
-                //actor.Draw();
                 actor.SetUniformsAndDraw(_pointShadowProgram);
             }
         }
 
-        public void PointLightJointPass(Camera camera, PointLight light, IEnumerable<Actor> actors)
+        private void PointLightJointPass(Camera camera, PointLight light, IEnumerable<Actor> actors)
         {
             _pointShadowJointProgram.Use();
 
@@ -176,11 +175,10 @@ namespace SpiceEngine.Rendering.Processing
             camera.SetUniforms(_pointShadowJointProgram, light);
             _pointShadowJointProgram.SetUniform("lightRadius", light.Radius);
             _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
+
             // Draw all geometry, but only the positions
             foreach (var actor in actors)
             {
-                //actor.SetUniforms(_pointShadowJointProgram);
-                //actor.Draw();
                 actor.SetUniformsAndDraw(_pointShadowJointProgram);
             }
 
@@ -203,12 +201,8 @@ namespace SpiceEngine.Rendering.Processing
 
             foreach (var actor in actors)
             {
-                //actor.SetUniforms(_spotShadowProgram);
-                //actor.Draw();
                 actor.SetUniformsAndDraw(_spotShadowProgram);
             }
-
-            _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         private void SpotLightJointPass(Camera camera, SpotLight light, IEnumerable<Actor> actors)
@@ -221,8 +215,6 @@ namespace SpiceEngine.Rendering.Processing
             // Draw all geometry, but only the positions
             foreach (var actor in actors)
             {
-                //actor.SetUniforms(_spotShadowJointProgram);
-                //actor.Draw();
                 actor.SetUniformsAndDraw(_spotShadowJointProgram);
             }
 
@@ -239,7 +231,7 @@ namespace SpiceEngine.Rendering.Processing
                     PointLightJointPass(camera, pLight, actors.Where(g => g.Model is AnimatedModel3D));
                     break;
                 case SpotLight sLight:
-                    BindForSpotlightShadowDrawing();
+                    BindForSpotShadowDrawing();
                     SpotLightPass(camera, sLight, brushes, actors.Where(g => g.Model is Model3D<Vertex3D>));
                     SpotLightJointPass(camera, sLight, actors.Where(g => g.Model is AnimatedModel3D));
                     break;

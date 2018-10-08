@@ -26,50 +26,21 @@ namespace SpiceEngine.Utilities
             }
         }
 
-        public static IEnumerable<T> DistinctBy<T, U>(this IEnumerable<T> source, Func<T, U> func)
+        public static T[] Subset<T>(this T[] source, int start) => source.Subset(start, source.Length - start);
+        public static T[] Subset<T>(this T[] source, int start, int length)
         {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (func == null) throw new ArgumentNullException(nameof(func));
+            if (start < 0 || start >= source.Length) throw new ArgumentOutOfRangeException("Start must be within the bounds of the source array");
+            if (start + length > source.Length) throw new ArgumentOutOfRangeException("Length must be within the bounds of the source array");
+            if (length <= 0) throw new ArgumentOutOfRangeException("Length must be at least 1");
 
-            return source.Any() 
-                ? source.GroupBy(func).Select(g => g.First()) 
-                : source;
-        }
+            var subset = new T[length];
 
-        /// <summary>
-        /// Finds the element with the minimum value
-        /// </summary>
-        /// <typeparam name="T">The type of the items within the enumerable</typeparam>
-        /// <typeparam name="U">The type of the value to find the minimum of</typeparam>
-        /// <param name="source">The enumerable to search within</param>
-        /// <param name="func">The function to apply to each item within the enumerable, in order to find the minimum element</param>
-        /// <returns>The element that yielded the minimum value</returns>
-        public static T MinElement<T, U>(this IEnumerable<T> source, Func<T, U> func) where U : IComparable
-        {
-            if (source == null) throw new ArgumentNullException(nameof(source));
-            if (func == null) throw new ArgumentNullException(nameof(func));
-
-            using (var sourceIterator = source.GetEnumerator())
+            for (var i = 0; i < length; i++)
             {
-                if (!sourceIterator.MoveNext()) throw new InvalidOperationException("Sequence contains no elements");
-
-                var minElement = sourceIterator.Current;
-                var minValue = func(minElement);
-
-                while (sourceIterator.MoveNext())
-                {
-                    var candidate = sourceIterator.Current;
-                    var candidateProjected = func(candidate);
-
-                    if (candidateProjected.CompareTo(minValue) < 0)
-                    {
-                        minElement = candidate;
-                        minValue = candidateProjected;
-                    }
-                }
-
-                return minElement;
+                subset[i] = source[start + i];
             }
+
+            return subset;
         }
     }
 }

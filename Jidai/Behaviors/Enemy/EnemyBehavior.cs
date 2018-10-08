@@ -57,24 +57,23 @@ namespace Jidai.Behaviors.Enemy
 
         protected override void SetResponses()
         {
-            var response = new Response(Stimulus.Player)
+            var playerResponse = new Response(Stimulus.Player)
             {
                 TriggerOnContact = true,
                 TriggerOnSight = true,
                 SightAngle = 50.0f,
                 SightDistance = 20.0f
             };
-            response.Triggered += Response_Triggered;
-            Responses.Add(response);
+            playerResponse.Triggered += PlayerResponse_Triggered;
+            Responses.Add(playerResponse);
         }
 
         private void AlertMeter_Triggered(object sender, MeterTriggeredEventArgs e)
         {
-            var newRoot = new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player");
-            RootStack.Push(newRoot);
+            RootStack.Push(new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player"));
         }
 
-        private void Response_Triggered(object sender, StimulusTriggeredEventArgs e)
+        private void PlayerResponse_Triggered(object sender, StimulusTriggeredEventArgs e)
         {
             if (_alertMeter.Value < _alertMeter.TriggerValue)
             {
