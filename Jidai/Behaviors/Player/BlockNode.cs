@@ -46,21 +46,21 @@ namespace Jidai.Behaviors.Player
 
                 return BehaviorStatus.Failure;
             }
-            else if (context.InputState.IsPressed(context.InputMapping.Block))
+            else if (context.InputManager.IsPressed(context.InputMapping.Block))
             {
                 context.SetVariable("nBlockTicks", 1);
 
                 // Swallow any directional movement inputs
                 //context.InputState.SwallowInputs(context.InputMapping.Forward, context.InputMapping.Backward, context.InputMapping.Left, context.InputMapping.Right);
             }
-            else if (context.InputState.IsHeld(context.InputMapping.Block))
+            else if (context.InputManager.IsDown(context.InputMapping.Block))
             {
                 var nBlockTicks = context.GetVariableOrDefault<int>("nBlockTicks");
                 nBlockTicks++;
 
                 context.SetVariable("nBlockTicks", nBlockTicks);
 
-                var evadeTranslation = GeometryHelper.GetPressedTranslation(context.Camera, EvadeSpeed, context.InputState, context.InputMapping);
+                var evadeTranslation = GeometryHelper.GetPressedTranslation(context.Camera, EvadeSpeed, context.InputManager, context.InputMapping);
 
                 if (evadeTranslation != Vector3.Zero)
                 {

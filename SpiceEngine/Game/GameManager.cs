@@ -1,42 +1,41 @@
-﻿using OpenTK;
-using OpenTK.Input;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Models;
 using SpiceEngine.Helpers;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
+using SpiceEngine.Physics;
 using SpiceEngine.Physics.Collision;
-using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using System;
+using System.Drawing;
+using System.Drawing.Imaging;
+using System.IO;
+using System.Linq;
 
 namespace SpiceEngine.Game
 {
-    public class GameState
+    public class GameManager
     {
         public Camera Camera { get; set; }
+
         public EntityManager EntityManager { get; private set; } = new EntityManager();
         public TextureManager TextureManager { get; } = new TextureManager();
+        public InputManager InputManager { get; private set; }
+        public PhysicsManager PhysicsManager { get; private set; }
+
         public bool IsLoaded { get; private set; }
 
         private Resolution _resolution;
-        internal InputState _inputState = new InputState();
 
-        private QuadTree _actorQuads;
-        private QuadTree _brushQuads;
-        private QuadTree _volumeQuads;
-        private QuadTree _lightQuads;
-
-        public GameState(Resolution resolution)
+        public GameManager(Resolution resolution, IMouseDelta mouseDelta)
         {
             _resolution = resolution;
+
+            InputManager = new InputManager(mouseDelta);
 
             TextureManager.EnableMipMapping = true;
             TextureManager.EnableAnisotropy = true;
@@ -46,17 +45,6 @@ namespace SpiceEngine.Game
         {
             EntityManager = entityManager;
 
-            _lightQuads = new QuadTree(0, map.Boundaries);
-            _lightQuads.InsertRange(EntityManager.Lights.Select(l => new BoundingCircle(l)));
-
-            _brushQuads = new QuadTree(0, map.Boundaries);
-            _brushQuads.InsertRange(EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
-
-            _volumeQuads = new QuadTree(0, map.Boundaries);
-            _volumeQuads.InsertRange(EntityManager.Volumes.Select(v => v.Bounds));
-
-            _actorQuads = new QuadTree(0, map.Boundaries);
-
             for (var i = 0; i < map.Brushes.Count; i++)
             {
                 EntityManager.Brushes[i].Mesh.TextureMapping = map.Brushes[i].TexturesPaths.ToTextureMapping(TextureManager);
@@ -64,7 +52,7 @@ namespace SpiceEngine.Game
 
             foreach (var mapActor in map.Actors)
             {
-                var actor = GetActorByName(mapActor.Name);
+                var actor = EntityManager.GetActorByName(mapActor.Name);
 
                 switch (actor.Model)
                 {
@@ -99,18 +87,117 @@ namespace SpiceEngine.Game
         public void LoadFromMap(Map map)
         {
             Camera = map.Camera.ToCamera(_resolution);
-            EntityManager.ClearEntities();
 
-            LoadLightsFromMap(map);
-            LoadBrushesFromMap(map);
-            LoadVolumesFromMap(map);
-            LoadActorsFromMap(map);
+            EntityManager.ClearEntities();
+            EntityManager.AddEntities(map.Lights);
+            EntityManager.AddEntities(map.Brushes.Select(b => b.ToBrush()));
+            EntityManager.AddEntities(map.Volumes.Select(v => v.ToVolume()));
+            EntityManager.AddEntities(map.Actors.Select(a => a.ToActor()));
             EntityManager.LoadEntities();
+
+            switch (map)
+            {
+                case Map2D map2D:
+                    PhysicsManager = new PhysicsManager(map2D.Boundaries);
+                    break;
+                case Map3D map3D:
+                    PhysicsManager = new PhysicsManager(map3D.Boundaries);
+                    break;
+            }
+
+            PhysicsManager.InsertBrushes(EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
+            PhysicsManager.InsertVolumes(EntityManager.Volumes.Select(v => v.Bounds));
+            PhysicsManager.InsertLights(map.Lights.Select(l => new BoundingCircle(l)));
+
+            for (var i = 0; i < map.Brushes.Count; i++)
+            {
+                EntityManager.Brushes[i].Mesh.TextureMapping = map.Brushes[i].TexturesPaths.ToTextureMapping(TextureManager);
+            }
+
+            foreach (var mapActor in map.Actors)
+            {
+                var actor = EntityManager.GetActorByName(mapActor.Name);
+
+                switch (actor.Model)
+                {
+                    case Model3D<Vertex3D> s:
+                        for (var i = 0; i < s.Meshes.Count; i++)
+                        {
+                            if (i < mapActor.TexturesPaths.Count)
+                            {
+                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
+                            }
+                        }
+                        break;
+
+                    case AnimatedModel3D a:
+                        using (var importer = new Assimp.AssimpContext())
+                        {
+                            var scene = importer.ImportFile(mapActor.ModelFilePath);
+                            for (var i = 0; i < a.Meshes.Count; i++)
+                            {
+                                a.Meshes[i].TextureMapping = (i < mapActor.TexturesPaths.Count)
+                                    ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                    : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+                            }
+                        }
+                        break;
+                }
+
+                if (map.Camera.AttachedActorName == actor.Name)
+                {
+                    Camera.AttachToEntity(actor, true, false);
+                }
+            }
 
             IsLoaded = true;
         }
 
-        private void LoadLightsFromMap(Map map)
+        public void Initialize()
+        {
+            EntityManager.Initialize();
+        }
+
+        public void Update()
+        {
+            Camera.OnHandleInput(InputManager);
+
+            foreach (var actor in EntityManager.Actors)
+            {
+                actor.OnHandleInput(InputManager, Camera);
+            }
+
+            PhysicsManager.Update(EntityManager.Actors);
+
+            Camera.OnUpdateFrame();
+
+            InputManager.Update();
+        }
+
+        public void SaveToFile(string path) => throw new NotImplementedException();
+
+        public static GameManager LoadFromFile(string path) => throw new NotImplementedException();
+
+        private void TakeScreenshot()
+        {
+            var bitmap = new Bitmap(_resolution.Width, _resolution.Height);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, _resolution.Width, _resolution.Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.ReadPixels(0, 0, _resolution.Width, _resolution.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.Finish();
+
+            bitmap.UnlockBits(data);
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            string fileName = FilePathHelper.SCREENSHOT_PATH + "\\"
+                + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
+                + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
+
+            bitmap.Save(fileName, ImageFormat.Png);
+            bitmap.Dispose();
+        }
+
+        /*private void LoadLightsFromMap(Map map)
         {
             _lightQuads = new QuadTree(0, map.Boundaries);
             _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
@@ -183,59 +270,6 @@ namespace SpiceEngine.Game
 
                 EntityManager.AddEntity(actor);
             }
-        }
-
-        public Actor GetActorByName(string name) => EntityManager.Actors.First(g => g.Name == name);
-
-        public void Initialize()
-        {
-            foreach (var actor in EntityManager.Actors)
-            {
-                actor.OnInitialization();
-            }
-        }
-
-        public void HandleInput()
-        {
-            Camera.OnHandleInput(_inputState);
-
-            foreach (var actor in EntityManager.Actors)
-            {
-                actor.OnHandleInput(_inputState, Camera);
-            }
-        }
-
-        public void UpdateFrame()
-        {
-            // Update the gameobject colliders every frame, since they could have moved
-            _actorQuads.Clear();
-            _actorQuads.InsertRange(EntityManager.Actors.Select(g => g.Bounds).Where(c => c != null));
-
-            // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
-            foreach (var actor in EntityManager.Actors)
-            {
-                //actor.ClearLights();
-                //actor.AddPointLights(_lightQuads.Retrieve(actor.Bounds)
-                //    .Where(c => c.AttachedEntity is PointLight)
-                //    .Select(c => (PointLight)c.AttachedEntity));
-
-                var filteredColliders = _brushQuads.Retrieve(actor.Bounds)
-                    .Concat(_actorQuads
-                        .Retrieve(actor.Bounds)
-                            .Where(c => ((Actor)c.AttachedEntity).Name != actor.Name));
-
-                actor.OnUpdateFrame(filteredColliders);
-            }
-
-            Camera.OnUpdateFrame();
-
-            PollForInput();
-        }
-
-        private void PollForInput() => _inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
-
-        public void SaveToFile(string path) => throw new NotImplementedException();
-
-        public static GameState LoadFromFile(string path) => throw new NotImplementedException();
+        }*/
     }
 }

@@ -25,8 +25,8 @@ namespace SpiceEngine.Scripting.Behaviors
         public IEnumerable<Bounds> Colliders { get; internal set; }
 
         public Camera Camera { get; internal set; }
-        public InputState InputState { get; internal set; }
-        public InputMapping InputMapping { get; internal set; }
+        public InputManager InputManager { get; internal set; }
+        public InputBinding InputMapping { get; internal set; }
 
         public Vector3 EulerRotation { get; set; }
         public Vector3 Translation { get; set; }

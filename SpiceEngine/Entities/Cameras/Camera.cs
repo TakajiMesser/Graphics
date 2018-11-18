@@ -59,7 +59,7 @@ namespace SpiceEngine.Entities.Cameras
             }
         }
 
-        public abstract void OnHandleInput(InputState inputState);
+        public abstract void OnHandleInput(InputManager inputManager);
 
         public void SetUniforms(ShaderProgram program)
         {

@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Inputs
 {
-    public class InputMapping
+    public class InputBinding
     {
         // Movement
         public Input Forward { get; set; } = new Input(Key.W);

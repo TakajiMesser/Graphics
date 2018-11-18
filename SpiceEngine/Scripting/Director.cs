@@ -9,11 +9,11 @@ namespace SpiceEngine.Scripting
     /// </summary>
     public class Director : Actor
     {
-        private GameState _gameState;
+        private GameManager _gameManager;
 
-        public Director(string name, GameState gameState) : base(name)
+        public Director(string name, GameManager gameManager) : base(name)
         {
-            _gameState = gameState;
+            _gameManager = gameManager;
         }
     }
 }

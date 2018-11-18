@@ -46,7 +46,7 @@ namespace SpiceEngine.Entities
 
         public Behavior Behaviors { get; set; }
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public InputMapping InputMapping { get; set; } = new InputMapping();
+        public InputBinding InputMapping { get; set; } = new InputBinding();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
 
         public Bounds Bounds { get; set; }
@@ -84,11 +84,11 @@ namespace SpiceEngine.Entities
             }
         }
 
-        public virtual void OnHandleInput(InputState inputState, Camera camera)
+        public virtual void OnHandleInput(InputManager inputManager, Camera camera)
         {
             if (Behaviors != null)
             {
-                Behaviors.Context.InputState = inputState;
+                Behaviors.Context.InputManager = inputManager;
                 Behaviors.Context.InputMapping = InputMapping;
                 Behaviors.Context.Camera = camera;
             }

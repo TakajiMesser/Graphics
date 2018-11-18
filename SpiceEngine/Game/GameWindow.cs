@@ -12,31 +12,26 @@ using SpiceEngine.Helpers;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
+using SpiceEngine.Utilities;
+using SpiceEngine.Inputs;
 
 namespace SpiceEngine.Game
 {
-    public class GameWindow : OpenTK.GameWindow
+    public class GameWindow : OpenTK.GameWindow, IMouseDelta
     {
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
         private string _mapPath;
-
-        private GameState _gameState;
+        private GameManager _gameManager;
         private RenderManager _renderManager;
 
-        private KeyboardState _keyState;
-        private KeyboardState _previousKeyState;
-        private MouseState _mouseState;
-        private MouseState _previousMouseState;
-        private MouseDevice _mouse;
-        private MouseDevice _previousMouse;
+        private MouseDevice _mouseDevice;
 
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
 
-        public GameWindow(string mapPath) : base(1280, 720,
-            GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameWindow(string mapPath) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
             WindowSize = new Resolution(Width, Height);
@@ -53,6 +48,14 @@ namespace SpiceEngine.Game
                 }
             };
         }
+
+        public Vector2? MouseCoordinates => _mouseDevice != null
+            ? new Vector2(_mouseDevice.X, _mouseDevice.Y)
+            : (Vector2?)null;
+
+        public bool IsMouseInWindow => _mouseDevice != null
+            ? (_mouseDevice.X.IsBetween(0, WindowSize.Width) && _mouseDevice.Y.IsBetween(0, WindowSize.Height))
+            : false;
 
         protected override void OnResize(EventArgs e)
         {
@@ -76,9 +79,13 @@ namespace SpiceEngine.Game
 
             var map = Map.Load(_mapPath);
 
-            _gameState = new GameState(Resolution);
+            /*_gameState = new GameState(Resolution);
             _gameState.LoadFromMap(map);
-            _gameState.Initialize();
+            _gameState.Initialize();*/
+
+            _gameManager = new GameManager(Resolution, this/*, map*/);
+            _gameManager.LoadFromMap(map);
+            _gameManager.Initialize();
 
             _renderManager = new RenderManager(Resolution, WindowSize);
             _renderManager.Load(map.SkyboxTextureFilePaths);
@@ -90,80 +97,20 @@ namespace SpiceEngine.Game
 
         //protected override void OnMouseLeave(EventArgs e) => CursorVisible = true;
 
+        // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
-            HandleInput();
-            _gameState.HandleInput();
-
-            _gameState.UpdateFrame();
-            PollForInput();
+            _mouseDevice = Mouse;
+            _gameManager.Update();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.RenderFullFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
+            _renderManager.RenderFullFrame(_gameManager.Camera, _gameManager.EntityManager, _gameManager.TextureManager);
 
             GL.UseProgram(0);
             SwapBuffers();
-        }
-
-        private void HandleInput()
-        {
-            if (_keyState.IsKeyDown(Key.Escape))
-            {
-                Close();
-            }
-
-            if (_previousKeyState != null && _previousKeyState.IsKeyUp(Key.F11) && _keyState.IsKeyDown(Key.F11))
-            {
-                if (WindowState == WindowState.Normal)
-                {
-                    WindowState = WindowState.Fullscreen;
-                }
-                else
-                {
-                    WindowState = WindowState.Normal;
-                }
-            }
-
-            if (_previousKeyState != null && _previousKeyState.IsKeyUp(Key.F11) && _keyState.IsKeyDown(Key.F5))
-            {
-                TakeScreenshot();
-            }
-        }
-
-        private void TakeScreenshot()
-        {
-            var bitmap = new Bitmap(Resolution.Width, Resolution.Height);
-            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, Resolution.Width, Resolution.Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
-
-            GL.ReadPixels(0, 0, Resolution.Width, Resolution.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
-            GL.Finish();
-
-            bitmap.UnlockBits(data);
-            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
-
-            string fileName = FilePathHelper.SCREENSHOT_PATH + "\\" 
-                + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_" 
-                + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
-
-            bitmap.Save(fileName, ImageFormat.Png);
-            bitmap.Dispose();
-        }
-
-        private void PollForInput()
-        {
-            _previousKeyState = _keyState;
-            _previousMouseState = _mouseState;
-            _previousMouse = _mouse;
-
-            _keyState = Keyboard.GetState();
-            _mouseState = Mouse.GetState();
-            _mouse = Mouse;
-
-            _gameState?._inputState.UpdateState(this);
         }
     }
 }

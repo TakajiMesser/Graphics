@@ -121,6 +121,7 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
+    <Compile Include="Game\GameManager.cs" />
     <Compile Include="Game\PanelLoadedEventArgs.cs" />
     <Compile Include="Game\TransformModeEventArgs.cs" />
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
@@ -137,19 +138,22 @@
     <Compile Include="Entities\Models\AnimatedModel3D.cs" />
     <Compile Include="Game\GameProperty.cs" />
     <Compile Include="Entities\Actor.cs" />
-    <Compile Include="Game\GameState.cs" />
     <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
+    <Compile Include="Inputs\IMouseDelta.cs" />
+    <Compile Include="Inputs\InputManager.cs" />
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
-    <Compile Include="Inputs\InputMapping.cs" />
+    <Compile Include="Inputs\InputBinding.cs" />
     <Compile Include="Entities\Lights\DirectionalLight.cs" />
     <Compile Include="Entities\Lights\SpotLight.cs" />
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
+    <Compile Include="Maps\Map3D.cs" />
+    <Compile Include="Maps\Map2D.cs" />
     <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />
@@ -157,6 +161,12 @@
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Outputs\ResolutionEventArgs.cs" />
     <Compile Include="Physics\Collision\ICollidable.cs" />
+    <Compile Include="Physics\Collision\OctTree.cs" />
+    <Compile Include="Physics\Collision\ICollisionTree.cs" />
+    <Compile Include="Physics\Collision\Oct.cs" />
+    <Compile Include="Physics\IMovable.cs" />
+    <Compile Include="Physics\PhysicsBody.cs" />
+    <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -260,6 +270,7 @@
     <Compile Include="Scripting\Meters\Meter.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
     <Compile Include="Scripting\Properties\Property.cs" />
+    <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
     <Compile Include="Scripting\States\State.cs" />

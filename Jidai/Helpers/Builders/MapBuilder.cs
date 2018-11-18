@@ -12,7 +12,7 @@ namespace Jidai.Helpers.Builders
     {
         public static void CreateTestMap()
         {
-            var map = new Map()
+            var map = new Map3D()
             {
                 Camera = new Jidai.GameObjects.Camera()
             };

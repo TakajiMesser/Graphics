@@ -30,25 +30,25 @@ namespace SpiceEngine.Rendering.Buffers
 
         public MatrixStack() { }
 
-        public void AddEntities(GameState gameState)
+        public void AddEntities(Camera camera, IEnumerable<Actor> actors, IEnumerable<Brush> brushes)
         {
-            _viewMatrixBuffer.AddMatrix(gameState.Camera.ViewMatrix);
-            _projectionMatrixBuffer.AddMatrix(gameState.Camera.ProjectionMatrix);
+            _viewMatrixBuffer.AddMatrix(camera.ViewMatrix);
+            _projectionMatrixBuffer.AddMatrix(camera.ProjectionMatrix);
 
-            foreach (var actor in gameState.EntityManager.Actors)
+            foreach (var actor in actors)
             {
                 _modelMatrixBuffer.AddMatrix(actor.Model.ModelMatrix);
 
                 // TODO - Confirm whether or not this multiplication order should be reversed
-                _mvpMatrixBuffer.AddMatrix(actor.Model.ModelMatrix * gameState.Camera.ViewMatrix * gameState.Camera.ProjectionMatrix);
+                _mvpMatrixBuffer.AddMatrix(actor.Model.ModelMatrix * camera.ViewMatrix * camera.ProjectionMatrix);
             }
 
-            foreach (var brush in gameState.EntityManager.Brushes)
+            foreach (var brush in brushes)
             {
                 _modelMatrixBuffer.AddMatrix(brush.ModelMatrix);
 
                 // TODO - Confirm whether or not this multiplication order should be reversed
-                _mvpMatrixBuffer.AddMatrix(brush.ModelMatrix * gameState.Camera.ViewMatrix * gameState.Camera.ProjectionMatrix);
+                _mvpMatrixBuffer.AddMatrix(brush.ModelMatrix * camera.ViewMatrix * camera.ProjectionMatrix);
             }
         }
 

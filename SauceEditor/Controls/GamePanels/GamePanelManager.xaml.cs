@@ -128,7 +128,7 @@ namespace SauceEditor.Controls.GamePanels
             Resolution = new Resolution((int)Width, (int)Height);
             
             _map = Map.Load(mapPath);
-            _entityManager.LoadFromMap(_map);
+            //_entityManager.LoadFromMap(_map);
 
             _perspectiveView = new DockableGamePanel(MainDockManager, ViewTypes.Perspective)
             {

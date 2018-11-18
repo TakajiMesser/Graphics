@@ -13,17 +13,19 @@ namespace SpiceEngine.Entities
 {
     public class EntityManager
     {
+        public List<IEntity> Entities { get; } = new List<IEntity>();
+
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
         public List<Volume> Volumes { get; } = new List<Volume>();
         public List<Light> Lights { get; } = new List<Light>();
 
-        private int _nextAvailableID = 1;
-
         public EntityManager() { }
 
         public void ClearEntities()
         {
+            Entities.Clear();
+
             Actors.Clear();
             Brushes.Clear();
             Volumes.Clear();
@@ -32,39 +34,16 @@ namespace SpiceEngine.Entities
 
         public IEntity GetEntityByID(int id)
         {
-            var actor = Actors.FirstOrDefault(g => g.ID == id);
-            if (actor != null)
-            {
-                return actor;
-            }
-            else
-            {
-                var brush = Brushes.FirstOrDefault(b => b.ID == id);
-                if (brush != null)
-                {
-                    return brush;
-                }
-                else
-                {
-                    var volume = Volumes.FirstOrDefault(v => v.ID == id);
-                    if (volume != null)
-                    {
-                        return volume;
-                    }
-                    else
-                    {
-                        var light = Lights.FirstOrDefault(l => l.ID == id);
-                        if (light != null)
-                        {
-                            return light;
-                        }
-                        else
-                        {
-                            throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-                        }
-                    }
-                }
-            }
+            if (id > Entities.Count) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+            return Entities[id - 1];
+        }
+
+        public Actor GetActorByName(string name)
+        {
+            var actor = Actors.FirstOrDefault(a => a.Name == name);
+            if (actor == null) throw new KeyNotFoundException("No actor found for name " + name);
+
+            return actor;
         }
 
         public void AddEntities(IEnumerable<IEntity> entities)
@@ -80,14 +59,8 @@ namespace SpiceEngine.Entities
             // Assign a unique ID
             if (entity.ID == 0)
             {
-                entity.ID = _nextAvailableID;
-                _nextAvailableID++;
-
-                if (_nextAvailableID == SelectionRenderer.RED_ID || _nextAvailableID == SelectionRenderer.GREEN_ID || _nextAvailableID == SelectionRenderer.BLUE_ID
-                    || _nextAvailableID == SelectionRenderer.CYAN_ID || _nextAvailableID == SelectionRenderer.MAGENTA_ID || _nextAvailableID == SelectionRenderer.YELLOW_ID)
-                {
-                    _nextAvailableID++;
-                }
+                Entities.Add(entity);
+                entity.ID = Entities.Count;
             }
 
             switch (entity)
@@ -150,12 +123,13 @@ namespace SpiceEngine.Entities
             }
         }
 
-        public void LoadFromMap(Map map)
+        // Questionable method...
+        public void Initialize()
         {
-            AddEntities(map.Lights);
-            AddEntities(map.Brushes.Select(b => b.ToBrush()));
-            AddEntities(map.Volumes.Select(v => v.ToVolume()));
-            AddEntities(map.Actors.Select(a => a.ToActor()));
+            foreach (var actor in Actors)
+            {
+                actor.OnInitialization();
+            }
         }
     }
 }

@@ -21,9 +21,9 @@ namespace SpiceEngine.Entities.Cameras
             _projectionMatrix.UpdateOrthographic(startingWidth, zNear, zFar);
         }
 
-        public override void OnHandleInput(InputState inputState)
+        public override void OnHandleInput(InputManager inputManager)
         {
-            float amount = inputState.MouseWheelDelta * 1.0f;
+            float amount = inputManager.MouseWheelDelta * 1.0f;
             if (amount > 0.0f || amount < 0.0f)
             {
                 _projectionMatrix.Width += amount;

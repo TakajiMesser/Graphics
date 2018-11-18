@@ -51,9 +51,9 @@ namespace SpiceEngine.Entities.Cameras
             };
         }
 
-        public override void OnHandleInput(InputState inputState)
+        public override void OnHandleInput(InputManager inputManager)
         {
-            float amount = inputState.MouseWheelDelta * 1.0f;
+            float amount = inputManager.MouseWheelDelta * 1.0f;
             if (amount > 0.0f || amount < 0.0f)
             {
                 _distance += amount;
@@ -68,9 +68,9 @@ namespace SpiceEngine.Entities.Cameras
 
             var currentAngles = CurrentAngles;
 
-            if (inputState.IsHeld(new Input(MouseButton.Middle)))
+            if (inputManager.IsDown(new Input(MouseButton.Right)))
             {
-                var mouseDelta = inputState.MouseDelta * 0.001f;
+                var mouseDelta = inputManager.MouseDelta * 0.001f;
 
                 if (mouseDelta != Vector2.Zero)
                 {
@@ -87,22 +87,22 @@ namespace SpiceEngine.Entities.Cameras
             {
                 var cameraSpeed = 0.02f;
 
-                if (inputState.IsHeld(new Input(Key.Up)))
+                if (inputManager.IsDown(new Input(Key.Up)))
                 {
                     currentAngles.Y += cameraSpeed;
                 }
 
-                if (inputState.IsHeld(new Input(Key.Down)))
+                if (inputManager.IsDown(new Input(Key.Down)))
                 {
                     currentAngles.Y -= cameraSpeed;
                 }
 
-                if (inputState.IsHeld(new Input(Key.Right)))
+                if (inputManager.IsDown(new Input(Key.Right)))
                 {
                     currentAngles.X -= cameraSpeed;
                 }
 
-                if (inputState.IsHeld(new Input(Key.Left)))
+                if (inputManager.IsDown(new Input(Key.Left)))
                 {
                     currentAngles.X += cameraSpeed;
                 }

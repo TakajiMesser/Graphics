@@ -9,7 +9,7 @@ namespace SpiceEngine.Game.GameSettings
 {
     public class ControlSettings
     {
-        public InputMapping InputMapping { get; set; }
+        public InputBinding InputMapping { get; set; }
 
         public int MouseXSensitivity { get; set; }
         public int MouseYSensitivity { get; set; }

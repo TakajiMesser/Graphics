@@ -37,13 +37,14 @@ namespace SpiceEngine.Game
         Texture
     }
 
-    public class GamePanel : GLControl
+    public class GamePanel : GLControl, IMouseDelta
     {
         public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
         public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;
 
         public Resolution Resolution { get; private set; }
-        public Resolution PanelSize { get; private set; }
+        public Resolution WindowSize { get; private set; }
+
         public double Frequency { get; private set; }
         public ViewTypes ViewType { get; set; }
         public RenderModes RenderMode { get; set; }
@@ -61,12 +62,12 @@ namespace SpiceEngine.Game
                 {
                     case Tools.Volume:
                         _toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
-                        _gameState?.EntityManager.AddEntity(_toolVolume);
+                        _gameManager?.EntityManager.AddEntity(_toolVolume);
                         break;
                     default:
                         if (_toolVolume != null)
                         {
-                            _gameState?.EntityManager.RemoveEntityByID(_toolVolume.ID);
+                            _gameManager?.EntityManager.RemoveEntityByID(_toolVolume.ID);
                             _toolVolume = null;
                         }
                         break;
@@ -76,7 +77,9 @@ namespace SpiceEngine.Game
             }
         }
 
-        public bool IsMouseInPanel { get; private set; }
+        public Vector2? MouseCoordinates { get; private set; }
+        public bool IsMouseInWindow { get; private set; }
+
         public bool IsCameraMoving { get; private set; }
         public bool IsLoaded { get; private set; }
         public bool IsDragging { get; private set; }
@@ -94,7 +97,7 @@ namespace SpiceEngine.Game
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
 
-        private GameState _gameState;
+        private GameManager _gameManager;
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
@@ -133,7 +136,7 @@ namespace SpiceEngine.Game
         public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
-            PanelSize = new Resolution(Width, Height);
+            WindowSize = new Resolution(Width, Height);
 
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
@@ -143,7 +146,7 @@ namespace SpiceEngine.Game
 
         public void CenterView()
         {
-            if (_gameState != null && SelectedEntities.Count > 0)
+            if (_gameManager != null && SelectedEntities.Count > 0)
             {
                 switch (ViewType)
                 {
@@ -153,34 +156,34 @@ namespace SpiceEngine.Game
                         var translationX = new Vector3()
                         {
                             X = 0.0f,
-                            Y = SelectedEntities.Average(e => e.Position.Y) - _gameState.Camera.Position.Y,
-                            Z = SelectedEntities.Average(e => e.Position.Z) - _gameState.Camera.Position.Z
+                            Y = SelectedEntities.Average(e => e.Position.Y) - _gameManager.Camera.Position.Y,
+                            Z = SelectedEntities.Average(e => e.Position.Z) - _gameManager.Camera.Position.Z
                         };
 
-                        _gameState.Camera.Position += translationX;
-                        _gameState.Camera._viewMatrix.LookAt += translationX;
+                        _gameManager.Camera.Position += translationX;
+                        _gameManager.Camera._viewMatrix.LookAt += translationX;
                         break;
                     case ViewTypes.Y:
                         var translationY = new Vector3()
                         {
-                            X = SelectedEntities.Average(e => e.Position.X) - _gameState.Camera.Position.X,
+                            X = SelectedEntities.Average(e => e.Position.X) - _gameManager.Camera.Position.X,
                             Y = 0.0f,
-                            Z = SelectedEntities.Average(e => e.Position.Z) - _gameState.Camera.Position.Z
+                            Z = SelectedEntities.Average(e => e.Position.Z) - _gameManager.Camera.Position.Z
                         };
 
-                        _gameState.Camera.Position += translationY;
-                        _gameState.Camera._viewMatrix.LookAt += translationY;
+                        _gameManager.Camera.Position += translationY;
+                        _gameManager.Camera._viewMatrix.LookAt += translationY;
                         break;
                     case ViewTypes.Z:
                         var translationZ = new Vector3()
                         {
-                            X = SelectedEntities.Average(e => e.Position.X) - _gameState.Camera.Position.X,
-                            Y = SelectedEntities.Average(e => e.Position.Y) - _gameState.Camera.Position.Y,
+                            X = SelectedEntities.Average(e => e.Position.X) - _gameManager.Camera.Position.X,
+                            Y = SelectedEntities.Average(e => e.Position.Y) - _gameManager.Camera.Position.Y,
                             Z = 0.0f
                         };
 
-                        _gameState.Camera.Position += translationZ;
-                        _gameState.Camera._viewMatrix.LookAt += translationZ;
+                        _gameManager.Camera.Position += translationZ;
+                        _gameManager.Camera._viewMatrix.LookAt += translationZ;
                         break;
                 }
 
@@ -224,15 +227,15 @@ namespace SpiceEngine.Game
         {
             Location = new Point(0, 0);
 
-            _gameState = new GameState(Resolution);
-            _renderManager = new RenderManager(Resolution, PanelSize);
+            _gameManager = new GameManager(Resolution, this);
+            _renderManager = new RenderManager(Resolution, WindowSize);
 
             base.OnLoad(e);
         }
 
         public void LoadFromMap(Map map)
         {
-            _gameState.LoadFromMap(map);
+            _gameManager.LoadFromMap(map);
             LoadCamera();
 
             _renderManager.Load(map.SkyboxTextureFilePaths);
@@ -245,7 +248,7 @@ namespace SpiceEngine.Game
         public void LoadFromEntities(EntityManager entities, Map map)
         {
             entities.LoadEntities();
-            _gameState.LoadFromEntities(entities, map);
+            _gameManager.LoadFromEntities(entities, map);
             LoadCamera();
 
             _renderManager.Load(map.SkyboxTextureFilePaths);
@@ -260,40 +263,40 @@ namespace SpiceEngine.Game
             switch (ViewType)
             {
                 case ViewTypes.Perspective:
-                    _gameState.Camera = new PerspectiveCamera("", Resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
-                    _gameState.Camera.DetachFromEntity();
+                    _gameManager.Camera = new PerspectiveCamera("", Resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
+                    _gameManager.Camera.DetachFromEntity();
                     _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
-                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
-                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
+                    _gameManager.Camera._viewMatrix.Up = Vector3.UnitZ;
+                    _gameManager.Camera._viewMatrix.LookAt = _gameManager.Camera.Position + Vector3.UnitY;
                     break;
                 case ViewTypes.X:
-                    _gameState.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    _gameManager.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
                     };
                     _currentAngles = new Vector3(90.0f, 0.0f, 0.0f);
-                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
-                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitX;
+                    _gameManager.Camera._viewMatrix.Up = Vector3.UnitZ;
+                    _gameManager.Camera._viewMatrix.LookAt = _gameManager.Camera.Position + Vector3.UnitX;
                     _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
                     break;
                 case ViewTypes.Y:
-                    _gameState.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    _gameManager.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
                     };
                     _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
-                    _gameState.Camera._viewMatrix.Up = Vector3.UnitZ;
-                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + Vector3.UnitY;
+                    _gameManager.Camera._viewMatrix.Up = Vector3.UnitZ;
+                    _gameManager.Camera._viewMatrix.LookAt = _gameManager.Camera.Position + Vector3.UnitY;
                     _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
                     break;
                 case ViewTypes.Z:
-                    _gameState.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    _gameManager.Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
                     };
                     _currentAngles = new Vector3(0.0f, 90.0f, 0.0f);
-                    _gameState.Camera._viewMatrix.Up = Vector3.UnitY;
-                    _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position - Vector3.UnitZ;
+                    _gameManager.Camera._viewMatrix.Up = Vector3.UnitY;
+                    _gameManager.Camera._viewMatrix.LookAt = _gameManager.Camera.Position - Vector3.UnitZ;
                     break;
             }
         }
@@ -323,7 +326,7 @@ namespace SpiceEngine.Game
         {
             foreach (var entity in entities)
             {
-                var selectedEntity = _gameState.EntityManager.GetEntityByID(entity.ID);
+                var selectedEntity = _gameManager.EntityManager.GetEntityByID(entity.ID);
 
                 if (selectedEntity != null)
                 {
@@ -354,7 +357,7 @@ namespace SpiceEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _gameState != null && _gameState.IsLoaded)
+            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _gameManager != null && _gameManager.IsLoaded)
             {
                 base.OnPaint(e);
                 RenderFrame();
@@ -374,10 +377,10 @@ namespace SpiceEngine.Game
                 }
             }
 
-            if (PanelSize != null)
+            if (WindowSize != null)
             {
-                PanelSize.Width = Width;
-                PanelSize.Height = Height;
+                WindowSize.Width = Width;
+                WindowSize.Height = Height;
 
                 if (_renderManager != null && _renderManager.IsLoaded)
                 {
@@ -393,25 +396,25 @@ namespace SpiceEngine.Game
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:
-                    _renderManager.RenderWireframe(_gameState.Camera, _gameState.EntityManager);
-                    _renderManager.RenderEntityIDs(_gameState.Camera, _gameState.EntityManager);
+                    _renderManager.RenderWireframe(_gameManager.Camera, _gameManager.EntityManager);
+                    _renderManager.RenderEntityIDs(_gameManager.Camera, _gameManager.EntityManager);
                     break;
                 case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
-                    _renderManager.RenderEntityIDs(_gameState.Camera, _gameState.EntityManager);
+                    _renderManager.RenderDiffuseFrame(_gameManager.Camera, _gameManager.EntityManager, _gameManager.TextureManager);
+                    _renderManager.RenderEntityIDs(_gameManager.Camera, _gameManager.EntityManager);
                     break;
                 case RenderModes.Lit:
-                    _renderManager.RenderLitFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
-                    _renderManager.RenderEntityIDs(_gameState.Camera, _gameState.EntityManager);
+                    _renderManager.RenderLitFrame(_gameManager.Camera, _gameManager.EntityManager, _gameManager.TextureManager);
+                    _renderManager.RenderEntityIDs(_gameManager.Camera, _gameManager.EntityManager);
                     break;
                 case RenderModes.Full:  
-                    _renderManager.RenderFullFrame(_gameState.Camera, _gameState.EntityManager, _gameState.TextureManager);
+                    _renderManager.RenderFullFrame(_gameManager.Camera, _gameManager.EntityManager, _gameManager.TextureManager);
                     break;
             }
 
             if (SelectedEntities.Count > 0)
             {
-                _renderManager.RenderSelection(_gameState.Camera, SelectedEntities, TransformMode);
+                _renderManager.RenderSelection(_gameManager.Camera, SelectedEntities, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -420,13 +423,13 @@ namespace SpiceEngine.Game
 
         protected override void OnMouseEnter(EventArgs e)
         {
-            IsMouseInPanel = true;
+            IsMouseInWindow = true;
             base.OnMouseEnter(e);
         }
 
         protected override void OnMouseLeave(EventArgs e)
         {
-            IsMouseInPanel = false;
+            IsMouseInWindow = false;
             base.OnMouseLeave(e);
         }
 
@@ -435,7 +438,7 @@ namespace SpiceEngine.Game
             var horizontal = Math.Cos(_currentAngles.Y);
             var vertical = Math.Sin(_currentAngles.Y);
 
-            _gameState.Camera._viewMatrix.LookAt = _gameState.Camera.Position + new Vector3()
+            _gameManager.Camera._viewMatrix.LookAt = _gameManager.Camera.Position + new Vector3()
             {
                 X = (float)(horizontal * Math.Sin(_currentAngles.X)),
                 Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
@@ -450,7 +453,7 @@ namespace SpiceEngine.Game
             var horizontal = Math.Cos(yAngle);
             var vertical = Math.Sin(yAngle);
 
-            _gameState.Camera._viewMatrix.Up = new Vector3()
+            _gameManager.Camera._viewMatrix.Up = new Vector3()
             {
                 X = (float)(horizontal * Math.Sin(_currentAngles.X)),
                 Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
@@ -460,7 +463,7 @@ namespace SpiceEngine.Game
 
         public void Zoom(int wheelDelta)
         {
-            if (_gameState.Camera is OrthographicCamera camera)
+            if (_gameManager.Camera is OrthographicCamera camera)
             {
                 var width = camera.Width - wheelDelta * 0.01f;
 
@@ -481,7 +484,7 @@ namespace SpiceEngine.Game
 
             if (id > 0)
             {
-                var entity = _gameState.EntityManager.GetEntityByID(id);
+                var entity = _gameManager.EntityManager.GetEntityByID(id);
 
                 if (isMultiSelect && SelectedEntities.Select(e => e.ID).Contains(id))
                 {
@@ -535,7 +538,7 @@ namespace SpiceEngine.Game
         {
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
-            PollForInput();
+            _gameManager.InputManager.Update();
             
             if (_invalidated)
             {
@@ -547,28 +550,28 @@ namespace SpiceEngine.Game
         public void EndDrag()
         {
             IsDragging = false;
-            _gameState._inputState.ClearState();
+            _gameManager.InputManager.Clear();
             SelectionType = SelectionTypes.None;
             _pollTimer.Stop();
         }
 
         private void HandleInput()
         {
-            if (_gameState._inputState.IsReleased(new Input(MouseButton.Left)))
+            if (_gameManager.InputManager.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionType = SelectionTypes.None;
             }
 
-            if (_gameState._inputState.IsHeld(new Input(MouseButton.Left), new Input(MouseButton.Right)))
+            if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)) && _gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
             {
                 // Both mouse buttons allow "strafing"
-                var right = Vector3.Cross(_gameState.Camera._viewMatrix.Up, _gameState.Camera._viewMatrix.LookAt - _gameState.Camera.Position).Normalized();
+                var right = Vector3.Cross(_gameManager.Camera._viewMatrix.Up, _gameManager.Camera._viewMatrix.LookAt - _gameManager.Camera.Position).Normalized();
 
-                var verticalTranslation = _gameState.Camera._viewMatrix.Up * _gameState._inputState.MouseDelta.Y * 0.02f;
-                var horizontalTranslation = right * _gameState._inputState.MouseDelta.X * 0.02f;
+                var verticalTranslation = _gameManager.Camera._viewMatrix.Up * _gameManager.InputManager.MouseDelta.Y * 0.02f;
+                var horizontalTranslation = right * _gameManager.InputManager.MouseDelta.X * 0.02f;
 
-                _gameState.Camera.Position -= verticalTranslation + horizontalTranslation;
-                _gameState.Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
+                _gameManager.Camera.Position -= verticalTranslation + horizontalTranslation;
+                _gameManager.Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
 
                 //IsCursorVisible = false;
                 SelectionType = SelectionTypes.None;
@@ -576,7 +579,7 @@ namespace SpiceEngine.Game
             }
             else if (SelectionType != SelectionTypes.None)
             {
-                if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)))
+                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
                 {
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
                     foreach (var entity in SelectedEntities)
@@ -602,15 +605,15 @@ namespace SpiceEngine.Game
             }
             else if (ViewType == ViewTypes.Perspective)
             {
-                if (_gameState._inputState.IsHeld(new Input(MouseButton.Left)))
+                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
                 {
                     // Left mouse button allows "moving"
-                    var translation = (_gameState.Camera._viewMatrix.LookAt - _gameState.Camera.Position) * _gameState._inputState.MouseDelta.Y * 0.02f;
-                    //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _gameState._inputState.MouseDelta.Y * 0.02f;
-                    _gameState.Camera.Position -= translation;
+                    var translation = (_gameManager.Camera._viewMatrix.LookAt - _gameManager.Camera.Position) * _gameManager.InputManager.MouseDelta.Y * 0.02f;
+                    //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _gameManager.InputManager.MouseDelta.Y * 0.02f;
+                    _gameManager.Camera.Position -= translation;
 
                     var currentAngles = _currentAngles;
-                    var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
+                    var mouseDelta = _gameManager.InputManager.MouseDelta * 0.001f;
 
                     if (mouseDelta != Vector2.Zero)
                     {
@@ -625,11 +628,11 @@ namespace SpiceEngine.Game
                     //IsCursorVisible = false;
                     _invalidated = true;
                 }
-                else if (_gameState._inputState.IsHeld(new Input(MouseButton.Right)))
+                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
                 {
                     // Right mouse button allows "turning"
                     var currentAngles = _currentAngles;
-                    var mouseDelta = _gameState._inputState.MouseDelta * 0.001f;
+                    var mouseDelta = _gameManager.InputManager.MouseDelta * 0.001f;
 
                     if (mouseDelta != Vector2.Zero)
                     {
@@ -656,25 +659,25 @@ namespace SpiceEngine.Game
             switch (SelectionType)
             {
                 case SelectionTypes.Red:
-                    position.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    position.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Green:
-                    position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Blue:
-                    position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Cyan:
-                    position.Y += _gameState._inputState.MouseDelta.X * 0.002f;
-                    position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    position.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Magenta:
-                    position.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
-                    position.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
                     break;
                 case SelectionTypes.Yellow:
-                    position.X += _gameState._inputState.MouseDelta.X * 0.002f;
-                    position.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
             }
 
@@ -690,25 +693,25 @@ namespace SpiceEngine.Game
                 switch (SelectionType)
                 {
                     case SelectionTypes.Red:
-                        rotation.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        rotation.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Green:
-                        rotation.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Blue:
-                        rotation.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Cyan:
-                        rotation.Y += _gameState._inputState.MouseDelta.X * 0.002f;
-                        rotation.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        rotation.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Magenta:
-                        rotation.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
-                        rotation.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
                         break;
                     case SelectionTypes.Yellow:
-                        rotation.X += _gameState._inputState.MouseDelta.X * 0.002f;
-                        rotation.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                 }
 
@@ -725,25 +728,25 @@ namespace SpiceEngine.Game
                 switch (SelectionType)
                 {
                     case SelectionTypes.Red:
-                        scale.X -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        scale.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Green:
-                        scale.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Blue:
-                        scale.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Cyan:
-                        scale.Y += _gameState._inputState.MouseDelta.X * 0.002f;
-                        scale.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        scale.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Magenta:
-                        scale.Z -= _gameState._inputState.MouseDelta.Y * 0.002f;
-                        scale.X += _gameState._inputState.MouseDelta.X * 0.002f;
+                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
                         break;
                     case SelectionTypes.Yellow:
-                        scale.X += _gameState._inputState.MouseDelta.X * 0.002f;
-                        scale.Y -= _gameState._inputState.MouseDelta.Y * 0.002f;
+                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                 }
 
@@ -760,7 +763,5 @@ namespace SpiceEngine.Game
                 Mouse.SetPosition(_startMouseLocation.X, _startMouseLocation.Y);
             }
         }
-
-        private void PollForInput() => _gameState._inputState.UpdateState(Keyboard.GetState(), Mouse.GetState());
     }
 }

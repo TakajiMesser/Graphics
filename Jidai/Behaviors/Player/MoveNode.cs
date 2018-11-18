@@ -27,40 +27,40 @@ namespace Jidai.Behaviors.Player
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var speed = context.InputState.IsHeld(context.InputMapping.Run)
+            var speed = context.InputManager.IsDown(context.InputMapping.Run)
                 ? RunSpeed
-                : context.InputState.IsHeld(context.InputMapping.Crawl)
+                : context.InputManager.IsDown(context.InputMapping.Crawl)
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, context.InputState, context.InputMapping);
+            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, context.InputManager, context.InputMapping);
 
-            if (context.InputState.IsHeld(context.InputMapping.In))
+            if (context.InputManager.IsDown(context.InputMapping.In))
             {
                 translation.Z += speed;
             }
 
-            if (context.InputState.IsHeld(context.InputMapping.Out))
+            if (context.InputManager.IsDown(context.InputMapping.Out))
             {
                 translation.Z -= speed;
             }
 
-            if (context.InputState.IsHeld(context.InputMapping.ItemSlot1))
+            if (context.InputManager.IsDown(context.InputMapping.ItemSlot1))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y + 0.1f, context.EulerRotation.Z);
             }
 
-            if (context.InputState.IsHeld(context.InputMapping.ItemSlot2))
+            if (context.InputManager.IsDown(context.InputMapping.ItemSlot2))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y - 0.1f, context.EulerRotation.Z);
             }
 
-            if (context.InputState.IsHeld(context.InputMapping.ItemSlot3))
+            if (context.InputManager.IsDown(context.InputMapping.ItemSlot3))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z + 0.1f);
             }
 
-            if (context.InputState.IsHeld(context.InputMapping.ItemSlot4))
+            if (context.InputManager.IsDown(context.InputMapping.ItemSlot4))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }
