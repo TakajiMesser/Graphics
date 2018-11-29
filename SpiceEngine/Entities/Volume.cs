@@ -44,29 +44,29 @@ namespace SpiceEngine.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public Mesh3D<ColorVertex3D> Mesh { get; private set; }
+        //public Mesh3D<ColorVertex3D> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = false;
-        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
+        //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
 
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
         public Volume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color)
         {
             var simpleVertices = vertices.Select(v => new ColorVertex3D(v, color)).ToList();
-            Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
+            //Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
         }
 
-        public void Load() => Mesh.Load();
-        public void Draw() => Mesh.Draw();
+        //public void Load() => Mesh.Load();
+        //public void Draw() => Mesh.Draw();
 
         public void SetUniforms(ShaderProgram program)
         {
             _modelMatrix.Set(program);
-            Mesh.SetUniforms(program);
+            //Mesh.SetUniforms(program);
         }
 
         public static Volume RectangularPrism(Vector3 center, float xLength, float yLength, float zLength, Vector4 color)

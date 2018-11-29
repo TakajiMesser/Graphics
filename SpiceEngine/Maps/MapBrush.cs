@@ -8,6 +8,7 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics;
+using SpiceEngine.Rendering.Meshes;
 
 namespace SpiceEngine.Maps
 {
@@ -25,17 +26,46 @@ namespace SpiceEngine.Maps
 
         public Brush ToBrush()
         {
-            var brush = new Brush(Vertices, Material, TriangleIndices)
+            var brush = new Brush(Material)
             {
                 Position = Position,
                 OriginalRotation = Rotation,
                 Scale = Scale,
                 HasCollision = HasCollision
             };
-            brush.Bounds = new BoundingBox(brush);
-            brush.AddTestColors();
+            brush.Bounds = new BoundingBox(brush, Vertices.Select(v => v.Position));
 
             return brush;
+        }
+
+        public Mesh3D<Vertex3D> ToMesh()
+        {
+            AddTestColors();
+            return new Mesh3D<Vertex3D>(Vertices, TriangleIndices);
+        }
+
+        public void AddTestColors()
+        {
+            var vertices = new List<Vertex3D>();
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                if (i % 3 == 0)
+                {
+                    vertices.Add(Vertices[i].Colored(Color4.Lime));
+                }
+                else if (i % 3 == 1)
+                {
+                    vertices.Add(Vertices[i].Colored(Color4.Red));
+                }
+                else if (i % 3 == 2)
+                {
+                    vertices.Add(Vertices[i].Colored(Color4.Blue));
+                }
+            }
+
+            Vertices.Clear();
+            Vertices.AddRange(vertices);
         }
 
         public static MapBrush Rectangle(Vector3 center, float width, float height)

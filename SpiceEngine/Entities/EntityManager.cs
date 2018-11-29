@@ -11,7 +11,7 @@ using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Entities
 {
-    public class EntityManager
+    public class EntityManager : IEntityProvider
     {
         public List<IEntity> Entities { get; } = new List<IEntity>();
 
@@ -32,7 +32,7 @@ namespace SpiceEngine.Entities
             Lights.Clear();
         }
 
-        public IEntity GetEntityByID(int id)
+        public IEntity GetEntity(int id)
         {
             if (id > Entities.Count) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
             return Entities[id - 1];
@@ -86,7 +86,7 @@ namespace SpiceEngine.Entities
 
         public void RemoveEntityByID(int id)
         {
-            var entity = GetEntityByID(id);
+            var entity = GetEntity(id);
 
             switch (entity)
             {
@@ -109,17 +109,17 @@ namespace SpiceEngine.Entities
         {
             foreach (var actor in Actors)
             {
-                actor.Load();
+                //actor.Load();
             }
 
             foreach (var brush in Brushes)
             {
-                brush.Load();
+                //brush.Load();
             }
 
             foreach (var volume in Volumes)
             {
-                volume.Load();
+                //volume.Load();
             }
         }
 

@@ -5,6 +5,7 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Game;
 using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
+using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
@@ -154,44 +155,25 @@ namespace SpiceEngine.Rendering.Processing
             return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
         }
 
-        public void SelectionPass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Volume> volumes, IEnumerable<Actor> actors)
+        // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
+        public void SelectionPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
         {
             _selectionProgram.Use();
 
             camera.SetUniforms(_selectionProgram);
 
-            foreach (var brush in brushes)
-            {
-                _selectionProgram.SetUniform("id", GetColorFromID(brush.ID));
-                brush.SetUniforms(_selectionProgram);
-                brush.Draw();
-            }
-
-            foreach (var volume in volumes)
-            {
-                _selectionProgram.SetUniform("id", GetColorFromID(volume.ID));
-                volume.SetUniforms(_selectionProgram);
-                volume.Draw();
-            }
-
-            foreach (var actor in actors)
-            {
-                _selectionProgram.SetUniform("id", GetColorFromID(actor.ID));
-                actor.SetUniformsAndDraw(_selectionProgram);
-            }
+            batchManager.DrawBrushes(entityProvider, _selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.DrawVolumes(entityProvider, _selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.DrawActors(entityProvider, _selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
         }
 
-        public void JointSelectionPass(Camera camera, IEnumerable<Actor> actors)
+        public void JointSelectionPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
         {
             _jointSelectionProgram.Use();
 
             camera.SetUniforms(_jointSelectionProgram);
 
-            foreach (var actor in actors)
-            {
-                _jointSelectionProgram.SetUniform("id", GetColorFromID(actor.ID));
-                actor.SetUniformsAndDraw(_jointSelectionProgram);
-            }
+            batchManager.DrawJoints(entityProvider, _jointSelectionProgram, id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)));
         }
 
         public void RenderTranslationArrows(Camera camera, Vector3 position)
@@ -270,7 +252,7 @@ namespace SpiceEngine.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;
@@ -281,7 +263,7 @@ namespace SpiceEngine.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;

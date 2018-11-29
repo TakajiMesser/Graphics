@@ -15,6 +15,7 @@ using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Rendering.Batches;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -123,7 +124,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Disable(EnableCap.CullFace);
         }
 
-        public void WireframePass(Camera camera, IEnumerable<Volume> volumes)
+        public void VolumeWireframePass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
         {
             _wireframeProgram.Use();
 
@@ -131,14 +132,10 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", Vector4.One);
 
-            foreach (var volume in volumes)
-            {
-                volume.SetUniforms(_wireframeProgram);
-                volume.Draw();
-            }
+            batchManager.DrawVolumes(entityProvider, _wireframeProgram);
         }
 
-        public void WireframePass(Camera camera, IEnumerable<Brush> brushes, IEnumerable<Volume> volumes, IEnumerable<Actor> actors)
+        public void WireframePass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
         {
             _wireframeProgram.Use();
 
@@ -146,27 +143,12 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", Vector4.One);
 
-            foreach (var brush in brushes)
-            {
-                brush.SetUniforms(_wireframeProgram);
-                brush.Draw();
-            }
-
-            foreach (var volume in volumes)
-            {
-                volume.SetUniforms(_wireframeProgram);
-                volume.Draw();
-            }
-
-            foreach (var actor in actors)
-            {
-                //actor.SetUniforms(_wireframeProgram);
-                //actor.Draw();
-                actor.SetUniformsAndDraw(_wireframeProgram);
-            }
+            batchManager.DrawBrushes(entityProvider, _wireframeProgram);
+            batchManager.DrawVolumes(entityProvider, _wireframeProgram);
+            batchManager.DrawActors(entityProvider, _wireframeProgram);
         }
 
-        public void JointWireframePass(Camera camera, IEnumerable<Actor> actors)
+        public void JointWireframePass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
         {
             _jointWireframeProgram.Use();
 
@@ -174,12 +156,7 @@ namespace SpiceEngine.Rendering.Processing
             _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
             _jointWireframeProgram.SetUniform("lineColor", Vector4.One);
 
-            foreach (var actor in actors)
-            {
-                //actor.SetUniforms(_jointWireframeProgram);
-                //actor.Draw();
-                actor.SetUniformsAndDraw(_jointWireframeProgram);
-            }
+            batchManager.DrawJoints(entityProvider, _jointWireframeProgram);
         }
 
         public void RenderGridLines(Camera camera)
@@ -197,29 +174,17 @@ namespace SpiceEngine.Rendering.Processing
             _gridSquare.Draw();
         }
 
-        public void SelectionPass(Camera camera, IEntity entity)
+        public void SelectionPass(IEntityProvider entityProvider, Camera camera, IEntity entity, BatchManager batchManager)
         {
-            var program = (entity is Actor actor && actor.Model is AnimatedModel3D) ? _jointWireframeProgram : _wireframeProgram;
+            var program = (entity is AnimatedActor actor) ? _jointWireframeProgram : _wireframeProgram;
             program.Use();
 
             camera.SetUniforms(program);
             program.SetUniform("lineThickness", SelectedLineThickness);
             program.SetUniform("lineColor", new Vector4(0.7f, 0.7f, 0.1f, 1.0f));
 
-            switch (entity)
-            {
-                case Brush b:
-                    b.SetUniforms(_wireframeProgram);
-                    b.Draw();
-                    break;
-                case Actor a:
-                    //a.SetUniforms(_wireframeProgram);
-                    //a.Draw();
-                    a.SetUniformsAndDraw(_wireframeProgram);
-                    break;
-                case Light l:
-                    break;
-            }
+            var batch = batchManager.GetBatch(entity.ID);
+            batch.Draw(entityProvider, program);
         }
 
         public void SelectionPass(Camera camera, Light light, SimpleMesh mesh)
@@ -251,7 +216,7 @@ namespace SpiceEngine.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;
@@ -262,7 +227,7 @@ namespace SpiceEngine.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;

@@ -125,7 +125,7 @@ namespace SpiceEngine.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;
@@ -136,7 +136,7 @@ namespace SpiceEngine.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;

@@ -14,6 +14,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using SpiceEngine.Inputs;
+using SpiceEngine.Physics.Collision;
 
 namespace SpiceEngine.Game
 {
@@ -84,11 +85,48 @@ namespace SpiceEngine.Game
             _gameState.Initialize();*/
 
             _gameManager = new GameManager(Resolution, this/*, map*/);
+            _renderManager = new RenderManager(Resolution, WindowSize);
+            _renderManager.Load(map.SkyboxTextureFilePaths);
+
+            _gameManager.EntityManager.ClearEntities();
+            _gameManager.EntityManager.AddEntities(map.Lights);
+
+            foreach (var mapBrush in map.Brushes)
+            {
+                var brush = mapBrush.ToBrush();
+                brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_gameManager.TextureManager);
+
+                int entityID = _gameManager.EntityManager.AddEntity(brush);
+
+                var mesh = mapBrush.ToMesh();
+                _renderManager.BatchManager.AddBrush(entityID, mesh);
+            }
+
+            foreach (var mapVolume in map.Volumes)
+            {
+                var volume = mapVolume.ToVolume();
+                int entityID = _gameManager.EntityManager.AddEntity(volume);
+            }
+
+            foreach (var mapActor in map.Actors)
+            {
+                var actor = mapActor.ToActor(_gameManager.TextureManager);
+
+                int entityID = _gameManager.EntityManager.AddEntity(actor);
+
+                var meshes = mapActor.ToMeshes();
+                _renderManager.BatchManager.AddActor(entityID, meshes);
+
+                actor.HasCollision = mapActor.HasCollision;
+                actor.Bounds = actor.Name == "Player"
+                    ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
+                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));
+            }
+
             _gameManager.LoadFromMap(map);
             _gameManager.Initialize();
 
-            _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.Load(map.SkyboxTextureFilePaths);
+            _renderManager.BatchManager.Load();
 
             _fpsTimer.Start();
         }
@@ -107,7 +145,7 @@ namespace SpiceEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.RenderFullFrame(_gameManager.Camera, _gameManager.EntityManager, _gameManager.TextureManager);
+            _renderManager.RenderFullFrame(_gameManager.EntityManager, _gameManager.Camera, _gameManager.TextureManager);
 
             GL.UseProgram(0);
             SwapBuffers();

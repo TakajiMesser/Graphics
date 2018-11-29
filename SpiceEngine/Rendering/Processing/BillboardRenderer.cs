@@ -14,6 +14,7 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using SpiceEngine.Rendering.Batches;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -138,7 +139,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
-        public void RenderSelection(Camera camera, Volume volume)
+        public void RenderSelection(Camera camera, Volume volume, BatchManager batchManager)
         {
             _billboardProgram.Use();
 
@@ -150,9 +151,10 @@ namespace SpiceEngine.Rendering.Processing
 
             _vertexBuffer.Clear();
 
-            foreach (var vertex in volume.Mesh.Vertices)
+            var batch = batchManager.GetBatch(volume.ID);
+            foreach (var vertex in batch.Vertices)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
+                //_vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
             }
 
             _vertexArray.Bind();
@@ -231,7 +233,7 @@ namespace SpiceEngine.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;
@@ -242,7 +244,7 @@ namespace SpiceEngine.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;

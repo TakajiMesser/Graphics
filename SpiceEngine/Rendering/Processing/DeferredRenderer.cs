@@ -10,6 +10,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Batches;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -274,28 +275,18 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
         }
 
-        public void GeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void GeometryPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _geometryProgram.Use();
 
             camera.SetUniforms(_geometryProgram);
             _geometryProgram.SetUniform("cameraPosition", camera.Position);
 
-            foreach (var brush in brushes)
-            {
-                brush.SetUniforms(_geometryProgram, textureManager);
-                brush.Draw();
-            }
-
-            foreach (var actor in actors)
-            {
-                //actor.SetUniforms(_geometryProgram, textureManager);
-                //actor.Draw();
-                actor.SetUniformsAndDraw(_geometryProgram, textureManager);
-            }
+            batchManager.DrawBrushes(entityProvider, _geometryProgram, textureManager);
+            batchManager.DrawActors(entityProvider, _geometryProgram, textureManager);
         }
 
-        public void TransparentGeometryPass(Camera camera, IEnumerable<Volume> volumes)
+        public void TransparentGeometryPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
         {
             _geometryProgram.Use();
 
@@ -304,29 +295,21 @@ namespace SpiceEngine.Rendering.Processing
 
             //GL.Enable(EnableCap.Blend);
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
-           // GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
+            // GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
 
-            foreach (var volume in volumes)
-            {
-                volume.SetUniforms(_geometryProgram);
-                volume.Draw();
-            }
+            batchManager.DrawVolumes(entityProvider, _geometryProgram);
 
             //GL.Disable(EnableCap.Blend);
         }
 
-        public void JointGeometryPass(TextureManager textureManager, Camera camera, IEnumerable<Actor> actors)
+        public void JointGeometryPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _jointGeometryProgram.Use();
 
             camera.SetUniforms(_jointGeometryProgram);
+            _geometryProgram.SetUniform("cameraPosition", camera.Position);
 
-            foreach (var actor in actors)
-            {
-                //actor.SetUniforms(_jointGeometryProgram, textureManager);
-                //actor.Draw();
-                actor.SetUniformsAndDraw(_jointGeometryProgram, textureManager);
-            }
+            batchManager.DrawJoints(entityProvider, _geometryProgram, textureManager);
 
             GL.Enable(EnableCap.CullFace);
         }
@@ -339,7 +322,7 @@ namespace SpiceEngine.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;
@@ -350,7 +333,7 @@ namespace SpiceEngine.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;

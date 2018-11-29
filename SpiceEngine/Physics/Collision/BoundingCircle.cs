@@ -3,6 +3,7 @@ using System;
 using System.Linq;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Lights;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Collision
 {
@@ -10,15 +11,10 @@ namespace SpiceEngine.Physics.Collision
     {
         public float Radius { get; set; }
 
-        public BoundingCircle(Actor actor) : base(actor)
+        public BoundingCircle(IEntity entity, IEnumerable<Vector3> vertices) : base(entity)
         {
-            var maxDistanceSquared = actor.Model.Vertices.Select(v => v.Xy.LengthSquared).Max();
-            Radius = (float)Math.Sqrt(maxDistanceSquared);
-        }
-
-        public BoundingCircle(Brush brush) : base(brush)
-        {
-            var maxDistanceSquared = brush.Vertices.Select(v => v.Xy.LengthSquared).Max();
+            //var maxDistanceSquared = actor.Model.Vertices.Select(v => v.Xy.LengthSquared).Max();
+            var maxDistanceSquared = vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 

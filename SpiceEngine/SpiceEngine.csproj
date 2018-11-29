@@ -106,7 +106,9 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\AnimatedActor.cs" />
     <Compile Include="Entities\EntityManager.cs" />
+    <Compile Include="Entities\IEntityProvider.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
     <Compile Include="Entities\Volume.cs" />
     <Compile Include="Entities\IStimulate.cs" />
@@ -172,12 +174,15 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Batches\IBatch.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
-    <Compile Include="Rendering\Batches\Batch.cs" />
+    <Compile Include="Rendering\Batches\ModelBatch.cs" />
+    <Compile Include="Rendering\Batches\MeshBatch.cs" />
     <Compile Include="Rendering\Buffers\MatrixBuffer.cs" />
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
+    <Compile Include="Rendering\Meshes\IMesh3D.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />

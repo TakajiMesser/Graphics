@@ -29,7 +29,7 @@ namespace Jidai.Behaviors.Enemy
 
             if (player != null)
             {
-                var playerPosition = ((Actor)player.AttachedEntity).Model.Position;
+                var playerPosition = ((Actor)player.AttachedEntity).Position;
 
                 var playerDirection = playerPosition - context.Actor.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);

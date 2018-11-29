@@ -14,7 +14,7 @@ using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Entities.Models
 {
-    public class AnimatedModel3D : Model3D<JointVertex3D>
+    /*public class AnimatedModel3D : Model3D<JointVertex3D>
     {
         public Animator Animator { get; set; } = new Animator();
         public Joint RootJoint { get; set; }
@@ -190,12 +190,12 @@ namespace SpiceEngine.Entities.Models
                 /*foreach (var kvp in keyFrames)
                 {
                     kvp.Value.Transforms.OrderBy(t => t.MeshIndex).ToList();
-                }*/
+                }*
 
                 animation.KeyFrames.AddRange(keyFrames.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
 
                 Animator.Animations.Add(animation);
             }
         }
-    }
+    }*/
 }

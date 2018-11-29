@@ -11,6 +11,8 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.StimResponse;
+using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Rendering.Materials;
 
 namespace SpiceEngine.Entities
 {
@@ -18,30 +20,41 @@ namespace SpiceEngine.Entities
     {
         public int ID { get; set; }
         public string Name { get; private set; }
-        public IModel3D Model { get; set; }
+
+        /// <summary>
+        /// All models are assumed to have their "forward" direction in the positive X direction.
+        /// If the model is oriented in a different direction, this quaternion should orient it from the assumed direction to the correct one.
+        /// If the model is already oriented correctly, this should be the quaternion identity.
+        /// </summary>
+        public Quaternion Orientation { get; set; } = Quaternion.Identity;
 
         public Vector3 Position
         {
-            get => Model.Position;
-            set => Model.Position = value;
+            get => _modelMatrix.Translation;
+            set => _modelMatrix.Translation = value;
         }
 
         public Quaternion Rotation
         {
-            get => Model.Rotation;
-            set => Model.Rotation = value;
+            get => Orientation * _modelMatrix.Rotation;
+            set => _modelMatrix.Rotation = Orientation * value;
         }
 
+        private Vector3 _originalRotation;
         public Vector3 OriginalRotation
         {
-            get => Model.OriginalRotation;
-            set => Model.OriginalRotation = value;
+            get => _originalRotation;
+            set
+            {
+                _originalRotation = value;
+                _modelMatrix.Rotation = Quaternion.FromEulerAngles(value);
+            }
         }
 
         public Vector3 Scale
         {
-            get => Model.Scale;
-            set => Model.Scale = value;
+            get => _modelMatrix.Scale;
+            set => _modelMatrix.Scale = value;
         }
 
         public Behavior Behaviors { get; set; }
@@ -52,13 +65,39 @@ namespace SpiceEngine.Entities
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
 
+        public Matrix4 ModelMatrix => _modelMatrix.Matrix;
+
+        private ModelMatrix _modelMatrix = new ModelMatrix();
+
+        private Dictionary<int, Material> _materialByMeshIndex = new Dictionary<int, Material>();
+        private Dictionary<int, TextureMapping> _textureMappingByMeshIndex = new Dictionary<int, TextureMapping>();
+
         public Actor(string name)
         {
             Name = name;
         }
 
-        public void Load() => Model.Load();
-        public void Draw() => Model.Draw();
+        public void AddMaterial(int meshIndex, Material material) => _materialByMeshIndex.Add(meshIndex, material);
+
+        public void AddTextureMapping(int meshIndex, TextureMapping textureMapping) => _textureMappingByMeshIndex.Add(meshIndex, textureMapping);
+
+        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager)
+        {
+            _modelMatrix.Set(program);
+        }
+
+        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
+        {
+            _materialByMeshIndex[meshIndex].SetUniforms(program);
+            if (textureManager != null && _textureMappingByMeshIndex.ContainsKey(meshIndex))
+            {
+                program.BindTextures(textureManager, _textureMappingByMeshIndex[meshIndex]);
+            }
+            else
+            {
+                program.UnbindTextures();
+            }
+        }
 
         /*On Model Position Change -> if (Bounds != null)
         {
@@ -114,12 +153,6 @@ namespace SpiceEngine.Entities
                     Behaviors.Context.Translation = Vector3.Zero;
                 }
 
-                if (Model is AnimatedModel3D animated)
-                {
-                    animated.Animator.CurrentAnimation = animated.Animator.Animations.First();
-                    animated.Animator.Tick();
-                }
-
                 //Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
                 //Model.Rotation = Behaviors.Context.QRotation;
             }
@@ -129,7 +162,7 @@ namespace SpiceEngine.Entities
         {
             if (HasCollision && Bounds != null && translation != Vector3.Zero)
             {
-                Bounds.Center = Model.Position + translation;
+                Bounds.Center = Position + translation;
 
                 foreach (var collider in colliders)
                 {
@@ -141,14 +174,14 @@ namespace SpiceEngine.Entities
                                 if (Bounds.CollidesWith(circle))
                                 {
                                     // Correct the X translation
-                                    Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
+                                    Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
                                     if (Bounds.CollidesWith(circle))
                                     {
                                         translation.X = 0;
                                     }
 
                                     // Correct the Y translation
-                                    Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
+                                    Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
                                     if (Bounds.CollidesWith(circle))
                                     {
                                         translation.Y = 0;
@@ -160,14 +193,14 @@ namespace SpiceEngine.Entities
                                 if (Bounds.CollidesWith(box))
                                 {
                                     // Correct the X translation
-                                    Bounds.Center = new Vector3(Model.Position.X + translation.X, Model.Position.Y, Model.Position.Z);
+                                    Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
                                     if (Bounds.CollidesWith(box))
                                     {
                                         translation.X = 0;
                                     }
 
                                     // Correct the Y translation
-                                    Bounds.Center = new Vector3(Model.Position.X, Model.Position.Y + translation.Y, Model.Position.Z);
+                                    Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
                                     if (Bounds.CollidesWith(box))
                                     {
                                         translation.Y = 0;
@@ -179,11 +212,8 @@ namespace SpiceEngine.Entities
                 }
             }
 
-            Model.Position += translation;
+            Position += translation;
         }
-
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager = null) => Model.SetUniforms(program, textureManager);
-        public virtual void SetUniformsAndDraw(ShaderProgram program, TextureManager textureManager = null) => Model.SetUniformsAndDraw(program, textureManager);
 
         // Define how this object's state will be saved, if desired
         public virtual void OnSaveState() { }

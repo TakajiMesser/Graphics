@@ -13,7 +13,7 @@ using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class JointMesh3D : Mesh3D<JointVertex3D>
+    /*public class JointMesh3D : Mesh3D<JointVertex3D>
     {
         public const int MAX_JOINTS = 100;
 
@@ -34,9 +34,9 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public override void SetUniforms(ShaderProgram program, TextureManager textureManager)
+        public override void SetUniforms(ShaderProgram program)
         {
-            base.SetUniforms(program, textureManager);
+            base.SetUniforms(program);
             program.SetUniform("jointTransforms", _jointTransforms);
         }
 
@@ -193,7 +193,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
 
             return new Mesh<Vertex>(verticies, materials, triangleIndices);
-        }*/
+        }*
 
         #region IDisposable Support
         private bool disposedValue = false;
@@ -223,5 +223,5 @@ namespace SpiceEngine.Rendering.Meshes
             GC.SuppressFinalize(this);
         }
         #endregion
-    }
+    }*/
 }

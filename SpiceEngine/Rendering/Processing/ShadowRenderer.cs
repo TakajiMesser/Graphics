@@ -13,6 +13,7 @@ using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Rendering.Batches;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -145,7 +146,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.DepthBufferBit);
         }
 
-        private void PointLightPass(Camera camera, PointLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        private void PointLightPass(IEntityProvider entityProvider, Camera camera, PointLight light, BatchManager batchManager)
         {
             _pointShadowProgram.Use();
 
@@ -155,19 +156,11 @@ namespace SpiceEngine.Rendering.Processing
             _pointShadowProgram.SetUniform("lightPosition", light.Position);
 
             // Draw all geometry, but only the positions
-            foreach (var brush in brushes)
-            {
-                brush.SetUniforms(_pointShadowProgram);
-                brush.Draw();
-            }
-
-            foreach (var actor in actors)
-            {
-                actor.SetUniformsAndDraw(_pointShadowProgram);
-            }
+            batchManager.DrawBrushes(entityProvider, _pointShadowProgram);
+            batchManager.DrawActors(entityProvider, _pointShadowProgram);
         }
 
-        private void PointLightJointPass(Camera camera, PointLight light, IEnumerable<Actor> actors)
+        private void PointLightJointPass(IEntityProvider entityProvider, Camera camera, PointLight light, BatchManager batchManager)
         {
             _pointShadowJointProgram.Use();
 
@@ -177,15 +170,12 @@ namespace SpiceEngine.Rendering.Processing
             _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
 
             // Draw all geometry, but only the positions
-            foreach (var actor in actors)
-            {
-                actor.SetUniformsAndDraw(_pointShadowJointProgram);
-            }
+            batchManager.DrawJoints(entityProvider, _pointShadowJointProgram);
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightPass(Camera camera, SpotLight light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        private void SpotLightPass(IEntityProvider entityProvider, Camera camera, SpotLight light, BatchManager batchManager)
         {
             _spotShadowProgram.Use();
 
@@ -193,19 +183,11 @@ namespace SpiceEngine.Rendering.Processing
             camera.SetUniforms(_spotShadowProgram, light);
 
             // Draw all geometry, but only the positions
-            foreach (var brush in brushes)
-            {
-                brush.SetUniforms(_spotShadowProgram);
-                brush.Draw();
-            }
-
-            foreach (var actor in actors)
-            {
-                actor.SetUniformsAndDraw(_spotShadowProgram);
-            }
+            batchManager.DrawBrushes(entityProvider, _spotShadowProgram);
+            batchManager.DrawActors(entityProvider, _spotShadowProgram);
         }
 
-        private void SpotLightJointPass(Camera camera, SpotLight light, IEnumerable<Actor> actors)
+        private void SpotLightJointPass(IEntityProvider entityProvider, Camera camera, SpotLight light, BatchManager batchManager)
         {
             _spotShadowJointProgram.Use();
 
@@ -213,27 +195,24 @@ namespace SpiceEngine.Rendering.Processing
             camera.SetUniforms(_spotShadowJointProgram, light);
 
             // Draw all geometry, but only the positions
-            foreach (var actor in actors)
-            {
-                actor.SetUniformsAndDraw(_spotShadowJointProgram);
-            }
+            batchManager.DrawActors(entityProvider, _spotShadowJointProgram);
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        public void Render(Camera camera, Light light, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void Render(IEntityProvider entityProvider, Camera camera, Light light, BatchManager batchManager)
         {
             switch (light)
             {
                 case PointLight pLight:
                     BindForPointShadowDrawing();
-                    PointLightPass(camera, pLight, brushes, actors.Where(g => g.Model is Model3D<Vertex3D>));
-                    PointLightJointPass(camera, pLight, actors.Where(g => g.Model is AnimatedModel3D));
+                    PointLightPass(entityProvider, camera, pLight, batchManager);
+                    PointLightJointPass(entityProvider, camera, pLight, batchManager);
                     break;
                 case SpotLight sLight:
                     BindForSpotShadowDrawing();
-                    SpotLightPass(camera, sLight, brushes, actors.Where(g => g.Model is Model3D<Vertex3D>));
-                    SpotLightJointPass(camera, sLight, actors.Where(g => g.Model is AnimatedModel3D));
+                    SpotLightPass(entityProvider, camera, sLight, batchManager);
+                    SpotLightJointPass(entityProvider, camera, sLight, batchManager);
                     break;
             }
         }

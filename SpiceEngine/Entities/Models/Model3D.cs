@@ -12,7 +12,7 @@ using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Entities.Models
 {
-    public class Model3D<T> : IModel3D where T : IVertex3D
+    /*public class Model3D<T> : IModel3D where T : IVertex3D
     {
         internal ModelMatrix _modelMatrix = new ModelMatrix();
 
@@ -75,13 +75,13 @@ namespace SpiceEngine.Entities.Models
             }
         }
 
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager)
+        public virtual void SetUniforms(ShaderProgram program)
         {
             _modelMatrix.Set(program);
 
             foreach (var mesh in Meshes)
             {
-                mesh.SetUniforms(program, textureManager);
+                mesh.SetUniforms(program);
             }
         }
 
@@ -144,5 +144,5 @@ namespace SpiceEngine.Entities.Models
 
         // Define how this object's state will be saved, if desired
         //public override void OnSaveState() { }
-    }
+    }*/
 }

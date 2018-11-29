@@ -11,6 +11,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Batches;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -107,7 +108,7 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(Resolution resolution, TextureManager textureManager, Camera camera, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        public void Render(Resolution resolution, IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _program.Use();
             _frameBuffer.BindAndDraw();
@@ -118,18 +119,8 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_program);
 
-            foreach (var brush in brushes)
-            {
-                brush.SetUniforms(_program, textureManager);
-                brush.Draw();
-            }
-
-            foreach (var actor in actors)
-            {
-                //actor.SetUniforms(_program, textureManager);
-                //actor.Draw();
-                actor.SetUniformsAndDraw(_program, textureManager);
-            }
+            batchManager.DrawBrushes(entityProvider, _program, textureManager);
+            batchManager.DrawActors(entityProvider, _program, textureManager);
         }
 
         private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)
@@ -173,7 +164,7 @@ namespace SpiceEngine.Rendering.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;
@@ -184,7 +175,7 @@ namespace SpiceEngine.Rendering.Processing
             // Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Model.Position;
+                Vector3 position = actor.Position;
             }
 
             return actors;

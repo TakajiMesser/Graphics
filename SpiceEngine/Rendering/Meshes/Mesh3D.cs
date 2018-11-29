@@ -8,16 +8,16 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics.OpenGL;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class Mesh3D<T> : IDisposable where T : IVertex3D
+    public class Mesh3D<T> : IMesh3D, IDisposable where T : IVertex3D
     {
-        public TextureMapping TextureMapping { get; set; }
-        public List<T> Vertices { get; }
+        public IEnumerable<IVertex3D> Vertices => _vertices.Cast<IVertex3D>();
 
+        private List<T> _vertices;
         private List<int> _triangleIndices;
-        private Material _material;
 
         private VertexBuffer<T> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
@@ -30,48 +30,12 @@ namespace SpiceEngine.Rendering.Meshes
                 throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
             }
 
-            Vertices = vertices;
+            _vertices = vertices;
             _triangleIndices = triangleIndices;
         }
 
-        public Mesh3D(List<T> vertices, Material material, List<int> triangleIndices)
-        {
-            if (triangleIndices.Count % 3 != 0)
-            {
-                throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
-            }
-
-            Vertices = vertices;
-            _triangleIndices = triangleIndices;
-            _material = material;
-        }
-
-        public void AddVertices(IEnumerable<T> vertices) => Vertices.AddRange(vertices);
-        public void ClearVertices() => Vertices.Clear();
-
-        /*public void AddTestColors()
-        {
-            var vertices = new List<Vertex>();
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                if (i % 3 == 0)
-                {
-                    vertices.Add(Vertices[i].Colored(Color4.Lime));
-                }
-                else if (i % 3 == 1)
-                {
-                    vertices.Add(Vertices[i].Colored(Color4.Red));
-                }
-                else if (i % 3 == 2)
-                {
-                    vertices.Add(Vertices[i].Colored(Color4.Blue));
-                }
-            }
-
-            ClearVertices();
-            AddVertices(vertices);
-        }*/
+        public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
+        public void ClearVertices() => _vertices.Clear();
 
         public void Load()
         {
@@ -79,7 +43,7 @@ namespace SpiceEngine.Rendering.Meshes
             _indexBuffer = new VertexIndexBuffer();
             _vertexArray = new VertexArray<T>();
 
-            _vertexBuffer.AddVertices(Vertices);
+            _vertexBuffer.AddVertices(_vertices);
             _indexBuffer.AddIndices(_triangleIndices.ConvertAll(i => (ushort)i));
 
             _vertexBuffer.Bind();
@@ -101,20 +65,6 @@ namespace SpiceEngine.Rendering.Meshes
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
             _indexBuffer.Unbind();
-        }
-
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
-        {
-            if (textureManager != null && TextureMapping != null)
-            {
-                program.BindTextures(textureManager, TextureMapping);
-            }
-            else
-            {
-                program.UnbindTextures();
-            }
-
-            _material.SetUniforms(program);
         }
 
         public virtual void SaveToFile()

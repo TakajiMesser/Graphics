@@ -31,7 +31,7 @@ namespace SpiceEngine.Rendering.Processing
         public bool IsLoaded { get; private set; }
         public bool RenderGrid { get; set; }
 
-        private BatchManager _batchManager = new BatchManager();
+        public BatchManager BatchManager { get; } = new BatchManager();
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -95,15 +95,15 @@ namespace SpiceEngine.Rendering.Processing
 
         public void ResizeWindow() => _renderToScreen.ResizeTextures(WindowSize);
 
-        public void RenderEntityIDs(Camera camera, EntityManager entityManager)
+        public void RenderEntityIDs(IEntityProvider entityProvider, Camera camera)
         {
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.JointSelectionPass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
-            _selectionRenderer.SelectionPass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
-            _billboardRenderer.RenderLightSelections(camera, entityManager.Lights);
+            _selectionRenderer.JointSelectionPass(entityProvider, camera, BatchManager);
+            _selectionRenderer.SelectionPass(entityProvider, camera, BatchManager);
+            _billboardRenderer.RenderLightSelections(camera, entityProvider.Lights);
         }
 
         /*public void RenderEntityIDs(Volume volume)
@@ -121,7 +121,7 @@ namespace SpiceEngine.Rendering.Processing
             return _selectionRenderer.GetEntityIDFromPoint(point);
         }
 
-        public void RenderSelection(Camera camera, List<IEntity> entities, TransformModes transformMode)
+        public void RenderSelection(IEntityProvider entityProvider, Camera camera, List<IEntity> entities, TransformModes transformMode)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -142,16 +142,16 @@ namespace SpiceEngine.Rendering.Processing
                 }
                 else if (entity is Volume volume)
                 {
-                    _wireframeRenderer.SelectionPass(camera, entity);
-                    _billboardRenderer.RenderSelection(camera, volume);
+                    _wireframeRenderer.SelectionPass(entityProvider, camera, entity, BatchManager);
+                    _billboardRenderer.RenderSelection(camera, volume, BatchManager);
 
                     _selectionRenderer.BindForWriting();
-                    _billboardRenderer.RenderSelection(camera, volume);
+                    _billboardRenderer.RenderSelection(camera, volume, BatchManager);
                 }
                 else
                 {
                     // TODO - Find out why selection appears to be updating ahead of entity
-                    _wireframeRenderer.SelectionPass(camera, entity);
+                    _wireframeRenderer.SelectionPass(entityProvider, camera, entity, BatchManager);
                 }
 
                 if (i == entities.Count - 1)
@@ -196,7 +196,7 @@ namespace SpiceEngine.Rendering.Processing
 
         public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
 
-        public void RenderWireframe(Camera camera, EntityManager entityManager)
+        public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
         {
             _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -206,15 +206,15 @@ namespace SpiceEngine.Rendering.Processing
                 _wireframeRenderer.RenderGridLines(camera);
             }
 
-            _wireframeRenderer.WireframePass(camera, entityManager.Brushes, entityManager.Volumes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
-            _wireframeRenderer.JointWireframePass(camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
+            _wireframeRenderer.WireframePass(entityProvider, camera, BatchManager);
+            _wireframeRenderer.JointWireframePass(entityProvider, camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            _billboardRenderer.RenderLights(camera, entityManager.Lights);
+            _billboardRenderer.RenderLights(camera, entityProvider.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -222,13 +222,13 @@ namespace SpiceEngine.Rendering.Processing
             _renderToScreen.Render(_fxaaRenderer.FinalTexture);
         }
 
-        public void RenderDiffuseFrame(Camera camera, EntityManager entityManager, TextureManager textureManager)
+        public void RenderDiffuseFrame(IEntityProvider entityProvider, Camera camera, TextureManager textureManager)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
-            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
+            _deferredRenderer.GeometryPass(entityProvider, camera, BatchManager, textureManager);
+            _deferredRenderer.JointGeometryPass(entityProvider, camera, BatchManager, textureManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
@@ -240,7 +240,7 @@ namespace SpiceEngine.Rendering.Processing
             }
 
             _skyboxRenderer.Render(camera);
-            _billboardRenderer.RenderLights(camera, entityManager.Lights);
+            _billboardRenderer.RenderLights(camera, entityProvider.Lights);
 
             _deferredRenderer.BindForTransparentWriting();
 
@@ -249,7 +249,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, entityManager.Volumes);
+            _deferredRenderer.TransparentGeometryPass(entityProvider, camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -259,20 +259,20 @@ namespace SpiceEngine.Rendering.Processing
             _renderToScreen.Render(_deferredRenderer.ColorTexture);
         }
 
-        public void RenderLitFrame(Camera camera, EntityManager entityManager, TextureManager textureManager)
+        public void RenderLitFrame(IEntityProvider entityProvider, Camera camera, TextureManager textureManager)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
-            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
+            _deferredRenderer.GeometryPass(entityProvider, camera, BatchManager, textureManager);
+            _deferredRenderer.JointGeometryPass(entityProvider, camera, BatchManager, textureManager);
 
-            RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);
+            RenderLights(entityProvider, camera);
 
             _deferredRenderer.BindForLitWriting();
 
             _skyboxRenderer.Render(camera);
-            _billboardRenderer.RenderLights(camera, entityManager.Lights);
+            _billboardRenderer.RenderLights(camera, entityProvider.Lights);
 
             if (RenderGrid)
             {
@@ -288,7 +288,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, entityManager.Volumes);
+            _deferredRenderer.TransparentGeometryPass(entityProvider, camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -298,17 +298,15 @@ namespace SpiceEngine.Rendering.Processing
             _renderToScreen.Render(_deferredRenderer.FinalTexture);
         }
 
-        public void RenderFullFrame(Camera camera, EntityManager entityManager, TextureManager textureManager)
+        public void RenderFullFrame(IEntityProvider entityProvider, Camera camera, TextureManager textureManager)
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(textureManager, camera, entityManager.Brushes, entityManager.Actors.Where(g => g.Model is Model3D<Vertex3D>));
-            //_batchManager.AddEntities(entityManager);
-            //_batchManager.RenderBatches();
-            _deferredRenderer.JointGeometryPass(textureManager, camera, entityManager.Actors.Where(g => g.Model is AnimatedModel3D));
+            _deferredRenderer.GeometryPass(entityProvider, camera, BatchManager, textureManager);
+            _deferredRenderer.JointGeometryPass(entityProvider, camera, BatchManager, textureManager);
 
-            RenderLights(camera, entityManager.Lights, entityManager.Brushes, entityManager.Actors);
+            RenderLights(entityProvider, camera);
 
             _deferredRenderer.BindForLitWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -329,20 +327,20 @@ namespace SpiceEngine.Rendering.Processing
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
         }
 
-        private void RenderLights(Camera camera, IEnumerable<Light> lights, IEnumerable<Brush> brushes, IEnumerable<Actor> actors)
+        private void RenderLights(IEntityProvider entityProvider, Camera camera)
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
 
-            foreach (var light in lights)
+            foreach (var light in entityProvider.Lights)
             {
                 var lightMesh = _lightRenderer.GetMeshForLight(light);
                 _lightRenderer.StencilPass(light, camera, lightMesh);
 
                 GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(camera, light, brushes, actors);
+                _shadowRenderer.Render(entityProvider, camera, light, BatchManager);
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();

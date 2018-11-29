@@ -44,57 +44,40 @@ namespace SpiceEngine.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public Mesh3D<Vertex3D> Mesh { get; private set; }
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
         public Bounds Bounds { get; set; }
         public bool HasCollision { get; set; } = true;
-        public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
+        //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
 
         private ModelMatrix _modelMatrix = new ModelMatrix();
+        private Material _material;
+        public TextureMapping TextureMapping { get; set; }
 
-        public Brush(List<Vertex3D> vertices, Material material, List<int> triangleIndices)
+        public Brush(Material material)
         {
-            Mesh = new Mesh3D<Vertex3D>(vertices, material, triangleIndices);
+            _material = material;
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
-
-        public void AddTestColors()
-        {
-            var vertices = new List<Vertex3D>();
-
-            for (var i = 0; i < Mesh.Vertices.Count; i++)
-            {
-                if (i % 3 == 0)
-                {
-                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Lime));
-                }
-                else if (i % 3 == 1)
-                {
-                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Red));
-                }
-                else if (i % 3 == 2)
-                {
-                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Blue));
-                }
-            }
-
-            Mesh.ClearVertices();
-            Mesh.AddVertices(vertices);
-        }
-
-        public void Load() => Mesh.Load();
-        public void Draw() => Mesh.Draw();
 
         public void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
         {
             _modelMatrix.Set(program);
-            Mesh.SetUniforms(program, textureManager);
+            _material.SetUniforms(program);
+
+            if (textureManager != null && TextureMapping != null)
+            {
+                program.BindTextures(textureManager, TextureMapping);
+            }
+            else
+            {
+                program.UnbindTextures();
+            }
         }
 
-        public static Brush Rectangle(Vector3 center, float width, float height)
+        /*public static Brush Rectangle(Vector3 center, float width, float height)
         {
             var vertices = new List<Vertex3D>
             {
@@ -112,6 +95,6 @@ namespace SpiceEngine.Entities
             };
 
             return new Brush(vertices, material, triangleIndices);
-        }
+        }*/
     }
 }

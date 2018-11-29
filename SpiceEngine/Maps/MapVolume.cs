@@ -29,7 +29,7 @@ namespace SpiceEngine.Maps
                 OriginalRotation = Rotation,
                 Scale = Scale
             };
-            volume.Bounds = new BoundingBox(volume);
+            volume.Bounds = new BoundingBox(volume, Vertices);
 
             return volume;
         }

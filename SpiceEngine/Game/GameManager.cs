@@ -45,12 +45,7 @@ namespace SpiceEngine.Game
         {
             EntityManager = entityManager;
 
-            for (var i = 0; i < map.Brushes.Count; i++)
-            {
-                EntityManager.Brushes[i].Mesh.TextureMapping = map.Brushes[i].TexturesPaths.ToTextureMapping(TextureManager);
-            }
-
-            foreach (var mapActor in map.Actors)
+            /*foreach (var mapActor in map.Actors)
             {
                 var actor = EntityManager.GetActorByName(mapActor.Name);
 
@@ -79,7 +74,7 @@ namespace SpiceEngine.Game
                         }
                         break;
                 }
-            }
+            }*/
 
             IsLoaded = true;
         }
@@ -88,12 +83,20 @@ namespace SpiceEngine.Game
         {
             Camera = map.Camera.ToCamera(_resolution);
 
-            EntityManager.ClearEntities();
-            EntityManager.AddEntities(map.Lights);
-            EntityManager.AddEntities(map.Brushes.Select(b => b.ToBrush()));
-            EntityManager.AddEntities(map.Volumes.Select(v => v.ToVolume()));
-            EntityManager.AddEntities(map.Actors.Select(a => a.ToActor()));
-            EntityManager.LoadEntities();
+            //EntityManager.ClearEntities();
+            //EntityManager.AddEntities(map.Lights);
+            //EntityManager.AddEntities(map.Brushes.Select(b => b.ToBrush()));
+            //EntityManager.AddEntities(map.Volumes.Select(v => v.ToVolume()));
+            //EntityManager.AddEntities(map.Actors.Select(a => a.ToActor()));
+            //EntityManager.LoadEntities();
+
+            /*foreach (var mapBrush in map.Brushes)
+            {
+                var brush = mapBrush.ToBrush();
+                brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
+
+                int entityID = EntityManager.AddEntity(brush);
+            }*/
 
             switch (map)
             {
@@ -109,39 +112,32 @@ namespace SpiceEngine.Game
             PhysicsManager.InsertVolumes(EntityManager.Volumes.Select(v => v.Bounds));
             PhysicsManager.InsertLights(map.Lights.Select(l => new BoundingCircle(l)));
 
-            for (var i = 0; i < map.Brushes.Count; i++)
-            {
-                EntityManager.Brushes[i].Mesh.TextureMapping = map.Brushes[i].TexturesPaths.ToTextureMapping(TextureManager);
-            }
-
             foreach (var mapActor in map.Actors)
             {
                 var actor = EntityManager.GetActorByName(mapActor.Name);
 
-                switch (actor.Model)
+                if (actor is AnimatedActor)
                 {
-                    case Model3D<Vertex3D> s:
-                        for (var i = 0; i < s.Meshes.Count; i++)
-                        {
-                            if (i < mapActor.TexturesPaths.Count)
-                            {
-                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
-                            }
-                        }
-                        break;
+                    using (var importer = new Assimp.AssimpContext())
+                    {
+                        var scene = importer.ImportFile(mapActor.ModelFilePath);
 
-                    case AnimatedModel3D a:
-                        using (var importer = new Assimp.AssimpContext())
+                        for (var i = 0; i < scene.Meshes.Count; i++)
                         {
-                            var scene = importer.ImportFile(mapActor.ModelFilePath);
-                            for (var i = 0; i < a.Meshes.Count; i++)
-                            {
-                                a.Meshes[i].TextureMapping = (i < mapActor.TexturesPaths.Count)
-                                    ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                    : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-                            }
+                            var textureMapping = i < mapActor.TexturesPaths.Count
+                                ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+
+                            actor.AddTextureMapping(i, textureMapping);
                         }
-                        break;
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
+                    {
+                        actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(TextureManager));
+                    }
                 }
 
                 if (map.Camera.AttachedActorName == actor.Name)

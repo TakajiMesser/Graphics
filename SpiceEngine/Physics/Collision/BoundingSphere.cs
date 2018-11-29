@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using SpiceEngine.Entities;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Collision
 {
@@ -9,15 +10,9 @@ namespace SpiceEngine.Physics.Collision
     {
         public float Radius { get; set; }
 
-        public BoundingSphere(Actor actor) : base(actor)
+        public BoundingSphere(IEntity entity, IEnumerable<Vector3> vertices) : base(entity)
         {
-            var maxDistanceSquared = actor.Model.Vertices.Select(v => v.LengthSquared).Max();
-            Radius = (float)Math.Sqrt(maxDistanceSquared);
-        }
-
-        public BoundingSphere(Brush brush) : base(brush)
-        {
-            var maxDistanceSquared = brush.Vertices.Select(v => v.LengthSquared).Max();
+            var maxDistanceSquared = vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
