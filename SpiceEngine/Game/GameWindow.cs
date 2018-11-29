@@ -15,6 +15,7 @@ using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics.Collision;
+using SpiceEngine.Entities;
 
 namespace SpiceEngine.Game
 {
@@ -115,7 +116,15 @@ namespace SpiceEngine.Game
                 int entityID = _gameManager.EntityManager.AddEntity(actor);
 
                 var meshes = mapActor.ToMeshes();
-                _renderManager.BatchManager.AddActor(entityID, meshes);
+
+                if (actor is AnimatedActor)
+                {
+                    _renderManager.BatchManager.AddJoint(entityID, meshes);
+                }
+                else
+                {
+                    _renderManager.BatchManager.AddActor(entityID, meshes);
+                }
 
                 actor.HasCollision = mapActor.HasCollision;
                 actor.Bounds = actor.Name == "Player"

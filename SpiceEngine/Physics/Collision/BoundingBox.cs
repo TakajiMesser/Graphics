@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using SpiceEngine.Entities;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Collision
 {
@@ -15,53 +16,26 @@ namespace SpiceEngine.Physics.Collision
         public float MinY => Center.Y - Height / 2.0f;
         public float MaxY => Center.Y + Height / 2.0f;
 
-        public BoundingBox(Actor actor) : base(actor)
+        public BoundingBox(IEntity entity, IEnumerable<Vector3> vertices) : base(entity)
         {
-            var vertices = actor.Model.Vertices.Select(v => Matrix4.CreateScale(actor.Model.Scale) * Matrix4.CreateFromQuaternion(actor.Model.Rotation) * new Vector4(v, 1.0f));
+            IEnumerable<Vector3> adjustedVertices;
 
-            var minX = vertices.Select(v => v.X).Min();
-            var maxX = vertices.Select(v => v.X).Max();
-            Width = maxX - minX;
-
-            var minY = vertices.Select(v => v.Y).Min();
-            var maxY = vertices.Select(v => v.Y).Max();
-            Height = maxY - minY;
-        }
-
-        public BoundingBox(Brush brush) : base(brush)
-        {
-            var minX = brush.Vertices.Select(v => v.X).Min();
-            var maxX = brush.Vertices.Select(v => v.X).Max();
-            Width = maxX - minX;
-
-            var minY = brush.Vertices.Select(v => v.Y).Min();
-            var maxY = brush.Vertices.Select(v => v.Y).Max();
-            Height = maxY - minY;
-
-            /*Center = new Vector3()
+            if (entity is Actor actor)
             {
-                X = (maxX + minX) / 2.0f,
-                Y = (maxY + minY) / 2.0f,
-                Z = brush.Vertices.Select(v => v.Z).Average()
-            };*/
-        }
+                adjustedVertices = vertices.Select(v => (Matrix4.CreateScale(actor.Scale) * Matrix4.CreateFromQuaternion(actor.Rotation) * new Vector4(v, 1.0f)).Xyz);
+            }
+            else
+            {
+                adjustedVertices = vertices;
+            }
 
-        public BoundingBox(Volume volume) : base(volume)
-        {
-            var minX = volume.Vertices.Select(v => v.X).Min();
-            var maxX = volume.Vertices.Select(v => v.X).Max();
+            var minX = adjustedVertices.Select(v => v.X).Min();
+            var maxX = adjustedVertices.Select(v => v.X).Max();
             Width = maxX - minX;
 
-            var minY = volume.Vertices.Select(v => v.Y).Min();
-            var maxY = volume.Vertices.Select(v => v.Y).Max();
+            var minY = adjustedVertices.Select(v => v.Y).Min();
+            var maxY = adjustedVertices.Select(v => v.Y).Max();
             Height = maxY - minY;
-
-            /*Center = new Vector3()
-            {
-                X = (maxX + minX) / 2.0f,
-                Y = (maxY + minY) / 2.0f,
-                Z = brush.Vertices.Select(v => v.Z).Average()
-            };*/
         }
 
         public override bool CollidesWith(Vector3 point) => (point.X > MinX && point.X < MaxX) && (point.Y > MinY && point.Y < MaxY);

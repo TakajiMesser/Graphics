@@ -307,9 +307,9 @@ namespace SpiceEngine.Rendering.Processing
             _jointGeometryProgram.Use();
 
             camera.SetUniforms(_jointGeometryProgram);
-            _geometryProgram.SetUniform("cameraPosition", camera.Position);
+            _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
 
-            batchManager.DrawJoints(entityProvider, _geometryProgram, textureManager);
+            batchManager.DrawJoints(entityProvider, _jointGeometryProgram, textureManager);
 
             GL.Enable(EnableCap.CullFace);
         }
