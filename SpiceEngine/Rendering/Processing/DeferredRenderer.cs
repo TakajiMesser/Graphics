@@ -275,18 +275,18 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
         }
 
-        public void GeometryPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void GeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _geometryProgram.Use();
 
             camera.SetUniforms(_geometryProgram);
             _geometryProgram.SetUniform("cameraPosition", camera.Position);
 
-            batchManager.DrawBrushes(entityProvider, _geometryProgram, textureManager);
-            batchManager.DrawActors(entityProvider, _geometryProgram, textureManager);
+            batchManager.DrawBrushes(_geometryProgram, textureManager);
+            batchManager.DrawActors(_geometryProgram, textureManager);
         }
 
-        public void TransparentGeometryPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
+        public void TransparentGeometryPass(Camera camera, BatchManager batchManager)
         {
             _geometryProgram.Use();
 
@@ -297,19 +297,19 @@ namespace SpiceEngine.Rendering.Processing
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
             // GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
 
-            batchManager.DrawVolumes(entityProvider, _geometryProgram);
+            batchManager.DrawVolumes(_geometryProgram);
 
             //GL.Disable(EnableCap.Blend);
         }
 
-        public void JointGeometryPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void JointGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _jointGeometryProgram.Use();
 
             camera.SetUniforms(_jointGeometryProgram);
             _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
 
-            batchManager.DrawJoints(entityProvider, _jointGeometryProgram, textureManager);
+            batchManager.DrawJoints(_jointGeometryProgram, textureManager);
 
             GL.Enable(EnableCap.CullFace);
         }

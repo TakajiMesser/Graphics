@@ -25,7 +25,7 @@ namespace SpiceEngine.Game
         public EntityManager EntityManager { get; private set; } = new EntityManager();
         public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
-        public PhysicsManager PhysicsManager { get; private set; }
+        public PhysicsManager PhysicsManager { get; set; }
 
         public bool IsLoaded { get; private set; }
 
@@ -101,16 +101,16 @@ namespace SpiceEngine.Game
             switch (map)
             {
                 case Map2D map2D:
-                    PhysicsManager = new PhysicsManager(map2D.Boundaries);
+                    PhysicsManager = new PhysicsManager(EntityManager, map2D.Boundaries);
                     break;
                 case Map3D map3D:
-                    PhysicsManager = new PhysicsManager(map3D.Boundaries);
+                    PhysicsManager = new PhysicsManager(EntityManager, map3D.Boundaries);
                     break;
             }
 
-            PhysicsManager.InsertBrushes(EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
-            PhysicsManager.InsertVolumes(EntityManager.Volumes.Select(v => v.Bounds));
-            PhysicsManager.InsertLights(map.Lights.Select(l => new BoundingCircle(l)));
+            //PhysicsManager.InsertBrushes(EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
+            //PhysicsManager.InsertVolumes(EntityManager.Volumes.Select(v => v.Bounds));
+            //PhysicsManager.InsertLights(map.Lights.Select(l => new BoundingCircle(l)));
 
             foreach (var mapActor in map.Actors)
             {
@@ -163,7 +163,7 @@ namespace SpiceEngine.Game
                 actor.OnHandleInput(InputManager, Camera);
             }
 
-            PhysicsManager.Update(EntityManager.Actors);
+            PhysicsManager.Update();
 
             Camera.OnUpdateFrame();
 

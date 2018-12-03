@@ -9,40 +9,33 @@ using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics;
 using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Maps
 {
-    public class MapBrush
+    public class MapBrush : MapEntity3D<Brush>
     {
-        public Vector3 Position { get; set; } = Vector3.Zero;
-        public Vector3 Rotation { get; set; } = Vector3.Zero;
-        public Vector3 Scale { get; set; } = Vector3.One;
-
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool HasCollision { get; set; }
         public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
 
-        public Brush ToBrush()
-        {
-            var brush = new Brush(Material)
-            {
-                Position = Position,
-                OriginalRotation = Rotation,
-                Scale = Scale,
-                HasCollision = HasCollision
-            };
-            brush.Bounds = new BoundingBox(brush, Vertices.Select(v => v.Position));
-
-            return brush;
-        }
-
         public Mesh3D<Vertex3D> ToMesh()
         {
             AddTestColors();
             return new Mesh3D<Vertex3D>(Vertices, TriangleIndices);
         }
+
+        public override Brush ToEntity() => new Brush(Material)
+        {
+            Position = Position,
+            OriginalRotation = Rotation,
+            Scale = Scale,
+            //HasCollision = HasCollision
+        };
+
+        public override Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

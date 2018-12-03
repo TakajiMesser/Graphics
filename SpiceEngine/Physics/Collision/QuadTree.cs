@@ -77,10 +77,10 @@ namespace SpiceEngine.Physics.Collision
 
             Nodes = new QuadTree[NUMBER_OF_NODES];
 
-            Nodes[0] = new QuadTree(Level + 1, new Quad(new Vector3(Quad.Min.X + halfWidth, Quad.Min.Y + halfHeight, Quad.Min.Z), Quad.Max));
-            Nodes[1] = new QuadTree(Level + 1, new Quad(new Vector3(Quad.Min.X, Quad.Min.Y + halfHeight, Quad.Min.Z), new Vector3(Quad.Min.X + halfWidth, Quad.Max.Y, Quad.Max.Z)));
-            Nodes[2] = new QuadTree(Level + 1, new Quad(Quad.Min, new Vector3(Quad.Min.X + halfWidth, Quad.Min.Y + halfHeight, Quad.Max.Z)));
-            Nodes[3] = new QuadTree(Level + 1, new Quad(new Vector3(Quad.Min.X + halfWidth, Quad.Min.Y, Quad.Min.Z), new Vector3(Quad.Max.X, Quad.Min.Y + halfHeight, Quad.Max.Z)));
+            Nodes[0] = new QuadTree(Level + 1, new Quad(new Vector2(Quad.Min.X + halfWidth, Quad.Min.Y + halfHeight), Quad.Max));
+            Nodes[1] = new QuadTree(Level + 1, new Quad(new Vector2(Quad.Min.X, Quad.Min.Y + halfHeight), new Vector2(Quad.Min.X + halfWidth, Quad.Max.Y)));
+            Nodes[2] = new QuadTree(Level + 1, new Quad(Quad.Min, new Vector2(Quad.Min.X + halfWidth, Quad.Min.Y + halfHeight)));
+            Nodes[3] = new QuadTree(Level + 1, new Quad(new Vector2(Quad.Min.X + halfWidth, Quad.Min.Y), new Vector2(Quad.Max.X, Quad.Min.Y + halfHeight)));
         }
 
         public void Clear()

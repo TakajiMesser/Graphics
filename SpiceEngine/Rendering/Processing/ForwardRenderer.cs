@@ -108,7 +108,7 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(Resolution resolution, IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void Render(Resolution resolution, Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _program.Use();
             _frameBuffer.BindAndDraw();
@@ -119,8 +119,8 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_program);
 
-            batchManager.DrawBrushes(entityProvider, _program, textureManager);
-            batchManager.DrawActors(entityProvider, _program, textureManager);
+            batchManager.DrawBrushes(_program, textureManager);
+            batchManager.DrawActors(_program, textureManager);
         }
 
         private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)

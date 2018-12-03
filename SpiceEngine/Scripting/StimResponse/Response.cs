@@ -10,6 +10,8 @@ using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Utilities;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Physics;
 
 namespace SpiceEngine.Scripting.StimResponse
 {
@@ -65,36 +67,38 @@ namespace SpiceEngine.Scripting.StimResponse
                 _tickMeter.Reset();
 
                 // Filter colliders by those that are stimuli, and those that aren't
-                var stimuliColliders = new List<Bounds>();
+                var stimuliColliders = new List<PhysicsBody>();
 
-                foreach (var collider in context.Colliders)
+                foreach (var collider in context.ColliderBodies)
                 {
-                    if (collider.AttachedEntity is IStimulate stimulator && stimulator.Stimuli.Contains(Stimulus))
+                    if (context.EntityProvider.GetEntity(collider.EntityID) is IStimulate stimulator && stimulator.Stimuli.Contains(Stimulus))
                     {
                         stimuliColliders.Add(collider);
                     }
                 }
 
-                if (TriggerOnContact && HasContactStimulus(context.Actor, stimuliColliders))
+                if (TriggerOnContact && HasContactStimulus(context.Actor, context.ActorShape, stimuliColliders, context.EntityProvider))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
-                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders))
+                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders, context.EntityProvider))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
-                else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.Colliders))
+                else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.ColliderBodies, context.EntityProvider))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
             }
         }
 
-        private bool HasContactStimulus(Actor actor, IEnumerable<Bounds> stimuliColliders)
+        private bool HasContactStimulus(Actor actor, IShape shape, IEnumerable<PhysicsBody> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
-                if (actor.Bounds.CollidesWith(collider))
+                var position = entityProvider.GetEntity(collider.EntityID).Position;
+
+                if (Shape3D.Collides(actor.Position, (Shape3D)shape, position, (Shape3D)collider.Shape))
                 {
                     return true;
                 }
@@ -103,11 +107,11 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasProximityStimulus(Actor actor, IEnumerable<Bounds> stimuliColliders)
+        private bool HasProximityStimulus(Actor actor, IEnumerable<PhysicsBody> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
-                var distance = (actor.Bounds.Center - collider.Center).Length;
+                var distance = (actor.Position - entityProvider.GetEntity(collider.EntityID).Position).Length;
                 if (distance <= Radius)
                 {
                     return true;
@@ -117,11 +121,11 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<Bounds> stimuliColliders, IEnumerable<Bounds> colliders)
+        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<PhysicsBody> stimuliColliders, IEnumerable<PhysicsBody> colliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
-                var stimulusDirection = (collider.Center - actor.Bounds.Center).Normalized();
+                var stimulusDirection = (entityProvider.GetEntity(collider.EntityID).Position - actor.Position).Normalized();
                 //var stimulusQuaternion = Quaternion.FromEulerAngles(stimulusDirection);
 
                 stimulusDirection.Z = 0.0f;
@@ -137,9 +141,10 @@ namespace SpiceEngine.Scripting.StimResponse
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the stimulus
                     // TODO - Filter colliders by their ability to obstruct vision
-                    if (Raycast.TryRaycast(new Ray3(actor.Position, stimulusDirection, (float)SightDistance), colliders, out RaycastHit hit))
+                    var ray = new Ray3(actor.Position, stimulusDirection, (float)SightDistance);
+                    if (Raycast.TryRaycast(ray, colliders, entityProvider, out RaycastHit hit))
                     {
-                        if (hit.Collider == collider)
+                        if (hit.EntityID == collider.EntityID)
                         {
                             return true;
                         }

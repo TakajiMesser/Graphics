@@ -1,9 +1,10 @@
 ﻿using OpenTK;
+using SpiceEngine.Physics.Shapes;
 using System;
 
 namespace SpiceEngine.Physics.Collision
 {
-    public struct Oct
+    public struct Oct : ICollider
     {
         public Vector3 Min { get; set; }
         public Vector3 Max { get; set; }
@@ -16,36 +17,20 @@ namespace SpiceEngine.Physics.Collision
             Max = max;
         }
 
-        public bool CanContain(Bounds collider)
+        public bool CanContain(Bounds bounds)
         {
-            if (collider.GetType() == typeof(BoundingBox))
+            switch (bounds.Collider)
             {
-                var boundingBox = (BoundingBox)collider;
-                return (Min.X < boundingBox.MaxX && Max.X > boundingBox.MinX) && (Min.Y < boundingBox.MaxY && Max.Y > boundingBox.MinY);
+                case Oct oct:
+                    return Min.X < oct.Min.X
+                        && Min.Y < oct.Min.Y
+                        && Min.Z < oct.Min.Z
+                        && Max.X > oct.Max.X
+                        && Max.Y > oct.Max.Y
+                        && Max.Z > oct.Max.Z;
             }
-            else if (collider.GetType() == typeof(BoundingCircle))
-            {
-                var boundingCircle = (BoundingCircle)collider;
 
-                var closestX = (boundingCircle.Center.X > Max.X)
-                ? Max.X
-                : (boundingCircle.Center.X < Min.X)
-                    ? Min.X
-                    : boundingCircle.Center.X;
-
-                var closestY = (boundingCircle.Center.Y > Max.Y)
-                    ? Max.Y
-                    : (boundingCircle.Center.Y < Min.Y)
-                        ? Min.Y
-                        : boundingCircle.Center.Y;
-
-                var distanceSquared = Math.Pow(boundingCircle.Center.X - closestX, 2) + Math.Pow(boundingCircle.Center.Y - closestY, 2);
-                return distanceSquared < Math.Pow(boundingCircle.Radius, 2);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
     }
 }

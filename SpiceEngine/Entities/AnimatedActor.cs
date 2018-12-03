@@ -43,10 +43,8 @@ namespace SpiceEngine.Entities
             }
         }
 
-        public override void OnUpdateFrame(IEnumerable<Bounds> colliders)
+        public void UpdateAnimation()
         {
-            base.OnUpdateFrame(colliders);
-
             Animator.CurrentAnimation = Animator.Animations.First();
             Animator.Tick();
         }

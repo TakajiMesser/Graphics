@@ -1,31 +1,35 @@
 ﻿using OpenTK;
 using System.Collections.Generic;
 using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Entities;
 
 namespace SpiceEngine.Physics.Raycasting
 {
     public static class Raycast
     {
-        public static bool TryRaycast(Ray3 ray, IEnumerable<Bounds> colliders, out RaycastHit hit)
+        public static bool TryRaycast(Ray3 ray, IEnumerable<PhysicsBody> colliders, IEntityProvider entityProvider, out RaycastHit hit)
         {
             hit = new RaycastHit();
             float shortestDistance = ray.Distance;
 
             foreach (var collider in colliders)
             {
-                if (collider.GetType() == typeof(BoundingBox))
-                {
-                    var box = (BoundingBox)collider;
+                var position = entityProvider.GetEntity(collider.EntityID).Position;
 
-                    if (ray.TryGetBoxIntersection(box, out Vector3 intersection))
+                if (collider.Shape.GetType() == typeof(Box))
+                {
+                    var box = (Box)collider.Shape;
+
+                    if (ray.TryGetBoxIntersection(box, position, out Vector3 intersection))
                     {
                         float distance = (intersection - ray.Origin).Length;
 
-                        if (hit.Collider == null || distance < shortestDistance)
+                        if (hit.EntityID == 0|| distance < shortestDistance)
                         {
                             hit = new RaycastHit()
                             {
-                                Collider = collider,
+                                EntityID = collider.EntityID,
                                 Intersection = intersection
                             };
 
@@ -33,19 +37,19 @@ namespace SpiceEngine.Physics.Raycasting
                         }
                     }
                 }
-                else if (collider.GetType() == typeof(BoundingCircle))
+                else if (collider.Shape.GetType() == typeof(RayCircle))
                 {
-                    var circle = (BoundingCircle)collider;
+                    var circle = (Circle)collider.Shape;
 
-                    if (ray.TryGetCircleIntersection(circle, out Vector3 intersection))
+                    if (ray.TryGetCircleIntersection(circle, position, out Vector3 intersection))
                     {
                         float distance = (intersection - ray.Origin).Length;
 
-                        if (hit.Collider == null || distance < shortestDistance)
+                        if (hit.EntityID == 0 || distance < shortestDistance)
                         {
                             hit = new RaycastHit()
                             {
-                                Collider = collider,
+                                EntityID = collider.EntityID,
                                 Intersection = intersection
                             };
 
@@ -55,37 +59,39 @@ namespace SpiceEngine.Physics.Raycasting
                 }
             }
 
-            return (hit.Collider != null);
+            return (hit.EntityID != 0);
         }
 
-        public static bool TryCircleCast(Circle circle, IEnumerable<Bounds> colliders, out RaycastHit hit)
+        public static bool TryCircleCast(RayCircle rayCircle, IEnumerable<PhysicsBody> colliders, IEntityProvider entityProvider, out RaycastHit hit)
         {
             foreach (var collider in colliders)
             {
-                if (collider.GetType() == typeof(BoundingBox))
-                {
-                    var box = (BoundingBox)collider;
+                var position = entityProvider.GetEntity(collider.EntityID).Position;
 
-                    if (circle.TryGetBoxIntersection(box, out Vector3 intersection))
+                if (collider.Shape.GetType() == typeof(Box))
+                {
+                    var box = (Box)collider.Shape;
+
+                    if (rayCircle.TryGetBoxIntersection(box, position, out Vector3 intersection))
                     {
                         hit = new RaycastHit()
                         {
-                            Collider = collider,
+                            EntityID = collider.EntityID,
                             Intersection = intersection
                         };
 
                         return true;
                     }
                 }
-                else if (collider.GetType() == typeof(BoundingCircle))
+                else if (collider.Shape.GetType() == typeof(Circle))
                 {
-                    var boundingCircle = (BoundingCircle)collider;
+                    var circle = (Circle)collider.Shape;
 
-                    if (circle.TryGetCircleIntersection(boundingCircle, out Vector3 intersection))
+                    if (rayCircle.TryGetCircleIntersection(circle, position, out Vector3 intersection))
                     {
                         hit = new RaycastHit()
                         {
-                            Collider = collider,
+                            EntityID = collider.EntityID,
                             Intersection = intersection
                         };
 

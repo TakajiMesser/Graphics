@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using System;
 using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Physics.Raycasting
 {
@@ -18,9 +19,9 @@ namespace SpiceEngine.Physics.Raycasting
         }
 
         // From http://mathworld.wolfram.com/Circle-LineIntersection.html
-        public bool TryGetCircleIntersection(BoundingCircle circle, out Vector3 intersection)
+        public bool TryGetCircleIntersection(Circle circle, Vector3 position, out Vector3 intersection)
         {
-            var line = new LineSegment(Origin - circle.Center, Origin + Direction * Distance - circle.Center);
+            var line = new LineSegment(Origin - position, Origin + Direction * Distance - position);
 
             var dx = line.PointB.X - line.PointA.X;
             var dy = line.PointB.Y - line.PointA.Y;
@@ -29,15 +30,15 @@ namespace SpiceEngine.Physics.Raycasting
 
             var discriminant = circle.Radius * circle.Radius * dr2 - d * d;
 
-            if (discriminant >= 0 && (Origin - circle.Center).Length - circle.Radius < Distance)
+            if (discriminant >= 0 && (Origin - position).Length - circle.Radius < Distance)
             {
                 if (discriminant == 0)
                 {
                     intersection = new Vector3()
                     {
-                        X = circle.Center.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
-                        Y = circle.Center.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
-                        Z = circle.Center.Z
+                        X = position.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        Y = position.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        Z = position.Z
                     };
 
                     return true;
@@ -46,16 +47,16 @@ namespace SpiceEngine.Physics.Raycasting
                 {
                     var intersectionA = new Vector3()
                     {
-                        X = circle.Center.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
-                        Y = circle.Center.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
-                        Z = circle.Center.Z
+                        X = position.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        Y = position.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        Z = position.Z
                     };
 
                     var intersectionB = new Vector3()
                     {
-                        X = circle.Center.X + (float)((d * dy - (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
-                        Y = circle.Center.Y + (float)((-d * dx - Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
-                        Z = circle.Center.Z
+                        X = position.X + (float)((d * dy - (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        Y = position.Y + (float)((-d * dx - Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        Z = position.Z
                     };
 
                     intersection = (intersectionA - Origin).Length < (intersectionB - Origin).Length
@@ -72,20 +73,20 @@ namespace SpiceEngine.Physics.Raycasting
             }
         }
 
-        public bool TryGetBoxIntersection(BoundingBox box, out Vector3 intersection)
+        public bool TryGetBoxIntersection(Box box, Vector3 position, out Vector3 intersection)
         {
             var line = new LineSegment(Origin, Origin + Direction * Distance);
 
             Vector3? horizontalIntersection = null;
             Vector3? verticalIntersection = null;
 
-            if (Origin.X < box.MinX)
+            if (Origin.X < position.X - box.Width / 2.0f)
             {
                 // Consider left side
                 var boxLeft = new LineSegment()
                 {
-                    PointA = new Vector3(box.MinX, box.MinY, box.Center.Z),
-                    PointB = new Vector3(box.MinX, box.MaxY, box.Center.Z)
+                    PointA = new Vector3(position.X - box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X - box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z)
                 };
 
                 if (line.TryGetLineSegmentIntersection(boxLeft, out Vector3 leftIntersection))
@@ -93,13 +94,13 @@ namespace SpiceEngine.Physics.Raycasting
                     horizontalIntersection = leftIntersection;
                 }
             }
-            else if (Origin.X > box.MaxX)
+            else if (Origin.X > position.X + box.Width / 2.0f)
             {
                 // Consider right side
                 var boxRight = new LineSegment()
                 {
-                    PointA = new Vector3(box.MaxX, box.MinY, box.Center.Z),
-                    PointB = new Vector3(box.MaxX, box.MaxY, box.Center.Z)
+                    PointA = new Vector3(position.X + box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X + box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z)
                 };
 
                 if (line.TryGetLineSegmentIntersection(boxRight, out Vector3 rightIntersection))
@@ -108,13 +109,18 @@ namespace SpiceEngine.Physics.Raycasting
                 }
             }
 
-            if (Origin.Y < box.MinY)
+            /*public float MinX => Center.X - Width / 2.0f;
+            public float MaxX => Center.X + Width / 2.0f;
+            public float MinY => Center.Y - Height / 2.0f;
+            public float MaxY => Center.Y + Height / 2.0f;*/
+
+            if (Origin.Y < position.Y - box.Height / 2.0f)
             {
                 // Consider bottom side
                 var boxBottom = new LineSegment()
                 {
-                    PointA = new Vector3(box.MinX, box.MinY, box.Center.Z),
-                    PointB = new Vector3(box.MaxX, box.MinY, box.Center.Z)
+                    PointA = new Vector3(position.X - box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X + box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z)
                 };
 
                 if (line.TryGetLineSegmentIntersection(boxBottom, out Vector3 bottomIntersection))
@@ -122,13 +128,13 @@ namespace SpiceEngine.Physics.Raycasting
                     verticalIntersection = bottomIntersection;
                 }
             }
-            else if (Origin.Y > box.MaxY)
+            else if (Origin.Y > position.Y + box.Height / 2.0f)
             {
                 // Consider top side
                 var boxTop = new LineSegment()
                 {
-                    PointA = new Vector3(box.MinX, box.MaxY, box.Center.Z),
-                    PointB = new Vector3(box.MaxX, box.MaxY, box.Center.Z)
+                    PointA = new Vector3(position.X - box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X + box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z)
                 };
 
                 if (line.TryGetLineSegmentIntersection(boxTop, out Vector3 topIntersection))

@@ -124,7 +124,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Disable(EnableCap.CullFace);
         }
 
-        public void VolumeWireframePass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
+        public void VolumeWireframePass(Camera camera, BatchManager batchManager)
         {
             _wireframeProgram.Use();
 
@@ -132,10 +132,10 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", Vector4.One);
 
-            batchManager.DrawVolumes(entityProvider, _wireframeProgram);
+            batchManager.DrawVolumes(_wireframeProgram);
         }
 
-        public void WireframePass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
+        public void WireframePass(Camera camera, BatchManager batchManager)
         {
             _wireframeProgram.Use();
 
@@ -143,12 +143,12 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", Vector4.One);
 
-            batchManager.DrawBrushes(entityProvider, _wireframeProgram);
-            batchManager.DrawVolumes(entityProvider, _wireframeProgram);
-            batchManager.DrawActors(entityProvider, _wireframeProgram);
+            batchManager.DrawBrushes(_wireframeProgram);
+            batchManager.DrawVolumes(_wireframeProgram);
+            batchManager.DrawActors(_wireframeProgram);
         }
 
-        public void JointWireframePass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
+        public void JointWireframePass(Camera camera, BatchManager batchManager)
         {
             _jointWireframeProgram.Use();
 
@@ -156,7 +156,7 @@ namespace SpiceEngine.Rendering.Processing
             _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
             _jointWireframeProgram.SetUniform("lineColor", Vector4.One);
 
-            batchManager.DrawJoints(entityProvider, _jointWireframeProgram);
+            batchManager.DrawJoints(_jointWireframeProgram);
         }
 
         public void RenderGridLines(Camera camera)

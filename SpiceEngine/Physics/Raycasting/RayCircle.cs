@@ -1,123 +1,124 @@
 ﻿using OpenTK;
 using System;
 using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Physics.Raycasting
 {
-    public struct Circle
+    public struct RayCircle
     {
         public Vector3 Origin { get; set; }
         public float Radius { get; set; }
 
-        public Circle(Vector3 origin, float radius)
+        public RayCircle(Vector3 origin, float radius)
         {
             Origin = origin;
             Radius = radius;
         }
 
-        public bool TryGetBoxIntersection(BoundingBox box, out Vector3 intersection)
+        public bool TryGetBoxIntersection(Box box, Vector3 position, out Vector3 intersection)
         {
             Vector3? horizontalIntersection = null;
             Vector3? verticalIntersection = null;
 
-            if (Origin.X < box.MinX)
+            if (Origin.X < position.X - box.Width / 2.0f)
             {
                 // Consider left side
                 var boxLeft = new LineSegment()
                 {
-                    PointA = new Vector3(box.MinX, box.MinY, box.Center.Z),
-                    PointB = new Vector3(box.MinX, box.MaxY, box.Center.Z)
+                    PointA = new Vector3(position.X - box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X - box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z)
                 };
 
                 if (boxLeft.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    if (Origin.Y >= box.MaxY)
+                    if (Origin.Y >= position.Y + box.Height / 2.0f)
                     {
-                        horizontalIntersection = new Vector3(box.MinX, box.MaxY, box.Center.Z);
+                        horizontalIntersection = new Vector3(position.X - box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z);
                     }
-                    else if (Origin.Y <= box.MinY)
+                    else if (Origin.Y <= position.Y - box.Height / 2.0f)
                     {
-                        horizontalIntersection = new Vector3(box.MinX, box.MinY, box.Center.Z);
+                        horizontalIntersection = new Vector3(position.X - box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z);
                     }
                     else
                     {
-                        horizontalIntersection = new Vector3(box.MinX, Origin.Y, box.Center.Z);
+                        horizontalIntersection = new Vector3(position.X - box.Width / 2.0f, Origin.Y, position.Z);
                     }
                 }
             }
-            else if (Origin.X > box.MaxX)
+            else if (Origin.X > position.X + box.Width / 2.0f)
             {
                 // Consider right side
                 var boxRight = new LineSegment()
                 {
-                    PointA = new Vector3(box.MaxX, box.MinY, box.Center.Z),
-                    PointB = new Vector3(box.MaxX, box.MaxY, box.Center.Z)
+                    PointA = new Vector3(position.X + box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X + box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z)
                 };
 
                 if (boxRight.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    if (Origin.Y >= box.MaxY)
+                    if (Origin.Y >= position.Y + box.Height / 2.0f)
                     {
-                        horizontalIntersection = new Vector3(box.MaxX, box.MaxY, box.Center.Z);
+                        horizontalIntersection = new Vector3(position.X + box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z);
                     }
-                    else if (Origin.Y <= box.MinY)
+                    else if (Origin.Y <= position.Y - box.Height / 2.0f)
                     {
-                        horizontalIntersection = new Vector3(box.MaxX, box.MinY, box.Center.Z);
+                        horizontalIntersection = new Vector3(position.X + box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z);
                     }
                     else
                     {
-                        horizontalIntersection = new Vector3(box.MaxX, Origin.Y, box.Center.Z);
+                        horizontalIntersection = new Vector3(position.X + box.Width / 2.0f, Origin.Y, position.Z);
                     }
                 }
             }
 
-            if (Origin.Y < box.MinY)
+            if (Origin.Y < position.Y - box.Height / 2.0f)
             {
                 // Consider bottom side
                 var boxBottom = new LineSegment()
                 {
-                    PointA = new Vector3(box.MinX, box.MinY, box.Center.Z),
-                    PointB = new Vector3(box.MaxX, box.MinY, box.Center.Z)
+                    PointA = new Vector3(position.X - box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X + box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z)
                 };
 
                 if (boxBottom.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    if (Origin.X >= box.MaxX)
+                    if (Origin.X >= position.X + box.Width / 2.0f)
                     {
-                        verticalIntersection = new Vector3(box.MaxX, box.MinY, box.Center.Z);
+                        verticalIntersection = new Vector3(position.X + box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z);
                     }
-                    else if (Origin.X <= box.MinX)
+                    else if (Origin.X <= position.X - box.Width / 2.0f)
                     {
-                        verticalIntersection = new Vector3(box.MinX, box.MinY, box.Center.Z);
+                        verticalIntersection = new Vector3(position.X - box.Width / 2.0f, position.Y - box.Height / 2.0f, position.Z);
                     }
                     else
                     {
-                        verticalIntersection = new Vector3(Origin.X, box.MinY, box.Center.Z);
+                        verticalIntersection = new Vector3(Origin.X, position.Y - box.Height / 2.0f, position.Z);
                     }
                 }
             }
-            else if (Origin.Y > box.MaxY)
+            else if (Origin.Y > position.Y + box.Height / 2.0f)
             {
                 // Consider top side
                 var boxTop = new LineSegment()
                 {
-                    PointA = new Vector3(box.MinX, box.MaxY, box.Center.Z),
-                    PointB = new Vector3(box.MaxX, box.MaxY, box.Center.Z)
+                    PointA = new Vector3(position.X - box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z),
+                    PointB = new Vector3(position.X + box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z)
                 };
 
                 if (boxTop.GetDistanceFromPoint(Origin) <= Radius)
                 {
-                    if (Origin.X >= box.MaxX)
+                    if (Origin.X >= position.X + box.Width / 2.0f)
                     {
-                        verticalIntersection = new Vector3(box.MaxX, box.MaxY, box.Center.Z);
+                        verticalIntersection = new Vector3(position.X + box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z);
                     }
-                    else if (Origin.X <= box.MinX)
+                    else if (Origin.X <= position.X - box.Width / 2.0f)
                     {
-                        verticalIntersection = new Vector3(box.MinX, box.MaxY, box.Center.Z);
+                        verticalIntersection = new Vector3(position.X - box.Width / 2.0f, position.Y + box.Height / 2.0f, position.Z);
                     }
                     else
                     {
-                        verticalIntersection = new Vector3(Origin.X, box.MaxY, box.Center.Z);
+                        verticalIntersection = new Vector3(Origin.X, position.Y + box.Height / 2.0f, position.Z);
                     }
                 }
             }
@@ -164,9 +165,9 @@ namespace SpiceEngine.Physics.Raycasting
         }
 
         // From https://math.stackexchange.com/questions/256100/how-can-i-find-the-points-at-which-two-circles-intersect
-        public bool TryGetCircleIntersection(BoundingCircle circle, out Vector3 intersection)
+        public bool TryGetCircleIntersection(Circle circle, Vector3 position, out Vector3 intersection)
         {
-            var distanceSquared = (circle.Center.X - Origin.X) * (circle.Center.X - Origin.X) + (circle.Center.Y - Origin.Y) * (circle.Center.Y - Origin.Y);
+            var distanceSquared = (position.X - Origin.X) * (position.X - Origin.X) + (position.Y - Origin.Y) * (position.Y - Origin.Y);
             var r1Squared = Radius * Radius;
             var r2Squared = circle.Radius * circle.Radius;
 
@@ -184,9 +185,9 @@ namespace SpiceEngine.Physics.Raycasting
                 {
                     intersection = new Vector3()
                     {
-                        X = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
-                        Y = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
-                        Z = circle.Center.Z
+                        X = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Z = position.Z
                     };
 
                     return true;
@@ -195,16 +196,16 @@ namespace SpiceEngine.Physics.Raycasting
                 {
                     var intersectionA = new Vector3()
                     {
-                        X = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
-                        Y = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) + c * (circle.Center.Y - Origin.Y),
-                        Z = circle.Center.Z
+                        X = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Z = position.Z
                     };
 
                     var intersectionB = new Vector3()
                     {
-                        X = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) - c * (circle.Center.Y - Origin.Y),
-                        Y = 0.5f * (Origin.X + circle.Center.X) + b * (circle.Center.X - Origin.X) - c * (circle.Center.Y - Origin.Y),
-                        Z = circle.Center.Z
+                        X = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) - c * (position.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) - c * (position.Y - Origin.Y),
+                        Z = position.Z
                     };
 
                     intersection = (intersectionA - Origin).Length < (intersectionB - Origin).Length

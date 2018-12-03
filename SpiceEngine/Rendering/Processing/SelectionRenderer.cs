@@ -156,24 +156,24 @@ namespace SpiceEngine.Rendering.Processing
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
-        public void SelectionPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
+        public void SelectionPass(Camera camera, BatchManager batchManager)
         {
             _selectionProgram.Use();
 
             camera.SetUniforms(_selectionProgram);
 
-            batchManager.DrawBrushes(entityProvider, _selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
-            batchManager.DrawVolumes(entityProvider, _selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
-            batchManager.DrawActors(entityProvider, _selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.DrawBrushes(_selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.DrawVolumes(_selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.DrawActors(_selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
         }
 
-        public void JointSelectionPass(IEntityProvider entityProvider, Camera camera, BatchManager batchManager)
+        public void JointSelectionPass(Camera camera, BatchManager batchManager)
         {
             _jointSelectionProgram.Use();
 
             camera.SetUniforms(_jointSelectionProgram);
 
-            batchManager.DrawJoints(entityProvider, _jointSelectionProgram, id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.DrawJoints(_jointSelectionProgram, id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)));
         }
 
         public void RenderTranslationArrows(Camera camera, Vector3 position)

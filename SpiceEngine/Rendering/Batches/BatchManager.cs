@@ -15,12 +15,19 @@ namespace SpiceEngine.Rendering.Batches
 {
     public class BatchManager
     {
+        private IEntityProvider _entityProvider;
+
         private List<MeshBatch> _brushBatches = new List<MeshBatch>();
         private List<MeshBatch> _volumeBatches = new List<MeshBatch>();
         private List<ModelBatch> _actorBatches = new List<ModelBatch>();
         private List<ModelBatch> _jointBatches = new List<ModelBatch>();
 
         private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
+
+        public BatchManager(IEntityProvider entityProvider)
+        {
+            _entityProvider = entityProvider;
+        }
 
         public IBatch GetBatch(int entityID)
         {
@@ -87,71 +94,71 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        public void DrawBrushes(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
+        public void DrawBrushes(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
             foreach (var batch in _brushBatches)
             {
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawBrushes(IEntityProvider entityProvider, ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
+        public void DrawBrushes(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
             foreach (var batch in _brushBatches)
             {
                 batchAction(batch.EntityID);
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawVolumes(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
+        public void DrawVolumes(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
             foreach (var batch in _volumeBatches)
             {
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawVolumes(IEntityProvider entityProvider, ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
+        public void DrawVolumes(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
             foreach (var batch in _volumeBatches)
             {
                 batchAction(batch.EntityID);
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawActors(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
+        public void DrawActors(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
             foreach (var batch in _actorBatches)
             {
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawActors(IEntityProvider entityProvider, ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
+        public void DrawActors(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
             foreach (var batch in _actorBatches)
             {
                 batchAction(batch.EntityID);
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawJoints(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
+        public void DrawJoints(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
             foreach (var batch in _jointBatches)
             {
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
 
-        public void DrawJoints(IEntityProvider entityProvider, ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
+        public void DrawJoints(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
             foreach (var batch in _jointBatches)
             {
                 batchAction(batch.EntityID);
-                batch.Draw(entityProvider, shaderProgram, textureManager);
+                batch.Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
     }

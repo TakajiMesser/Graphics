@@ -10,6 +10,7 @@ using SpiceEngine.Entities;
 using System.Runtime.Serialization;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Helpers;
+using SpiceEngine.Physics.Shapes;
 
 namespace Jidai.Behaviors.Player
 {
@@ -47,16 +48,16 @@ namespace Jidai.Behaviors.Player
 
                         if (translation != Vector3.Zero)
                         {
-                            var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
+                            var filteredColliders = context.ColliderBodies.Where(c => context.EntityProvider.GetEntity(c.EntityID).GetType() == typeof(Brush));
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
-                            var borderPoint = context.Actor.Bounds.GetBorder(translation);
+                            var borderPoint = ((Shape3D)context.ActorShape).GetFurthestPoint(context.Actor.Position, translation);
                             
                             // TODO - Dynamically determine how far the raycast should be
                             var boundWidth = 2.0f;
 
                             var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                            if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), boundWidth), filteredColliders, out RaycastHit hit))
+                            if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), boundWidth), filteredColliders, context.EntityProvider, out RaycastHit hit))
                             {
                                 var vectorBetween = hit.Intersection - borderPoint;
 

@@ -8,31 +8,24 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics;
+using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Maps
 {
-    public class MapVolume
+    public class MapVolume : MapEntity3D<Volume>
     {
-        public Vector3 Position { get; set; } = Vector3.Zero;
-        public Vector3 Rotation { get; set; } = Vector3.Zero;
-        public Vector3 Scale { get; set; } = Vector3.One;
-
         public List<Vector3> Vertices { get; set; } = new List<Vector3>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public Vector4 Color { get; set; }
 
-        public Volume ToVolume()
+        public override Volume ToEntity() => new Volume(Vertices, TriangleIndices, Color)
         {
-            var volume = new Volume(Vertices, TriangleIndices, Color)
-            {
-                Position = Position,
-                OriginalRotation = Rotation,
-                Scale = Scale
-            };
-            volume.Bounds = new BoundingBox(volume, Vertices);
+            Position = Position,
+            OriginalRotation = Rotation,
+            Scale = Scale
+        };
 
-            return volume;
-        }
+        public override Shape3D ToShape() => new Box(Vertices);
 
         public static MapBrush Rectangle(Vector3 center, float width, float height)
         {

@@ -27,9 +27,9 @@ namespace Jidai.Behaviors.Player
         public override BehaviorStatus Tick(BehaviorContext context)
         {
             // TODO - Filter gameobjects and brushes based on "coverable" property
-            var filteredColliders = context.Colliders.Where(c => c.AttachedEntity.GetType() == typeof(Brush));
+            var filteredColliders = context.ColliderBodies.Where(c => context.EntityProvider.GetEntity(c.EntityID).GetType() == typeof(Brush));
 
-            if (Raycast.TryCircleCast(new Circle(context.Actor.Position, CoverDistance), filteredColliders, out RaycastHit hit))
+            if (Raycast.TryCircleCast(new RayCircle(context.Actor.Position, CoverDistance), filteredColliders, context.EntityProvider, out RaycastHit hit))
             {
                 var vectorBetween = hit.Intersection - context.Actor.Position;
                 context.SetVariable("coverDirection", vectorBetween.Xy);

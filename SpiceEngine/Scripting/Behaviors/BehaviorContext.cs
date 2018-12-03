@@ -9,6 +9,8 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Scripting.StimResponse;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Physics;
 
 namespace SpiceEngine.Scripting.Behaviors
 {
@@ -19,10 +21,15 @@ namespace SpiceEngine.Scripting.Behaviors
         /// </summary>
         public Actor Actor { get; internal set; }
 
+        public IEntityProvider EntityProvider { get; internal set; }
+        public Bounds ActorBounds { get; internal set; }
+        public IShape ActorShape { get; internal set; }
+
         /// <summary>
         /// The set of colliders within range of this actor
         /// </summary>
-        public IEnumerable<Bounds> Colliders { get; internal set; }
+        public IEnumerable<Bounds> ColliderBounds { get; internal set; }
+        public IEnumerable<PhysicsBody> ColliderBodies { get; internal set; }
 
         public Camera Camera { get; internal set; }
         public InputManager InputManager { get; internal set; }

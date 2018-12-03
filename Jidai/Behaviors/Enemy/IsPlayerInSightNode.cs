@@ -25,11 +25,12 @@ namespace Jidai.Behaviors.Enemy
 
         public override bool Condition(BehaviorContext context)
         {
-            var player = context.Colliders.FirstOrDefault(c => c.AttachedEntity.GetType() == typeof(Actor) && ((Actor)c.AttachedEntity).Name == "Player");
+            var player = context.ColliderBodies.FirstOrDefault(c => context.EntityProvider.GetEntity(c.EntityID).GetType() == typeof(Actor)
+                && ((Actor)context.EntityProvider.GetEntity(c.EntityID)).Name == "Player");
 
             if (player != null)
             {
-                var playerPosition = ((Actor)player.AttachedEntity).Position;
+                var playerPosition = ((Actor)context.EntityProvider.GetEntity(player.EntityID)).Position;
 
                 var playerDirection = playerPosition - context.Actor.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
@@ -44,9 +45,11 @@ namespace Jidai.Behaviors.Enemy
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the player
                     // TODO - Filter colliders by their ability to obstruct vision
-                    if (Raycast.TryRaycast(new Ray3(context.Actor.Position, playerDirection, ViewDistance), context.Colliders, out RaycastHit hit))
+                    if (Raycast.TryRaycast(new Ray3(context.Actor.Position, playerDirection, ViewDistance), context.ColliderBodies, context.EntityProvider, out RaycastHit hit))
                     {
-                        if (hit.Collider.AttachedEntity.GetType() == typeof(Actor) && ((Actor)hit.Collider.AttachedEntity).Name == "Player")
+                        var hitEntity = context.EntityProvider.GetEntity(hit.EntityID);
+
+                        if (hitEntity.GetType() == typeof(Actor) && ((Actor)hitEntity).Name == "Player")
                         {
                             return true;
                         }

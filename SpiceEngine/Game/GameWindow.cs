@@ -16,6 +16,10 @@ using SpiceEngine.Utilities;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Entities;
+using SpiceEngine.Rendering;
+using SpiceEngine.Physics;
+using SpiceEngine.Rendering.Textures;
+using System.IO;
 
 namespace SpiceEngine.Game
 {
@@ -87,17 +91,36 @@ namespace SpiceEngine.Game
 
             _gameManager = new GameManager(Resolution, this/*, map*/);
             _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.Load(map.SkyboxTextureFilePaths);
+            _renderManager.Load(_gameManager.EntityManager, map.SkyboxTextureFilePaths);
 
             _gameManager.EntityManager.ClearEntities();
             _gameManager.EntityManager.AddEntities(map.Lights);
 
+            _gameManager.Camera = map.Camera.ToCamera(Resolution);
+
+            switch (map)
+            {
+                case Map2D map2D:
+                    _gameManager.PhysicsManager = new PhysicsManager(_gameManager.EntityManager, map2D.Boundaries);
+                    break;
+                case Map3D map3D:
+                    _gameManager.PhysicsManager = new PhysicsManager(_gameManager.EntityManager, map3D.Boundaries);
+                    break;
+            }
+
+            //_gameManager.PhysicsManager.InsertBrushes(_gameManager.EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
+            //_gameManager.PhysicsManager.InsertVolumes(_gameManager.EntityManager.Volumes.Select(v => v.Bounds));
+            //_gameManager.PhysicsManager.InsertLights(map.Lights.Select(l => new BoundingCircle(l)));
+
             foreach (var mapBrush in map.Brushes)
             {
-                var brush = mapBrush.ToBrush();
+                var brush = mapBrush.ToEntity();
                 brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_gameManager.TextureManager);
 
                 int entityID = _gameManager.EntityManager.AddEntity(brush);
+
+                var shape = mapBrush.ToShape();
+                _gameManager.PhysicsManager.AddBrush(entityID, shape, brush.Position);
 
                 var mesh = mapBrush.ToMesh();
                 _renderManager.BatchManager.AddBrush(entityID, mesh);
@@ -105,13 +128,16 @@ namespace SpiceEngine.Game
 
             foreach (var mapVolume in map.Volumes)
             {
-                var volume = mapVolume.ToVolume();
+                var volume = mapVolume.ToEntity();
                 int entityID = _gameManager.EntityManager.AddEntity(volume);
+
+                var shape = mapVolume.ToShape();
+                _gameManager.PhysicsManager.AddVolume(entityID, shape, volume.Position);
             }
 
             foreach (var mapActor in map.Actors)
             {
-                var actor = mapActor.ToActor(_gameManager.TextureManager);
+                var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
 
                 int entityID = _gameManager.EntityManager.AddEntity(actor);
 
@@ -126,13 +152,45 @@ namespace SpiceEngine.Game
                     _renderManager.BatchManager.AddActor(entityID, meshes);
                 }
 
-                actor.HasCollision = mapActor.HasCollision;
+                var shape = mapActor.ToShape();
+                _gameManager.PhysicsManager.AddActor(entityID, shape, actor.Position);
+
+                /*actor.HasCollision = mapActor.HasCollision;
                 actor.Bounds = actor.Name == "Player"
                     ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));
+                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+
+                if (actor is AnimatedActor)
+                {
+                    using (var importer = new Assimp.AssimpContext())
+                    {
+                        var scene = importer.ImportFile(mapActor.ModelFilePath);
+
+                        for (var i = 0; i < scene.Meshes.Count; i++)
+                        {
+                            var textureMapping = i < mapActor.TexturesPaths.Count
+                                ? mapActor.TexturesPaths[i].ToTextureMapping(_gameManager.TextureManager)
+                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(_gameManager.TextureManager);
+
+                            actor.AddTextureMapping(i, textureMapping);
+                        }
+                    }
+                }
+                else
+                {
+                    for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
+                    {
+                        actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(_gameManager.TextureManager));
+                    }
+                }
+
+                if (map.Camera.AttachedActorName == actor.Name)
+                {
+                    _gameManager.Camera.AttachToEntity(actor, true, false);
+                }
             }
 
-            _gameManager.LoadFromMap(map);
+            //_gameManager.LoadFromMap(map);
             _gameManager.Initialize();
 
             _renderManager.BatchManager.Load();

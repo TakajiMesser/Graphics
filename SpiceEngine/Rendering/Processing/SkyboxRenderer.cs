@@ -30,7 +30,7 @@ namespace SpiceEngine.Rendering.Processing
         private SimpleMesh _squareMesh;
         private List<string> _texturePaths = new List<string>();
 
-        public void SetTextures(List<string> texturePaths)
+        public void SetTextures(IList<string> texturePaths)
         {
             _texturePaths.Clear();
             _texturePaths.AddRange(texturePaths);

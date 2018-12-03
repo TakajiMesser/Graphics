@@ -1,51 +1,34 @@
 ﻿using OpenTK;
+using SpiceEngine.Physics.Shapes;
 using System;
 
 namespace SpiceEngine.Physics.Collision
 {
-    public struct Quad
+    public struct Quad : ICollider
     {
-        public Vector3 Min { get; set; }
-        public Vector3 Max { get; set; }
+        public Vector2 Min { get; }
+        public Vector2 Max { get; }
 
         public float Length => (Max - Min).Length;
 
-        public Quad(Vector3 min, Vector3 max)
+        public Quad(Vector2 min, Vector2 max)
         {
             Min = min;
             Max = max;
         }
 
-        public bool CanContain(Bounds collider)
+        public bool CanContain(Bounds bounds)
         {
-            if (collider.GetType() == typeof(BoundingBox))
+            switch (bounds.Collider)
             {
-                var boundingBox = (BoundingBox)collider;
-                return (Min.X < boundingBox.MaxX && Max.X > boundingBox.MinX) && (Min.Y < boundingBox.MaxY && Max.Y > boundingBox.MinY);
+                case Quad quad:
+                    return Min.X < quad.Min.X
+                        && Min.Y < quad.Min.Y
+                        && Max.X > quad.Max.X
+                        && Max.Y > quad.Max.Y;
             }
-            else if (collider.GetType() == typeof(BoundingCircle))
-            {
-                var boundingCircle = (BoundingCircle)collider;
 
-                var closestX = (boundingCircle.Center.X > Max.X)
-                ? Max.X
-                : (boundingCircle.Center.X < Min.X)
-                    ? Min.X
-                    : boundingCircle.Center.X;
-
-                var closestY = (boundingCircle.Center.Y > Max.Y)
-                    ? Max.Y
-                    : (boundingCircle.Center.Y < Min.Y)
-                        ? Min.Y
-                        : boundingCircle.Center.Y;
-
-                var distanceSquared = Math.Pow(boundingCircle.Center.X - closestX, 2) + Math.Pow(boundingCircle.Center.Y - closestY, 2);
-                return distanceSquared < Math.Pow(boundingCircle.Radius, 2);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
+            throw new NotImplementedException();
         }
     }
 }

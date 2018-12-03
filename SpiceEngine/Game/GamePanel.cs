@@ -17,6 +17,7 @@ using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using Brush = SpiceEngine.Entities.Brush;
 using Timer = System.Timers.Timer;
+using SpiceEngine.Rendering;
 
 namespace SpiceEngine.Game
 {
@@ -238,7 +239,7 @@ namespace SpiceEngine.Game
             _gameManager.LoadFromMap(map);
             LoadCamera();
 
-            _renderManager.Load(map.SkyboxTextureFilePaths);
+            _renderManager.Load(_gameManager.EntityManager, map.SkyboxTextureFilePaths);
             Invalidate();
 
             IsLoaded = true;
@@ -251,7 +252,7 @@ namespace SpiceEngine.Game
             _gameManager.LoadFromEntities(entities, map);
             LoadCamera();
 
-            _renderManager.Load(map.SkyboxTextureFilePaths);
+            _renderManager.Load(_gameManager.EntityManager, map.SkyboxTextureFilePaths);
             Invalidate();
 
             IsLoaded = true;

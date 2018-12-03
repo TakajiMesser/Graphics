@@ -14,6 +14,7 @@ using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Processing;
 using Camera = SpiceEngine.Entities.Cameras.Camera;
+using SpiceEngine.Rendering;
 
 namespace SauceEditor.Controls.GamePanels
 {

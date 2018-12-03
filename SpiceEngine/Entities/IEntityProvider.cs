@@ -9,5 +9,6 @@ namespace SpiceEngine.Entities
     {
         IEntity GetEntity(int id);
         List<Light> Lights { get; }
+        List<Actor> Actors { get; }
     }
 }
