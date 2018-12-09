@@ -10,6 +10,7 @@ namespace SpiceEngine.Physics.Shapes
 {
     public abstract class Shape2D : IShape
     {
+        public abstract Vector2 Center { get; }
         public abstract float Mass { get; set; }
         public abstract float MomentOfInertia { get; }
 
@@ -22,13 +23,13 @@ namespace SpiceEngine.Physics.Shapes
             switch (shapeA)
             {
                 case Rectangle rectangleA when shapeB is Rectangle rectangleB:
-                    return Collides(positionA, rectangleA, positionB, rectangleB);
+                    return Collides(positionA - rectangleA.Center, rectangleA, positionB - rectangleB.Center, rectangleB);
                 case Rectangle rectangleA when shapeB is Circle circleB:
-                    return Collides(positionA, rectangleA, positionB, circleB);
+                    return Collides(positionA - rectangleA.Center, rectangleA, positionB - circleB.Center, circleB);
                 case Circle circleA when shapeB is Rectangle rectangleB:
-                    return Collides(positionB, rectangleB, positionA, circleA);
+                    return Collides(positionB - circleA.Center, rectangleB, positionA - rectangleB.Center, circleA);
                 case Circle circleA when shapeB is Circle circleB:
-                    return Collides(positionA, circleA, positionB, circleB);
+                    return Collides(positionA - circleA.Center, circleA, positionB - circleB.Center, circleB);
             }
 
             throw new NotImplementedException();

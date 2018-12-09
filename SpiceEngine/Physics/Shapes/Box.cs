@@ -14,6 +14,7 @@ namespace SpiceEngine.Physics.Shapes
         public float Height { get; }
         public float Depth { get; }
 
+        public override Vector3 Center { get; }
         public override float Mass { get; set; }
         public override float MomentOfInertia { get; }
 
@@ -35,12 +36,19 @@ namespace SpiceEngine.Physics.Shapes
             var minZ = vertices.Select(v => v.Z).Min();
             var maxZ = vertices.Select(v => v.Z).Max();
             Depth = maxZ - minZ;
+
+            Center = new Vector3()
+            {
+                X = (maxX + minX) / 2.0f,
+                Y = (maxY + minY) / 2.0f,
+                Z = (maxZ + minZ) / 2.0f
+            };
         }
 
         public override ICollider ToCollider(Vector3 position)
         {
-            var min = new Vector3(position.X - Width / 2.0f, position.Y - Height / 2.0f, position.Z - Depth / 2.0f);
-            var max = new Vector3(position.X + Width / 2.0f, position.Y + Height / 2.0f, position.Z + Depth / 2.0f);
+            var min = new Vector3(position.X - Center.X - Width / 2.0f, position.Y - Center.Y - Height / 2.0f, position.Z - Center.Z - Depth / 2.0f);
+            var max = new Vector3(position.X - Center.X + Width / 2.0f, position.Y - Center.Y + Height / 2.0f, position.Z - Center.Z + Depth / 2.0f);
 
             return new Oct(min, max);
         }
@@ -55,15 +63,15 @@ namespace SpiceEngine.Physics.Shapes
             var newY = direction.Y * xRatio;
 
             return (Math.Abs(newX) < Width / 2.0f)
-                ? new Vector3(position.X + newX, position.Y + direction.Y * yRatio, position.Z)
-                : new Vector3(position.X + direction.X * xRatio, position.Y + newY, position.Z);
+                ? new Vector3(position.X - Center.X + newX, position.Y - Center.Y + direction.Y * yRatio, position.Z - Center.Z)
+                : new Vector3(position.X - Center.X + direction.X * xRatio, position.Y - Center.Y + newY, position.Z - Center.Z);
         }
 
-        public override bool CollidesWith(Vector3 position, Vector3 point) => point.X > position.X - Width / 2.0f
-            && point.X < position.X + Width / 2.0f
-            && point.Y > position.Y - Height / 2.0f
-            && point.Y < position.Y + Height / 2.0f
-            && point.Z > position.Z - Depth / 2.0f
-            && point.Z < position.Z + Depth / 2.0f;
+        public override bool CollidesWith(Vector3 position, Vector3 point) => point.X > position.X - Center.X - Width / 2.0f
+            && point.X < position.X - Center.X + Width / 2.0f
+            && point.Y > position.Y - Center.Y - Height / 2.0f
+            && point.Y < position.Y - Center.Y + Height / 2.0f
+            && point.Z > position.Z - Center.Z - Depth / 2.0f
+            && point.Z < position.Z - Center.Z + Depth / 2.0f;
     }
 }

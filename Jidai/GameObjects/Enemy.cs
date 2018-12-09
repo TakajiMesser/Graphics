@@ -13,6 +13,7 @@ namespace Jidai.GameObjects
         {
             Name = NAME;
             Position = new Vector3(5.0f, 5.0f, -1.5f);
+            Offset = new Vector3();
             Scale = 0.04f * Vector3.One;
             Rotation = Vector3.Zero;
             Orientation = new Vector3(90.0f, 0.0f, 0.0f);

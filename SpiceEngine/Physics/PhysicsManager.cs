@@ -154,7 +154,6 @@ namespace SpiceEngine.Physics
             if (/*HasCollision && */shape != null && translation != Vector3.Zero)
             {
                 //var translatedPosition = actor.Position + translation;
-
                 foreach (var collider in colliders)
                 {
                     var colliderPosition = _entityProvider.GetEntity(collider.EntityID).Position;

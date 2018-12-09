@@ -10,6 +10,7 @@ namespace SpiceEngine.Physics.Shapes
 {
     public abstract class Shape3D : IShape
     {
+        public abstract Vector3 Center { get; }
         public abstract float Mass { get; set; }
         public abstract float MomentOfInertia { get; }
 
@@ -22,25 +23,47 @@ namespace SpiceEngine.Physics.Shapes
             switch (shapeA)
             {
                 case Box boxA when shapeB is Box boxB:
-                    return Collides(positionA, boxA, positionB, boxB);
+                    return Collides(positionA - boxA.Center, boxA, positionB - boxB.Center, boxB);
                 case Box boxA when shapeB is Sphere sphereB:
-                    return Collides(positionA, boxA, positionB, sphereB);
+                    return Collides(positionA - boxA.Center, boxA, positionB - sphereB.Center, sphereB);
                 case Sphere sphereA when shapeB is Box boxB:
-                    return Collides(positionB, boxB, positionA, sphereA);
+                    return Collides(positionB - sphereA.Center, boxB, positionA - boxB.Center, sphereA);
                 case Sphere sphereA when shapeB is Sphere sphereB:
-                    return Collides(positionA, sphereA, positionB, sphereB);
+                    return Collides(positionA - sphereA.Center, sphereA, positionB - sphereB.Center, sphereB);
             }
 
             throw new NotImplementedException();
         }
 
-        private static bool Collides(Vector3 positionA, Box boxA, Vector3 positionB, Box boxB) =>
-            positionA.X - boxA.Width / 2.0f < positionB.X + boxB.Width / 2.0f
-            && positionA.X + boxA.Width / 2.0f > positionB.X - boxB.Width / 2.0f
-            && positionA.Y - boxA.Height / 2.0f < positionB.Y + boxB.Height / 2.0f
-            && positionA.Y + boxA.Height / 2.0f > positionB.Y - boxB.Height / 2.0f
-            && positionA.Z - boxA.Depth / 2.0f < positionB.Z + boxB.Depth / 2.0f
-            && positionA.Z + boxA.Depth / 2.0f > positionB.Z - boxB.Depth / 2.0f;
+        private static bool Collides(Vector3 positionA, Box boxA, Vector3 positionB, Box boxB)
+        {
+            bool collides = positionA.X - boxA.Width / 2.0f < positionB.X + boxB.Width / 2.0f
+                && positionA.X + boxA.Width / 2.0f > positionB.X - boxB.Width / 2.0f
+                && positionA.Y - boxA.Height / 2.0f < positionB.Y + boxB.Height / 2.0f
+                && positionA.Y + boxA.Height / 2.0f > positionB.Y - boxB.Height / 2.0f
+                && positionA.Z - boxA.Depth / 2.0f < positionB.Z + boxB.Depth / 2.0f
+                && positionA.Z + boxA.Depth / 2.0f > positionB.Z - boxB.Depth / 2.0f;
+
+            if (collides)
+            {
+                var minXA = positionA.X - boxA.Width / 2.0f;
+                var maxXA = positionA.X + boxA.Width / 2.0f;
+                var minYA = positionA.Y - boxA.Height / 2.0f;
+                var maxYA = positionA.Y + boxA.Height / 2.0f;
+                var minZA = positionA.Z - boxA.Depth / 2.0f;
+                var maxZA = positionA.Z + boxA.Depth / 2.0f;
+
+                var minXB = positionB.X - boxB.Width / 2.0f;
+                var maxXB = positionB.X + boxB.Width / 2.0f;
+                var minYB = positionB.Y - boxB.Height / 2.0f;
+                var maxYB = positionB.Y + boxB.Height / 2.0f;
+                var minZB = positionB.Z - boxB.Depth / 2.0f;
+                var maxZB = positionB.Z + boxB.Depth / 2.0f;
+            }
+
+            return collides;
+        }
+            
 
         private static bool Collides(Vector3 positionA, Sphere sphereA, Vector3 positionB, Sphere sphereB)
         {

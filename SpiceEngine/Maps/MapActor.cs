@@ -20,7 +20,9 @@ namespace SpiceEngine.Maps
     public class MapActor : MapEntity3D<Actor>
     {
         public string Name { get; set; }
+
         public Vector3 Orientation { get; set; }
+        public Vector3 Offset { get; set; }
 
         public string ModelFilePath { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
@@ -314,7 +316,21 @@ namespace SpiceEngine.Maps
                     | Assimp.PostProcessSteps.GenerateSmoothNormals
                     | Assimp.PostProcessSteps.FlipUVs);
 
-                var vertices = scene.Meshes.SelectMany(m => m.Vertices.Select(v => v.ToVector3()));
+                /*public Quaternion Rotation
+                {
+                    get => Orientation * _modelMatrix.Rotation;
+                    set => _modelMatrix.Rotation = Orientation * value;
+                }
+
+                actor.Orientation = Quaternion.FromEulerAngles(Orientation);*/
+
+                var vertices = scene.Meshes
+                    .SelectMany(m => m.Vertices
+                        .Select(v => v.ToVector3()))
+                    .Select(v => (Matrix4.CreateScale(Scale)
+                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation)
+                        * Quaternion.FromEulerAngles(Rotation))
+                        * new Vector4(v, 1.0f)).Xyz);
 
                 if (Name == "Player")
                 {
