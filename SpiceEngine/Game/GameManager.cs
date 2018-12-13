@@ -10,6 +10,7 @@ using SpiceEngine.Physics;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Scripting;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
@@ -26,6 +27,7 @@ namespace SpiceEngine.Game
         public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; set; }
+        public ScriptManager ScriptManager { get; set; }
 
         public bool IsLoaded { get; private set; }
 
@@ -39,6 +41,8 @@ namespace SpiceEngine.Game
 
             TextureManager.EnableMipMapping = true;
             TextureManager.EnableAnisotropy = true;
+
+            ScriptManager = new ScriptManager(EntityManager);
         }
 
         public void LoadFromEntities(EntityManager entityManager, Map map)
@@ -149,21 +153,17 @@ namespace SpiceEngine.Game
             IsLoaded = true;
         }
 
-        public void Initialize()
-        {
-            EntityManager.Initialize();
-        }
-
         public void Update()
         {
             Camera.OnHandleInput(InputManager);
 
-            foreach (var actor in EntityManager.Actors)
-            {
-                actor.OnHandleInput(InputManager, Camera);
-            }
-
+            ScriptManager.HandleInput(InputManager, Camera);
             PhysicsManager.Update();
+
+            ScriptManager.UpdatePhysics(PhysicsManager.ActorPhysics);
+            ScriptManager.Update();
+
+            PhysicsManager.HandleActorCollisions(ScriptManager.ActorTranslations);
 
             Camera.OnUpdateFrame();
 

@@ -164,11 +164,13 @@
     <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Outputs\ResolutionEventArgs.cs" />
+    <Compile Include="Physics\ActorTranslation.cs" />
     <Compile Include="Physics\Collision\ICollidable.cs" />
     <Compile Include="Physics\Collision\ICollider.cs" />
     <Compile Include="Physics\Collision\OctTree.cs" />
     <Compile Include="Physics\Collision\ICollisionTree.cs" />
     <Compile Include="Physics\Collision\Oct.cs" />
+    <Compile Include="Physics\ActorPhysics.cs" />
     <Compile Include="Physics\IMovable.cs" />
     <Compile Include="Physics\Shapes\Shape3D.cs" />
     <Compile Include="Physics\Shapes\Shape2D.cs" />

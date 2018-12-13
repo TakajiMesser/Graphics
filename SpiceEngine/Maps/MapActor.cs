@@ -287,21 +287,6 @@ namespace SpiceEngine.Maps
             actor.Scale = Scale;
             actor.Orientation = Quaternion.FromEulerAngles(Orientation);
 
-            if (!string.IsNullOrEmpty(BehaviorFilePath))
-            {
-                actor.Behaviors = Behavior.Load(BehaviorFilePath);
-            }
-
-            actor.Stimuli.AddRange(Stimuli);
-
-            if (Properties != null)
-            {
-                foreach (var property in Properties)
-                {
-                    actor.Properties.Add(property.Name, property);
-                }
-            }
-
             return actor;
         }
 
@@ -347,5 +332,28 @@ namespace SpiceEngine.Maps
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
         }
+
+        public Behavior ToBehavior()
+        {
+            if (!string.IsNullOrEmpty(BehaviorFilePath))
+            {
+                return Behavior.Load(BehaviorFilePath);
+            }
+
+            return null;
+        }
+
+        /*public Script ToScript()
+        {
+            actor.Stimuli.AddRange(Stimuli);
+
+            if (Properties != null)
+            {
+                foreach (var property in Properties)
+                {
+                    actor.Properties.Add(property.Name, property);
+                }
+            }
+        }*/
     }
 }

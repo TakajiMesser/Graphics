@@ -83,6 +83,7 @@ namespace SpiceEngine.Physics
         {
             // Update the actor colliders every frame, since they could have moved
             _actorTree.Clear();
+            ActorPhysics.Clear();
             var boundsByID = new Dictionary<int, Bounds>();
 
             foreach (var actor in _entityProvider.Actors)
@@ -109,117 +110,52 @@ namespace SpiceEngine.Physics
                         .Retrieve(bounds)
                         .Where(b => b.EntityID != actor.ID));
 
-                UpdateActor(actor, bounds, filteredColliders);
+                ActorPhysics.Add(new ActorPhysics(actor.ID)
+                {
+                    Shape = _rigidBodyByEntityID[actor.ID].Shape,
+                    Bounds = bounds,
+                    Colliders = filteredColliders,
+                    Bodies = filteredColliders.Select(c => _rigidBodyByEntityID[c.EntityID])
+                });
             }
         }
 
-        public void UpdateActor(Actor actor, Bounds bounds, IEnumerable<Bounds> colliders)
+        public List<ActorPhysics> ActorPhysics { get; } = new List<ActorPhysics>();
+
+        public virtual void HandleActorCollisions(IEnumerable<ActorTranslation> actorTranslations)
         {
-            if (actor.Behaviors != null)
+            foreach (var actorTranslation in actorTranslations)
             {
-                var shape = _rigidBodyByEntityID[actor.ID].Shape;
+                var actor = _entityProvider.GetEntity(actorTranslation.ActorID);
 
-                //Behaviors.Context.Rotation = Rotation;
-                actor.Behaviors.Context.EntityProvider = _entityProvider;
-                actor.Behaviors.Context.ActorShape = shape;
-                actor.Behaviors.Context.ActorBounds = bounds;
-                actor.Behaviors.Context.ColliderBounds = colliders;
-                actor.Behaviors.Context.ColliderBodies = colliders.Select(c => _rigidBodyByEntityID[c.EntityID]);
+                Vector3 translation = actorTranslation.Translation;
+                var physics = ActorPhysics.FirstOrDefault(p => p.ActorID == actorTranslation.ActorID);
 
-                foreach (var property in actor.Properties.Where(p => !p.Value.IsConstant))
+                if (physics.Shape != null)
                 {
-                    actor.Behaviors.Context.SetProperty(property.Key, property.Value);
-                }
-
-                actor.Behaviors.Tick();
-
-                if (actor.Behaviors.Context.Translation != Vector3.Zero)
-                {
-                    HandleActorCollisions(actor, actor.Behaviors.Context.Translation, shape, actor.Behaviors.Context.ColliderBodies);
-                    actor.Behaviors.Context.Translation = Vector3.Zero;
-                }
-
-                //Rotation = Quaternion.FromEulerAngles(Behaviors.Context.Rotation);
-                //Model.Rotation = Behaviors.Context.QRotation;
-            }
-
-            if (actor is AnimatedActor animatedActor)
-            {
-                animatedActor.UpdateAnimation();
-            }
-        }
-
-        public virtual void HandleActorCollisions(Actor actor, Vector3 translation, IShape shape, IEnumerable<PhysicsBody> colliders)
-        {
-            if (/*HasCollision && */shape != null && translation != Vector3.Zero)
-            {
-                //var translatedPosition = actor.Position + translation;
-                foreach (var collider in colliders)
-                {
-                    var colliderPosition = _entityProvider.GetEntity(collider.EntityID).Position;
-
-                    if (Shape3D.Collides(new Vector3(actor.Position.X + translation.X, actor.Position.Y, actor.Position.Z), (Shape3D)shape, colliderPosition, (Shape3D)collider.Shape))
+                    foreach (var collider in physics.Bodies)
                     {
-                        translation.X = 0;
-                    }
+                        var colliderPosition = _entityProvider.GetEntity(collider.EntityID).Position;
 
-                    if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y + translation.Y, actor.Position.Z), (Shape3D)shape, colliderPosition, (Shape3D)collider.Shape))
-                    {
-                        translation.Y = 0;
-                    }
-
-                    if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y, actor.Position.Z + translation.Z), (Shape3D)shape, colliderPosition, (Shape3D)collider.Shape))
-                    {
-                        translation.Z = 0;
-                    }
-
-                    /*if (collider.AttachedEntity is ICollidable collidable && collidable.HasCollision)
-                    {
-                        switch (collider.Collider)
+                        if (Shape3D.Collides(new Vector3(actor.Position.X + translation.X, actor.Position.Y, actor.Position.Z), (Shape3D)physics.Shape, colliderPosition, (Shape3D)collider.Shape))
                         {
-                            case BoundingCircle circle:
-                                if (Bounds.CollidesWith(circle))
-                                {
-                                    // Correct the X translation
-                                    Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
-                                    if (Bounds.CollidesWith(circle))
-                                    {
-                                        translation.X = 0;
-                                    }
-
-                                    // Correct the Y translation
-                                    Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
-                                    if (Bounds.CollidesWith(circle))
-                                    {
-                                        translation.Y = 0;
-                                    }
-                                }
-                                break;
-
-                            case BoundingBox box:
-                                if (Bounds.CollidesWith(box))
-                                {
-                                    // Correct the X translation
-                                    Bounds.Center = new Vector3(Position.X + translation.X, Position.Y, Position.Z);
-                                    if (Bounds.CollidesWith(box))
-                                    {
-                                        translation.X = 0;
-                                    }
-
-                                    // Correct the Y translation
-                                    Bounds.Center = new Vector3(Position.X, Position.Y + translation.Y, Position.Z);
-                                    if (Bounds.CollidesWith(box))
-                                    {
-                                        translation.Y = 0;
-                                    }
-                                }
-                                break;
+                            translation.X = 0;
                         }
-                    }*/
-                }
-            }
 
-            actor.Position += translation;
+                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y + translation.Y, actor.Position.Z), (Shape3D)physics.Shape, colliderPosition, (Shape3D)collider.Shape))
+                        {
+                            translation.Y = 0;
+                        }
+
+                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y, actor.Position.Z + translation.Z), (Shape3D)physics.Shape, colliderPosition, (Shape3D)collider.Shape))
+                        {
+                            translation.Z = 0;
+                        }
+                    }
+                }
+
+                actor.Position += translation;
+            }
         }
     }
 }

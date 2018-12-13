@@ -122,14 +122,5 @@ namespace SpiceEngine.Entities
                 //volume.Load();
             }
         }
-
-        // Questionable method...
-        public void Initialize()
-        {
-            foreach (var actor in Actors)
-            {
-                actor.OnInitialization();
-            }
-        }
     }
 }

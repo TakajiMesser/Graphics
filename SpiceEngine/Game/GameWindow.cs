@@ -85,10 +85,6 @@ namespace SpiceEngine.Game
 
             var map = Map.Load(_mapPath);
 
-            /*_gameState = new GameState(Resolution);
-            _gameState.LoadFromMap(map);
-            _gameState.Initialize();*/
-
             _gameManager = new GameManager(Resolution, this/*, map*/);
             _renderManager = new RenderManager(Resolution, WindowSize);
             _renderManager.Load(_gameManager.EntityManager, map.SkyboxTextureFilePaths);
@@ -108,11 +104,19 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            //_gameManager.PhysicsManager.InsertBrushes(_gameManager.EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
-            //_gameManager.PhysicsManager.InsertVolumes(_gameManager.EntityManager.Volumes.Select(v => v.Bounds));
-            //_gameManager.PhysicsManager.InsertLights(map.Lights.Select(l => new BoundingCircle(l)));
+            LoadBrushes(map.Brushes);
+            LoadVolumes(map.Volumes);
+            LoadActors(map.Actors, map.Camera.AttachedActorName);
 
-            foreach (var mapBrush in map.Brushes)
+            _gameManager.ScriptManager.Load();
+            _renderManager.BatchManager.Load();
+
+            _fpsTimer.Start();
+        }
+
+        private void LoadBrushes(IEnumerable<MapBrush> mapBrushes)
+        {
+            foreach (var mapBrush in mapBrushes)
             {
                 var brush = mapBrush.ToEntity();
                 brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_gameManager.TextureManager);
@@ -125,8 +129,11 @@ namespace SpiceEngine.Game
                 var mesh = mapBrush.ToMesh();
                 _renderManager.BatchManager.AddBrush(entityID, mesh);
             }
+        }
 
-            foreach (var mapVolume in map.Volumes)
+        private void LoadVolumes(IEnumerable<MapVolume> mapVolumes)
+        {
+            foreach (var mapVolume in mapVolumes)
             {
                 var volume = mapVolume.ToEntity();
                 int entityID = _gameManager.EntityManager.AddEntity(volume);
@@ -134,11 +141,13 @@ namespace SpiceEngine.Game
                 var shape = mapVolume.ToShape();
                 _gameManager.PhysicsManager.AddVolume(entityID, shape, volume.Position);
             }
+        }
 
-            foreach (var mapActor in map.Actors)
+        private void LoadActors(IEnumerable<MapActor> mapActors, string cameraAttachedActorName)
+        {
+            foreach (var mapActor in mapActors)
             {
                 var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
-
                 int entityID = _gameManager.EntityManager.AddEntity(actor);
 
                 var meshes = mapActor.ToMeshes();
@@ -159,6 +168,9 @@ namespace SpiceEngine.Game
                 actor.Bounds = actor.Name == "Player"
                     ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                     : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+
+                var behavior = mapActor.ToBehavior();
+                _gameManager.ScriptManager.AddBehavior(entityID, behavior);
 
                 if (actor is AnimatedActor)
                 {
@@ -184,18 +196,11 @@ namespace SpiceEngine.Game
                     }
                 }
 
-                if (map.Camera.AttachedActorName == actor.Name)
+                if (cameraAttachedActorName == actor.Name)
                 {
                     _gameManager.Camera.AttachToEntity(actor, true, false);
                 }
             }
-
-            //_gameManager.LoadFromMap(map);
-            _gameManager.Initialize();
-
-            _renderManager.BatchManager.Load();
-
-            _fpsTimer.Start();
         }
 
         //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;

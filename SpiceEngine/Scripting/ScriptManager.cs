@@ -1,4 +1,15 @@
-﻿namespace SpiceEngine.Scripting
+﻿using OpenTK;
+using SpiceEngine.Entities;
+using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Inputs;
+using SpiceEngine.Physics;
+using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Scripting.Behaviors;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SpiceEngine.Scripting
 {
     /// <summary>
     /// A script is a set of sequential commands
@@ -7,9 +18,117 @@
     /// </summary>
     public class ScriptManager
     {
+        private IEntityProvider _entityProvider;
+
+        private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
+
+        public ScriptManager(IEntityProvider entityProvider)
+        {
+            _entityProvider = entityProvider;
+        }
+
+        public void AddBehavior(int entityID, Behavior behavior)
+        {
+            _behaviorsByEntityID.Add(entityID, behavior);
+        }
+
+        public void Load()
+        {
+            foreach (var actor in _entityProvider.Actors)
+            {
+                if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                {
+                    var behavior = _behaviorsByEntityID[actor.ID];
+                    behavior.Context.Actor = actor;
+
+                    /*foreach (var property in Properties)
+                    {
+                        if (property.Value.IsConstant)
+                        {
+                            Behaviors.Context.AddProperty(property.Key, property.Value.Value);
+                        }
+                    }*/
+                }
+            }
+        }
+
+        /*public virtual void OnHandleInput(InputManager inputManager, Camera camera)
+        {
+            if (Behaviors != null)
+            {
+                Behaviors.Context.InputManager = inputManager;
+                Behaviors.Context.InputMapping = InputMapping;
+                Behaviors.Context.Camera = camera;
+            }
+        }*/
+
+        public InputBinding InputMapping { get; set; } = new InputBinding();
+
+        public void HandleInput(InputManager inputManager, Camera camera)
+        {
+            foreach (var actor in _entityProvider.Actors)
+            {
+                if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                {
+                    var behavior = _behaviorsByEntityID[actor.ID];
+
+                    behavior.Context.InputManager = inputManager;
+                    behavior.Context.InputMapping = InputMapping;
+                    behavior.Context.Camera = camera;
+                }
+            }
+        }
+
+        public void UpdatePhysics(IEnumerable<ActorPhysics> actorPhysics)
+        {
+            foreach (var physics in actorPhysics)
+            {
+                if (_behaviorsByEntityID.ContainsKey(physics.ActorID))
+                {
+                    var behavior = _behaviorsByEntityID[physics.ActorID];
+
+                    behavior.Context.ActorShape = physics.Shape;
+                    behavior.Context.ActorBounds = physics.Bounds;
+                    behavior.Context.ColliderBounds = physics.Colliders;
+                    behavior.Context.ColliderBodies = physics.Bodies;
+                }
+            }
+        }
+
+        public List<ActorTranslation> ActorTranslations { get; } = new List<ActorTranslation>();
+
         public void Update()
         {
+            ActorTranslations.Clear();
 
+            foreach (var actor in _entityProvider.Actors)
+            {
+                if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                {
+                    var behavior = _behaviorsByEntityID[actor.ID];
+
+                    //Behaviors.Context.Rotation = Rotation;
+                    behavior.Context.EntityProvider = _entityProvider;
+
+                    foreach (var property in actor.Properties.Where(p => !p.Value.IsConstant))
+                    {
+                        behavior.Context.SetProperty(property.Key, property.Value);
+                    }
+
+                    behavior.Tick();
+
+                    // Mark and report any actors that have moved
+                    if (behavior.Context.Translation != Vector3.Zero)
+                    {
+                        ActorTranslations.Add(new ActorTranslation(actor.ID, behavior.Context.Translation));
+                    }
+
+                    if (actor is AnimatedActor animatedActor)
+                    {
+                        animatedActor.UpdateAnimation();
+                    }
+                }
+            }
         }
     }
 }

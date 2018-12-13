@@ -57,9 +57,7 @@ namespace SpiceEngine.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public Behavior Behaviors { get; set; }
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public InputBinding InputMapping { get; set; } = new InputBinding();
         public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
 
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
@@ -103,32 +101,6 @@ namespace SpiceEngine.Entities
 
         //public void ClearLights() => Model.ClearLights();
         //public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
-
-        public virtual void OnInitialization()
-        {
-            if (Behaviors != null)
-            {
-                Behaviors.Context.Actor = this;
-
-                foreach (var property in Properties)
-                {
-                    if (property.Value.IsConstant)
-                    {
-                        Behaviors.Context.AddProperty(property.Key, property.Value.Value);
-                    }
-                }
-            }
-        }
-
-        public virtual void OnHandleInput(InputManager inputManager, Camera camera)
-        {
-            if (Behaviors != null)
-            {
-                Behaviors.Context.InputManager = inputManager;
-                Behaviors.Context.InputMapping = InputMapping;
-                Behaviors.Context.Camera = camera;
-            }
-        }
 
         // Define how this object's state will be saved, if desired
         public virtual void OnSaveState() { }
