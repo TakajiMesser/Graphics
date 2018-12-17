@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Game;
 
 namespace SpiceEngine.Scripting

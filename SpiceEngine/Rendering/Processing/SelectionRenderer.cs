@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Game;
 using SpiceEngine.Outputs;

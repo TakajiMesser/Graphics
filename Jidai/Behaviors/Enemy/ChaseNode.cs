@@ -4,6 +4,7 @@ using System.Linq;
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Entities.Actors;
 
 namespace Jidai.Behaviors.Enemy
 {

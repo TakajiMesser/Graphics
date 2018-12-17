@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Entities
 {

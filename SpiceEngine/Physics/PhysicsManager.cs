@@ -12,6 +12,8 @@ namespace SpiceEngine.Physics
 {
     public class PhysicsManager
     {
+        public List<ActorPhysics> ActorPhysics { get; } = new List<ActorPhysics>();
+
         private IEntityProvider _entityProvider;
 
         private ICollisionTree _actorTree;
@@ -119,8 +121,6 @@ namespace SpiceEngine.Physics
                 });
             }
         }
-
-        public List<ActorPhysics> ActorPhysics { get; } = new List<ActorPhysics>();
 
         public virtual void HandleActorCollisions(IEnumerable<ActorTranslation> actorTranslations)
         {

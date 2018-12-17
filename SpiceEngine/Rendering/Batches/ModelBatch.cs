@@ -9,6 +9,7 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Rendering.Batches
 {

@@ -18,6 +18,8 @@ using SpiceEngine.Utilities;
 using Brush = SpiceEngine.Entities.Brush;
 using Timer = System.Timers.Timer;
 using SpiceEngine.Rendering;
+using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Game
 {

@@ -18,6 +18,7 @@ using SpiceEngine.Entities.Lights;
 using SauceEditor.Utilities;
 using Brush = SpiceEngine.Entities.Brush;
 using SauceEditor.Controls.Transform;
+using SpiceEngine.Entities.Actors;
 
 namespace SauceEditor.Controls.Properties
 {

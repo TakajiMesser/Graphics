@@ -15,6 +15,8 @@ using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using SpiceEngine.Rendering.Batches;
+using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Rendering.Processing
 {

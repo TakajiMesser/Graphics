@@ -14,6 +14,8 @@ using SpiceEngine.Utilities;
 using System.Linq;
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Scripting.Properties;
 
 namespace SpiceEngine.Maps
 {
@@ -29,7 +31,7 @@ namespace SpiceEngine.Maps
 
         public string BehaviorFilePath { get; set; }
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public List<GameProperty> Properties { get; set; }
+        public List<Property> Properties { get; set; }
 
         public bool HasCollision { get; set; }
         //public ICollider Collider { get; set; }

@@ -14,13 +14,13 @@ using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Scripting.StimResponse;
 
-namespace SpiceEngine.Entities
+namespace SpiceEngine.Entities.Volumes
 {
     /// <summary>
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Volume : IEntity, IStimulate, IRotate, IScale
+    public class Volume : IEntity, IRotate, IScale
     {
         public int ID { get; set; }
 
@@ -45,13 +45,12 @@ namespace SpiceEngine.Entities
         }
 
         //public Mesh3D<ColorVertex3D> Mesh { get; private set; }
-        public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
 
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
+        public Volume() { }
         public Volume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color)
         {
             var simpleVertices = vertices.Select(v => new ColorVertex3D(v, color)).ToList();

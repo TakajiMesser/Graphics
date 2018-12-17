@@ -9,6 +9,7 @@ using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Entities.Volumes;
 
 namespace SpiceEngine.Maps
 {

@@ -106,11 +106,15 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\AnimatedActor.cs" />
+    <Compile Include="Entities\Actors\AnimatedActor.cs" />
+    <Compile Include="Entities\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
-    <Compile Include="Entities\Volume.cs" />
+    <Compile Include="Entities\Volumes\PhysicsVolume.cs" />
+    <Compile Include="Entities\Volumes\TriggerVolume.cs" />
+    <Compile Include="Entities\Volumes\BlockingVolume.cs" />
+    <Compile Include="Entities\Volumes\Volume.cs" />
     <Compile Include="Entities\IStimulate.cs" />
     <Compile Include="Entities\IScale.cs" />
     <Compile Include="Entities\IRotate.cs" />
@@ -138,8 +142,7 @@
     <Compile Include="Entities\Cameras\OrthographicCamera.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
     <Compile Include="Entities\Models\AnimatedModel3D.cs" />
-    <Compile Include="Game\GameProperty.cs" />
-    <Compile Include="Entities\Actor.cs" />
+    <Compile Include="Entities\Actors\Actor.cs" />
     <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
@@ -284,12 +287,15 @@
     <Compile Include="Scripting\Meters\MeterTriggeredEventArgs.cs" />
     <Compile Include="Scripting\Meters\Meter.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
+    <Compile Include="Scripting\Properties\PropertyCollection.cs" />
     <Compile Include="Scripting\Properties\Property.cs" />
+    <Compile Include="Scripting\IStimulusProvider.cs" />
     <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
     <Compile Include="Scripting\States\State.cs" />
     <Compile Include="Scripting\StimResponse\Response.cs" />
+    <Compile Include="Scripting\StimResponse\StimulusCollection.cs" />
     <Compile Include="Scripting\StimResponse\StimulusTriggeredEventArgs.cs" />
     <Compile Include="Scripting\StimResponse\Stimulus.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />

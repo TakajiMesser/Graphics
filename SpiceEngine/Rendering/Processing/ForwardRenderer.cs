@@ -12,6 +12,7 @@ using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Batches;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Rendering.Processing
 {

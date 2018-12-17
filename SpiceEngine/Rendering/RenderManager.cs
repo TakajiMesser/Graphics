@@ -5,6 +5,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Models;
+using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;

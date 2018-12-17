@@ -20,6 +20,8 @@ using SpiceEngine.Rendering;
 using SpiceEngine.Physics;
 using SpiceEngine.Rendering.Textures;
 using System.IO;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Scripting.Properties;
 
 namespace SpiceEngine.Game
 {
@@ -171,6 +173,9 @@ namespace SpiceEngine.Game
 
                 var behavior = mapActor.ToBehavior();
                 _gameManager.ScriptManager.AddBehavior(entityID, behavior);
+
+                _gameManager.ScriptManager.AddProperties(entityID, mapActor.Properties);
+                _gameManager.ScriptManager.AddStimuli(entityID, mapActor.Stimuli);
 
                 if (actor is AnimatedActor)
                 {

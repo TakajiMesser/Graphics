@@ -20,7 +20,7 @@ namespace SpiceEngine.Entities
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : IEntity, IStimulate, IRotate, IScale
+    public class Brush : IEntity, IRotate, IScale
     {
         public int ID { get; set; }
 
@@ -43,9 +43,6 @@ namespace SpiceEngine.Entities
             get => _modelMatrix.Scale;
             set => _modelMatrix.Scale = value;
         }
-
-        public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
-        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
 
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;

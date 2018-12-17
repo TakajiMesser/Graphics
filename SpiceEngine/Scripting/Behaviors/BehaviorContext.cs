@@ -11,6 +11,7 @@ using SpiceEngine.Physics.Collision;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Physics;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Scripting.Behaviors
 {
@@ -22,6 +23,8 @@ namespace SpiceEngine.Scripting.Behaviors
         public Actor Actor { get; internal set; }
 
         public IEntityProvider EntityProvider { get; internal set; }
+        public IStimulusProvider StimulusProvider { get; internal set; }
+
         public Bounds ActorBounds { get; internal set; }
         public IShape ActorShape { get; internal set; }
 

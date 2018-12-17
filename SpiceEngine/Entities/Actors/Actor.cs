@@ -14,9 +14,9 @@ using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Materials;
 
-namespace SpiceEngine.Entities
+namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : IEntity, IStimulate, IRotate, IScale
+    public class Actor : IEntity, IRotate, IScale
     {
         public int ID { get; set; }
         public string Name { get; private set; }
@@ -56,9 +56,6 @@ namespace SpiceEngine.Entities
             get => _modelMatrix.Scale;
             set => _modelMatrix.Scale = value;
         }
-
-        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public Dictionary<string, GameProperty> Properties { get; private set; } = new Dictionary<string, GameProperty>();
 
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
 

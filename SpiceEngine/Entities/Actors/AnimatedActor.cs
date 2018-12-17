@@ -16,7 +16,7 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Utilities;
 
-namespace SpiceEngine.Entities
+namespace SpiceEngine.Entities.Actors
 {
     public class AnimatedActor : Actor
     {

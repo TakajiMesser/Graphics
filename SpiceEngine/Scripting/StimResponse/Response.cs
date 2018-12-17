@@ -12,6 +12,7 @@ using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Utilities;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Physics;
+using SpiceEngine.Entities.Actors;
 
 namespace SpiceEngine.Scripting.StimResponse
 {
@@ -71,7 +72,7 @@ namespace SpiceEngine.Scripting.StimResponse
 
                 foreach (var collider in context.ColliderBodies)
                 {
-                    if (context.EntityProvider.GetEntity(collider.EntityID) is IStimulate stimulator && stimulator.Stimuli.Contains(Stimulus))
+                    if (context.StimulusProvider.GetStimuli(collider.EntityID).Contains(Stimulus))
                     {
                         stimuliColliders.Add(collider);
                     }
