@@ -8,18 +8,18 @@ using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics
 {
-    public class ActorPhysics
+    public class EntityCollision
     {
-        public int ActorID { get; private set; }
+        public int EntityID { get; private set; }
 
         public IShape Shape { get; set; }
         public Bounds Bounds { get; set; }
         public IEnumerable<Bounds> Colliders { get; set; }
         public IEnumerable<PhysicsBody> Bodies { get; set; }
 
-        public ActorPhysics(int actorID)
+        public EntityCollision(int entityID)
         {
-            ActorID = actorID;
+            EntityID = entityID;
         }
     }
 }

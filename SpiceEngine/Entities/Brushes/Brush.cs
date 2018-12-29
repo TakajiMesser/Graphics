@@ -14,7 +14,7 @@ using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Scripting.StimResponse;
 
-namespace SpiceEngine.Entities
+namespace SpiceEngine.Entities.Brushes
 {
     /// <summary>
     /// Brushes are static geometric shapes that are baked into a scene.

@@ -7,6 +7,7 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Game;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Brushes;
 
 namespace SpiceEngine.Rendering.Buffers
 {

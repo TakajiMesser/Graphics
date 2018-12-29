@@ -9,14 +9,14 @@ using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics
 {
-    public class ActorTranslation
+    public class EntityTranslation
     {
-        public int ActorID { get; private set; }
+        public int EntityID { get; private set; }
         public Vector3 Translation { get; private set; }
 
-        public ActorTranslation(int actorID, Vector3 translation)
+        public EntityTranslation(int entityID, Vector3 translation)
         {
-            ActorID = actorID;
+            EntityID = entityID;
             Translation = translation;
         }
     }

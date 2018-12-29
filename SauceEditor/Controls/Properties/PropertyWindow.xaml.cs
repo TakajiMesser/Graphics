@@ -16,7 +16,7 @@ using System.Windows.Shapes;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Lights;
 using SauceEditor.Utilities;
-using Brush = SpiceEngine.Entities.Brush;
+using Brush = SpiceEngine.Entities.Brushes.Brush;
 using SauceEditor.Controls.Transform;
 using SpiceEngine.Entities.Actors;
 

@@ -22,6 +22,7 @@ using SpiceEngine.Rendering.Textures;
 using System.IO;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Entities.Cameras;
 
 namespace SpiceEngine.Game
 {
@@ -31,6 +32,7 @@ namespace SpiceEngine.Game
         public Resolution WindowSize { get; private set; }
 
         private string _mapPath;
+
         private GameManager _gameManager;
         private RenderManager _renderManager;
 
@@ -87,125 +89,13 @@ namespace SpiceEngine.Game
 
             var map = Map.Load(_mapPath);
 
-            _gameManager = new GameManager(Resolution, this/*, map*/);
+            _gameManager = new GameManager(Resolution, this);
+            var entityMapping = _gameManager.LoadFromMap(map);
+
             _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.Load(_gameManager.EntityManager, map.SkyboxTextureFilePaths);
-
-            _gameManager.EntityManager.ClearEntities();
-            _gameManager.EntityManager.AddEntities(map.Lights);
-
-            _gameManager.Camera = map.Camera.ToCamera(Resolution);
-
-            switch (map)
-            {
-                case Map2D map2D:
-                    _gameManager.PhysicsManager = new PhysicsManager(_gameManager.EntityManager, map2D.Boundaries);
-                    break;
-                case Map3D map3D:
-                    _gameManager.PhysicsManager = new PhysicsManager(_gameManager.EntityManager, map3D.Boundaries);
-                    break;
-            }
-
-            LoadBrushes(map.Brushes);
-            LoadVolumes(map.Volumes);
-            LoadActors(map.Actors, map.Camera.AttachedActorName);
-
-            _gameManager.ScriptManager.Load();
-            _renderManager.BatchManager.Load();
+            _renderManager.LoadFromMap(map, _gameManager.EntityManager, entityMapping);
 
             _fpsTimer.Start();
-        }
-
-        private void LoadBrushes(IEnumerable<MapBrush> mapBrushes)
-        {
-            foreach (var mapBrush in mapBrushes)
-            {
-                var brush = mapBrush.ToEntity();
-                brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_gameManager.TextureManager);
-
-                int entityID = _gameManager.EntityManager.AddEntity(brush);
-
-                var shape = mapBrush.ToShape();
-                _gameManager.PhysicsManager.AddBrush(entityID, shape, brush.Position);
-
-                var mesh = mapBrush.ToMesh();
-                _renderManager.BatchManager.AddBrush(entityID, mesh);
-            }
-        }
-
-        private void LoadVolumes(IEnumerable<MapVolume> mapVolumes)
-        {
-            foreach (var mapVolume in mapVolumes)
-            {
-                var volume = mapVolume.ToEntity();
-                int entityID = _gameManager.EntityManager.AddEntity(volume);
-
-                var shape = mapVolume.ToShape();
-                _gameManager.PhysicsManager.AddVolume(entityID, shape, volume.Position);
-            }
-        }
-
-        private void LoadActors(IEnumerable<MapActor> mapActors, string cameraAttachedActorName)
-        {
-            foreach (var mapActor in mapActors)
-            {
-                var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
-                int entityID = _gameManager.EntityManager.AddEntity(actor);
-
-                var meshes = mapActor.ToMeshes();
-
-                if (actor is AnimatedActor)
-                {
-                    _renderManager.BatchManager.AddJoint(entityID, meshes);
-                }
-                else
-                {
-                    _renderManager.BatchManager.AddActor(entityID, meshes);
-                }
-
-                var shape = mapActor.ToShape();
-                _gameManager.PhysicsManager.AddActor(entityID, shape, actor.Position);
-
-                /*actor.HasCollision = mapActor.HasCollision;
-                actor.Bounds = actor.Name == "Player"
-                    ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
-
-                var behavior = mapActor.ToBehavior();
-                _gameManager.ScriptManager.AddBehavior(entityID, behavior);
-
-                _gameManager.ScriptManager.AddProperties(entityID, mapActor.Properties);
-                _gameManager.ScriptManager.AddStimuli(entityID, mapActor.Stimuli);
-
-                if (actor is AnimatedActor)
-                {
-                    using (var importer = new Assimp.AssimpContext())
-                    {
-                        var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                        for (var i = 0; i < scene.Meshes.Count; i++)
-                        {
-                            var textureMapping = i < mapActor.TexturesPaths.Count
-                                ? mapActor.TexturesPaths[i].ToTextureMapping(_gameManager.TextureManager)
-                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(_gameManager.TextureManager);
-
-                            actor.AddTextureMapping(i, textureMapping);
-                        }
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
-                    {
-                        actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(_gameManager.TextureManager));
-                    }
-                }
-
-                if (cameraAttachedActorName == actor.Name)
-                {
-                    _gameManager.Camera.AttachToEntity(actor, true, false);
-                }
-            }
         }
 
         //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;

@@ -11,6 +11,7 @@ using System.Runtime.Serialization;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Entities.Brushes;
 
 namespace Jidai.Behaviors.Player
 {

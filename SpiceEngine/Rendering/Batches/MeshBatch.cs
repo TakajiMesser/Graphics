@@ -10,6 +10,7 @@ using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Entities;
 using OpenTK.Graphics;
+using SpiceEngine.Entities.Brushes;
 
 namespace SpiceEngine.Rendering.Batches
 {

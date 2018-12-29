@@ -12,9 +12,8 @@ namespace SpiceEngine.Physics
 {
     public class PhysicsManager
     {
-        public List<ActorPhysics> ActorPhysics { get; } = new List<ActorPhysics>();
-
         private IEntityProvider _entityProvider;
+        private ITranslationProvider _translationProvider;
 
         private ICollisionTree _actorTree;
         private ICollisionTree _brushTree;
@@ -23,9 +22,12 @@ namespace SpiceEngine.Physics
 
         private Dictionary<int, RigidBody> _rigidBodyByEntityID = new Dictionary<int, RigidBody>();
 
-        public PhysicsManager(IEntityProvider entityProvider, Quad worldBoundaries)
+        public List<EntityCollision> EntityCollisions { get; } = new List<EntityCollision>();
+        
+        public PhysicsManager(IEntityProvider entityProvider, ITranslationProvider translationProvider, Quad worldBoundaries)
         {
             _entityProvider = entityProvider;
+            _translationProvider = translationProvider;
 
             _actorTree = new QuadTree(0, worldBoundaries);
             _brushTree = new QuadTree(0, worldBoundaries);
@@ -44,9 +46,10 @@ namespace SpiceEngine.Physics
             _actorQuads = new QuadTree(0, map.Boundaries);*/
         }
 
-        public PhysicsManager(IEntityProvider entityProvider, Oct worldBoundaries)
+        public PhysicsManager(IEntityProvider entityProvider, ITranslationProvider translationProvider, Oct worldBoundaries)
         {
             _entityProvider = entityProvider;
+            _translationProvider = translationProvider;
 
             _actorTree = new OctTree(0, worldBoundaries);
             _brushTree = new OctTree(0, worldBoundaries);
@@ -85,7 +88,7 @@ namespace SpiceEngine.Physics
         {
             // Update the actor colliders every frame, since they could have moved
             _actorTree.Clear();
-            ActorPhysics.Clear();
+            EntityCollisions.Clear();
             var boundsByID = new Dictionary<int, Bounds>();
 
             foreach (var actor in _entityProvider.Actors)
@@ -112,7 +115,7 @@ namespace SpiceEngine.Physics
                         .Retrieve(bounds)
                         .Where(b => b.EntityID != actor.ID));
 
-                ActorPhysics.Add(new ActorPhysics(actor.ID)
+                EntityCollisions.Add(new EntityCollision(actor.ID)
                 {
                     Shape = _rigidBodyByEntityID[actor.ID].Shape,
                     Bounds = bounds,
@@ -122,14 +125,14 @@ namespace SpiceEngine.Physics
             }
         }
 
-        public virtual void HandleActorCollisions(IEnumerable<ActorTranslation> actorTranslations)
+        public virtual void HandleActorCollisions()
         {
-            foreach (var actorTranslation in actorTranslations)
+            foreach (var entityTranslation in _translationProvider.EntityTranslations)
             {
-                var actor = _entityProvider.GetEntity(actorTranslation.ActorID);
+                var actor = _entityProvider.GetEntity(entityTranslation.EntityID);
 
-                Vector3 translation = actorTranslation.Translation;
-                var physics = ActorPhysics.FirstOrDefault(p => p.ActorID == actorTranslation.ActorID);
+                Vector3 translation = entityTranslation.Translation;
+                var physics = EntityCollisions.FirstOrDefault(p => p.EntityID == entityTranslation.EntityID);
 
                 if (physics.Shape != null)
                 {

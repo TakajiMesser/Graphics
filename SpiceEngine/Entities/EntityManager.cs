@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;

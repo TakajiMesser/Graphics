@@ -137,7 +137,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Entities\Models\Model3D.cs" />
-    <Compile Include="Entities\Brush.cs" />
+    <Compile Include="Entities\Brushes\Brush.cs" />
     <Compile Include="Entities\Cameras\PerspectiveCamera.cs" />
     <Compile Include="Entities\Cameras\OrthographicCamera.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
@@ -157,6 +157,7 @@
     <Compile Include="Entities\Lights\SpotLight.cs" />
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
+    <Compile Include="Maps\EntityMapping.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />
     <Compile Include="Maps\MapEntity2D.cs" />
@@ -167,13 +168,14 @@
     <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Outputs\ResolutionEventArgs.cs" />
-    <Compile Include="Physics\ActorTranslation.cs" />
+    <Compile Include="Physics\EntityTranslation.cs" />
     <Compile Include="Physics\Collision\ICollidable.cs" />
     <Compile Include="Physics\Collision\ICollider.cs" />
     <Compile Include="Physics\Collision\OctTree.cs" />
     <Compile Include="Physics\Collision\ICollisionTree.cs" />
     <Compile Include="Physics\Collision\Oct.cs" />
-    <Compile Include="Physics\ActorPhysics.cs" />
+    <Compile Include="Physics\EntityCollision.cs" />
+    <Compile Include="Physics\ITranslationProvider.cs" />
     <Compile Include="Physics\IMovable.cs" />
     <Compile Include="Physics\Shapes\Shape3D.cs" />
     <Compile Include="Physics\Shapes\Shape2D.cs" />
@@ -298,6 +300,7 @@
     <Compile Include="Scripting\StimResponse\StimulusCollection.cs" />
     <Compile Include="Scripting\StimResponse\StimulusTriggeredEventArgs.cs" />
     <Compile Include="Scripting\StimResponse\Stimulus.cs" />
+    <Compile Include="Sounds\SoundManager.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />

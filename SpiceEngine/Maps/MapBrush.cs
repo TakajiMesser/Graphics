@@ -10,6 +10,7 @@ using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Entities.Brushes;
 
 namespace SpiceEngine.Maps
 {

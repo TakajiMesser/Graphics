@@ -31,10 +31,28 @@ namespace SpiceEngine.Maps
 
         public string BehaviorFilePath { get; set; }
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public List<Property> Properties { get; set; }
+        public List<Property> Properties { get; set; } = new List<Property>();
 
         public bool HasCollision { get; set; }
         //public ICollider Collider { get; set; }
+
+        public bool HasAnimations
+        {
+            get
+            {
+                using (var importer = new Assimp.AssimpContext())
+                {
+                    var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                        | Assimp.PostProcessSteps.CalculateTangentSpace
+                        | Assimp.PostProcessSteps.LimitBoneWeights
+                        | Assimp.PostProcessSteps.Triangulate
+                        | Assimp.PostProcessSteps.GenerateSmoothNormals
+                        | Assimp.PostProcessSteps.FlipUVs);
+
+                    return scene.HasAnimations;
+                }
+            }
+        }
 
         public IEnumerable<IMesh3D> ToMeshes()
         {

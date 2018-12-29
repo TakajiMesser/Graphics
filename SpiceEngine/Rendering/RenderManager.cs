@@ -6,6 +6,7 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Models;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
@@ -56,11 +57,18 @@ namespace SpiceEngine.Rendering
             WindowSize = windowSize;
         }
 
-        public void Load(IEntityProvider entityProvider, IList<string> texturePaths)
+        public void LoadFromMap(Map map, IEntityProvider entityProvider, EntityMapping entityMapping)
         {
             BatchManager = new BatchManager(entityProvider);
 
-            _skyboxRenderer.SetTextures(texturePaths);
+            LoadBrushes(map.Brushes, entityMapping.BrushIDs);
+            LoadLights(map.Lights, entityMapping.LightIDs);
+            LoadActors(map.Actors, entityMapping.ActorIDs);
+            LoadVolumes(map.Volumes, entityMapping.VolumeIDs);
+
+            BatchManager.Load();
+
+            _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 
             _forwardRenderer.Load(Resolution);
             _deferredRenderer.Load(Resolution);
@@ -79,6 +87,54 @@ namespace SpiceEngine.Rendering
             GL.ClearColor(Color4.Black);
 
             IsLoaded = true;
+        }
+
+        private void LoadBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
+        {
+            for (var i = 0; i < mapBrushes.Count; i++)
+            {
+                var entityID = brushIDs[i];
+                var mesh = mapBrushes[i].ToMesh();
+
+                BatchManager.AddBrush(entityID, mesh);
+            }
+        }
+
+        private void LoadVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
+        {
+            for (var i = 0; i < mapVolumes.Count; i++)
+            {
+                /*var entityID = volumeIDs[i];
+                var mesh = mapVolumes[i].ToMesh();
+
+                BatchManager.AddVolume(entityID, mesh);*/
+            }
+        }
+
+        private void LoadLights(IList<Light> lights, IList<int> lightIDs)
+        {
+            foreach (var light in lights)
+            {
+                //BatchManager.light.ID;
+            }
+        }
+
+        private void LoadActors(IList<MapActor> mapActors, IList<int> actorIDs)
+        {
+            for (var i = 0; i < mapActors.Count; i++)
+            {
+                var entityID = actorIDs[i];
+                var meshes = mapActors[i].ToMeshes();
+
+                if (mapActors[i].HasAnimations)
+                {
+                    BatchManager.AddJoint(entityID, meshes);
+                }
+                else
+                {
+                    BatchManager.AddActor(entityID, meshes);
+                }
+            }
         }
 
         public void ResizeResolution()

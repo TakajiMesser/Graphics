@@ -19,15 +19,16 @@ namespace SpiceEngine.Scripting
     /// Each command can be something this object needs to communicate to another object, or performed by itself
     /// Each command either needs to be associated with 
     /// </summary>
-    public class ScriptManager : IStimulusProvider
+    public class ScriptManager : ITranslationProvider, IStimulusProvider
     {
-        public List<ActorTranslation> ActorTranslations { get; } = new List<ActorTranslation>();
-
         private IEntityProvider _entityProvider;
 
         private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
+        private List<EntityTranslation> _entityTranslations = new List<EntityTranslation>();
+
+        public IEnumerable<EntityTranslation> EntityTranslations => _entityTranslations;
 
         public ScriptManager(IEntityProvider entityProvider)
         {
@@ -106,25 +107,25 @@ namespace SpiceEngine.Scripting
             }
         }
 
-        public void UpdatePhysics(IEnumerable<ActorPhysics> actorPhysics)
+        public void UpdateCollisions(IEnumerable<EntityCollision> entityCollisions)
         {
-            foreach (var physics in actorPhysics)
+            foreach (var entityCollision in entityCollisions)
             {
-                if (_behaviorsByEntityID.ContainsKey(physics.ActorID))
+                if (_behaviorsByEntityID.ContainsKey(entityCollision.EntityID))
                 {
-                    var behavior = _behaviorsByEntityID[physics.ActorID];
+                    var behavior = _behaviorsByEntityID[entityCollision.EntityID];
 
-                    behavior.Context.ActorShape = physics.Shape;
-                    behavior.Context.ActorBounds = physics.Bounds;
-                    behavior.Context.ColliderBounds = physics.Colliders;
-                    behavior.Context.ColliderBodies = physics.Bodies;
+                    behavior.Context.ActorShape = entityCollision.Shape;
+                    behavior.Context.ActorBounds = entityCollision.Bounds;
+                    behavior.Context.ColliderBounds = entityCollision.Colliders;
+                    behavior.Context.ColliderBodies = entityCollision.Bodies;
                 }
             }
         }
 
         public void Update()
         {
-            ActorTranslations.Clear();
+            _entityTranslations.Clear();
 
             foreach (var actor in _entityProvider.Actors)
             {
@@ -134,6 +135,7 @@ namespace SpiceEngine.Scripting
 
                     //Behaviors.Context.Rotation = Rotation;
                     behavior.Context.EntityProvider = _entityProvider;
+                    behavior.Context.StimulusProvider = this;
 
                     foreach (var property in _propertiesByEntityID[actor.ID].VariableProperties)
                     {
@@ -145,7 +147,7 @@ namespace SpiceEngine.Scripting
                     // Mark and report any actors that have moved
                     if (behavior.Context.Translation != Vector3.Zero)
                     {
-                        ActorTranslations.Add(new ActorTranslation(actor.ID, behavior.Context.Translation));
+                        _entityTranslations.Add(new EntityTranslation(actor.ID, behavior.Context.Translation));
                     }
 
                     if (actor is AnimatedActor animatedActor)

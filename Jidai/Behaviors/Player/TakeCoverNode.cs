@@ -8,6 +8,7 @@ using SpiceEngine.Physics.Raycasting;
 using OpenTK;
 using SpiceEngine.Entities;
 using System.Runtime.Serialization;
+using SpiceEngine.Entities.Brushes;
 
 namespace Jidai.Behaviors.Player
 {
