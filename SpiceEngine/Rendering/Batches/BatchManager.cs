@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Models;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Meshes;
@@ -39,6 +40,23 @@ namespace SpiceEngine.Rendering.Batches
             throw new KeyNotFoundException("No batch found for entity ID " + entityID);
         }
 
+        public void RemoveByEntityID(int entityID)
+        {
+            var batch = GetBatch(entityID);
+            
+            switch (batch)
+            {
+                case MeshBatch meshBatch:
+                    _brushBatches.Remove(meshBatch);
+                    _volumeBatches.Remove(meshBatch);
+                    break;
+                case ModelBatch modelBatch:
+                    _actorBatches.Remove(modelBatch);
+                    _jointBatches.Remove(modelBatch);
+                    break;
+            }
+        }
+
         public void AddBrush(int entityID, IMesh3D mesh)
         {
             var batch = new MeshBatch(entityID, mesh);
@@ -70,6 +88,8 @@ namespace SpiceEngine.Rendering.Batches
             _jointBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
         }
+
+        public void Load(int entityID) => _batchesByEntityID[entityID].Load();
 
         public void Load()
         {

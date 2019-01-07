@@ -25,6 +25,8 @@ using SpiceEngine.Scripting;
 using SpiceEngine.Sounds;
 using SpiceEngine.Rendering.Textures;
 using System.IO;
+using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Game
 {
@@ -69,14 +71,35 @@ namespace SpiceEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        _toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
-                        _entityManager.AddEntity(_toolVolume);
+                        var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        //_toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
+                        _toolVolume = mapVolume.ToEntity();
+                        int entityID = _entityManager.AddEntity(_toolVolume);
+
+                        lock (_loadLock)
+                        {
+                            if (_renderManager != null)
+                            {
+                                //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
+                                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Vector4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                                _renderManager.BatchManager.AddVolume(entityID, mesh);
+                                _renderManager.BatchManager.Load(entityID);
+                            }
+                        }
                         break;
                     default:
                         if (_toolVolume != null)
                         {
                             _entityManager.RemoveEntityByID(_toolVolume.ID);
-                            _toolVolume = null;
+
+                            lock (_loadLock)
+                            {
+                                if (_renderManager != null)
+                                {
+                                    _renderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
+                                    _toolVolume = null;
+                                }
+                            }
                         }
                         break;
                 }
@@ -259,6 +282,15 @@ namespace SpiceEngine.Game
 
                     _renderManager = new RenderManager(Resolution, WindowSize);
                     _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
+
+                    if (_selectedTool == Tools.Volume && _toolVolume != null)
+                    {
+                        // TODO - Correct this, shouldn't be creating another MapVolume here
+                        var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Vector4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                        _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
+                        _renderManager.BatchManager.Load(_toolVolume.ID);
+                    }
 
                     // Clear pointers
                     _map = null;

@@ -102,13 +102,13 @@ namespace SpiceEngine.Rendering
 
         private void LoadVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
         {
-            for (var i = 0; i < mapVolumes.Count; i++)
+            /*for (var i = 0; i < mapVolumes.Count; i++)
             {
-                /*var entityID = volumeIDs[i];
+                var entityID = volumeIDs[i];
                 var mesh = mapVolumes[i].ToMesh();
 
-                BatchManager.AddVolume(entityID, mesh);*/
-            }
+                BatchManager.AddVolume(entityID, mesh);
+            }*/
         }
 
         private void LoadLights(IList<Light> lights, IList<int> lightIDs)

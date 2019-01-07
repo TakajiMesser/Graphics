@@ -11,6 +11,7 @@ using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Entities;
 using OpenTK.Graphics;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Entities.Volumes;
 
 namespace SpiceEngine.Rendering.Batches
 {
@@ -54,9 +55,18 @@ namespace SpiceEngine.Rendering.Batches
 
         public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
-            var brush = (Brush)entityProvider.GetEntity(EntityID);
-            brush.SetUniforms(shaderProgram, textureManager);
+            var entity = entityProvider.GetEntity(EntityID);
 
+            switch (entity)
+            {
+                case Brush brush:
+                    brush.SetUniforms(shaderProgram, textureManager);
+                    break;
+                case Volume volume:
+                    volume.SetUniforms(shaderProgram);
+                    break;
+            }
+            
             Mesh.Draw();
         }
     }

@@ -298,6 +298,8 @@ namespace SpiceEngine.Rendering.Processing
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
             // GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
 
+            _geometryProgram.UnbindTextures();
+
             batchManager.DrawVolumes(_geometryProgram);
 
             //GL.Disable(EnableCap.Blend);

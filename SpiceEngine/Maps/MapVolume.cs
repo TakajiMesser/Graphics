@@ -10,6 +10,7 @@ using SpiceEngine.Rendering.Vertices;
 using OpenTK.Graphics;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Rendering.Meshes;
 
 namespace SpiceEngine.Maps
 {
@@ -18,6 +19,12 @@ namespace SpiceEngine.Maps
         public List<Vector3> Vertices { get; set; } = new List<Vector3>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public Vector4 Color { get; set; }
+
+        /*public Mesh3D<Vertex3D> ToMesh()
+        {
+            var vertices = Vertices.Select(v => new Vertex3D(v, v, v, Vector2.Zero, Color4.Blue)).ToList();
+            return new Mesh3D<Vertex3D>(vertices, TriangleIndices);
+        }*/
 
         public override Volume ToEntity() => new Volume(Vertices, TriangleIndices, Color)
         {
@@ -48,7 +55,7 @@ namespace SpiceEngine.Maps
             };
         }
 
-        public static MapBrush RectangularPrism(Vector3 center, float width, float height, float depth)
+        public static MapVolume RectangularPrism(Vector3 center, float width, float height, float depth)
         {
             var vertices = new List<Vector3>
             {
@@ -62,24 +69,6 @@ namespace SpiceEngine.Maps
                 new Vector3(width / 2.0f, height / 2.0f, depth / 2.0f)
             };
 
-            var uvs = new List<Vector2>
-            {
-                new Vector2(0, 0),
-                new Vector2(0, 2),
-                new Vector2(2, 0),
-                new Vector2(2, 2)
-            };
-
-            var normals = new List<Vector3>
-            {
-                new Vector3(1, 0, 0),
-                new Vector3(0, 1, 0),
-                new Vector3(0, 0, 1),
-                new Vector3(-1, 0, 0),
-                new Vector3(0, -1, 0),
-                new Vector3(0, 0, -1)
-            };
-
             var vertexIndices = new List<int>
             {
                 8, 7, 5, 8, 5, 6,
@@ -89,29 +78,9 @@ namespace SpiceEngine.Maps
                 3, 1, 5, 3, 5, 7,
                 6, 5, 1, 6, 1, 2
             };
-            var uvIndices = new List<int>
-            {
-                2, 1, 3, 2, 3, 4,
-                2, 1, 3, 2, 3, 4,
-                2, 1, 3, 2, 3, 4,
-                2, 1, 3, 2, 3, 4,
-                2, 1, 3, 2, 3, 4,
-                2, 1, 3, 2, 3, 4
-            };
-            var normalIndices = new List<int>
-            {
-                1, 1, 1, 1, 1, 1,
-                2, 2, 2, 2, 2, 2,
-                3, 3, 3, 3, 3, 3,
-                4, 4, 4, 4, 4, 4,
-                5, 5, 5, 5, 5, 5, 
-                6, 6, 6, 6, 6, 6
-            };
 
-            var verticies = new List<Vertex3D>();
+            var verticies = new List<Vector3>();
             var triangleIndices = new List<int>();
-
-            Vector3 tangent = Vector3.Zero;
 
             for (var i = 0; i < vertexIndices.Count; i++)
             {
@@ -127,19 +96,10 @@ namespace SpiceEngine.Maps
                     // tangent = (deltaPos1 * deltaUv2.y - deltaPos2 * deltaUv1.y) * r;
                     var deltaPos1 = vertices[vertexIndices[i + 1] - 1] - vertices[vertexIndices[i] - 1];
                     var deltaPos2 = vertices[vertexIndices[i + 2] - 1] - vertices[vertexIndices[i] - 1];
-                    var deltaUV1 = uvs[uvIndices[i + 1] - 1] - uvs[uvIndices[i] - 1];
-                    var deltaUV2 = uvs[uvIndices[i + 1] - 1] - uvs[uvIndices[i] - 1];
-
-                    var r = 1 / (deltaUV1.X * deltaUV2.Y - deltaUV1.Y - deltaUV2.X);
-                    tangent = (deltaPos1 * deltaUV2.Y - deltaPos2 * deltaUV1.Y) * r;
                 }
 
-                var uv = uvIndices[i] > 0 ? uvs[uvIndices[i] - 1] : Vector2.Zero;
-
-                var meshVertex = new Vertex3D(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv);
-                var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
-                    && v.Normal == meshVertex.Normal
-                    && v.TextureCoords == meshVertex.TextureCoords);
+                var meshVertex = vertices[vertexIndices[i] - 1];
+                var existingIndex = verticies.FindIndex(v => v == meshVertex);
 
                 if (existingIndex >= 0)
                 {
@@ -152,11 +112,10 @@ namespace SpiceEngine.Maps
                 }
             }
 
-            return new MapBrush()
+            return new MapVolume()
             {
                 Position = center,
                 Vertices = verticies,
-                Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices
             };
 

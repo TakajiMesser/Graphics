@@ -21,6 +21,11 @@ namespace SpiceEngine.Rendering.Textures
         public string SpecularMapFilePath { get; set; }
         public string ParallaxMapFilePath { get; set; }
 
+        public bool IsEmpty => string.IsNullOrEmpty(DiffuseMapFilePath)
+            && string.IsNullOrEmpty(NormalMapFilePath)
+            && string.IsNullOrEmpty(SpecularMapFilePath)
+            && string.IsNullOrEmpty(ParallaxMapFilePath);
+
         public TexturePaths() { }
         public TexturePaths(Assimp.Material material, string directoryPath)
         {

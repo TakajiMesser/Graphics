@@ -24,7 +24,11 @@ namespace SpiceEngine.Maps
 
         public Mesh3D<Vertex3D> ToMesh()
         {
-            AddTestColors();
+            if (TexturesPaths.IsEmpty)
+            {
+                AddTestColors();
+            }
+            
             return new Mesh3D<Vertex3D>(Vertices, TriangleIndices);
         }
 
