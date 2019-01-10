@@ -30,14 +30,6 @@ using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Game
 {
-    public enum ViewTypes
-    {
-        X,
-        Y,
-        Z,
-        Perspective
-    }
-
     public enum Tools
     {
         Selector,
@@ -49,14 +41,10 @@ namespace SpiceEngine.Game
 
     public class GamePanel : GLControl, IMouseDelta
     {
-        public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
-        public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;
-
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
         public double Frequency { get; private set; }
-        public ViewTypes ViewType { get; set; }
         public RenderModes RenderMode { get; set; }
         public TransformModes TransformMode { get; set; }
         public List<IEntity> SelectedEntities { get; } = new List<IEntity>();
@@ -133,7 +121,7 @@ namespace SpiceEngine.Game
         private Map _map;
         private EntityMapping _entityMapping;
 
-        private Camera _camera;
+        private PanelCamera _panelCamera;
         private EntityManager _entityManager;
         private TextureManager _textureManager;
         private InputManager _inputManager;
@@ -141,13 +129,15 @@ namespace SpiceEngine.Game
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
-        private Vector3 _currentAngles = new Vector3();
+        
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
 
         private Tools _selectedTool = Tools.Brush;
         private Volume _toolVolume;
+
+        private ViewTypes _viewType;
 
         private object _cursorLock = new object();
         private bool _isCursorVisible = true;
@@ -184,49 +174,13 @@ namespace SpiceEngine.Game
             _pollTimer.Elapsed += PollTimer_Elapsed;
         }
 
+        public void SetViewType(ViewTypes viewType) => _viewType = viewType;
+
         public void CenterView()
         {
             if (_entityManager != null && SelectedEntities.Count > 0)
             {
-                switch (ViewType)
-                {
-                    case ViewTypes.Perspective:
-                        break;
-                    case ViewTypes.X:
-                        var translationX = new Vector3()
-                        {
-                            X = 0.0f,
-                            Y = SelectedEntities.Average(e => e.Position.Y) - _camera.Position.Y,
-                            Z = SelectedEntities.Average(e => e.Position.Z) - _camera.Position.Z
-                        };
-
-                        _camera.Position += translationX;
-                        _camera._viewMatrix.LookAt += translationX;
-                        break;
-                    case ViewTypes.Y:
-                        var translationY = new Vector3()
-                        {
-                            X = SelectedEntities.Average(e => e.Position.X) - _camera.Position.X,
-                            Y = 0.0f,
-                            Z = SelectedEntities.Average(e => e.Position.Z) - _camera.Position.Z
-                        };
-
-                        _camera.Position += translationY;
-                        _camera._viewMatrix.LookAt += translationY;
-                        break;
-                    case ViewTypes.Z:
-                        var translationZ = new Vector3()
-                        {
-                            X = SelectedEntities.Average(e => e.Position.X) - _camera.Position.X,
-                            Y = SelectedEntities.Average(e => e.Position.Y) - _camera.Position.Y,
-                            Z = 0.0f
-                        };
-
-                        _camera.Position += translationZ;
-                        _camera._viewMatrix.LookAt += translationZ;
-                        break;
-                }
-
+                _panelCamera.CenterView(SelectedEntities.Select(e => e.Position));
                 RenderFrame();
             }
         }
@@ -278,7 +232,9 @@ namespace SpiceEngine.Game
                 {
                     //LoadBrushes(map.Brushes, entityMapping.BrushIDs);
                     //LoadActors(map.Actors, entityMapping.ActorIDs);
-                    LoadCamera();
+                    _panelCamera = new PanelCamera(Resolution, _renderManager);
+                    _panelCamera.ViewType = _viewType;
+                    _panelCamera.Load();
 
                     _renderManager = new RenderManager(Resolution, WindowSize);
                     _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
@@ -318,7 +274,9 @@ namespace SpiceEngine.Game
                 {
                     //LoadBrushes(map.Brushes, entityMapping.BrushIDs);
                     //LoadActors(map.Actors, entityMapping.ActorIDs);
-                    LoadCamera();
+                    _panelCamera = new PanelCamera(Resolution, _renderManager);
+                    _panelCamera.ViewType = _viewType;
+                    _panelCamera.Load();
 
                     _renderManager = new RenderManager(Resolution, WindowSize);
                     _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
@@ -346,49 +304,6 @@ namespace SpiceEngine.Game
             IsLoaded = true;
             PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
         }*/
-
-        private void LoadCamera()
-        {
-            switch (ViewType)
-            {
-                case ViewTypes.Perspective:
-                    _camera = new PerspectiveCamera("", Resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
-                    _camera.DetachFromEntity();
-                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
-                    _camera._viewMatrix.Up = Vector3.UnitZ;
-                    _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
-                    break;
-                case ViewTypes.X:
-                    _camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
-                    {
-                        Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
-                    };
-                    _currentAngles = new Vector3(90.0f, 0.0f, 0.0f);
-                    _camera._viewMatrix.Up = Vector3.UnitZ;
-                    _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitX;
-                    _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
-                    break;
-                case ViewTypes.Y:
-                    _camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
-                    {
-                        Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
-                    };
-                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
-                    _camera._viewMatrix.Up = Vector3.UnitZ;
-                    _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
-                    _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
-                    break;
-                case ViewTypes.Z:
-                    _camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
-                    {
-                        Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
-                    };
-                    _currentAngles = new Vector3(0.0f, 90.0f, 0.0f);
-                    _camera._viewMatrix.Up = Vector3.UnitY;
-                    _camera._viewMatrix.LookAt = _camera.Position - Vector3.UnitZ;
-                    break;
-            }
-        }
 
         public void SelectEntity(IEntity entity)
         {
@@ -485,25 +400,25 @@ namespace SpiceEngine.Game
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:
-                    _renderManager.RenderWireframe(_entityManager, _camera);
-                    _renderManager.RenderEntityIDs(_entityManager, _camera);
+                    _renderManager.RenderWireframe(_entityManager, _panelCamera.Camera);
+                    _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame(_entityManager, _camera, _textureManager);
-                    _renderManager.RenderEntityIDs(_entityManager, _camera);
+                    _renderManager.RenderDiffuseFrame(_entityManager, _panelCamera.Camera, _textureManager);
+                    _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Lit:
-                    _renderManager.RenderLitFrame(_entityManager, _camera, _textureManager);
-                    _renderManager.RenderEntityIDs(_entityManager, _camera);
+                    _renderManager.RenderLitFrame(_entityManager, _panelCamera.Camera, _textureManager);
+                    _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Full:  
-                    _renderManager.RenderFullFrame(_entityManager, _camera, _textureManager);
+                    _renderManager.RenderFullFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     break;
             }
 
             if (SelectedEntities.Count > 0)
             {
-                _renderManager.RenderSelection(_entityManager, _camera, SelectedEntities, TransformMode);
+                _renderManager.RenderSelection(_entityManager, _panelCamera.Camera, SelectedEntities, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -522,45 +437,11 @@ namespace SpiceEngine.Game
             base.OnMouseLeave(e);
         }
 
-        private void CalculateDirection()
-        {
-            var horizontal = Math.Cos(_currentAngles.Y);
-            var vertical = Math.Sin(_currentAngles.Y);
-
-            _camera._viewMatrix.LookAt = _camera.Position + new Vector3()
-            {
-                X = (float)(horizontal * Math.Sin(_currentAngles.X)),
-                Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
-                Z = -(float)vertical
-            };
-        }
-
-        private void CalculateUp()
-        {
-            var yAngle = _currentAngles.Y - (float)Math.PI / 2.0f;
-
-            var horizontal = Math.Cos(yAngle);
-            var vertical = Math.Sin(yAngle);
-
-            _camera._viewMatrix.Up = new Vector3()
-            {
-                X = (float)(horizontal * Math.Sin(_currentAngles.X)),
-                Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
-                Z = -(float)vertical
-            };
-        }
-
         public void Zoom(int wheelDelta)
         {
-            if (_camera is OrthographicCamera camera)
+            if (_panelCamera.Zoom(wheelDelta))
             {
-                var width = camera.Width - wheelDelta * 0.01f;
-
-                if (width > 0.0f)
-                {
-                    camera.Width = width;
-                    RenderFrame();
-                }
+                RenderFrame();
             }
         }
 
@@ -653,14 +534,7 @@ namespace SpiceEngine.Game
 
             if (_inputManager.IsDown(new Input(MouseButton.Left)) && _inputManager.IsDown(new Input(MouseButton.Right)))
             {
-                // Both mouse buttons allow "strafing"
-                var right = Vector3.Cross(_camera._viewMatrix.Up, _camera._viewMatrix.LookAt - _camera.Position).Normalized();
-
-                var verticalTranslation = _camera._viewMatrix.Up * _inputManager.MouseDelta.Y * 0.02f;
-                var horizontalTranslation = right * _inputManager.MouseDelta.X * 0.02f;
-
-                _camera.Position -= verticalTranslation + horizontalTranslation;
-                _camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
+                _panelCamera.Strafe(_inputManager.MouseDelta);
 
                 //IsCursorVisible = false;
                 SelectionType = SelectionTypes.None;
@@ -692,47 +566,18 @@ namespace SpiceEngine.Game
                     Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities))));
                 }
             }
-            else if (ViewType == ViewTypes.Perspective)
+            else if (_panelCamera.ViewType == _panelCamera.ViewTypes.Perspective)
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
-                    // Left mouse button allows "moving"
-                    var translation = (_camera._viewMatrix.LookAt - _camera.Position) * _inputManager.MouseDelta.Y * 0.02f;
-                    //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _inputManager.MouseDelta.Y * 0.02f;
-                    _camera.Position -= translation;
-
-                    var currentAngles = _currentAngles;
-                    var mouseDelta = _inputManager.MouseDelta * 0.001f;
-
-                    if (mouseDelta != Vector2.Zero)
-                    {
-                        currentAngles.X += mouseDelta.X;
-                        _currentAngles = currentAngles;
-
-                        CalculateDirection();
-                    }
-
-                    CalculateUp();
+                    _panelCamera.Travel(_inputManager.MouseDelta);
 
                     //IsCursorVisible = false;
                     _invalidated = true;
                 }
                 else if (_inputManager.IsDown(new Input(MouseButton.Right)))
                 {
-                    // Right mouse button allows "turning"
-                    var currentAngles = _currentAngles;
-                    var mouseDelta = _inputManager.MouseDelta * 0.001f;
-
-                    if (mouseDelta != Vector2.Zero)
-                    {
-                        currentAngles.X += mouseDelta.X;
-                        currentAngles.Y += mouseDelta.Y;
-                        currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-                        _currentAngles = currentAngles;
-
-                        CalculateDirection();
-                        CalculateUp();
-                    }
+                    _panelCamera.Turn(_inputManager.MouseDelta);
 
                     IsCameraMoving = true;
                     //IsCursorVisible = false;

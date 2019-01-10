@@ -25,8 +25,6 @@ namespace SauceEditor.Controls.GamePanels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
-        public ViewTypes ViewType => Panel.ViewType;
-
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
 
