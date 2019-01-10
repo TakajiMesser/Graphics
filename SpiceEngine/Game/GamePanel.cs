@@ -99,7 +99,6 @@ namespace SpiceEngine.Game
         public Vector2? MouseCoordinates { get; private set; }
         public bool IsMouseInWindow { get; private set; }
 
-        public bool IsCameraMoving { get; private set; }
         public bool IsLoaded { get; private set; }
         public bool IsDragging { get; private set; }
         public bool RenderGrid
@@ -579,7 +578,13 @@ namespace SpiceEngine.Game
                 {
                     _panelCamera.Turn(_inputManager.MouseDelta);
 
-                    IsCameraMoving = true;
+                    //IsCursorVisible = false;
+                    _invalidated = true;
+                }
+                else if (_inputManager.IsDown(new Input(MouseButton.Middle)))
+                {
+                    _panelCamera.Pivot(_inputManager.MouseDelta, SelectedEntities.Select(e => e.Position));
+
                     //IsCursorVisible = false;
                     _invalidated = true;
                 }

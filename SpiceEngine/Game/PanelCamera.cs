@@ -209,6 +209,48 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void Pivot(Vector2 mouseDelta, IEnumerable<Vector3> positions)
+        {
+            if (ViewType == ViewTypes.Perspective)
+            {
+                mouseDelta *= 0.001f;
+
+                if (mouseDelta != Vector2.Zero)
+                {
+                    currentAngles.X += mouseDelta.X;
+                    currentAngles.Y += mouseDelta.Y;
+                    _currentAngles = currentAngles;
+                    //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+
+                    var position = new Vector3()
+                    {
+                        X = positions.Average(p => p.X),
+                        Y = positions.Average(p => p.Y),
+                        Z = positions.Average(p => p.Z) 
+                    };
+
+                    CalculateTranslation(position);
+                    CalculateUp();
+                }
+            }
+        }
+
+        private void CalculateTranslation(Vector3 position)
+        {
+            var horizontal = _distance * Math.Cos(_currentAngles.Y);
+            var vertical = _distance * Math.Sin(_currentAngles.Y);
+
+            var translation = new Vector3()
+            {
+                X = -(float)(horizontal * Math.Sin(_currentAngles.X)),
+                Y = -(float)(horizontal * Math.Cos(_currentAngles.X)),
+                Z = (float)vertical
+            };
+
+            Camera.Position = position - translation;
+            Camera._viewMatrix.LookAt = position;
+        }
+
         private void CalculateDirection()
         {
             var horizontal = Math.Cos(_currentAngles.Y);
