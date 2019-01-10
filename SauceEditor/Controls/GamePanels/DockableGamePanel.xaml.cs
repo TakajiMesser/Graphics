@@ -212,6 +212,26 @@ namespace SauceEditor.Controls.GamePanels
             base.OnClosing(e);
         }
 
+        private void ShowHideBrushes_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void ShowHideActors_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void ShowHideLights_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
+        private void ShowHideVolumes_CheckedChanged(object sender, RoutedEventArgs e)
+        {
+            
+        }
+
         private void WireframeButton_Click(object sender, RoutedEventArgs e)
         {
             WireframeButton.IsEnabled = false;
@@ -252,6 +272,5 @@ namespace SauceEditor.Controls.GamePanels
 
         private void GridButton_Checked(object sender, RoutedEventArgs e) => Panel.RenderGrid = true;
         private void GridButton_Unchecked(object sender, RoutedEventArgs e) => Panel.RenderGrid = false;
-
     }
 }
