@@ -16,12 +16,18 @@ namespace SpiceEngine.Entities
 {
     public class EntityManager : IEntityProvider
     {
+        private LayerManager _layerManager = new LayerManager();
+
         public List<IEntity> Entities { get; } = new List<IEntity>();
 
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
         public List<Volume> Volumes { get; } = new List<Volume>();
         public List<Light> Lights { get; } = new List<Light>();
+
+        public IEnumerable<int> EntityRenderIDs => _layerManager.EntityRenderIDs;
+        public IEnumerable<int> EntityScriptIDs => _layerManager.EntityScriptIDs;
+        public IEnumerable<int> EntityPhysicsIDs => _layerManager.EntityPhysicsIDs;
 
         public EntityManager() { }
 
