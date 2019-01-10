@@ -18,10 +18,10 @@ namespace SpiceEngine.Rendering.Batches
     {
         private IEntityProvider _entityProvider;
 
-        private List<MeshBatch> _brushBatches = new List<MeshBatch>();
-        private List<MeshBatch> _volumeBatches = new List<MeshBatch>();
-        private List<ModelBatch> _actorBatches = new List<ModelBatch>();
-        private List<ModelBatch> _jointBatches = new List<ModelBatch>();
+        private HashSet<int> _brushIDs = new HashSet<int>();
+        private HashSet<int> _volumeIDs = new HashSet<int>();
+        private HashSet<int> _actorIDs = new HashSet<int>();
+        private HashSet<int> _jointIDs = new HashSet<int>();
 
         private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
 
@@ -47,12 +47,12 @@ namespace SpiceEngine.Rendering.Batches
             switch (batch)
             {
                 case MeshBatch meshBatch:
-                    _brushBatches.Remove(meshBatch);
-                    _volumeBatches.Remove(meshBatch);
+                    _brushIDs.Remove(entityID);
+                    _volumeIDs.Remove(entityID);
                     break;
                 case ModelBatch modelBatch:
-                    _actorBatches.Remove(modelBatch);
-                    _jointBatches.Remove(modelBatch);
+                    _actorIDs.Remove(entityID);
+                    _jointIDs.Remove(entityID);
                     break;
             }
         }
@@ -61,7 +61,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new MeshBatch(entityID, mesh);
 
-            _brushBatches.Add(batch);
+            _brushIDs.Add(entityID);
             _batchesByEntityID.Add(entityID, batch);
         }
 
@@ -69,7 +69,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new MeshBatch(entityID, mesh);
 
-            _volumeBatches.Add(batch);
+            _volumeIDs.Add(entityID);
             _batchesByEntityID.Add(entityID, batch);
         }
 
@@ -77,7 +77,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new ModelBatch(entityID, meshes);
 
-            _actorBatches.Add(batch);
+            _actorIDs.Add(entityID);
             _batchesByEntityID.Add(entityID, batch);
         }
 
@@ -85,7 +85,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new ModelBatch(entityID, meshes);
 
-            _jointBatches.Add(batch);
+            _jointIDs.Add(entityID);
             _batchesByEntityID.Add(entityID, batch);
         }
 
@@ -93,22 +93,7 @@ namespace SpiceEngine.Rendering.Batches
 
         public void Load()
         {
-            foreach (var batch in _brushBatches)
-            {
-                batch.Load();
-            }
-
-            foreach (var batch in _volumeBatches)
-            {
-                batch.Load();
-            }
-
-            foreach (var batch in _actorBatches)
-            {
-                batch.Load();
-            }
-
-            foreach (var batch in _jointBatches)
+            foreach (var batch in _batchesByEntityID.Values)
             {
                 batch.Load();
             }
@@ -116,69 +101,93 @@ namespace SpiceEngine.Rendering.Batches
 
         public void DrawBrushes(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
-            foreach (var batch in _brushBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_brushIDs.Contains(id))
+                {
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawBrushes(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
-            foreach (var batch in _brushBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batchAction(batch.EntityID);
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_brushIDs.Contains(id))
+                {
+                    batchAction(id);
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawVolumes(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
-            foreach (var batch in _volumeBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_volumeIDs.Contains(id))
+                {
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawVolumes(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
-            foreach (var batch in _volumeBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batchAction(batch.EntityID);
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_volumeIDs.Contains(id))
+                {
+                    batchAction(id);
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawActors(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
-            foreach (var batch in _actorBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_actorIDs.Contains(id))
+                {
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawActors(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
-            foreach (var batch in _actorBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batchAction(batch.EntityID);
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_actorIDs.Contains(id))
+                {
+                    batchAction(id);
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawJoints(ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
-            foreach (var batch in _jointBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_jointIDs.Contains(id))
+                {
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
 
         public void DrawJoints(ShaderProgram shaderProgram, Action<int> batchAction, TextureManager textureManager = null)
         {
-            foreach (var batch in _jointBatches)
+            foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                batchAction(batch.EntityID);
-                batch.Draw(_entityProvider, shaderProgram, textureManager);
+                if (_jointIDs.Contains(id))
+                {
+                    batchAction(id);
+                    _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+                }
             }
         }
     }
