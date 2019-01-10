@@ -25,6 +25,13 @@ namespace SauceEditor.Structure
         public Tools DefaultTool { get; set; }
         public ViewTypes DefaultView { get; set; }
 
+        public int WireframeThickness { get; set; }
+        public Color4 WireframeColor { get; set; }
+
+        public int WireframeSelectedThickness { get; set; }
+        public Color4 WireframeSelectedColor { get; set; }
+        public Color4 WireframeSelectedLightColor { get; set; }
+
         public void Save(string path)
         {
             using (var writer = XmlWriter.Create(path))
