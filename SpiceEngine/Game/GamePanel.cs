@@ -71,7 +71,15 @@ namespace SpiceEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        var meshShape = MeshShape.RectangularPrism(10.0f, 10.0f, 10.0f);
+
+                        var mapVolume = new MapVolume()
+                        {
+                            Position = Vector3.Zero,
+                            Vertices = meshShape.Vertices,
+                            TriangleIndices = meshShape.TriangleIndices
+                        };
+
                         //_toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                         _toolVolume = mapVolume.ToEntity();
                         int entityID = _entityManager.AddEntity(_toolVolume);
@@ -81,7 +89,7 @@ namespace SpiceEngine.Game
                             if (_renderManager != null)
                             {
                                 //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
-                                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Vector4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                                var mesh = new Mesh3D<ColorVertex3D>(meshShape.Vertices.Select(v => new ColorVertex3D(v, new Vector4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), meshShape.TriangleIndices);
                                 _renderManager.BatchManager.AddVolume(entityID, mesh);
                                 _renderManager.BatchManager.Load(entityID);
                             }
@@ -285,9 +293,8 @@ namespace SpiceEngine.Game
 
                     if (_selectedTool == Tools.Volume && _toolVolume != null)
                     {
-                        // TODO - Correct this, shouldn't be creating another MapVolume here
-                        var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                        var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Vector4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                        var meshShape = MeshShape.RectangularPrism(10.0f, 10.0f, 10.0f);
+                        var mesh = new Mesh3D<ColorVertex3D>(meshShape.Vertices.Select(v => new ColorVertex3D(v, new Vector4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), meshShape.TriangleIndices);
                         _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
                         _renderManager.BatchManager.Load(_toolVolume.ID);
                     }

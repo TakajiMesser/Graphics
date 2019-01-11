@@ -68,37 +68,34 @@ namespace SpiceEngine.Maps
 
         public static MapBrush Rectangle(Vector3 center, float width, float height)
         {
+            var meshShape = MeshShape.Rectangle(width, height);
+
+            var uvs = new List<Vector2>()
+            {
+                new Vector2(0, 0),
+                new Vector2(0, 1),
+                new Vector2(1, 0),
+                new Vector2(1, 1)
+            };
+
+            var vertices = new List<Vertex3D>();
+            for (var i = 0; i < floorMeshShape.Vertices.Count; i++)
+            {
+                vertices.Add(new Vertex3D(floorMeshShape.Vertices[i], Vector3.UnitZ, Vector3.UnitY, uvs[i]));
+            }
+
             return new MapBrush()
             {
-                Vertices = new List<Vertex3D>
-                {
-                    new Vertex3D(new Vector3(-width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 0)),
-                    new Vertex3D(new Vector3(-width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(0, 1)),
-                    new Vertex3D(new Vector3(width / 2.0f, -height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 0)),
-                    new Vertex3D(new Vector3(width / 2.0f, height / 2.0f, 0.0f), Vector3.UnitZ, Vector3.UnitY, new Vector2(1, 1))
-                },
+                Vertices = vertices,
                 Position = center,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
-                TriangleIndices = new List<int>()
-                {
-                    0, 2, 1, 1, 2, 3
-                }
+                TriangleIndices = meshShape.TriangleIndices
             };
         }
 
         public static MapBrush RectangularPrism(Vector3 center, float width, float height, float depth)
         {
-            var vertices = new List<Vector3>
-            {
-                new Vector3(-width / 2.0f, -height / 2.0f, -depth / 2.0f),
-                new Vector3(-width / 2.0f, height / 2.0f, -depth / 2.0f),
-                new Vector3(-width / 2.0f, -height / 2.0f, depth / 2.0f),
-                new Vector3(-width / 2.0f, height / 2.0f, depth / 2.0f),
-                new Vector3(width / 2.0f, -height / 2.0f, -depth / 2.0f),
-                new Vector3(width / 2.0f, height / 2.0f, -depth / 2.0f),
-                new Vector3(width / 2.0f, -height / 2.0f, depth / 2.0f),
-                new Vector3(width / 2.0f, height / 2.0f, depth / 2.0f)
-            };
+            var meshShape = MeshShape.RectangularPrism(width, height, depth);
 
             var uvs = new List<Vector2>
             {
@@ -118,15 +115,6 @@ namespace SpiceEngine.Maps
                 new Vector3(0, 0, -1)
             };
 
-            var vertexIndices = new List<int>
-            {
-                8, 7, 5, 8, 5, 6,
-                2, 4, 8, 2, 8, 6,
-                4, 3, 7, 4, 7, 8,
-                2, 1, 3, 2, 3, 4, 
-                3, 1, 5, 3, 5, 7,
-                6, 5, 1, 6, 1, 2
-            };
             var uvIndices = new List<int>
             {
                 2, 1, 3, 2, 3, 4,
@@ -136,6 +124,7 @@ namespace SpiceEngine.Maps
                 2, 1, 3, 2, 3, 4,
                 2, 1, 3, 2, 3, 4
             };
+
             var normalIndices = new List<int>
             {
                 1, 1, 1, 1, 1, 1,
@@ -146,12 +135,12 @@ namespace SpiceEngine.Maps
                 6, 6, 6, 6, 6, 6
             };
 
-            var verticies = new List<Vertex3D>();
+            var vertices = new List<Vertex3D>();
             var triangleIndices = new List<int>();
 
             Vector3 tangent = Vector3.Zero;
 
-            for (var i = 0; i < vertexIndices.Count; i++)
+            for (var i = 0; i < meshShape.TriangleIndices.Count; i++)
             {
                 // Grab vertexIndices, three at a time, to form each triangle
                 if (i % 3 == 0)
@@ -163,8 +152,8 @@ namespace SpiceEngine.Maps
                     // deltaUv2 = T2 - T0;
                     // r = 1 / (deltaUv1.x * deltaUv2.y - deltaUv1.y - deltaUv2.x);
                     // tangent = (deltaPos1 * deltaUv2.y - deltaPos2 * deltaUv1.y) * r;
-                    var deltaPos1 = vertices[vertexIndices[i + 1] - 1] - vertices[vertexIndices[i] - 1];
-                    var deltaPos2 = vertices[vertexIndices[i + 2] - 1] - vertices[vertexIndices[i] - 1];
+                    var deltaPos1 = meshShape.Vertices[meshShape.TriangleIndices[i + 1] - 1] - meshShape.Vertices[meshShape.TriangleIndices[i] - 1];
+                    var deltaPos2 = meshShape.Vertices[meshShape.TriangleIndices[i + 2] - 1] - meshShape.Vertices[meshShape.TriangleIndices[i] - 1];
                     var deltaUV1 = uvs[uvIndices[i + 1] - 1] - uvs[uvIndices[i] - 1];
                     var deltaUV2 = uvs[uvIndices[i + 1] - 1] - uvs[uvIndices[i] - 1];
 
@@ -174,7 +163,7 @@ namespace SpiceEngine.Maps
 
                 var uv = uvIndices[i] > 0 ? uvs[uvIndices[i] - 1] : Vector2.Zero;
 
-                var meshVertex = new Vertex3D(vertices[vertexIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv);
+                var meshVertex = new Vertex3D(meshShape.Vertices[meshShape.TriangleIndices[i] - 1], normals[normalIndices[i] - 1], tangent.Normalized(), uv);
                 var existingIndex = verticies.FindIndex(v => v.Position == meshVertex.Position
                     && v.Normal == meshVertex.Normal
                     && v.TextureCoords == meshVertex.TextureCoords);
@@ -186,14 +175,14 @@ namespace SpiceEngine.Maps
                 else
                 {
                     triangleIndices.Add(verticies.Count);
-                    verticies.Add(meshVertex);
+                    vertices.Add(meshVertex);
                 }
             }
 
             return new MapBrush()
             {
                 Position = center,
-                Vertices = verticies,
+                Vertices = vertices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices
             };
