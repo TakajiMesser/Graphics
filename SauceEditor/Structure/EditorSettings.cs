@@ -5,6 +5,7 @@ using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml;
+using OpenTK.Graphics;
 using SpiceEngine.Game;
 
 namespace SauceEditor.Structure
@@ -30,6 +31,8 @@ namespace SauceEditor.Structure
 
         public int WireframeSelectedThickness { get; set; }
         public Color4 WireframeSelectedColor { get; set; }
+
+        public int WireframeSelectedLightThickness { get; set; }
         public Color4 WireframeSelectedLightColor { get; set; }
 
         public void Save(string path)

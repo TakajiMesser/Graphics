@@ -15,6 +15,7 @@ using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Processing;
 using Camera = SpiceEngine.Entities.Cameras.Camera;
 using SpiceEngine.Rendering;
+using SauceEditor.Controls.UpDowns;
 
 namespace SauceEditor.Controls.GamePanels
 {
@@ -27,8 +28,20 @@ namespace SauceEditor.Controls.GamePanels
 
         public ViewTypes ViewType => Panel.ViewType;
 
+        public readonly static DependencyProperty WireframeThicknessProperty = DependencyProperty.Register("WireframeThickness", typeof(float), typeof(NumericUpDown));
+
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+
+        public float WireframeThickness
+        {
+            get => (float)GetValue(WireframeThicknessProperty);
+            set
+            {
+                SetValue(WireframeThicknessProperty, value);
+                Panel.SetWireframeThickness(value);
+            }
+        }
 
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
@@ -48,7 +61,7 @@ namespace SauceEditor.Controls.GamePanels
             Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
             Panel.MouseDown += Panel_MouseDown;
             Panel.MouseUp += Panel_MouseUp;
-            Panel.PanelLoaded += (s, e) =>
+            Panel.PanelLoaded += (s, args) =>
             {
                 GridButton.IsChecked = true;
             };
@@ -56,6 +69,11 @@ namespace SauceEditor.Controls.GamePanels
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
             Panel.RenderMode = RenderModes.Wireframe;
+
+            WireframeThicknessUpDown.ValueHoldChanged += (s, args) =>
+            {
+                Panel.SetWireframeThickness(args.NewValue);
+            };
         }
 
         private void BeginDrag()
@@ -253,5 +271,9 @@ namespace SauceEditor.Controls.GamePanels
         private void GridButton_Checked(object sender, RoutedEventArgs e) => Panel.RenderGrid = true;
         private void GridButton_Unchecked(object sender, RoutedEventArgs e) => Panel.RenderGrid = false;
 
+        private void ComboBox_TouchDown(object sender, TouchEventArgs e)
+        {
+            e.Handled = true;
+        }
     }
 }

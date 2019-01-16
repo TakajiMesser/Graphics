@@ -27,11 +27,12 @@ namespace SpiceEngine.Rendering.Processing
 
         public float SelectedLineThickness { get; set; } = 0.02f;
         public Vector4 SelectedLineColor { get; set; } = new Vector4(0.7f, 0.7f, 0.1f, 1.0f);
+
+        public float SelectedLightLineThickness { get; set; } = 0.02f;
         public Vector4 SelectedLightLineColor { get; set; } = new Vector4(0.8f, 0.8f, 0.1f, 1.0f);
-        
-        public float SelectedLineThickness { get; set; } = 0.02f;
 
         public float GridLength { get; set; } = 10000.0f;
+        public float GridThickness { get; set; } = 0.02f;
         public Quaternion GridRotation { get; set; } = Quaternion.Identity;
 
         public Texture FinalTexture { get; protected set; }
@@ -176,7 +177,7 @@ namespace SpiceEngine.Rendering.Processing
             var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
             _gridProgram.SetUniform("modelMatrix", model);
 
-            _gridProgram.SetUniform("thickness", 0.02f);
+            _gridProgram.SetUniform("thickness", GridThickness);
             _gridProgram.SetUniform("length", GridLength);
 
             _gridSquare.Draw();
@@ -200,7 +201,7 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.Use();
 
             camera.SetUniforms(_wireframeProgram);
-            _wireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
+            _wireframeProgram.SetUniform("lineThickness", SelectedLightLineThickness);
             _wireframeProgram.SetUniform("lineColor", SelectedLightLineColor);
 
             switch (light)

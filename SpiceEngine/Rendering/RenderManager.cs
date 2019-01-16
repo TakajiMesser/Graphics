@@ -255,6 +255,7 @@ namespace SpiceEngine.Rendering
         }
 
         public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
+        public void SetWireframeThickness(float thickness) => _wireframeRenderer.LineThickness = thickness;
 
         public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
         {

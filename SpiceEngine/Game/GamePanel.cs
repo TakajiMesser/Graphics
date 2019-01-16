@@ -366,7 +366,7 @@ namespace SpiceEngine.Game
                     _currentAngles = new Vector3(90.0f, 0.0f, 0.0f);
                     _camera._viewMatrix.Up = Vector3.UnitZ;
                     _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitX;
-                    _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
+                    _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
                     break;
                 case ViewTypes.Y:
                     _camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
@@ -376,7 +376,7 @@ namespace SpiceEngine.Game
                     _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
                     _camera._viewMatrix.Up = Vector3.UnitZ;
                     _camera._viewMatrix.LookAt = _camera.Position + Vector3.UnitY;
-                    _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
+                    _renderManager.RotateGrid((float)Math.PI / 2.0f, 0.0f, 0.0f);
                     break;
                 case ViewTypes.Z:
                     _camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
@@ -388,6 +388,12 @@ namespace SpiceEngine.Game
                     _camera._viewMatrix.LookAt = _camera.Position - Vector3.UnitZ;
                     break;
             }
+        }
+
+        public void SetWireframeThickness(float thickness)
+        {
+            _renderManager.SetWireframeThickness(thickness);
+            Invalidate();
         }
 
         public void SelectEntity(IEntity entity)
