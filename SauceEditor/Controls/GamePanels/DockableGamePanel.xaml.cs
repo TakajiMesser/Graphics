@@ -270,10 +270,5 @@ namespace SauceEditor.Controls.GamePanels
 
         private void GridButton_Checked(object sender, RoutedEventArgs e) => Panel.RenderGrid = true;
         private void GridButton_Unchecked(object sender, RoutedEventArgs e) => Panel.RenderGrid = false;
-
-        private void ComboBox_TouchDown(object sender, TouchEventArgs e)
-        {
-            e.Handled = true;
-        }
     }
 }
