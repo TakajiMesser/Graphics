@@ -46,7 +46,7 @@ namespace SpiceEngine.Game
         private Resolution _resolution;
         private RenderManager _renderManager;
 
-        private Vector3 _currentAngles = new Vector3();
+        private Vector2 _currentAngles = new Vector2();
 
         public Camera Camera { get; private set; }
         public ViewTypes ViewType { get; set; }
@@ -122,7 +122,7 @@ namespace SpiceEngine.Game
                 case ViewTypes.Perspective:
                     Camera = new PerspectiveCamera("", _resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
                     Camera.DetachFromEntity();
-                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                    _currentAngles = new Vector2(0.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
                     break;
@@ -131,7 +131,7 @@ namespace SpiceEngine.Game
                     {
                         Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
                     };
-                    _currentAngles = new Vector3(90.0f, 0.0f, 0.0f);
+                    _currentAngles = new Vector2(90.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitX;
                     _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
@@ -141,7 +141,7 @@ namespace SpiceEngine.Game
                     {
                         Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
                     };
-                    _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
+                    _currentAngles = new Vector2(0.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
                     _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
@@ -151,30 +151,17 @@ namespace SpiceEngine.Game
                     {
                         Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
                     };
-                    _currentAngles = new Vector3(0.0f, 90.0f, 0.0f);
+                    _currentAngles = new Vector2(0.0f, 90.0f);
                     Camera._viewMatrix.Up = Vector3.UnitY;
                     Camera._viewMatrix.LookAt = Camera.Position - Vector3.UnitZ;
                     break;
             }
         }
 
-        public void Strafe(Vector2 mouseDelta)
-        {
-            // Both mouse buttons allow "strafing"
-            var right = Vector3.Cross(Camera._viewMatrix.Up, Camera._viewMatrix.LookAt - Camera.Position).Normalized();
-
-            var verticalTranslation = Camera._viewMatrix.Up * mouseDelta.Y * 0.02f;
-            var horizontalTranslation = right * mouseDelta.X * 0.02f;
-
-            Camera.Position -= verticalTranslation + horizontalTranslation;
-            Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
-        }
-
         public void Travel(Vector2 mouseDelta)
         {
             // Left mouse button allows "moving"
             var translation = (Camera._viewMatrix.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
-            //var translation = new Vector3(_gameState._camera._viewMatrix.LookAt.X - _gameState._camera.Position.X, _gameState._camera._viewMatrix.LookAt.Y - _gameState._camera.Position.Y, 0.0f) * _inputManager.MouseDelta.Y * 0.02f;
             Camera.Position -= translation;
 
             var currentAngles = _currentAngles;
@@ -185,7 +172,7 @@ namespace SpiceEngine.Game
                 currentAngles.X += mouseDelta.X;
                 _currentAngles = currentAngles;
 
-                CalculateDirection();
+                CalculateLookAt();
             }
 
             CalculateUp();
@@ -204,12 +191,24 @@ namespace SpiceEngine.Game
                 currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
                 _currentAngles = currentAngles;
 
-                CalculateDirection();
+                CalculateLookAt();
                 CalculateUp();
             }
         }
 
-        public void Pivot(Vector2 mouseDelta, IEnumerable<Vector3> positions)
+        public void Strafe(Vector2 mouseDelta)
+        {
+            // Both mouse buttons allow "strafing"
+            var right = Vector3.Cross(Camera._viewMatrix.Up, Camera._viewMatrix.LookAt - Camera.Position).Normalized();
+
+            var verticalTranslation = Camera._viewMatrix.Up * mouseDelta.Y * 0.02f;
+            var horizontalTranslation = right * mouseDelta.X * 0.02f;
+
+            Camera.Position -= verticalTranslation + horizontalTranslation;
+            Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
+        }
+
+        public void Pivot(Vector2 mouseDelta, Vector3 position)
         {
             if (ViewType == ViewTypes.Perspective)
             {
@@ -217,59 +216,7 @@ namespace SpiceEngine.Game
 
                 if (mouseDelta != Vector2.Zero)
                 {
-                    var position = new Vector3()
-                    {
-                        X = positions.Average(p => p.X),
-                        Y = positions.Average(p => p.Y),
-                        Z = positions.Average(p => p.Z)
-                    };
-
-                    // Whereever the camera is, begin looking at the passed position
-                    var cameraToPosition = (Camera.Position - position).Normalized();// position - Camera.Position;
-                    /*var xAngle1 = (float)Math.Acos(cameraToPosition.X);
-                    var xAngle2 = (float)Math.Asin(cameraToPosition.Y);
-
-                    float xAngle = 0.0f;
-                    if (xAngle1 > (float)Math.PI / 2.0f)
-                    {
-                        // Quadrant 2 or 3
-                    }
-                    else
-                    {
-                        // Quadrant 1 or 4
-                    }
-
-                    if (xAngle2 > 0.0f)
-                    {
-                        // Quadrant 1 or 2
-                    }
-                    else
-                    {
-                        // Quadrant 3 or 4
-                    }
-
-                    xAngle = (float)Math.Asin(cameraToPosition.Y) >= 0.0f
-                        ? xAngle1
-                        : (float)Math.PI + xAngle1;*/
-
-                    var xAngle = (float)Math.Acos(cameraToPosition.X);
-                    if ((float)Math.Asin(cameraToPosition.Y) >= 0.0f)
-                    {
-                        xAngle += (float)Math.PI;
-                    }
-
-                    var yAngle = (float)Math.Acos(cameraToPosition.Y);
-                    if ((float)Math.Asin(cameraToPosition.Z) >= 0.0f)
-                    {
-                        yAngle += (float)Math.PI;
-                    }
-
-                    var currentAngles = new Vector3()
-                    {
-                        X = (5.0f * (float)Math.PI - xAngle) % (2.0f * (float)Math.PI),//-(float)Math.Asin(cameraToPosition.X),
-                        Y = (4.0f * (float)Math.PI - yAngle) % (2.0f * (float)Math.PI),//(float)(Math.PI / 2.0f),//-(float)Math.Acos(cameraToPosition.X),
-                        Z = 0.0f,//(float)(Math.PI / 2.0f)//(float)Math.Asin(cameraToPosition.Y)
-                    };
+                    Attach(position);
 
                     currentAngles.X += mouseDelta.X;
                     currentAngles.Y += mouseDelta.Y;
@@ -285,6 +232,35 @@ namespace SpiceEngine.Game
                     //CalculateUp();
                 }
             }
+        }
+
+        private void Attach(Vector3 position)
+        {
+            // Whereever the camera is, begin looking at the passed position
+            var cameraToPosition = (Camera.Position - position).Normalized();// position - Camera.Position;
+
+            var xAngle = (float)Math.Acos(cameraToPosition.X);
+            if ((float)Math.Asin(cameraToPosition.Y) >= 0.0f)
+            {
+                xAngle += (float)Math.PI;
+            }
+
+            var yAngle = (float)Math.Acos(cameraToPosition.Y);
+            if ((float)Math.Asin(cameraToPosition.Z) >= 0.0f)
+            {
+                yAngle += (float)Math.PI;
+            }
+
+            var currentAngles = new Vector2()
+            {
+                X = (5.0f * (float)Math.PI - xAngle) % (2.0f * (float)Math.PI),//-(float)Math.Asin(cameraToPosition.X),
+                Y = (4.0f * (float)Math.PI - yAngle) % (2.0f * (float)Math.PI)//(float)(Math.PI / 2.0f),//-(float)Math.Acos(cameraToPosition.X)
+            };
+
+            currentAngles.X += mouseDelta.X;
+            currentAngles.Y += mouseDelta.Y;
+            currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+            _currentAngles = currentAngles;
         }
 
         private void CalculateTranslation(Vector3 position)
@@ -305,7 +281,7 @@ namespace SpiceEngine.Game
             Camera._viewMatrix.LookAt = position;
         }
 
-        private void CalculateDirection()
+        private void CalculateLookAt()
         {
             var horizontal = Math.Cos(_currentAngles.Y);
             var vertical = Math.Sin(_currentAngles.Y);

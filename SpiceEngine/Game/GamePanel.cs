@@ -587,7 +587,14 @@ namespace SpiceEngine.Game
                 {
                     if (SelectedEntities.Count > 0)
                     {
-                        _panelCamera.Pivot(_inputManager.MouseDelta, SelectedEntities.Select(e => e.Position));
+                        var pivotPosition = new Vector3()
+                        {
+                            X = SelectedEntities.Average(e => e.Position.X),
+                            Y = SelectedEntities.Average(e => e.Position.Y),
+                            Z = SelectedEntities.Average(e => e.Position.Z)
+                        };
+
+                        _panelCamera.Pivot(_inputManager.MouseDelta, pivotPosition);
 
                         //IsCursorVisible = false;
                         _invalidated = true;
