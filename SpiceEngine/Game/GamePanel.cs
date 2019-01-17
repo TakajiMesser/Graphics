@@ -231,8 +231,10 @@ namespace SpiceEngine.Game
                 {
                     //LoadBrushes(map.Brushes, entityMapping.BrushIDs);
                     //LoadActors(map.Actors, entityMapping.ActorIDs);
-                    _panelCamera = new PanelCamera(Resolution, _renderManager);
-                    _panelCamera.ViewType = _viewType;
+                    _panelCamera = new PanelCamera(Resolution, _renderManager)
+                    {
+                        ViewType = _viewType
+                    };
                     _panelCamera.Load();
 
                     _renderManager = new RenderManager(Resolution, WindowSize);
@@ -565,7 +567,7 @@ namespace SpiceEngine.Game
                     Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities))));
                 }
             }
-            else if (_panelCamera.ViewType == _panelCamera.ViewTypes.Perspective)
+            else if (_panelCamera.ViewType == ViewTypes.Perspective)
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
@@ -581,12 +583,15 @@ namespace SpiceEngine.Game
                     //IsCursorVisible = false;
                     _invalidated = true;
                 }
-                else if (_inputManager.IsDown(new Input(MouseButton.Middle)))
+                else if (_inputManager.IsDown(new Input(MouseButton.Button1)))
                 {
-                    _panelCamera.Pivot(_inputManager.MouseDelta, SelectedEntities.Select(e => e.Position));
+                    if (SelectedEntities.Count > 0)
+                    {
+                        _panelCamera.Pivot(_inputManager.MouseDelta, SelectedEntities.Select(e => e.Position));
 
-                    //IsCursorVisible = false;
-                    _invalidated = true;
+                        //IsCursorVisible = false;
+                        _invalidated = true;
+                    }
                 }
             }
         }

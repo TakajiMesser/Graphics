@@ -99,7 +99,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public boolean Zoom(int wheelDelta)
+        public bool Zoom(int wheelDelta)
         {
             if (Camera is OrthographicCamera camera)
             {
@@ -115,19 +115,19 @@ namespace SpiceEngine.Game
             return false;
         }
 
-        private void Load()
+        public void Load()
         {
             switch (ViewType)
             {
                 case ViewTypes.Perspective:
-                    Camera = new PerspectiveCamera("", Resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
+                    Camera = new PerspectiveCamera("", _resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
                     Camera.DetachFromEntity();
                     _currentAngles = new Vector3(0.0f, 0.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
                     break;
                 case ViewTypes.X:
-                    Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
                     };
@@ -137,7 +137,7 @@ namespace SpiceEngine.Game
                     _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
                     break;
                 case ViewTypes.Y:
-                    Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
                     };
@@ -147,7 +147,7 @@ namespace SpiceEngine.Game
                     _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
                     break;
                 case ViewTypes.Z:
-                    Camera = new OrthographicCamera("", Resolution, -1000.0f, 1000.0f, 20.0f)
+                    Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
                     };
@@ -163,8 +163,8 @@ namespace SpiceEngine.Game
             // Both mouse buttons allow "strafing"
             var right = Vector3.Cross(Camera._viewMatrix.Up, Camera._viewMatrix.LookAt - Camera.Position).Normalized();
 
-            var verticalTranslation = Camera._viewMatrix.Up * _inputManager.MouseDelta.Y * 0.02f;
-            var horizontalTranslation = right * _inputManager.MouseDelta.X * 0.02f;
+            var verticalTranslation = Camera._viewMatrix.Up * mouseDelta.Y * 0.02f;
+            var horizontalTranslation = right * mouseDelta.X * 0.02f;
 
             Camera.Position -= verticalTranslation + horizontalTranslation;
             Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
@@ -217,28 +217,82 @@ namespace SpiceEngine.Game
 
                 if (mouseDelta != Vector2.Zero)
                 {
-                    currentAngles.X += mouseDelta.X;
-                    currentAngles.Y += mouseDelta.Y;
-                    _currentAngles = currentAngles;
-                    //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-
                     var position = new Vector3()
                     {
                         X = positions.Average(p => p.X),
                         Y = positions.Average(p => p.Y),
-                        Z = positions.Average(p => p.Z) 
+                        Z = positions.Average(p => p.Z)
                     };
 
+                    // Whereever the camera is, begin looking at the passed position
+                    var cameraToPosition = (Camera.Position - position).Normalized();// position - Camera.Position;
+                    /*var xAngle1 = (float)Math.Acos(cameraToPosition.X);
+                    var xAngle2 = (float)Math.Asin(cameraToPosition.Y);
+
+                    float xAngle = 0.0f;
+                    if (xAngle1 > (float)Math.PI / 2.0f)
+                    {
+                        // Quadrant 2 or 3
+                    }
+                    else
+                    {
+                        // Quadrant 1 or 4
+                    }
+
+                    if (xAngle2 > 0.0f)
+                    {
+                        // Quadrant 1 or 2
+                    }
+                    else
+                    {
+                        // Quadrant 3 or 4
+                    }
+
+                    xAngle = (float)Math.Asin(cameraToPosition.Y) >= 0.0f
+                        ? xAngle1
+                        : (float)Math.PI + xAngle1;*/
+
+                    var xAngle = (float)Math.Acos(cameraToPosition.X);
+                    if ((float)Math.Asin(cameraToPosition.Y) >= 0.0f)
+                    {
+                        xAngle += (float)Math.PI;
+                    }
+
+                    var yAngle = (float)Math.Acos(cameraToPosition.Y);
+                    if ((float)Math.Asin(cameraToPosition.Z) >= 0.0f)
+                    {
+                        yAngle += (float)Math.PI;
+                    }
+
+                    var currentAngles = new Vector3()
+                    {
+                        X = (5.0f * (float)Math.PI - xAngle) % (2.0f * (float)Math.PI),//-(float)Math.Asin(cameraToPosition.X),
+                        Y = (4.0f * (float)Math.PI - yAngle) % (2.0f * (float)Math.PI),//(float)(Math.PI / 2.0f),//-(float)Math.Acos(cameraToPosition.X),
+                        Z = 0.0f,//(float)(Math.PI / 2.0f)//(float)Math.Asin(cameraToPosition.Y)
+                    };
+
+                    currentAngles.X += mouseDelta.X;
+                    currentAngles.Y += mouseDelta.Y;
+                    currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                    _currentAngles = currentAngles;
+
+                    //Camera.Position = new Vector3(-10.0f, -10.0f, 10.0f);
+                    //CalculateDirection();
                     CalculateTranslation(position);
                     CalculateUp();
+
+                    //CalculateTranslation(position);
+                    //CalculateUp();
                 }
             }
         }
 
         private void CalculateTranslation(Vector3 position)
         {
-            var horizontal = _distance * Math.Cos(_currentAngles.Y);
-            var vertical = _distance * Math.Sin(_currentAngles.Y);
+            var distance = (Camera.Position - position).Length;
+
+            var horizontal = distance * Math.Cos(_currentAngles.Y);
+            var vertical = distance * Math.Sin(_currentAngles.Y);
 
             var translation = new Vector3()
             {
