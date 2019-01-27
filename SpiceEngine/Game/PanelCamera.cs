@@ -1,32 +1,11 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
+using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Outputs;
+using SpiceEngine.Rendering;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using System.Windows.Forms;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Inputs;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Utilities;
-using Brush = SpiceEngine.Entities.Brushes.Brush;
-using Timer = System.Timers.Timer;
-using SpiceEngine.Rendering;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics;
-using SpiceEngine.Scripting;
-using SpiceEngine.Sounds;
-using SpiceEngine.Rendering.Textures;
-using System.IO;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Game
 {
@@ -34,7 +13,7 @@ namespace SpiceEngine.Game
     {
         X,
         Y,
-        Z,
+        Z, 
         Perspective
     }
 
@@ -46,7 +25,11 @@ namespace SpiceEngine.Game
         private Resolution _resolution;
         private RenderManager _renderManager;
 
-        private Vector2 _currentAngles = new Vector2();
+        // Yaw of zero should point in the direction of the X-Axis
+        private float _yaw;
+
+        // Pitch of zero should point in the direction of the X-Axis
+        private float _pitch;
 
         public Camera Camera { get; private set; }
         public ViewTypes ViewType { get; set; }
@@ -122,38 +105,42 @@ namespace SpiceEngine.Game
                 case ViewTypes.Perspective:
                     Camera = new PerspectiveCamera("", _resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
                     Camera.DetachFromEntity();
-                    _currentAngles = new Vector2(0.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
+                    _yaw = 0.0f;
+                    _pitch = 0.0f;
                     break;
                 case ViewTypes.X:
                     Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
                     };
-                    _currentAngles = new Vector2(90.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitX;
                     _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
+                    _yaw = (float)Math.PI / 2.0f;//90.0f;
+                    _pitch = 0.0f;
                     break;
                 case ViewTypes.Y:
                     Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
                     };
-                    _currentAngles = new Vector2(0.0f, 0.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
                     _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
+                    _yaw = 0.0f;
+                    _pitch = 0.0f;
                     break;
                 case ViewTypes.Z:
                     Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
                     };
-                    _currentAngles = new Vector2(0.0f, 90.0f);
                     Camera._viewMatrix.Up = Vector3.UnitY;
                     Camera._viewMatrix.LookAt = Camera.Position - Vector3.UnitZ;
+                    _yaw = 0.0f;
+                    _pitch = (float)Math.PI / 2.0f;//90.0f;
                     break;
             }
         }
@@ -161,35 +148,25 @@ namespace SpiceEngine.Game
         public void Travel(Vector2 mouseDelta)
         {
             // Left mouse button allows "moving"
-            var translation = (Camera._viewMatrix.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
-            Camera.Position -= translation;
-
-            var currentAngles = _currentAngles;
-            mouseDelta *= 0.001f;
-
             if (mouseDelta != Vector2.Zero)
             {
-                currentAngles.X += mouseDelta.X;
-                _currentAngles = currentAngles;
+                var translation = (Camera._viewMatrix.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
+                Camera.Position -= translation;
 
+                _yaw -= mouseDelta.X * 0.001f;
                 CalculateLookAt();
+                CalculateUp();
             }
-
-            CalculateUp();
         }
 
         public void Turn(Vector2 mouseDelta)
         {
             // Right mouse button allows "turning"
-            var currentAngles = _currentAngles;
-            mouseDelta *= 0.001f;
-
             if (mouseDelta != Vector2.Zero)
             {
-                currentAngles.X += mouseDelta.X;
-                currentAngles.Y += mouseDelta.Y;
-                currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-                _currentAngles = currentAngles;
+                _yaw -= mouseDelta.X * 0.001f;
+                _pitch -= mouseDelta.Y * 0.001f;
+                _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
                 CalculateLookAt();
                 CalculateUp();
@@ -199,82 +176,59 @@ namespace SpiceEngine.Game
         public void Strafe(Vector2 mouseDelta)
         {
             // Both mouse buttons allow "strafing"
-            var right = Vector3.Cross(Camera._viewMatrix.Up, Camera._viewMatrix.LookAt - Camera.Position).Normalized();
+            if (mouseDelta != Vector2.Zero)
+            {
+                var right = Vector3.Cross(Camera._viewMatrix.Up, Camera._viewMatrix.LookAt - Camera.Position).Normalized();
 
-            var verticalTranslation = Camera._viewMatrix.Up * mouseDelta.Y * 0.02f;
-            var horizontalTranslation = right * mouseDelta.X * 0.02f;
+                var verticalTranslation = Camera._viewMatrix.Up * mouseDelta.Y * 0.02f;
+                var horizontalTranslation = right * mouseDelta.X * 0.02f;
 
-            Camera.Position -= verticalTranslation + horizontalTranslation;
-            Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
+                Camera.Position -= verticalTranslation + horizontalTranslation;
+                Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
+            }
         }
 
         public void Pivot(Vector2 mouseDelta, Vector3 position)
         {
-            if (ViewType == ViewTypes.Perspective)
+            if (ViewType == ViewTypes.Perspective && mouseDelta != Vector2.Zero)
             {
-                mouseDelta *= 0.001f;
+                // Determine new yaw and pitch
+                _yaw = (float)Math.Asin((position.Y - Camera.Position.Y) / (position - Camera.Position).Xy.Length);
+                _pitch = (float)Math.Asin((position.Z - Camera.Position.Z) / (position - Camera.Position).Xz.Length);
 
-                if (mouseDelta != Vector2.Zero)
+                if (position.X - Camera.Position.X < 0.0f)
                 {
-                    Attach(position);
-
-                    currentAngles.X += mouseDelta.X;
-                    currentAngles.Y += mouseDelta.Y;
-                    currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-                    _currentAngles = currentAngles;
-
-                    //Camera.Position = new Vector3(-10.0f, -10.0f, 10.0f);
-                    //CalculateDirection();
-                    CalculateTranslation(position);
-                    CalculateUp();
-
-                    //CalculateTranslation(position);
-                    //CalculateUp();
+                    _yaw = (float)Math.PI - _yaw;
                 }
+
+                // Now, we can adjust our position accordingly
+                _yaw += mouseDelta.X * 0.001f;
+                _pitch += mouseDelta.Y * 0.001f;
+                _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+
+                CalculateTranslation(position);
+                CalculateUp();
             }
-        }
-
-        private void Attach(Vector3 position)
-        {
-            // Whereever the camera is, begin looking at the passed position
-            var cameraToPosition = (Camera.Position - position).Normalized();// position - Camera.Position;
-
-            var xAngle = (float)Math.Acos(cameraToPosition.X);
-            if ((float)Math.Asin(cameraToPosition.Y) >= 0.0f)
-            {
-                xAngle += (float)Math.PI;
-            }
-
-            var yAngle = (float)Math.Acos(cameraToPosition.Y);
-            if ((float)Math.Asin(cameraToPosition.Z) >= 0.0f)
-            {
-                yAngle += (float)Math.PI;
-            }
-
-            var currentAngles = new Vector2()
-            {
-                X = (5.0f * (float)Math.PI - xAngle) % (2.0f * (float)Math.PI),//-(float)Math.Asin(cameraToPosition.X),
-                Y = (4.0f * (float)Math.PI - yAngle) % (2.0f * (float)Math.PI)//(float)(Math.PI / 2.0f),//-(float)Math.Acos(cameraToPosition.X)
-            };
-
-            currentAngles.X += mouseDelta.X;
-            currentAngles.Y += mouseDelta.Y;
-            currentAngles.Y = currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-            _currentAngles = currentAngles;
         }
 
         private void CalculateTranslation(Vector3 position)
         {
             var distance = (Camera.Position - position).Length;
 
-            var horizontal = distance * Math.Cos(_currentAngles.Y);
-            var vertical = distance * Math.Sin(_currentAngles.Y);
+            /*var horizontal = distance * Math.Cos(_pitch);
+            var vertical = distance * Math.Sin(_pitch);
 
             var translation = new Vector3()
             {
-                X = -(float)(horizontal * Math.Sin(_currentAngles.X)),
-                Y = -(float)(horizontal * Math.Cos(_currentAngles.X)),
+                X = -(float)(horizontal * Math.Sin(_yaw)),
+                Y = -(float)(horizontal * Math.Cos(_yaw)),
                 Z = (float)vertical
+            };*/
+            var translation = new Vector3()
+            {
+                X = distance * (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
+                Y = distance * (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
+                Z = distance * (float)Math.Sin(_pitch)
             };
 
             Camera.Position = position - translation;
@@ -283,30 +237,48 @@ namespace SpiceEngine.Game
 
         private void CalculateLookAt()
         {
-            var horizontal = Math.Cos(_currentAngles.Y);
-            var vertical = Math.Sin(_currentAngles.Y);
+            /*var horizontal = Math.Cos(_pitch);
+            var vertical = Math.Sin(_pitch);
 
             Camera._viewMatrix.LookAt = Camera.Position + new Vector3()
             {
-                X = (float)(horizontal * Math.Sin(_currentAngles.X)),
-                Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
+                X = (float)(horizontal * Math.Sin(_yaw)),
+                Y = (float)(horizontal * Math.Cos(_yaw)),
                 Z = -(float)vertical
+            };*/
+
+            var translation = new Vector3()
+            {
+                X = (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
+                Z = (float)Math.Sin(_pitch)
             };
+
+            Camera._viewMatrix.LookAt = Camera.Position + translation;
         }
 
         private void CalculateUp()
         {
-            var yAngle = _currentAngles.Y - (float)Math.PI / 2.0f;
+            var yAngle = _pitch - (float)Math.PI / 2.0f;
 
-            var horizontal = Math.Cos(yAngle);
+            /*var horizontal = Math.Cos(yAngle);
             var vertical = Math.Sin(yAngle);
 
             Camera._viewMatrix.Up = new Vector3()
             {
-                X = (float)(horizontal * Math.Sin(_currentAngles.X)),
-                Y = (float)(horizontal * Math.Cos(_currentAngles.X)),
+                X = (float)(horizontal * Math.Sin(_yaw)),
+                Y = (float)(horizontal * Math.Cos(_yaw)),
                 Z = -(float)vertical
+            };*/
+
+            var translation = new Vector3()
+            {
+                X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
+                Z = (float)Math.Sin(yAngle)
             };
+
+
         }
     }
 }
