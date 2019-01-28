@@ -518,6 +518,12 @@ namespace SpiceEngine.Game
             }
         }
 
+        public bool IsHeld()
+        {
+            _inputManager.Update();
+            return _inputManager.IsDown(new Input(MouseButton.Left)) || _inputManager.IsDown(new Input(MouseButton.Right));
+        }
+
         public void EndDrag()
         {
             IsDragging = false;
@@ -594,7 +600,7 @@ namespace SpiceEngine.Game
                             Z = SelectedEntities.Average(e => e.Position.Z)
                         };
 
-                        _panelCamera.Pivot(_inputManager.MouseDelta, pivotPosition);
+                        _panelCamera.Pivot(_inputManager.MouseDelta, _inputManager.MouseWheelDelta, pivotPosition);
 
                         //IsCursorVisible = false;
                         _invalidated = true;

@@ -15,6 +15,7 @@ using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Processing;
 using Camera = SpiceEngine.Entities.Cameras.Camera;
 using SpiceEngine.Rendering;
+using SpiceEngine.Inputs;
 
 namespace SauceEditor.Controls.GamePanels
 {
@@ -134,16 +135,20 @@ namespace SauceEditor.Controls.GamePanels
 
             if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released && Mouse.XButton1 == MouseButtonState.Released)
             {
-                _mouseHoldtimer.Stop();
+                // Double-check with Panel, since its input tracking is more reliable
+                if (!Panel.IsHeld())
+                {
+                    _mouseHoldtimer.Stop();
 
-                if (Panel.IsDragging)
-                {
-                    EndDrag();
-                }
-                else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
-                {
-                    var point = e.Location;
-                    Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
+                    if (Panel.IsDragging)
+                    {
+                        EndDrag();
+                    }
+                    else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
+                    {
+                        var point = e.Location;
+                        Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
+                    }
                 }
             }
         }

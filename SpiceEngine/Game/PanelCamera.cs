@@ -19,6 +19,7 @@ namespace SpiceEngine.Game
 
     public class PanelCamera
     {
+        public const float MIN_DISTANCE = 1.0f;
         public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
         public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;
 
@@ -188,21 +189,31 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void Pivot(Vector2 mouseDelta, Vector3 position)
+        public void Pivot(Vector2 mouseDelta, int mouseWheelDelta, Vector3 position)
         {
-            if (ViewType == ViewTypes.Perspective && mouseDelta != Vector2.Zero)
+            if (ViewType == ViewTypes.Perspective && (mouseDelta != Vector2.Zero || mouseWheelDelta != 0))
             {
                 // Determine new yaw and pitch
                 var direction = (position - Camera.Position).Normalized();
                 _pitch = (float)Math.Asin(direction.Z);
                 _yaw = (float)(Math.Atan2(direction.Y, direction.X) + Math.PI);
 
-                // Now, we can adjust our position accordingly
-                _yaw += mouseDelta.X * 0.001f;
-                _pitch += mouseDelta.Y * 0.001f;
-                _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                if (mouseWheelDelta != 0.0f)
+                {
+                    var translation = direction * mouseWheelDelta * 1.0f;
+                    Camera.Position -= translation;
+                }
 
-                CalculateTranslation(position);
+                if (mouseDelta != Vector2.Zero)
+                {
+                    // Now, we can adjust our position accordingly
+                    _yaw += mouseDelta.X * 0.001f;
+                    _pitch += mouseDelta.Y * 0.001f;
+                    _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+
+                    CalculateTranslation(position);
+                }
+
                 CalculateUp();
             }
         }
