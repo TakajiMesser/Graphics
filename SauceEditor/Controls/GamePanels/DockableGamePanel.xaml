@@ -23,10 +23,16 @@
         <ToolBar DockPanel.Dock="Top">
             <ComboBox>
                 <ComboBoxItem>
-                    <CheckBox Name="ShowHideBrushes" Checked="ShowHideBrushes_CheckedChanged" Unchecked="ShowHideBrushes_CheckedChanged">Brushes</Checkbox>
-                    <CheckBox Name="ShowHideActors" Checked="ShowHideActors_CheckedChanged" Unchecked="ShowHideActors_CheckedChanged">Actors</Checkbox>
-                    <CheckBox Name="ShowHideLights" Checked="ShowHideLights_CheckedChanged" Unchecked="ShowHideLights_CheckedChanged">Lights</Checkbox>
-                    <CheckBox Name="ShowHideVolumes" Checked="ShowHideVolumes_CheckedChanged" Unchecked="ShowHideVolumes_CheckedChanged">Volumes</Checkbox>
+                    <CheckBox Name="ShowHideBrushes" Checked="ShowHideBrushes_CheckedChanged" Unchecked="ShowHideBrushes_CheckedChanged">Brushes</CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox Name="ShowHideActors" Checked="ShowHideActors_CheckedChanged" Unchecked="ShowHideActors_CheckedChanged">Actors</CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox Name="ShowHideLights" Checked="ShowHideLights_CheckedChanged" Unchecked="ShowHideLights_CheckedChanged">Lights</CheckBox>
+                </ComboBoxItem>
+                <ComboBoxItem>
+                    <CheckBox Name="ShowHideVolumes" Checked="ShowHideVolumes_CheckedChanged" Unchecked="ShowHideVolumes_CheckedChanged">Volumes</CheckBox>
                 </ComboBoxItem>
             </ComboBox>
             <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
