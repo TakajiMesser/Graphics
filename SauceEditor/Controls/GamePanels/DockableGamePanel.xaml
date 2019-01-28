@@ -34,6 +34,22 @@
                             <Label Name="WireframeThicknessLabel" Content="Wireframe Thickness"/>
                             <updowns:NumericUpDown x:Name="WireframeThicknessUpDown" Value="{Binding WireframeThickness}" Margin="4, 2, 2, 4"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="SelectedWireframeColorLabel" Content="Selected Wireframe Color"/>
+                            <xctk:ColorPicker x:Name="SelectedWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="SelectedWireframeThicknessLabel" Content="Selected Wireframe Thickness"/>
+                            <updowns:NumericUpDown x:Name="SelectedWireframeThicknessUpDown" Value="{Binding SelectedWireframeThickness}" Margin="4, 2, 2, 4"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="SelectedLightWireframeColorLabel" Content="Selected Light Wireframe Color"/>
+                            <xctk:ColorPicker x:Name="SelectedLightWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="SelectedLightWireframeThicknessLabel" Content="Selected Light Wireframe Thickness"/>
+                            <updowns:NumericUpDown x:Name="SelectedLightWireframeThicknessUpDown" Value="{Binding SelectedLightWireframeThickness}" Margin="4, 2, 2, 4"/>
+                        </StackPanel>
                     </StackPanel>
                 </Popup>
             </Expander>

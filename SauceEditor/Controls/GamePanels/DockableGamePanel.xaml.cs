@@ -16,6 +16,8 @@ using SpiceEngine.Rendering.Processing;
 using Camera = SpiceEngine.Entities.Cameras.Camera;
 using SpiceEngine.Rendering;
 using SauceEditor.Controls.UpDowns;
+using SauceEditor.Utilities;
+using SpiceEngine.Utilities;
 
 namespace SauceEditor.Controls.GamePanels
 {
@@ -70,10 +72,14 @@ namespace SauceEditor.Controls.GamePanels
             WireframeButton.IsEnabled = false;
             Panel.RenderMode = RenderModes.Wireframe;
 
-            WireframeThicknessUpDown.ValueHoldChanged += (s, args) =>
-            {
-                Panel.SetWireframeThickness(args.NewValue);
-            };
+            WireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetWireframeThickness(args.NewValue);
+            WireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
+
+            SelectedWireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetSelectedWireframeThickness(args.NewValue);
+            SelectedWireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetSelectedWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
+
+            SelectedLightWireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetSelectedLightWireframeThickness(args.NewValue);
+            SelectedLightWireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetSelectedLightWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
         }
 
         private void BeginDrag()

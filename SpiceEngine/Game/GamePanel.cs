@@ -396,6 +396,36 @@ namespace SpiceEngine.Game
             Invalidate();
         }
 
+        public void SetWireframeColor(Color4 color)
+        {
+            _renderManager.SetWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetSelectedWireframeThickness(float thickness)
+        {
+            _renderManager.SetSelectedWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetSelectedWireframeColor(Color4 color)
+        {
+            _renderManager.SetSelectedWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetSelectedLightWireframeThickness(float thickness)
+        {
+            _renderManager.SetSelectedLightWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetSelectedLightWireframeColor(Color4 color)
+        {
+            _renderManager.SetSelectedLightWireframeColor(color);
+            Invalidate();
+        }
+
         public void SelectEntity(IEntity entity)
         {
             if (entity != null)
