@@ -15,6 +15,7 @@ using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Processing;
 using Camera = SpiceEngine.Entities.Cameras.Camera;
 using SpiceEngine.Rendering;
+using SpiceEngine.Inputs;
 
 namespace SauceEditor.Controls.GamePanels
 {
@@ -24,8 +25,6 @@ namespace SauceEditor.Controls.GamePanels
     public partial class DockableGamePanel : DockableContent
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
-
-        public ViewTypes ViewType => Panel.ViewType;
 
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
@@ -39,7 +38,7 @@ namespace SauceEditor.Controls.GamePanels
             InitializeComponent();
 
             _mouseHoldtimer.Elapsed += MouseHoldtimer_Elapsed;
-            Panel.ViewType = viewType;
+            Panel.SetViewType(viewType);
 
             Panel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
             //Panel.TransformModeChanged += GamePanel_TransformModeChanged;
@@ -105,6 +104,14 @@ namespace SauceEditor.Controls.GamePanels
                         BeginDrag();
                     }
                     break;
+                case System.Windows.Forms.MouseButtons.XButton1:
+                    _mouseHoldtimer.Stop();
+
+                    if (!Panel.IsDragging)
+                    {
+                        BeginDrag();
+                    }
+                    break;
             }
         }
 
@@ -126,18 +133,22 @@ namespace SauceEditor.Controls.GamePanels
         {
             //System.Windows.Forms.Cursor.Position = _cursorLocation;
 
-            if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released)
+            if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released && Mouse.XButton1 == MouseButtonState.Released)
             {
-                _mouseHoldtimer.Stop();
+                // Double-check with Panel, since its input tracking is more reliable
+                if (!Panel.IsHeld())
+                {
+                    _mouseHoldtimer.Stop();
 
-                if (Panel.IsDragging)
-                {
-                    EndDrag();
-                }
-                else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
-                {
-                    var point = e.Location;
-                    Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
+                    if (Panel.IsDragging)
+                    {
+                        EndDrag();
+                    }
+                    else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
+                    {
+                        var point = e.Location;
+                        Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
+                    }
                 }
             }
         }

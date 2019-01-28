@@ -114,15 +114,5 @@ namespace SpiceEngine.Entities.Cameras
                 CalculateUp();
             }
         }
-
-        private Vector3 GetCurrentAngles()
-        {
-            return new Vector3()
-            {
-                X = (float)Math.Acos(Vector2.Dot(_viewMatrix.Translation.Yz, _viewMatrix.LookAt.Yz)),
-                Y = (float)Math.Acos(Vector2.Dot(_viewMatrix.Translation.Xz, _viewMatrix.LookAt.Xz)),
-                Z = (float)Math.Acos(Vector2.Dot(_viewMatrix.Translation.Xy, _viewMatrix.LookAt.Xy))
-            };
-        }
     }
 }
