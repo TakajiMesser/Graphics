@@ -25,6 +25,7 @@ namespace SpiceEngine.Rendering.Processing
         public float LineThickness { get; set; } = 0.02f;
         public float SelectedLineThickness { get; set; } = 0.02f;
 
+        public float GridLineThickness { get; set; } = 0.02f;
         public float GridUnit { get; set; } = 1.0f;
         public float GridLength { get; set; } = 10000.0f;
         public Quaternion GridRotation { get; set; } = Quaternion.Identity;
@@ -171,7 +172,7 @@ namespace SpiceEngine.Rendering.Processing
             var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
             _gridProgram.SetUniform("modelMatrix", model);
 
-            _gridProgram.SetUniform("thickness", 0.02f);
+            _gridProgram.SetUniform("thickness", GridLineThickness);
             _gridProgram.SetUniform("length", GridLength);
             _gridProgram.SetUniform("unit", GridUnit);
 

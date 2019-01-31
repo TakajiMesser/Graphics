@@ -256,6 +256,8 @@ namespace SpiceEngine.Rendering
 
         public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
 
+        public void SetGridUnit(float unit) => _wireframeRenderer.GridUnit = unit;
+
         public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
         {
             _wireframeRenderer.BindForWriting();

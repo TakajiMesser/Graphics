@@ -26,8 +26,20 @@ namespace SauceEditor.Controls.GamePanels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
+        public readonly static DependencyProperty GridUnitProperty = DependencyProperty.Register("GridUnit", typeof(float), typeof(NumericUpDown));
+
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+
+        public float GridUnit
+        {
+            get => (float)GetValue(GridUnitProperty);
+            set
+            {
+                SetValue(GridUnitProperty, value);
+                Panel.SetGridUnit(value);
+            }
+        }
 
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);

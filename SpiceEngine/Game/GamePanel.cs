@@ -446,6 +446,12 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void SetGridUnit(float unit)
+        {
+            _renderManager.SetGridUnit(unit);
+            Invalidate();
+        }
+
         public void SelectEntity(Point coordinates, bool isMultiSelect)
         {
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
