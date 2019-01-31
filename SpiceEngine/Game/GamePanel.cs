@@ -446,6 +446,36 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void SetGridThickness(float thickness)
+        {
+            _renderManager.SetGridThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetGridUnitColor(Color4 color)
+        {
+            _renderManager.SetGridUnitColor(color);
+            Invalidate();
+        }
+
+        public void SetGridAxisColor(Color4 color)
+        {
+            _renderManager.SetGridAxisColor(color);
+            Invalidate();
+        }
+
+        public void SetGrid5Color(Color4 color)
+        {
+            _renderManager.SetGrid5Color(color);
+            Invalidate();
+        }
+
+        public void SetGrid10Color(Color4 color)
+        {
+            _renderManager.SetGrid10Color(color);
+            Invalidate();
+        }
+
         public void SelectEntity(Point coordinates, bool isMultiSelect)
         {
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);

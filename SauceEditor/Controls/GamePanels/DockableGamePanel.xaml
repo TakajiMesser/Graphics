@@ -21,6 +21,33 @@
             </Style>
         </DockPanel.Resources>-->
         <ToolBar DockPanel.Dock="Top">
+            <Expander x:Name="SettingsExpander" ExpandDirection="Down" Margin="0" VerticalAlignment="Top" Height="22">
+                <Popup PlacementTarget="{Binding ElementName=SettingsExpander}" Placement="Bottom" IsOpen="{Binding IsExpanded, ElementName=SettingsExpander}">
+                    <StackPanel Orientation="Vertical" Margin="10, 4, 0, 0" Background="White">
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridThicknessLabel" Content="Grid Thickness"/>
+                            <updowns:NumericUpDown x:Name="GridThicknessUpDown" Value="{Binding GridThickness}" Margin="4, 2, 2, 4"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridUnitColorLabel" Content="Grid Unit Color"/>
+                            <xctk:ColorPicker x:Name="GridUnitColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridAxisColorLabel" Content="Grid Axis Color"/>
+                            <xctk:ColorPicker x:Name="GridAxisColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="Grid5ColorLabel" Content="Grid 5 Color"/>
+                            <xctk:ColorPicker x:Name="Grid5ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="Grid10ColorLabel" Content="Grid 10 Color"/>
+                            <xctk:ColorPicker x:Name="Grid10ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </StackPanel>
+                </Popup>
+            </Expander>
+            <Separator/>
             <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
             <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
             <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>

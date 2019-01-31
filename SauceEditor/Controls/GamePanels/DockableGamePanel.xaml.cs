@@ -26,8 +26,20 @@ namespace SauceEditor.Controls.GamePanels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
+        public readonly static DependencyProperty GridThicknessProperty = DependencyProperty.Register("GridThickness", typeof(float), typeof(NumericUpDown));
+
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+
+        public float GridThickness
+        {
+            get => (float)GetValue(GridThicknessProperty);
+            set
+            {
+                SetValue(GridThicknessProperty, value);
+                Panel.SetGridThickness(value);
+            }
+        }
 
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
@@ -55,6 +67,12 @@ namespace SauceEditor.Controls.GamePanels
             // Default to wireframe rendering
             WireframeButton.IsEnabled = false;
             Panel.RenderMode = RenderModes.Wireframe;
+
+            GridThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetGridThickness(args.NewValue);
+            GridUnitColorPick.SelectedColorChanged += (s, args) => Panel.SetGridUnitColor(args.NewValue.Value.ToVector4().ToColor4());
+            GridAxisColorPick.SelectedColorChanged += (s, args) => Panel.SetGridAxisColor(args.NewValue.Value.ToVector4().ToColor4());
+            Grid5ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid5Color(args.NewValue.Value.ToVector4().ToColor4());
+            Grid10ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid10Color(args.NewValue.Value.ToVector4().ToColor4());
         }
 
         private void BeginDrag()
