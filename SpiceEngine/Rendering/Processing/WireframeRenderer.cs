@@ -33,6 +33,10 @@ namespace SpiceEngine.Rendering.Processing
 
         public float GridLength { get; set; } = 10000.0f;
         public float GridThickness { get; set; } = 0.02f;
+        public Vector4 GridLineUnitColor { get; set; } = new Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+        public Vector4 GridLineAxisColor { get; set; } = new Vector4(0.8f, 0.2f, 0.2f, 1.0f);
+        public Vector4 GridLine5Color { get; set; } = new Vector4(0.4f, 0.2f, 0.2f, 1.0f);
+        public Vector4 GridLine10Color { get; set; } = new Vector4(0.6f, 0.2f, 0.2f, 1.0f);
         public Quaternion GridRotation { get; set; } = Quaternion.Identity;
 
         public Texture FinalTexture { get; protected set; }
@@ -177,8 +181,12 @@ namespace SpiceEngine.Rendering.Processing
             var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
             _gridProgram.SetUniform("modelMatrix", model);
 
-            _gridProgram.SetUniform("thickness", GridThickness);
             _gridProgram.SetUniform("length", GridLength);
+            _gridProgram.SetUniform("thickness", GridThickness);
+            _gridProgram.SetUniform("lineUnitColor", GridLineUnitColor);
+            _gridProgram.SetUniform("lineAxisColor", GridLineAxisColor);
+            _gridProgram.SetUniform("line5Color", GridLine5Color);
+            _gridProgram.SetUniform("line10Color", GridLine10Color);
 
             _gridSquare.Draw();
         }

@@ -264,6 +264,12 @@ namespace SpiceEngine.Rendering
         public void SetSelectedLightWireframeThickness(float thickness) => _wireframeRenderer.SelectedLightLineThickness = thickness;
         public void SetSelectedLightWireframeColor(Color4 color) => _wireframeRenderer.SelectedLightLineColor = color.ToVector4();
 
+        public void SetGridThickness(float thickness) => _wireframeRenderer.GridThickness;
+        public void SetGridUnitColor(Color4 color) => _wireframeRenderer.GridLineUnitColor;
+        public void SetGridAxisColor(Color4 color) => _wireframeRenderer.GridLineAxisColor;
+        public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color;
+        public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color;
+
         public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
         {
             _wireframeRenderer.BindForWriting();

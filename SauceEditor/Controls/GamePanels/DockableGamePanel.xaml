@@ -27,28 +27,48 @@
                 <Popup PlacementTarget="{Binding ElementName=SettingsExpander}" Placement="Bottom" IsOpen="{Binding IsExpanded, ElementName=SettingsExpander}">
                     <StackPanel Orientation="Vertical" Margin="10, 4, 0, 0" Background="White">
                         <StackPanel Orientation="Horizontal">
-                            <Label Name="WireframeColorLabel" Content="Wireframe Color"/>
-                            <xctk:ColorPicker x:Name="WireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </StackPanel>
-                        <StackPanel Orientation="Horizontal">
                             <Label Name="WireframeThicknessLabel" Content="Wireframe Thickness"/>
                             <updowns:NumericUpDown x:Name="WireframeThicknessUpDown" Value="{Binding WireframeThickness}" Margin="4, 2, 2, 4"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Name="SelectedWireframeColorLabel" Content="Selected Wireframe Color"/>
-                            <xctk:ColorPicker x:Name="SelectedWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Label Name="WireframeColorLabel" Content="Wireframe Color"/>
+                            <xctk:ColorPicker x:Name="WireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Name="SelectedWireframeThicknessLabel" Content="Selected Wireframe Thickness"/>
                             <updowns:NumericUpDown x:Name="SelectedWireframeThicknessUpDown" Value="{Binding SelectedWireframeThickness}" Margin="4, 2, 2, 4"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
-                            <Label Name="SelectedLightWireframeColorLabel" Content="Selected Light Wireframe Color"/>
-                            <xctk:ColorPicker x:Name="SelectedLightWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <Label Name="SelectedWireframeColorLabel" Content="Selected Wireframe Color"/>
+                            <xctk:ColorPicker x:Name="SelectedWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal">
                             <Label Name="SelectedLightWireframeThicknessLabel" Content="Selected Light Wireframe Thickness"/>
                             <updowns:NumericUpDown x:Name="SelectedLightWireframeThicknessUpDown" Value="{Binding SelectedLightWireframeThickness}" Margin="4, 2, 2, 4"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="SelectedLightWireframeColorLabel" Content="Selected Light Wireframe Color"/>
+                            <xctk:ColorPicker x:Name="SelectedLightWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridThicknessLabel" Content="Grid Thickness"/>
+                            <updowns:NumericUpDown x:Name="GridThicknessUpDown" Value="{Binding GridThickness}" Margin="4, 2, 2, 4"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridUnitColorLabel" Content="Grid Unit Color"/>
+                            <xctk:ColorPicker x:Name="GridUnitColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridAxisColorLabel" Content="Grid Axis Color"/>
+                            <xctk:ColorPicker x:Name="GridAxisColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="Grid5ColorLabel" Content="Grid 5 Color"/>
+                            <xctk:ColorPicker x:Name="Grid5ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="Grid10ColorLabel" Content="Grid 10 Color"/>
+                            <xctk:ColorPicker x:Name="Grid10ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </StackPanel>
                     </StackPanel>
                 </Popup>
