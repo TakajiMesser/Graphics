@@ -2,6 +2,7 @@
 
 uniform float thickness;
 uniform float length;
+uniform float unit;
 
 in vec2 fPosition;
 in vec2 fUV;
@@ -9,12 +10,12 @@ in vec2 fUV;
 layout(location = 0) out vec4 color;
 
 void main() {
-    float x = fract(fUV.x * length);
+    float x = fract(fUV.x * (1.0f / unit) * length);
     x = min(x, 1.0 - x);
     float xdelta = fwidth(x);
     x = smoothstep(x - xdelta, x + xdelta, thickness);
 
-    float y = fract(fUV.y * length);
+    float y = fract(fUV.y * (1.0f / unit) * length);
     y = min(y, 1.0 - y);
     float ydelta = fwidth(y);
     y = smoothstep(y - ydelta, y + ydelta, thickness);
