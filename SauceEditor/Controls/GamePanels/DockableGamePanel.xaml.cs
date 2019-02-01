@@ -29,8 +29,6 @@ namespace SauceEditor.Controls.GamePanels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
-        public ViewTypes ViewType => Panel.ViewType;
-
         public readonly static DependencyProperty WireframeThicknessProperty = DependencyProperty.Register("WireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty SelectedWireframeThicknessProperty = DependencyProperty.Register("SelectedWireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty SelectedLightWireframeThicknessProperty = DependencyProperty.Register("SelectedLightWireframeThickness", typeof(float), typeof(NumericUpDown));
