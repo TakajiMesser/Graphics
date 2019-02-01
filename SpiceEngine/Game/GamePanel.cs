@@ -551,6 +551,15 @@ namespace SpiceEngine.Game
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
+                    if (_inputManager.IsDown(new Input(Key.LeftShift)))
+                    {
+                        // Create duplicates and overwrite SelectedEntities with them
+                        var duplicateEntities = SelectedEntities.Select(e => _entityManager.DuplicateEntity(e));
+                        
+                        SelectedEntities.Clear();
+                        SelectedEntities.AddRange(duplicateEntities);
+                    }
+
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
                     foreach (var entity in SelectedEntities)
                     {

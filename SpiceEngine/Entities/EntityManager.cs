@@ -57,6 +57,16 @@ namespace SpiceEngine.Entities
             }
         }
 
+        private int GetUniqueID()
+        {
+
+        }
+
+        private string GetUniqueName(string name)
+        {
+             
+        }
+
         public int AddEntity(IEntity entity)
         {
             // Assign a unique ID
@@ -85,6 +95,52 @@ namespace SpiceEngine.Entities
             }
 
             return entity.ID;
+        }
+
+        public IEntity DuplicateEntity(IEntity entity)
+        {
+            IEntity duplicateEntity;
+
+            switch (entity)
+            {
+                case Actor actor:
+                    var name = GetUniqueName(entity.Name);
+                    duplicateEntity = new Actor(name)
+                    {
+                        Position = entity.Position,
+                        Rotation = entity.Rotation,
+                        Scale = entity.Scale,
+                        Orientation = entity.Orientation
+                    };
+                    break;
+                case Brush brush:
+                    duplicateEntity = new Brush()
+                    {
+                        Position = entity.Position,
+                        Rotation = entity.Rotation,
+                        Scale = entity.Scale,
+                    };
+                    break;
+                case Volume volume:
+                    duplicateEntity = new Volume()
+                    {
+                        Position = entity.Position,
+                        Rotation = entity.Rotation,
+                        Scale = entity.Scale,
+                    };
+                    break;
+                case Light light:
+                    duplicateEntity = new Light()
+                    {
+                        Position = entity.Position,
+                        Rotation = entity.Rotation,
+                        Scale = entity.Scale,
+                    };
+                    break;
+            }
+
+            AddEntity(duplicateEntity);
+            return duplicateEntity;
         }
 
         public void RemoveEntityByID(int id)
