@@ -128,7 +128,7 @@ namespace SpiceEngine.Game
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
-        
+
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
@@ -412,7 +412,7 @@ namespace SpiceEngine.Game
                     _renderManager.RenderLitFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
                     break;
-                case RenderModes.Full:  
+                case RenderModes.Full:
                     _renderManager.RenderFullFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     break;
             }
@@ -469,7 +469,7 @@ namespace SpiceEngine.Game
                     {
                         SelectedEntities.Clear();
                     }
-                    
+
                     SelectedEntities.Add(entity);
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
                     RenderFrame();
@@ -510,7 +510,7 @@ namespace SpiceEngine.Game
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
             _inputManager.Update();
-            
+
             if (_invalidated)
             {
                 Invalidate();
