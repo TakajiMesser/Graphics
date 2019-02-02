@@ -33,6 +33,7 @@ namespace SauceEditor.Controls.GamePanels
         public readonly static DependencyProperty SelectedWireframeThicknessProperty = DependencyProperty.Register("SelectedWireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty SelectedLightWireframeThicknessProperty = DependencyProperty.Register("SelectedLightWireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty GridThicknessProperty = DependencyProperty.Register("GridThickness", typeof(float), typeof(NumericUpDown));
+        public readonly static DependencyProperty GridUnitProperty = DependencyProperty.Register("GridUnit", typeof(float), typeof(NumericUpDown));
 
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
@@ -74,6 +75,16 @@ namespace SauceEditor.Controls.GamePanels
             {
                 SetValue(GridThicknessProperty, value);
                 Panel.SetGridThickness(value);
+            }
+        }
+
+        public float GridUnit
+        {
+            get => (float)GetValue(GridUnitProperty);
+            set
+            {
+                SetValue(GridUnitProperty, value);
+                Panel.SetGridUnit(value);
             }
         }
 

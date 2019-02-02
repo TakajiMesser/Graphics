@@ -70,6 +70,10 @@
                             <Label Name="Grid10ColorLabel" Content="Grid 10 Color"/>
                             <xctk:ColorPicker x:Name="Grid10ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <Label Name="GridUnitLabel" Content="Grid Scale Unit"/>
+                            <updowns:NumericUpDown x:Name="GridUnitUpDown" Value="{Binding GridUnit}" Margin="4, 2, 2, 4"/>
+                        </StackPanel>
                     </StackPanel>
                 </Popup>
             </Expander>
