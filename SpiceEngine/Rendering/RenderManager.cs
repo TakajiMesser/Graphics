@@ -13,6 +13,7 @@ using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -256,7 +257,20 @@ namespace SpiceEngine.Rendering
 
         public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
 
+        public void SetWireframeThickness(float thickness) => _wireframeRenderer.LineThickness = thickness;
+        public void SetWireframeColor(Color4 color) => _wireframeRenderer.LineColor = color.ToVector4();
+        public void SetSelectedWireframeThickness(float thickness) => _wireframeRenderer.SelectedLineThickness = thickness;
+        public void SetSelectedWireframeColor(Color4 color) => _wireframeRenderer.SelectedLineColor = color.ToVector4();
+        public void SetSelectedLightWireframeThickness(float thickness) => _wireframeRenderer.SelectedLightLineThickness = thickness;
+        public void SetSelectedLightWireframeColor(Color4 color) => _wireframeRenderer.SelectedLightLineColor = color.ToVector4();
+
         public void SetGridUnit(float unit) => _wireframeRenderer.GridUnit = unit;
+        public void SetGridLineThickness(float thickness) => _wireframeRenderer.GridLineThickness = thickness;
+        public void SetGridUnitColor(Color4 color) => _wireframeRenderer.GridLineUnitColor = color.ToVector4();
+        public void SetGridAxisColor(Color4 color) => _wireframeRenderer.GridLineAxisColor = color.ToVector4();
+        public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
+        public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
+
 
         public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
         {

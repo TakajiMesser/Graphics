@@ -128,7 +128,7 @@ namespace SpiceEngine.Game
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
-        
+
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
@@ -412,7 +412,7 @@ namespace SpiceEngine.Game
                     _renderManager.RenderLitFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
                     break;
-                case RenderModes.Full:  
+                case RenderModes.Full:
                     _renderManager.RenderFullFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     break;
             }
@@ -446,6 +446,72 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void SetWireframeThickness(float thickness)
+        {
+            _renderManager.SetWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetWireframeColor(Color4 color)
+        {
+            _renderManager.SetWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetSelectedWireframeThickness(float thickness)
+        {
+            _renderManager.SetSelectedWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetSelectedWireframeColor(Color4 color)
+        {
+            _renderManager.SetSelectedWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetSelectedLightWireframeThickness(float thickness)
+        {
+            _renderManager.SetSelectedLightWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetSelectedLightWireframeColor(Color4 color)
+        {
+            _renderManager.SetSelectedLightWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetGridThickness(float thickness)
+        {
+            _renderManager.SetGridThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetGridUnitColor(Color4 color)
+        {
+            _renderManager.SetGridUnitColor(color);
+            Invalidate();
+        }
+
+        public void SetGridAxisColor(Color4 color)
+        {
+            _renderManager.SetGridAxisColor(color);
+            Invalidate();
+        }
+
+        public void SetGrid5Color(Color4 color)
+        {
+            _renderManager.SetGrid5Color(color);
+            Invalidate();
+        }
+
+        public void SetGrid10Color(Color4 color)
+        {
+            _renderManager.SetGrid10Color(color);
+            Invalidate();
+        }
+
         public void SetGridUnit(float unit)
         {
             _renderManager.SetGridUnit(unit);
@@ -475,7 +541,7 @@ namespace SpiceEngine.Game
                     {
                         SelectedEntities.Clear();
                     }
-                    
+
                     SelectedEntities.Add(entity);
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
                     RenderFrame();
@@ -516,7 +582,7 @@ namespace SpiceEngine.Game
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
             _inputManager.Update();
-            
+
             if (_invalidated)
             {
                 Invalidate();
