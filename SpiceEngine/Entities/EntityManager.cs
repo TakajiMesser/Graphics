@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
@@ -16,7 +17,8 @@ namespace SpiceEngine.Entities
 {
     public class EntityManager : IEntityProvider
     {
-        public List<IEntity> Entities { get; } = new List<IEntity>();
+        private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
+        private int _nextAvailableID = 1;
 
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
@@ -27,7 +29,8 @@ namespace SpiceEngine.Entities
 
         public void ClearEntities()
         {
-            Entities.Clear();
+            _entitiesByID.Clear();
+            _nextAvailableID = 1;
 
             Actors.Clear();
             Brushes.Clear();
@@ -37,8 +40,8 @@ namespace SpiceEngine.Entities
 
         public IEntity GetEntity(int id)
         {
-            if (id > Entities.Count) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-            return Entities[id - 1];
+            if (!_entitiesByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+            return _entitiesByID[id];
         }
 
         public Actor GetActorByName(string name)
@@ -57,23 +60,14 @@ namespace SpiceEngine.Entities
             }
         }
 
-        private int GetUniqueID()
-        {
-
-        }
-
-        private string GetUniqueName(string name)
-        {
-             
-        }
-
         public int AddEntity(IEntity entity)
         {
             // Assign a unique ID
             if (entity.ID == 0)
             {
-                Entities.Add(entity);
-                entity.ID = Entities.Count;
+                int id = GetUniqueID();
+                _entitiesByID.Add(id, entity);
+                entity.ID = id;
             }
 
             switch (entity)
@@ -99,43 +93,44 @@ namespace SpiceEngine.Entities
 
         public IEntity DuplicateEntity(IEntity entity)
         {
-            IEntity duplicateEntity;
+            IEntity duplicateEntity = null;
 
             switch (entity)
             {
                 case Actor actor:
-                    var name = GetUniqueName(entity.Name);
+                    var name = GetUniqueName(actor.Name);
                     duplicateEntity = new Actor(name)
                     {
-                        Position = entity.Position,
-                        Rotation = entity.Rotation,
-                        Scale = entity.Scale,
-                        Orientation = entity.Orientation
+                        Position = actor.Position,
+                        Rotation = actor.Rotation,
+                        Scale = actor.Scale,
+                        Orientation = actor.Orientation
                     };
                     break;
                 case Brush brush:
-                    duplicateEntity = new Brush()
+                    duplicateEntity = new Brush(brush.Material)
                     {
-                        Position = entity.Position,
-                        Rotation = entity.Rotation,
-                        Scale = entity.Scale,
+                        Position = brush.Position,
+                        Rotation = brush.Rotation,
+                        Scale = brush.Scale,
+                        TextureMapping = brush.TextureMapping
                     };
                     break;
                 case Volume volume:
                     duplicateEntity = new Volume()
                     {
-                        Position = entity.Position,
-                        Rotation = entity.Rotation,
-                        Scale = entity.Scale,
+                        Position = volume.Position,
+                        Rotation = volume.Rotation,
+                        Scale = volume.Scale,
                     };
                     break;
                 case Light light:
-                    duplicateEntity = new Light()
+                    /*duplicateEntity = new Light()
                     {
-                        Position = entity.Position,
-                        Rotation = entity.Rotation,
-                        Scale = entity.Scale,
-                    };
+                        Position = light.Position,
+                        Rotation = light.Rotation,
+                        Scale = light.Scale,
+                    };*/
                     break;
             }
 
@@ -179,6 +174,40 @@ namespace SpiceEngine.Entities
             foreach (var volume in Volumes)
             {
                 //volume.Load();
+            }
+        }
+
+        private int GetUniqueID()
+        {
+            int id = _nextAvailableID;
+            _nextAvailableID++;
+
+            return id;
+        }
+
+        private string GetUniqueName(string name)
+        {
+            // Check if this name is already taken
+            if (Actors.Any(a => a.Name == name))
+            {
+                var regex = new Regex("(?<Name>.+)_(?<Number>[0-9]+$)");
+                var match = regex.Match(name);
+
+                if (match.Success)
+                {
+                    // Increment "_n" and try again
+                    var number = int.Parse(match.Groups["Number"].Value);
+                    return GetUniqueName(match.Groups["Name"].Value + "_" + (number + 1));
+                }
+                else
+                {
+                    // Append "_2" and try again
+                    return GetUniqueName(name + "_2");
+                }
+            }
+            else
+            {
+                return name;
             }
         }
     }

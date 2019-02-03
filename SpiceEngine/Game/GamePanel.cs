@@ -47,7 +47,7 @@ namespace SpiceEngine.Game
         public double Frequency { get; private set; }
         public RenderModes RenderMode { get; set; }
         public TransformModes TransformMode { get; set; }
-        public List<IEntity> SelectedEntities { get; } = new List<IEntity>();
+        public List<IEntity> SelectedEntities { get; private set; } = new List<IEntity>();
         public SelectionTypes SelectionType { get; private set; }
         public Tools SelectedTool
         {
@@ -507,6 +507,8 @@ namespace SpiceEngine.Game
 
         private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            _pollTimer.Stop();
+
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
             _inputManager.Update();
@@ -515,6 +517,11 @@ namespace SpiceEngine.Game
             {
                 Invalidate();
                 _invalidated = false;
+            }
+
+            if (IsDragging)
+            {
+                _pollTimer.Start();
             }
         }
 
@@ -551,13 +558,13 @@ namespace SpiceEngine.Game
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
-                    if (_inputManager.IsDown(new Input(Key.LeftShift)))
+                    if (_inputManager.IsDown(new Input(Key.ShiftLeft)))
                     {
                         // Create duplicates and overwrite SelectedEntities with them
                         var duplicateEntities = SelectedEntities.Select(e => _entityManager.DuplicateEntity(e));
-                        
-                        SelectedEntities.Clear();
-                        SelectedEntities.AddRange(duplicateEntities);
+                        SelectedEntities = duplicateEntities.ToList();
+                        //SelectedEntities.Clear();
+                        //SelectedEntities.AddRange(duplicateEntities);
                     }
 
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
