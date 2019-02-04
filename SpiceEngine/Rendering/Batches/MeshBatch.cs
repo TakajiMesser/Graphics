@@ -27,6 +27,8 @@ namespace SpiceEngine.Rendering.Batches
             Mesh = mesh;
         }
 
+        public IBatch Duplicate(int entityID) => new MeshBatch(entityID, Mesh.Duplicate());
+
         public void AddTestColors()
         {
             /*var vertices = new List<Vertex3D>();

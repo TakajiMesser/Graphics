@@ -18,6 +18,6 @@ namespace SpiceEngine.Rendering.Batches
         IEnumerable<IVertex3D> Vertices { get; }
         void Load();
         void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null);
-        //IBatch Duplicate();
+        IBatch Duplicate(int entityID);
     }
 }

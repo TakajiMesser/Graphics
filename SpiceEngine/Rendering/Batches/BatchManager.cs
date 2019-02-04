@@ -16,6 +16,14 @@ namespace SpiceEngine.Rendering.Batches
 {
     public class BatchManager
     {
+        private enum EntityTypes
+        {
+            Actor,
+            Brush,
+            Volume,
+            Joint
+        }
+
         private IEntityProvider _entityProvider;
 
         private List<MeshBatch> _brushBatches = new List<MeshBatch>();
@@ -24,6 +32,7 @@ namespace SpiceEngine.Rendering.Batches
         private List<ModelBatch> _jointBatches = new List<ModelBatch>();
 
         private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
+        private Dictionary<int, EntityTypes> _typesByEntityID = new Dictionary<int, EntityTypes>();
 
         public BatchManager(IEntityProvider entityProvider)
         {
@@ -33,14 +42,27 @@ namespace SpiceEngine.Rendering.Batches
         public void DuplicateBatch(int entityID, int newID)
         {
             var batch = GetBatch(entityID);
+            var entityType = GetEntityType(entityID);
 
-            switch (batch)
+            switch (entityType)
             {
-                case MeshBatch meshBatch:
-                     new MeshBatch(newID, meshBatch.Mesh.Duplicate());
+                case EntityTypes.Actor:
+                    var actorBatch = (ModelBatch)batch;
+                    AddActor(newID, actorBatch.Meshes.Select(m => m.Duplicate()));
+                    break;
+                case EntityTypes.Brush:
+                    var brushBatch = (MeshBatch)batch;
+                    AddBrush(newID, brushBatch.Mesh.Duplicate());
+                    break;
+                case EntityTypes.Volume:
+                    var volumeBatch = (MeshBatch)batch;
+                    AddVolume(newID, volumeBatch.Mesh.Duplicate());
+                    break;
+                case EntityTypes.Joint:
+                    var jointBatch = (ModelBatch)batch;
+                    AddJoint(newID, jointBatch.Meshes.Select(m => m.Duplicate()));
                     break;
             }
-            
         }
 
         public IBatch GetBatch(int entityID)
@@ -53,21 +75,39 @@ namespace SpiceEngine.Rendering.Batches
             throw new KeyNotFoundException("No batch found for entity ID " + entityID);
         }
 
+        private EntityTypes GetEntityType(int entityID)
+        {
+            if (_typesByEntityID.ContainsKey(entityID))
+            {
+                return _typesByEntityID[entityID];
+            }
+
+            throw new KeyNotFoundException("No entity type found for entity ID " + entityID);
+        }
+
         public void RemoveByEntityID(int entityID)
         {
             var batch = GetBatch(entityID);
-            
-            switch (batch)
+            var entityType = GetEntityType(entityID);
+
+            switch (entityType)
             {
-                case MeshBatch meshBatch:
-                    _brushBatches.Remove(meshBatch);
-                    _volumeBatches.Remove(meshBatch);
+                case EntityTypes.Actor:
+                    _actorBatches.Remove((ModelBatch)batch);
                     break;
-                case ModelBatch modelBatch:
-                    _actorBatches.Remove(modelBatch);
-                    _jointBatches.Remove(modelBatch);
+                case EntityTypes.Brush:
+                    _brushBatches.Remove((MeshBatch)batch);
+                    break;
+                case EntityTypes.Volume:
+                    _volumeBatches.Remove((MeshBatch)batch);
+                    break;
+                case EntityTypes.Joint:
+                    _jointBatches.Remove((ModelBatch)batch);
                     break;
             }
+
+            _batchesByEntityID.Remove(entityID);
+            _typesByEntityID.Remove(entityID);
         }
 
         public void AddBrush(int entityID, IMesh3D mesh)
@@ -76,6 +116,7 @@ namespace SpiceEngine.Rendering.Batches
 
             _brushBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+            _typesByEntityID.Add(entityID, EntityTypes.Brush);
         }
 
         public void AddVolume(int entityID, IMesh3D mesh)
@@ -84,6 +125,7 @@ namespace SpiceEngine.Rendering.Batches
 
             _volumeBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+            _typesByEntityID.Add(entityID, EntityTypes.Volume);
         }
 
         public void AddActor(int entityID, IEnumerable<IMesh3D> meshes)
@@ -92,6 +134,7 @@ namespace SpiceEngine.Rendering.Batches
 
             _actorBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+            _typesByEntityID.Add(entityID, EntityTypes.Actor);
         }
 
         public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes)
@@ -100,6 +143,7 @@ namespace SpiceEngine.Rendering.Batches
 
             _jointBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+            _typesByEntityID.Add(entityID, EntityTypes.Joint);
         }
 
         public void Load(int entityID) => _batchesByEntityID[entityID].Load();
