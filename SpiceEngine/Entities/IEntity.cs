@@ -8,5 +8,6 @@ namespace SpiceEngine.Entities
     {
         int ID { get; set; }
         Vector3 Position { get; set; }
+        //IEntity Duplicate();
     }
 }

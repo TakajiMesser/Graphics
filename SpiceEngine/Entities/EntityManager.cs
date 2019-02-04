@@ -99,30 +99,14 @@ namespace SpiceEngine.Entities
             {
                 case Actor actor:
                     var name = GetUniqueName(actor.Name);
-                    duplicateEntity = new Actor(name)
-                    {
-                        Position = actor.Position,
-                        Rotation = actor.Rotation,
-                        Scale = actor.Scale,
-                        Orientation = actor.Orientation
-                    };
+                    duplicateEntity = actor.Duplicate(name);
                     break;
+
                 case Brush brush:
-                    duplicateEntity = new Brush(brush.Material)
-                    {
-                        Position = brush.Position,
-                        Rotation = brush.Rotation,
-                        Scale = brush.Scale,
-                        TextureMapping = brush.TextureMapping
-                    };
+                    duplicateEntity = brush.Duplicate();
                     break;
                 case Volume volume:
-                    duplicateEntity = new Volume()
-                    {
-                        Position = volume.Position,
-                        Rotation = volume.Rotation,
-                        Scale = volume.Scale,
-                    };
+                    duplicateEntity = volume.Duplicate();
                     break;
                 case Light light:
                     /*duplicateEntity = new Light()

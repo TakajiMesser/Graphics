@@ -16,5 +16,6 @@ namespace SpiceEngine.Rendering.Meshes
         IEnumerable<IVertex3D> Vertices { get; }
         void Load();
         void Draw();
+        IMesh3D Duplicate();
     }
 }

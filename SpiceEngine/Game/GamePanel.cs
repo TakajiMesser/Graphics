@@ -539,6 +539,24 @@ namespace SpiceEngine.Game
             _pollTimer.Stop();
         }
 
+        private void DuplicateSelectedItems()
+        {
+            // Create duplicates and overwrite SelectedEntities with them
+            var duplicateEntities = new List<IEntity>();
+
+            foreach (var entity in SelectedEntities)
+            {
+                var duplicateEntity = _entityManager.DuplicateEntity(entity);
+                _renderManager.BatchManager.DuplicateBatch(entity.ID, duplicateEntity.ID);
+                // Need to duplicate colliders
+                // Need to duplicate scripts
+
+                duplicateEntities.Add(duplicateEntity);
+            }
+
+            SelectedEntities = duplicateEntities;
+        }
+
         private void HandleInput()
         {
             if (_inputManager.IsReleased(new Input(MouseButton.Left)))
@@ -560,11 +578,7 @@ namespace SpiceEngine.Game
                 {
                     if (_inputManager.IsDown(new Input(Key.ShiftLeft)))
                     {
-                        // Create duplicates and overwrite SelectedEntities with them
-                        var duplicateEntities = SelectedEntities.Select(e => _entityManager.DuplicateEntity(e));
-                        SelectedEntities = duplicateEntities.ToList();
-                        //SelectedEntities.Clear();
-                        //SelectedEntities.AddRange(duplicateEntities);
+                        DuplicateSelectedItems();
                     }
 
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y

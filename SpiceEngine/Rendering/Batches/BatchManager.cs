@@ -30,6 +30,19 @@ namespace SpiceEngine.Rendering.Batches
             _entityProvider = entityProvider;
         }
 
+        public void DuplicateBatch(int entityID, int newID)
+        {
+            var batch = GetBatch(entityID);
+
+            switch (batch)
+            {
+                case MeshBatch meshBatch:
+                     new MeshBatch(newID, meshBatch.Mesh.Duplicate());
+                    break;
+            }
+            
+        }
+
         public IBatch GetBatch(int entityID)
         {
             if (_batchesByEntityID.ContainsKey(entityID))

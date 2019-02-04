@@ -58,6 +58,25 @@ namespace SpiceEngine.Entities.Brushes
             //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
         }
 
+        public Brush Duplicate()
+        {
+            var brush = new Brush(Material)
+            {
+                Position = Position,
+                Rotation = Rotation,
+                Scale = Scale,
+                TextureMapping = new TextureMapping()
+                {
+                    DiffuseMapID = TextureMapping.DiffuseMapID,
+                    NormalMapID = TextureMapping.NormalMapID,
+                    ParallaxMapID = TextureMapping.ParallaxMapID,
+                    SpecularMapID = TextureMapping.SpecularMapID
+                }
+            };
+
+            return brush;
+        }
+
         public void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
         {
             _modelMatrix.Set(program);
