@@ -70,22 +70,26 @@ namespace SpiceEngine.Entities.Actors
             Name = name;
         }
 
-        public Actor Duplicate(string name)
+        public virtual Actor Duplicate(string name)
         {
-            var actor = new Actor(name)
-            {
-                Position = Position,
-                Rotation = Rotation,
-                Scale = Scale,
-                Orientation = Orientation
-            };
+            var actor = new Actor(name);
+            actor.FromActor(this);
+            return actor;
+        }
 
-            foreach (var kvp in _materialByMeshIndex)
+        protected void FromActor(Actor actor)
+        {
+            Position = actor.Position;
+            Rotation = actor.Rotation;
+            Scale = actor.Scale;
+            Orientation = actor.Orientation;
+
+            foreach (var kvp in actor._materialByMeshIndex)
             {
-                actor._materialByMeshIndex.Add(kvp.Key, kvp.Value);
+                _materialByMeshIndex.Add(kvp.Key, kvp.Value);
             }
-            
-            foreach (var kvp in _textureMappingByMeshIndex)
+
+            foreach (var kvp in actor._textureMappingByMeshIndex)
             {
                 var textureMapping = new TextureMapping()
                 {
@@ -95,10 +99,8 @@ namespace SpiceEngine.Entities.Actors
                     SpecularMapID = kvp.Value.SpecularMapID
                 };
 
-                actor._textureMappingByMeshIndex.Add(kvp.Key, textureMapping);
+                _textureMappingByMeshIndex.Add(kvp.Key, textureMapping);
             }
-
-            return actor;
         }
 
         public void AddMaterial(int meshIndex, Material material) => _materialByMeshIndex.Add(meshIndex, material);

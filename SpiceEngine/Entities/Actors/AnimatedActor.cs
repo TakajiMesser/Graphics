@@ -33,6 +33,19 @@ namespace SpiceEngine.Entities.Actors
 
         public void SetJointTransforms(int meshIndex, Matrix4[] transforms) => _jointTransformsByMeshIndex[meshIndex] = transforms;
 
+        public override Actor Duplicate(string name)
+        {
+            var animatedActor = new AnimatedActor(name);
+            animatedActor.FromActor(this);
+
+            foreach (var kvp in _jointTransformsByMeshIndex)
+            {
+                animatedActor._jointTransformsByMeshIndex.Add(kvp.Key, kvp.Value);
+            }
+
+            return animatedActor;
+        }
+
         public override void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
         {
             base.SetUniforms(program, textureManager, meshIndex);
