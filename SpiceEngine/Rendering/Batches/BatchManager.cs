@@ -34,6 +34,8 @@ namespace SpiceEngine.Rendering.Batches
         private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
         private Dictionary<int, EntityTypes> _typesByEntityID = new Dictionary<int, EntityTypes>();
 
+        public bool IsLoaded { get; private set; } = false;
+
         public BatchManager(IEntityProvider entityProvider)
         {
             _entityProvider = entityProvider;
@@ -117,6 +119,11 @@ namespace SpiceEngine.Rendering.Batches
             _brushBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
             _typesByEntityID.Add(entityID, EntityTypes.Brush);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void AddVolume(int entityID, IMesh3D mesh)
@@ -126,6 +133,11 @@ namespace SpiceEngine.Rendering.Batches
             _volumeBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
             _typesByEntityID.Add(entityID, EntityTypes.Volume);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void AddActor(int entityID, IEnumerable<IMesh3D> meshes)
@@ -135,6 +147,11 @@ namespace SpiceEngine.Rendering.Batches
             _actorBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
             _typesByEntityID.Add(entityID, EntityTypes.Actor);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes)
@@ -144,6 +161,11 @@ namespace SpiceEngine.Rendering.Batches
             _jointBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
             _typesByEntityID.Add(entityID, EntityTypes.Joint);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void Load(int entityID) => _batchesByEntityID[entityID].Load();
@@ -169,6 +191,8 @@ namespace SpiceEngine.Rendering.Batches
             {
                 batch.Load();
             }
+
+            IsLoaded = true;
         }
 
         public void DrawBrushes(ShaderProgram shaderProgram, TextureManager textureManager = null)

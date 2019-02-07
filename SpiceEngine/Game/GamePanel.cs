@@ -114,6 +114,7 @@ namespace SpiceEngine.Game
         public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
 
         private object _loadLock = new object();
         private bool _isLoaded = false;
@@ -128,7 +129,8 @@ namespace SpiceEngine.Game
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
-        
+        private bool _isDuplicating = false;
+
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
@@ -547,18 +549,28 @@ namespace SpiceEngine.Game
             foreach (var entity in SelectedEntities)
             {
                 var duplicateEntity = _entityManager.DuplicateEntity(entity);
-                _renderManager.BatchManager.DuplicateBatch(entity.ID, duplicateEntity.ID);
                 // Need to duplicate colliders
                 // Need to duplicate scripts
 
+                EntityDuplicated?.Invoke(this, new DuplicatedEntityEventArgs(entity.ID, duplicateEntity.ID));
                 duplicateEntities.Add(duplicateEntity);
             }
 
             SelectedEntities = duplicateEntities;
         }
 
+        public void Duplicate(int entityID, int duplicateEntityID)
+        {
+            Invoke(new Action(() => _renderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+        }
+
         private void HandleInput()
         {
+            if (_isDuplicating && !_inputManager.IsDown(new Input(Key.ShiftLeft)))
+            {
+                _isDuplicating = false;
+            }
+
             if (_inputManager.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionType = SelectionTypes.None;
@@ -576,8 +588,9 @@ namespace SpiceEngine.Game
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
-                    if (_inputManager.IsDown(new Input(Key.ShiftLeft)))
+                    if (!_isDuplicating && _inputManager.IsDown(new Input(Key.ShiftLeft)))
                     {
+                        _isDuplicating = true;
                         DuplicateSelectedItems();
                     }
 

@@ -87,7 +87,7 @@ namespace SauceEditor.Controls.GamePanels
             InitializeComponent();
             Open(mapPath);
 
-            Title = System.IO.Path.GetFileNameWithoutExtension(mapPath);
+            Title = Path.GetFileNameWithoutExtension(mapPath);
 
             TransformMode = TransformModes.Translate;
         }
@@ -194,6 +194,13 @@ namespace SauceEditor.Controls.GamePanels
 
                 EntitySelectionChanged?.Invoke(this, args);
             };
+            _perspectiveView.Panel.EntityDuplicated += (s, args) =>
+            {
+                _perspectiveView.Panel.Duplicate(args.ID, args.NewID);
+                _xView.Panel.Duplicate(args.ID, args.NewID);
+                _yView.Panel.Duplicate(args.ID, args.NewID);
+                _zView.Panel.Duplicate(args.ID, args.NewID);
+            };
             //_perspectiveView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
             _perspectiveView.Width = MainDockManager.Width / 2.0;
@@ -220,6 +227,13 @@ namespace SauceEditor.Controls.GamePanels
                 }
 
                 EntitySelectionChanged?.Invoke(this, args);
+            };
+            _xView.Panel.EntityDuplicated += (s, args) =>
+            {
+                _perspectiveView.Panel.Duplicate(args.ID, args.NewID);
+                _xView.Panel.Duplicate(args.ID, args.NewID);
+                _yView.Panel.Duplicate(args.ID, args.NewID);
+                _zView.Panel.Duplicate(args.ID, args.NewID);
             };
             //_xView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_xView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
@@ -248,6 +262,13 @@ namespace SauceEditor.Controls.GamePanels
 
                 EntitySelectionChanged?.Invoke(this, args);
             };
+            _yView.Panel.EntityDuplicated += (s, args) =>
+            {
+                _perspectiveView.Panel.Duplicate(args.ID, args.NewID);
+                _xView.Panel.Duplicate(args.ID, args.NewID);
+                _yView.Panel.Duplicate(args.ID, args.NewID);
+                _zView.Panel.Duplicate(args.ID, args.NewID);
+            };
             //_yView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_yView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
             _yView.Width = MainDockManager.Width;// / 2.0;
@@ -274,6 +295,13 @@ namespace SauceEditor.Controls.GamePanels
                 }
 
                 EntitySelectionChanged?.Invoke(this, args);
+            };
+            _zView.Panel.EntityDuplicated += (s, args) =>
+            {
+                _perspectiveView.Panel.Duplicate(args.ID, args.NewID);
+                _xView.Panel.Duplicate(args.ID, args.NewID);
+                _yView.Panel.Duplicate(args.ID, args.NewID);
+                _zView.Panel.Duplicate(args.ID, args.NewID);
             };
             //_zView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_zView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
