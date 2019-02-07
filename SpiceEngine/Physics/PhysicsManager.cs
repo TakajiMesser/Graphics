@@ -57,6 +57,27 @@ namespace SpiceEngine.Physics
             _lightTree = new OctTree(0, worldBoundaries);
         }
 
+        public void DuplicateBody(int entityID, int newID)
+        {
+            var position = _entityProvider.GetEntity(entityID).Position;
+            var shape = _rigidBodyByEntityID[entityID].Shape;
+            var entityType = _entityProvider.GetEntityType(entityID);
+
+            switch (entityType)
+            {
+                case EntityTypes.Actor:
+                case EntityTypes.Joint:
+                    AddActor(newID, shape.Duplicate(), position);
+                    break;
+                case EntityTypes.Brush:
+                    AddBrush(newID, shape.Duplicate(), position);
+                    break;
+                case EntityTypes.Volume:
+                    AddVolume(newID, shape.Duplicate(), position);
+                    break;
+            }
+        }
+
         public void AddBrush(int entityID, IShape shape, Vector3 position)
         {
             var collider = shape.ToCollider(position);

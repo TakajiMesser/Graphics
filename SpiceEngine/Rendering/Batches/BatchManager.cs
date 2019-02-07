@@ -25,9 +25,37 @@ namespace SpiceEngine.Rendering.Batches
 
         private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
 
+        public bool IsLoaded { get; private set; } = false;
+
         public BatchManager(IEntityProvider entityProvider)
         {
             _entityProvider = entityProvider;
+        }
+
+        public void DuplicateBatch(int entityID, int newID)
+        {
+            var batch = GetBatch(entityID);
+            var entityType = _entityProvider.GetEntityType(entityID);
+
+            switch (entityType)
+            {
+                case EntityTypes.Actor:
+                    var actorBatch = (ModelBatch)batch;
+                    AddActor(newID, actorBatch.Meshes.Select(m => m.Duplicate()));
+                    break;
+                case EntityTypes.Brush:
+                    var brushBatch = (MeshBatch)batch;
+                    AddBrush(newID, brushBatch.Mesh.Duplicate());
+                    break;
+                case EntityTypes.Volume:
+                    var volumeBatch = (MeshBatch)batch;
+                    AddVolume(newID, volumeBatch.Mesh.Duplicate());
+                    break;
+                case EntityTypes.Joint:
+                    var jointBatch = (ModelBatch)batch;
+                    AddJoint(newID, jointBatch.Meshes.Select(m => m.Duplicate()));
+                    break;
+            }
         }
 
         public IBatch GetBatch(int entityID)
@@ -43,18 +71,25 @@ namespace SpiceEngine.Rendering.Batches
         public void RemoveByEntityID(int entityID)
         {
             var batch = GetBatch(entityID);
-            
-            switch (batch)
+            var entityType = _entityProvider.GetEntityType(entityID);
+
+            switch (entityType)
             {
-                case MeshBatch meshBatch:
-                    _brushBatches.Remove(meshBatch);
-                    _volumeBatches.Remove(meshBatch);
+                case EntityTypes.Actor:
+                    _actorBatches.Remove((ModelBatch)batch);
                     break;
-                case ModelBatch modelBatch:
-                    _actorBatches.Remove(modelBatch);
-                    _jointBatches.Remove(modelBatch);
+                case EntityTypes.Brush:
+                    _brushBatches.Remove((MeshBatch)batch);
+                    break;
+                case EntityTypes.Volume:
+                    _volumeBatches.Remove((MeshBatch)batch);
+                    break;
+                case EntityTypes.Joint:
+                    _jointBatches.Remove((ModelBatch)batch);
                     break;
             }
+
+            _batchesByEntityID.Remove(entityID);
         }
 
         public void AddBrush(int entityID, IMesh3D mesh)
@@ -63,6 +98,11 @@ namespace SpiceEngine.Rendering.Batches
 
             _brushBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void AddVolume(int entityID, IMesh3D mesh)
@@ -71,6 +111,11 @@ namespace SpiceEngine.Rendering.Batches
 
             _volumeBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void AddActor(int entityID, IEnumerable<IMesh3D> meshes)
@@ -79,6 +124,11 @@ namespace SpiceEngine.Rendering.Batches
 
             _actorBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes)
@@ -87,6 +137,11 @@ namespace SpiceEngine.Rendering.Batches
 
             _jointBatches.Add(batch);
             _batchesByEntityID.Add(entityID, batch);
+
+            if (IsLoaded)
+            {
+                batch.Load();
+            }
         }
 
         public void Load(int entityID) => _batchesByEntityID[entityID].Load();
@@ -112,6 +167,8 @@ namespace SpiceEngine.Rendering.Batches
             {
                 batch.Load();
             }
+
+            IsLoaded = true;
         }
 
         public void DrawBrushes(ShaderProgram shaderProgram, TextureManager textureManager = null)

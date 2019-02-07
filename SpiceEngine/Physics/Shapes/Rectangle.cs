@@ -34,6 +34,15 @@ namespace SpiceEngine.Physics.Shapes
             };
         }
 
+        public Rectangle(float width, float height, Vector2 center)
+        {
+            Width = width;
+            Height = height;
+            Center = center;
+        }
+
+        public override IShape Duplicate() => new Rectangle(Width, Height, Center);
+
         public override ICollider ToCollider(Vector3 position)
         {
             var min = new Vector2(position.X - Center.X - Width / 2.0f, position.Y - Center.Y - Height / 2.0f);

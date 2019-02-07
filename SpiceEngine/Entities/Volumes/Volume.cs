@@ -57,6 +57,13 @@ namespace SpiceEngine.Entities.Volumes
             //Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
         }
 
+        public Volume Duplicate() => new Volume()
+        {
+            Position = Position,
+            Rotation = Rotation,
+            Scale = Scale,
+        };
+
         //public void Load() => Mesh.Load();
         //public void Draw() => Mesh.Draw();
 

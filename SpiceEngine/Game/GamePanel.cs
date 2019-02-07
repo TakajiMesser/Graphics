@@ -47,7 +47,7 @@ namespace SpiceEngine.Game
         public double Frequency { get; private set; }
         public RenderModes RenderMode { get; set; }
         public TransformModes TransformMode { get; set; }
-        public List<IEntity> SelectedEntities { get; } = new List<IEntity>();
+        public List<IEntity> SelectedEntities { get; private set; } = new List<IEntity>();
         public SelectionTypes SelectionType { get; private set; }
         public Tools SelectedTool
         {
@@ -114,6 +114,7 @@ namespace SpiceEngine.Game
         public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
 
         private object _loadLock = new object();
         private bool _isLoaded = false;
@@ -128,6 +129,7 @@ namespace SpiceEngine.Game
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
+        private bool _isDuplicating = false;
 
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
@@ -579,6 +581,8 @@ namespace SpiceEngine.Game
 
         private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            _pollTimer.Stop();
+
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
             _inputManager.Update();
@@ -587,6 +591,11 @@ namespace SpiceEngine.Game
             {
                 Invalidate();
                 _invalidated = false;
+            }
+
+            if (IsDragging)
+            {
+                _pollTimer.Start();
             }
         }
 
@@ -604,8 +613,36 @@ namespace SpiceEngine.Game
             _pollTimer.Stop();
         }
 
+        private void DuplicateSelectedItems()
+        {
+            // Create duplicates and overwrite SelectedEntities with them
+            var duplicateEntities = new List<IEntity>();
+
+            foreach (var entity in SelectedEntities)
+            {
+                var duplicateEntity = _entityManager.DuplicateEntity(entity);
+                // Need to duplicate colliders
+                // Need to duplicate scripts
+
+                EntityDuplicated?.Invoke(this, new DuplicatedEntityEventArgs(entity.ID, duplicateEntity.ID));
+                duplicateEntities.Add(duplicateEntity);
+            }
+
+            SelectedEntities = duplicateEntities;
+        }
+
+        public void Duplicate(int entityID, int duplicateEntityID)
+        {
+            Invoke(new Action(() => _renderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+        }
+
         private void HandleInput()
         {
+            if (_isDuplicating && !_inputManager.IsDown(new Input(Key.ShiftLeft)))
+            {
+                _isDuplicating = false;
+            }
+
             if (_inputManager.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionType = SelectionTypes.None;
@@ -623,6 +660,12 @@ namespace SpiceEngine.Game
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
+                    if (!_isDuplicating && _inputManager.IsDown(new Input(Key.ShiftLeft)))
+                    {
+                        _isDuplicating = true;
+                        DuplicateSelectedItems();
+                    }
+
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
                     foreach (var entity in SelectedEntities)
                     {

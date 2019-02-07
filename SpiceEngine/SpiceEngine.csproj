@@ -122,6 +122,7 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\DuplicatedEntityEventArgs.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
     <Compile Include="Game\GameSettings\ControlSettings.cs" />
     <Compile Include="Game\GameSettings\AudioSettings.cs" />

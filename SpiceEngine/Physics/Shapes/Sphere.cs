@@ -22,6 +22,13 @@ namespace SpiceEngine.Physics.Shapes
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
+        public Sphere(float radius)
+        {
+            Radius = radius;
+        }
+
+        public override IShape Duplicate() => new Sphere(Radius);
+
         public override ICollider ToCollider(Vector3 position)
         {
             var min = new Vector3(position.X - Center.X - Radius, position.Y - Center.Y - Radius, position.Z - Center.Z - Radius);

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
@@ -14,9 +15,20 @@ using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Entities
 {
+    public enum EntityTypes
+    {
+        Actor,
+        Brush,
+        Volume,
+        Joint,
+        Light
+    }
+
     public class EntityManager : IEntityProvider
     {
-        public List<IEntity> Entities { get; } = new List<IEntity>();
+        private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
+        private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
+        private int _nextAvailableID = 1;
 
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
@@ -27,7 +39,9 @@ namespace SpiceEngine.Entities
 
         public void ClearEntities()
         {
-            Entities.Clear();
+            _entitiesByID.Clear();
+            _entityTypeByID.Clear();
+            _nextAvailableID = 1;
 
             Actors.Clear();
             Brushes.Clear();
@@ -37,8 +51,14 @@ namespace SpiceEngine.Entities
 
         public IEntity GetEntity(int id)
         {
-            if (id > Entities.Count) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-            return Entities[id - 1];
+            if (!_entitiesByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+            return _entitiesByID[id];
+        }
+
+        public EntityTypes GetEntityType(int id)
+        {
+            if (!_entityTypeByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+            return _entityTypeByID[id];
         }
 
         public Actor GetActorByName(string name)
@@ -62,8 +82,9 @@ namespace SpiceEngine.Entities
             // Assign a unique ID
             if (entity.ID == 0)
             {
-                Entities.Add(entity);
-                entity.ID = Entities.Count;
+                int id = GetUniqueID();
+                _entitiesByID.Add(id, entity);
+                entity.ID = id;
             }
 
             switch (entity)
@@ -72,19 +93,53 @@ namespace SpiceEngine.Entities
                     if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
                     if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
                     Actors.Add(actor);
+                    _entityTypeByID.Add(entity.ID, actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor);
                     break;
                 case Brush brush:
                     Brushes.Add(brush);
+                    _entityTypeByID.Add(entity.ID, EntityTypes.Brush);
                     break;
                 case Volume volume:
                     Volumes.Add(volume);
+                    _entityTypeByID.Add(entity.ID, EntityTypes.Volume);
                     break;
                 case Light light:
                     Lights.Add(light);
+                    _entityTypeByID.Add(entity.ID, EntityTypes.Light);
                     break;
             }
 
             return entity.ID;
+        }
+
+        public IEntity DuplicateEntity(IEntity entity)
+        {
+            IEntity duplicateEntity = null;
+
+            switch (entity)
+            {
+                case Actor actor:
+                    var name = GetUniqueName(actor.Name);
+                    duplicateEntity = actor.Duplicate(name);
+                    break;
+                case Brush brush:
+                    duplicateEntity = brush.Duplicate();
+                    break;
+                case Volume volume:
+                    duplicateEntity = volume.Duplicate();
+                    break;
+                case Light light:
+                    /*duplicateEntity = new Light()
+                    {
+                        Position = light.Position,
+                        Rotation = light.Rotation,
+                        Scale = light.Scale,
+                    };*/
+                    break;
+            }
+
+            AddEntity(duplicateEntity);
+            return duplicateEntity;
         }
 
         public void RemoveEntityByID(int id)
@@ -123,6 +178,40 @@ namespace SpiceEngine.Entities
             foreach (var volume in Volumes)
             {
                 //volume.Load();
+            }
+        }
+
+        private int GetUniqueID()
+        {
+            int id = _nextAvailableID;
+            _nextAvailableID++;
+
+            return id;
+        }
+
+        private string GetUniqueName(string name)
+        {
+            // Check if this name is already taken
+            if (Actors.Any(a => a.Name == name))
+            {
+                var regex = new Regex("(?<Name>.+)_(?<Number>[0-9]+$)");
+                var match = regex.Match(name);
+
+                if (match.Success)
+                {
+                    // Increment "_n" and try again
+                    var number = int.Parse(match.Groups["Number"].Value);
+                    return GetUniqueName(match.Groups["Name"].Value + "_" + (number + 1));
+                }
+                else
+                {
+                    // Append "_2" and try again
+                    return GetUniqueName(name + "_2");
+                }
+            }
+            else
+            {
+                return name;
             }
         }
     }

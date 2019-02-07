@@ -13,6 +13,7 @@ using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Materials;
+using System;
 
 namespace SpiceEngine.Entities.Actors
 {
@@ -67,6 +68,39 @@ namespace SpiceEngine.Entities.Actors
         public Actor(string name)
         {
             Name = name;
+        }
+
+        public virtual Actor Duplicate(string name)
+        {
+            var actor = new Actor(name);
+            actor.FromActor(this);
+            return actor;
+        }
+
+        protected void FromActor(Actor actor)
+        {
+            Position = actor.Position;
+            Rotation = actor.Rotation;
+            Scale = actor.Scale;
+            Orientation = actor.Orientation;
+
+            foreach (var kvp in actor._materialByMeshIndex)
+            {
+                _materialByMeshIndex.Add(kvp.Key, kvp.Value);
+            }
+
+            foreach (var kvp in actor._textureMappingByMeshIndex)
+            {
+                var textureMapping = new TextureMapping()
+                {
+                    DiffuseMapID = kvp.Value.DiffuseMapID,
+                    NormalMapID = kvp.Value.NormalMapID,
+                    ParallaxMapID = kvp.Value.ParallaxMapID,
+                    SpecularMapID = kvp.Value.SpecularMapID
+                };
+
+                _textureMappingByMeshIndex.Add(kvp.Key, textureMapping);
+            }
         }
 
         public void AddMaterial(int meshIndex, Material material) => _materialByMeshIndex.Add(meshIndex, material);

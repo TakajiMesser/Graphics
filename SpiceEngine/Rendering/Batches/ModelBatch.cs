@@ -25,6 +25,8 @@ namespace SpiceEngine.Rendering.Batches
             Meshes.AddRange(meshes);
         }
 
+        public IBatch Duplicate(int entityID) => new ModelBatch(entityID, Meshes.Select(m => m.Duplicate()));
+
         public void Load()
         {
             foreach (var mesh in Meshes)
