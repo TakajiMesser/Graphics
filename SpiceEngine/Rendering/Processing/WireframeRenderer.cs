@@ -23,8 +23,21 @@ namespace SpiceEngine.Rendering.Processing
     public class WireframeRenderer : Renderer
     {
         public float LineThickness { get; set; } = 0.02f;
+        public Vector4 LineColor { get; set; } = Vector4.One;
+
         public float SelectedLineThickness { get; set; } = 0.02f;
+        public Vector4 SelectedLineColor { get; set; } = new Vector4(0.7f, 0.7f, 0.1f, 1.0f);
+
+        public float SelectedLightLineThickness { get; set; } = 0.02f;
+        public Vector4 SelectedLightLineColor { get; set; } = new Vector4(0.8f, 0.8f, 0.1f, 1.0f);
+
+        public float GridUnit { get; set; } = 1.0f;
         public float GridLength { get; set; } = 10000.0f;
+        public float GridLineThickness { get; set; } = 0.02f;
+        public Vector4 GridLineUnitColor { get; set; } = new Vector4(0.2f, 0.2f, 0.2f, 1.0f);
+        public Vector4 GridLineAxisColor { get; set; } = new Vector4(0.8f, 0.2f, 0.2f, 1.0f);
+        public Vector4 GridLine5Color { get; set; } = new Vector4(0.4f, 0.2f, 0.2f, 1.0f);
+        public Vector4 GridLine10Color { get; set; } = new Vector4(0.6f, 0.2f, 0.2f, 1.0f);
         public Quaternion GridRotation { get; set; } = Quaternion.Identity;
 
         public Texture FinalTexture { get; protected set; }
@@ -131,7 +144,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_wireframeProgram);
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
-            _wireframeProgram.SetUniform("lineColor", Vector4.One);
+            _wireframeProgram.SetUniform("lineColor", LineColor);
 
             batchManager.DrawVolumes(_wireframeProgram);
         }
@@ -142,7 +155,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_wireframeProgram);
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
-            _wireframeProgram.SetUniform("lineColor", Vector4.One);
+            _wireframeProgram.SetUniform("lineColor", LineColor);
 
             batchManager.DrawBrushes(_wireframeProgram);
             batchManager.DrawVolumes(_wireframeProgram);
@@ -155,7 +168,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_jointWireframeProgram);
             _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
-            _jointWireframeProgram.SetUniform("lineColor", Vector4.One);
+            _jointWireframeProgram.SetUniform("lineColor", LineColor);
 
             batchManager.DrawJoints(_jointWireframeProgram);
         }
@@ -169,8 +182,13 @@ namespace SpiceEngine.Rendering.Processing
             var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
             _gridProgram.SetUniform("modelMatrix", model);
 
-            _gridProgram.SetUniform("thickness", 0.02f);
+            _gridProgram.SetUniform("unit", GridUnit);
             _gridProgram.SetUniform("length", GridLength);
+            _gridProgram.SetUniform("thickness", GridLineThickness);
+            _gridProgram.SetUniform("lineUnitColor", GridLineUnitColor);
+            _gridProgram.SetUniform("lineAxisColor", GridLineAxisColor);
+            _gridProgram.SetUniform("line5Color", GridLine5Color);
+            _gridProgram.SetUniform("line10Color", GridLine10Color);
 
             _gridSquare.Draw();
         }
@@ -182,7 +200,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(program);
             program.SetUniform("lineThickness", SelectedLineThickness);
-            program.SetUniform("lineColor", new Vector4(0.7f, 0.7f, 0.1f, 1.0f));
+            program.SetUniform("lineColor", SelectedLineColor);
 
             var batch = batchManager.GetBatch(entity.ID);
             batch.Draw(entityProvider, program);
@@ -193,8 +211,8 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.Use();
 
             camera.SetUniforms(_wireframeProgram);
-            _wireframeProgram.SetUniform("lineThickness", SelectedLineThickness);
-            _wireframeProgram.SetUniform("lineColor", new Vector4(0.8f, 0.8f, 0.1f, 1.0f));
+            _wireframeProgram.SetUniform("lineThickness", SelectedLightLineThickness);
+            _wireframeProgram.SetUniform("lineColor", SelectedLightLineColor);
 
             switch (light)
             {

@@ -30,7 +30,9 @@ namespace SauceEditor.Controls.UpDowns
         public readonly static DependencyProperty MinValueProperty = DependencyProperty.Register("MinValue", typeof(float), typeof(NumericUpDown));
 
         public event EventHandler<ValueChangedEventArgs> ValueChanged;
+        public event EventHandler<ValueChangedEventArgs> ValueHoldChanged;
 
+        private float _downValue;
         private Point _cursorStart = new Point();
 
         public NumericUpDown()
@@ -82,12 +84,19 @@ namespace SauceEditor.Controls.UpDowns
 
         private void UpButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            _downValue = Value;
             _cursorStart = Mouse.GetPosition(this);
         }
 
         private void DownButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            _downValue = Value;
             _cursorStart = Mouse.GetPosition(this);
+        }
+
+        private void Button_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            ValueHoldChanged?.Invoke(this, new ValueChangedEventArgs(_downValue, Value));
         }
 
         private void UpButton_Click(object sender, RoutedEventArgs e)
