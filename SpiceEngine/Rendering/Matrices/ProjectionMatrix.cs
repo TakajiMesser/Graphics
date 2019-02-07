@@ -1,7 +1,7 @@
 ﻿using OpenTK;
-using System;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Shaders;
+using System;
 
 namespace SpiceEngine.Rendering.Matrices
 {

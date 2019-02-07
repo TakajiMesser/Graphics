@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SpiceEngine.Entities;
+using System;
 using System.Collections.Generic;
-using SpiceEngine.Entities;
 
 namespace SpiceEngine.Game
 {

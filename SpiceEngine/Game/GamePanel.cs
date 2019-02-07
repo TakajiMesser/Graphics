@@ -2,31 +2,25 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Inputs;
+using SpiceEngine.Maps;
+using SpiceEngine.Outputs;
+using SpiceEngine.Rendering;
+using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Processing;
+using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Inputs;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Utilities;
 using Brush = SpiceEngine.Entities.Brushes.Brush;
 using Timer = System.Timers.Timer;
-using SpiceEngine.Rendering;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics;
-using SpiceEngine.Scripting;
-using SpiceEngine.Sounds;
-using SpiceEngine.Rendering.Textures;
-using System.IO;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Game
 {
@@ -484,9 +478,9 @@ namespace SpiceEngine.Game
             Invalidate();
         }
 
-        public void SetGridThickness(float thickness)
+        public void SetGridLineThickness(float thickness)
         {
-            _renderManager.SetGridThickness(thickness);
+            _renderManager.SetGridLineThickness(thickness);
             Invalidate();
         }
 

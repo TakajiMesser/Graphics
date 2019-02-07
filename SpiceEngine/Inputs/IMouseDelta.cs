@@ -1,7 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Input;
 using SpiceEngine.Outputs;
-using System;
 
 namespace SpiceEngine.Inputs
 {

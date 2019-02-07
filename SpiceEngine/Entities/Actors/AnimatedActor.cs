@@ -1,20 +1,9 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using System.Linq;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Models;
-using SpiceEngine.Game;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Entities.Actors
 {

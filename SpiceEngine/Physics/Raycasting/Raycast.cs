@@ -1,8 +1,7 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities;
+using SpiceEngine.Physics.Shapes;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Raycasting
 {

@@ -1,10 +1,4 @@
-﻿using SpiceEngine.Physics.Collision;
-using SpiceEngine.Physics.Shapes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Physics
 {

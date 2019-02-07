@@ -1,9 +1,4 @@
-﻿using OpenTK;
-using System;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Lights;
-
-namespace SpiceEngine.Physics.Collision
+﻿namespace SpiceEngine.Physics.Collision
 {
     public class Bounds
     {

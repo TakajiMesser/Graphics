@@ -1,21 +1,17 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Models;
-using SpiceEngine.Game;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Utilities;
-using System.Linq;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering.Animations;
+using SpiceEngine.Rendering.Materials;
+using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Scripting.StimResponse;
+using SpiceEngine.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Maps
 {

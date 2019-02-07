@@ -3,15 +3,12 @@ using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Models;
 using SpiceEngine.Helpers;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Physics;
-using SpiceEngine.Physics.Collision;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Scripting;
 using SpiceEngine.Sounds;
 using System;
@@ -19,7 +16,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
-using System.Linq;
 
 namespace SpiceEngine.Game
 {

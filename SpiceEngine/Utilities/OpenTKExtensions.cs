@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngine.Rendering.Vertices;
 using System.Drawing;
 
 namespace SpiceEngine.Utilities

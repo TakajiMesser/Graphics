@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Collision

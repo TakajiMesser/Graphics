@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Input;
-using System;
 using SpiceEngine.Inputs;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Matrices;
+using System;
 
 namespace SpiceEngine.Entities.Cameras
 {

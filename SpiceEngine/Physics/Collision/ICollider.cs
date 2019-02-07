@@ -1,8 +1,4 @@
-﻿using OpenTK;
-using SpiceEngine.Physics.Shapes;
-using System;
-
-namespace SpiceEngine.Physics.Collision
+﻿namespace SpiceEngine.Physics.Collision
 {
     public interface ICollider
     {

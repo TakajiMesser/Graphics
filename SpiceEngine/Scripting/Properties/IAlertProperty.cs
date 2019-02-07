@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpiceEngine.Scripting.Behaviors;
+﻿using SpiceEngine.Scripting.Behaviors;
+using System;
 
 namespace SpiceEngine.Scripting.Properties
 {

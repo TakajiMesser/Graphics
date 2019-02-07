@@ -1,16 +1,11 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Helpers;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering.Materials;
+using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
 using System.Linq;
-using SpiceEngine.Entities;
-using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using OpenTK.Graphics;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Rendering.Meshes;
 
 namespace SpiceEngine.Maps
 {

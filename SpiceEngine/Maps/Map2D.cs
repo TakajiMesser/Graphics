@@ -1,11 +1,7 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
+using SpiceEngine.Physics.Collision;
 using System.Linq;
 using System.Runtime.Serialization;
-using System.Xml;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Physics.Collision;
 
 namespace SpiceEngine.Maps
 {

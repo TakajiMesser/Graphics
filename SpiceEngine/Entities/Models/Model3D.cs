@@ -1,16 +1,4 @@
-﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Rendering.Meshes;
-using System.Linq;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Utilities;
-
-namespace SpiceEngine.Entities.Models
+﻿namespace SpiceEngine.Entities.Models
 {
     /*public class Model3D<T> : IModel3D where T : IVertex3D
     {

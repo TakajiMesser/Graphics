@@ -1,17 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using SpiceEngine.Entities.Actors;
+﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Maps;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Textures;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace SpiceEngine.Entities
 {

@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Models;
-using SpiceEngine.Rendering.Buffers;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {

@@ -74,7 +74,7 @@ namespace SauceEditor.Controls.GamePanels
             set
             {
                 SetValue(GridThicknessProperty, value);
-                Panel.SetGridThickness(value);
+                Panel.SetGridLineThickness(value);
             }
         }
 
@@ -124,7 +124,7 @@ namespace SauceEditor.Controls.GamePanels
             SelectedLightWireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetSelectedLightWireframeThickness(args.NewValue);
             SelectedLightWireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetSelectedLightWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
 
-            GridThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetGridThickness(args.NewValue);
+            GridThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetGridLineThickness(args.NewValue);
             GridUnitColorPick.SelectedColorChanged += (s, args) => Panel.SetGridUnitColor(args.NewValue.Value.ToVector4().ToColor4());
             GridAxisColorPick.SelectedColorChanged += (s, args) => Panel.SetGridAxisColor(args.NewValue.Value.ToVector4().ToColor4());
             Grid5ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid5Color(args.NewValue.Value.ToVector4().ToColor4());

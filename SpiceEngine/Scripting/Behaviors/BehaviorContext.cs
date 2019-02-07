@@ -1,17 +1,12 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Physics;
-using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Shapes;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Scripting.Behaviors
 {

@@ -1,8 +1,6 @@
-﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Actors;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities
 {

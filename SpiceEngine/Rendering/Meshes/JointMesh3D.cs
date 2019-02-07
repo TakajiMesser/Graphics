@@ -1,17 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using System;
-using System.Collections.Generic;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
-
-namespace SpiceEngine.Rendering.Meshes
+﻿namespace SpiceEngine.Rendering.Meshes
 {
     /*public class JointMesh3D : Mesh3D<JointVertex3D>
     {

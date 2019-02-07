@@ -4,7 +4,6 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Models;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
@@ -12,10 +11,8 @@ using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Rendering
 {

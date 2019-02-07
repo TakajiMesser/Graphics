@@ -1,18 +1,15 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SpiceEngine.Entities;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics;
 using SpiceEngine.Physics.Raycasting;
+using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Utilities;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Physics;
-using SpiceEngine.Entities.Actors;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Scripting.StimResponse
 {

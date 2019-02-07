@@ -1,8 +1,8 @@
 ﻿using OpenTK;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Rendering.Animations
 {

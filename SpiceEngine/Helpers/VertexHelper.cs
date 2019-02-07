@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using System;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Helpers
 {
