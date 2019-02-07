@@ -17,6 +17,7 @@ namespace SpiceEngine.Physics.Shapes
         public abstract ICollider ToCollider(Vector3 position);
         public abstract Vector2 GetFurthestPoint(Vector2 position, Vector2 direction);
         public abstract bool CollidesWith(Vector2 position, Vector2 point);
+        public abstract IShape Duplicate();
 
         public static bool Collides(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
         {

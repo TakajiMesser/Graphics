@@ -15,9 +15,19 @@ using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Entities
 {
+    public enum EntityTypes
+    {
+        Actor,
+        Brush,
+        Volume,
+        Joint,
+        Light
+    }
+
     public class EntityManager : IEntityProvider
     {
         private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
+        private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
         private int _nextAvailableID = 1;
 
         public List<Actor> Actors { get; } = new List<Actor>();
@@ -30,6 +40,7 @@ namespace SpiceEngine.Entities
         public void ClearEntities()
         {
             _entitiesByID.Clear();
+            _entityTypeByID.Clear();
             _nextAvailableID = 1;
 
             Actors.Clear();
@@ -42,6 +53,12 @@ namespace SpiceEngine.Entities
         {
             if (!_entitiesByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
             return _entitiesByID[id];
+        }
+
+        public EntityTypes GetEntityType(int id)
+        {
+            if (!_entityTypeByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
+            return _entityTypeByID[id];
         }
 
         public Actor GetActorByName(string name)
@@ -76,15 +93,19 @@ namespace SpiceEngine.Entities
                     if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
                     if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
                     Actors.Add(actor);
+                    _entityTypeByID.Add(entity.ID, actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor);
                     break;
                 case Brush brush:
                     Brushes.Add(brush);
+                    _entityTypeByID.Add(entity.ID, EntityTypes.Brush);
                     break;
                 case Volume volume:
                     Volumes.Add(volume);
+                    _entityTypeByID.Add(entity.ID, EntityTypes.Volume);
                     break;
                 case Light light:
                     Lights.Add(light);
+                    _entityTypeByID.Add(entity.ID, EntityTypes.Light);
                     break;
             }
 
@@ -101,7 +122,6 @@ namespace SpiceEngine.Entities
                     var name = GetUniqueName(actor.Name);
                     duplicateEntity = actor.Duplicate(name);
                     break;
-
                 case Brush brush:
                     duplicateEntity = brush.Duplicate();
                     break;

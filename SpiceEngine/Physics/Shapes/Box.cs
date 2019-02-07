@@ -10,9 +10,9 @@ namespace SpiceEngine.Physics.Shapes
 {
     public class Box : Shape3D
     {
-        public float Width { get; }
-        public float Height { get; }
-        public float Depth { get; }
+        public float Width { get; private set; }
+        public float Height { get; private set; }
+        public float Depth { get; private set; }
 
         public override Vector3 Center { get; }
         public override float Mass { get; set; }
@@ -44,6 +44,19 @@ namespace SpiceEngine.Physics.Shapes
                 Z = (maxZ + minZ) / 2.0f
             };
         }
+
+        public Box(float width, float height, float depth, Vector3 center)
+        {
+            Width = width;
+            Height = height;
+            Depth = depth;
+            Center = center;
+        }
+
+        public override IShape Duplicate() => new Box(Width, Height, Depth, Center)
+        {
+            Mass = Mass
+        };
 
         public override ICollider ToCollider(Vector3 position)
         {

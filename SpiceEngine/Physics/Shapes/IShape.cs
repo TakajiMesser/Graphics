@@ -14,5 +14,6 @@ namespace SpiceEngine.Physics.Shapes
         float MomentOfInertia { get; }
 
         ICollider ToCollider(Vector3 position);
+        IShape Duplicate();
     }
 }
