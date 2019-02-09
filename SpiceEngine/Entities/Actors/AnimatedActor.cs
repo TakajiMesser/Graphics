@@ -2,6 +2,7 @@
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -42,6 +43,10 @@ namespace SpiceEngine.Entities.Actors
             if (_jointTransformsByMeshIndex.ContainsKey(meshIndex))
             {
                 program.SetUniform("jointTransforms", _jointTransformsByMeshIndex[meshIndex]);
+            }
+            else
+            {
+                program.SetUniform("jointTransforms", ArrayExtensions.Initialize(MAX_JOINTS, Matrix4.Identity));
             }
         }
 
