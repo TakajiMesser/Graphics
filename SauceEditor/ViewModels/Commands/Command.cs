@@ -2,29 +2,41 @@
 
 namespace SauceEditor.ViewModels.Commands
 {
-    public class Command
+    public class Command : ICommand
     {
         public object Source { get; private set; }
-        public Action Action { get; private set; }
 
-        public Command(object source, Action action)
+        private Action _doAction;
+        private Action _undoAction;
+
+        public Command(object source, Action doAction, Action undoAction)
         {
             Source = source;
-            Action = action;
+            _doAction = doAction;
+            _undoAction = undoAction;
         }
+
+        public void Do() => _doAction();
+        public void Undo() => _undoAction();
     }
 
     public class Command<T>
     {
         public object Source { get; private set; }
-        public T Parameter { get; private set; }
-        public Action<T> Action { get; private set; }
 
-        public Command(object source, T parameter, Action<T> action)
+        private T _parameter;
+        private Action<T> _doAction;
+        private Action<T> _undoAction;
+
+        public Command(object source, T parameter, Action<T> doAction, Action<T> undoAction)
         {
             Source = source;
-            Parameter = parameter;
-            Action = action;
+            _parameter = parameter;
+            _doAction = doAction;
+            _undoAction = undoAction;
         }
+
+        public void Do() => _doAction(_parameter);
+        public void Undo() => _undoAction(_parameter);
     }
 }

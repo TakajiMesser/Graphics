@@ -26,7 +26,7 @@ namespace SauceEditor.Views.Controls
     /// </summary>
     public partial class MainWindow : Window
     {
-        public CommandStack CommandStack { get; set; } = new CommandStack();
+        public CommandStack CommandStack { get; private set; } = new CommandStack();
 
         private Map _map;
         private string _mapPath;
