@@ -2,12 +2,12 @@
 
 namespace SpiceEngine.Physics
 {
-    public abstract class PhysicsBody
+    public abstract class Body
     {
         public int EntityID { get; }
         public IShape Shape { get; }
 
-        public PhysicsBody(int entityID, IShape shape)
+        public Body(int entityID, IShape shape)
         {
             EntityID = entityID;
             Shape = shape;

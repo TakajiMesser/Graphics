@@ -17,7 +17,8 @@ namespace SpiceEngine.Physics
         private ICollisionTree _volumeTree;
         private ICollisionTree _lightTree;
 
-        private Dictionary<int, RigidBody> _rigidBodyByEntityID = new Dictionary<int, RigidBody>();
+        private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
+        private Dictionary<int, Body> _bodyByEntityID = new Dictionary<int, Body>();
 
         public List<EntityCollision> EntityCollisions { get; } = new List<EntityCollision>();
         
@@ -57,7 +58,7 @@ namespace SpiceEngine.Physics
         public void DuplicateBody(int entityID, int newID)
         {
             var position = _entityProvider.GetEntity(entityID).Position;
-            var shape = _rigidBodyByEntityID[entityID].Shape;
+            var shape = _bodyByEntityID[entityID].Shape;
             var entityType = _entityProvider.GetEntityType(entityID);
 
             switch (entityType)
@@ -81,7 +82,7 @@ namespace SpiceEngine.Physics
             _brushTree.Insert(new Bounds(entityID, collider));
 
             var rigidBody = new RigidBody(entityID, shape);
-            _rigidBodyByEntityID.Add(entityID, rigidBody);
+            _bodyByEntityID.Add(entityID, rigidBody);
         }
 
         public void AddActor(int entityID, IShape shape, Vector3 position)
@@ -90,7 +91,7 @@ namespace SpiceEngine.Physics
             _actorTree.Insert(new Bounds(entityID, collider));
 
             var rigidBody = new RigidBody(entityID, shape);
-            _rigidBodyByEntityID.Add(entityID, rigidBody);
+            _bodyByEntityID.Add(entityID, rigidBody);
         }
 
         public void AddVolume(int entityID, IShape shape, Vector3 position)
@@ -99,7 +100,7 @@ namespace SpiceEngine.Physics
             _volumeTree.Insert(new Bounds(entityID, collider));
 
             var rigidBody = new RigidBody(entityID, shape);
-            _rigidBodyByEntityID.Add(entityID, rigidBody);
+            _bodyByEntityID.Add(entityID, rigidBody);
         }
 
         public void Update()
@@ -111,7 +112,7 @@ namespace SpiceEngine.Physics
 
             foreach (var actor in _entityProvider.Actors)
             {
-                var shape = _rigidBodyByEntityID[actor.ID].Shape;
+                var shape = _bodyByEntityID[actor.ID].Shape;
                 var collider = shape.ToCollider(actor.Position);
                 var bounds = new Bounds(actor.ID, collider);
 
@@ -135,11 +136,83 @@ namespace SpiceEngine.Physics
 
                 EntityCollisions.Add(new EntityCollision(actor.ID)
                 {
-                    Shape = _rigidBodyByEntityID[actor.ID].Shape,
+                    Shape = _bodyByEntityID[actor.ID].Shape,
                     Bounds = bounds,
                     Colliders = filteredColliders,
-                    Bodies = filteredColliders.Select(c => _rigidBodyByEntityID[c.EntityID])
+                    Bodies = filteredColliders.Select(c => _bodyByEntityID[c.EntityID])
                 });
+            }
+        }
+
+        private CollisionManager _collisionManager = new CollisionManager();
+
+        public void Update()
+        {
+            ApplyForces();
+            BroadPhaseCollisionDetections();
+            NarrowPhaseCollisionDetections();
+            PerformCollisionResolutions();
+        }
+
+        private void ApplyForces()
+        {
+            
+        }
+
+        private void BroadPhaseCollisionDetections()
+        {
+            // We just need to perform these collision detections for Actors, since they are all that can move
+            // Can Volumes move? Lights? Maybe Lights need to be attached to an Actor in order to move?
+            _actorTree.Clear();
+            var boundsByEntityID = new Dictionary<int, Bounds>();
+
+            // Update the actor colliders every frame, since they could have moved
+            foreach (var actor in _entityProvider.Actors)
+            {
+                var collider = _bodyByEntityID[actor.ID].Shape.ToCollider(actor.Position);
+                var bounds = new Bounds(actor.ID, collider);
+
+                boundsByEntityID.Add(actor.ID, bounds);
+                _actorTree.Insert(bounds);
+            }
+
+            // Now, for each actor, check for broad collisions against other actors, brushes, and volumes
+            foreach (var actor in _entityProvider.Actors)
+            {
+                var bounds = boundsByEntityID[actor.ID];
+
+                var colliderBounds = _actorTree.Retrieve(bounds)
+                    .Where(b => b.EntityID != actor.ID)
+                    .Concat(_brushTree
+                        .Retrieve(bounds));
+
+                _collisionManager.AddBroadCollision(actor.ID, colliderBounds);
+            }
+        }
+
+        private void NarrowPhaseCollisionDetections()
+        {
+            // For each broad phase collision detection, check more narrowly to see if a collision actually did occur or not
+            foreach (var collisionPair in _collisionManager.BroadCollisions)
+            {
+                var firstBody = _bodyByEntityID[collisionPair.FirstEntityID];
+                var secondBody = _bodyByEntityID[collisionPair.SecondEntityID];
+
+                var entityA = _entityProvider.GetEntity(collisionPair.FirstEntityID);
+                var entityB = _entityProvider.GetEntity(collisionPair.SecondEntityID);
+
+                if (Shape3D.Collides(entityA.Position, firstBody, entityB.Position, secondBody))
+                {
+                    _collisionManager.AddNarrowCollision(collisionPair);
+                }
+            }
+        }
+
+        private void PerformCollisionResolutions()
+        {
+            foreach (var collisionPair in _collisionManager.NarrowCollisions)
+            {
+                
             }
         }
 
