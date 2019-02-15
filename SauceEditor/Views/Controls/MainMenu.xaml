@@ -1,0 +1,89 @@
+﻿<Menu x:Class="SauceEditor.Views.Controls.MainMenu"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+    xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" 
+    xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
+    xmlns:local="clr-namespace:SauceEditor.Views.Controls.GamePanels"
+    mc:Ignorable="d"
+    DockPanel.Dock="Top">
+    <Menu.Resources>
+        <RoutedUICommand x:Key="NewProjectCommand" Text="New Project"/>
+        <RoutedUICommand x:Key="NewMapCommand" Text="New Map"/>
+        <RoutedUICommand x:Key="NewModelCommand" Text="New Model"/>
+        <RoutedUICommand x:Key="NewBehaviorCommand" Text="New Behavior"/>
+
+        <RoutedUICommand x:Key="OpenProjectCommand" Text="Open Project"/>
+        <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
+        <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
+        <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
+
+        <RoutedUICommand x:Key="SaveAllCommand" Text="Save All"/>
+
+        <RoutedUICommand x:Key="SettingsCommand" Text="Settings..."/>
+    </Menu.Resources>
+    <Menu.CommandBindings>
+        <CommandBinding Command="{StaticResource NewProjectCommand}"  CanExecute="NewProjectCommand_CanExecute" Executed="NewProjectCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewMapCommand}"  CanExecute="NewMapCommand_CanExecute" Executed="NewMapCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewModelCommand}"  CanExecute="NewModelCommand_CanExecute" Executed="NewModelCommand_Executed" />
+        <CommandBinding Command="{StaticResource NewBehaviorCommand}"  CanExecute="NewBehaviorCommand_CanExecute" Executed="NewBehaviorCommand_Executed" />
+
+        <CommandBinding Command="{StaticResource OpenProjectCommand}"  CanExecute="OpenProjectCommand_CanExecute" Executed="OpenProjectCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenMapCommand}"  CanExecute="OpenMapCommand_CanExecute" Executed="OpenMapCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenModelCommand}"  CanExecute="OpenModelCommand_CanExecute" Executed="OpenModelCommand_Executed" />
+        <CommandBinding Command="{StaticResource OpenBehaviorCommand}"  CanExecute="OpenBehaviorCommand_CanExecute" Executed="OpenBehaviorCommand_Executed" />
+
+        <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
+        <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
+        <CommandBinding Command="{StaticResource SaveAllCommand}" CanExecute="SaveAllCommand_CanExecute" Executed="SaveAllCommand_Executed" />
+
+        <CommandBinding Command="{StaticResource SettingsCommand}" CanExecute="Settings_CanExecute" Executed="Settings_Executed"/>
+    </Menu.CommandBindings>
+    <MenuItem Header="_File">
+        <MenuItem Header="New">
+            <MenuItem Header="Project" Command="{StaticResource NewProjectCommand}"/>
+            <MenuItem Header="Map" Command="{StaticResource NewMapCommand}"/>
+            <MenuItem Header="Model" Command="{StaticResource NewModelCommand}"/>
+            <MenuItem Header="Behavior" Command="{StaticResource NewBehaviorCommand}"/>
+        </MenuItem>
+        <MenuItem Header="Open">
+            <MenuItem Header="Project" Command="{StaticResource OpenProjectCommand}"/>
+            <MenuItem Header="Map" Command="{StaticResource OpenMapCommand}"/>
+            <MenuItem Header="Model" Command="{StaticResource OpenModelCommand}"/>
+            <MenuItem Header="Behavior" Command="{StaticResource OpenBehaviorCommand}"/>
+        </MenuItem>
+        <Separator/>
+        <MenuItem Command="Save" />
+        <MenuItem Command="SaveAs" />
+        <MenuItem Header="Save All" Command="{StaticResource SaveAllCommand}" />
+        <Separator/>
+        <MenuItem Header="Close" />
+        <MenuItem Header="Close All" />
+        <Separator/>
+        <MenuItem Header="Exit" />
+    </MenuItem>
+    <MenuItem Header="_Edit">
+        <MenuItem Command="Undo"/>
+        <MenuItem Command="Redo"/>
+        <Separator/>
+        <MenuItem Command="Cut"/>
+        <MenuItem Command="Copy"/>
+        <MenuItem Command="Paste"/>
+        <MenuItem Command="Delete"/>
+        <Separator/>
+        <MenuItem Header="Settings..." Command="{StaticResource SettingsCommand}"/>
+    </MenuItem>
+    <MenuItem Header="_View">
+
+    </MenuItem>
+    <MenuItem Header="_Project">
+
+    </MenuItem>
+    <MenuItem Header="_Window">
+
+    </MenuItem>
+    <MenuItem Header="_Help">
+
+    </MenuItem>
+</Menu>

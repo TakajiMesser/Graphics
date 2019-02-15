@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor"
-        xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary" Loaded="OnLoaded" Closing="OnClosing"
+        xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
+        xmlns:controls="clr-namespace:SauceEditor.Views.Controls" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
         Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
-    <Window.Resources>
+    <!--<Window.Resources>
         <RoutedUICommand x:Key="NewProjectCommand" Text="New Project"/>
         <RoutedUICommand x:Key="NewMapCommand" Text="New Map"/>
         <RoutedUICommand x:Key="NewModelCommand" Text="New Model"/>
@@ -21,8 +22,8 @@
         <RoutedUICommand x:Key="SaveAllCommand" Text="Save All"/>
 
         <RoutedUICommand x:Key="SettingsCommand" Text="Settings..."/>
-    </Window.Resources>
-    <Window.CommandBindings>
+    </Window.Resources>-->
+    <!--<Window.CommandBindings>
         <CommandBinding Command="{StaticResource NewProjectCommand}"  CanExecute="NewProjectCommand_CanExecute" Executed="NewProjectCommand_Executed" />
         <CommandBinding Command="{StaticResource NewMapCommand}"  CanExecute="NewMapCommand_CanExecute" Executed="NewMapCommand_Executed" />
         <CommandBinding Command="{StaticResource NewModelCommand}"  CanExecute="NewModelCommand_CanExecute" Executed="NewModelCommand_Executed" />
@@ -38,60 +39,17 @@
         <CommandBinding Command="{StaticResource SaveAllCommand}" CanExecute="SaveAllCommand_CanExecute" Executed="SaveAllCommand_Executed" />
 
         <CommandBinding Command="{StaticResource SettingsCommand}" CanExecute="Settings_CanExecute" Executed="Settings_Executed"/>
-    </Window.CommandBindings>
+    </Window.CommandBindings>-->
     <Window.InputBindings>
-        <KeyBinding Command="{Binding Path=NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
-        <KeyBinding Command="{Binding Path=OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding Path=Menu/NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding Path=Menu/OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>
     </Window.InputBindings>
     <DockPanel>
-        <Menu DockPanel.Dock="Top">
-            <MenuItem Header="_File">
-                <MenuItem Header="New">
-                    <MenuItem Header="Project" Command="{StaticResource NewProjectCommand}"/>
-                    <MenuItem Header="Map" Command="{StaticResource NewMapCommand}"/>
-                    <MenuItem Header="Model" Command="{StaticResource NewModelCommand}"/>
-                    <MenuItem Header="Behavior" Command="{StaticResource NewBehaviorCommand}"/>
-                </MenuItem>
-                <MenuItem Header="Open">
-                    <MenuItem Header="Project" Command="{StaticResource OpenProjectCommand}"/>
-                    <MenuItem Header="Map" Command="{StaticResource OpenMapCommand}"/>
-                    <MenuItem Header="Model" Command="{StaticResource OpenModelCommand}"/>
-                    <MenuItem Header="Behavior" Command="{StaticResource OpenBehaviorCommand}"/>
-                </MenuItem>
-                <Separator/>
-                <MenuItem Command="Save" />
-                <MenuItem Command="SaveAs" />
-                <MenuItem Header="Save All" Command="{StaticResource SaveAllCommand}" />
-                <Separator/>
-                <MenuItem Header="Close" />
-                <MenuItem Header="Close All" />
-                <Separator/>
-                <MenuItem Header="Exit" />
-            </MenuItem>
-            <MenuItem Header="_Edit">
-                <MenuItem Command="Undo"/>
-                <MenuItem Command="Redo"/>
-                <Separator/>
-                <MenuItem Command="Cut"/>
-                <MenuItem Command="Copy"/>
-                <MenuItem Command="Paste"/>
-                <MenuItem Command="Delete"/>
-                <Separator/>
-                <MenuItem Header="Settings..." Command="{StaticResource SettingsCommand}"/>
-            </MenuItem>
-            <MenuItem Header="_View">
-
-            </MenuItem>
-            <MenuItem Header="_Project">
-
-            </MenuItem>
-            <MenuItem Header="_Window">
-
-            </MenuItem>
-            <MenuItem Header="_Help">
-
-            </MenuItem>
-        </Menu>
+        <controls:MainMenu x:Name="Menu" DockPanel.Dock="Top" 
+            MapOpened="Menu_MapOpened"
+            ProjectOpened="Menu_ProjectOpened"
+            ModelOpened="Menu_ModelOpened"
+            BehaviorOpened="Menu_BehaviorOpened"/>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Button Command="Undo" Content="Undo"/>
@@ -101,11 +59,13 @@
         </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="4*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="6*"/>
+                <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <dock:DockManager Name ="MainDockManager" Grid.Column="0"/>
-            <dock:DockManager Name ="SideDockManager" Grid.Column="1"/>
+            <dock:DockManager Name ="ToolDockManager" Grid.Column="0"/>
+            <dock:DockManager Name ="MainDockManager" Grid.Column="1"/>
+            <dock:DockManager Name ="SideDockManager" Grid.Column="2"/>
         </Grid>
     </DockPanel>
 </Window>

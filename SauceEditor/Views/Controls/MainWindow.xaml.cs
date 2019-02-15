@@ -129,102 +129,6 @@ namespace SauceEditor.Views.Controls
             return false;
         }
 
-        private void NewMap()
-        {
-
-        }
-
-        private void NewModel()
-        {
-
-        }
-
-        private void NewBehavior()
-        {
-
-        }
-
-        private void NewTexture()
-        {
-
-        }
-
-        private void NewAudio()
-        {
-
-        }
-
-        private void OpenMap(string filePath)
-        {
-            _map = Map.Load(filePath);
-            _mapPath = filePath;
-
-            PlayButton.Visibility = Visibility.Visible;
-            _gamePanelManager = new GamePanelManager(MainDockManager, _mapPath);
-            _gamePanelManager.Closed += (s, args) =>
-            {
-                PlayButton.Visibility = Visibility.Hidden;
-                _map = null;
-            };
-            _gamePanelManager.EntitySelectionChanged += (s, args) =>
-            {
-                _propertyPanel.Entity = args.Entities.LastOrDefault();
-                SideDockManager.ActiveContent = _propertyPanel;
-            };
-            _gamePanelManager.ShowAsDocument();
-            _gamePanelManager.SetView(_settings.DefaultView);
-
-            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
-
-
-        }
-
-        private void OpenModel(string filePath)
-        {
-            PlayButton.Visibility = Visibility.Visible;
-
-            /*var modelView = new DockableGamePanel(MainDockManager);
-            modelView.Panel.LoadFromModel(filePath);
-            modelView.EntitySelectionChanged += (s, args) =>
-            {
-                _propertyPanel.Entity = args.Entity;
-                SideDockManager.ActiveContent = _propertyPanel;
-            };
-            modelView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            modelView.ShowAsDocument();*/
-
-            //_propertyPanel.TransformChanged += (s, args) => modelView.Panel.Invalidate();
-        }
-
-        private void OpenBehavior(string filePath)
-        {
-
-        }
-
-        private void OpenTexture(string filePath)
-        {
-
-        }
-
-        private void OpenAudio(string filePath)
-        {
-
-        }
-
-        private void NewProjectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void NewMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void NewModelCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void NewBehaviorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
-        private void OpenProjectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void OpenMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void OpenModelCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void OpenBehaviorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
-        private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void SaveAsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void SaveAllCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             var titleBuilder = new StringBuilder("Document");
@@ -268,88 +172,6 @@ namespace SauceEditor.Views.Controls
         private void NewBehaviorCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
 
-        }
-
-        private void OpenProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog()
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                Filter = "Project Files|*.pro",
-                DefaultExt = GameProject.FILE_EXTENSION,
-                InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
-                    : System.IO.Path.GetDirectoryName(_mapPath)
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                _projectTree.OpenProject(dialog.FileName);
-                SideDockManager.ActiveContent = _projectTree;
-                Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-            }
-        }
-
-        private void OpenMapCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog()
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                DefaultExt = "map",
-                Filter = "Map Files|*.map",
-                InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
-                    : System.IO.Path.GetDirectoryName(_mapPath)
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                _projectTree.OpenMap(dialog.FileName);
-                SideDockManager.ActiveContent = _projectTree;
-
-                Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-                OpenMap(dialog.FileName);
-            }
-        }
-
-        private void OpenModelCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog()
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                DefaultExt = "obj",
-                InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
-                    : System.IO.Path.GetDirectoryName(_mapPath)
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-                OpenModel(dialog.FileName);
-            }
-        }
-
-        private void OpenBehaviorCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var dialog = new OpenFileDialog()
-            {
-                CheckFileExists = true,
-                CheckPathExists = true,
-                DefaultExt = "bhv",
-                InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
-                    : System.IO.Path.GetDirectoryName(_mapPath)
-            };
-
-            if (dialog.ShowDialog() == true)
-            {
-                Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-                OpenBehavior(dialog.FileName);
-            }
         }
 
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -417,6 +239,82 @@ namespace SauceEditor.Views.Controls
                 _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
             };
             _settingsWindow.Show();
+        }
+
+        private void Menu_MapOpened(object sender, FileEventArgs e) => OpenMap(e.FileName);
+
+        private void Menu_ProjectOpened(object sender, FileEventArgs e)
+        {
+            _projectTree.OpenProject(e.FileName);
+            SideDockManager.ActiveContent = _projectTree;
+            Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
+        }
+
+        private void Menu_ModelOpened(object sender, FileEventArgs e)
+        {
+            
+        }
+
+        private void Menu_BehaviorOpened(object sender, FileEventArgs e)
+        {
+            Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
+        }
+
+        private void OpenMap(string filePath)
+        {
+            Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
+
+            _map = Map.Load(filePath);
+            _mapPath = filePath;
+
+            PlayButton.Visibility = Visibility.Visible;
+            _gamePanelManager = new GamePanelManager(MainDockManager, _mapPath);
+            _gamePanelManager.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            _gamePanelManager.EntitySelectionChanged += (s, args) =>
+            {
+                _propertyPanel.Entity = args.Entities.LastOrDefault();
+                SideDockManager.ActiveContent = _propertyPanel;
+            };
+            _gamePanelManager.ShowAsDocument();
+            _gamePanelManager.SetView(_settings.DefaultView);
+
+            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
+        }
+
+        private void OpenModel(string filePath)
+        {
+            PlayButton.Visibility = Visibility.Visible;
+
+            /*var modelView = new DockableGamePanel(MainDockManager);
+            modelView.Panel.LoadFromModel(filePath);
+            modelView.EntitySelectionChanged += (s, args) =>
+            {
+                _propertyPanel.Entity = args.Entity;
+                SideDockManager.ActiveContent = _propertyPanel;
+            };
+            modelView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
+            modelView.ShowAsDocument();*/
+
+            //_propertyPanel.TransformChanged += (s, args) => modelView.Panel.Invalidate();
+        }
+
+        private void OpenBehavior(string filePath)
+        {
+
+        }
+
+        private void OpenTexture(string filePath)
+        {
+
+        }
+
+        private void OpenAudio(string filePath)
+        {
+
         }
     }
 }
