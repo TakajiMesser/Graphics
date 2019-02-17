@@ -42,8 +42,6 @@ namespace SpiceEngine.Game
 
             TextureManager.EnableMipMapping = true;
             TextureManager.EnableAnisotropy = true;
-
-            ScriptManager = new ScriptManager(EntityManager);
         }
 
         public void LoadFromEntities(EntityManager entityManager, Map map)
@@ -89,13 +87,14 @@ namespace SpiceEngine.Game
             switch (map)
             {
                 case Map2D map2D:
-                    PhysicsManager = new PhysicsManager(EntityManager, ScriptManager, map2D.Boundaries);
+                    PhysicsManager = new PhysicsManager(EntityManager, map2D.Boundaries);
                     break;
                 case Map3D map3D:
-                    PhysicsManager = new PhysicsManager(EntityManager, ScriptManager, map3D.Boundaries);
+                    PhysicsManager = new PhysicsManager(EntityManager, map3D.Boundaries);
                     break;
             }
 
+            ScriptManager = new ScriptManager(EntityManager, PhysicsManager);
             EntityManager.ClearEntities();
 
             Camera = map.Camera.ToCamera(_resolution);
@@ -107,7 +106,7 @@ namespace SpiceEngine.Game
 
             var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
 
-            var actor = EntityManager.GetActorByName(map.Camera.AttachedActorName);
+            var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
             Camera.AttachToEntity(actor, true, false);
             ScriptManager.Load();
 
@@ -212,10 +211,10 @@ namespace SpiceEngine.Game
             ScriptManager.HandleInput(InputManager, Camera);
             PhysicsManager.Update();
 
-            ScriptManager.UpdateCollisions(PhysicsManager.EntityCollisions);
+            //ScriptManager.UpdateCollisions(PhysicsManager.EntityCollisions);
             ScriptManager.Update();
 
-            PhysicsManager.HandleActorCollisions();
+            //PhysicsManager.HandleActorCollisions();
 
             InputManager.Update();
         }

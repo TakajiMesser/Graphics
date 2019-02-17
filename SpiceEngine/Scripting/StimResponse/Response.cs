@@ -65,17 +65,10 @@ namespace SpiceEngine.Scripting.StimResponse
                 _tickMeter.Reset();
 
                 // Filter colliders by those that are stimuli, and those that aren't
-                var stimuliColliders = new List<Body>();
+                var stimuliColliders = context.CollisionProvider.GetCollisions().Select(c => context.CollisionProvider.GetBody(c))
+                    .Where(c => context.StimulusProvider.GetStimuli(c.EntityID).Contains(Stimulus));
 
-                foreach (var collider in context.ColliderBodies)
-                {
-                    if (context.StimulusProvider.GetStimuli(collider.EntityID).Contains(Stimulus))
-                    {
-                        stimuliColliders.Add(collider);
-                    }
-                }
-
-                if (TriggerOnContact && HasContactStimulus(context.Actor, context.ActorShape, stimuliColliders, context.EntityProvider))
+                if (TriggerOnContact && HasContactStimulus(context.Actor, context.CollisionProvider.GetBody(context.Actor.ID).Shape, stimuliColliders, context.EntityProvider))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
@@ -83,10 +76,10 @@ namespace SpiceEngine.Scripting.StimResponse
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
-                else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.ColliderBodies, context.EntityProvider))
+                /*else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.ColliderBodies, context.EntityProvider))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
-                }
+                }*/
             }
         }
 

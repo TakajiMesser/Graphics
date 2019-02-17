@@ -3,7 +3,7 @@ using System;
 
 namespace SpiceEngine.Physics.Collision
 {
-    public struct Quad : ICollider
+    public struct Quad : IPartition
     {
         public Vector2 Min { get; }
         public Vector2 Max { get; }

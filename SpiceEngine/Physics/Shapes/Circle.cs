@@ -27,7 +27,7 @@ namespace SpiceEngine.Physics.Shapes
 
         public override IShape Duplicate() => new Circle(Radius);
 
-        public override ICollider ToCollider(Vector3 position)
+        public override IPartition ToCollider(Vector3 position)
         {
             var min = new Vector2(position.X - Center.X - Radius, position.Y - Center.Y - Radius);
             var max = new Vector2(position.X - Center.X + Radius, position.Y - Center.Y + Radius);

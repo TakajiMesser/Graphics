@@ -20,6 +20,7 @@ namespace SpiceEngine.Scripting
     public class ScriptManager : ITranslationProvider, IStimulusProvider
     {
         private IEntityProvider _entityProvider;
+        private ICollisionProvider _collisionProvider;
 
         private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
@@ -28,9 +29,10 @@ namespace SpiceEngine.Scripting
 
         public IEnumerable<EntityTranslation> EntityTranslations => _entityTranslations;
 
-        public ScriptManager(IEntityProvider entityProvider)
+        public ScriptManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
         {
             _entityProvider = entityProvider;
+            _collisionProvider = collisionProvider;
         }
 
         public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
@@ -105,7 +107,7 @@ namespace SpiceEngine.Scripting
             }
         }
 
-        public void UpdateCollisions(IEnumerable<EntityCollision> entityCollisions)
+        /*public void UpdateCollisions(IEnumerable<EntityCollision> entityCollisions)
         {
             foreach (var entityCollision in entityCollisions)
             {
@@ -114,12 +116,12 @@ namespace SpiceEngine.Scripting
                     var behavior = _behaviorsByEntityID[entityCollision.EntityID];
 
                     behavior.Context.ActorShape = entityCollision.Shape;
-                    behavior.Context.ActorBounds = entityCollision.Bounds;
-                    behavior.Context.ColliderBounds = entityCollision.Colliders;
+                    //behavior.Context.ActorBounds = entityCollision.Bounds;
+                    //behavior.Context.ColliderBounds = entityCollision.Colliders;
                     behavior.Context.ColliderBodies = entityCollision.Bodies;
                 }
             }
-        }
+        }*/
 
         public void Update()
         {
@@ -133,6 +135,7 @@ namespace SpiceEngine.Scripting
 
                     //Behaviors.Context.Rotation = Rotation;
                     behavior.Context.EntityProvider = _entityProvider;
+                    behavior.Context.CollisionProvider = _collisionProvider;
                     behavior.Context.StimulusProvider = this;
 
                     foreach (var property in _propertiesByEntityID[actor.ID].VariableProperties)
@@ -145,7 +148,7 @@ namespace SpiceEngine.Scripting
                     // Mark and report any actors that have moved
                     if (behavior.Context.Translation != Vector3.Zero)
                     {
-                        _entityTranslations.Add(new EntityTranslation(actor.ID, behavior.Context.Translation));
+                        _collisionProvider.ApplyForce(behavior.Context.Actor.ID, behavior.Context.Translation);
                     }
 
                     if (actor is AnimatedActor animatedActor)

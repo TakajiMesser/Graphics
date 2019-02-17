@@ -7,6 +7,7 @@ namespace SpiceEngine.Entities
     public interface IEntityProvider
     {
         IEntity GetEntity(int id);
+        Actor GetActor(string name);
         EntityTypes GetEntityType(int id);
         List<Light> Lights { get; }
         List<Actor> Actors { get; }

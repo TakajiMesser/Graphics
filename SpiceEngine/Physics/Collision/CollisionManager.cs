@@ -24,6 +24,19 @@ namespace SpiceEngine.Physics.Collision
             }
         }
 
+        public IEnumerable<int> GetNarrowCollisions()
+        {
+            var entityIDs = new HashSet<int>();
+
+            foreach (var collisionPair in _narrowCollisions)
+            {
+                entityIDs.Add(collisionPair.FirstEntityID);
+                entityIDs.Add(collisionPair.SecondEntityID);
+            }
+
+            return entityIDs;
+        }
+
         public void AddBroadCollision(int entityID, IEnumerable<Bounds> bounds)
         {
             foreach (var bound in bounds)

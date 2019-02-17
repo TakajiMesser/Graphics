@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Physics.Collision
 {
-    public interface ICollisionTree
+    public interface IPartitionTree
     {
         int Level { get; set; }
         List<Bounds> Colliders { get; }

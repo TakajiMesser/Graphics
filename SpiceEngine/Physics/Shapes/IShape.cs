@@ -8,7 +8,7 @@ namespace SpiceEngine.Physics.Shapes
         float Mass { get; set; }
         float MomentOfInertia { get; }
 
-        ICollider ToCollider(Vector3 position);
+        IPartition ToCollider(Vector3 position);
         IShape Duplicate();
     }
 }

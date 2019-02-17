@@ -3,9 +3,9 @@
     public class Bounds
     {
         public int EntityID { get; }
-        public ICollider Collider { get; }
+        public IPartition Collider { get; }
 
-        public Bounds(int entityID, ICollider collider)
+        public Bounds(int entityID, IPartition collider)
         {
             EntityID = entityID;
             Collider = collider;

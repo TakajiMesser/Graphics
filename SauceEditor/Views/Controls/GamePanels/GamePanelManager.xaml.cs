@@ -140,8 +140,6 @@ namespace SauceEditor.Views.Controls.GamePanels
         {
             Resolution = new Resolution((int)Width, (int)Height);
 
-            _scriptManager = new ScriptManager(_entityManager);
-
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
 
@@ -299,13 +297,14 @@ namespace SauceEditor.Views.Controls.GamePanels
             switch (map)
             {
                 case Map2D map2D:
-                    _physicsManager = new PhysicsManager(_entityManager, _scriptManager, map2D.Boundaries);
+                    _physicsManager = new PhysicsManager(_entityManager, map2D.Boundaries);
                     break;
                 case Map3D map3D:
-                    _physicsManager = new PhysicsManager(_entityManager, _scriptManager, map3D.Boundaries);
+                    _physicsManager = new PhysicsManager(_entityManager, map3D.Boundaries);
                     break;
             }
 
+            _scriptManager = new ScriptManager(_entityManager, _physicsManager);
             _entityManager.ClearEntities();
 
             var lightIDs = LoadLights(map.Lights);

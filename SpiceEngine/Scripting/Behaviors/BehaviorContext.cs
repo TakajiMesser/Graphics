@@ -18,16 +18,17 @@ namespace SpiceEngine.Scripting.Behaviors
         public Actor Actor { get; internal set; }
 
         public IEntityProvider EntityProvider { get; internal set; }
+        public ICollisionProvider CollisionProvider { get; internal set; }
         public IStimulusProvider StimulusProvider { get; internal set; }
 
-        public Bounds ActorBounds { get; internal set; }
-        public IShape ActorShape { get; internal set; }
+        //public Bounds ActorBounds { get; internal set; }
+        //public IShape ActorShape { get; internal set; }
 
         /// <summary>
         /// The set of colliders within range of this actor
         /// </summary>
-        public IEnumerable<Bounds> ColliderBounds { get; internal set; }
-        public IEnumerable<Body> ColliderBodies { get; internal set; }
+        //public IEnumerable<Bounds> ColliderBounds { get; internal set; }
+        //public IEnumerable<Body> ColliderBodies { get; internal set; }
 
         public Camera Camera { get; internal set; }
         public InputManager InputManager { get; internal set; }

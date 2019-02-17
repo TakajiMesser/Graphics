@@ -41,7 +41,7 @@ namespace SpiceEngine.Physics.Shapes
 
         public override IShape Duplicate() => new Rectangle(Width, Height, Center);
 
-        public override ICollider ToCollider(Vector3 position)
+        public override IPartition ToCollider(Vector3 position)
         {
             var min = new Vector2(position.X - Center.X - Width / 2.0f, position.Y - Center.Y - Height / 2.0f);
             var max = new Vector2(position.X - Center.X + Width / 2.0f, position.Y - Center.Y + Height / 2.0f);

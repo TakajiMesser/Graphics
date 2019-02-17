@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Collision
 {
-    public class QuadTree : ICollisionTree
+    public class QuadTree : IPartitionTree
     {
         public const int NUMBER_OF_NODES = 4;
         public const int MAX_COLLIDERS = 10;

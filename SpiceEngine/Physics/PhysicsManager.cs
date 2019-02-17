@@ -2,30 +2,29 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Collision;
 using SpiceEngine.Physics.Shapes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Physics
 {
-    public class PhysicsManager
+    public class PhysicsManager : ICollisionProvider
     {
         private IEntityProvider _entityProvider;
-        private ITranslationProvider _translationProvider;
 
-        private ICollisionTree _actorTree;
-        private ICollisionTree _brushTree;
-        private ICollisionTree _volumeTree;
-        private ICollisionTree _lightTree;
+        private IPartitionTree _actorTree;
+        private IPartitionTree _brushTree;
+        private IPartitionTree _volumeTree;
+        private IPartitionTree _lightTree;
 
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
         private Dictionary<int, Body> _bodyByEntityID = new Dictionary<int, Body>();
 
         public List<EntityCollision> EntityCollisions { get; } = new List<EntityCollision>();
         
-        public PhysicsManager(IEntityProvider entityProvider, ITranslationProvider translationProvider, Quad worldBoundaries)
+        public PhysicsManager(IEntityProvider entityProvider, Quad worldBoundaries)
         {
             _entityProvider = entityProvider;
-            _translationProvider = translationProvider;
 
             _actorTree = new QuadTree(0, worldBoundaries);
             _brushTree = new QuadTree(0, worldBoundaries);
@@ -44,10 +43,9 @@ namespace SpiceEngine.Physics
             _actorQuads = new QuadTree(0, map.Boundaries);*/
         }
 
-        public PhysicsManager(IEntityProvider entityProvider, ITranslationProvider translationProvider, Oct worldBoundaries)
+        public PhysicsManager(IEntityProvider entityProvider, Oct worldBoundaries)
         {
             _entityProvider = entityProvider;
-            _translationProvider = translationProvider;
 
             _actorTree = new OctTree(0, worldBoundaries);
             _brushTree = new OctTree(0, worldBoundaries);
@@ -163,6 +161,43 @@ namespace SpiceEngine.Physics
         private void ApplyForces()
         {
             // TODO - For all bodies, calculate their new velocities and positions given their forces
+            // For now, we are just using very basic translations passed each frame for each entity
+            // We will also want this step of applying the force separated from the step of resolving the collision
+            // For now, we are performing these two steps together...
+            foreach (var entityTranslation in _entityTranslations)
+            {
+                var actor = _entityProvider.GetEntity(entityTranslation.Item1);
+                var shape = (Shape3D)_bodyByEntityID[actor.ID].Shape;
+
+                Vector3 translation = entityTranslation.Item2;
+
+                if (shape != null)
+                {
+                    foreach (var body in _bodyByEntityID.Values.Where(b => b.EntityID != actor.ID))
+                    {
+                        var colliderPosition = _entityProvider.GetEntity(body.EntityID).Position;
+
+                        if (Shape3D.Collides(new Vector3(actor.Position.X + translation.X, actor.Position.Y, actor.Position.Z), shape, colliderPosition, (Shape3D)body.Shape))
+                        {
+                            translation.X = 0;
+                        }
+
+                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y + translation.Y, actor.Position.Z), shape, colliderPosition, (Shape3D)body.Shape))
+                        {
+                            translation.Y = 0;
+                        }
+
+                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y, actor.Position.Z + translation.Z), shape, colliderPosition, (Shape3D)body.Shape))
+                        {
+                            translation.Z = 0;
+                        }
+                    }
+                }
+
+                actor.Position += translation;
+            }
+
+            _entityTranslations.Clear();
         }
 
         private void BroadPhaseCollisionDetections()
@@ -214,15 +249,34 @@ namespace SpiceEngine.Physics
             }
         }
 
+        public Body GetBody(int entityID)
+        {
+            if (_bodyByEntityID.ContainsKey(entityID))
+            {
+                return _bodyByEntityID[entityID];
+            }
+
+            // TODO - Will this every be NULL? Should we throw an error instead?
+            return null;
+        }
+
+        public IEnumerable<int> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
+
+        public IEnumerable<int> GetCollisions() => _collisionManager.GetNarrowCollisions();
+
+        private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
+
+        public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
+
         private void PerformCollisionResolutions()
         {
             foreach (var collisionPair in _collisionManager.NarrowCollisions)
             {
-                
+                // For each collision pair, 
             }
         }
 
-        public virtual void HandleActorCollisions()
+        /*public virtual void HandleActorCollisions()
         {
             foreach (var entityTranslation in _translationProvider.EntityTranslations)
             {
@@ -256,6 +310,6 @@ namespace SpiceEngine.Physics
 
                 actor.Position += translation;
             }
-        }
+        }*/
     }
 }

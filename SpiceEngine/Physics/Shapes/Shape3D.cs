@@ -10,7 +10,7 @@ namespace SpiceEngine.Physics.Shapes
         public abstract float Mass { get; set; }
         public abstract float MomentOfInertia { get; }
 
-        public abstract ICollider ToCollider(Vector3 position);
+        public abstract IPartition ToCollider(Vector3 position);
         public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
         public abstract bool CollidesWith(Vector3 position, Vector3 point);
         public abstract IShape Duplicate();
