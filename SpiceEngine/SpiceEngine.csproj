@@ -170,6 +170,9 @@
     <Compile Include="Maps\MapActor.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Outputs\ResolutionEventArgs.cs" />
+    <Compile Include="Physics\Body.cs" />
+    <Compile Include="Physics\Collision\CollisionManager.cs" />
+    <Compile Include="Physics\Collision\CollisionPair.cs" />
     <Compile Include="Physics\EntityTranslation.cs" />
     <Compile Include="Physics\Collision\ICollidable.cs" />
     <Compile Include="Physics\Collision\ICollider.cs" />
@@ -187,7 +190,6 @@
     <Compile Include="Physics\Shapes\Circle.cs" />
     <Compile Include="Physics\Shapes\IShape.cs" />
     <Compile Include="Physics\RigidBody.cs" />
-    <Compile Include="Physics\PhysicsBody.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

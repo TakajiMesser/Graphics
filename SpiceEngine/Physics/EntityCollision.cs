@@ -11,7 +11,7 @@ namespace SpiceEngine.Physics
         public IShape Shape { get; set; }
         public Bounds Bounds { get; set; }
         public IEnumerable<Bounds> Colliders { get; set; }
-        public IEnumerable<PhysicsBody> Bodies { get; set; }
+        public IEnumerable<Body> Bodies { get; set; }
 
         public EntityCollision(int entityID)
         {

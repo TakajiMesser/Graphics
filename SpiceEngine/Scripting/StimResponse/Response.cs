@@ -65,7 +65,7 @@ namespace SpiceEngine.Scripting.StimResponse
                 _tickMeter.Reset();
 
                 // Filter colliders by those that are stimuli, and those that aren't
-                var stimuliColliders = new List<PhysicsBody>();
+                var stimuliColliders = new List<Body>();
 
                 foreach (var collider in context.ColliderBodies)
                 {
@@ -90,7 +90,7 @@ namespace SpiceEngine.Scripting.StimResponse
             }
         }
 
-        private bool HasContactStimulus(Actor actor, IShape shape, IEnumerable<PhysicsBody> stimuliColliders, IEntityProvider entityProvider)
+        private bool HasContactStimulus(Actor actor, IShape shape, IEnumerable<Body> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
@@ -105,7 +105,7 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasProximityStimulus(Actor actor, IEnumerable<PhysicsBody> stimuliColliders, IEntityProvider entityProvider)
+        private bool HasProximityStimulus(Actor actor, IEnumerable<Body> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
@@ -119,7 +119,7 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<PhysicsBody> stimuliColliders, IEnumerable<PhysicsBody> colliders, IEntityProvider entityProvider)
+        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<Body> stimuliColliders, IEnumerable<Body> colliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {

@@ -1,4 +1,7 @@
-﻿namespace SpiceEngine.Physics.Collision
+﻿using System.Collections.Generic;
+using System.Linq;
+
+namespace SpiceEngine.Physics.Collision
 {
     public class CollisionManager
     {
@@ -25,7 +28,7 @@
         {
             foreach (var bound in bounds)
             {
-                _broadCollisions.Add(entityID, bound.EntityID);
+                _broadCollisions.Add(new CollisionPair(entityID, bound.EntityID));
             }
         }
 

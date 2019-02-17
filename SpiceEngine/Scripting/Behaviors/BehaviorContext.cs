@@ -27,7 +27,7 @@ namespace SpiceEngine.Scripting.Behaviors
         /// The set of colliders within range of this actor
         /// </summary>
         public IEnumerable<Bounds> ColliderBounds { get; internal set; }
-        public IEnumerable<PhysicsBody> ColliderBodies { get; internal set; }
+        public IEnumerable<Body> ColliderBodies { get; internal set; }
 
         public Camera Camera { get; internal set; }
         public InputManager InputManager { get; internal set; }

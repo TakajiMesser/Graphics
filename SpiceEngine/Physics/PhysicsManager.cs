@@ -103,7 +103,7 @@ namespace SpiceEngine.Physics
             _bodyByEntityID.Add(entityID, rigidBody);
         }
 
-        public void Update()
+        /*public void Update()
         {
             // Update the actor colliders every frame, since they could have moved
             _actorTree.Clear();
@@ -142,7 +142,7 @@ namespace SpiceEngine.Physics
                     Bodies = filteredColliders.Select(c => _bodyByEntityID[c.EntityID])
                 });
             }
-        }
+        }*/
 
         private CollisionManager _collisionManager = new CollisionManager();
 
@@ -151,12 +151,18 @@ namespace SpiceEngine.Physics
             ApplyForces();
             BroadPhaseCollisionDetections();
             NarrowPhaseCollisionDetections();
+
+            // TODO - Determine order of operations here
+            // The issue is that after applying forces, the positions will move, so we need to perform CD and CR
+            // HOWEVER, when we perform the behaviors/scripts for Actors, the positions can potentially move again!
+            // Does this mean that we perform CD and CR again? Sounds pretty inefficient...
+            // Maybe we can just have the behaviors/scripts affect the positions, BUT we don't perform CD and CR again until the next frame!
             PerformCollisionResolutions();
         }
 
         private void ApplyForces()
         {
-            
+            // TODO - For all bodies, calculate their new velocities and positions given their forces
         }
 
         private void BroadPhaseCollisionDetections()
@@ -201,7 +207,7 @@ namespace SpiceEngine.Physics
                 var entityA = _entityProvider.GetEntity(collisionPair.FirstEntityID);
                 var entityB = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
-                if (Shape3D.Collides(entityA.Position, firstBody, entityB.Position, secondBody))
+                if (Shape3D.Collides(entityA.Position, (Shape3D)firstBody.Shape, entityB.Position, (Shape3D)secondBody.Shape))
                 {
                     _collisionManager.AddNarrowCollision(collisionPair);
                 }

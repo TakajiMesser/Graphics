@@ -3,7 +3,7 @@ using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Physics
 {
-    public class RigidBody : PhysicsBody
+    public class RigidBody : Body
     {
         public Vector3 LinearVelocity { get; private set; }
         public Vector2 AngularVelocity { get; private set; }
