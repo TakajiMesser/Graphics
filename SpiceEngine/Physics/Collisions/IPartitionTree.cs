@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpiceEngine.Physics.Collision
+namespace SpiceEngine.Physics.Collisions
 {
     public interface IPartitionTree
     {

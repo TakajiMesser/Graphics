@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using System.Linq;
 using System.Runtime.Serialization;
 

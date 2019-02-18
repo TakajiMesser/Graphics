@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
 using System;
 using System.Collections.Generic;
@@ -16,6 +16,9 @@ namespace SpiceEngine.Physics
         private IPartitionTree _brushTree;
         private IPartitionTree _volumeTree;
         private IPartitionTree _lightTree;
+
+        private CollisionManager _collisionManager = new CollisionManager();
+        private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
 
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
         private Dictionary<int, Body> _bodyByEntityID = new Dictionary<int, Body>();
@@ -101,60 +104,39 @@ namespace SpiceEngine.Physics
             _bodyByEntityID.Add(entityID, rigidBody);
         }
 
-        /*public void Update()
+        public Body GetBody(int entityID)
         {
-            // Update the actor colliders every frame, since they could have moved
-            _actorTree.Clear();
-            EntityCollisions.Clear();
-            var boundsByID = new Dictionary<int, Bounds>();
-
-            foreach (var actor in _entityProvider.Actors)
+            if (_bodyByEntityID.ContainsKey(entityID))
             {
-                var shape = _bodyByEntityID[actor.ID].Shape;
-                var collider = shape.ToCollider(actor.Position);
-                var bounds = new Bounds(actor.ID, collider);
-
-                boundsByID.Add(actor.ID, bounds);
-                _actorTree.Insert(bounds);
+                return _bodyByEntityID[entityID];
             }
 
-            // For each object that has a non-zero transform, we need to determine the set of colliders to compare it against for hit detection
-            foreach (var actor in _entityProvider.Actors)
-            {
-                //actor.ClearLights();
-                //actor.AddPointLights(_lightQuads.Retrieve(actor.Bounds)
-                //    .Where(c => c.AttachedEntity is PointLight)
-                //    .Select(c => (PointLight)c.AttachedEntity));
-                var bounds = boundsByID[actor.ID];
+            // TODO - Will this ever be NULL? Should we throw an error instead?
+            return null;
+        }
 
-                var filteredColliders = _brushTree.Retrieve(bounds)
-                    .Concat(_actorTree
-                        .Retrieve(bounds)
-                        .Where(b => b.EntityID != actor.ID));
+        public IEnumerable<Collision> GetCollisions() => _collisionManager.NarrowCollisions;
 
-                EntityCollisions.Add(new EntityCollision(actor.ID)
-                {
-                    Shape = _bodyByEntityID[actor.ID].Shape,
-                    Bounds = bounds,
-                    Colliders = filteredColliders,
-                    Bodies = filteredColliders.Select(c => _bodyByEntityID[c.EntityID])
-                });
-            }
-        }*/
+        public IEnumerable<Collision> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
 
-        private CollisionManager _collisionManager = new CollisionManager();
+        public IEnumerable<int> GetCollisionIDs() => _collisionManager.NarrowCollisionIDs;
+
+        public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
+
+        public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
 
         public void Update()
         {
             ApplyForces();
-            BroadPhaseCollisionDetections();
-            NarrowPhaseCollisionDetections();
 
             // TODO - Determine order of operations here
             // The issue is that after applying forces, the positions will move, so we need to perform CD and CR
             // HOWEVER, when we perform the behaviors/scripts for Actors, the positions can potentially move again!
             // Does this mean that we perform CD and CR again? Sounds pretty inefficient...
             // Maybe we can just have the behaviors/scripts affect the positions, BUT we don't perform CD and CR again until the next frame!
+            _collisionManager.Clear();
+            BroadPhaseCollisionDetections();
+            NarrowPhaseCollisionDetections();
             PerformCollisionResolutions();
         }
 
@@ -163,7 +145,11 @@ namespace SpiceEngine.Physics
             // TODO - For all bodies, calculate their new velocities and positions given their forces
             // For now, we are just using very basic translations passed each frame for each entity
             // We will also want this step of applying the force separated from the step of resolving the collision
-            // For now, we are performing these two steps together...
+            // For now, we are performing these two steps together, which is BAD because it defeats the whole point of doing CD
+            // We want to apply the forces, get the new position, then when we do CR, and use the linear velocity to know where the entity moved from
+            // From there, we can either A) Just revert back to the previous position by using the linear velocity, or (better)
+            // B) Apply an appropriate force to send the object in its new direction
+            // Maybe we can use the linear velocity to determine the time delta of collision, then base the new position off of that
             foreach (var entityTranslation in _entityTranslations)
             {
                 var actor = _entityProvider.GetEntity(entityTranslation.Item1);
@@ -227,89 +213,35 @@ namespace SpiceEngine.Physics
                     .Concat(_brushTree
                         .Retrieve(bounds));
 
-                _collisionManager.AddBroadCollision(actor.ID, colliderBounds);
+                _collisionManager.AddBroadCollision(actor.ID, colliderBounds.Select(b => b.EntityID));
             }
         }
 
         private void NarrowPhaseCollisionDetections()
         {
             // For each broad phase collision detection, check more narrowly to see if a collision actually did occur or not
-            foreach (var collisionPair in _collisionManager.BroadCollisions)
+            foreach (var collisionPair in _collisionManager.BroadCollisionPairs)
             {
                 var firstBody = _bodyByEntityID[collisionPair.FirstEntityID];
                 var secondBody = _bodyByEntityID[collisionPair.SecondEntityID];
 
-                var entityA = _entityProvider.GetEntity(collisionPair.FirstEntityID);
-                var entityB = _entityProvider.GetEntity(collisionPair.SecondEntityID);
+                var firstEntity = _entityProvider.GetEntity(collisionPair.FirstEntityID);
+                var secondEntity = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
-                if (Shape3D.Collides(entityA.Position, (Shape3D)firstBody.Shape, entityB.Position, (Shape3D)secondBody.Shape))
+                if (Shape3D.Collides(firstEntity.Position, (Shape3D)firstBody.Shape, secondEntity.Position, (Shape3D)secondBody.Shape))
                 {
-                    _collisionManager.AddNarrowCollision(collisionPair);
+                    var collision = new Collision(collisionPair);
+                    _collisionManager.AddNarrowCollision(collision);
                 }
             }
         }
 
-        public Body GetBody(int entityID)
-        {
-            if (_bodyByEntityID.ContainsKey(entityID))
-            {
-                return _bodyByEntityID[entityID];
-            }
-
-            // TODO - Will this every be NULL? Should we throw an error instead?
-            return null;
-        }
-
-        public IEnumerable<int> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
-
-        public IEnumerable<int> GetCollisions() => _collisionManager.GetNarrowCollisions();
-
-        private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
-
-        public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
-
         private void PerformCollisionResolutions()
         {
-            foreach (var collisionPair in _collisionManager.NarrowCollisions)
+            foreach (var collision in _collisionManager.NarrowCollisions)
             {
                 // For each collision pair, 
             }
         }
-
-        /*public virtual void HandleActorCollisions()
-        {
-            foreach (var entityTranslation in _translationProvider.EntityTranslations)
-            {
-                var actor = _entityProvider.GetEntity(entityTranslation.EntityID);
-
-                Vector3 translation = entityTranslation.Translation;
-                var physics = EntityCollisions.FirstOrDefault(p => p.EntityID == entityTranslation.EntityID);
-
-                if (physics.Shape != null)
-                {
-                    foreach (var collider in physics.Bodies)
-                    {
-                        var colliderPosition = _entityProvider.GetEntity(collider.EntityID).Position;
-
-                        if (Shape3D.Collides(new Vector3(actor.Position.X + translation.X, actor.Position.Y, actor.Position.Z), (Shape3D)physics.Shape, colliderPosition, (Shape3D)collider.Shape))
-                        {
-                            translation.X = 0;
-                        }
-
-                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y + translation.Y, actor.Position.Z), (Shape3D)physics.Shape, colliderPosition, (Shape3D)collider.Shape))
-                        {
-                            translation.Y = 0;
-                        }
-
-                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y, actor.Position.Z + translation.Z), (Shape3D)physics.Shape, colliderPosition, (Shape3D)collider.Shape))
-                        {
-                            translation.Z = 0;
-                        }
-                    }
-                }
-
-                actor.Position += translation;
-            }
-        }*/
     }
 }

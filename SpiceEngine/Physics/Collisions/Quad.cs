@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using System;
 
-namespace SpiceEngine.Physics.Collision
+namespace SpiceEngine.Physics.Collisions
 {
     public struct Quad : IPartition
     {

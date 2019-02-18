@@ -4,7 +4,7 @@ using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
 

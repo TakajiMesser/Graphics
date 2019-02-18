@@ -1,23 +1,23 @@
 ﻿using OpenTK;
 using System.Collections.Generic;
 
-namespace SpiceEngine.Physics.Collision
+namespace SpiceEngine.Physics.Collisions
 {
-    public class QuadTree : IPartitionTree
+    public class OctTree : IPartitionTree
     {
-        public const int NUMBER_OF_NODES = 4;
+        public const int NUMBER_OF_NODES = 8;
         public const int MAX_COLLIDERS = 10;
         public const int MAX_LEVELS = 5;
 
         public int Level { get; set; }
-        public Quad Quad { get; set; }
+        public Oct Oct { get; set; }
         public List<Bounds> Colliders { get; set; } = new List<Bounds>();
-        public QuadTree[] Nodes { get; set; } = null;
+        public OctTree[] Nodes { get; set; } = null;
 
-        public QuadTree(int level, Quad quad)
+        public OctTree(int level, Oct oct)
         {
             Level = level;
-            Quad = quad;
+            Oct = oct;
         }
 
         public void InsertRange(IEnumerable<Bounds> colliders)
@@ -72,15 +72,22 @@ namespace SpiceEngine.Physics.Collision
 
         public void Split()
         {
-            var halfWidth = (Quad.Max.X - Quad.Min.X) / 2.0f;
-            var halfHeight = (Quad.Max.Y - Quad.Min.Y) / 2.0f;
+            var halfWidth = (Oct.Max.X - Oct.Min.X) / 2.0f;
+            var halfHeight = (Oct.Max.Y - Oct.Min.Y) / 2.0f;
+            var halfDepth = (Oct.Max.Z - Oct.Min.Z) / 2.0f;
 
-            Nodes = new QuadTree[NUMBER_OF_NODES];
+            Nodes = new OctTree[NUMBER_OF_NODES];
 
-            Nodes[0] = new QuadTree(Level + 1, new Quad(new Vector2(Quad.Min.X + halfWidth, Quad.Min.Y + halfHeight), Quad.Max));
-            Nodes[1] = new QuadTree(Level + 1, new Quad(new Vector2(Quad.Min.X, Quad.Min.Y + halfHeight), new Vector2(Quad.Min.X + halfWidth, Quad.Max.Y)));
-            Nodes[2] = new QuadTree(Level + 1, new Quad(Quad.Min, new Vector2(Quad.Min.X + halfWidth, Quad.Min.Y + halfHeight)));
-            Nodes[3] = new QuadTree(Level + 1, new Quad(new Vector2(Quad.Min.X + halfWidth, Quad.Min.Y), new Vector2(Quad.Max.X, Quad.Min.Y + halfHeight)));
+            Nodes[0] = new OctTree(Level + 1, new Oct(new Vector3(Oct.Min.X + halfWidth, Oct.Min.Y + halfHeight, Oct.Min.Z), Oct.Max));
+            Nodes[1] = new OctTree(Level + 1, new Oct(new Vector3(Oct.Min.X, Oct.Min.Y + halfHeight, Oct.Min.Z), new Vector3(Oct.Min.X + halfWidth, Oct.Max.Y, Oct.Max.Z)));
+            Nodes[2] = new OctTree(Level + 1, new Oct(Oct.Min, new Vector3(Oct.Min.X + halfWidth, Oct.Min.Y + halfHeight, Oct.Max.Z)));
+            Nodes[3] = new OctTree(Level + 1, new Oct(new Vector3(Oct.Min.X + halfWidth, Oct.Min.Y, Oct.Min.Z), new Vector3(Oct.Max.X, Oct.Min.Y + halfHeight, Oct.Max.Z)));
+
+            // TODO - Correct these octal boundaries
+            Nodes[4] = new OctTree(Level + 1, new Oct(new Vector3(Oct.Min.X + halfWidth, Oct.Min.Y + halfHeight, Oct.Min.Z + halfDepth), Oct.Max));
+            Nodes[5] = new OctTree(Level + 1, new Oct(new Vector3(Oct.Min.X, Oct.Min.Y + halfHeight, Oct.Min.Z + halfDepth), new Vector3(Oct.Min.X + halfWidth, Oct.Max.Y, Oct.Max.Z)));
+            Nodes[6] = new OctTree(Level + 1, new Oct(Oct.Min, new Vector3(Oct.Min.X + halfWidth, Oct.Min.Y + halfHeight, Oct.Min.Z + halfDepth)));
+            Nodes[7] = new OctTree(Level + 1, new Oct(new Vector3(Oct.Min.X + halfWidth, Oct.Min.Y, Oct.Min.Z + halfDepth), new Vector3(Oct.Max.X, Oct.Min.Y + halfHeight, Oct.Max.Z)));
         }
 
         public void Clear()
@@ -102,11 +109,11 @@ namespace SpiceEngine.Physics.Collision
         {
             if (Nodes != null)
             {
-                // Figure out which node this quad can fit into, if possible
+                // Figure out which node this oct can fit into, if possible
                 // If it overlaps, then it is instead a part of the parent node
                 for (var i = 0; i < NUMBER_OF_NODES; i++)
                 {
-                    if (Nodes[i].Quad.CanContain(collider))
+                    if (Nodes[i].Oct.CanContain(collider))
                     {
                         index = i;
                         return true;

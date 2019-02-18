@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Physics.Collision;
+﻿using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
 

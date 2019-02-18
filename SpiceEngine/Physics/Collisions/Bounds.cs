@@ -1,4 +1,4 @@
-﻿namespace SpiceEngine.Physics.Collision
+﻿namespace SpiceEngine.Physics.Collisions
 {
     public class Bounds
     {

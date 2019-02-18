@@ -45,7 +45,7 @@ namespace Jidai.Behaviors.Enemy
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the player
                     // TODO - Filter colliders by their ability to obstruct vision
-                    var colliders = context.CollisionProvider.GetCollisions(context.Actor.ID)
+                    var colliders = context.CollisionProvider.GetCollisionIDs(context.Actor.ID)
                         .Select(c => context.CollisionProvider.GetBody(c));
 
                     if (Raycast.TryRaycast(new Ray3(context.Actor.Position, playerDirection, ViewDistance), colliders, context.EntityProvider, out RaycastHit hit))

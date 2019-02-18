@@ -8,7 +8,7 @@ using SpiceEngine.Physics.Raycasting;
 using OpenTK;
 using SpiceEngine.Entities;
 using System.Runtime.Serialization;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities.Brushes;
@@ -49,7 +49,7 @@ namespace Jidai.Behaviors.Player
 
                         if (translation != Vector3.Zero)
                         {
-                            var filteredColliders = context.CollisionProvider.GetCollisions(context.Actor.ID)
+                            var filteredColliders = context.CollisionProvider.GetCollisionIDs(context.Actor.ID)
                                 .Select(c => context.CollisionProvider.GetBody(c))
                                 .Where(c => context.EntityProvider.GetEntity(c.EntityID) is Brush);
 
