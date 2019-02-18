@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using Xceed.Wpf.AvalonDock.Layout;
 using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace SauceEditor.Views.Controls
@@ -84,7 +85,7 @@ namespace SauceEditor.Views.Controls
 
         private void OnLoaded(object sender, EventArgs e)
         {
-            MainDockManager.ParentWindow = this;
+            //MainDockManager.ParentWindow = this;
             SideDockManager.ParentWindow = this;
 
             _projectTree.DockManager = SideDockManager;
@@ -116,7 +117,7 @@ namespace SauceEditor.Views.Controls
             //Properties.Settings.Default.Save();
         }
 
-        private bool ContainsDocument(string title)
+        /*private bool ContainsDocument(string title)
         {
             foreach (DockingLibrary.DocumentContent doc in MainDockManager.Documents)
             {
@@ -127,11 +128,11 @@ namespace SauceEditor.Views.Controls
             }
                 
             return false;
-        }
+        }*/
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var titleBuilder = new StringBuilder("Document");
+            /*var titleBuilder = new StringBuilder("Document");
 
             int i = 1;
             while (ContainsDocument(titleBuilder.ToString() + i))
@@ -147,7 +148,7 @@ namespace SauceEditor.Views.Controls
             };
             doc.ShowAsDocument();
 
-            //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));
+            //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));*/
         }
 
         private void NewProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -268,18 +269,27 @@ namespace SauceEditor.Views.Controls
             _mapPath = filePath;
 
             PlayButton.Visibility = Visibility.Visible;
-            _gamePanelManager = new GamePanelManager(MainDockManager, _mapPath);
-            _gamePanelManager.Closed += (s, args) =>
-            {
-                PlayButton.Visibility = Visibility.Hidden;
-                _map = null;
-            };
+            _gamePanelManager = new GamePanelManager(_mapPath);
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entities.LastOrDefault();
                 SideDockManager.ActiveContent = _propertyPanel;
             };
-            _gamePanelManager.ShowAsDocument();
+
+            LayoutAnchorable anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _gamePanelManager,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();
+
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);

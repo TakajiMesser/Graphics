@@ -8,14 +8,17 @@ using System;
 using System.ComponentModel;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using Xceed.Wpf.AvalonDock.Layout;
+using Xceed.Wpf.Toolkit;
 
 namespace SauceEditor.Views.Controls.GamePanels
 {
     /// <summary>
     /// Interaction logic for DockableGamePanel.xaml
     /// </summary>
-    public partial class DockableGamePanel : DockableContent
+    public partial class DockableGamePanel : LayoutAnchorablePane
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
@@ -82,9 +85,12 @@ namespace SauceEditor.Views.Controls.GamePanels
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
         public DockableGamePanel() => InitializeComponent();
-        public DockableGamePanel(DockManager dockManager, ViewTypes viewType/*, GameState gameState*/) : base(dockManager)
+        public DockableGamePanel(ViewTypes viewType)// : base(dockManager)
         {
             InitializeComponent();
+
+            DockPanel.Focusable = true;
+            Anchorable.Title = GetTitle(viewType);
 
             _mouseHoldtimer.Elapsed += MouseHoldtimer_Elapsed;
             Panel.SetViewType(viewType);
@@ -119,6 +125,23 @@ namespace SauceEditor.Views.Controls.GamePanels
             GridAxisColorPick.SelectedColorChanged += (s, args) => Panel.SetGridAxisColor(args.NewValue.Value.ToVector4().ToColor4());
             Grid5ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid5Color(args.NewValue.Value.ToVector4().ToColor4());
             Grid10ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid10Color(args.NewValue.Value.ToVector4().ToColor4());
+        }
+
+        private string GetTitle(ViewTypes viewType)
+        {
+            switch (viewType)
+            {
+                case ViewTypes.Perspective:
+                    return "Perspective";
+                case ViewTypes.X:
+                    return "X";
+                case ViewTypes.Y:
+                    return "Y";
+                case ViewTypes.Z:
+                    return "Z";
+            }
+
+            throw new ArgumentException("Could not handle ViewType " + viewType);
         }
 
         private void BeginDrag()
@@ -272,20 +295,20 @@ namespace SauceEditor.Views.Controls.GamePanels
             });
         }*/
 
-        protected override void OnInitialized(EventArgs e)
+        /*protected override void OnInitialized(EventArgs e)
         {
             base.OnInitialized(e);
             //DockManager.ParentWindow = this;
             //Grid.Children.Add(GameWindow);
-        }
+        }*/
 
         private void OnLoaded(object sender, EventArgs e) { }
 
-        protected override void OnClosing(CancelEventArgs e)
+        /*protected override void OnClosing(CancelEventArgs e)
         {
             //GamePanel?.Close();
             base.OnClosing(e);
-        }
+        }*/
 
         private void WireframeButton_Click(object sender, RoutedEventArgs e)
         {
