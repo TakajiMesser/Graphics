@@ -1,17 +1,14 @@
-﻿using DockingLibrary;
-using SauceEditor.Utilities;
+﻿using SauceEditor.Utilities;
 using SauceEditor.Views.Controls.UpDowns;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
 using SpiceEngine.Utilities;
 using System;
-using System.ComponentModel;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
-using Xceed.Wpf.Toolkit;
 
 namespace SauceEditor.Views.Controls.GamePanels
 {

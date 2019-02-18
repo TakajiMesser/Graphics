@@ -5,7 +5,6 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views.Controls.GamePanels"
         xmlns:updowns="clr-namespace:SauceEditor.Views.Controls.UpDowns"
-        xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"

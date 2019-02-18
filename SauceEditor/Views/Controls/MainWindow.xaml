@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:SauceEditor"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
-        xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
         xmlns:controls="clr-namespace:SauceEditor.Views.Controls" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
         Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
