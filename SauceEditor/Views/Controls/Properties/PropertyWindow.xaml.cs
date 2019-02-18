@@ -4,6 +4,7 @@ using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
 using System;
 using System.Windows;
+using Xceed.Wpf.AvalonDock.Layout;
 using Brush = SpiceEngine.Entities.Brushes.Brush;
 
 namespace SauceEditor.Views.Controls.Properties
@@ -11,7 +12,7 @@ namespace SauceEditor.Views.Controls.Properties
     /// <summary>
     /// Interaction logic for PropertyWindow.xaml
     /// </summary>
-    public partial class PropertyWindow : DockingLibrary.DockableContent
+    public partial class PropertyWindow : LayoutAnchorable
     {
         private IEntity _entity;
         public IEntity Entity

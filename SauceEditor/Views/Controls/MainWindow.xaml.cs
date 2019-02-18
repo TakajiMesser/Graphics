@@ -85,25 +85,23 @@ namespace SauceEditor.Views.Controls
 
         private void OnLoaded(object sender, EventArgs e)
         {
-            //MainDockManager.ParentWindow = this;
-            SideDockManager.ParentWindow = this;
-
-            _projectTree.DockManager = SideDockManager;
-            _projectTree.ShowAsDocument();
             _projectTree.MapSelected += (s, args) => OpenMap(args.FilePath);
             _projectTree.ModelSelected += (s, args) => OpenModel(args.FilePath);
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
             _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
+            _projectTree.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
+            _projectTree.DockAsDocument();
 
-            _toolPanel.DockManager = SideDockManager;
-            _toolPanel.ShowAsDocument();
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
+            _toolPanel.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
+            _toolPanel.DockAsDocument();
 
-            _propertyPanel.DockManager = SideDockManager;
-            _propertyPanel.ShowAsDocument();
+            _propertyPanel.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
+            _propertyPanel.DockAsDocument();
 
-            SideDockManager.ActiveContent = _projectTree;
+            _projectTree.IsActive = true;
+            //SideDockManager.ActiveContent = _projectTree;
         }
 
         private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
@@ -247,7 +245,8 @@ namespace SauceEditor.Views.Controls
         private void Menu_ProjectOpened(object sender, FileEventArgs e)
         {
             _projectTree.OpenProject(e.FileName);
-            SideDockManager.ActiveContent = _projectTree;
+            _projectTree.IsActive = true;
+            //SideDockManager.ActiveContent = _projectTree;
             Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
         }
 
@@ -273,7 +272,8 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 _propertyPanel.Entity = args.Entities.LastOrDefault();
-                SideDockManager.ActiveContent = _propertyPanel;
+                _propertyPanel.IsActive = true;
+                //SideDockManager.ActiveContent = _propertyPanel;
             };
 
             LayoutAnchorable anchorable = new LayoutAnchorable

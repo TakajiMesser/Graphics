@@ -1,28 +1,30 @@
-﻿<dock:DockableContent x:Class="SauceEditor.Views.Controls.ProjectTree.ProjectTreeView"
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Controls.ProjectTree.ProjectTreeView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views.Controls"
         xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         mc:Ignorable="d"
-        Title="Project Tree" Height="300" Width="300">
-    <Window.Resources>
-        <RoutedUICommand x:Key="AddMapCommand" Text="Add Map"/>
-        <RoutedUICommand x:Key="AddModelCommand" Text="Add Model"/>
-        <RoutedUICommand x:Key="AddBehaviorCommand" Text="Add Behavior"/>
-        <RoutedUICommand x:Key="AddTextureCommand" Text="Add Texture"/>
-        <RoutedUICommand x:Key="AddAudioCommand" Text="Add Audio"/>
-        <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
-        <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
-        <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
-        <RoutedUICommand x:Key="OpenTextureCommand" Text="Open Texture"/>
-        <RoutedUICommand x:Key="OpenAudioCommand" Text="Open Audio"/>
-        <RoutedUICommand x:Key="ExcludeCommand" Text="Exclude"/>
-        <RoutedUICommand x:Key="DeleteCommand" Text="Delete"/>
-        <RoutedUICommand x:Key="RenameCommand" Text="Rename"/>
-    </Window.Resources>
-    <StackPanel Orientation="Vertical">
+        Title="Project Tree">
+    <StackPanel Name="Panel" Orientation="Vertical">
+        <StackPanel.Resources>
+            <RoutedUICommand x:Key="AddMapCommand" Text="Add Map"/>
+            <RoutedUICommand x:Key="AddModelCommand" Text="Add Model"/>
+            <RoutedUICommand x:Key="AddBehaviorCommand" Text="Add Behavior"/>
+            <RoutedUICommand x:Key="AddTextureCommand" Text="Add Texture"/>
+            <RoutedUICommand x:Key="AddAudioCommand" Text="Add Audio"/>
+            <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
+            <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
+            <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
+            <RoutedUICommand x:Key="OpenTextureCommand" Text="Open Texture"/>
+            <RoutedUICommand x:Key="OpenAudioCommand" Text="Open Audio"/>
+            <RoutedUICommand x:Key="ExcludeCommand" Text="Exclude"/>
+            <RoutedUICommand x:Key="DeleteCommand" Text="Delete"/>
+            <RoutedUICommand x:Key="RenameCommand" Text="Rename"/>
+        </StackPanel.Resources>
         <Label Name="ProjectType" FontSize="14"/>
         <TreeView Name="Tree" BorderBrush="Transparent">
             <TreeView.CommandBindings>
@@ -96,4 +98,4 @@
             </TreeView.Resources>
         </TreeView>
     </StackPanel>
-</dock:DockableContent>
+</xcad:LayoutAnchorable>
