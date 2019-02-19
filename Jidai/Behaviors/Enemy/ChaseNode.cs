@@ -5,6 +5,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics;
 
 namespace Jidai.Behaviors.Enemy
 {
@@ -29,8 +30,10 @@ namespace Jidai.Behaviors.Enemy
 
             if (player != null)
             {
-                var playerPosition = player.Position;
-                var difference = playerPosition - context.Actor.Position;
+                var playerBody = context.CollisionProvider.GetBody(player.ID) as RigidBody3D;
+                var playerPosition = playerBody.Position;
+
+                var difference = playerPosition - context.Position;
 
                 if (difference.Length < 3.0f)// == Vector3.Zero)
                 {

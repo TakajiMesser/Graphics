@@ -174,16 +174,14 @@
     <Compile Include="Physics\Collisions\CollisionManager.cs" />
     <Compile Include="Physics\Collisions\Collision.cs" />
     <Compile Include="Physics\Collisions\CollisionPair.cs" />
-    <Compile Include="Physics\EntityTranslation.cs" />
     <Compile Include="Physics\Collisions\ICollidable.cs" />
     <Compile Include="Physics\Collisions\IPartition.cs" />
     <Compile Include="Physics\Collisions\OctTree.cs" />
     <Compile Include="Physics\Collisions\IPartitionTree.cs" />
     <Compile Include="Physics\Collisions\Oct.cs" />
-    <Compile Include="Physics\EntityCollision.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
-    <Compile Include="Physics\ITranslationProvider.cs" />
     <Compile Include="Physics\IMovable.cs" />
+    <Compile Include="Physics\StaticBody3D.cs" />
     <Compile Include="Physics\Shapes\Shape3D.cs" />
     <Compile Include="Physics\Shapes\Shape2D.cs" />
     <Compile Include="Physics\Shapes\Rectangle.cs" />
@@ -191,7 +189,7 @@
     <Compile Include="Physics\Shapes\Sphere.cs" />
     <Compile Include="Physics\Shapes\Circle.cs" />
     <Compile Include="Physics\Shapes\IShape.cs" />
-    <Compile Include="Physics\RigidBody.cs" />
+    <Compile Include="Physics\RigidBody3D.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>

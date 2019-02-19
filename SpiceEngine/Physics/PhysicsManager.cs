@@ -23,8 +23,8 @@ namespace SpiceEngine.Physics
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
         private Dictionary<int, Body> _bodyByEntityID = new Dictionary<int, Body>();
 
-        public List<EntityCollision> EntityCollisions { get; } = new List<EntityCollision>();
-        
+        public int TickRate { get; set; } = 1;
+
         public PhysicsManager(IEntityProvider entityProvider, Quad worldBoundaries)
         {
             _entityProvider = entityProvider;
@@ -58,50 +58,51 @@ namespace SpiceEngine.Physics
 
         public void DuplicateBody(int entityID, int newID)
         {
-            var position = _entityProvider.GetEntity(entityID).Position;
             var shape = _bodyByEntityID[entityID].Shape;
+            var entity = _entityProvider.GetEntity(entityID);
             var entityType = _entityProvider.GetEntityType(entityID);
 
             switch (entityType)
             {
                 case EntityTypes.Actor:
                 case EntityTypes.Joint:
-                    AddActor(newID, shape.Duplicate(), position);
+                    AddActor(entity, shape.Duplicate());
                     break;
                 case EntityTypes.Brush:
-                    AddBrush(newID, shape.Duplicate(), position);
+                    AddBrush(entity, shape.Duplicate());
                     break;
                 case EntityTypes.Volume:
-                    AddVolume(newID, shape.Duplicate(), position);
+                    AddVolume(entity, shape.Duplicate());
                     break;
             }
         }
 
-        public void AddBrush(int entityID, IShape shape, Vector3 position)
+        public void AddBrush(IEntity entity, IShape shape)
         {
-            var collider = shape.ToCollider(position);
-            _brushTree.Insert(new Bounds(entityID, collider));
+            var partition = shape.ToPartition(entity.Position);
+            _brushTree.Insert(new Bounds(entity.ID, partition));
 
-            var rigidBody = new RigidBody(entityID, shape);
-            _bodyByEntityID.Add(entityID, rigidBody);
+            var rigidBody = new StaticBody3D(entity, shape);
+            _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
-        public void AddActor(int entityID, IShape shape, Vector3 position)
+        public void AddActor(IEntity entity, IShape shape)
         {
-            var collider = shape.ToCollider(position);
-            _actorTree.Insert(new Bounds(entityID, collider));
+            var partition = shape.ToPartition(entity.Position);
+            _actorTree.Insert(new Bounds(entity.ID, partition));
 
-            var rigidBody = new RigidBody(entityID, shape);
-            _bodyByEntityID.Add(entityID, rigidBody);
+            var rigidBody = new RigidBody3D(entity, shape);
+            rigidBody.ForceApplied += (s, args) => _bodiesToUpdate.Add(args.Body);
+            _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
-        public void AddVolume(int entityID, IShape shape, Vector3 position)
+        public void AddVolume(IEntity entity, IShape shape)
         {
-            var collider = shape.ToCollider(position);
-            _volumeTree.Insert(new Bounds(entityID, collider));
+            var partition = shape.ToPartition(entity.Position);
+            _volumeTree.Insert(new Bounds(entity.ID, partition));
 
-            var rigidBody = new RigidBody(entityID, shape);
-            _bodyByEntityID.Add(entityID, rigidBody);
+            var rigidBody = new StaticBody3D(entity, shape);
+            _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
         public Body GetBody(int entityID)
@@ -125,6 +126,8 @@ namespace SpiceEngine.Physics
 
         public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
 
+        private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
+
         public void Update()
         {
             ApplyForces();
@@ -134,10 +137,19 @@ namespace SpiceEngine.Physics
             // HOWEVER, when we perform the behaviors/scripts for Actors, the positions can potentially move again!
             // Does this mean that we perform CD and CR again? Sounds pretty inefficient...
             // Maybe we can just have the behaviors/scripts affect the positions, BUT we don't perform CD and CR again until the next frame!
+            UpdateTransforms();
             _collisionManager.Clear();
             BroadPhaseCollisionDetections();
             NarrowPhaseCollisionDetections();
             PerformCollisionResolutions();
+        }
+
+        private void UpdateTransforms()
+        {
+            foreach (var body in _bodiesToUpdate)
+            {
+                body.Update(TickRate);
+            }
         }
 
         private void ApplyForces()
@@ -181,6 +193,7 @@ namespace SpiceEngine.Physics
                 }
 
                 actor.Position += translation;
+                ((RigidBody3D)_bodyByEntityID[actor.ID]).Position += translation;
             }
 
             _entityTranslations.Clear();
@@ -196,8 +209,8 @@ namespace SpiceEngine.Physics
             // Update the actor colliders every frame, since they could have moved
             foreach (var actor in _entityProvider.Actors)
             {
-                var collider = _bodyByEntityID[actor.ID].Shape.ToCollider(actor.Position);
-                var bounds = new Bounds(actor.ID, collider);
+                var partition = _bodyByEntityID[actor.ID].Shape.ToPartition(actor.Position);
+                var bounds = new Bounds(actor.ID, partition);
 
                 boundsByEntityID.Add(actor.ID, bounds);
                 _actorTree.Insert(bounds);
@@ -240,7 +253,7 @@ namespace SpiceEngine.Physics
         {
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
-                // For each collision pair, 
+                // For each collision that occurs, we need to determine what new forces are going to get applied to the collider pair
             }
         }
     }

@@ -3,6 +3,7 @@ using System.Linq;
 using System.Runtime.Serialization;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics;
 using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Behaviors.Decorators;
@@ -30,9 +31,10 @@ namespace Jidai.Behaviors.Enemy
 
             if (player != null)
             {
-                var playerPosition = player.Position;
+                var playerBody = context.CollisionProvider.GetBody(player.ID) as RigidBody3D;
+                var playerPosition = playerBody.Position;
 
-                var playerDirection = playerPosition - context.Actor.Position;
+                var playerDirection = playerPosition - context.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
                 var angleDifference = (playerAngle - context.EulerRotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
@@ -48,7 +50,7 @@ namespace Jidai.Behaviors.Enemy
                     var colliders = context.CollisionProvider.GetCollisionIDs(context.Actor.ID)
                         .Select(c => context.CollisionProvider.GetBody(c));
 
-                    if (Raycast.TryRaycast(new Ray3(context.Actor.Position, playerDirection, ViewDistance), colliders, context.EntityProvider, out RaycastHit hit))
+                    if (Raycast.TryRaycast(new Ray3(context.Position, playerDirection, ViewDistance), colliders, context.EntityProvider, out RaycastHit hit))
                     {
                         var hitEntity = context.EntityProvider.GetEntity(hit.EntityID);
 

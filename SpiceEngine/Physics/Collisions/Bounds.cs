@@ -3,12 +3,12 @@
     public class Bounds
     {
         public int EntityID { get; }
-        public IPartition Collider { get; }
+        public IPartition Partition { get; }
 
-        public Bounds(int entityID, IPartition collider)
+        public Bounds(int entityID, IPartition partition)
         {
             EntityID = entityID;
-            Collider = collider;
+            Partition = partition;
         }
     }
 }

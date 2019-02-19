@@ -21,6 +21,12 @@ namespace SpiceEngine.Scripting.Behaviors
         public ICollisionProvider CollisionProvider { get; internal set; }
         public IStimulusProvider StimulusProvider { get; internal set; }
 
+        public Vector3 Position
+        {
+            get => ((RigidBody3D)CollisionProvider.GetBody(Actor.ID)).Position;
+            set => ((RigidBody3D)CollisionProvider.GetBody(Actor.ID)).Position = value;
+        }
+
         //public Bounds ActorBounds { get; internal set; }
         //public IShape ActorShape { get; internal set; }
 

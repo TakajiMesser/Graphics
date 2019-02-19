@@ -16,7 +16,7 @@ namespace Jidai.Behaviors
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Actor.Position;
+            var difference = Destination - context.Position;
 
             if (difference == Vector3.Zero)
             {

@@ -12,8 +12,6 @@ namespace SpiceEngine.Physics.Shapes
         public float Height { get; }
 
         public override Vector2 Center { get; }
-        public override float Mass { get; set; }
-        public override float MomentOfInertia { get; }
 
         public Rectangle(IEnumerable<Vector2> vertices)
         {
@@ -41,7 +39,7 @@ namespace SpiceEngine.Physics.Shapes
 
         public override IShape Duplicate() => new Rectangle(Width, Height, Center);
 
-        public override IPartition ToCollider(Vector3 position)
+        public override IPartition ToPartition(Vector3 position)
         {
             var min = new Vector2(position.X - Center.X - Width / 2.0f, position.Y - Center.Y - Height / 2.0f);
             var max = new Vector2(position.X - Center.X + Width / 2.0f, position.Y - Center.Y + Height / 2.0f);
@@ -66,5 +64,7 @@ namespace SpiceEngine.Physics.Shapes
             && point.X < position.X - Center.X + Width / 2.0f
             && point.Y > position.Y - Center.Y - Height / 2.0f
             && point.Y < position.Y - Center.Y + Height / 2.0f;
+
+        public override float CalculateInertia(float mass) => 0.0f;
     }
 }

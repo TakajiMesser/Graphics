@@ -7,13 +7,12 @@ namespace SpiceEngine.Physics.Shapes
     public abstract class Shape3D : IShape
     {
         public abstract Vector3 Center { get; }
-        public abstract float Mass { get; set; }
-        public abstract float MomentOfInertia { get; }
 
-        public abstract IPartition ToCollider(Vector3 position);
+        public abstract IPartition ToPartition(Vector3 position);
         public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
         public abstract bool CollidesWith(Vector3 position, Vector3 point);
         public abstract IShape Duplicate();
+        public abstract float CalculateInertia(float mass);
 
         public static bool Collides(Vector3 positionA, Shape3D shapeA, Vector3 positionB, Shape3D shapeB)
         {

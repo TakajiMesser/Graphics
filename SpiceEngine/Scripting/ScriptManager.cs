@@ -17,7 +17,7 @@ namespace SpiceEngine.Scripting
     /// Each command can be something this object needs to communicate to another object, or performed by itself
     /// Each command either needs to be associated with 
     /// </summary>
-    public class ScriptManager : ITranslationProvider, IStimulusProvider
+    public class ScriptManager : IStimulusProvider
     {
         private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
@@ -25,9 +25,6 @@ namespace SpiceEngine.Scripting
         private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
-        private List<EntityTranslation> _entityTranslations = new List<EntityTranslation>();
-
-        public IEnumerable<EntityTranslation> EntityTranslations => _entityTranslations;
 
         public ScriptManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
         {
@@ -125,8 +122,6 @@ namespace SpiceEngine.Scripting
 
         public void Update()
         {
-            _entityTranslations.Clear();
-
             foreach (var actor in _entityProvider.Actors)
             {
                 if (_behaviorsByEntityID.ContainsKey(actor.ID))

@@ -317,7 +317,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
 
                 var shape = mapBrush.ToShape();
-                _physicsManager.AddBrush(entityID, shape, brush.Position);
+                _physicsManager.AddBrush(brush, shape);
 
                 yield return entityID;
             }
@@ -331,7 +331,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 int entityID = _entityManager.AddEntity(volume);
 
                 var shape = mapVolume.ToShape();
-                _physicsManager.AddVolume(entityID, shape, volume.Position);
+                _physicsManager.AddVolume(volume, shape);
 
                 yield return entityID;
             }
@@ -347,7 +347,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 var meshes = mapActor.ToMeshes();
 
                 var shape = mapActor.ToShape();
-                _physicsManager.AddActor(entityID, shape, actor.Position);
+                _physicsManager.AddActor(actor, shape);
 
                 /*actor.HasCollision = mapActor.HasCollision;
                 actor.Bounds = actor.Name == "Player"

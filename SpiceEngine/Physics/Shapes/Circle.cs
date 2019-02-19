@@ -11,8 +11,6 @@ namespace SpiceEngine.Physics.Shapes
         public float Radius { get; }
 
         public override Vector2 Center { get; }
-        public override float Mass { get; set; }
-        public override float MomentOfInertia { get; }
 
         public Circle(IEnumerable<Vector2> vertices)
         {
@@ -27,7 +25,7 @@ namespace SpiceEngine.Physics.Shapes
 
         public override IShape Duplicate() => new Circle(Radius);
 
-        public override IPartition ToCollider(Vector3 position)
+        public override IPartition ToPartition(Vector3 position)
         {
             var min = new Vector2(position.X - Center.X - Radius, position.Y - Center.Y - Radius);
             var max = new Vector2(position.X - Center.X + Radius, position.Y - Center.Y + Radius);
@@ -46,5 +44,7 @@ namespace SpiceEngine.Physics.Shapes
             var distanceSquared = Math.Pow(point.X - position.X - Center.X, 2.0f) + Math.Pow(point.Y - position.Y - Center.Y, 2.0f);
             return distanceSquared < Math.Pow(Radius, 2.0f);
         }
+
+        public override float CalculateInertia(float mass) => 0.0f;
     }
 }

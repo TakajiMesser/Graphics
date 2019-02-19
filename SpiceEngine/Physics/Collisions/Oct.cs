@@ -18,7 +18,7 @@ namespace SpiceEngine.Physics.Collisions
 
         public bool CanContain(Bounds bounds)
         {
-            switch (bounds.Collider)
+            switch (bounds.Partition)
             {
                 case Oct oct:
                     return Min.X < oct.Min.X

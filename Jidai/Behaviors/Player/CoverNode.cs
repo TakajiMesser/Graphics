@@ -55,7 +55,7 @@ namespace Jidai.Behaviors.Player
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
                             var shape = (Shape3D)context.CollisionProvider.GetBody(context.Actor.ID).Shape;
-                            var borderPoint = shape.GetFurthestPoint(context.Actor.Position, translation);
+                            var borderPoint = shape.GetFurthestPoint(context.Position, translation);
                             
                             // TODO - Dynamically determine how far the raycast should be
                             var boundWidth = 2.0f;

@@ -13,8 +13,6 @@ namespace SpiceEngine.Physics.Shapes
         public float Depth { get; private set; }
 
         public override Vector3 Center { get; }
-        public override float Mass { get; set; }
-        public override float MomentOfInertia { get; }
 
         /*public float MinX => Center.X - Width / 2.0f;
         public float MaxX => Center.X + Width / 2.0f;
@@ -51,12 +49,9 @@ namespace SpiceEngine.Physics.Shapes
             Center = center;
         }
 
-        public override IShape Duplicate() => new Box(Width, Height, Depth, Center)
-        {
-            Mass = Mass
-        };
+        public override IShape Duplicate() => new Box(Width, Height, Depth, Center);
 
-        public override IPartition ToCollider(Vector3 position)
+        public override IPartition ToPartition(Vector3 position)
         {
             var min = new Vector3(position.X - Center.X - Width / 2.0f, position.Y - Center.Y - Height / 2.0f, position.Z - Center.Z - Depth / 2.0f);
             var max = new Vector3(position.X - Center.X + Width / 2.0f, position.Y - Center.Y + Height / 2.0f, position.Z - Center.Z + Depth / 2.0f);
@@ -84,5 +79,7 @@ namespace SpiceEngine.Physics.Shapes
             && point.Y < position.Y - Center.Y + Height / 2.0f
             && point.Z > position.Z - Center.Z - Depth / 2.0f
             && point.Z < position.Z - Center.Z + Depth / 2.0f;
+
+        public override float CalculateInertia(float mass) => mass * (Width * Width + Height * Height) / 12.0f;
     }
 }
