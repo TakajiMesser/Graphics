@@ -6,35 +6,37 @@ using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Scripting.Behaviors
 {
     public class BehaviorContext
     {
-        /// <summary>
-        /// The actor that this behavior belongs to
-        /// </summary>
         public Actor Actor { get; internal set; }
 
-        public IEntityProvider EntityProvider { get; internal set; }
-        public ICollisionProvider CollisionProvider { get; internal set; }
-        public IStimulusProvider StimulusProvider { get; internal set; }
+        private IEntityProvider _entityProvider;
+        private ICollisionProvider _collisionProvider;
+        private IStimulusProvider _stimulusProvider;
 
         public Vector3 Position
         {
-            get => ((RigidBody3D)CollisionProvider.GetBody(Actor.ID)).Position;
-            set => ((RigidBody3D)CollisionProvider.GetBody(Actor.ID)).Position = value;
+            get => ((RigidBody3D)_collisionProvider.GetBody(Actor.ID)).Position;
+            set => ((RigidBody3D)_collisionProvider.GetBody(Actor.ID)).Position = value;
         }
 
-        //public Bounds ActorBounds { get; internal set; }
-        //public IShape ActorShape { get; internal set; }
+        public Body Body => _collisionProvider.GetBody(Actor.ID);
 
-        /// <summary>
-        /// The set of colliders within range of this actor
-        /// </summary>
-        //public IEnumerable<Bounds> ColliderBounds { get; internal set; }
-        //public IEnumerable<Body> ColliderBodies { get; internal set; }
+        public IEntityProvider GetEntityProvider() => _entityProvider;
+        public IEntity GetEntity(int id) => _entityProvider.GetEntity(id);
+        public Actor GetActor(string name) => _entityProvider.GetActor(name);
+
+        public bool HasStimuli(int entityID, Stimulus stimulus) => _stimulusProvider.GetStimuli(entityID).Contains(stimulus);
+
+        public Body GetBody(int entityID) => _collisionProvider.GetBody(entityID);
+        public IEnumerable<Body> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
+        public IEnumerable<Body> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
 
         public Camera Camera { get; internal set; }
         public InputManager InputManager { get; internal set; }
@@ -65,5 +67,9 @@ namespace SpiceEngine.Scripting.Behaviors
                 VariablesByName.Remove(name);
             }
         }
+
+        public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public void SetCollisionProvider(ICollisionProvider collisionProvider) => _collisionProvider = collisionProvider;
+        public void SetStimulusProvider(IStimulusProvider stimulusProvider) => _stimulusProvider = stimulusProvider;
     }
 }

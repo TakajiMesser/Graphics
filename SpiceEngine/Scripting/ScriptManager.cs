@@ -66,6 +66,11 @@ namespace SpiceEngine.Scripting
                     var behavior = _behaviorsByEntityID[actor.ID];
                     behavior.Context.Actor = actor;
 
+                    //Behaviors.Context.Rotation = Rotation;
+                    behavior.Context.SetEntityProvider(_entityProvider);
+                    behavior.Context.SetCollisionProvider(_collisionProvider);
+                    behavior.Context.SetStimulusProvider(this);
+
                     /*foreach (var property in Properties)
                     {
                         if (property.Value.IsConstant)
@@ -127,11 +132,6 @@ namespace SpiceEngine.Scripting
                 if (_behaviorsByEntityID.ContainsKey(actor.ID))
                 {
                     var behavior = _behaviorsByEntityID[actor.ID];
-
-                    //Behaviors.Context.Rotation = Rotation;
-                    behavior.Context.EntityProvider = _entityProvider;
-                    behavior.Context.CollisionProvider = _collisionProvider;
-                    behavior.Context.StimulusProvider = this;
 
                     foreach (var property in _propertiesByEntityID[actor.ID].VariableProperties)
                     {

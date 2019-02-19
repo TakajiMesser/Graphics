@@ -65,14 +65,13 @@ namespace SpiceEngine.Scripting.StimResponse
                 _tickMeter.Reset();
 
                 // Filter colliders by those that are stimuli, and those that aren't
-                var stimuliColliders = context.CollisionProvider.GetCollisionIDs().Select(c => context.CollisionProvider.GetBody(c))
-                    .Where(c => context.StimulusProvider.GetStimuli(c.EntityID).Contains(Stimulus));
+                var stimuliColliders = context.GetBodies().Where(b => context.HasStimuli(b.EntityID, Stimulus));
 
-                if (TriggerOnContact && HasContactStimulus(context.Actor, context.CollisionProvider.GetBody(context.Actor.ID).Shape, stimuliColliders, context.EntityProvider))
+                if (TriggerOnContact && HasContactStimulus(context.Actor, context.Body.Shape, stimuliColliders, context.GetEntityProvider()))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
-                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders, context.EntityProvider))
+                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders, context.GetEntityProvider()))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }

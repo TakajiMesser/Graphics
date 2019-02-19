@@ -26,11 +26,11 @@ namespace Jidai.Behaviors.Enemy
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var player = context.EntityProvider.GetActor("Player");
+            var player = context.GetActor("Player");
 
             if (player != null)
             {
-                var playerBody = context.CollisionProvider.GetBody(player.ID) as RigidBody3D;
+                var playerBody = context.GetBody(player.ID) as RigidBody3D;
                 var playerPosition = playerBody.Position;
 
                 var difference = playerPosition - context.Position;
