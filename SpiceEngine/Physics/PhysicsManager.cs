@@ -146,9 +146,11 @@ namespace SpiceEngine.Physics
 
         private void UpdateTransforms()
         {
+            var tickRate = TickRate;
+
             foreach (var body in _bodiesToUpdate)
             {
-                body.Update(TickRate);
+                body.Update(tickRate);
             }
         }
 
@@ -253,7 +255,8 @@ namespace SpiceEngine.Physics
         {
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
-                // For each collision that occurs, we need to determine what new forces are going to get applied to the collider pair
+                // For each collision that occurs, we need to determine what new forces (impulse) are going to get applied
+                collision.Resolve();
             }
         }
     }

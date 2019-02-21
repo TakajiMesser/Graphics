@@ -3,13 +3,12 @@ using SpiceEngine.Entities;
 using SpiceEngine.Physics.Shapes;
 using System;
 
-namespace SpiceEngine.Physics
+namespace SpiceEngine.Physics.Bodies
 {
-    public class RigidBody3D : Body
+    public class RigidBody3D : Body3D
     {
         private float _mass;
 
-        public Vector3 Position { get; set; }
         public Quaternion Rotation { get; set; }
 
         public Vector3 LinearVelocity { get; private set; }
@@ -22,11 +21,15 @@ namespace SpiceEngine.Physics
             set
             {
                 _mass = value;
+                InverseMass = 1 / value;
                 MomentOfInertia = Shape.CalculateInertia(value);
+                InverseInertia = 1 / MomentOfInertia;
             }
         }
+        public float InverseMass { get; private set; }
 
         public float MomentOfInertia { get; private set; }
+        public float InverseInertia { get; private set; }
 
         //public Vector3 LinearAcceleration { get; private set; }
         //public Vector2 AngularAcceleration { get; private set; }
@@ -37,9 +40,9 @@ namespace SpiceEngine.Physics
         public event EventHandler<RigidBodyEventArgs> Moved;
         public event EventHandler<RigidBodyEventArgs> ForceApplied;
 
-        public RigidBody3D(IEntity entity, IShape shape) : base(entity.ID, shape)
+        public RigidBody3D(IEntity entity, IShape shape) : base(entity, shape)
         {
-            Position = entity.Position;
+            
         }
 
         public void Update(int nTicks)
@@ -68,6 +71,12 @@ namespace SpiceEngine.Physics
 
             Force = Vector3.Zero;
             Torque = Vector3.Zero;
+        }
+
+        // An impulse is an instantaneous change in velocity
+        public void ApplyImpulse(Vector3 impulse)
+        {
+
         }
 
         // Assume the force here is applied directly to the center of mass

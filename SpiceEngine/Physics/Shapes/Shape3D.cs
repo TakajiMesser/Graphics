@@ -59,7 +59,35 @@ namespace SpiceEngine.Physics.Shapes
 
             return collides;
         }
-            
+
+        private static Collision GetCollision(Vector3 positionA, Box boxA, Vector3 positionB, Box boxB)
+        {
+            bool collides = positionA.X - boxA.Width / 2.0f < positionB.X + boxB.Width / 2.0f
+                && positionA.X + boxA.Width / 2.0f > positionB.X - boxB.Width / 2.0f
+                && positionA.Y - boxA.Height / 2.0f < positionB.Y + boxB.Height / 2.0f
+                && positionA.Y + boxA.Height / 2.0f > positionB.Y - boxB.Height / 2.0f
+                && positionA.Z - boxA.Depth / 2.0f < positionB.Z + boxB.Depth / 2.0f
+                && positionA.Z + boxA.Depth / 2.0f > positionB.Z - boxB.Depth / 2.0f;
+
+            if (collides)
+            {
+                var minXA = positionA.X - boxA.Width / 2.0f;
+                var maxXA = positionA.X + boxA.Width / 2.0f;
+                var minYA = positionA.Y - boxA.Height / 2.0f;
+                var maxYA = positionA.Y + boxA.Height / 2.0f;
+                var minZA = positionA.Z - boxA.Depth / 2.0f;
+                var maxZA = positionA.Z + boxA.Depth / 2.0f;
+
+                var minXB = positionB.X - boxB.Width / 2.0f;
+                var maxXB = positionB.X + boxB.Width / 2.0f;
+                var minYB = positionB.Y - boxB.Height / 2.0f;
+                var maxYB = positionB.Y + boxB.Height / 2.0f;
+                var minZB = positionB.Z - boxB.Depth / 2.0f;
+                var maxZB = positionB.Z + boxB.Depth / 2.0f;
+            }
+
+            return collides;
+        }
 
         private static bool Collides(Vector3 positionA, Sphere sphereA, Vector3 positionB, Sphere sphereB)
         {

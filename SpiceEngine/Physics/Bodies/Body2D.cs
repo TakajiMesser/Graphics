@@ -1,18 +1,41 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collisions;
-using System;
+using SpiceEngine.Physics.Shapes;
 
-namespace SpiceEngine.Physics.Shapes
+namespace SpiceEngine.Physics.Bodies
 {
-    public abstract class Shape2D : IShape
+    public abstract class Body2D : IBody
     {
-        public abstract Vector2 Center { get; }
+        public int EntityID { get; }
+        public IShape Shape { get; }
+        public Vector2 Position { get; }
 
-        public abstract IPartition ToPartition(Vector3 position);
-        public abstract Vector2 GetFurthestPoint(Vector2 position, Vector2 direction);
-        public abstract bool CollidesWith(Vector2 position, Vector2 point);
-        public abstract IShape Duplicate();
-        public abstract float CalculateInertia(float mass);
+        public Body2D(IEntity entity, IShape shape)
+        {
+            EntityID = entity.ID;
+            Shape = shape;
+            Position = entity.Position;
+        }
+
+        public Collision GetCollision(Body2D body)
+        {
+            
+        }
+
+        private Collision GetCircleCircleCollision(Body2D body)
+        {
+            var normal = body.Position - Position;
+            var distanceSquared = normal.LengthSquared;
+
+            var circleA = (Circle)Shape;
+            var circleB = (Circle)body.Shape;
+
+            var radius = circleA.Radius + circleB.Radius;
+
+            if (distanceSquared )
+        }
+
+
+
 
         public static Collision GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
         {
@@ -43,26 +66,13 @@ namespace SpiceEngine.Physics.Shapes
             var distanceSquared = normal.LengthSquared;
             var radius = circleA.Radius + circleB.Radius;
 
+            if (distanceSquared >= radius * radius)
+            {
+
+            }
+
             var distanceSquared = Math.Pow(positionA.X - positionB.X, 2.0f) + Math.Pow(positionA.Y - positionB.Y, 2.0f);
             return distanceSquared < Math.Pow(circleA.Radius + circleB.Radius, 2.0f);
-        }
-
-        private static Collision GetCollision(Vector2 positionA, Rectangle rectangleA, Vector2 positionB, Circle circleB)
-        {
-            var closestX = (positionB.X > positionA.X + rectangleA.Width / 2.0f)
-                ? positionA.X + rectangleA.Width / 2.0f
-                : (positionB.X < positionA.X - rectangleA.Width / 2.0f)
-                    ? positionA.X - rectangleA.Width / 2.0f
-                    : positionB.X;
-
-            var closestY = (positionB.Y > positionA.Y + rectangleA.Height / 2.0f)
-                ? positionA.Y + rectangleA.Height / 2.0f
-                : (positionB.Y < positionA.Y - rectangleA.Height / 2.0f)
-                    ? positionA.Y - rectangleA.Height / 2.0f
-                    : positionB.Y;
-
-            var distanceSquared = Math.Pow(positionB.X - closestX, 2) + Math.Pow(positionB.Y - closestY, 2);
-            return distanceSquared < Math.Pow(circleB.Radius, 2);
         }
     }
 }

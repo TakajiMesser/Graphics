@@ -45,6 +45,6 @@ namespace SpiceEngine.Physics.Shapes
             return distanceSquared < Math.Pow(Radius, 2.0f);
         }
 
-        public override float CalculateInertia(float mass) => 0.0f;
+        public override float CalculateInertia(float mass) => mass * Radius * Radius;
     }
 }
