@@ -18,11 +18,18 @@ namespace SpiceEngine.Physics.Bodies
 
         public Collision GetCollision(Body2D body)
         {
-            
+            if (Shape is Circle && body.Shape is Circle)
+            {
+                return GetCircleCircleCollision(body);
+            }
+
+            return new Collision(this, body);
         }
 
         private Collision GetCircleCircleCollision(Body2D body)
         {
+            var collision = new Collision(this, body);
+
             var normal = body.Position - Position;
             var distanceSquared = normal.LengthSquared;
 
@@ -31,10 +38,26 @@ namespace SpiceEngine.Physics.Bodies
 
             var radius = circleA.Radius + circleB.Radius;
 
-            if (distanceSquared )
+            if (distanceSquared < radius * radius)
+            {
+                var distance = Math.Sqrt(distanceSquared);
+
+                if (distance == 0.0f)
+                {
+                    collision.PenetrationDepth = circleA.Radius;
+                    collision.ContactNormal = new Vector2(1, 0);
+                    collision.ContactPoints.Add(Position);
+                }
+                else
+                {
+                    collision.PenetrationDepth = radius - distance;
+                    collision.ContactNormal = normal / distance;
+                    collision.ContactPoints.Add(normal * circleA.Radius + Position);
+                }
+            }
+
+            return collision;
         }
-
-
 
 
         public static Collision GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
