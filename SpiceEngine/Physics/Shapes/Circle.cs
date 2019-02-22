@@ -10,8 +10,6 @@ namespace SpiceEngine.Physics.Shapes
     {
         public float Radius { get; }
 
-        public override Vector2 Center { get; }
-
         public Circle(IEnumerable<Vector2> vertices)
         {
             var maxDistanceSquared = vertices.Select(v => v.LengthSquared).Max();
@@ -27,23 +25,23 @@ namespace SpiceEngine.Physics.Shapes
 
         public override IPartition ToPartition(Vector3 position)
         {
-            var min = new Vector2(position.X - Center.X - Radius, position.Y - Center.Y - Radius);
-            var max = new Vector2(position.X - Center.X + Radius, position.Y - Center.Y + Radius);
+            var min = new Vector2(position.X - Radius, position.Y - Radius);
+            var max = new Vector2(position.X + Radius, position.Y + Radius);
 
             return new Quad(min, max);
         }
 
-        public override Vector2 GetFurthestPoint(Vector2 position, Vector2 direction)
+        /*public override Vector2 GetFurthestPoint(Vector2 position, Vector2 direction)
         {
-            var extended = position - Center + (direction.Normalized() * Radius);
+            var extended = position + (direction.Normalized() * Radius);
             return new Vector2(extended.X, extended.Y);
         }
 
         public override bool CollidesWith(Vector2 position, Vector2 point)
         {
-            var distanceSquared = Math.Pow(point.X - position.X - Center.X, 2.0f) + Math.Pow(point.Y - position.Y - Center.Y, 2.0f);
+            var distanceSquared = Math.Pow(point.X - position.X, 2.0f) + Math.Pow(point.Y - position.Y, 2.0f);
             return distanceSquared < Math.Pow(Radius, 2.0f);
-        }
+        }*/
 
         public override float CalculateInertia(float mass) => mass * Radius * Radius;
     }

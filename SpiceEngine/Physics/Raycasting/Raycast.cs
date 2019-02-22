@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
 
@@ -7,7 +8,7 @@ namespace SpiceEngine.Physics.Raycasting
 {
     public static class Raycast
     {
-        public static bool TryRaycast(Ray3 ray, IEnumerable<Body> colliders, IEntityProvider entityProvider, out RaycastHit hit)
+        public static bool TryRaycast(Ray3 ray, IEnumerable<IBody> colliders, IEntityProvider entityProvider, out RaycastHit hit)
         {
             hit = new RaycastHit();
             float shortestDistance = ray.Distance;
@@ -61,7 +62,7 @@ namespace SpiceEngine.Physics.Raycasting
             return (hit.EntityID != 0);
         }
 
-        public static bool TryCircleCast(RayCircle rayCircle, IEnumerable<Body> colliders, IEntityProvider entityProvider, out RaycastHit hit)
+        public static bool TryCircleCast(RayCircle rayCircle, IEnumerable<IBody> colliders, IEntityProvider entityProvider, out RaycastHit hit)
         {
             foreach (var collider in colliders)
             {

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
@@ -7,10 +8,10 @@ namespace SpiceEngine.Physics
 {
     public interface ICollisionProvider
     {
-        Body GetBody(int entityID);
+        IBody GetBody(int entityID);
 
-        IEnumerable<Collision> GetCollisions();
-        IEnumerable<Collision> GetCollisions(int entityID);
+        IEnumerable<Collision3D> GetCollisions();
+        IEnumerable<Collision3D> GetCollisions(int entityID);
 
         IEnumerable<int> GetCollisionIDs();
         IEnumerable<int> GetCollisionIDs(int entityID);

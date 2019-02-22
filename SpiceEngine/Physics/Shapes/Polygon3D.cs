@@ -6,31 +6,31 @@ using System.Linq;
 
 namespace SpiceEngine.Physics.Shapes
 {
-    public class Polygon2D : Shape2D
+    public class Polygon3D : Shape3D
     {
-        public List<Vector2> Vertices { get; } = new List<Vector2>();
+        public List<Vector3> Vertices { get; } = new List<Vector3>();
 
-        public Polygon2D(IEnumerable<Vector2> vertices) => Vertices.AddRange(vertices);
+        public Polygon3D(IEnumerable<Vector3> vertices) => Vertices.AddRange(vertices);
 
-        public override IShape Duplicate() => new Polygon2D(Vertices);
+        public override IShape Duplicate() => new Polygon3D(Vertices);
 
         public override IPartition ToPartition(Vector3 position)
         {
-            Vertices.Select(v => v.X).Min();
-
-            var min = new Vector2()
+            var min = new Vector3()
             {
                 X = Vertices.Min(v => v.X),
-                Y = Vertices.Min(v => v.Y)
+                Y = Vertices.Min(v => v.Y),
+                Z = Vertices.Min(v => v.Z)
             };
 
-            var max = new Vector2()
+            var max = new Vector3()
             {
                 X = Vertices.Max(v => v.X),
-                Y = Vertices.Max(v => v.Y)
+                Y = Vertices.Max(v => v.Y),
+                Z = Vertices.Max(v => v.Z)
             };
 
-            return new Quad(min, max);
+            return new Oct(min, max);
         }
 
         // TODO - Correct this (right now it calculates the same as 2D, but just tags on the Z position)

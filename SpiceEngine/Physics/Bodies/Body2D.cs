@@ -1,5 +1,8 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities;
+using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
+using System;
 
 namespace SpiceEngine.Physics.Bodies
 {
@@ -7,28 +10,29 @@ namespace SpiceEngine.Physics.Bodies
     {
         public int EntityID { get; }
         public IShape Shape { get; }
-        public Vector2 Position { get; }
+        public Vector2 Position { get; set; }
+        public float Restitution { get; set; }
 
         public Body2D(IEntity entity, IShape shape)
         {
             EntityID = entity.ID;
             Shape = shape;
-            Position = entity.Position;
+            Position = entity.Position.Xy;
         }
 
-        public Collision GetCollision(Body2D body)
+        public Collision2D GetCollision(Body2D body)
         {
             if (Shape is Circle && body.Shape is Circle)
             {
                 return GetCircleCircleCollision(body);
             }
 
-            return new Collision(this, body);
+            return new Collision2D(this, body);
         }
 
-        private Collision GetCircleCircleCollision(Body2D body)
+        private Collision2D GetCircleCircleCollision(Body2D body)
         {
-            var collision = new Collision(this, body);
+            var collision = new Collision2D(this, body);
 
             var normal = body.Position - Position;
             var distanceSquared = normal.LengthSquared;
@@ -40,7 +44,7 @@ namespace SpiceEngine.Physics.Bodies
 
             if (distanceSquared < radius * radius)
             {
-                var distance = Math.Sqrt(distanceSquared);
+                var distance = (float)Math.Sqrt(distanceSquared);
 
                 if (distance == 0.0f)
                 {
@@ -59,43 +63,29 @@ namespace SpiceEngine.Physics.Bodies
             return collision;
         }
 
-
-        public static Collision GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
+        private Collision2D GetCircleRectangleCollision(Body2D body)
         {
-            switch (shapeA)
-            {
-                case Rectangle rectangleA when shapeB is Rectangle rectangleB:
-                    return Collides(positionA - rectangleA.Center, rectangleA, positionB - rectangleB.Center, rectangleB);
-                case Rectangle rectangleA when shapeB is Circle circleB:
-                    return Collides(positionA - rectangleA.Center, rectangleA, positionB - circleB.Center, circleB);
-                case Circle circleA when shapeB is Rectangle rectangleB:
-                    return Collides(positionB - circleA.Center, rectangleB, positionA - rectangleB.Center, circleA);
-                case Circle circleA when shapeB is Circle circleB:
-                    return Collides(positionA - circleA.Center, circleA, positionB - circleB.Center, circleB);
-            }
-
-            throw new NotImplementedException();
+            return new Collision2D(this, body);
         }
 
-        private static Collision GetCollision(Vector2 positionA, Rectangle rectangleA, Vector2 positionB, Rectangle rectangleB) =>
-            positionA.X - rectangleA.Width / 2.0f < positionB.X + rectangleB.Width / 2.0f
-            && positionA.X + rectangleA.Width / 2.0f > positionB.X - rectangleB.Width / 2.0f
-            && positionA.Y - rectangleA.Height / 2.0f < positionB.Y + rectangleB.Height / 2.0f
-            && positionA.Y + rectangleA.Height / 2.0f > positionB.Y - rectangleB.Height / 2.0f;
-
-        private static Collision GetCollision(Vector2 positionA, Circle circleA, Vector2 positionB, Circle circleB)
+        private Collision2D GetRectangleRectangleCollision(Body2D body)
         {
-            var normal = positionB - positionA;
-            var distanceSquared = normal.LengthSquared;
-            var radius = circleA.Radius + circleB.Radius;
+            return new Collision2D(this, body);
+        }
 
-            if (distanceSquared >= radius * radius)
-            {
+        private Collision2D GetPolygonPolygonCollision(Body2D body)
+        {
+            return new Collision2D(this, body);
+        }
 
-            }
+        private Collision2D GetCirclePolygonCollision(Body2D body)
+        {
+            return new Collision2D(this, body);
+        }
 
-            var distanceSquared = Math.Pow(positionA.X - positionB.X, 2.0f) + Math.Pow(positionA.Y - positionB.Y, 2.0f);
-            return distanceSquared < Math.Pow(circleA.Radius + circleB.Radius, 2.0f);
+        private Collision2D GetRectanglePolygonCollision(Body2D body)
+        {
+            return new Collision2D(this, body);
         }
     }
 }

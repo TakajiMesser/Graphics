@@ -11,8 +11,8 @@ namespace SpiceEngine.Physics.Bodies
 
         public Quaternion Rotation { get; set; }
 
-        public Vector3 LinearVelocity { get; private set; }
-        public Vector3 AngularVelocity { get; private set; }
+        public Vector3 LinearVelocity { get; set; }
+        public Vector3 AngularVelocity { get; set; }
         public Quaternion Spin { get; private set; }
 
         public float Mass
@@ -92,7 +92,7 @@ namespace SpiceEngine.Physics.Bodies
         public void ApplyForce(Vector3 force, Vector3 point)
         {
             Force = force;
-            Torque = Vector3.Cross(point - ((Shape3D)Shape).Center, force);
+            Torque = Vector3.Cross(point - Position, force);
 
             if (force != Vector3.Zero)
             {

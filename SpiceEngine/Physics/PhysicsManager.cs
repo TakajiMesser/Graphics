@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
 using System;
@@ -21,7 +22,7 @@ namespace SpiceEngine.Physics
         private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
 
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
-        private Dictionary<int, Body> _bodyByEntityID = new Dictionary<int, Body>();
+        private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
 
         public int TickRate { get; set; } = 1;
 
@@ -105,7 +106,7 @@ namespace SpiceEngine.Physics
             _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
-        public Body GetBody(int entityID)
+        public IBody GetBody(int entityID)
         {
             if (_bodyByEntityID.ContainsKey(entityID))
             {
@@ -116,9 +117,9 @@ namespace SpiceEngine.Physics
             return null;
         }
 
-        public IEnumerable<Collision> GetCollisions() => _collisionManager.NarrowCollisions;
+        public IEnumerable<Collision3D> GetCollisions() => _collisionManager.NarrowCollisions;
 
-        public IEnumerable<Collision> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
+        public IEnumerable<Collision3D> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
 
         public IEnumerable<int> GetCollisionIDs() => _collisionManager.NarrowCollisionIDs;
 
@@ -167,35 +168,36 @@ namespace SpiceEngine.Physics
             foreach (var entityTranslation in _entityTranslations)
             {
                 var actor = _entityProvider.GetEntity(entityTranslation.Item1);
-                var shape = (Shape3D)_bodyByEntityID[actor.ID].Shape;
+                var body = (Body3D)_bodyByEntityID[actor.ID];
 
                 Vector3 translation = entityTranslation.Item2;
 
-                if (shape != null)
+                foreach (var colliderBody in _bodyByEntityID.Values.Where(b => b.EntityID != actor.ID).Cast<Body3D>())
                 {
-                    foreach (var body in _bodyByEntityID.Values.Where(b => b.EntityID != actor.ID))
+                    var originalPosition = body.Position;
+                    var colliderPosition = _entityProvider.GetEntity(body.EntityID).Position;
+
+                    body.Position = originalPosition + translation.X * Vector3.UnitX;
+                    if (body.GetCollision(colliderBody).ContactPoints.Count > 0)
                     {
-                        var colliderPosition = _entityProvider.GetEntity(body.EntityID).Position;
+                        translation.X = 0;
+                    }
 
-                        if (Shape3D.Collides(new Vector3(actor.Position.X + translation.X, actor.Position.Y, actor.Position.Z), shape, colliderPosition, (Shape3D)body.Shape))
-                        {
-                            translation.X = 0;
-                        }
+                    body.Position = originalPosition + translation.Y * Vector3.UnitY;
+                    if (body.GetCollision(colliderBody).ContactPoints.Count > 0)
+                    {
+                        translation.Y = 0;
+                    }
 
-                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y + translation.Y, actor.Position.Z), shape, colliderPosition, (Shape3D)body.Shape))
-                        {
-                            translation.Y = 0;
-                        }
-
-                        if (Shape3D.Collides(new Vector3(actor.Position.X, actor.Position.Y, actor.Position.Z + translation.Z), shape, colliderPosition, (Shape3D)body.Shape))
-                        {
-                            translation.Z = 0;
-                        }
+                    body.Position = originalPosition + translation.Z * Vector3.UnitZ;
+                    if (body.GetCollision(colliderBody).ContactPoints.Count > 0)
+                    {
+                        translation.Z = 0;
                     }
                 }
 
+                body.Position += translation;
                 actor.Position += translation;
-                ((RigidBody3D)_bodyByEntityID[actor.ID]).Position += translation;
             }
 
             _entityTranslations.Clear();
@@ -237,15 +239,15 @@ namespace SpiceEngine.Physics
             // For each broad phase collision detection, check more narrowly to see if a collision actually did occur or not
             foreach (var collisionPair in _collisionManager.BroadCollisionPairs)
             {
-                var firstBody = _bodyByEntityID[collisionPair.FirstEntityID];
-                var secondBody = _bodyByEntityID[collisionPair.SecondEntityID];
+                var firstBody = (Body3D)_bodyByEntityID[collisionPair.FirstEntityID];
+                var secondBody = (Body3D)_bodyByEntityID[collisionPair.SecondEntityID];
 
                 var firstEntity = _entityProvider.GetEntity(collisionPair.FirstEntityID);
                 var secondEntity = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
-                if (Shape3D.Collides(firstEntity.Position, (Shape3D)firstBody.Shape, secondEntity.Position, (Shape3D)secondBody.Shape))
+                var collision = firstBody.GetCollision(secondBody);
+                if (collision.ContactPoints.Count > 0)
                 {
-                    var collision = new Collision(collisionPair);
                     _collisionManager.AddNarrowCollision(collision);
                 }
             }

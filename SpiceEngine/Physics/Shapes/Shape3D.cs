@@ -6,15 +6,13 @@ namespace SpiceEngine.Physics.Shapes
 {
     public abstract class Shape3D : IShape
     {
-        public abstract Vector3 Center { get; }
-
         public abstract IPartition ToPartition(Vector3 position);
-        public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
-        public abstract bool CollidesWith(Vector3 position, Vector3 point);
+        //public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
+        //public abstract bool CollidesWith(Vector3 position, Vector3 point);
         public abstract IShape Duplicate();
         public abstract float CalculateInertia(float mass);
 
-        public static bool Collides(Vector3 positionA, Shape3D shapeA, Vector3 positionB, Shape3D shapeB)
+        /*public static bool Collides(Vector3 positionA, Shape3D shapeA, Vector3 positionB, Shape3D shapeB)
         {
             switch (shapeA)
             {
@@ -60,7 +58,7 @@ namespace SpiceEngine.Physics.Shapes
             return collides;
         }
 
-        private static Collision GetCollision(Vector3 positionA, Box boxA, Vector3 positionB, Box boxB)
+        private static Collision3D GetCollision(Vector3 positionA, Box boxA, Vector3 positionB, Box boxB)
         {
             bool collides = positionA.X - boxA.Width / 2.0f < positionB.X + boxB.Width / 2.0f
                 && positionA.X + boxA.Width / 2.0f > positionB.X - boxB.Width / 2.0f
@@ -117,6 +115,6 @@ namespace SpiceEngine.Physics.Shapes
 
             var distanceSquared = Math.Pow(positionB.X - closestX, 2) + Math.Pow(positionB.Y - closestY, 2) + Math.Pow(positionB.Z - closestZ, 2);
             return distanceSquared < Math.Pow(sphereB.Radius, 2);
-        }
+        }*/
     }
 }

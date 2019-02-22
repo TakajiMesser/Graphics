@@ -4,6 +4,7 @@ using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Scripting.StimResponse;
@@ -22,11 +23,11 @@ namespace SpiceEngine.Scripting.Behaviors
 
         public Vector3 Position
         {
-            get => ((RigidBody3D)_collisionProvider.GetBody(Actor.ID)).Position;
-            set => ((RigidBody3D)_collisionProvider.GetBody(Actor.ID)).Position = value;
+            get => ((Body3D)_collisionProvider.GetBody(Actor.ID)).Position;
+            set => ((Body3D)_collisionProvider.GetBody(Actor.ID)).Position = value;
         }
 
-        public Body Body => _collisionProvider.GetBody(Actor.ID);
+        public IBody Body => _collisionProvider.GetBody(Actor.ID);
 
         public IEntityProvider GetEntityProvider() => _entityProvider;
         public IEntity GetEntity(int id) => _entityProvider.GetEntity(id);
@@ -34,9 +35,9 @@ namespace SpiceEngine.Scripting.Behaviors
 
         public bool HasStimuli(int entityID, Stimulus stimulus) => _stimulusProvider.GetStimuli(entityID).Contains(stimulus);
 
-        public Body GetBody(int entityID) => _collisionProvider.GetBody(entityID);
-        public IEnumerable<Body> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
-        public IEnumerable<Body> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
+        public IBody GetBody(int entityID) => _collisionProvider.GetBody(entityID);
+        public IEnumerable<IBody> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
+        public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
 
         public Camera Camera { get; internal set; }
         public InputManager InputManager { get; internal set; }

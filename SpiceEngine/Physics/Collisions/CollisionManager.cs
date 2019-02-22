@@ -7,11 +7,11 @@ namespace SpiceEngine.Physics.Collisions
         private HashSet<CollisionPair> _broadCollisions = new HashSet<CollisionPair>();
 
         private Dictionary<int, HashSet<CollisionPair>> _narrowCollisionPairsByEntityID = new Dictionary<int, HashSet<CollisionPair>>();
-        private Dictionary<CollisionPair, Collision> _narrowCollisionByCollisionPair = new Dictionary<CollisionPair, Collision>();
+        private Dictionary<CollisionPair, Collision3D> _narrowCollisionByCollisionPair = new Dictionary<CollisionPair, Collision3D>();
 
         public IEnumerable<CollisionPair> BroadCollisionPairs => _broadCollisions;
         public IEnumerable<int> NarrowCollisionIDs => _narrowCollisionPairsByEntityID.Keys;
-        public IEnumerable<Collision> NarrowCollisions => _narrowCollisionByCollisionPair.Values;
+        public IEnumerable<Collision3D> NarrowCollisions => _narrowCollisionByCollisionPair.Values;
 
         public IEnumerable<int> GetNarrowCollisionIDs(int entityID)
         {
@@ -26,7 +26,7 @@ namespace SpiceEngine.Physics.Collisions
             return entityIDs;
         }
 
-        public IEnumerable<Collision> GetNarrowCollisions(int entityID)
+        public IEnumerable<Collision3D> GetNarrowCollisions(int entityID)
         {
             if (_narrowCollisionPairsByEntityID.ContainsKey(entityID))
             {
@@ -45,22 +45,24 @@ namespace SpiceEngine.Physics.Collisions
             }
         }
 
-        public void AddNarrowCollision(Collision collision)
+        public void AddNarrowCollision(Collision3D collision)
         {
-            _narrowCollisionByCollisionPair.Add(collision.CollisionPair, collision);
+            var collisionPair = new CollisionPair(collision.FirstBody.EntityID, collision.SecondBody.EntityID);
 
-            if (!_narrowCollisionPairsByEntityID.ContainsKey(collision.CollisionPair.FirstEntityID))
+            _narrowCollisionByCollisionPair.Add(collisionPair, collision);
+
+            if (!_narrowCollisionPairsByEntityID.ContainsKey(collisionPair.FirstEntityID))
             {
-                _narrowCollisionPairsByEntityID.Add(collision.CollisionPair.FirstEntityID, new HashSet<CollisionPair>());
+                _narrowCollisionPairsByEntityID.Add(collisionPair.FirstEntityID, new HashSet<CollisionPair>());
             }
 
-            if (!_narrowCollisionPairsByEntityID.ContainsKey(collision.CollisionPair.SecondEntityID))
+            if (!_narrowCollisionPairsByEntityID.ContainsKey(collisionPair.SecondEntityID))
             {
-                _narrowCollisionPairsByEntityID.Add(collision.CollisionPair.SecondEntityID, new HashSet<CollisionPair>());
+                _narrowCollisionPairsByEntityID.Add(collisionPair.SecondEntityID, new HashSet<CollisionPair>());
             }
 
-            _narrowCollisionPairsByEntityID[collision.CollisionPair.FirstEntityID].Add(collision.CollisionPair);
-            _narrowCollisionPairsByEntityID[collision.CollisionPair.SecondEntityID].Add(collision.CollisionPair);
+            _narrowCollisionPairsByEntityID[collisionPair.FirstEntityID].Add(collisionPair);
+            _narrowCollisionPairsByEntityID[collisionPair.SecondEntityID].Add(collisionPair);
         }
 
         public void Clear()

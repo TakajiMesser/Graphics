@@ -6,6 +6,7 @@ using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Physics;
+using SpiceEngine.Physics.Bodies;
 
 namespace Jidai.Behaviors.Enemy
 {
