@@ -30,7 +30,7 @@ namespace SpiceEngine.Physics.Bodies
             {
                 return GetRectangleRectangleCollision(body);
             }
-            else if (Shape is Polygon2D && body.Shape is Polygon2D)
+            else if (Shape is Polygon && body.Shape is Polygon)
             {
                 return GetPolygonPolygonCollision(body);
             }
@@ -42,19 +42,19 @@ namespace SpiceEngine.Physics.Bodies
             {
                 return body.GetCircleRectangleCollision(this);
             }
-            else if (Shape is Circle && body.Shape is Polygon2D)
+            else if (Shape is Circle && body.Shape is Polygon)
             {
                 return GetCirclePolygonCollision(body);
             }
-            else if (Shape is Polygon2D && body.Shape is Circle)
+            else if (Shape is Polygon && body.Shape is Circle)
             {
                 return body.GetCirclePolygonCollision(this);
             }
-            else if (Shape is Rectangle && body.Shape is Polygon2D)
+            else if (Shape is Rectangle && body.Shape is Polygon)
             {
                 return GetRectanglePolygonCollision(body);
             }
-            else if (Shape is Polygon2D && body.Shape is Rectangle)
+            else if (Shape is Polygon && body.Shape is Rectangle)
             {
                 return body.GetRectanglePolygonCollision(this);
             }
@@ -113,8 +113,8 @@ namespace SpiceEngine.Physics.Bodies
         {
             var collision = new Collision2D(this, body);
 
-            var polygonA = (Polygon2D)Shape;
-            var polygonB = (Polygon2D)body.Shape;
+            var polygonA = (Polygon)Shape;
+            var polygonB = (Polygon)body.Shape;
 
             return collision;
         }
@@ -149,7 +149,7 @@ namespace SpiceEngine.Physics.Bodies
             var collision = new Collision2D(this, body);
 
             var circle = (Circle)Shape;
-            var polygon = (Polygon2D)body.Shape;
+            var polygon = (Polygon)body.Shape;
 
             return collision;
         }
@@ -159,7 +159,7 @@ namespace SpiceEngine.Physics.Bodies
             var collision = new Collision2D(this, body);
 
             var rectangle = (Rectangle)Shape;
-            var polygon = (Polygon2D)body.Shape;
+            var polygon = (Polygon)body.Shape;
 
             return collision;
         }

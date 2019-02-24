@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Rendering.PostProcessing;
 using System;
 using System.Collections.Generic;
 
@@ -65,7 +66,37 @@ namespace SpiceEngine.Physics.Collisions
 
         private void Resolve(RigidBody3D rigidBodyA, RigidBody3D rigidBodyB)
         {
-            foreach (var contactPoint in ContactPoints)
+            var relativeVelocity = rigidBodyB.LinearVelocity - rigidBodyA.LinearVelocity;
+            //var relativeVelocity = rigidBodyA.LinearVelocity - rigidBodyB.LinearVelocity;
+            float velocityAlongNormal = Vector3.Dot(relativeVelocity, ContactNormal);
+
+            // Do not resolve if velocities are separating (?)
+            if (velocityAlongNormal <= 0)
+            {
+                float restitution = Math.Min(rigidBodyA.Restitution, rigidBodyB.Restitution);
+                float impulseScalar = -(1 + restitution) * velocityAlongNormal;
+
+                var combinedInverseMass = rigidBodyA.InverseMass + rigidBodyB.InverseMass;
+                if (combinedInverseMass > 0)
+                {
+                    impulseScalar /= combinedInverseMass;
+                }
+
+                var impulse = impulseScalar * ContactNormal;
+
+                rigidBodyA.LinearVelocity -= rigidBodyA.InverseMass * impulse;
+                rigidBodyB.LinearVelocity += rigidBodyB.InverseMass * impulse;
+
+                //Frequency.ToString("0.##")
+                /*LogManager.LogToScreen("Sphere = (" + rigidBodyA.LinearVelocity.X.ToString("0.##")
+                    + ", " + rigidBodyA.LinearVelocity.Y.ToString("0.##")
+                    + ", " + rigidBodyA.LinearVelocity.Z.ToString("0.##")
+                    + "    Box = (" + rigidBodyB.LinearVelocity.X.ToString("0.##")
+                    + ", " + rigidBodyB.LinearVelocity.Y.ToString("0.##")
+                    + ", " + rigidBodyB.LinearVelocity.Z.ToString("0.##"));*/
+            }
+
+            /*foreach (var contactPoint in ContactPoints)
             {
                 var ra = contactPoint - rigidBodyA.Position;
                 var rb = contactPoint - rigidBodyB.Position;
@@ -97,10 +128,10 @@ namespace SpiceEngine.Physics.Collisions
                 // Intelligently distribute impulse scalar over the two objects
                 /*var combinedMass = rigidBodyA.Mass + rigidBodyB.Mass;
                 rigidBodyA.Velocity -= (rigidBodyA.Mass / combinedMass) * impulse;
-                rigidBodyB.Velocity += (rigidBodyB.Mass / combinedMass) * impulse;*/
+                rigidBodyB.Velocity += (rigidBodyB.Mass / combinedMass) * impulse;*
 
                 PositionalCorrection(rigidBodyA, rigidBodyB);
-            }
+            }*/
         }
 
         private void PositionalCorrection(RigidBody3D bodyA, RigidBody3D bodyB)

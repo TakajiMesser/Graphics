@@ -6,13 +6,13 @@ using System.Linq;
 
 namespace SpiceEngine.Physics.Shapes
 {
-    public class Polygon2D : Shape2D
+    public class Polygon : Shape2D
     {
         public List<Vector2> Vertices { get; } = new List<Vector2>();
 
-        public Polygon2D(IEnumerable<Vector2> vertices) => Vertices.AddRange(vertices);
+        public Polygon(IEnumerable<Vector2> vertices) => Vertices.AddRange(vertices);
 
-        public override IShape Duplicate() => new Polygon2D(Vertices);
+        public override IShape Duplicate() => new Polygon(Vertices);
 
         public override IPartition ToPartition(Vector3 position)
         {

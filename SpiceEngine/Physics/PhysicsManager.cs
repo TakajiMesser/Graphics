@@ -154,6 +154,8 @@ namespace SpiceEngine.Physics
             {
                 body.Update(tickRate);
             }
+
+            _bodiesToUpdate.Clear();
         }
 
         private void ApplyForces()

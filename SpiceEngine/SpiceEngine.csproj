@@ -187,10 +187,8 @@
     <Compile Include="Physics\Collisions\Oct.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
     <Compile Include="Physics\IMovable.cs" />
-    <Compile Include="Physics\Shapes\PolygonVertex3D.cs" />
-    <Compile Include="Physics\Shapes\PolygonVertex2D.cs" />
-    <Compile Include="Physics\Shapes\Polygon3D.cs" />
-    <Compile Include="Physics\Shapes\Polygon2D.cs" />
+    <Compile Include="Physics\Shapes\Polyhedron.cs" />
+    <Compile Include="Physics\Shapes\Polygon.cs" />
     <Compile Include="Physics\Shapes\Shape3D.cs" />
     <Compile Include="Physics\Shapes\Shape2D.cs" />
     <Compile Include="Physics\Shapes\Rectangle.cs" />
