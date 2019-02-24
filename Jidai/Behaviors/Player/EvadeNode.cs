@@ -10,6 +10,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Utilities;
 using System.Runtime.Serialization;
 using SpiceEngine.Helpers;
+using SpiceEngine.Physics.Bodies;
 
 namespace Jidai.Behaviors.Player
 {
@@ -62,7 +63,7 @@ namespace Jidai.Behaviors.Player
 
                     context.Actor.Rotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
                     context.EulerRotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), context.EulerRotation.Y, context.EulerRotation.Z);
-                    context.Translation = evadeTranslation;
+                    ((RigidBody3D)context.Body).ApplyImpulse(evadeTranslation);
 
                     context.SetVariable("evadeTranslation", evadeTranslation);
                     context.SetVariable("nEvadeTicks", nEvadeTicks);
@@ -80,7 +81,7 @@ namespace Jidai.Behaviors.Player
                 context.EulerRotation = new Vector3(context.EulerRotation.X, 2.0f * (float)Math.PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
                 nEvadeTicks++;
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
-                context.Translation = evadeTranslation;
+                ((RigidBody3D)context.Body).ApplyImpulse(evadeTranslation);
 
                 return BehaviorStatus.Success;
             }

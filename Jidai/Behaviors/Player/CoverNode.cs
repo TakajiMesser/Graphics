@@ -12,6 +12,7 @@ using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Physics.Bodies;
 
 namespace Jidai.Behaviors.Player
 {
@@ -39,7 +40,7 @@ namespace Jidai.Behaviors.Player
                         context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - EnterCoverSpeed);
 
                         var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                        context.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed;
+                        ((RigidBody3D)context.Body).ApplyImpulse(new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed);
                     }
 
                     if (context.GetVariable<float>("coverDistance") < 0.1f)

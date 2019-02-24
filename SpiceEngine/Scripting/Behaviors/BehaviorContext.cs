@@ -44,7 +44,7 @@ namespace SpiceEngine.Scripting.Behaviors
         public InputBinding InputMapping { get; internal set; }
 
         public Vector3 EulerRotation { get; set; }
-        public Vector3 Translation { get; set; }
+        //public Vector3 Translation { get; set; }
 
         public Dictionary<string, object> PropertiesByName { get; protected set; } = new Dictionary<string, object>();
         public Dictionary<string, object> VariablesByName { get; protected set; } = new Dictionary<string, object>();

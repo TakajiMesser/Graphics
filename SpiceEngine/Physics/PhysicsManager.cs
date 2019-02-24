@@ -19,7 +19,7 @@ namespace SpiceEngine.Physics
         private IPartitionTree _lightTree;
 
         private CollisionManager _collisionManager = new CollisionManager();
-        private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
+        //private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
 
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
         private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
@@ -94,6 +94,7 @@ namespace SpiceEngine.Physics
 
             var rigidBody = new RigidBody3D(entity, shape);
             rigidBody.ForceApplied += (s, args) => _bodiesToUpdate.Add(args.Body);
+            rigidBody.Moved += (s, args) => entity.Position = args.Body.Position;
             _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
@@ -125,24 +126,24 @@ namespace SpiceEngine.Physics
 
         public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
 
-        public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
+        //public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
 
         private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
 
         public void Update()
         {
-            ApplyForces();
+            //ApplyForces();
 
             // TODO - Determine order of operations here
             // The issue is that after applying forces, the positions will move, so we need to perform CD and CR
             // HOWEVER, when we perform the behaviors/scripts for Actors, the positions can potentially move again!
             // Does this mean that we perform CD and CR again? Sounds pretty inefficient...
             // Maybe we can just have the behaviors/scripts affect the positions, BUT we don't perform CD and CR again until the next frame!
-            UpdateTransforms();
             _collisionManager.Clear();
             BroadPhaseCollisionDetections();
             NarrowPhaseCollisionDetections();
             PerformCollisionResolutions();
+            UpdateTransforms();
         }
 
         private void UpdateTransforms()
@@ -165,7 +166,7 @@ namespace SpiceEngine.Physics
             // From there, we can either A) Just revert back to the previous position by using the linear velocity, or (better)
             // B) Apply an appropriate force to send the object in its new direction
             // Maybe we can use the linear velocity to determine the time delta of collision, then base the new position off of that
-            foreach (var entityTranslation in _entityTranslations)
+            /*foreach (var entityTranslation in _entityTranslations)
             {
                 var actor = _entityProvider.GetEntity(entityTranslation.Item1);
                 var body = (Body3D)_bodyByEntityID[actor.ID];
@@ -178,21 +179,21 @@ namespace SpiceEngine.Physics
                     var colliderPosition = _entityProvider.GetEntity(body.EntityID).Position;
 
                     body.Position = originalPosition + translation.X * Vector3.UnitX;
-                    if (body.GetCollision(colliderBody).ContactPoints.Count > 0)
+                    if (body.GetCollision(colliderBody).HasCollision)
                     {
-                        translation.X = 0;
+                        //translation.X = 0;
                     }
 
                     body.Position = originalPosition + translation.Y * Vector3.UnitY;
-                    if (body.GetCollision(colliderBody).ContactPoints.Count > 0)
+                    if (body.GetCollision(colliderBody).HasCollision)
                     {
-                        translation.Y = 0;
+                        //translation.Y = 0;
                     }
 
                     body.Position = originalPosition + translation.Z * Vector3.UnitZ;
-                    if (body.GetCollision(colliderBody).ContactPoints.Count > 0)
+                    if (body.GetCollision(colliderBody).HasCollision)
                     {
-                        translation.Z = 0;
+                        //translation.Z = 0;
                     }
                 }
 
@@ -200,7 +201,7 @@ namespace SpiceEngine.Physics
                 actor.Position += translation;
             }
 
-            _entityTranslations.Clear();
+            _entityTranslations.Clear();*/
         }
 
         private void BroadPhaseCollisionDetections()
@@ -246,7 +247,7 @@ namespace SpiceEngine.Physics
                 var secondEntity = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
                 var collision = firstBody.GetCollision(secondBody);
-                if (collision.ContactPoints.Count > 0)
+                if (collision.HasCollision)
                 {
                     _collisionManager.AddNarrowCollision(collision);
                 }

@@ -88,7 +88,7 @@ namespace SpiceEngine.Scripting.StimResponse
             foreach (var collider in stimuliColliders)
             {
                 var collision = ((Body3D)body).GetCollision((Body3D)collider);
-                if (collision.ContactPoints.Count > 0)
+                if (collision.HasCollision)
                 {
                     return true;
                 }

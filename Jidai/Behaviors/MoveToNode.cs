@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting.Behaviors;
 
 namespace Jidai.Behaviors
@@ -24,11 +25,11 @@ namespace Jidai.Behaviors
             }
             else if (difference.Length < Speed)
             {
-                context.Translation = difference;
+                ((RigidBody3D)context.Body).ApplyImpulse(difference);
             }
             else
             {
-                context.Translation = difference.Normalized() * Speed;
+                ((RigidBody3D)context.Body).ApplyImpulse(difference.Normalized() * Speed);
             }
 
             return BehaviorStatus.Running;

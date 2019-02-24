@@ -16,6 +16,7 @@ namespace SpiceEngine.Physics
         IEnumerable<int> GetCollisionIDs();
         IEnumerable<int> GetCollisionIDs(int entityID);
 
-        void ApplyForce(int entityID, Vector3 translation);
+        //void ApplyImpulse(int entityID, Vector3 translation);
+        //void ApplyForce(int entityID, Vector3 translation);
     }
 }

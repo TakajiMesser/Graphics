@@ -7,7 +7,7 @@ namespace SpiceEngine.Physics.Bodies
 {
     public class RigidBody3D : Body3D
     {
-        private float _mass;
+        private float _mass = 1.0f;
 
         public Quaternion Rotation { get; set; }
 
@@ -26,7 +26,7 @@ namespace SpiceEngine.Physics.Bodies
                 InverseInertia = 1 / MomentOfInertia;
             }
         }
-        public float InverseMass { get; private set; }
+        public float InverseMass { get; private set; } = 1.0f;
 
         public float MomentOfInertia { get; private set; }
         public float InverseInertia { get; private set; }
@@ -76,7 +76,8 @@ namespace SpiceEngine.Physics.Bodies
         // An impulse is an instantaneous change in velocity
         public void ApplyImpulse(Vector3 impulse)
         {
-
+            LinearVelocity = impulse;
+            ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
         }
 
         // Assume the force here is applied directly to the center of mass

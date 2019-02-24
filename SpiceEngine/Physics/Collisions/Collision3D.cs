@@ -17,6 +17,8 @@ namespace SpiceEngine.Physics.Collisions
         public Vector3 ContactNormal { get; set; }
         public float PenetrationDepth { get; set; }
 
+        public bool HasCollision => ContactPoints.Count > 0;
+
         public Collision3D(Body3D firstBody, Body3D secondBody)
         {
             FirstBody = firstBody;
@@ -36,9 +38,9 @@ namespace SpiceEngine.Physics.Collisions
                 case RigidBody3D bodyA when SecondBody is RigidBody3D bodyB:
                     Resolve(bodyA, bodyB);
                     break;
+                default:
+                    throw new NotImplementedException();
             }
-
-            throw new NotImplementedException();
         }
 
         private void Resolve(StaticBody3D staticBody, RigidBody3D rigidBody)
@@ -50,7 +52,11 @@ namespace SpiceEngine.Physics.Collisions
             {
                 float restitution = Math.Min(staticBody.Restitution, rigidBody.Restitution);
                 float impulseScalar = -(1 + restitution) * velocityAlongNormal;
-                impulseScalar /= rigidBody.InverseMass;
+
+                if (rigidBody.InverseMass > 0)
+                {
+                    impulseScalar /= rigidBody.InverseMass;
+                }
 
                 var impulse = impulseScalar * ContactNormal;
 
@@ -60,12 +66,21 @@ namespace SpiceEngine.Physics.Collisions
 
         private void Resolve(RigidBody3D rigidBodyA, RigidBody3D rigidBodyB)
         {
-            var relativeVelocity = rigidBodyB.LinearVelocity - rigidBodyA.AngularVelocity;
-            float velocityAlongNormal = Vector3.Dot(relativeVelocity, ContactNormal);
-
-            // Do not resolve if velocities are separating (?)
-            if (velocityAlongNormal <= 0)
+            foreach (var contactPoint in ContactPoints)
             {
+                var ra = contactPoint - rigidBodyA.Position;
+                var rb = contactPoint - rigidBodyB.Position;
+
+                var relativeVelocity = rigidBodyB.LinearVelocity + Vector3.Cross(rigidBodyB.AngularVelocity, rb)
+                    - rigidBodyA.LinearVelocity - Vector3.Cross(rigidBodyA.AngularVelocity, ra);
+
+                float velocityAlongNormal = Vector3.Dot(relativeVelocity, ContactNormal);
+
+                if (velocityAlongNormal > 0)
+                {
+                    return;
+                }
+
                 float restitution = Math.Min(rigidBodyA.Restitution, rigidBodyB.Restitution);
                 float impulseScalar = -(1 + restitution) * velocityAlongNormal;
                 impulseScalar /= rigidBodyA.InverseMass + rigidBodyB.InverseMass;

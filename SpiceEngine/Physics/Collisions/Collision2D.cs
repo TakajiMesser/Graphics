@@ -17,6 +17,8 @@ namespace SpiceEngine.Physics.Collisions
         public Vector2 ContactNormal { get; set; }
         public float PenetrationDepth { get; set; }
 
+        public bool HasCollision => ContactPoints.Count > 0;
+
         public Collision2D(Body2D firstBody, Body2D secondBody)
         {
             FirstBody = firstBody;

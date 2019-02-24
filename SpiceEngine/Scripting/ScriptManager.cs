@@ -141,10 +141,10 @@ namespace SpiceEngine.Scripting
                     behavior.Tick();
 
                     // Mark and report any actors that have moved
-                    if (behavior.Context.Translation != Vector3.Zero)
+                    /*if (behavior.Context.Translation != Vector3.Zero)
                     {
                         _collisionProvider.ApplyForce(behavior.Context.Actor.ID, behavior.Context.Translation);
-                    }
+                    }*/
 
                     if (actor is AnimatedActor animatedActor)
                     {
