@@ -2,6 +2,7 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering.PostProcessing;
 using System;
 
 namespace SpiceEngine.Physics.Bodies
@@ -176,6 +177,8 @@ namespace SpiceEngine.Physics.Bodies
                     collision.PenetrationDepth = offsetLength;
                     collision.ContactNormal = offset / offsetLength;
                     collision.ContactPoints.Add(closestPoint);
+
+                    LogManager.LogToScreen("Sphere-Box Collision Found. PenetrationDepth = " + offsetLength);
                 }
             }
             

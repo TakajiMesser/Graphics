@@ -7,8 +7,8 @@ namespace SpiceEngine.Physics.Collisions
 {
     public class Collision3D : ICollision
     {
-        private const float PENETRATION_REDUCTION_PERCENTAGE = 0.2f; // usually 20% to 80%
-        private const float SLOP = 0.01f; // usually 0.01 to 0.1
+        private const float PENETRATION_REDUCTION_PERCENTAGE = 0.4f; // usually 20% to 80%
+        private const float SLOP = 0.05f; // usually 0.01 to 0.1
 
         public Body3D FirstBody { get; }
         public Body3D SecondBody { get; }
@@ -59,7 +59,6 @@ namespace SpiceEngine.Physics.Collisions
                 }
 
                 var impulse = impulseScalar * ContactNormal;
-
                 rigidBody.LinearVelocity += rigidBody.InverseMass * impulse;
             }
         }
@@ -83,7 +82,12 @@ namespace SpiceEngine.Physics.Collisions
 
                 float restitution = Math.Min(rigidBodyA.Restitution, rigidBodyB.Restitution);
                 float impulseScalar = -(1 + restitution) * velocityAlongNormal;
-                impulseScalar /= rigidBodyA.InverseMass + rigidBodyB.InverseMass;
+
+                var combinedInverseMass = rigidBodyA.InverseMass + rigidBodyB.InverseMass;
+                if (combinedInverseMass > 0)
+                {
+                    impulseScalar /= combinedInverseMass;
+                }
 
                 var impulse = impulseScalar * ContactNormal;
 
@@ -94,6 +98,8 @@ namespace SpiceEngine.Physics.Collisions
                 /*var combinedMass = rigidBodyA.Mass + rigidBodyB.Mass;
                 rigidBodyA.Velocity -= (rigidBodyA.Mass / combinedMass) * impulse;
                 rigidBodyB.Velocity += (rigidBodyB.Mass / combinedMass) * impulse;*/
+
+                PositionalCorrection(rigidBodyA, rigidBodyB);
             }
         }
 

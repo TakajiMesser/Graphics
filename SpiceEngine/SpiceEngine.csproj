@@ -247,6 +247,7 @@
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\LogManager.cs" />
     <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\InvertColors.cs" />
     <Compile Include="Rendering\PostProcessing\Blur.cs" />

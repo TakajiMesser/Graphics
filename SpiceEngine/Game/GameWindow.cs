@@ -17,9 +17,6 @@ namespace SpiceEngine.Game
 {
     public class GameWindow : OpenTK.GameWindow, IMouseDelta
     {
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
-
         private string _mapPath;
 
         private GameManager _gameManager;
@@ -29,6 +26,9 @@ namespace SpiceEngine.Game
 
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
+
+        public Resolution Resolution { get; private set; }
+        public Resolution WindowSize { get; private set; }
 
         public GameWindow(string mapPath) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {

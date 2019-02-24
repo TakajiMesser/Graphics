@@ -28,8 +28,8 @@ namespace SpiceEngine.Physics.Bodies
         }
         public float InverseMass { get; private set; } = 1.0f;
 
-        public float MomentOfInertia { get; private set; }
-        public float InverseInertia { get; private set; }
+        public float MomentOfInertia { get; private set; } = 1.0f;
+        public float InverseInertia { get; private set; } = 1.0f;
 
         //public Vector3 LinearAcceleration { get; private set; }
         //public Vector2 AngularAcceleration { get; private set; }
