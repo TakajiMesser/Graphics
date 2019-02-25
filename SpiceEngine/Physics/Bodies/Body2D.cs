@@ -126,20 +126,29 @@ namespace SpiceEngine.Physics.Bodies
             var circle = (Circle)Shape;
             var rectangle = (Rectangle)body.Shape;
 
-            /*var closestX = (positionB.X > positionA.X + rectangleA.Width / 2.0f)
-                ? positionA.X + rectangleA.Width / 2.0f
-                : (positionB.X < positionA.X - rectangleA.Width / 2.0f)
-                    ? positionA.X - rectangleA.Width / 2.0f
-                    : positionB.X;
+            var closestPoint = new Vector2()
+            {
+                X = MathHelper.Clamp(Position.X, body.Position.X - rectangle.Width / 2.0f, body.Position.X + rectangle.Width / 2.0f),
+                Y = MathHelper.Clamp(Position.Y, body.Position.Y - rectangle.Height / 2.0f, body.Position.Y + rectangle.Height / 2.0f)
+            };
 
-            var closestY = (positionB.Y > positionA.Y + rectangleA.Height / 2.0f)
-                ? positionA.Y + rectangleA.Height / 2.0f
-                : (positionB.Y < positionA.Y - rectangleA.Height / 2.0f)
-                    ? positionA.Y - rectangleA.Height / 2.0f
-                    : positionB.Y;
+            var offset = Position - closestPoint;
+            if (offset != Vector2.Zero)
+            {
+                var offsetLengthSquared = offset.LengthSquared;
 
-            var distanceSquared = Math.Pow(positionB.X - closestX, 2) + Math.Pow(positionB.Y - closestY, 2);
-            var doesCollide = distanceSquared < Math.Pow(circleB.Radius, 2);*/
+                if (offsetLengthSquared < circle.Radius * circle.Radius)
+                {
+                    var offsetLength = (float)Math.Sqrt(offsetLengthSquared);
+
+                    collision.PenetrationDepth = offsetLength;
+                    collision.ContactNormal = offset / offsetLength;
+                    collision.ContactPoints.Add(closestPoint);
+
+                    var circlePositionToContactPoint = closestPoint - Position;
+                    collision.PenetrationDepth = circle.Radius + Vector2.Dot(circlePositionToContactPoint, collision.ContactNormal);
+                }
+            }
 
             return collision;
         }

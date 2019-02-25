@@ -1,7 +1,5 @@
-﻿using OpenTK;
-using SpiceEngine.Physics.Bodies;
+﻿using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
-using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Physics

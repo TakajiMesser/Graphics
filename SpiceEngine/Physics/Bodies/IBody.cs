@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SpiceEngine.Physics.Shapes;
+﻿using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Physics.Bodies
 {

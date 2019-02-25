@@ -2,7 +2,6 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.PostProcessing;
 using System;
 
 namespace SpiceEngine.Physics.Bodies
@@ -33,7 +32,7 @@ namespace SpiceEngine.Physics.Bodies
             }
             else if (Shape is Polyhedron && body.Shape is Polyhedron)
             {
-                return GetPolygonPolygonCollision(body);
+                return GetPolyhedronPolyhedronCollision(body);
             }
             else if (Shape is Sphere && body.Shape is Box)
             {
@@ -45,19 +44,19 @@ namespace SpiceEngine.Physics.Bodies
             }
             else if (Shape is Sphere && body.Shape is Polyhedron)
             {
-                return GetSpherePolygonCollision(body);
+                return GetSpherePolyhedronCollision(body);
             }
             else if (Shape is Polyhedron && body.Shape is Sphere)
             {
-                return body.GetSpherePolygonCollision(this);
+                return body.GetSpherePolyhedronCollision(this);
             }
             else if (Shape is Box && body.Shape is Polyhedron)
             {
-                return GetBoxPolygonCollision(body);
+                return GetBoxPolyhedronCollision(body);
             }
             else if (Shape is Polyhedron && body.Shape is Box)
             {
-                return body.GetBoxPolygonCollision(this);
+                return body.GetBoxPolyhedronCollision(this);
             }
 
             return new Collision3D(this, body);
@@ -141,7 +140,7 @@ namespace SpiceEngine.Physics.Bodies
             return collision;
         }
 
-        private Collision3D GetPolygonPolygonCollision(Body3D body)
+        private Collision3D GetPolyhedronPolyhedronCollision(Body3D body)
         {
             var collision = new Collision3D(this, body);
 
@@ -180,14 +179,13 @@ namespace SpiceEngine.Physics.Bodies
 
                     var spherePositionToContactPoint = closestPoint - Position;
                     collision.PenetrationDepth = sphere.Radius + Vector3.Dot(spherePositionToContactPoint, collision.ContactNormal);
-                    //LogManager.LogToScreen("Sphere-Box Collision Found. PenetrationDepth = " + offsetLength);
                 }
             }
             
             return collision;
         }
 
-        private Collision3D GetSpherePolygonCollision(Body3D body)
+        private Collision3D GetSpherePolyhedronCollision(Body3D body)
         {
             var collision = new Collision3D(this, body);
 
@@ -197,7 +195,7 @@ namespace SpiceEngine.Physics.Bodies
             return collision;
         }
 
-        private Collision3D GetBoxPolygonCollision(Body3D body)
+        private Collision3D GetBoxPolyhedronCollision(Body3D body)
         {
             var collision = new Collision3D(this, body);
 

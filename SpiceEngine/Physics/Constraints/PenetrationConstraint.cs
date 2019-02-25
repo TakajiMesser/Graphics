@@ -1,15 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics.Constraints
 {
-    public class PenetrationConstraint : Constraint
+    public class PenetrationConstraint : IConstraint
     {
         public static void Resolve(Collision3D collision)
         {
@@ -160,5 +155,14 @@ namespace SpiceEngine.Physics.Constraints
                 rigidBody.ApplyImpulse(impulse);
             }
         }
+
+        /*private void PositionalCorrection(RigidBody3D bodyA, RigidBody3D bodyB)
+        {
+            // Correct floating point errors that add up over time and cause object sinking -> Use linear projection to reduce object penetration by a small percentage
+            // Slop is to prevent object jitter back and forth when they are resting upon one another -> Only perform correction if penetration is above arbitrary slop threshold
+            var correction = (Math.Max(PenetrationDepth - SLOP, 0.0f) / (bodyA.InverseMass + bodyB.InverseMass)) * ContactNormal * PENETRATION_REDUCTION_PERCENTAGE;
+            bodyA.Position -= bodyA.InverseMass * correction;
+            bodyB.Position += bodyB.InverseMass * correction;
+        }*/
     }
 }

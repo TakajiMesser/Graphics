@@ -1,10 +1,8 @@
-﻿using OpenTK;
-using SpiceEngine.Entities;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Constraints;
 using SpiceEngine.Physics.Shapes;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -133,21 +131,16 @@ namespace SpiceEngine.Physics
 
         public void Update()
         {
-            //ApplyForces();
-
-            // TODO - Determine order of operations here
-            // The issue is that after applying forces, the positions will move, so we need to perform CD and CR
-            // HOWEVER, when we perform the behaviors/scripts for Actors, the positions can potentially move again!
-            // Does this mean that we perform CD and CR again? Sounds pretty inefficient...
-            // Maybe we can just have the behaviors/scripts affect the positions, BUT we don't perform CD and CR again until the next frame!
             _collisionManager.Clear();
+
             BroadPhaseCollisionDetections();
             NarrowPhaseCollisionDetections();
             PerformCollisionResolutions();
-            UpdateTransforms();
+
+            UpdatePositions();
         }
 
-        private void UpdateTransforms()
+        private void UpdatePositions()
         {
             var tickRate = TickRate;
 
@@ -157,54 +150,6 @@ namespace SpiceEngine.Physics
             }
 
             _bodiesToUpdate.Clear();
-        }
-
-        private void ApplyForces()
-        {
-            // TODO - For all bodies, calculate their new velocities and positions given their forces
-            // For now, we are just using very basic translations passed each frame for each entity
-            // We will also want this step of applying the force separated from the step of resolving the collision
-            // For now, we are performing these two steps together, which is BAD because it defeats the whole point of doing CD
-            // We want to apply the forces, get the new position, then when we do CR, and use the linear velocity to know where the entity moved from
-            // From there, we can either A) Just revert back to the previous position by using the linear velocity, or (better)
-            // B) Apply an appropriate force to send the object in its new direction
-            // Maybe we can use the linear velocity to determine the time delta of collision, then base the new position off of that
-            /*foreach (var entityTranslation in _entityTranslations)
-            {
-                var actor = _entityProvider.GetEntity(entityTranslation.Item1);
-                var body = (Body3D)_bodyByEntityID[actor.ID];
-
-                Vector3 translation = entityTranslation.Item2;
-
-                foreach (var colliderBody in _bodyByEntityID.Values.Where(b => b.EntityID != actor.ID).Cast<Body3D>())
-                {
-                    var originalPosition = body.Position;
-                    var colliderPosition = _entityProvider.GetEntity(body.EntityID).Position;
-
-                    body.Position = originalPosition + translation.X * Vector3.UnitX;
-                    if (body.GetCollision(colliderBody).HasCollision)
-                    {
-                        //translation.X = 0;
-                    }
-
-                    body.Position = originalPosition + translation.Y * Vector3.UnitY;
-                    if (body.GetCollision(colliderBody).HasCollision)
-                    {
-                        //translation.Y = 0;
-                    }
-
-                    body.Position = originalPosition + translation.Z * Vector3.UnitZ;
-                    if (body.GetCollision(colliderBody).HasCollision)
-                    {
-                        //translation.Z = 0;
-                    }
-                }
-
-                body.Position += translation;
-                actor.Position += translation;
-            }
-
-            _entityTranslations.Clear();*/
         }
 
         private void BroadPhaseCollisionDetections()
@@ -262,7 +207,6 @@ namespace SpiceEngine.Physics
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
                 // For each collision that occurs, we need to determine what new forces (impulse) are going to get applied
-                //collision.Resolve();
                 PenetrationConstraint.Resolve(collision);
             }
         }

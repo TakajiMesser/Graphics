@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Collisions;
-using System;
 
 namespace SpiceEngine.Physics.Shapes
 {
