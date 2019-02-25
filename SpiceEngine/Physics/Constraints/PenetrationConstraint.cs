@@ -4,7 +4,7 @@ using SpiceEngine.Physics.Collisions;
 
 namespace SpiceEngine.Physics.Constraints
 {
-    public class PenetrationConstraint : IConstraint
+    public class PenetrationConstraint// : IConstraint
     {
         public static void Resolve(Collision3D collision)
         {
