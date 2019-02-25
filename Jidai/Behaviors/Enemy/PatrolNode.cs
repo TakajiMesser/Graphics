@@ -31,11 +31,11 @@ namespace Jidai.Behaviors.Enemy
             }
             else if (difference.Length < Speed)
             {
-                ((RigidBody3D)context.Body).ApplyImpulse(difference);
+                ((RigidBody3D)context.Body).ApplyVelocity(difference);
             }
             else
             {
-                ((RigidBody3D)context.Body).ApplyImpulse(difference.Normalized() * Speed);
+                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
             }
 
             if (((RigidBody3D)context.Body).LinearVelocity != Vector3.Zero)

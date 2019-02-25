@@ -66,6 +66,11 @@ namespace SpiceEngine.Physics.Collisions
 
         private void Resolve(RigidBody3D rigidBodyA, RigidBody3D rigidBodyB)
         {
+            // Steps (See ContactPenetrationConstraint.Update() and ContactPenetrationConstraint.SolveIteration())
+            // Compute relative velocity
+            // Track and clamp accumulated impulse
+            // Apply linear & angular impulses to both bodies
+
             var relativeVelocity = rigidBodyB.LinearVelocity - rigidBodyA.LinearVelocity;
             //var relativeVelocity = rigidBodyA.LinearVelocity - rigidBodyB.LinearVelocity;
             float velocityAlongNormal = Vector3.Dot(relativeVelocity, ContactNormal);

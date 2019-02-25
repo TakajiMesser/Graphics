@@ -47,6 +47,8 @@ namespace SpiceEngine.Physics.Bodies
 
         public void Update(int nTicks)
         {
+            // TODO - Apply linear damping
+            // TODO - Apply angular damping
             var linearAcceleration = Force / Mass;
             LinearVelocity += linearAcceleration * nTicks;
             Position += LinearVelocity * nTicks;
@@ -76,7 +78,13 @@ namespace SpiceEngine.Physics.Bodies
         // An impulse is an instantaneous change in velocity
         public void ApplyImpulse(Vector3 impulse)
         {
-            LinearVelocity = impulse;
+            LinearVelocity += InverseMass * impulse;
+            ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
+        }
+
+        public void ApplyVelocity(Vector3 velocity)
+        {
+            LinearVelocity = velocity;
             ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
         }
 

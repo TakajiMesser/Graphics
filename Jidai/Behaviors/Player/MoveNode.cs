@@ -66,7 +66,7 @@ namespace Jidai.Behaviors.Player
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }
 
-            ((RigidBody3D)context.Body).ApplyImpulse(translation);
+            ((RigidBody3D)context.Body).ApplyVelocity(translation);
             return BehaviorStatus.Success;
         }
 

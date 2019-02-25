@@ -25,11 +25,11 @@ namespace Jidai.Behaviors
             }
             else if (difference.Length < Speed)
             {
-                ((RigidBody3D)context.Body).ApplyImpulse(difference);
+                ((RigidBody3D)context.Body).ApplyVelocity(difference);
             }
             else
             {
-                ((RigidBody3D)context.Body).ApplyImpulse(difference.Normalized() * Speed);
+                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
             }
 
             return BehaviorStatus.Running;

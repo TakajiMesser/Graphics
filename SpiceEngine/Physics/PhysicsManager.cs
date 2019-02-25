@@ -2,6 +2,7 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
+using SpiceEngine.Physics.Constraints;
 using SpiceEngine.Physics.Shapes;
 using System;
 using System.Collections.Generic;
@@ -261,7 +262,8 @@ namespace SpiceEngine.Physics
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
                 // For each collision that occurs, we need to determine what new forces (impulse) are going to get applied
-                collision.Resolve();
+                //collision.Resolve();
+                PenetrationConstraint.Resolve(collision);
             }
         }
     }

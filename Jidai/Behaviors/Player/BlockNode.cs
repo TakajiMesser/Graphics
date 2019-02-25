@@ -33,7 +33,7 @@ namespace Jidai.Behaviors.Player
                 context.Actor.Rotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
                 context.EulerRotation = new Vector3(context.EulerRotation.X, 2.0f * (float)Math.PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
 
-                ((RigidBody3D)context.Body).ApplyImpulse(evadeTranslation);
+                ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);
 
                 return BehaviorStatus.Success;
             }
@@ -71,7 +71,7 @@ namespace Jidai.Behaviors.Player
 
                     context.Actor.Rotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
                     context.EulerRotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), context.EulerRotation.Y, context.EulerRotation.Z);
-                    ((RigidBody3D)context.Body).ApplyImpulse(evadeTranslation);
+                    ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);
 
                     context.SetVariable("evadeTranslation", evadeTranslation);
                     context.SetVariable("nEvadeTicks", nEvadeTicks);

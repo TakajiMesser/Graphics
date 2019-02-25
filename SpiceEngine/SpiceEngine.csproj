@@ -185,6 +185,8 @@
     <Compile Include="Physics\Collisions\OctTree.cs" />
     <Compile Include="Physics\Collisions\IPartitionTree.cs" />
     <Compile Include="Physics\Collisions\Oct.cs" />
+    <Compile Include="Physics\Constraints\PenetrationConstraint.cs" />
+    <Compile Include="Physics\Constraints\Constraint.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
     <Compile Include="Physics\IMovable.cs" />
     <Compile Include="Physics\Shapes\Polyhedron.cs" />
