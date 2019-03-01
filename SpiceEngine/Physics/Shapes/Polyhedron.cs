@@ -11,7 +11,7 @@ namespace SpiceEngine.Physics.Shapes
 
         public Polyhedron(IEnumerable<Vector3> vertices) => Vertices.AddRange(vertices);
 
-        public override IShape Duplicate() => new Polyhedron(Vertices);
+        public override Shape3D Duplicate() => new Polyhedron(Vertices);
 
         public override IPartition ToPartition(Vector3 position)
         {
@@ -31,6 +31,8 @@ namespace SpiceEngine.Physics.Shapes
 
             return new Oct(min, max);
         }
+
+        public override Vector3 GetFurthestPointInDirection(Vector3 direction) => direction.Normalized();
 
         // TODO - Correct this (right now it calculates the same as 2D, but just tags on the Z position)
         /*public override Vector3 GetFurthestPoint(Vector3 position, Vector3 direction)

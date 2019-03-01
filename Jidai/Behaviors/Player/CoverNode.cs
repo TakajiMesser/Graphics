@@ -53,7 +53,7 @@ namespace Jidai.Behaviors.Player
                             var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is Brush);
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
-                            var shape = (Shape3D)context.Body.Shape;
+                            var shape = ((Body3D)context.Body).Shape;
                             /*var borderPoint = shape.GetFurthestPoint(context.Position, translation);
                             
                             // TODO - Dynamically determine how far the raycast should be

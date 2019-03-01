@@ -9,11 +9,11 @@ namespace SpiceEngine.Physics.Bodies
     public abstract class Body3D : IBody
     {
         public int EntityID { get; }
-        public IShape Shape { get; }
+        public Shape3D Shape { get; }
         public Vector3 Position { get; set; }
         public float Restitution { get; set; }
 
-        public Body3D(IEntity entity, IShape shape)
+        public Body3D(IEntity entity, Shape3D shape)
         {
             EntityID = entity.ID;
             Shape = shape;
@@ -170,18 +170,17 @@ namespace SpiceEngine.Physics.Bodies
             if (Position == contactPoint)
             {
                 // The sphere position is completely inside of the box
-                var offset = Position - body.Position;
+                //var offset = Position - body.Position;
 
                 // Need to get intersection of offset vector and first box face it touches
                 // We can check against the 2-3 face planes we need to based on the direction of the vector
-                
 
-                contactPoint = new Vector3()
+                /*contactPoint = new Vector3()
                 {
                     X = MathHelper.Round(Position.X, body.Position.X - box.Width / 2.0f, body.Position.X + box.Width / 2.0f),
                     Y = MathHelper.Round(Position.Y, body.Position.Y - box.Height / 2.0f, body.Position.Y + box.Height / 2.0f),
                     Z = MathHelper.Round(Position.Z, body.Position.Z - box.Depth / 2.0f, body.Position.Z + box.Depth / 2.0f)
-                };
+                };*/
             }
 
             var offset = Position - contactPoint;

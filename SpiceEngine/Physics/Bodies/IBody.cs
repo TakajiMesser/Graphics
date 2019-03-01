@@ -5,6 +5,6 @@ namespace SpiceEngine.Physics.Bodies
     public interface IBody
     {
         int EntityID { get; }
-        IShape Shape { get; }
+        //IShape Shape { get; }
     }
 }

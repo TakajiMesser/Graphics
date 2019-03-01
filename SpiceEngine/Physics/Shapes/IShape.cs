@@ -6,7 +6,7 @@ namespace SpiceEngine.Physics.Shapes
     public interface IShape
     {
         IPartition ToPartition(Vector3 position);
-        IShape Duplicate();
+        //IShape Duplicate();
         float CalculateInertia(float mass);
     }
 }

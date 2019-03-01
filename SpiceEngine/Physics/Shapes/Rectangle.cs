@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Collisions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,7 +28,7 @@ namespace SpiceEngine.Physics.Shapes
             Height = height;
         }
 
-        public override IShape Duplicate() => new Rectangle(Width, Height);
+        public override Shape2D Duplicate() => new Rectangle(Width, Height);
 
         public override IPartition ToPartition(Vector3 position)
         {

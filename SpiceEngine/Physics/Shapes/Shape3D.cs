@@ -9,7 +9,7 @@ namespace SpiceEngine.Physics.Shapes
         //public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
         //public abstract bool CollidesWith(Vector3 position, Vector3 point);
         public abstract Vector3 GetFurthestPointInDirection(Vector3 direction);
-        public abstract IShape Duplicate();
+        public abstract Shape3D Duplicate();
         public abstract float CalculateInertia(float mass);
 
         /*public static bool Collides(Vector3 positionA, Shape3D shapeA, Vector3 positionB, Shape3D shapeB)

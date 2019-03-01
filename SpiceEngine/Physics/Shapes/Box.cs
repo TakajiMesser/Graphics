@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Collisions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,7 +34,7 @@ namespace SpiceEngine.Physics.Shapes
             Depth = depth;
         }
 
-        public override IShape Duplicate() => new Box(Width, Height, Depth);
+        public override Shape3D Duplicate() => new Box(Width, Height, Depth);
 
         public override IPartition ToPartition(Vector3 position)
         {
@@ -53,9 +54,10 @@ namespace SpiceEngine.Physics.Shapes
             var newY = direction.Y * xRatio;
             var newZ = direction.Z * zRatio;
 
-            return (Math.Abs(newX) < Width / 2.0f)
+            return new Vector3();
+            /*return (Math.Abs(newX) < Width / 2.0f)
                 ? new Vector2(newX, direction.Y * yRatio)
-                : new Vector2(direction.X * xRatio, newY);
+                : new Vector2(direction.X * xRatio, newY);*/
         }
 
         // TODO - Correct this (right now it calculates the same as 2D, but just tags on the Z position)

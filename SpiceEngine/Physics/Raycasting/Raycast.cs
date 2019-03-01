@@ -13,7 +13,7 @@ namespace SpiceEngine.Physics.Raycasting
             hit = new RaycastHit();
             float shortestDistance = ray.Distance;
 
-            foreach (var collider in colliders)
+            /*foreach (var collider in colliders)
             {
                 var position = entityProvider.GetEntity(collider.EntityID).Position;
 
@@ -57,14 +57,14 @@ namespace SpiceEngine.Physics.Raycasting
                         }
                     }
                 }
-            }
+            }*/
 
             return (hit.EntityID != 0);
         }
 
         public static bool TryCircleCast(RayCircle rayCircle, IEnumerable<IBody> colliders, IEntityProvider entityProvider, out RaycastHit hit)
         {
-            foreach (var collider in colliders)
+            /*foreach (var collider in colliders)
             {
                 var position = entityProvider.GetEntity(collider.EntityID).Position;
 
@@ -98,7 +98,7 @@ namespace SpiceEngine.Physics.Raycasting
                         return true;
                     }
                 }
-            }
+            }*/
 
             hit = new RaycastHit();
             return false;

@@ -21,7 +21,7 @@ namespace SpiceEngine.Physics.Shapes
             Radius = radius;
         }
 
-        public override IShape Duplicate() => new Circle(Radius);
+        public override Shape2D Duplicate() => new Circle(Radius);
 
         public override IPartition ToPartition(Vector3 position)
         {

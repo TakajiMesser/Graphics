@@ -58,7 +58,7 @@ namespace SpiceEngine.Physics
 
         public void DuplicateBody(int entityID, int newID)
         {
-            var shape = _bodyByEntityID[entityID].Shape;
+            var shape = ((Body3D)_bodyByEntityID[entityID]).Shape;
             var entity = _entityProvider.GetEntity(entityID);
             var entityType = _entityProvider.GetEntityType(entityID);
 
@@ -77,7 +77,7 @@ namespace SpiceEngine.Physics
             }
         }
 
-        public void AddBrush(IEntity entity, IShape shape)
+        public void AddBrush(IEntity entity, Shape3D shape)
         {
             var partition = shape.ToPartition(entity.Position);
             _brushTree.Insert(new Bounds(entity.ID, partition));
@@ -86,7 +86,7 @@ namespace SpiceEngine.Physics
             _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
-        public void AddActor(IEntity entity, IShape shape)
+        public void AddActor(IEntity entity, Shape3D shape)
         {
             var partition = shape.ToPartition(entity.Position);
             _actorTree.Insert(new Bounds(entity.ID, partition));
@@ -97,7 +97,7 @@ namespace SpiceEngine.Physics
             _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
-        public void AddVolume(IEntity entity, IShape shape)
+        public void AddVolume(IEntity entity, Shape3D shape)
         {
             var partition = shape.ToPartition(entity.Position);
             _volumeTree.Insert(new Bounds(entity.ID, partition));
@@ -162,7 +162,7 @@ namespace SpiceEngine.Physics
             // Update the actor colliders every frame, since they could have moved
             foreach (var actor in _entityProvider.Actors)
             {
-                var partition = _bodyByEntityID[actor.ID].Shape.ToPartition(actor.Position);
+                var partition = ((Body3D)_bodyByEntityID[actor.ID]).Shape.ToPartition(actor.Position);
                 var bounds = new Bounds(actor.ID, partition);
 
                 boundsByEntityID.Add(actor.ID, bounds);

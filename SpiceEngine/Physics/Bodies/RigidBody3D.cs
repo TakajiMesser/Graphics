@@ -40,7 +40,7 @@ namespace SpiceEngine.Physics.Bodies
         public event EventHandler<RigidBodyEventArgs> Moved;
         public event EventHandler<RigidBodyEventArgs> ForceApplied;
 
-        public RigidBody3D(IEntity entity, IShape shape) : base(entity, shape)
+        public RigidBody3D(IEntity entity, Shape3D shape) : base(entity, shape)
         {
             
         }

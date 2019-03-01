@@ -6,15 +6,13 @@ namespace SpiceEngine.Physics.Shapes
 {
     public abstract class Shape2D : IShape
     {
-        public abstract Vector2 Center { get; }
-
         public abstract IPartition ToPartition(Vector3 position);
         public abstract Vector2 GetFurthestPointInDirection(Vector2 direction);
-        public abstract bool CollidesWith(Vector2 position, Vector2 point);
-        public abstract IShape Duplicate();
+        //public abstract bool CollidesWith(Vector2 position, Vector2 point);
+        public abstract Shape2D Duplicate();
         public abstract float CalculateInertia(float mass);
 
-        public static Collision GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
+        /*public static Collision2D GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
         {
             switch (shapeA)
             {
@@ -68,6 +66,6 @@ namespace SpiceEngine.Physics.Shapes
 
             var distanceSquared = Math.Pow(positionB.X - closestX, 2) + Math.Pow(positionB.Y - closestY, 2);
             return distanceSquared < Math.Pow(circleB.Radius, 2);
-        }
+        }*/
     }
 }

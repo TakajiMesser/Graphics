@@ -11,7 +11,7 @@ namespace SpiceEngine.Physics.Shapes
 
         public Polygon(IEnumerable<Vector2> vertices) => Vertices.AddRange(vertices);
 
-        public override IShape Duplicate() => new Polygon(Vertices);
+        public override Shape2D Duplicate() => new Polygon(Vertices);
 
         public override IPartition ToPartition(Vector3 position)
         {
@@ -31,6 +31,8 @@ namespace SpiceEngine.Physics.Shapes
 
             return new Quad(min, max);
         }
+
+        public override Vector2 GetFurthestPointInDirection(Vector2 direction) => direction.Normalized();
 
         // TODO - Correct this (right now it calculates the same as 2D, but just tags on the Z position)
         /*public override Vector3 GetFurthestPoint(Vector3 position, Vector3 direction)

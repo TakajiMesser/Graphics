@@ -9,11 +9,11 @@ namespace SpiceEngine.Physics.Bodies
     public abstract class Body2D : IBody
     {
         public int EntityID { get; }
-        public IShape Shape { get; }
+        public Shape2D Shape { get; }
         public Vector2 Position { get; set; }
         public float Restitution { get; set; }
 
-        public Body2D(IEntity entity, IShape shape)
+        public Body2D(IEntity entity, Shape2D shape)
         {
             EntityID = entity.ID;
             Shape = shape;
