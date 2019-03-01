@@ -31,6 +31,8 @@ namespace SpiceEngine.Physics.Shapes
             return new Quad(min, max);
         }
 
+        public override Vector2 GetFurthestPointInDirection(Vector2 direction) => direction.Normalized() * Radius;
+
         /*public override Vector2 GetFurthestPoint(Vector2 position, Vector2 direction)
         {
             var extended = position + (direction.Normalized() * Radius);

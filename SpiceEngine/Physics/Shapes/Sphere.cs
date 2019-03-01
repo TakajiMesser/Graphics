@@ -31,6 +31,8 @@ namespace SpiceEngine.Physics.Shapes
             return new Oct(min, max);
         }
 
+        public override Vector3 GetFurthestPointInDirection(Vector3 direction) => direction.Normalized() * Radius;
+
         /*public override Vector3 GetFurthestPoint(Vector3 position, Vector3 direction)
         {
             return position - Center + (direction.Normalized() * Radius);

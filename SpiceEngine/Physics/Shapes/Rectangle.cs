@@ -37,6 +37,19 @@ namespace SpiceEngine.Physics.Shapes
             return new Quad(min, max);
         }
 
+        public override Vector2 GetFurthestPointInDirection(Vector2 direction)
+        {
+            var xRatio = (Width / 2.0f) / direction.X;
+            var yRatio = (Height / 2.0f) / direction.Y;
+
+            var newX = direction.X * yRatio;
+            var newY = direction.Y * xRatio;
+
+            return (Math.Abs(newX) < Width / 2.0f)
+                ? new Vector2(newX, direction.Y * yRatio)
+                : new Vector2(direction.X * xRatio, newY);
+        }
+
         /*public override Vector2 GetFurthestPoint(Vector2 position, Vector2 direction)
         {
             var xRatio = (Width / 2.0f) / direction.X;

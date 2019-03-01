@@ -8,6 +8,7 @@ namespace SpiceEngine.Physics.Shapes
         public abstract IPartition ToPartition(Vector3 position);
         //public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
         //public abstract bool CollidesWith(Vector3 position, Vector3 point);
+        public abstract Vector3 GetFurthestPointInDirection(Vector3 direction);
         public abstract IShape Duplicate();
         public abstract float CalculateInertia(float mass);
 

@@ -43,6 +43,21 @@ namespace SpiceEngine.Physics.Shapes
             return new Oct(min, max);
         }
 
+        public override Vector3 GetFurthestPointInDirection(Vector3 direction)
+        {
+            var xRatio = (Width / 2.0f) / direction.X;
+            var yRatio = (Height / 2.0f) / direction.Y;
+            var zRatio = (Depth / 2.0f) / direction.Z;
+
+            var newX = direction.X * yRatio;
+            var newY = direction.Y * xRatio;
+            var newZ = direction.Z * zRatio;
+
+            return (Math.Abs(newX) < Width / 2.0f)
+                ? new Vector2(newX, direction.Y * yRatio)
+                : new Vector2(direction.X * xRatio, newY);
+        }
+
         // TODO - Correct this (right now it calculates the same as 2D, but just tags on the Z position)
         /*public override Vector3 GetFurthestPoint(Vector3 position, Vector3 direction)
         {

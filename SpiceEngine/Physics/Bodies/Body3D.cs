@@ -106,6 +106,9 @@ namespace SpiceEngine.Physics.Bodies
                 && Position.Y - boxA.Height / 2.0f < body.Position.Y + boxB.Height / 2.0f
                 && Position.Y + boxA.Height / 2.0f > body.Position.Y - boxB.Height / 2.0f;
 
+            // Collision is "how far has shape A penetrated shape B?"
+
+
             // Is the left-most position on BoxA LEFT of the right-most position on BoxB?
             // PositionX - boxA.Width / 2.0f < body.Position.X + boxB.Width / 2.0f
 
@@ -157,14 +160,33 @@ namespace SpiceEngine.Physics.Bodies
             var sphere = (Sphere)Shape;
             var box = (Box)body.Shape;
 
-            var closestPoint = new Vector3()
+            var contactPoint = new Vector3()
             {
                 X = MathHelper.Clamp(Position.X, body.Position.X - box.Width / 2.0f, body.Position.X + box.Width / 2.0f),
                 Y = MathHelper.Clamp(Position.Y, body.Position.Y - box.Height / 2.0f, body.Position.Y + box.Height / 2.0f),
                 Z = MathHelper.Clamp(Position.Z, body.Position.Z - box.Depth / 2.0f, body.Position.Z + box.Depth / 2.0f)
             };
 
-            var offset = Position - closestPoint;
+            if (Position == contactPoint)
+            {
+                // The sphere position is completely inside of the box
+                var offset = Position - body.Position;
+
+                // Need to get intersection of offset vector and first box face it touches
+                // We can check against the 2-3 face planes we need to based on the direction of the vector
+                
+
+                contactPoint = new Vector3()
+                {
+                    X = MathHelper.Round(Position.X, body.Position.X - box.Width / 2.0f, body.Position.X + box.Width / 2.0f),
+                    Y = MathHelper.Round(Position.Y, body.Position.Y - box.Height / 2.0f, body.Position.Y + box.Height / 2.0f),
+                    Z = MathHelper.Round(Position.Z, body.Position.Z - box.Depth / 2.0f, body.Position.Z + box.Depth / 2.0f)
+                };
+            }
+
+            var offset = Position - contactPoint;
+
+            // This check is now likely unnecessary...
             if (offset != Vector3.Zero)
             {
                 var offsetLengthSquared = offset.LengthSquared;
@@ -173,12 +195,10 @@ namespace SpiceEngine.Physics.Bodies
                 {
                     var offsetLength = (float)Math.Sqrt(offsetLengthSquared);
 
-                    collision.PenetrationDepth = offsetLength;
                     collision.ContactNormal = offset / offsetLength;
-                    collision.ContactPoints.Add(closestPoint);
-
-                    var spherePositionToContactPoint = closestPoint - Position;
-                    collision.PenetrationDepth = sphere.Radius + Vector3.Dot(spherePositionToContactPoint, collision.ContactNormal);
+                    collision.ContactPoints.Add(contactPoint);
+                    //collision.PenetrationDepth = offsetLength;
+                    collision.PenetrationDepth = sphere.Radius + Vector3.Dot(-offset, collision.ContactNormal);
                 }
             }
             
@@ -203,6 +223,11 @@ namespace SpiceEngine.Physics.Bodies
             var polygon = (Polyhedron)body.Shape;
 
             return collision;
+        }
+
+        private void GetMinkowskiSimplex(Polyhedron polyhedronA, Polyhedron polyhedronB)
+        {
+            
         }
     }
 }
