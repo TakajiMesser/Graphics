@@ -149,6 +149,7 @@
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MathHelper.cs" />
+    <Compile Include="Helpers\MinkowskiHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\IMouseDelta.cs" />
     <Compile Include="Inputs\InputManager.cs" />
@@ -189,16 +190,19 @@
     <Compile Include="Physics\Constraints\IConstraint.cs" />
     <Compile Include="Physics\ICollisionProvider.cs" />
     <Compile Include="Physics\IMovable.cs" />
+    <Compile Include="Physics\Shapes\ISimplex.cs" />
     <Compile Include="Physics\Shapes\Polyhedron.cs" />
     <Compile Include="Physics\Shapes\Polygon.cs" />
     <Compile Include="Physics\Shapes\Shape3D.cs" />
     <Compile Include="Physics\Shapes\Shape2D.cs" />
     <Compile Include="Physics\Shapes\Rectangle.cs" />
     <Compile Include="Physics\Shapes\Box.cs" />
+    <Compile Include="Physics\Shapes\Simplex3D.cs" />
     <Compile Include="Physics\Shapes\Sphere.cs" />
     <Compile Include="Physics\Shapes\Circle.cs" />
     <Compile Include="Physics\Shapes\IShape.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
+    <Compile Include="Physics\Shapes\Tetrahedron.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

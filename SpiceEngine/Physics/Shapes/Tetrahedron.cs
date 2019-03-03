@@ -1,21 +1,14 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collisions;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 
 namespace SpiceEngine.Physics.Shapes
 {
     public class Tetrahedron : ISimplex
     {
-        public Vector3 VertexA { get; private set; }
-        public Vector3 VertexB { get; private set; }
-        public Vector3 VertexC { get; private set; }
-        public Vector3 VertexD { get; private set; }
-
-        public Tetrahedron()
-        {
-
-        }
+        public Vector3? VertexA { get; private set; }
+        public Vector3? VertexB { get; private set; }
+        public Vector3? VertexC { get; private set; }
+        public Vector3? VertexD { get; private set; }
         
         public void Add(Vector3 vertex)
         {
@@ -37,67 +30,95 @@ namespace SpiceEngine.Physics.Shapes
             }
         }
 
-        public Vector3 GetLastVertex()
+        public Vector3? GetLastVertex()
         {
-            if (VertexD != null)
+            if (VertexD.HasValue)
             {
-                return VertexD;
+                return VertexD.Value;
             }
-            else if (VertexC != null)
+            else if (VertexC.HasValue)
             {
-                return VertexC;
+                return VertexC.Value;
             }
-            else if (VertexB != null)
+            else if (VertexB.HasValue)
             {
-                return VertexB;
+                return VertexB.Value;
             }
-            else if (VertexA != null)
+            else if (VertexA.HasValue)
             {
-                return VertexA;
-            }
-        }
-
-        public Vector3 GetPointClosestToOrigin()
-        {
-            if (VertexD != null)
-            {
-                return GetPointOnTetrahedronClosestToOrigin();
-            }
-            else if (VertexC != null)
-            {
-                return GetPointOnTriangleClosestToOrigin();
-            }
-            else if (VertexB != null)
-            {
-                return GetPointOnSegmentClosestToOrigin();
-            }
-            else if (VertexA != null)
-            {
-                return VertexA;
+                return VertexA.Value;
             }
             else
             {
-                return Vector3.Zero;
+                return null;
+            }
+        }
+
+        public float GetErrorTolerance()
+        {
+            if (VertexD.HasValue)
+            {
+                return Math.Max(VertexA.Value.LengthSquared, Math.Max(VertexB.Value.LengthSquared, Math.Max(VertexC.Value.LengthSquared, VertexD.Value.LengthSquared)));
+            }
+            else if (VertexC.HasValue)
+            {
+                return Math.Max(VertexA.Value.LengthSquared, Math.Max(VertexB.Value.LengthSquared, VertexC.Value.LengthSquared));
+            }
+            else if (VertexB.HasValue)
+            {
+                return Math.Max(VertexA.Value.LengthSquared, VertexB.Value.LengthSquared);
+            }
+            else if(VertexA.HasValue)
+            {
+                return VertexA.Value.LengthSquared;
+            }
+            else
+            {
+                return 1.0f;
+            }
+        }
+
+        public Vector3? GetPointClosestToOrigin()
+        {
+            if (VertexD.HasValue)
+            {
+                return GetPointOnTetrahedronClosestToOrigin();
+            }
+            else if (VertexC.HasValue)
+            {
+                return GetPointOnTriangleClosestToOrigin();
+            }
+            else if (VertexB.HasValue)
+            {
+                return GetPointOnSegmentClosestToOrigin();
+            }
+            else if (VertexA.HasValue)
+            {
+                return VertexA.Value;
+            }
+            else
+            {
+                return null;
             }
         }
 
         private Vector3 GetPointOnSegmentClosestToOrigin()
         {
-            var displacement = VertexB - VertexA;
-            var dotA = Vector3.Dot(displacement, VertexA);
+            var displacement = VertexB.Value - VertexA.Value;
+            var dotA = Vector3.Dot(displacement, VertexA.Value);
 
             var v = -dotA / displacement.LengthSquared;
-            return v * displacement + VertexA;
+            return v * displacement + VertexA.Value;
         }
 
         private Vector3 GetPointOnTriangleClosestToOrigin()
         {
-            var ab = VertexB - VertexA;
-            var ac = VertexC - VertexA;
+            var ab = VertexB.Value - VertexA.Value;
+            var ac = VertexC.Value - VertexA.Value;
 
             // Check if outside C
-            var d5 = -Vector3.Dot(ab, VertexC);
-            var d6 = -Vector3.Dot(ac, VertexC);
+            var d5 = -Vector3.Dot(ab, VertexC.Value);
+            var d6 = -Vector3.Dot(ac, VertexC.Value);
 
             if (d6 >= 0f && d5 <= d6)
             {
@@ -106,27 +127,27 @@ namespace SpiceEngine.Physics.Shapes
                 VertexB = null;
                 VertexC = null;
 
-                return VertexA;
+                return VertexA.Value;
             }
 
             // Check if outside AC
-            var d1 = -Vector3.Dot(ab, VertexA);
-            var d2 = -Vector3.Dot(ac, VertexA);
+            var d1 = -Vector3.Dot(ab, VertexA.Value);
+            var d2 = -Vector3.Dot(ac, VertexA.Value);
             var vb = d5 * d2 - d1 * d6;
             
-            if (vb <= 0f && de > 0f && d6 < 0f)
+            if (vb <= 0f && d2 > 0f && d6 < 0f)
             {
                 // Get rid of B and compress C into B
                 VertexB = VertexC;
                 VertexC = null;
 
                 var v = d2 / (d2 - d6);
-                return ac * v + VertexA;
+                return ac * v + VertexA.Value;
             }
 
             // Check if outside BC
-            var d3 = -Vector3.Dot(ab, VertexB);
-            var d4 = -Vector3.Dot(ac, VertexB);
+            var d3 = -Vector3.Dot(ab, VertexB.Value);
+            var d4 = -Vector3.Dot(ac, VertexB.Value);
             var va = d3 * d6 - d5 * d4;
             var d3d4 = d4 - d3;
             var d6d5 = d5 - d6;
@@ -138,7 +159,7 @@ namespace SpiceEngine.Physics.Shapes
                 VertexC = null;
 
                 var u = d3d4 / (d3d4 + d6d5);
-                return u * (VertexC - VertexB) + VertexB;
+                return u * (VertexC.Value - VertexB.Value) + VertexB.Value;
             }
 
             // It is on the face of the triangle
@@ -148,32 +169,68 @@ namespace SpiceEngine.Physics.Shapes
             var w = vc * denominator;
 
             var acw = w * ac;
-            return VertexA + v2 * ab + acw;
+            return VertexA.Value + v2 * ab + acw;
         }
 
-        private Vector3 GetPointOnTetrahedronClosestToOrigin()
+        private Vector3? GetPointOnTetrahedronClosestToOrigin()
         {
             // Because we know that VertexD is new, we can ignore voronoi regions A, B, C, AC, AB, BC, ABC and only consider D, DA, DB, DC, DAC, DCB, DBA
             var minimumSimplex = new Tetrahedron();
+            var point = new Vector3();
+            var minimumDistance = float.MaxValue;
 
             Tetrahedron candidateSimplex;
             Vector3 candidatePoint;
 
-            if (TryTetrahedronTriangle(VertexA, VertexC, VertexD, VertexB, out candidateSimplex, out candidatePoint))
+            if (TryTetrahedronTriangle(VertexA.Value, VertexC.Value, VertexD.Value, VertexB.Value, out candidateSimplex, out candidatePoint))
             {
-                
+                point = candidatePoint;
+                minimumSimplex = candidateSimplex;
+                minimumDistance = candidatePoint.LengthSquared;
             }
+
+            if (TryTetrahedronTriangle(VertexC.Value, VertexB.Value, VertexD.Value, VertexA.Value, out candidateSimplex, out candidatePoint))
+            {
+                if (candidatePoint.LengthSquared < minimumDistance)
+                {
+                    point = candidatePoint;
+                    minimumSimplex = candidateSimplex;
+                    minimumDistance = candidatePoint.LengthSquared;
+                }
+            }
+
+            if (TryTetrahedronTriangle(VertexB.Value, VertexA.Value, VertexD.Value, VertexC.Value, out candidateSimplex, out candidatePoint))
+            {
+                if (candidatePoint.LengthSquared < minimumDistance)
+                {
+                    point = candidatePoint;
+                    minimumSimplex = candidateSimplex;
+                    minimumDistance = candidatePoint.LengthSquared;
+                }
+            }
+
+            if (minimumDistance < float.MaxValue)
+            {
+                VertexA = minimumSimplex.VertexA;
+                VertexB = minimumSimplex.VertexB;
+                VertexC = minimumSimplex.VertexC;
+                VertexD = minimumSimplex.VertexD;
+
+                return null;
+            }
+
+            return point;
         }
 
         private bool TryTetrahedronTriangle(Vector3 vertexA, Vector3 vertexB, Vector3 vertexC, Vector3 excludedPoint, out Tetrahedron simplex, out Vector3 point)
         {
-            var simplex = new SimpleSimplex();
-            var point = new Vector3();
+            simplex = new Tetrahedron();
+            point = new Vector3();
 
             var ab = vertexB - vertexA;
             var ac = vertexC - vertexA;
             var normal = Vector3.Cross(ab, ac);
-            var ad = excludedPoint - A;
+            var ad = excludedPoint - vertexA;
             var aDotN = Vector3.Dot(vertexA, normal);
             var adDotN = Vector3.Dot(ad, normal);
 
@@ -225,7 +282,7 @@ namespace SpiceEngine.Physics.Shapes
                     simplex.Add(vertexC);
 
                     var v = d3d4 / (d3d4 + d6d5);
-                    point = v * (c - b) + vertexB;
+                    point = v * (vertexC - vertexB) + vertexB;
 
                     return true;
                 }

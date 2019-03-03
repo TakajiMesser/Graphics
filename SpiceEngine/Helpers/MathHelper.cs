@@ -2,6 +2,8 @@
 {
     public static class MathHelper
     {
+        public const float EPSILON = 1E-5f;
+
         public static float Round(float value, float min, float max)
         {
             if (value <= min)

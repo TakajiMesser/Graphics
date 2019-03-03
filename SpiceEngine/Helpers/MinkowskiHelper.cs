@@ -1,11 +1,15 @@
-﻿namespace SpiceEngine.Helpers
+﻿using OpenTK;
+using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Physics.Shapes;
+
+namespace SpiceEngine.Helpers
 {
     public static class MinkowskiHelper
     {
         public const int MAX_ITERATIONS = 16;
 
         // GJK
-        public static Tetrahedron GenerateSimplex(Body3D bodyA, Body3D bodyB)
+        public static bool GenerateSimplex(Body3D bodyA, Body3D bodyB)
         {
             var simplex = new Tetrahedron();
 
@@ -16,8 +20,8 @@
 
             for (var i = 0; i < MAX_ITERATIONS; i++)
             {
-                var closestPoint = simplex.GetClosestPointToOrigin();
-                if (closestPoint.LengthSquared <= someErrorTolerance * Epsilon)
+                var closestPoint = simplex.GetPointClosestToOrigin();
+                if (closestPoint.HasValue || closestPoint.Value.LengthSquared <= simplex.GetErrorTolerance() * MathHelper.EPSILON)
                 {
                     return true;
                 }
@@ -25,7 +29,7 @@
                 {
                     var vertex = GetMinkowskiVertex(bodyA, bodyB, direction);
 
-                    if (Vector3.Dot(vertex, closestPoint) > 0)
+                    if (Vector3.Dot(vertex, closestPoint.Value) > 0)
                     {
                         return false;
                     }
@@ -36,18 +40,18 @@
                 }
             }
 
-            return simplex;
+            return false;
         }
 
         private static Vector3 GetMinkowskiVertex(Body3D bodyA, Body3D bodyB, Vector3 direction)
         {
-            var vertexA = bodyA.Position + bodyA.Shape.GetFarthestPointInDirection(direction);
-            var vertexB = bodyB.Position + bodyB.Shape.GetFarthestPointInDirection(-direction);
+            var vertexA = bodyA.Position + bodyA.Shape.GetFurthestPointInDirection(direction);
+            var vertexB = bodyB.Position + bodyB.Shape.GetFurthestPointInDirection(-direction);
 
             return vertexA - vertexB;
         }
 
-        private static bool ContainsOrigin(Tetrahedron simplex, out Vector3 direction)
+        /*private static bool ContainsOrigin(Tetrahedron simplex, out Vector3 direction)
         {
             var a = simplex.GetLastVertex();
 
@@ -96,8 +100,8 @@
 
                 return false;
             }
-        }
+        }*/
 
-        private Vector3 CalculateTripleProduct(Vector3 vectorA, Vector3 vectorB, Vector3 vectorC) => Vector3.Dot(vectorC, vectorA) * vectorB - Vector3.Dot(vectorC, vectorB) * vectorA;
+        private static Vector3 CalculateTripleProduct(Vector3 vectorA, Vector3 vectorB, Vector3 vectorC) => Vector3.Dot(vectorC, vectorA) * vectorB - Vector3.Dot(vectorC, vectorB) * vectorA;
     }
 }

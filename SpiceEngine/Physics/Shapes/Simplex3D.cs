@@ -14,7 +14,7 @@ namespace SpiceEngine.Physics.Shapes
             _vertices.Add(vertex);
         }
 
-        public bool ContainsOrigin(Vector3 direction)
+        /*public bool ContainsOrigin(Vector3 direction)
         {
             var a = _vertices.Last();
 
@@ -28,6 +28,8 @@ namespace SpiceEngine.Physics.Shapes
 
 
             }
-        }
+
+            return false;
+        }*/
     }
 }
