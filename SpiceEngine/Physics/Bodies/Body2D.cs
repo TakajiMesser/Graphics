@@ -9,9 +9,14 @@ namespace SpiceEngine.Physics.Bodies
     public abstract class Body2D : IBody
     {
         public int EntityID { get; }
+        public BodyStates State { get; set; }
         public Shape2D Shape { get; }
+
         public Vector2 Position { get; set; }
         public float Restitution { get; set; }
+
+        public bool IsMovable => false;
+        public bool IsPhysical => false;
 
         public Body2D(IEntity entity, Shape2D shape)
         {

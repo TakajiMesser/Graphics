@@ -131,8 +131,11 @@ namespace SpiceEngine.Game
 
                 int entityID = EntityManager.AddEntity(brush);
 
-                var shape = mapBrush.ToShape();
-                PhysicsManager.AddBrush(brush, shape);
+                if (mapBrush.IsPhysical)
+                {
+                    var shape = mapBrush.ToShape();
+                    PhysicsManager.AddBrush(brush, shape);
+                }
 
                 yield return entityID;
             }
@@ -162,7 +165,7 @@ namespace SpiceEngine.Game
                 var meshes = mapActor.ToMeshes();
 
                 var shape = mapActor.ToShape();
-                PhysicsManager.AddActor(actor, shape);
+                PhysicsManager.AddActor(actor, shape, mapActor.IsPhysical);
 
                 /*actor.HasCollision = mapActor.HasCollision;
                 actor.Bounds = actor.Name == "Player"

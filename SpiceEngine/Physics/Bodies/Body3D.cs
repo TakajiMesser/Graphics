@@ -11,9 +11,14 @@ namespace SpiceEngine.Physics.Bodies
     public abstract class Body3D : IBody
     {
         public int EntityID { get; }
+        public BodyStates State { get; set; }
         public Shape3D Shape { get; }
+
         public Vector3 Position { get; set; }
         public float Restitution { get; set; }
+
+        public bool IsMovable => this is RigidBody3D || this is SoftBody3D;
+        public bool IsPhysical { get; set; }
 
         public Body3D(IEntity entity, Shape3D shape)
         {

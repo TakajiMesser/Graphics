@@ -56,7 +56,7 @@ namespace SpiceEngine.Physics.Bodies
             // TODO - Apply angular damping
             var linearAcceleration = Force / Mass;
             LinearVelocity += linearAcceleration * nTicks;
-            Position += LinearVelocity * nTicks;
+            var positionDelta = LinearVelocity * nTicks;
 
             var angularAcceleration = Torque / MomentOfInertia;
             AngularVelocity += angularAcceleration * nTicks;
@@ -69,9 +69,12 @@ namespace SpiceEngine.Physics.Bodies
                 Z = AngularVelocity.Y,
                 W = AngularVelocity.Z
             };
-            Rotation += (nTicks / 2) * angularVelocityQuaternion * Rotation;
+            var rotationDelta = (nTicks / 2) * angularVelocityQuaternion * Rotation;
 
-            if (LinearVelocity != Vector3.Zero || AngularVelocity != Vector3.Zero)
+            Position += positionDelta;
+            Rotation += rotationDelta;
+
+            if (positionDelta.IsSignificant() || rotationDelta.IsSignificant())
             {
                 Moved?.Invoke(this, new RigidBodyEventArgs(this));
             }

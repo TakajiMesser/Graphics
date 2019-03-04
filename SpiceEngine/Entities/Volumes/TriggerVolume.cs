@@ -10,5 +10,10 @@ namespace SpiceEngine.Entities.Volumes
         {
 
         }
+
+        public void OnTriggered(IEntity entity)
+        {
+
+        }
     }
 }

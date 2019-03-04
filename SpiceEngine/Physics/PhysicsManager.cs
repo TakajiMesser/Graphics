@@ -19,10 +19,12 @@ namespace SpiceEngine.Physics
         private IPartitionTree _lightTree;
 
         private CollisionManager _collisionManager = new CollisionManager();
-        //private List<Tuple<int, Vector3>> _entityTranslations = new List<Tuple<int, Vector3>>();
 
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
         private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
+        private Dictionary<int, IBody> _awakeBodyByEntityID = new Dictionary<int, IBody>();
+
+        private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
 
         public int TickRate { get; set; } = 1;
 
@@ -46,54 +48,73 @@ namespace SpiceEngine.Physics
             _lightTree = new OctTree(0, worldBoundaries);
         }
 
+        public IEnumerable<Collision3D> GetCollisions() => _collisionManager.NarrowCollisions;
+
+        public IEnumerable<Collision3D> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
+
+        public IEnumerable<int> GetCollisionIDs() => _collisionManager.NarrowCollisionIDs;
+
+        public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
+
         public void DuplicateBody(int entityID, int newID)
         {
-            var shape = ((Body3D)_bodyByEntityID[entityID]).Shape;
+            var body = (Body3D)_bodyByEntityID[entityID];
+            var shape = body.Shape;
             var entity = _entityProvider.GetEntity(entityID);
-            var entityType = _entityProvider.GetEntityType(entityID);
 
-            switch (entityType)
+            switch (entity)
             {
-                case EntityTypes.Actor:
-                case EntityTypes.Joint:
-                    AddActor(entity, shape.Duplicate());
+                case Actor actor:
+                    AddActor(actor, shape, body.IsPhysical);
                     break;
-                case EntityTypes.Brush:
-                    AddBrush(entity, shape.Duplicate());
+                case Brush brush:
+                    AddBrush(brush, shape);
                     break;
-                case EntityTypes.Volume:
-                    AddVolume(entity, shape.Duplicate());
+                case Volume volume:
+                    AddVolume(volume, shape);
                     break;
             }
         }
 
-        public void AddActor(IEntity entity, Shape3D shape)
+        public void AddActor(Actor actor, Shape3D shape, bool isPhysical)
         {
-            var partition = shape.ToPartition(entity.Position);
-            _actorTree.Insert(new Bounds(entity.ID, partition));
+            var partition = shape.ToPartition(actor.Position);
+            _actorTree.Insert(new Bounds(actor.ID, partition));
 
-            var rigidBody = new RigidBody3D(entity, shape);
-            rigidBody.ForceApplied += (s, args) => _bodiesToUpdate.Add(args.Body);
-            rigidBody.Moved += (s, args) => entity.Position = args.Body.Position;
-            _bodyByEntityID.Add(entity.ID, rigidBody);
+            var body = new RigidBody3D(actor, shape)
+            {
+                IsPhysical = isPhysical
+            };
+            body.ForceApplied += (s, args) => _bodiesToUpdate.Add(args.Body);
+            body.Moved += (s, args) => entity.Position = args.Body.Position;
+            _bodyByEntityID.Add(actor.ID, body);
+
+            if (body.State == BodyStates.Awake)
+            {
+                _awakeBodyByEntityID.Add(actor.ID, body);
+            }
         }
 
-        public void AddBrush(IEntity entity, Shape3D shape)
+        public void AddBrush(Brush brush, Shape3D shape)
         {
-            var partition = shape.ToPartition(entity.Position);
-            _brushTree.Insert(new Bounds(entity.ID, partition));
+            var partition = shape.ToPartition(brush.Position);
+            _brushTree.Insert(new Bounds(brush.ID, partition));
 
-            var rigidBody = new StaticBody3D(entity, shape);
-            _bodyByEntityID.Add(entity.ID, rigidBody);
+            var body = new StaticBody3D(brush, shape);
+            _bodyByEntityID.Add(brush.ID, body);
         }
 
-        public void AddVolume(IEntity entity, Shape3D shape)
+        public void AddVolume(Volume volume, Shape3D shape)
         {
-            var partition = shape.ToPartition(entity.Position);
-            _volumeTree.Insert(new Bounds(entity.ID, partition));
+            var partition = shape.ToPartition(volume.Position);
+            _volumeTree.Insert(new Bounds(volume.ID, partition));
 
-            var rigidBody = new StaticBody3D(entity, shape);
-            _bodyByEntityID.Add(entity.ID, rigidBody);
+            var body = new StaticBody3D(volume, shape)
+            {
+                IsPhysical = volume is BlockingVolume
+            };
+
+            _bodyByEntityID.Add(volume.ID, body);
         }
 
         public IBody GetBody(int entityID)
@@ -107,18 +128,6 @@ namespace SpiceEngine.Physics
             return null;
         }
 
-        public IEnumerable<Collision3D> GetCollisions() => _collisionManager.NarrowCollisions;
-
-        public IEnumerable<Collision3D> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
-
-        public IEnumerable<int> GetCollisionIDs() => _collisionManager.NarrowCollisionIDs;
-
-        public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
-
-        //public void ApplyForce(int entityID, Vector3 translation) => _entityTranslations.Add(Tuple.Create(entityID, translation));
-
-        private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
-
         public void Update()
         {
             _collisionManager.Clear();
@@ -128,14 +137,6 @@ namespace SpiceEngine.Physics
             PerformCollisionResolutions();
 
             UpdatePositions();
-
-            // The current order-of-operations is causing an undesirable outcome with gravity
-            // First, we check for and mark any collisions
-            // Next, we perform collision-resolutions:
-                // if our actor is in the floor, this should cause an impulse in the positive Z direction
-                // if our actor is in the physics volume, this should apply a force in the negative Z direction
-            // Lastly, we update body positions
-                // 
         }
 
         private void UpdatePositions()
@@ -206,31 +207,59 @@ namespace SpiceEngine.Physics
         {
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
-                var firstEntitytype = _entityProvider.GetEntityType(collision.FirstBody.EntityID);
-                var secondEntityType = _entityProvider.GetEntityType(collision.SecondBody.EntityID);
-                var firstEntity = _entityProvider.GetEntity(collision.FirstBody.EntityID);
-                var secondEntity = _entityProvider.GetEntity(collision.SecondBody.EntityID);
-
-                // This is a pretty janky way to do things... this also assumes that a NarrowCollision must involve at least one RigidBody
-                if (_entityProvider.GetEntityType(collision.FirstBody.EntityID) == EntityTypes.Volume && _entityProvider.GetEntity(collision.FirstBody.EntityID) is PhysicsVolume physicsVolume)
+                // Only resolve the penetration constraint if both bodies are physical. Resolve by determining and applying impulses to each body
+                if (collision.FirstBody.IsPhysical && collision.SecondBody.IsPhysical)
                 {
-                    if (collision.SecondBody is RigidBody3D rigidBody)
-                    {
-                        rigidBody.ApplyForce(physicsVolume.Gravity);
-                    }
-                }
-                else if (_entityProvider.GetEntityType(collision.SecondBody.EntityID) == EntityTypes.Volume && _entityProvider.GetEntity(collision.SecondBody.EntityID) is PhysicsVolume physicsVolume2)
-                {
-                    if (collision.FirstBody is RigidBody3D rigidBody)
-                    {
-                        rigidBody.ApplyForce(physicsVolume2.Gravity);
-                    }
-                }
-                else
-                {
-                    // For each collision that occurs, we need to determine what new forces (impulse) are going to get applied
                     PenetrationConstraint.Resolve(collision);
                 }
+
+                // If one of the bodies is a PhysicsVolume, we need to apply its gravity
+                ResolvePhysicsVolume(collision.FirstBody, collision.SecondBody);
+
+                // If one of the bodies is a TriggerVolume, we need to trigger it. If the actor has a contact, proximity, or sight response, we need to trigger it.
+                ResolveTriggerVolume(collision.FirstBody, collision.SecondBody);
+            }
+        }
+
+        private void ResolvePhysicsVolume(Body3D bodyA, Body3D bodyB)
+        {
+            var entityA = _entityProvider.GetEntity(bodyA.EntityID);
+            var entityB = _entityProvider.GetEntity(bodyB.EntityID);
+
+            if (entityA is PhysicsVolume)
+            {
+                var physicsVolume = (PhysicsVolume)entityA;
+
+                if (entityB is RigidBody3D rigidBody)
+                {
+                    rigidBody.ApplyForce(physicsVolume.Gravity);
+                }
+            }
+            else if (entityB is PhysicsVolume)
+            {
+                var physicsVolume = (physicsVolume)entityB;
+
+                if (entityA is RigidBody3D rigidBody)
+                {
+                    rigidBody.ApplyForce(physicsVolume.Gravity);
+                }
+            }
+        }
+
+        private void ResolveTriggerVolume(Body3D bodyA, Body3D bodyB)
+        {
+            var entityA = _entityProvider.GetEntity(bodyA.EntityID);
+            var entityB = _entityProvider.GetEntity(bodyB.EntityID);
+
+            if (entityA is TriggerVolume)
+            {
+                var triggerVolume = (TriggerVolume)entityA;
+                triggerVolume.OnTriggered(entityA);
+            }
+            else if (entityB is TriggerVolume)
+            {
+                var triggerVolume = (TriggerVolume)entityB;
+                triggerVolume.OnTriggered(entityB);
             }
         }
     }
