@@ -10,6 +10,10 @@ namespace SpiceEngine.Physics.Bodies
     {
         private float _mass = 1.0f;
 
+        // For now, an impulse explicitly means that the body collided with another body and the penetration constraint had to be resolved
+        // If this happens, as a cheap shortcut for now, ignore any forces this update cycle...
+        private bool _impulseApplied = false;
+
         public Quaternion Rotation { get; set; }
 
         public Vector3 LinearVelocity { get; set; }
@@ -74,11 +78,13 @@ namespace SpiceEngine.Physics.Bodies
 
             Force = Vector3.Zero;
             Torque = Vector3.Zero;
+            _impulseApplied = false;
         }
 
         // An impulse is an instantaneous change in velocity
         public void ApplyImpulse(Vector3 impulse)
         {
+            _impulseApplied = true;
             LinearVelocity += InverseMass * impulse;
             ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
         }
@@ -92,7 +98,7 @@ namespace SpiceEngine.Physics.Bodies
         // Assume the force here is applied directly to the center of mass
         public void ApplyForce(Vector3 force)
         {
-            if (force.IsSignificant())
+            if (force.IsSignificant() && !_impulseApplied)
             {
                 Force += force;
                 ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
@@ -101,7 +107,7 @@ namespace SpiceEngine.Physics.Bodies
 
         public void ApplyForce(Vector3 force, Vector3 point)
         {
-            if (force.IsSignificant())
+            if (force.IsSignificant() && !_impulseApplied)
             {
                 Force += force;
                 Torque += Vector3.Cross(point - Position, force);

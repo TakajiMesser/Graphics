@@ -34,17 +34,6 @@ namespace SpiceEngine.Physics
             _brushTree = new QuadTree(0, worldBoundaries);
             _volumeTree = new QuadTree(0, worldBoundaries);
             _lightTree = new QuadTree(0, worldBoundaries);
-
-            /*_lightQuads = new QuadTree(0, map.Boundaries);
-            _lightQuads.InsertRange(EntityManager.Lights.Select(l => new BoundingCircle(l)));
-
-            _brushQuads = new QuadTree(0, map.Boundaries);
-            _brushQuads.InsertRange(EntityManager.Brushes.Where(b => b.HasCollision).Select(b => b.Bounds));
-
-            _volumeQuads = new QuadTree(0, map.Boundaries);
-            _volumeQuads.InsertRange(EntityManager.Volumes.Select(v => v.Bounds));
-
-            _actorQuads = new QuadTree(0, map.Boundaries);*/
         }
 
         public PhysicsManager(IEntityProvider entityProvider, Oct worldBoundaries)
@@ -139,6 +128,14 @@ namespace SpiceEngine.Physics
             PerformCollisionResolutions();
 
             UpdatePositions();
+
+            // The current order-of-operations is causing an undesirable outcome with gravity
+            // First, we check for and mark any collisions
+            // Next, we perform collision-resolutions:
+                // if our actor is in the floor, this should cause an impulse in the positive Z direction
+                // if our actor is in the physics volume, this should apply a force in the negative Z direction
+            // Lastly, we update body positions
+                // 
         }
 
         private void UpdatePositions()
