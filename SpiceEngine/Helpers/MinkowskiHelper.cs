@@ -15,7 +15,7 @@ namespace SpiceEngine.Helpers
             var simplex = new Tetrahedron();
 
             // Choose an initial search direction
-            var direction = new Vector3();
+            var direction = Vector3.Zero;
 
             simplex.Add(GetMinkowskiVertex(bodyA, bodyB, -direction));
 

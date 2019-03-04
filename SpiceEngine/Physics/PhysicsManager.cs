@@ -85,8 +85,8 @@ namespace SpiceEngine.Physics
             {
                 IsPhysical = isPhysical
             };
-            body.ForceApplied += (s, args) => _bodiesToUpdate.Add(args.Body);
-            body.Moved += (s, args) => entity.Position = args.Body.Position;
+            body.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
+            body.Updated += (s, args) => entity.Position = args.Body.Position;
             _bodyByEntityID.Add(actor.ID, body);
 
             if (body.State == BodyStates.Awake)

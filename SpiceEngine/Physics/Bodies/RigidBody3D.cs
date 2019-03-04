@@ -42,8 +42,8 @@ namespace SpiceEngine.Physics.Bodies
         public Vector3 Force { get; private set; }
         public Vector3 Torque { get; private set; }
 
-        public event EventHandler<RigidBodyEventArgs> Moved;
-        public event EventHandler<RigidBodyEventArgs> ForceApplied;
+        public event EventHandler<RigidBodyEventArgs> Updated;
+        public event EventHandler<RigidBodyEventArgs> Influenced;
 
         public RigidBody3D(IEntity entity, Shape3D shape) : base(entity, shape)
         {
@@ -76,7 +76,7 @@ namespace SpiceEngine.Physics.Bodies
 
             if (positionDelta.IsSignificant() || rotationDelta.IsSignificant())
             {
-                Moved?.Invoke(this, new RigidBodyEventArgs(this));
+                Updated?.Invoke(this, new RigidBodyEventArgs(this));
             }
 
             Force = Vector3.Zero;
@@ -89,13 +89,13 @@ namespace SpiceEngine.Physics.Bodies
         {
             _impulseApplied = true;
             LinearVelocity += InverseMass * impulse;
-            ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
+            Influenced?.Invoke(this, new RigidBodyEventArgs(this));
         }
 
         public void ApplyVelocity(Vector3 velocity)
         {
             LinearVelocity = velocity;
-            ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
+            Influenced?.Invoke(this, new RigidBodyEventArgs(this));
         }
 
         // Assume the force here is applied directly to the center of mass
@@ -104,7 +104,7 @@ namespace SpiceEngine.Physics.Bodies
             if (force.IsSignificant() && !_impulseApplied)
             {
                 Force += force;
-                ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
+                Influenced?.Invoke(this, new RigidBodyEventArgs(this));
             }
         }
 
@@ -114,7 +114,7 @@ namespace SpiceEngine.Physics.Bodies
             {
                 Force += force;
                 Torque += Vector3.Cross(point - Position, force);
-                ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
+                Influenced?.Invoke(this, new RigidBodyEventArgs(this));
             }
         }
 

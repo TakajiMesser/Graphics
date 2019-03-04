@@ -240,8 +240,8 @@ namespace SpiceEngine.Physics.Bodies
         {
             var collision = new Collision3D(this, body);
 
-            var polygonA = (Polyhedron)Shape;
-            var polygonB = (Polyhedron)body.Shape;
+            var polyhedronA = (Polyhedron)Shape;
+            var polyhedronB = (Polyhedron)body.Shape;
 
             if (MinkowskiHelper.GenerateSimplex(this, body))
             {
