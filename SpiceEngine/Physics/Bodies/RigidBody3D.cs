@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Utilities;
 using System;
 
 namespace SpiceEngine.Physics.Bodies
@@ -91,21 +92,19 @@ namespace SpiceEngine.Physics.Bodies
         // Assume the force here is applied directly to the center of mass
         public void ApplyForce(Vector3 force)
         {
-            if (force != Vector3.Zero)
+            if (force.IsSignificant())
             {
-                Force = force;
+                Force += force;
                 ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
             }
         }
 
         public void ApplyForce(Vector3 force, Vector3 point)
         {
-            Force = force;
-            Torque = Vector3.Cross(point - Position, force);
-
-            if (force != Vector3.Zero)
+            if (force.IsSignificant())
             {
-                Force = force;
+                Force += force;
+                Torque += Vector3.Cross(point - Position, force);
                 ForceApplied?.Invoke(this, new RigidBodyEventArgs(this));
             }
         }

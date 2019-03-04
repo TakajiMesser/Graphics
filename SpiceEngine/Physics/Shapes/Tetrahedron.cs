@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Utilities;
 using System;
 
 namespace SpiceEngine.Physics.Shapes
@@ -56,26 +57,26 @@ namespace SpiceEngine.Physics.Shapes
 
         public float GetErrorTolerance()
         {
+            float error = 1.0f;
+
             if (VertexD.HasValue)
             {
-                return Math.Max(VertexA.Value.LengthSquared, Math.Max(VertexB.Value.LengthSquared, Math.Max(VertexC.Value.LengthSquared, VertexD.Value.LengthSquared)));
+                error = Math.Max(VertexA.Value.LengthSquared, Math.Max(VertexB.Value.LengthSquared, Math.Max(VertexC.Value.LengthSquared, VertexD.Value.LengthSquared)));
             }
             else if (VertexC.HasValue)
             {
-                return Math.Max(VertexA.Value.LengthSquared, Math.Max(VertexB.Value.LengthSquared, VertexC.Value.LengthSquared));
+                error = Math.Max(VertexA.Value.LengthSquared, Math.Max(VertexB.Value.LengthSquared, VertexC.Value.LengthSquared));
             }
             else if (VertexB.HasValue)
             {
-                return Math.Max(VertexA.Value.LengthSquared, VertexB.Value.LengthSquared);
+                error = Math.Max(VertexA.Value.LengthSquared, VertexB.Value.LengthSquared);
             }
-            else if(VertexA.HasValue)
+            else if (VertexA.HasValue)
             {
-                return VertexA.Value.LengthSquared;
+                error = VertexA.Value.LengthSquared;
             }
-            else
-            {
-                return 1.0f;
-            }
+
+            return error * MathExtensions.EPSILON;
         }
 
         public Vector3? GetPointClosestToOrigin()

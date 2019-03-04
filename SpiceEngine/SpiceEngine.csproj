@@ -148,7 +148,6 @@
     <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
-    <Compile Include="Helpers\MathHelper.cs" />
     <Compile Include="Helpers\MinkowskiHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\IMouseDelta.cs" />
@@ -175,6 +174,7 @@
     <Compile Include="Physics\Bodies\Body3D.cs" />
     <Compile Include="Physics\Bodies\IBody.cs" />
     <Compile Include="Physics\Bodies\RigidBody3D.cs" />
+    <Compile Include="Physics\Bodies\SoftBody3D.cs" />
     <Compile Include="Physics\Bodies\StaticBody3D.cs" />
     <Compile Include="Physics\Collisions\Collision2D.cs" />
     <Compile Include="Physics\Collisions\ICollision.cs" />
@@ -251,6 +251,7 @@
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
     <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
+    <Compile Include="Rendering\PostProcessing\LogLine.cs" />
     <Compile Include="Rendering\PostProcessing\LogManager.cs" />
     <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\InvertColors.cs" />

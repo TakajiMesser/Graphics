@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Constraints;
@@ -77,15 +78,6 @@ namespace SpiceEngine.Physics
             }
         }
 
-        public void AddBrush(IEntity entity, Shape3D shape)
-        {
-            var partition = shape.ToPartition(entity.Position);
-            _brushTree.Insert(new Bounds(entity.ID, partition));
-
-            var rigidBody = new StaticBody3D(entity, shape);
-            _bodyByEntityID.Add(entity.ID, rigidBody);
-        }
-
         public void AddActor(IEntity entity, Shape3D shape)
         {
             var partition = shape.ToPartition(entity.Position);
@@ -94,6 +86,15 @@ namespace SpiceEngine.Physics
             var rigidBody = new RigidBody3D(entity, shape);
             rigidBody.ForceApplied += (s, args) => _bodiesToUpdate.Add(args.Body);
             rigidBody.Moved += (s, args) => entity.Position = args.Body.Position;
+            _bodyByEntityID.Add(entity.ID, rigidBody);
+        }
+
+        public void AddBrush(IEntity entity, Shape3D shape)
+        {
+            var partition = shape.ToPartition(entity.Position);
+            _brushTree.Insert(new Bounds(entity.ID, partition));
+
+            var rigidBody = new StaticBody3D(entity, shape);
             _bodyByEntityID.Add(entity.ID, rigidBody);
         }
 
@@ -177,6 +178,8 @@ namespace SpiceEngine.Physics
                 var colliderBounds = _actorTree.Retrieve(bounds)
                     .Where(b => b.EntityID != actor.ID)
                     .Concat(_brushTree
+                        .Retrieve(bounds))
+                    .Concat(_volumeTree
                         .Retrieve(bounds));
 
                 _collisionManager.AddBroadCollision(actor.ID, colliderBounds.Select(b => b.EntityID));
@@ -206,8 +209,31 @@ namespace SpiceEngine.Physics
         {
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
-                // For each collision that occurs, we need to determine what new forces (impulse) are going to get applied
-                PenetrationConstraint.Resolve(collision);
+                var firstEntitytype = _entityProvider.GetEntityType(collision.FirstBody.EntityID);
+                var secondEntityType = _entityProvider.GetEntityType(collision.SecondBody.EntityID);
+                var firstEntity = _entityProvider.GetEntity(collision.FirstBody.EntityID);
+                var secondEntity = _entityProvider.GetEntity(collision.SecondBody.EntityID);
+
+                // This is a pretty janky way to do things... this also assumes that a NarrowCollision must involve at least one RigidBody
+                if (_entityProvider.GetEntityType(collision.FirstBody.EntityID) == EntityTypes.Volume && _entityProvider.GetEntity(collision.FirstBody.EntityID) is PhysicsVolume physicsVolume)
+                {
+                    if (collision.SecondBody is RigidBody3D rigidBody)
+                    {
+                        rigidBody.ApplyForce(physicsVolume.Gravity);
+                    }
+                }
+                else if (_entityProvider.GetEntityType(collision.SecondBody.EntityID) == EntityTypes.Volume && _entityProvider.GetEntity(collision.SecondBody.EntityID) is PhysicsVolume physicsVolume2)
+                {
+                    if (collision.FirstBody is RigidBody3D rigidBody)
+                    {
+                        rigidBody.ApplyForce(physicsVolume2.Gravity);
+                    }
+                }
+                else
+                {
+                    // For each collision that occurs, we need to determine what new forces (impulse) are going to get applied
+                    PenetrationConstraint.Resolve(collision);
+                }
             }
         }
     }

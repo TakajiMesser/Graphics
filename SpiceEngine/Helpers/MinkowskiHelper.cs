@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Helpers
 {
@@ -21,7 +22,7 @@ namespace SpiceEngine.Helpers
             for (var i = 0; i < MAX_ITERATIONS; i++)
             {
                 var closestPoint = simplex.GetPointClosestToOrigin();
-                if (closestPoint.HasValue || closestPoint.Value.LengthSquared <= simplex.GetErrorTolerance() * MathHelper.EPSILON)
+                if (closestPoint.HasValue || closestPoint.Value.LengthSquared <= simplex.GetErrorTolerance())
                 {
                     return true;
                 }

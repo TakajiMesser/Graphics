@@ -11,6 +11,16 @@ namespace SpiceEngine.Maps
 {
     public class MapVolume : MapEntity3D<Volume>
     {
+        public enum VolumeTypes
+        {
+            Blocking,
+            Physics,
+            Trigger
+        }
+
+        public VolumeTypes VolumeType { get; set; }
+        public Vector3 Gravity { get; set; }
+
         public List<Vector3> Vertices { get; set; } = new List<Vector3>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public Vector4 Color { get; set; }
@@ -21,12 +31,41 @@ namespace SpiceEngine.Maps
             return new Mesh3D<Vertex3D>(vertices, TriangleIndices);
         }*/
 
-        public override Volume ToEntity() => new Volume(Vertices, TriangleIndices, Color)
+        public override Volume ToEntity()
         {
-            Position = Position,
-            OriginalRotation = Rotation,
-            Scale = Scale
-        };
+            switch (VolumeType)
+            {
+                case VolumeTypes.Blocking:
+                    return new BlockingVolume(Vertices, TriangleIndices, Color)
+                    {
+                        Position = Position,
+                        OriginalRotation = Rotation,
+                        Scale = Scale
+                    };
+                case VolumeTypes.Physics:
+                    return new PhysicsVolume(Vertices, TriangleIndices, Color)
+                    {
+                        Position = Position,
+                        OriginalRotation = Rotation,
+                        Scale = Scale,
+                        Gravity = Gravity
+                    };
+                case VolumeTypes.Trigger:
+                    return new TriggerVolume(Vertices, TriangleIndices, Color)
+                    {
+                        Position = Position,
+                        OriginalRotation = Rotation,
+                        Scale = Scale
+                    };
+            }
+
+            return new Volume(Vertices, TriangleIndices, Color)
+            {
+                Position = Position,
+                OriginalRotation = Rotation,
+                Scale = Scale
+            };
+        }
 
         public override Shape3D ToShape() => new Box(Vertices);
 

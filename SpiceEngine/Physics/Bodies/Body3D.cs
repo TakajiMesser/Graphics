@@ -1,7 +1,9 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Utilities;
 using System;
 
 namespace SpiceEngine.Physics.Bodies
@@ -150,6 +152,11 @@ namespace SpiceEngine.Physics.Bodies
             var polygonA = (Polyhedron)Shape;
             var polygonB = (Polyhedron)body.Shape;
 
+            if (MinkowskiHelper.GenerateSimplex(this, body))
+            {
+                // The bodies are colliding
+            }
+
             return collision;
         }
 
@@ -167,38 +174,56 @@ namespace SpiceEngine.Physics.Bodies
                 Z = MathHelper.Clamp(Position.Z, body.Position.Z - box.Depth / 2.0f, body.Position.Z + box.Depth / 2.0f)
             };
 
-            if (Position == contactPoint)
-            {
-                // The sphere position is completely inside of the box
-                //var offset = Position - body.Position;
-
-                // Need to get intersection of offset vector and first box face it touches
-                // We can check against the 2-3 face planes we need to based on the direction of the vector
-
-                /*contactPoint = new Vector3()
-                {
-                    X = MathHelper.Round(Position.X, body.Position.X - box.Width / 2.0f, body.Position.X + box.Width / 2.0f),
-                    Y = MathHelper.Round(Position.Y, body.Position.Y - box.Height / 2.0f, body.Position.Y + box.Height / 2.0f),
-                    Z = MathHelper.Round(Position.Z, body.Position.Z - box.Depth / 2.0f, body.Position.Z + box.Depth / 2.0f)
-                };*/
-            }
-
             var offset = Position - contactPoint;
 
-            // This check is now likely unnecessary...
-            if (offset != Vector3.Zero)
+            if (offset.IsSignificant())
             {
                 var offsetLengthSquared = offset.LengthSquared;
 
                 if (offsetLengthSquared < sphere.Radius * sphere.Radius)
                 {
+                    // The sphere center is outside the box
                     var offsetLength = (float)Math.Sqrt(offsetLengthSquared);
 
                     collision.ContactNormal = offset / offsetLength;
                     collision.ContactPoints.Add(contactPoint);
-                    //collision.PenetrationDepth = offsetLength;
-                    collision.PenetrationDepth = sphere.Radius + Vector3.Dot(-offset, collision.ContactNormal);
+                    collision.PenetrationDepth = sphere.Radius + Vector3.Dot(-offset, collision.ContactNormal);//offsetLength;
                 }
+            }
+            else
+            {
+                // The sphere center is inside the box
+                var penetration = Position - body.Position;
+
+                var penetrationDepths = new Vector3()
+                {
+                    X = penetration.X < 0 ? penetration.X + box.Width / 2.0f : box.Width / 2.0f - penetration.X,
+                    Y = penetration.Y < 0 ? penetration.Y + box.Height / 2.0f : box.Height / 2.0f - penetration.Y,
+                    Z = penetration.Z < 0 ? penetration.Z + box.Depth / 2.0f : box.Depth / 2.0f - penetration.Z
+                };
+
+                // This is wrong, but for now we want to at least detect the collision...
+                //collision.ContactPoints.Add(Position);
+                collision.ContactPoints.Add(contactPoint);
+
+                if (penetrationDepths.X < penetrationDepths.Y && penetrationDepths.X < penetrationDepths.Z)
+                {
+                    collision.ContactNormal = penetration.X > 0 ? Vector3.UnitX : -Vector3.UnitX;
+                    collision.PenetrationDepth = penetrationDepths.X;
+                }
+                else if (penetrationDepths.Y < penetrationDepths.Z)
+                {
+                    collision.ContactNormal = penetration.Y > 0 ? Vector3.UnitY : -Vector3.UnitY;
+                    collision.PenetrationDepth = penetrationDepths.Y;
+                }
+                else
+                {
+                    collision.ContactNormal = penetration.Z > 0 ? Vector3.UnitZ : -Vector3.UnitZ;
+                    collision.PenetrationDepth = penetrationDepths.Z;
+                }                
+
+                // Need to get intersection of offset vector and first box face it touches
+                // We can check against the 2-3 face planes we need to based on the direction of the vector
             }
             
             return collision;
