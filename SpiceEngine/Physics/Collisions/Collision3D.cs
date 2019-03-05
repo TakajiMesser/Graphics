@@ -12,11 +12,11 @@ namespace SpiceEngine.Physics.Collisions
         public Body3D FirstBody { get; }
         public Body3D SecondBody { get; }
 
-        public List<Vector3> ContactPoints { get; } = new List<Vector3>();
+        public Vector3 ContactPoint { get; set; }
         public Vector3 ContactNormal { get; set; }
         public float PenetrationDepth { get; set; }
 
-        public bool HasCollision => ContactPoints.Count > 0;
+        public bool HasCollision { get; set; }
 
         public Collision3D(Body3D firstBody, Body3D secondBody)
         {
