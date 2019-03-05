@@ -51,11 +51,11 @@ namespace SpiceEngine.Entities.Volumes
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
         public Volume() { }
-        public Volume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color)
+        /*public Volume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color)
         {
             var simpleVertices = vertices.Select(v => new ColorVertex3D(v, color)).ToList();
             //Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
-        }
+        }*/
 
         //public void Load() => Mesh.Load();
         //public void Draw() => Mesh.Draw();
@@ -64,39 +64,6 @@ namespace SpiceEngine.Entities.Volumes
         {
             _modelMatrix.Set(program);
             //Mesh.SetUniforms(program);
-        }
-
-        public static Volume RectangularPrism(Vector3 center, float xLength, float yLength, float zLength, Vector4 color)
-        {
-            var vertices = new List<Vector3>
-            {
-                new Vector3(center.X - xLength / 2.0f, center.Y - yLength / 2.0f, center.Z - zLength / 2.0f),
-                new Vector3(center.X - xLength / 2.0f, center.Y + yLength / 2.0f, center.Z - zLength / 2.0f),
-                new Vector3(center.X - xLength / 2.0f, center.Y - yLength / 2.0f, center.Z + zLength / 2.0f),
-                new Vector3(center.X - xLength / 2.0f, center.Y + yLength / 2.0f, center.Z + zLength / 2.0f),
-                new Vector3(center.X + xLength / 2.0f, center.Y - yLength / 2.0f, center.Z - zLength / 2.0f),
-                new Vector3(center.X + xLength / 2.0f, center.Y + yLength / 2.0f, center.Z - zLength / 2.0f),
-                new Vector3(center.X + xLength / 2.0f, center.Y - yLength / 2.0f, center.Z + zLength / 2.0f),
-                new Vector3(center.X + xLength / 2.0f, center.Y + yLength / 2.0f, center.Z + zLength / 2.0f)
-            };
-
-            var triangleIndices = new List<int>()
-            {
-                7, 6, 4,
-                7, 4, 5,
-                1, 3, 7,
-                1, 7, 5,
-                3, 2, 6,
-                3, 6, 7,
-                1, 0, 2,
-                1, 2, 3,
-                2, 0, 4,
-                2, 4, 6,
-                5, 4, 0,
-                5, 0, 1
-            };
-
-            return new Volume(vertices, triangleIndices, color);
         }
     }
 }

@@ -71,25 +71,5 @@ namespace SpiceEngine.Entities.Brushes
                 program.UnbindTextures();
             }
         }
-
-        /*public static Brush Rectangle(Vector3 center, float width, float height)
-        {
-            var vertices = new List<Vertex3D>
-            {
-                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero)
-            };
-
-            var material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
-
-            var triangleIndices = new List<int>()
-            {
-                0, 1, 2, 1, 2, 3
-            };
-
-            return new Brush(vertices, material, triangleIndices);
-        }*/
     }
 }
