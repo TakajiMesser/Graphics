@@ -22,7 +22,7 @@ namespace SpiceEngine.Rendering.Meshes
             TriangleIndices = triangleIndices;
         }
 
-        public static MeshShape RectangularPrism(float width, float height, float depth)
+        public static MeshShape Box(float width, float height, float depth)
         {
             var vertices = new List<Vector3>
             {
@@ -63,6 +63,38 @@ namespace SpiceEngine.Rendering.Meshes
             {
                 0, 2, 1, 1, 2, 3
             };
+
+            return new MeshShape(vertices, triangleIndices);
+        }
+
+        public static MeshShape Sphere(float radius)
+        {
+            var vertices = new List<Vector3>();
+            var triangleIndices = new List<int>();
+
+            return new MeshShape(vertices, triangleIndices);
+        }
+
+        public static MeshShape Circle(float radius)
+        {
+            var vertices = new List<Vector3>();
+            var triangleIndices = new List<int>();
+
+            return new MeshShape(vertices, triangleIndices);
+        }
+
+        public static MeshShape Cylinder(float radius, float height, int nSides)
+        {
+            var vertices = new List<Vector3>();
+            var triangleIndices = new List<int>();
+
+            return new MeshShape(vertices, triangleIndices);
+        }
+
+        public static MeshShape Cone(float radius, float height, int nSides)
+        {
+            var vertices = new List<Vector3>();
+            var triangleIndices = new List<int>();
 
             return new MeshShape(vertices, triangleIndices);
         }

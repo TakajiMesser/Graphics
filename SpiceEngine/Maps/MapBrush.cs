@@ -91,9 +91,9 @@ namespace SpiceEngine.Maps
             };
         }
 
-        public static MapBrush RectangularPrism(Vector3 center, float width, float height, float depth)
+        public static MapBrush Box(Vector3 center, float width, float height, float depth)
         {
-            var meshShape = MeshShape.RectangularPrism(width, height, depth);
+            var meshShape = MeshShape.Box(width, height, depth);
 
             var uvs = new List<Vector2>
             {

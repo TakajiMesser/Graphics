@@ -35,14 +35,14 @@ namespace SpiceEngine.Maps
             switch (VolumeType)
             {
                 case VolumeTypes.Blocking:
-                    return new BlockingVolume(Vertices, TriangleIndices, Color)
+                    return new BlockingVolume()
                     {
                         Position = Position,
                         OriginalRotation = Rotation,
                         Scale = Scale
                     };
                 case VolumeTypes.Physics:
-                    return new PhysicsVolume(Vertices, TriangleIndices, Color)
+                    return new PhysicsVolume()
                     {
                         Position = Position,
                         OriginalRotation = Rotation,
@@ -50,7 +50,7 @@ namespace SpiceEngine.Maps
                         Gravity = Gravity
                     };
                 case VolumeTypes.Trigger:
-                    return new TriggerVolume(Vertices, TriangleIndices, Color)
+                    return new TriggerVolume()
                     {
                         Position = Position,
                         OriginalRotation = Rotation,
@@ -58,14 +58,21 @@ namespace SpiceEngine.Maps
                     };
             }
 
-            return new Volume(Vertices, TriangleIndices, Color)
-            {
-                Position = Position,
-                OriginalRotation = Rotation,
-                Scale = Scale
-            };
+            throw new NotImplementedException();
         }
 
         public override Shape3D ToShape() => new Box(Vertices);
+
+        public static MapVolume Box(Vector3 center, float width, float height, float depth)
+        {
+            var meshShape = MeshShape.Box(width, height, depth);
+
+            return new MapVolume()
+            {
+                Position = center,
+                Vertices = meshShape.Vertices,
+                TriangleIndices = meshShape.TriangleIndices
+            };
+        }
     }
 }
