@@ -20,7 +20,7 @@ namespace Jidai.GameObjects
         {
             Name = NAME;
             AttachedActorName = "Player";
-            Position = new Vector3(0.0f, 0.0f, 20.0f);
+            Position = new Vector3(0.0f, 0.0f, 50.0f);
             Type = ProjectionTypes.Perspective;
             ZNear = 0.1f;
             ZFar = 1000.0f;

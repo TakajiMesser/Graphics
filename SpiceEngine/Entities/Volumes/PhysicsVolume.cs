@@ -1,23 +1,19 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using System.Collections.Generic;
-using System.Linq;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Game;
-using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Scripting.StimResponse;
 
 namespace SpiceEngine.Entities.Volumes
 {
+    /// <summary>
+    /// Use PhysicsVolumes to give all entities within the Volume unifying forces
+    /// </summary>
     public class PhysicsVolume : Volume
     {
-        
+        public Vector3 Gravity { get; set; }
+
+        public PhysicsVolume() { }
+        public PhysicsVolume(List<Vector3> vertices, List<int> triangleIndices, Vector4 color) : base(vertices, triangleIndices, color)
+        {
+
+        }
     }
 }

@@ -1,10 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics.Shapes
 {
@@ -12,25 +10,30 @@ namespace SpiceEngine.Physics.Shapes
     {
         public float Radius { get; }
 
-        public override Vector3 Center { get; }
-        public override float Mass { get; set; }
-        public override float MomentOfInertia { get; }
-
         public Sphere(IEnumerable<Vector3> vertices)
         {
             var maxDistanceSquared = vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
-        public override ICollider ToCollider(Vector3 position)
+        public Sphere(float radius)
         {
-            var min = new Vector3(position.X - Center.X - Radius, position.Y - Center.Y - Radius, position.Z - Center.Z - Radius);
-            var max = new Vector3(position.X - Center.X + Radius, position.Y - Center.Y + Radius, position.Z - Center.Z + Radius);
+            Radius = radius;
+        }
+
+        public override Shape3D Duplicate() => new Sphere(Radius);
+
+        public override IPartition ToPartition(Vector3 position)
+        {
+            var min = new Vector3(position.X - Radius, position.Y - Radius, position.Z - Radius);
+            var max = new Vector3(position.X + Radius, position.Y + Radius, position.Z + Radius);
 
             return new Oct(min, max);
         }
 
-        public override Vector3 GetFurthestPoint(Vector3 position, Vector3 direction)
+        public override Vector3 GetFurthestPointInDirection(Vector3 direction) => direction.Normalized() * Radius;
+
+        /*public override Vector3 GetFurthestPoint(Vector3 position, Vector3 direction)
         {
             return position - Center + (direction.Normalized() * Radius);
         }
@@ -39,6 +42,8 @@ namespace SpiceEngine.Physics.Shapes
         {
             var distanceSquared = Math.Pow(point.X - position.X - Center.X, 2.0f) + Math.Pow(point.Y - position.Y - Center.Y, 2.0f) + Math.Pow(point.Z - position.Z - Center.Z, 2.0f);
             return distanceSquared < Math.Pow(Radius, 2.0f);
-        }
+        }*/
+
+        public override float CalculateInertia(float mass) => 0.0f;
     }
 }

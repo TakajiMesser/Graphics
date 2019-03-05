@@ -82,10 +82,13 @@ void main()
 
     vec2 texCoords = (useParallaxMap > 0) ? calculateParallaxMap(fUV) : fUV;
 
+	color = (useDiffuseMap > 0)
+		? texture(diffuseMap, texCoords)
+		: fColor;
     //color = (useDiffuseMap > 0)
 	//	? ((1.0 - fColor.w) * texture(diffuseMap, texCoords)) + (fColor.w * fColor)
 	//	: fColor;
-	color = fColor;
+	//color = fColor;
 
 	normal = (useNormalMap > 0)
 		? calculateNormal(texCoords)

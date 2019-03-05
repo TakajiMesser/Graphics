@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Input;
-using System;
 using SpiceEngine.Inputs;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Matrices;
+using System;
 
 namespace SpiceEngine.Entities.Cameras
 {
@@ -113,16 +113,6 @@ namespace SpiceEngine.Entities.Cameras
                 CalculateTranslation();
                 CalculateUp();
             }
-        }
-
-        private Vector3 GetCurrentAngles()
-        {
-            return new Vector3()
-            {
-                X = (float)Math.Acos(Vector2.Dot(_viewMatrix.Translation.Yz, _viewMatrix.LookAt.Yz)),
-                Y = (float)Math.Acos(Vector2.Dot(_viewMatrix.Translation.Xz, _viewMatrix.LookAt.Xz)),
-                Z = (float)Math.Acos(Vector2.Dot(_viewMatrix.Translation.Xy, _viewMatrix.LookAt.Xy))
-            };
         }
     }
 }

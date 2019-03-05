@@ -2,35 +2,21 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using SpiceEngine.Inputs;
+using SpiceEngine.Maps;
+using SpiceEngine.Outputs;
+using SpiceEngine.Rendering;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.Linq;
 using System.Timers;
-using SpiceEngine.Helpers;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Utilities;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Entities;
-using SpiceEngine.Rendering;
-using SpiceEngine.Physics;
-using SpiceEngine.Rendering.Textures;
-using System.IO;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Scripting.Properties;
-using SpiceEngine.Entities.Cameras;
 
 namespace SpiceEngine.Game
 {
     public class GameWindow : OpenTK.GameWindow, IMouseDelta
     {
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
-
         private string _mapPath;
 
         private GameManager _gameManager;
@@ -40,6 +26,9 @@ namespace SpiceEngine.Game
 
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
+
+        public Resolution Resolution { get; private set; }
+        public Resolution WindowSize { get; private set; }
 
         public GameWindow(string mapPath) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {

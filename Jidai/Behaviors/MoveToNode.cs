@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting.Behaviors;
 
 namespace Jidai.Behaviors
@@ -16,7 +17,7 @@ namespace Jidai.Behaviors
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Actor.Position;
+            var difference = Destination - context.Position;
 
             if (difference == Vector3.Zero)
             {
@@ -24,11 +25,11 @@ namespace Jidai.Behaviors
             }
             else if (difference.Length < Speed)
             {
-                context.Translation = difference;
+                ((RigidBody3D)context.Body).ApplyVelocity(difference);
             }
             else
             {
-                context.Translation = difference.Normalized() * Speed;
+                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
             }
 
             return BehaviorStatus.Running;

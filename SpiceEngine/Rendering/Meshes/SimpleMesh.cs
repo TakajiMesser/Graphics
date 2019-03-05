@@ -1,14 +1,14 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {

@@ -1,24 +1,18 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics.Shapes
 {
     public abstract class Shape2D : IShape
     {
-        public abstract Vector2 Center { get; }
-        public abstract float Mass { get; set; }
-        public abstract float MomentOfInertia { get; }
+        public abstract IPartition ToPartition(Vector3 position);
+        public abstract Vector2 GetFurthestPointInDirection(Vector2 direction);
+        //public abstract bool CollidesWith(Vector2 position, Vector2 point);
+        public abstract Shape2D Duplicate();
+        public abstract float CalculateInertia(float mass);
 
-        public abstract ICollider ToCollider(Vector3 position);
-        public abstract Vector2 GetFurthestPoint(Vector2 position, Vector2 direction);
-        public abstract bool CollidesWith(Vector2 position, Vector2 point);
-
-        public static bool Collides(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
+        /*public static Collision2D GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)
         {
             switch (shapeA)
             {
@@ -35,19 +29,28 @@ namespace SpiceEngine.Physics.Shapes
             throw new NotImplementedException();
         }
 
-        private static bool Collides(Vector2 positionA, Rectangle rectangleA, Vector2 positionB, Rectangle rectangleB) =>
+        private static Collision GetCollision(Vector2 positionA, Rectangle rectangleA, Vector2 positionB, Rectangle rectangleB) =>
             positionA.X - rectangleA.Width / 2.0f < positionB.X + rectangleB.Width / 2.0f
             && positionA.X + rectangleA.Width / 2.0f > positionB.X - rectangleB.Width / 2.0f
             && positionA.Y - rectangleA.Height / 2.0f < positionB.Y + rectangleB.Height / 2.0f
             && positionA.Y + rectangleA.Height / 2.0f > positionB.Y - rectangleB.Height / 2.0f;
 
-        private static bool Collides(Vector2 positionA, Circle circleA, Vector2 positionB, Circle circleB)
+        private static Collision GetCollision(Vector2 positionA, Circle circleA, Vector2 positionB, Circle circleB)
         {
+            var normal = positionB - positionA;
+            var distanceSquared = normal.LengthSquared;
+            var radius = circleA.Radius + circleB.Radius;
+
+            if (distanceSquared >= radius * radius)
+            {
+                
+            }
+
             var distanceSquared = Math.Pow(positionA.X - positionB.X, 2.0f) + Math.Pow(positionA.Y - positionB.Y, 2.0f);
             return distanceSquared < Math.Pow(circleA.Radius + circleB.Radius, 2.0f);
         }
 
-        private static bool Collides(Vector2 positionA, Rectangle rectangleA, Vector2 positionB, Circle circleB)
+        private static Collision GetCollision(Vector2 positionA, Rectangle rectangleA, Vector2 positionB, Circle circleB)
         {
             var closestX = (positionB.X > positionA.X + rectangleA.Width / 2.0f)
                 ? positionA.X + rectangleA.Width / 2.0f
@@ -63,6 +66,6 @@ namespace SpiceEngine.Physics.Shapes
 
             var distanceSquared = Math.Pow(positionB.X - closestX, 2) + Math.Pow(positionB.Y - closestY, 2);
             return distanceSquared < Math.Pow(circleB.Radius, 2);
-        }
+        }*/
     }
 }

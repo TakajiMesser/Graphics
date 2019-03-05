@@ -1,18 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK.Graphics.OpenGL;
+﻿using FreeImageAPI;
 using OpenTK;
-using SpiceEngine.Rendering.Buffers;
 using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Rendering.Buffers;
+using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 using System.IO;
-using DevILSharp;
-using FreeImageAPI;
+using System.Linq;
+using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace SpiceEngine.Rendering.Textures
 {

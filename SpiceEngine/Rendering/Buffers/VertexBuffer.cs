@@ -1,10 +1,10 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
+using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Rendering.Buffers
 {

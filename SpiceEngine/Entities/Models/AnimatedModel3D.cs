@@ -1,18 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
-
-namespace SpiceEngine.Entities.Models
+﻿namespace SpiceEngine.Entities.Models
 {
     /*public class AnimatedModel3D : Model3D<JointVertex3D>
     {

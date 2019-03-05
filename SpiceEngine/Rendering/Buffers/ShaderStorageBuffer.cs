@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Rendering.Shaders;
 using System;
 using System.Runtime.InteropServices;
-using SpiceEngine.Rendering.Shaders;
 
 namespace SpiceEngine.Rendering.Buffers
 {

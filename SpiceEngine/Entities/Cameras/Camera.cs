@@ -1,12 +1,10 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using System;
-using System.Collections.Generic;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Inputs;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Cameras
 {

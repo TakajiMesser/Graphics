@@ -4,8 +4,6 @@ using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Scripting.StimResponse;
@@ -19,20 +17,19 @@ namespace SpiceEngine.Scripting
     /// Each command can be something this object needs to communicate to another object, or performed by itself
     /// Each command either needs to be associated with 
     /// </summary>
-    public class ScriptManager : ITranslationProvider, IStimulusProvider
+    public class ScriptManager : IStimulusProvider
     {
         private IEntityProvider _entityProvider;
+        private ICollisionProvider _collisionProvider;
 
         private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
-        private List<EntityTranslation> _entityTranslations = new List<EntityTranslation>();
 
-        public IEnumerable<EntityTranslation> EntityTranslations => _entityTranslations;
-
-        public ScriptManager(IEntityProvider entityProvider)
+        public ScriptManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
         {
             _entityProvider = entityProvider;
+            _collisionProvider = collisionProvider;
         }
 
         public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
@@ -68,6 +65,11 @@ namespace SpiceEngine.Scripting
                 {
                     var behavior = _behaviorsByEntityID[actor.ID];
                     behavior.Context.Actor = actor;
+
+                    //Behaviors.Context.Rotation = Rotation;
+                    behavior.Context.SetEntityProvider(_entityProvider);
+                    behavior.Context.SetCollisionProvider(_collisionProvider);
+                    behavior.Context.SetStimulusProvider(this);
 
                     /*foreach (var property in Properties)
                     {
@@ -107,7 +109,7 @@ namespace SpiceEngine.Scripting
             }
         }
 
-        public void UpdateCollisions(IEnumerable<EntityCollision> entityCollisions)
+        /*public void UpdateCollisions(IEnumerable<EntityCollision> entityCollisions)
         {
             foreach (var entityCollision in entityCollisions)
             {
@@ -116,26 +118,20 @@ namespace SpiceEngine.Scripting
                     var behavior = _behaviorsByEntityID[entityCollision.EntityID];
 
                     behavior.Context.ActorShape = entityCollision.Shape;
-                    behavior.Context.ActorBounds = entityCollision.Bounds;
-                    behavior.Context.ColliderBounds = entityCollision.Colliders;
+                    //behavior.Context.ActorBounds = entityCollision.Bounds;
+                    //behavior.Context.ColliderBounds = entityCollision.Colliders;
                     behavior.Context.ColliderBodies = entityCollision.Bodies;
                 }
             }
-        }
+        }*/
 
         public void Update()
         {
-            _entityTranslations.Clear();
-
             foreach (var actor in _entityProvider.Actors)
             {
                 if (_behaviorsByEntityID.ContainsKey(actor.ID))
                 {
                     var behavior = _behaviorsByEntityID[actor.ID];
-
-                    //Behaviors.Context.Rotation = Rotation;
-                    behavior.Context.EntityProvider = _entityProvider;
-                    behavior.Context.StimulusProvider = this;
 
                     foreach (var property in _propertiesByEntityID[actor.ID].VariableProperties)
                     {
@@ -143,12 +139,6 @@ namespace SpiceEngine.Scripting
                     }
 
                     behavior.Tick();
-
-                    // Mark and report any actors that have moved
-                    if (behavior.Context.Translation != Vector3.Zero)
-                    {
-                        _entityTranslations.Add(new EntityTranslation(actor.ID, behavior.Context.Translation));
-                    }
 
                     if (actor is AnimatedActor animatedActor)
                     {

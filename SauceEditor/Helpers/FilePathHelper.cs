@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SauceEditor.Models;
+using System;
 
 namespace SauceEditor.Helpers
 {
@@ -10,6 +7,6 @@ namespace SauceEditor.Helpers
     {
         private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine";
 
-        public static string SETTINGS_PATH = SOLUTION_DIRECTORY + @"\SauceEditor\EditorSettings" + SauceEditor.Structure.EditorSettings.FILE_EXTENSION;
+        public static string SETTINGS_PATH = SOLUTION_DIRECTORY + @"\SauceEditor\EditorSettings" + EditorSettings.FILE_EXTENSION;
     }
 }

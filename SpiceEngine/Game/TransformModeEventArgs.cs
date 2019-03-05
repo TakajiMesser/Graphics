@@ -1,6 +1,5 @@
-﻿using System;
-using SpiceEngine.Entities;
-using SpiceEngine.Rendering.Processing;
+﻿using SpiceEngine.Rendering.Processing;
+using System;
 
 namespace SpiceEngine.Game
 {
