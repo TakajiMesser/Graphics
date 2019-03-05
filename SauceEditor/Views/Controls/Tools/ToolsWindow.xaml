@@ -1,12 +1,13 @@
-﻿<dock:DockableContent x:Class="SauceEditor.Views.Controls.Tools.ToolsWindow"
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Controls.Tools.ToolsWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:transform="clr-namespace:SauceEditor.Views.Controls.Transform"
-        xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
-        mc:Ignorable="d" Title="Tools">
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        mc:Ignorable="d"
+        Title="Tools">
     <StackPanel Orientation="Vertical">
         <Label FontSize="14">Select Tool</Label>
         <WrapPanel Name="ButtonPanel">
@@ -75,4 +76,4 @@
             </Border>
         </Grid>
     </StackPanel>
-</dock:DockableContent>
+</xcad:LayoutAnchorable>

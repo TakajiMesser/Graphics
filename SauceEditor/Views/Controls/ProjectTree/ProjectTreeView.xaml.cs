@@ -3,6 +3,7 @@ using System;
 using System.IO;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Xceed.Wpf.AvalonDock.Layout;
 using Path = System.IO.Path;
 
 namespace SauceEditor.Views.Controls.ProjectTree
@@ -10,7 +11,7 @@ namespace SauceEditor.Views.Controls.ProjectTree
     /// <summary>
     /// Interaction logic for ProjectTreeView.xaml
     /// </summary>
-    public partial class ProjectTreeView : DockingLibrary.DockableContent
+    public partial class ProjectTreeView : LayoutAnchorable
     {
         public event EventHandler<ItemSelectedEventArgs> MapSelected;
         public event EventHandler<ItemSelectedEventArgs> ModelSelected;
@@ -177,7 +178,7 @@ namespace SauceEditor.Views.Controls.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = FindResource("ModelMenu") as ContextMenu;
+                    item.ContextMenu = Panel.FindResource("ModelMenu") as ContextMenu;
                 };
                 models.Items.Add(model);
             }
@@ -211,7 +212,7 @@ namespace SauceEditor.Views.Controls.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = FindResource("BehaviorMenu") as ContextMenu;
+                    item.ContextMenu = Panel.FindResource("BehaviorMenu") as ContextMenu;
                 };
                 behaviors.Items.Add(behavior);
             }
@@ -245,7 +246,7 @@ namespace SauceEditor.Views.Controls.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = FindResource("TextureMenu") as ContextMenu;
+                    item.ContextMenu = Panel.FindResource("TextureMenu") as ContextMenu;
                 };
                 textures.Items.Add(texture);
             }
@@ -279,7 +280,7 @@ namespace SauceEditor.Views.Controls.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = FindResource("AudioMenu") as ContextMenu;
+                    item.ContextMenu = Panel.FindResource("AudioMenu") as ContextMenu;
                 };
                 audios.Items.Add(audio);
             }

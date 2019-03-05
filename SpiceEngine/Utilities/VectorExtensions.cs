@@ -16,5 +16,12 @@ namespace SpiceEngine.Utilities
             var cosAngle = Vector3.Dot(vectorA, vectorB) / (vectorA.Length * vectorB.Length);
             return (float)Math.Acos(cosAngle);
         }
+
+        public static bool IsSignificant(this Vector2 vector) => vector.X >= MathExtensions.EPSILON || vector.X <= -MathExtensions.EPSILON
+            || vector.Y >= MathExtensions.EPSILON || vector.Y <= -MathExtensions.EPSILON;
+
+        public static bool IsSignificant(this Vector3 vector) => vector.X >= MathExtensions.EPSILON || vector.X <= -MathExtensions.EPSILON
+            || vector.Y >= MathExtensions.EPSILON || vector.Y <= -MathExtensions.EPSILON
+            || vector.Z >= MathExtensions.EPSILON || vector.Z <= -MathExtensions.EPSILON;
     }
 }

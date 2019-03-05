@@ -1,5 +1,4 @@
-﻿using DockingLibrary;
-using SpiceEngine.Entities;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Game;
@@ -13,16 +12,18 @@ using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Controls.GamePanels
 {
     /// <summary>
     /// Interaction logic for GamePanelManager.xaml
     /// </summary>
-    public partial class GamePanelManager : DockingLibrary.DockableContent
+    public partial class GamePanelManager : DockPanel
     {
         public Resolution Resolution { get; set; }
         public TransformModes TransformMode
@@ -81,12 +82,10 @@ namespace SauceEditor.Views.Controls.GamePanels
         private DockableGamePanel _yView;
         private DockableGamePanel _zView;
 
-        public GamePanelManager(DockManager dockManager, string mapPath) : base(dockManager)
+        public GamePanelManager(string mapPath)
         {
             InitializeComponent();
             Open(mapPath);
-
-            Title = Path.GetFileNameWithoutExtension(mapPath);
 
             TransformMode = TransformModes.Translate;
         }
@@ -140,8 +139,6 @@ namespace SauceEditor.Views.Controls.GamePanels
         {
             Resolution = new Resolution((int)Width, (int)Height);
 
-            _scriptManager = new ScriptManager(_entityManager);
-
             _textureManager.EnableMipMapping = true;
             _textureManager.EnableAnisotropy = true;
 
@@ -181,117 +178,97 @@ namespace SauceEditor.Views.Controls.GamePanels
             //_scriptManager;
         }
 
+        private DockableGamePanel CreatePanel(ViewTypes viewType, AnchorableShowStrategy showStrategy)
+        {
+            var gamePanel = new DockableGamePanel(viewType);
+            gamePanel.Panel.Load += (s, args) => LoadPanels();
+            gamePanel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            gamePanel.EntitySelectionChanged += (s, args) => OnEntitySelectionChanged(viewType, args);
+
+            /*var anchorable = new LayoutAnchorable
+            {
+                Title = GetTitle(viewType),
+                //FloatingHeight = 400,
+                //FloatingWidth = 500,
+                Content = gamePanel
+            };
+
+            anchorable.AddToLayout(MainDockingManager, showStrategy);
+            anchorable.DockAsDocument();*/
+            gamePanel.Anchorable.Show();
+
+            return gamePanel;
+        }
+
+        private void OnEntitySelectionChanged(ViewTypes viewType, EntitiesEventArgs args)
+        {
+            if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.SelectEntities(args.Entities);
+            if (viewType != ViewTypes.X) _xView.Panel.SelectEntities(args.Entities);
+            if (viewType != ViewTypes.Y) _yView.Panel.SelectEntities(args.Entities);
+            if (viewType != ViewTypes.Z) _zView.Panel.SelectEntities(args.Entities);
+
+            if (args.Entities.Count > 0)
+            {
+                if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.UpdateEntities(args.Entities);
+                if (viewType != ViewTypes.X) _xView.Panel.UpdateEntities(args.Entities);
+                if (viewType != ViewTypes.Y) _yView.Panel.UpdateEntities(args.Entities);
+                if (viewType != ViewTypes.Z) _zView.Panel.UpdateEntities(args.Entities);
+            }
+
+            EntitySelectionChanged?.Invoke(this, args);
+        }
+
         private void CreateAndShowPanels()
         {
-            _perspectiveView = new DockableGamePanel(MainDockManager, ViewTypes.Perspective)
-            {
-                Title = "Perspective",
-                Focusable = true
-            };
-            _perspectiveView.Panel.Load += (s, args) => LoadPanels();
-            _perspectiveView.EntitySelectionChanged += (s, args) =>
-            {
-                _xView.Panel.SelectEntities(args.Entities);
-                _yView.Panel.SelectEntities(args.Entities);
-                _zView.Panel.SelectEntities(args.Entities);
-
-                if (args.Entities.Count > 0)
-                {
-                    _xView.Panel.UpdateEntities(args.Entities);
-                    _yView.Panel.UpdateEntities(args.Entities);
-                    _zView.Panel.UpdateEntities(args.Entities);
-                }
-
-                EntitySelectionChanged?.Invoke(this, args);
-            };
-            _perspectiveView.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            _perspectiveView = CreatePanel(ViewTypes.Perspective, AnchorableShowStrategy.Most);
             //_perspectiveView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            _perspectiveView.Width = MainDockManager.Width / 2.0;
-            _perspectiveView.Height = MainDockManager.Height / 2.0;
-            _perspectiveView.Show();
+            //_perspectiveView.Width = MainDockingManager.Width / 2.0;
+            //_perspectiveView.Height = MainDockingManager.Height / 2.0;
+            //_perspectiveView.Show();
 
-            _xView = new DockableGamePanel(MainDockManager, ViewTypes.X)
-            {
-                Title = "X",
-                Focusable = true
-            };
-            _xView.Panel.Load += (s, args) => LoadPanels();
-            _xView.EntitySelectionChanged += (s, args) =>
-            {
-                _perspectiveView.Panel.SelectEntities(args.Entities);
-                _yView.Panel.SelectEntities(args.Entities);
-                _zView.Panel.SelectEntities(args.Entities);
-
-                if (args.Entities.Count > 0)
-                {
-                    _perspectiveView.Panel.UpdateEntities(args.Entities);
-                    _yView.Panel.UpdateEntities(args.Entities);
-                    _zView.Panel.UpdateEntities(args.Entities);
-                }
-
-                EntitySelectionChanged?.Invoke(this, args);
-            };
-            _xView.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            _xView = CreatePanel(ViewTypes.X, AnchorableShowStrategy.Right);
             //_xView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_xView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            _xView.Width = MainDockManager.Width / 2.0;
-            _xView.Height = MainDockManager.Height / 2.0;
-            _xView.Show(Docks.Right);
+            //_xView.Width = MainDockingManager.Width / 2.0;
+            //_xView.Height = MainDockingManager.Height / 2.0;
+            //_xView.Show(Docks.Right);
 
-            _yView = new DockableGamePanel(MainDockManager, ViewTypes.Y)
-            {
-                Title = "Y",
-                Focusable = true
-            };
-            _yView.Panel.Load += (s, args) => LoadPanels();
-            _yView.EntitySelectionChanged += (s, args) =>
-            {
-                _perspectiveView.Panel.SelectEntities(args.Entities);
-                _xView.Panel.SelectEntities(args.Entities);
-                _zView.Panel.SelectEntities(args.Entities);
-
-                if (args.Entities.Count > 0)
-                {
-                    _perspectiveView.Panel.UpdateEntities(args.Entities);
-                    _xView.Panel.UpdateEntities(args.Entities);
-                    _zView.Panel.UpdateEntities(args.Entities);
-                }
-
-                EntitySelectionChanged?.Invoke(this, args);
-            };
-            _yView.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            _yView = CreatePanel(ViewTypes.Y, AnchorableShowStrategy.Bottom);
             //_yView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_yView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            _yView.Width = MainDockManager.Width;// / 2.0;
-            _yView.Height = MainDockManager.Height / 2.0;
-            _yView.Show(Docks.Bottom);
+            //_yView.Width = MainDockingManager.Width;// / 2.0;
+            //_yView.Height = MainDockingManager.Height / 2.0;
+            //_yView.Show(Docks.Bottom);
 
-            _zView = new DockableGamePanel(MainDockManager, ViewTypes.Z)
-            {
-                Title = "Z",
-                Focusable = true
-            };
-            _zView.Panel.Load += (s, args) => LoadPanels();
-            _zView.EntitySelectionChanged += (s, args) =>
-            {
-                _perspectiveView.Panel.SelectEntities(args.Entities);
-                _xView.Panel.SelectEntities(args.Entities);
-                _yView.Panel.SelectEntities(args.Entities);
-
-                if (args.Entities.Count > 0)
-                {
-                    _perspectiveView.Panel.UpdateEntities(args.Entities);
-                    _xView.Panel.UpdateEntities(args.Entities);
-                    _yView.Panel.UpdateEntities(args.Entities);
-                }
-
-                EntitySelectionChanged?.Invoke(this, args);
-            };
-            _zView.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            _zView = CreatePanel(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
             //_zView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
             //_zView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            _zView.Show(Docks.Right | Docks.Bottom);
+            //_zView.Show(Docks.Right | Docks.Bottom);
+
+            //Get the main LayoutDocumentPane of your DockingManager 
+            var rootPanel = MainDockingManager.Layout.RootPanel;
+            rootPanel.Children.Clear();
+            rootPanel.Orientation = Orientation.Vertical;
+
+            var topPaneGroup = new LayoutAnchorablePaneGroup()
+            {
+                Orientation = Orientation.Horizontal,
+                DockMinHeight = MainDockingManager.ActualHeight / 2.0
+            };
+            topPaneGroup.Children.Add(_perspectiveView);
+            topPaneGroup.Children.Add(_xView);
+
+            var bottomPaneGroup = new LayoutAnchorablePaneGroup()
+            {
+                Orientation = Orientation.Horizontal,
+                DockMinHeight = MainDockingManager.ActualHeight / 2.0
+            };
+            bottomPaneGroup.Children.Add(_yView);
+            bottomPaneGroup.Children.Add(_zView);
+
+            rootPanel.Children.Add(topPaneGroup);
+            rootPanel.Children.Add(bottomPaneGroup);
         }
 
         public EntityMapping LoadFromMap(Map map)
@@ -299,13 +276,14 @@ namespace SauceEditor.Views.Controls.GamePanels
             switch (map)
             {
                 case Map2D map2D:
-                    _physicsManager = new PhysicsManager(_entityManager, _scriptManager, map2D.Boundaries);
+                    _physicsManager = new PhysicsManager(_entityManager, map2D.Boundaries);
                     break;
                 case Map3D map3D:
-                    _physicsManager = new PhysicsManager(_entityManager, _scriptManager, map3D.Boundaries);
+                    _physicsManager = new PhysicsManager(_entityManager, map3D.Boundaries);
                     break;
             }
 
+            _scriptManager = new ScriptManager(_entityManager, _physicsManager);
             _entityManager.ClearEntities();
 
             var lightIDs = LoadLights(map.Lights);
@@ -339,7 +317,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
 
                 var shape = mapBrush.ToShape();
-                _physicsManager.AddBrush(entityID, shape, brush.Position);
+                _physicsManager.AddBrush(brush, shape);
 
                 yield return entityID;
             }
@@ -353,7 +331,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 int entityID = _entityManager.AddEntity(volume);
 
                 var shape = mapVolume.ToShape();
-                _physicsManager.AddVolume(entityID, shape, volume.Position);
+                _physicsManager.AddVolume(volume, shape);
 
                 yield return entityID;
             }
@@ -369,7 +347,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 var meshes = mapActor.ToMeshes();
 
                 var shape = mapActor.ToShape();
-                _physicsManager.AddActor(entityID, shape, actor.Position);
+                _physicsManager.AddActor(actor, shape);
 
                 /*actor.HasCollision = mapActor.HasCollision;
                 actor.Bounds = actor.Name == "Player"
@@ -445,36 +423,53 @@ namespace SauceEditor.Views.Controls.GamePanels
             switch (selectedItem.Content)
             {
                 case "All":
-                    _perspectiveView.Show();
-                    _xView.Show();
-                    _yView.Show();
-                    _zView.Show();
+                    ((LayoutAnchorablePaneGroup)_zView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
+                    ((LayoutAnchorablePaneGroup)_yView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
+                    ((LayoutAnchorablePaneGroup)_perspectiveView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
+                    ((LayoutAnchorablePaneGroup)_xView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
+
+                    _perspectiveView.Anchorable.Show();
+                    _xView.Anchorable.Show();
+                    _yView.Anchorable.Show();
+                    _zView.Anchorable.Show();
                     break;
                 case "Perspective":
-                    _zView.Hide();
-                    _yView.Hide();
-                    _xView.Hide();
-                    _perspectiveView.Show();
+                    Hide(_zView);
+                    Hide(_yView);
+                    Hide(_xView);
+                    Show(_perspectiveView);
                     break;
                 case "X":
-                    _zView.Hide();
-                    _yView.Hide();
-                    _perspectiveView.Hide();
-                    _xView.Show();
+                    Hide(_zView);
+                    Hide(_yView);
+                    Hide(_perspectiveView);
+                    Show(_xView);
                     break;
                 case "Y":
-                    _zView.Hide();
-                    _xView.Hide();
-                    _perspectiveView.Hide();
-                    _yView.Show();
+                    Hide(_zView);
+                    Hide(_xView);
+                    Hide(_perspectiveView);
+                    Show(_yView);
                     break;
                 case "Z":
-                    _yView.Hide();
-                    _xView.Hide();
-                    _perspectiveView.Hide();
-                    _zView.Show();
+                    Hide(_yView);
+                    Hide(_xView);
+                    Hide(_perspectiveView);
+                    Show(_zView);
                     break;
             }
+        }
+
+        private void Show(DockableGamePanel gamePanel)
+        {
+            ((LayoutAnchorablePaneGroup)gamePanel.Parent).DockMinHeight = MainDockingManager.ActualHeight;
+            gamePanel.Anchorable.Show();
+        }
+
+        private void Hide(DockableGamePanel gamePanel)
+        {
+            ((LayoutAnchorablePaneGroup)gamePanel.Parent).DockMinHeight = 0;
+            gamePanel.Anchorable.Hide();
         }
     }
 }

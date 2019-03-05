@@ -70,7 +70,7 @@ namespace Jidai.Behaviors.Enemy
 
         private void AlertMeter_Triggered(object sender, MeterTriggeredEventArgs e)
         {
-            RootStack.Push(new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player"));
+            //RootStack.Push(new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player"));
         }
 
         private void PlayerResponse_Triggered(object sender, StimulusTriggeredEventArgs e)

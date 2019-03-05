@@ -12,6 +12,7 @@ using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering
@@ -49,10 +50,14 @@ namespace SpiceEngine.Rendering
         private TextRenderer _textRenderer = new TextRenderer();
         private RenderToScreen _renderToScreen = new RenderToScreen();
 
+        private LogManager _logManager;
+
         public RenderManager(Resolution resolution, Resolution windowSize)
         {
             Resolution = resolution;
             WindowSize = windowSize;
+
+            _logManager = new LogManager(_textRenderer);
         }
 
         public void LoadFromMap(Map map, IEntityProvider entityProvider, EntityMapping entityMapping)
@@ -396,7 +401,9 @@ namespace SpiceEngine.Rendering
             texture = _blurRenderer.FinalTexture;
 
             _renderToScreen.Render(texture);
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _logManager.RenderToScreen();
         }
 
         private void RenderLights(IEntityProvider entityProvider, Camera camera)

@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor"
-        xmlns:dock="clr-namespace:DockingLibrary;assembly=DockingLibrary"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:controls="clr-namespace:SauceEditor.Views.Controls" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
         Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
@@ -63,9 +64,9 @@
                 <ColumnDefinition Width="6*"/>
                 <ColumnDefinition Width="2*"/>
             </Grid.ColumnDefinitions>
-            <dock:DockManager Name ="ToolDockManager" Grid.Column="0"/>
-            <dock:DockManager Name ="MainDockManager" Grid.Column="1"/>
-            <dock:DockManager Name ="SideDockManager" Grid.Column="2"/>
+            <xcad:DockingManager Name ="ToolDockingManager" Grid.Column="0"/>
+            <xcad:DockingManager Name ="MainDockingManager" Grid.Column="1"/>
+            <xcad:DockingManager Name ="SideDockingManager" Grid.Column="2"/>
         </Grid>
     </DockPanel>
 </Window>

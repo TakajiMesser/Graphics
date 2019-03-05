@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jidai", "Jidai\Jidai.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SauceEditor", "SauceEditor\SauceEditor.csproj", "{682A34E6-D265-4782-9DA1-2B03CA01F5A5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DockingLibrary", "DockingLibrary\DockingLibrary.csproj", "{FA274CD2-57BB-4EB0-B101-A562ADB1685E}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,18 +55,6 @@ Global
 		{682A34E6-D265-4782-9DA1-2B03CA01F5A5}.Release|x64.Build.0 = Release|Any CPU
 		{682A34E6-D265-4782-9DA1-2B03CA01F5A5}.Release|x86.ActiveCfg = Release|x86
 		{682A34E6-D265-4782-9DA1-2B03CA01F5A5}.Release|x86.Build.0 = Release|x86
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Debug|x64.Build.0 = Debug|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Debug|x86.Build.0 = Debug|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Release|x64.ActiveCfg = Release|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Release|x64.Build.0 = Release|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Release|x86.ActiveCfg = Release|Any CPU
-		{FA274CD2-57BB-4EB0-B101-A562ADB1685E}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

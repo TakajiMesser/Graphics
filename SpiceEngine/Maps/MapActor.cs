@@ -29,7 +29,7 @@ namespace SpiceEngine.Maps
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<Property> Properties { get; set; } = new List<Property>();
 
-        public bool HasCollision { get; set; }
+        public bool IsPhysical { get; set; }
         //public ICollider Collider { get; set; }
 
         public bool HasAnimations

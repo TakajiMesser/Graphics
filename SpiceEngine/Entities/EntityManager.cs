@@ -55,7 +55,7 @@ namespace SpiceEngine.Entities
             return _entityTypeByID[id];
         }
 
-        public Actor GetActorByName(string name)
+        public Actor GetActor(string name)
         {
             var actor = Actors.FirstOrDefault(a => a.Name == name);
             if (actor == null) throw new KeyNotFoundException("No actor found for name " + name);

@@ -1,14 +1,12 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 
 namespace SpiceEngine.Physics.Shapes
 {
     public interface IShape
     {
-        float Mass { get; set; }
-        float MomentOfInertia { get; }
-
-        ICollider ToCollider(Vector3 position);
-        IShape Duplicate();
+        IPartition ToPartition(Vector3 position);
+        //IShape Duplicate();
+        float CalculateInertia(float mass);
     }
 }

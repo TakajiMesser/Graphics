@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Physics.Bodies;
 
 namespace Jidai.Behaviors.Enemy
 {
@@ -22,7 +23,7 @@ namespace Jidai.Behaviors.Enemy
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Actor.Position;
+            var difference = Destination - context.Position;
 
             if (difference == Vector3.Zero)
             {
@@ -30,16 +31,16 @@ namespace Jidai.Behaviors.Enemy
             }
             else if (difference.Length < Speed)
             {
-                context.Translation = difference;
+                ((RigidBody3D)context.Body).ApplyVelocity(difference);
             }
             else
             {
-                context.Translation = difference.Normalized() * Speed;
+                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
             }
 
-            if (context.Translation != Vector3.Zero)
+            if (((RigidBody3D)context.Body).LinearVelocity != Vector3.Zero)
             {
-                float turnAngle = (float)Math.Atan2(context.Translation.Y, context.Translation.X);
+                float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 
                 context.Actor.Rotation = new Quaternion(turnAngle, 0.0f, 0.0f);
                 context.EulerRotation = new Vector3(turnAngle, context.EulerRotation.Y, context.EulerRotation.Z);

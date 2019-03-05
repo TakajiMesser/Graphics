@@ -17,6 +17,7 @@ using System.Linq;
 using System.Text;
 using System.Windows;
 using System.Windows.Input;
+using Xceed.Wpf.AvalonDock.Layout;
 using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace SauceEditor.Views.Controls
@@ -84,25 +85,23 @@ namespace SauceEditor.Views.Controls
 
         private void OnLoaded(object sender, EventArgs e)
         {
-            MainDockManager.ParentWindow = this;
-            SideDockManager.ParentWindow = this;
-
-            _projectTree.DockManager = SideDockManager;
-            _projectTree.ShowAsDocument();
             _projectTree.MapSelected += (s, args) => OpenMap(args.FilePath);
             _projectTree.ModelSelected += (s, args) => OpenModel(args.FilePath);
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
             _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
+            _projectTree.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
+            _projectTree.DockAsDocument();
 
-            _toolPanel.DockManager = SideDockManager;
-            _toolPanel.ShowAsDocument();
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
+            _toolPanel.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
+            _toolPanel.DockAsDocument();
 
-            _propertyPanel.DockManager = SideDockManager;
-            _propertyPanel.ShowAsDocument();
+            _propertyPanel.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
+            _propertyPanel.DockAsDocument();
 
-            SideDockManager.ActiveContent = _projectTree;
+            _projectTree.IsActive = true;
+            //SideDockManager.ActiveContent = _projectTree;
         }
 
         private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
@@ -116,7 +115,7 @@ namespace SauceEditor.Views.Controls
             //Properties.Settings.Default.Save();
         }
 
-        private bool ContainsDocument(string title)
+        /*private bool ContainsDocument(string title)
         {
             foreach (DockingLibrary.DocumentContent doc in MainDockManager.Documents)
             {
@@ -127,11 +126,11 @@ namespace SauceEditor.Views.Controls
             }
                 
             return false;
-        }
+        }*/
 
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var titleBuilder = new StringBuilder("Document");
+            /*var titleBuilder = new StringBuilder("Document");
 
             int i = 1;
             while (ContainsDocument(titleBuilder.ToString() + i))
@@ -147,7 +146,7 @@ namespace SauceEditor.Views.Controls
             };
             doc.ShowAsDocument();
 
-            //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));
+            //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));*/
         }
 
         private void NewProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
@@ -246,7 +245,8 @@ namespace SauceEditor.Views.Controls
         private void Menu_ProjectOpened(object sender, FileEventArgs e)
         {
             _projectTree.OpenProject(e.FileName);
-            SideDockManager.ActiveContent = _projectTree;
+            _projectTree.IsActive = true;
+            //SideDockManager.ActiveContent = _projectTree;
             Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
         }
 
@@ -268,18 +268,28 @@ namespace SauceEditor.Views.Controls
             _mapPath = filePath;
 
             PlayButton.Visibility = Visibility.Visible;
-            _gamePanelManager = new GamePanelManager(MainDockManager, _mapPath);
-            _gamePanelManager.Closed += (s, args) =>
+            _gamePanelManager = new GamePanelManager(_mapPath);
+            _gamePanelManager.EntitySelectionChanged += (s, args) =>
+            {
+                _propertyPanel.Entity = args.Entities.LastOrDefault();
+                _propertyPanel.IsActive = true;
+                //SideDockManager.ActiveContent = _propertyPanel;
+            };
+
+            LayoutAnchorable anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _gamePanelManager,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
             {
                 PlayButton.Visibility = Visibility.Hidden;
                 _map = null;
             };
-            _gamePanelManager.EntitySelectionChanged += (s, args) =>
-            {
-                _propertyPanel.Entity = args.Entities.LastOrDefault();
-                SideDockManager.ActiveContent = _propertyPanel;
-            };
-            _gamePanelManager.ShowAsDocument();
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();
+
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);

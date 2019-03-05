@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Controls.Tools
 {
     /// <summary>
     /// Interaction logic for PropertyWindow.xaml
     /// </summary>
-    public partial class ToolsWindow : DockingLibrary.DockableContent
+    public partial class ToolsWindow : LayoutAnchorable
     {
         public SpiceEngine.Game.Tools SelectedTool { get; set; }
 

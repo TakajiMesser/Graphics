@@ -67,6 +67,9 @@
       <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="GongSolutions.WPF.DragDrop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=91f1945125b7a587, processorArchitecture=MSIL">
+      <HintPath>..\packages\gong-wpf-dragdrop.2.0.0-alpha0106\lib\net47\GongSolutions.WPF.DragDrop.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -74,6 +77,8 @@
       <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Runtime.Serialization" />
@@ -155,12 +160,6 @@
     <Compile Include="Views\Controls\Transform\TransformChangedEventArgs.cs" />
     <Compile Include="Views\Controls\Properties\EntityUpdatedEventArgs.cs" />
     <Compile Include="Views\Controls\UpDowns\ValueChangedEventArgs.cs" />
-    <Compile Include="DocWindow.xaml.cs">
-      <DependentUpon>DocWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="DocWindowCollection.xaml.cs">
-      <DependentUpon>DocWindowCollection.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Models\SettingsEventArgs.cs" />
     <Compile Include="Models\EditorSettings.cs" />
@@ -203,14 +202,6 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Controls\Transform\TransformPanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DocWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="DocWindowCollection.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -262,10 +253,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DockingLibrary\DockingLibrary.csproj">
-      <Project>{fa274cd2-57bb-4eb0-b101-a562adb1685e}</Project>
-      <Name>DockingLibrary</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Jidai\Jidai.csproj">
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
       <Name>Jidai</Name>

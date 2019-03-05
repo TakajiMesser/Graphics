@@ -17,7 +17,7 @@ namespace SpiceEngine.Maps
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
-        public bool HasCollision { get; set; }
+        public bool IsPhysical { get; set; }
         public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
 
         public Mesh3D<Vertex3D> ToMesh()
