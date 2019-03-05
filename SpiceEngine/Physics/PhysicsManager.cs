@@ -135,20 +135,7 @@ namespace SpiceEngine.Physics
             BroadPhaseCollisionDetections();
             NarrowPhaseCollisionDetections();
             PerformCollisionResolutions();
-
             UpdatePositions();
-        }
-
-        private void UpdatePositions()
-        {
-            var tickRate = TickRate;
-
-            foreach (var body in _bodiesToUpdate)
-            {
-                body.Update(tickRate);
-            }
-
-            _bodiesToUpdate.Clear();
         }
 
         private void BroadPhaseCollisionDetections()
@@ -261,6 +248,18 @@ namespace SpiceEngine.Physics
                 var triggerVolume = (TriggerVolume)entityB;
                 triggerVolume.OnTriggered(entityB);
             }
+        }
+
+        private void UpdatePositions()
+        {
+            var tickRate = TickRate;
+
+            foreach (var body in _bodiesToUpdate)
+            {
+                body.Update(tickRate);
+            }
+
+            _bodiesToUpdate.Clear();
         }
     }
 }
