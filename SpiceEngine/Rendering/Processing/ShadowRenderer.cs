@@ -1,19 +1,12 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Properties;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Models;
-using SpiceEngine.Helpers;
 using SpiceEngine.Outputs;
+using SpiceEngine.Properties;
+using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Rendering.Batches;
 
 namespace SpiceEngine.Rendering.Processing
 {

@@ -4,7 +4,6 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Models;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
@@ -12,9 +11,9 @@ using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Rendering
 {
@@ -51,10 +50,14 @@ namespace SpiceEngine.Rendering
         private TextRenderer _textRenderer = new TextRenderer();
         private RenderToScreen _renderToScreen = new RenderToScreen();
 
+        private LogManager _logManager;
+
         public RenderManager(Resolution resolution, Resolution windowSize)
         {
             Resolution = resolution;
             WindowSize = windowSize;
+
+            _logManager = new LogManager(_textRenderer);
         }
 
         public void LoadFromMap(Map map, IEntityProvider entityProvider, EntityMapping entityMapping)
@@ -256,6 +259,20 @@ namespace SpiceEngine.Rendering
 
         public void RotateGrid(float pitch, float yaw, float roll) => _wireframeRenderer.GridRotation = Quaternion.FromEulerAngles(pitch, yaw, roll);
 
+        public void SetWireframeThickness(float thickness) => _wireframeRenderer.LineThickness = thickness;
+        public void SetWireframeColor(Color4 color) => _wireframeRenderer.LineColor = color.ToVector4();
+        public void SetSelectedWireframeThickness(float thickness) => _wireframeRenderer.SelectedLineThickness = thickness;
+        public void SetSelectedWireframeColor(Color4 color) => _wireframeRenderer.SelectedLineColor = color.ToVector4();
+        public void SetSelectedLightWireframeThickness(float thickness) => _wireframeRenderer.SelectedLightLineThickness = thickness;
+        public void SetSelectedLightWireframeColor(Color4 color) => _wireframeRenderer.SelectedLightLineColor = color.ToVector4();
+
+        public void SetGridUnit(float unit) => _wireframeRenderer.GridUnit = unit;
+        public void SetGridLineThickness(float thickness) => _wireframeRenderer.GridLineThickness = thickness;
+        public void SetGridUnitColor(Color4 color) => _wireframeRenderer.GridLineUnitColor = color.ToVector4();
+        public void SetGridAxisColor(Color4 color) => _wireframeRenderer.GridLineAxisColor = color.ToVector4();
+        public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
+        public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
+
         public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
         {
             _wireframeRenderer.BindForWriting();
@@ -384,7 +401,9 @@ namespace SpiceEngine.Rendering
             texture = _blurRenderer.FinalTexture;
 
             _renderToScreen.Render(texture);
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), 10, Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _logManager.RenderToScreen();
         }
 
         private void RenderLights(IEntityProvider entityProvider, Camera camera)

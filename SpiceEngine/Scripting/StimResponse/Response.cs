@@ -1,18 +1,16 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SpiceEngine.Entities;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Raycasting;
+using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Utilities;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Physics;
-using SpiceEngine.Entities.Actors;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Scripting.StimResponse
 {
@@ -68,38 +66,29 @@ namespace SpiceEngine.Scripting.StimResponse
                 _tickMeter.Reset();
 
                 // Filter colliders by those that are stimuli, and those that aren't
-                var stimuliColliders = new List<PhysicsBody>();
+                var stimuliColliders = context.GetBodies().Where(b => context.HasStimuli(b.EntityID, Stimulus));
 
-                foreach (var collider in context.ColliderBodies)
-                {
-                    if (context.StimulusProvider.GetStimuli(collider.EntityID).Contains(Stimulus))
-                    {
-                        stimuliColliders.Add(collider);
-                    }
-                }
-
-                if (TriggerOnContact && HasContactStimulus(context.Actor, context.ActorShape, stimuliColliders, context.EntityProvider))
+                if (TriggerOnContact && HasContactStimulus(context.Actor, context.Body, stimuliColliders, context.GetEntityProvider()))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
-                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders, context.EntityProvider))
+                else if (TriggerOnProximity && HasProximityStimulus(context.Actor, stimuliColliders, context.GetEntityProvider()))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                 }
-                else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.ColliderBodies, context.EntityProvider))
+                /*else if (TriggerOnSight && HasSightStimulus(context.Actor, context.EulerRotation, stimuliColliders, context.ColliderBodies, context.EntityProvider))
                 {
                     Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
-                }
+                }*/
             }
         }
 
-        private bool HasContactStimulus(Actor actor, IShape shape, IEnumerable<PhysicsBody> stimuliColliders, IEntityProvider entityProvider)
+        private bool HasContactStimulus(Actor actor, IBody body, IEnumerable<IBody> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
-                var position = entityProvider.GetEntity(collider.EntityID).Position;
-
-                if (Shape3D.Collides(actor.Position, (Shape3D)shape, position, (Shape3D)collider.Shape))
+                var collision = ((Body3D)body).GetCollision((Body3D)collider);
+                if (collision.HasCollision)
                 {
                     return true;
                 }
@@ -108,7 +97,7 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasProximityStimulus(Actor actor, IEnumerable<PhysicsBody> stimuliColliders, IEntityProvider entityProvider)
+        private bool HasProximityStimulus(Actor actor, IEnumerable<IBody> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
@@ -122,7 +111,7 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<PhysicsBody> stimuliColliders, IEnumerable<PhysicsBody> colliders, IEntityProvider entityProvider)
+        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<IBody> stimuliColliders, IEnumerable<IBody> colliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {

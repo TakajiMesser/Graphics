@@ -1,9 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using System;
-using System.Drawing;
-using System.Linq;
-using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Inputs
 {

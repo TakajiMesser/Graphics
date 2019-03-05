@@ -1,6 +1,4 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Scripting.StimResponse;
 
 namespace SpiceEngine.Entities
 {
@@ -8,5 +6,6 @@ namespace SpiceEngine.Entities
     {
         int ID { get; set; }
         Vector3 Position { get; set; }
+        //IEntity Duplicate();
     }
 }

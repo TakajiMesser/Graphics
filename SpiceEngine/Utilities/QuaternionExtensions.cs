@@ -15,5 +15,8 @@ namespace SpiceEngine.Utilities
 
             return (float)angle;
         }
+
+        public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
+            || W >= MathExtensions.EPSILON || W <= -MathExtensions.EPSILON;
     }
 }

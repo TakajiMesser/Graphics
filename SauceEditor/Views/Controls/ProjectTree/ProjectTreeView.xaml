@@ -1,0 +1,100 @@
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Controls.ProjectTree.ProjectTreeView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SauceEditor.Views.Controls"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        mc:Ignorable="d"
+        Title="Project Tree">
+    <StackPanel Name="Panel" Orientation="Vertical">
+        <StackPanel.Resources>
+            <RoutedUICommand x:Key="AddMapCommand" Text="Add Map"/>
+            <RoutedUICommand x:Key="AddModelCommand" Text="Add Model"/>
+            <RoutedUICommand x:Key="AddBehaviorCommand" Text="Add Behavior"/>
+            <RoutedUICommand x:Key="AddTextureCommand" Text="Add Texture"/>
+            <RoutedUICommand x:Key="AddAudioCommand" Text="Add Audio"/>
+            <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
+            <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
+            <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
+            <RoutedUICommand x:Key="OpenTextureCommand" Text="Open Texture"/>
+            <RoutedUICommand x:Key="OpenAudioCommand" Text="Open Audio"/>
+            <RoutedUICommand x:Key="ExcludeCommand" Text="Exclude"/>
+            <RoutedUICommand x:Key="DeleteCommand" Text="Delete"/>
+            <RoutedUICommand x:Key="RenameCommand" Text="Rename"/>
+        </StackPanel.Resources>
+        <Label Name="ProjectType" FontSize="14"/>
+        <TreeView Name="Tree" BorderBrush="Transparent">
+            <TreeView.CommandBindings>
+                <CommandBinding Command="{StaticResource AddMapCommand}" CanExecute="AddMapCommand_CanExecute" Executed="AddMapCommand_Executed" />
+                <CommandBinding Command="{StaticResource AddModelCommand}" CanExecute="AddModelCommand_CanExecute" Executed="AddModelCommand_Executed" />
+                <CommandBinding Command="{StaticResource AddBehaviorCommand}" CanExecute="AddBehaviorCommand_CanExecute" Executed="AddBehaviorCommand_Executed" />
+                <CommandBinding Command="{StaticResource AddTextureCommand}" CanExecute="AddTextureCommand_CanExecute" Executed="AddTextureCommand_Executed" />
+                <CommandBinding Command="{StaticResource AddAudioCommand}" CanExecute="AddAudioCommand_CanExecute" Executed="AddAudioCommand_Executed" />
+
+                <CommandBinding Command="{StaticResource OpenMapCommand}" CanExecute="OpenMapCommand_CanExecute" Executed="OpenMapCommand_Executed" />
+                <CommandBinding Command="{StaticResource OpenModelCommand}" CanExecute="OpenModelCommand_CanExecute" Executed="OpenModelCommand_Executed" />
+                <CommandBinding Command="{StaticResource OpenBehaviorCommand}" CanExecute="OpenBehaviorCommand_CanExecute" Executed="OpenBehaviorCommand_Executed" />
+                <CommandBinding Command="{StaticResource OpenTextureCommand}" CanExecute="OpenTextureCommand_CanExecute" Executed="OpenTextureCommand_Executed" />
+                <CommandBinding Command="{StaticResource OpenAudioCommand}" CanExecute="OpenAudioCommand_CanExecute" Executed="OpenAudioCommand_Executed" />
+
+                <CommandBinding Command="{StaticResource ExcludeCommand}" CanExecute="ExcludeCommand_CanExecute" Executed="ExcludeCommand_Executed" />
+                <CommandBinding Command="{StaticResource DeleteCommand}" CanExecute="DeleteCommand_CanExecute" Executed="DeleteCommand_Executed" />
+                <CommandBinding Command="{StaticResource RenameCommand}" CanExecute="RenameCommand_CanExecute" Executed="RenameCommand_Executed" />
+            </TreeView.CommandBindings>
+            <TreeView.Resources>
+                <ContextMenu x:Key="MapsMenu">
+                    <MenuItem Header="Add Map" Command="{StaticResource AddMapCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="ModelsMenu">
+                    <MenuItem Header="Add Model" Command="{StaticResource AddModelCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="BehaviorsMenu">
+                    <MenuItem Header="Add Behavior" Command="{StaticResource AddBehaviorCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="TexturesMenu">
+                    <MenuItem Header="Add Texture" Command="{StaticResource AddTextureCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="AudiosMenu">
+                    <MenuItem Header="Add Audio" Command="{StaticResource AddAudioCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="MapMenu">
+                    <MenuItem Header="Open Map" Command="{StaticResource OpenMapCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exclude From Project" Command="{StaticResource ExcludeCommand}"/>
+                    <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
+                    <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="ModelMenu">
+                    <MenuItem Header="Open Model" Command="{StaticResource OpenModelCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exclude From Project" Command="{StaticResource ExcludeCommand}"/>
+                    <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
+                    <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="BehaviorMenu">
+                    <MenuItem Header="Open Behavior" Command="{StaticResource OpenBehaviorCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exclude From Project" Command="{StaticResource ExcludeCommand}"/>
+                    <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
+                    <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="TextureMenu">
+                    <MenuItem Header="Open Texture" Command="{StaticResource OpenTextureCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exclude From Project" Command="{StaticResource ExcludeCommand}"/>
+                    <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
+                    <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
+                </ContextMenu>
+                <ContextMenu x:Key="AudioMenu">
+                    <MenuItem Header="Open Audio" Command="{StaticResource OpenAudioCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="Exclude From Project" Command="{StaticResource ExcludeCommand}"/>
+                    <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
+                    <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
+                </ContextMenu>
+            </TreeView.Resources>
+        </TreeView>
+    </StackPanel>
+</xcad:LayoutAnchorable>

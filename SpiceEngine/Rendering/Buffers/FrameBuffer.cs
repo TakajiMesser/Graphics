@@ -1,9 +1,9 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Buffers
 {

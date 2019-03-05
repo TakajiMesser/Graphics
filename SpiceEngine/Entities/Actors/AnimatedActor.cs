@@ -1,20 +1,10 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using System.Linq;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Models;
-using SpiceEngine.Game;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Utilities;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Entities.Actors
 {
@@ -33,6 +23,19 @@ namespace SpiceEngine.Entities.Actors
 
         public void SetJointTransforms(int meshIndex, Matrix4[] transforms) => _jointTransformsByMeshIndex[meshIndex] = transforms;
 
+        public override Actor Duplicate(string name)
+        {
+            var animatedActor = new AnimatedActor(name);
+            animatedActor.FromActor(this);
+
+            foreach (var kvp in _jointTransformsByMeshIndex)
+            {
+                animatedActor._jointTransformsByMeshIndex.Add(kvp.Key, kvp.Value);
+            }
+
+            return animatedActor;
+        }
+
         public override void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
         {
             base.SetUniforms(program, textureManager, meshIndex);
@@ -40,6 +43,10 @@ namespace SpiceEngine.Entities.Actors
             if (_jointTransformsByMeshIndex.ContainsKey(meshIndex))
             {
                 program.SetUniform("jointTransforms", _jointTransformsByMeshIndex[meshIndex]);
+            }
+            else
+            {
+                program.SetUniform("jointTransforms", ArrayExtensions.Initialize(MAX_JOINTS, Matrix4.Identity));
             }
         }
 

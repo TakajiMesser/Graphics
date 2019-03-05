@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Entities.Lights;
 using System.Collections.Generic;
 using System.Linq;
-using SpiceEngine.Entities.Lights;
 
 namespace SpiceEngine.Rendering.Buffers
 {

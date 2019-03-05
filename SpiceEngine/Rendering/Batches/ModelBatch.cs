@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Vertices;
+﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
+using SpiceEngine.Rendering.Vertices;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
@@ -24,6 +20,8 @@ namespace SpiceEngine.Rendering.Batches
             EntityID = entityID;
             Meshes.AddRange(meshes);
         }
+
+        public IBatch Duplicate(int entityID) => new ModelBatch(entityID, Meshes.Select(m => m.Duplicate()));
 
         public void Load()
         {

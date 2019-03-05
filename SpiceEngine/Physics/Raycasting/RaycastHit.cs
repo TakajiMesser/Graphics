@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collision;
 
 namespace SpiceEngine.Physics.Raycasting
 {

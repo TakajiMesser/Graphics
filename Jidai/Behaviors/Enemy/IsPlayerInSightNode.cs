@@ -3,6 +3,8 @@ using System.Linq;
 using System.Runtime.Serialization;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Behaviors.Decorators;
@@ -26,14 +28,14 @@ namespace Jidai.Behaviors.Enemy
 
         public override bool Condition(BehaviorContext context)
         {
-            var player = context.ColliderBodies.FirstOrDefault(c => context.EntityProvider.GetEntity(c.EntityID).GetType() == typeof(Actor)
-                && ((Actor)context.EntityProvider.GetEntity(c.EntityID)).Name == "Player");
+            var player = context.GetActor("Player");
 
             if (player != null)
             {
-                var playerPosition = ((Actor)context.EntityProvider.GetEntity(player.EntityID)).Position;
+                var playerBody = context.GetBody(player.ID) as RigidBody3D;
+                var playerPosition = playerBody.Position;
 
-                var playerDirection = playerPosition - context.Actor.Position;
+                var playerDirection = playerPosition - context.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
                 var angleDifference = (playerAngle - context.EulerRotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
@@ -46,9 +48,11 @@ namespace Jidai.Behaviors.Enemy
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the player
                     // TODO - Filter colliders by their ability to obstruct vision
-                    if (Raycast.TryRaycast(new Ray3(context.Actor.Position, playerDirection, ViewDistance), context.ColliderBodies, context.EntityProvider, out RaycastHit hit))
+                    var colliders = context.GetColliderBodies();
+
+                    if (Raycast.TryRaycast(new Ray3(context.Position, playerDirection, ViewDistance), colliders, context.GetEntityProvider(), out RaycastHit hit))
                     {
-                        var hitEntity = context.EntityProvider.GetEntity(hit.EntityID);
+                        var hitEntity = context.GetEntity(hit.EntityID);
 
                         if (hitEntity.GetType() == typeof(Actor) && ((Actor)hitEntity).Name == "Player")
                         {

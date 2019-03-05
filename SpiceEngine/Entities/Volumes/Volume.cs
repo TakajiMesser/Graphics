@@ -1,18 +1,9 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
+using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Rendering.Shaders;
+using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
 using System.Linq;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Game;
-using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Scripting.StimResponse;
 
 namespace SpiceEngine.Entities.Volumes
 {
@@ -56,6 +47,13 @@ namespace SpiceEngine.Entities.Volumes
             var simpleVertices = vertices.Select(v => new ColorVertex3D(v, color)).ToList();
             //Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
         }
+
+        public Volume Duplicate() => new Volume()
+        {
+            Position = Position,
+            Rotation = Rotation,
+            Scale = Scale,
+        };
 
         //public void Load() => Mesh.Load();
         //public void Draw() => Mesh.Draw();

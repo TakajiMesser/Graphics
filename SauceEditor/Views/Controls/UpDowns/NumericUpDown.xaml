@@ -1,0 +1,22 @@
+﻿<UserControl x:Class="SauceEditor.Views.Controls.UpDowns.NumericUpDown"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SauceEditor.Views.Controls"
+             mc:Ignorable="d" >
+    <StackPanel Orientation="Vertical">
+        <StackPanel.Resources>
+            <ImageBrush x:Key="UpButtonImage" ImageSource="/SauceEditor;component/Resources/Images/DockTop.png" Stretch="UniformToFill"/>
+            <ImageBrush x:Key="DownButtonImage" ImageSource="/SauceEditor;component/Resources/Images/DockBottom.png" Stretch="UniformToFill"/>
+        </StackPanel.Resources>
+        <Label Content="{Binding Label}" FontSize="14" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <DockPanel>
+            <StackPanel DockPanel.Dock="Right" Orientation="Vertical">
+                <RepeatButton Name="UpButton" MinWidth="20" MinHeight="20" Background="{StaticResource UpButtonImage}" Click="UpButton_Click" PreviewMouseLeftButtonDown="UpButton_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
+                <RepeatButton Name="DownButton" MinWidth="20" MinHeight="20" Background="{StaticResource DownButtonImage}" Click="DownButton_Click" PreviewMouseLeftButtonDown="DownButton_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
+            </StackPanel>
+            <TextBox Name="ValueText" FontSize="16" Text="{Binding Value, StringFormat={}{0:0.00}}"/>
+        </DockPanel>
+    </StackPanel>
+</UserControl>

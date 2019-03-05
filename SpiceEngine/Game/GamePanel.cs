@@ -2,31 +2,25 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Inputs;
+using SpiceEngine.Maps;
+using SpiceEngine.Outputs;
+using SpiceEngine.Rendering;
+using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Processing;
+using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Inputs;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Utilities;
 using Brush = SpiceEngine.Entities.Brushes.Brush;
 using Timer = System.Timers.Timer;
-using SpiceEngine.Rendering;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics;
-using SpiceEngine.Scripting;
-using SpiceEngine.Sounds;
-using SpiceEngine.Rendering.Textures;
-using System.IO;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Vertices;
 
 namespace SpiceEngine.Game
 {
@@ -47,7 +41,7 @@ namespace SpiceEngine.Game
         public double Frequency { get; private set; }
         public RenderModes RenderMode { get; set; }
         public TransformModes TransformMode { get; set; }
-        public List<IEntity> SelectedEntities { get; } = new List<IEntity>();
+        public List<IEntity> SelectedEntities { get; private set; } = new List<IEntity>();
         public SelectionTypes SelectionType { get; private set; }
         public Tools SelectedTool
         {
@@ -114,6 +108,7 @@ namespace SpiceEngine.Game
         public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
         public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
 
         private object _loadLock = new object();
         private bool _isLoaded = false;
@@ -128,7 +123,8 @@ namespace SpiceEngine.Game
         private RenderManager _renderManager;
 
         private bool _invalidated = false;
-        
+        private bool _isDuplicating = false;
+
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
         private Timer _pollTimer = new Timer();
@@ -412,7 +408,7 @@ namespace SpiceEngine.Game
                     _renderManager.RenderLitFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
                     break;
-                case RenderModes.Full:  
+                case RenderModes.Full:
                     _renderManager.RenderFullFrame(_entityManager, _panelCamera.Camera, _textureManager);
                     break;
             }
@@ -446,6 +442,78 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void SetWireframeThickness(float thickness)
+        {
+            _renderManager.SetWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetWireframeColor(Color4 color)
+        {
+            _renderManager.SetWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetSelectedWireframeThickness(float thickness)
+        {
+            _renderManager.SetSelectedWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetSelectedWireframeColor(Color4 color)
+        {
+            _renderManager.SetSelectedWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetSelectedLightWireframeThickness(float thickness)
+        {
+            _renderManager.SetSelectedLightWireframeThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetSelectedLightWireframeColor(Color4 color)
+        {
+            _renderManager.SetSelectedLightWireframeColor(color);
+            Invalidate();
+        }
+
+        public void SetGridLineThickness(float thickness)
+        {
+            _renderManager.SetGridLineThickness(thickness);
+            Invalidate();
+        }
+
+        public void SetGridUnitColor(Color4 color)
+        {
+            _renderManager.SetGridUnitColor(color);
+            Invalidate();
+        }
+
+        public void SetGridAxisColor(Color4 color)
+        {
+            _renderManager.SetGridAxisColor(color);
+            Invalidate();
+        }
+
+        public void SetGrid5Color(Color4 color)
+        {
+            _renderManager.SetGrid5Color(color);
+            Invalidate();
+        }
+
+        public void SetGrid10Color(Color4 color)
+        {
+            _renderManager.SetGrid10Color(color);
+            Invalidate();
+        }
+
+        public void SetGridUnit(float unit)
+        {
+            _renderManager.SetGridUnit(unit);
+            Invalidate();
+        }
+
         public void SelectEntity(Point coordinates, bool isMultiSelect)
         {
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
@@ -469,7 +537,7 @@ namespace SpiceEngine.Game
                     {
                         SelectedEntities.Clear();
                     }
-                    
+
                     SelectedEntities.Add(entity);
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
                     RenderFrame();
@@ -507,14 +575,21 @@ namespace SpiceEngine.Game
 
         private void PollTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
+            _pollTimer.Stop();
+
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
             _inputManager.Update();
-            
+
             if (_invalidated)
             {
                 Invalidate();
                 _invalidated = false;
+            }
+
+            if (IsDragging)
+            {
+                _pollTimer.Start();
             }
         }
 
@@ -532,8 +607,36 @@ namespace SpiceEngine.Game
             _pollTimer.Stop();
         }
 
+        private void DuplicateSelectedItems()
+        {
+            // Create duplicates and overwrite SelectedEntities with them
+            var duplicateEntities = new List<IEntity>();
+
+            foreach (var entity in SelectedEntities)
+            {
+                var duplicateEntity = _entityManager.DuplicateEntity(entity);
+                // Need to duplicate colliders
+                // Need to duplicate scripts
+
+                EntityDuplicated?.Invoke(this, new DuplicatedEntityEventArgs(entity.ID, duplicateEntity.ID));
+                duplicateEntities.Add(duplicateEntity);
+            }
+
+            SelectedEntities = duplicateEntities;
+        }
+
+        public void Duplicate(int entityID, int duplicateEntityID)
+        {
+            Invoke(new Action(() => _renderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+        }
+
         private void HandleInput()
         {
+            if (_isDuplicating && !_inputManager.IsDown(new Input(Key.ShiftLeft)))
+            {
+                _isDuplicating = false;
+            }
+
             if (_inputManager.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionType = SelectionTypes.None;
@@ -551,6 +654,12 @@ namespace SpiceEngine.Game
             {
                 if (_inputManager.IsDown(new Input(MouseButton.Left)))
                 {
+                    if (!_isDuplicating && _inputManager.IsDown(new Input(Key.ShiftLeft)))
+                    {
+                        _isDuplicating = true;
+                        DuplicateSelectedItems();
+                    }
+
                     // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
                     foreach (var entity in SelectedEntities)
                     {

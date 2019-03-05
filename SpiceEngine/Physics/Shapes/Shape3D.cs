@@ -1,24 +1,18 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Collision;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SpiceEngine.Physics.Collisions;
 
 namespace SpiceEngine.Physics.Shapes
 {
     public abstract class Shape3D : IShape
     {
-        public abstract Vector3 Center { get; }
-        public abstract float Mass { get; set; }
-        public abstract float MomentOfInertia { get; }
+        public abstract IPartition ToPartition(Vector3 position);
+        //public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
+        //public abstract bool CollidesWith(Vector3 position, Vector3 point);
+        public abstract Vector3 GetFurthestPointInDirection(Vector3 direction);
+        public abstract Shape3D Duplicate();
+        public abstract float CalculateInertia(float mass);
 
-        public abstract ICollider ToCollider(Vector3 position);
-        public abstract Vector3 GetFurthestPoint(Vector3 position, Vector3 direction);
-        public abstract bool CollidesWith(Vector3 position, Vector3 point);
-
-        public static bool Collides(Vector3 positionA, Shape3D shapeA, Vector3 positionB, Shape3D shapeB)
+        /*public static bool Collides(Vector3 positionA, Shape3D shapeA, Vector3 positionB, Shape3D shapeB)
         {
             switch (shapeA)
             {
@@ -63,7 +57,35 @@ namespace SpiceEngine.Physics.Shapes
 
             return collides;
         }
-            
+
+        private static Collision3D GetCollision(Vector3 positionA, Box boxA, Vector3 positionB, Box boxB)
+        {
+            bool collides = positionA.X - boxA.Width / 2.0f < positionB.X + boxB.Width / 2.0f
+                && positionA.X + boxA.Width / 2.0f > positionB.X - boxB.Width / 2.0f
+                && positionA.Y - boxA.Height / 2.0f < positionB.Y + boxB.Height / 2.0f
+                && positionA.Y + boxA.Height / 2.0f > positionB.Y - boxB.Height / 2.0f
+                && positionA.Z - boxA.Depth / 2.0f < positionB.Z + boxB.Depth / 2.0f
+                && positionA.Z + boxA.Depth / 2.0f > positionB.Z - boxB.Depth / 2.0f;
+
+            if (collides)
+            {
+                var minXA = positionA.X - boxA.Width / 2.0f;
+                var maxXA = positionA.X + boxA.Width / 2.0f;
+                var minYA = positionA.Y - boxA.Height / 2.0f;
+                var maxYA = positionA.Y + boxA.Height / 2.0f;
+                var minZA = positionA.Z - boxA.Depth / 2.0f;
+                var maxZA = positionA.Z + boxA.Depth / 2.0f;
+
+                var minXB = positionB.X - boxB.Width / 2.0f;
+                var maxXB = positionB.X + boxB.Width / 2.0f;
+                var minYB = positionB.Y - boxB.Height / 2.0f;
+                var maxYB = positionB.Y + boxB.Height / 2.0f;
+                var minZB = positionB.Z - boxB.Depth / 2.0f;
+                var maxZB = positionB.Z + boxB.Depth / 2.0f;
+            }
+
+            return collides;
+        }
 
         private static bool Collides(Vector3 positionA, Sphere sphereA, Vector3 positionB, Sphere sphereB)
         {
@@ -93,6 +115,6 @@ namespace SpiceEngine.Physics.Shapes
 
             var distanceSquared = Math.Pow(positionB.X - closestX, 2) + Math.Pow(positionB.Y - closestY, 2) + Math.Pow(positionB.Z - closestZ, 2);
             return distanceSquared < Math.Pow(sphereB.Radius, 2);
-        }
+        }*/
     }
 }

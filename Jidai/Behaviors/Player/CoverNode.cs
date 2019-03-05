@@ -8,10 +8,11 @@ using SpiceEngine.Physics.Raycasting;
 using OpenTK;
 using SpiceEngine.Entities;
 using System.Runtime.Serialization;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Physics.Bodies;
 
 namespace Jidai.Behaviors.Player
 {
@@ -39,7 +40,7 @@ namespace Jidai.Behaviors.Player
                         context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - EnterCoverSpeed);
 
                         var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                        context.Translation = new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed;
+                        ((RigidBody3D)context.Body).ApplyVelocity(new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed);
                     }
 
                     if (context.GetVariable<float>("coverDistance") < 0.1f)
@@ -49,16 +50,17 @@ namespace Jidai.Behaviors.Player
 
                         if (translation != Vector3.Zero)
                         {
-                            var filteredColliders = context.ColliderBodies.Where(c => context.EntityProvider.GetEntity(c.EntityID).GetType() == typeof(Brush));
+                            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is Brush);
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
-                            var borderPoint = ((Shape3D)context.ActorShape).GetFurthestPoint(context.Actor.Position, translation);
+                            var shape = ((Body3D)context.Body).Shape;
+                            /*var borderPoint = shape.GetFurthestPoint(context.Position, translation);
                             
                             // TODO - Dynamically determine how far the raycast should be
                             var boundWidth = 2.0f;
 
                             var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                            if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), boundWidth), filteredColliders, context.EntityProvider, out RaycastHit hit))
+                            if (Raycast.TryRaycast(new Ray3(borderPoint, new Vector3(coverDirection.X, coverDirection.Y, 0.0f), boundWidth), filteredColliders, context.GetEntityProvider(), out RaycastHit hit))
                             {
                                 var vectorBetween = hit.Intersection - borderPoint;
 
@@ -66,7 +68,7 @@ namespace Jidai.Behaviors.Player
                                 translation.Y += vectorBetween.Y;
 
                                 context.Translation = translation;
-                            }
+                            }*/
                         }
                     }
                 }

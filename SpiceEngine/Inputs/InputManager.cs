@@ -1,7 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Input;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Outputs;
 using System;
 using System.Collections.Generic;

@@ -1,9 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using System;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Entities.Lights
 {

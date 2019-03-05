@@ -1,13 +1,8 @@
 ﻿using OpenTK.Graphics;
+using SpiceEngine.Rendering.Buffers;
+using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using OpenTK.Graphics.OpenGL;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
@@ -15,6 +10,7 @@ namespace SpiceEngine.Rendering.Meshes
     public class Mesh3D<T> : IMesh3D, IDisposable where T : IVertex3D
     {
         public IEnumerable<IVertex3D> Vertices => _vertices.Cast<IVertex3D>();
+        public IEnumerable<int> TriangleIndices => _triangleIndices;
 
         private List<T> _vertices;
         private List<int> _triangleIndices;
@@ -33,6 +29,8 @@ namespace SpiceEngine.Rendering.Meshes
             _vertices = vertices;
             _triangleIndices = triangleIndices;
         }
+
+        public IMesh3D Duplicate() => new Mesh3D<T>(_vertices.ToList(), _triangleIndices.ToList());
 
         public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
         public void ClearVertices() => _vertices.Clear();

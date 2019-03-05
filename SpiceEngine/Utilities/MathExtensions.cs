@@ -2,6 +2,11 @@
 {
     public static class MathExtensions
     {
+        public const float EPSILON = 1E-5f;
+
+        public static bool IsSignificant(this int value) => value >= EPSILON || value <= -EPSILON;
+        public static bool IsSignificant(this float value) => value >= EPSILON || value <= -EPSILON;
+
         public static bool IsBetween(this int value, int valueA, int valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
         public static bool IsBetween(this float value, float valueA, float valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
 
@@ -34,6 +39,42 @@
             else
             {
                 return value;
+            }
+        }
+
+        public static int Round(this int value, int min, int max)
+        {
+            if (value <= min)
+            {
+                return min;
+            }
+            else if (value >= max)
+            {
+                return max;
+            }
+            else
+            {
+                return max - value < value - min
+                    ? max
+                    : min;
+            }
+        }
+
+        public static float Round(this float value, float min, float max)
+        {
+            if (value <= min)
+            {
+                return min;
+            }
+            else if (value >= max)
+            {
+                return max;
+            }
+            else
+            {
+                return max - value < value - min
+                    ? max
+                    : min;
             }
         }
     }

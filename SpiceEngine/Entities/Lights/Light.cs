@@ -1,8 +1,6 @@
 ﻿using OpenTK;
-using System;
-using System.Runtime.Serialization;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Shaders;
+using System;
 
 namespace SpiceEngine.Entities.Lights
 {

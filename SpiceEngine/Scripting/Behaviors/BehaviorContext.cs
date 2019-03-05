@@ -1,45 +1,50 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
-using SpiceEngine.Physics.Collision;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Physics;
-using SpiceEngine.Entities.Actors;
+using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Physics.Collisions;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Scripting.StimResponse;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Scripting.Behaviors
 {
     public class BehaviorContext
     {
-        /// <summary>
-        /// The actor that this behavior belongs to
-        /// </summary>
         public Actor Actor { get; internal set; }
 
-        public IEntityProvider EntityProvider { get; internal set; }
-        public IStimulusProvider StimulusProvider { get; internal set; }
+        private IEntityProvider _entityProvider;
+        private ICollisionProvider _collisionProvider;
+        private IStimulusProvider _stimulusProvider;
 
-        public Bounds ActorBounds { get; internal set; }
-        public IShape ActorShape { get; internal set; }
+        public Vector3 Position
+        {
+            get => ((Body3D)_collisionProvider.GetBody(Actor.ID)).Position;
+            set => ((Body3D)_collisionProvider.GetBody(Actor.ID)).Position = value;
+        }
 
-        /// <summary>
-        /// The set of colliders within range of this actor
-        /// </summary>
-        public IEnumerable<Bounds> ColliderBounds { get; internal set; }
-        public IEnumerable<PhysicsBody> ColliderBodies { get; internal set; }
+        public IBody Body => _collisionProvider.GetBody(Actor.ID);
+
+        public IEntityProvider GetEntityProvider() => _entityProvider;
+        public IEntity GetEntity(int id) => _entityProvider.GetEntity(id);
+        public Actor GetActor(string name) => _entityProvider.GetActor(name);
+
+        public bool HasStimuli(int entityID, Stimulus stimulus) => _stimulusProvider.GetStimuli(entityID).Contains(stimulus);
+
+        public IBody GetBody(int entityID) => _collisionProvider.GetBody(entityID);
+        public IEnumerable<IBody> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
+        public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
 
         public Camera Camera { get; internal set; }
         public InputManager InputManager { get; internal set; }
         public InputBinding InputMapping { get; internal set; }
 
         public Vector3 EulerRotation { get; set; }
-        public Vector3 Translation { get; set; }
+        //public Vector3 Translation { get; set; }
 
         public Dictionary<string, object> PropertiesByName { get; protected set; } = new Dictionary<string, object>();
         public Dictionary<string, object> VariablesByName { get; protected set; } = new Dictionary<string, object>();
@@ -63,5 +68,9 @@ namespace SpiceEngine.Scripting.Behaviors
                 VariablesByName.Remove(name);
             }
         }
+
+        public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public void SetCollisionProvider(ICollisionProvider collisionProvider) => _collisionProvider = collisionProvider;
+        public void SetStimulusProvider(IStimulusProvider stimulusProvider) => _stimulusProvider = stimulusProvider;
     }
 }

@@ -1,8 +1,8 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Shaders;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using SpiceEngine.Rendering.Shaders;
 
 namespace SpiceEngine.Rendering.Materials
 {

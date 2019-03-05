@@ -12,7 +12,7 @@ namespace Jidai.GameObjects
         public Enemy()
         {
             Name = NAME;
-            Position = new Vector3(5.0f, 5.0f, -1.5f);
+            Position = new Vector3(5.0f, 5.0f, 10.5f);
             Offset = new Vector3();
             Scale = 0.04f * Vector3.One;
             Rotation = Vector3.Zero;

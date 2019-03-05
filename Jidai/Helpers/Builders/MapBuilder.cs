@@ -68,6 +68,11 @@ namespace Jidai.Helpers.Builders
                 Height = 20.0f
             });
 
+            var physicsVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 20.0f);
+            physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
+            physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
+            map.Volumes.Add(physicsVolume);
+
             map.SkyboxTextureFilePaths = new List<string>
             {
                 FilePathHelper.SPACE_01_TEXTURE_PATH,

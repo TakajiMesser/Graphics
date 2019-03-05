@@ -1,16 +1,14 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using System.Linq;
-using SpiceEngine.Entities;
+using OpenTK.Graphics;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Materials;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
-using OpenTK.Graphics;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Entities.Brushes;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Maps
 {
@@ -19,7 +17,7 @@ namespace SpiceEngine.Maps
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
-        public bool HasCollision { get; set; }
+        public bool IsPhysical { get; set; }
         public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
 
         public Mesh3D<Vertex3D> ToMesh()

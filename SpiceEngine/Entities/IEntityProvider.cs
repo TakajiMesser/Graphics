@@ -1,8 +1,6 @@
-﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Actors;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities
 {
@@ -13,6 +11,8 @@ namespace SpiceEngine.Entities
         IEnumerable<int> EntityPhysicsIDs { get; }
 
         IEntity GetEntity(int id);
+        Actor GetActor(string name);
+        EntityTypes GetEntityType(int id);
         List<Light> Lights { get; }
         List<Actor> Actors { get; }
     }

@@ -1,6 +1,5 @@
-﻿using OpenTK;
+﻿using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
-using SpiceEngine.Scripting.StimResponse;
 
 namespace SpiceEngine.Entities
 {

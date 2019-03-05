@@ -1,12 +1,7 @@
 ﻿using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Rendering.Meshes;
-using System.Linq;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Models
 {

@@ -9,6 +9,7 @@ using OpenTK;
 using SpiceEngine.Entities;
 using System.Runtime.Serialization;
 using SpiceEngine.Helpers;
+using SpiceEngine.Physics.Bodies;
 
 namespace Jidai.Behaviors.Player
 {
@@ -65,7 +66,7 @@ namespace Jidai.Behaviors.Player
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }
 
-            context.Translation = translation;
+            ((RigidBody3D)context.Body).ApplyVelocity(translation);
             return BehaviorStatus.Success;
         }
 
