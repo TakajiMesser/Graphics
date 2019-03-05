@@ -110,6 +110,7 @@
     <Compile Include="Entities\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
+    <Compile Include="Entities\LayerManager.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
     <Compile Include="Entities\Volumes\PhysicsVolume.cs" />
     <Compile Include="Entities\Volumes\TriggerVolume.cs" />

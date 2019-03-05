@@ -20,6 +20,8 @@ namespace SpiceEngine.Entities
 
     public class EntityManager : IEntityProvider
     {
+        private LayerManager _layerManager = new LayerManager();
+        
         private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
         private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
         private int _nextAvailableID = 1;
@@ -28,6 +30,10 @@ namespace SpiceEngine.Entities
         public List<Brush> Brushes { get; } = new List<Brush>();
         public List<Volume> Volumes { get; } = new List<Volume>();
         public List<Light> Lights { get; } = new List<Light>();
+
+        public IEnumerable<int> EntityRenderIDs => _layerManager.EntityRenderIDs;
+        public IEnumerable<int> EntityScriptIDs => _layerManager.EntityScriptIDs;
+        public IEnumerable<int> EntityPhysicsIDs => _layerManager.EntityPhysicsIDs;
 
         public EntityManager() { }
 
