@@ -284,7 +284,7 @@ namespace SpiceEngine.Rendering.Processing
             batchManager.DrawActors(_geometryProgram, textureManager);
         }
 
-        public void TransparentGeometryPass(Camera camera, BatchManager batchManager)
+        public void TransparentGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
             _geometryProgram.Use();
 
@@ -297,7 +297,7 @@ namespace SpiceEngine.Rendering.Processing
 
             _geometryProgram.UnbindTextures();
 
-            batchManager.DrawVolumes(_geometryProgram);
+            batchManager.DrawTransparencies(_geometryProgram, textureManager);
 
             //GL.Disable(EnableCap.Blend);
         }
@@ -310,6 +310,18 @@ namespace SpiceEngine.Rendering.Processing
             _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
 
             batchManager.DrawJoints(_jointGeometryProgram, textureManager);
+
+            GL.Enable(EnableCap.CullFace);
+        }
+
+        public void TransparentJointGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
+        {
+            _jointGeometryProgram.Use();
+
+            camera.SetUniforms(_jointGeometryProgram);
+            _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
+
+            batchManager.DrawTransparentJoints(_jointGeometryProgram, textureManager);
 
             GL.Enable(EnableCap.CullFace);
         }

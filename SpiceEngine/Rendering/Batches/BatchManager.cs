@@ -17,6 +17,11 @@ namespace SpiceEngine.Rendering.Batches
         private HashSet<int> _actorIDs = new HashSet<int>();
         private HashSet<int> _jointIDs = new HashSet<int>();
 
+        private HashSet<int> _transparentBrushIDs = new HashSet<int>();
+        private HashSet<int> _transparentVolumeIDs = new HashSet<int>();
+        private HashSet<int> _transparentActorIDs = new HashSet<int>();
+        private HashSet<int> _transparentJointIDs = new HashSet<int>();
+
         private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
 
         public bool IsLoaded { get; private set; } = false;
@@ -90,46 +95,68 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new MeshBatch(entityID, mesh);
 
-            _brushIDs.Add(entityID);
-            _batchesByEntityID.Add(entityID, batch);
-
-            if (IsLoaded)
+            if (mesh.Alpha < 1.0f)
             {
-                batch.Load();
+                _transparentBrushIDs.Add(entityID);
             }
+            else
+            {
+                _brushIDs.Add(entityID);
+            }
+
+            AddBatch(entityID, batch);
         }
 
         public void AddVolume(int entityID, IMesh3D mesh)
         {
             var batch = new MeshBatch(entityID, mesh);
 
-            _volumeIDs.Add(entityID);
-            _batchesByEntityID.Add(entityID, batch);
-
-            if (IsLoaded)
+            if (mesh.Alpha < 1.0f)
             {
-                batch.Load();
+                _transparentVolumeIDs.Add(entityID);
             }
+            else
+            {
+                _volumeIDs.Add(entityID);
+            }
+
+            AddBatch(entityID, batch);
         }
 
         public void AddActor(int entityID, IEnumerable<IMesh3D> meshes)
         {
             var batch = new ModelBatch(entityID, meshes);
 
-            _actorIDs.Add(entityID);
-            _batchesByEntityID.Add(entityID, batch);
-
-            if (IsLoaded)
+            if (meshes.Any(m => m.Alpha < 1.0f))
             {
-                batch.Load();
+                _transparentActorIDs.Add(entityID);
             }
+            else
+            {
+                _actorIDs.Add(entityID);
+            }
+
+            AddBatch(entityID, batch);
         }
 
         public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes)
         {
             var batch = new ModelBatch(entityID, meshes);
 
-            _jointIDs.Add(entityID);
+            if (meshes.Any(m => m.Alpha < 1.0f))
+            {
+                _transparentJointIDs.Add(entityID);
+            }
+            else
+            {
+                _jointIDs.Add(entityID);
+            }
+
+            AddBatch(entityID, batch);
+        }
+
+        private void AddBatch(int entityID, IBatch batch)
+        {
             _batchesByEntityID.Add(entityID, batch);
 
             if (IsLoaded)
@@ -239,6 +266,28 @@ namespace SpiceEngine.Rendering.Batches
                     batchAction(id);
                     _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
                 }
+            }
+        }
+
+        public void DrawTransparencies(ShaderProgram shaderProgram, TextureManager textureManager = null)
+        {
+            // TODO - Sort transparent meshes from furthest from camera to closest
+            var transparencyIDs = _transparentBrushIDs.Concat(_transparentActorIDs).Concat(_transparentVolumeIDs);
+
+            foreach (var id in transparencyIDs)
+            {
+                _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
+            }
+        }
+
+        public void DrawTransparentJoints(ShaderProgram shaderProgram, TextureManager textureManager = null)
+        {
+            // TODO - Sort transparent meshes from furthest from camera to closest
+            var transparencyIDs = _transparentJointIDs;
+
+            foreach (var id in transparencyIDs)
+            {
+                _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
             }
         }
     }

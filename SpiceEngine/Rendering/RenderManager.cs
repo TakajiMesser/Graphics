@@ -365,7 +365,8 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(camera, BatchManager, textureManager);
+            _deferredRenderer.TransparentJointGeometryPass(camera, BatchManager, textureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);

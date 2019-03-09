@@ -11,6 +11,21 @@ namespace SpiceEngine.Rendering.Meshes
     {
         public IEnumerable<IVertex3D> Vertices => _vertices.Cast<IVertex3D>();
         public IEnumerable<int> TriangleIndices => _triangleIndices;
+        public float Alpha
+        {
+            get => _alpha;
+            set
+            {
+                _alpha = value;
+
+                for (var i = 0; i < _vertices.Count; i++)
+                {
+                    var vertex = _vertices[i];
+
+                    _vertices[i] = vertex;
+                }
+            }
+        }
 
         private List<T> _vertices;
         private List<int> _triangleIndices;
@@ -18,6 +33,8 @@ namespace SpiceEngine.Rendering.Meshes
         private VertexBuffer<T> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
         private VertexArray<T> _vertexArray;
+
+        private float _alpha = 1.0f;
 
         public Mesh3D(List<T> vertices, List<int> triangleIndices)
         {
