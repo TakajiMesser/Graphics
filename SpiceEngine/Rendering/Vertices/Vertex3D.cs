@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vertex3D : IVertex3D
+    public struct Vertex3D : IVertex3D, IColorVertex
     {
         public Vector3 Position { get; set; }
         public Vector3 Normal { get; set; }

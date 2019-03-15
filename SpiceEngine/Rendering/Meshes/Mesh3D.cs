@@ -16,16 +16,26 @@ namespace SpiceEngine.Rendering.Meshes
             get => _alpha;
             set
             {
-                _alpha = value;
-
-                for (var i = 0; i < _vertices.Count; i++)
+                if (_alpha != value)
                 {
-                    var vertex = _vertices[i];
+                    for (var i = 0; i < _vertices.Count; i++)
+                    {
+                        var vertex = _vertices[i];
 
-                    _vertices[i] = vertex;
+                        if (vertex is IColorVertex colorVertex)
+                        {
+                            _vertices[i] = colorVertex.Colored(colorVertex.Color.Xyz, value); ;
+                        }
+                    }
+
+                    var oldValue = _alpha;
+                    _alpha = value;
+                    AlphaChanged?.Invoke(this, new AlphaEventArgs(oldValue, value));
                 }
             }
         }
+
+        public event EventHandler<AlphaEventArgs> AlphaChanged;
 
         private List<T> _vertices;
         private List<int> _triangleIndices;

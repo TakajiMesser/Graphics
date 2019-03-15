@@ -95,6 +95,23 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new MeshBatch(entityID, mesh);
 
+            if (mesh is Mesh3D mesh3D)
+            {
+                mesh3D.AlphaChanged += (s, args) =>
+                {
+                    if (!args.WasTransparent && args.IsTransparent)
+                    {
+                        _brushIDs.Remove(entityID);
+                        _transparentBrushIDs.Add(entityID);
+                    }
+                    else if (args.WasTransparent && !args.IsTransparent)
+                    {
+                        _transparentBrushIDs.Remove(entityID);
+                        _brushIDs.Add(entityID);
+                    }
+                };
+            }
+
             if (mesh.Alpha < 1.0f)
             {
                 _transparentBrushIDs.Add(entityID);
@@ -110,6 +127,23 @@ namespace SpiceEngine.Rendering.Batches
         public void AddVolume(int entityID, IMesh3D mesh)
         {
             var batch = new MeshBatch(entityID, mesh);
+
+            if (mesh is Mesh3D mesh3D)
+            {
+                mesh3D.AlphaChanged += (s, args) =>
+                {
+                    if (!args.WasTransparent && args.IsTransparent)
+                    {
+                        _volumeIDs.Remove(entityID);
+                        _transparentVolumeIDs.Add(entityID);
+                    }
+                    else if (args.WasTransparent && !args.IsTransparent)
+                    {
+                        _transparentVolumeIDs.Remove(entityID);
+                        _volumeIDs.Add(entityID);
+                    }
+                };
+            }
 
             if (mesh.Alpha < 1.0f)
             {
@@ -127,6 +161,26 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new ModelBatch(entityID, meshes);
 
+            foreach (var mesh in meshes)
+            {
+                if (mesh is Mesh3D mesh3D)
+                {
+                    mesh3D.AlphaChanged += (s, args) =>
+                    {
+                        if (!args.WasTransparent && args.IsTransparent)
+                        {
+                            _actorIDs.Remove(entityID);
+                            _transparentActorIDs.Add(entityID);
+                        }
+                        else if (args.WasTransparent && !args.IsTransparent)
+                        {
+                            _transparentActorIDs.Remove(entityID);
+                            _actorIDs.Add(entityID);
+                        }
+                    };
+                }
+            }
+
             if (meshes.Any(m => m.Alpha < 1.0f))
             {
                 _transparentActorIDs.Add(entityID);
@@ -142,6 +196,26 @@ namespace SpiceEngine.Rendering.Batches
         public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes)
         {
             var batch = new ModelBatch(entityID, meshes);
+
+            foreach (var mesh in meshes)
+            {
+                if (mesh is Mesh3D mesh3D)
+                {
+                    mesh3D.AlphaChanged += (s, args) =>
+                    {
+                        if (!args.WasTransparent && args.IsTransparent)
+                        {
+                            _jointIDs.Remove(entityID);
+                            _transparentJointIDs.Add(entityID);
+                        }
+                        else if (args.WasTransparent && !args.IsTransparent)
+                        {
+                            _transparentJointIDs.Remove(entityID);
+                            _jointIDs.Add(entityID);
+                        }
+                    };
+                }
+            }
 
             if (meshes.Any(m => m.Alpha < 1.0f))
             {

@@ -319,14 +319,15 @@ namespace SpiceEngine.Rendering
             _skyboxRenderer.Render(camera);
             _billboardRenderer.RenderLights(camera, entityProvider.Lights);
 
-            _deferredRenderer.BindForTransparentWriting();
+            _deferredRenderer.BindForLitTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(camera, BatchManager, textureManager);
+            _deferredRenderer.TransparentJointGeometryPass(camera, BatchManager, textureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -389,6 +390,19 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForLitWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
             _skyboxRenderer.Render(camera);
+
+            _deferredRenderer.BindForLitTransparentWriting();
+
+            GL.Enable(EnableCap.Blend);
+            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
+            GL.Disable(EnableCap.CullFace);
+
+            _deferredRenderer.TransparentGeometryPass(camera, BatchManager, textureManager);
+            _deferredRenderer.TransparentJointGeometryPass(camera, BatchManager, textureManager);
+
+            GL.Enable(EnableCap.CullFace);
+            GL.Disable(EnableCap.Blend);
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
