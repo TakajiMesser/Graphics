@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
-using SpiceEngine.Physics.Collision;
+using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 
@@ -26,6 +26,8 @@ namespace SpiceEngine.Entities
         private Dictionary<string, LayerState> _scriptLayerStatesByName = new Dictionary<string, LayerState>();
         private Dictionary<string, LayerState> _physicsLayerStatesByName = new Dictionary<string, LayerState>();
 
+        public EntityLayer RootLayer { get; } = new EntityLayer("Root");
+
         public List<string> RenderLayerNames { get; } = new List<string>();
         public List<string> ScriptLayerNames { get; } = new List<string>();
         public List<string> PhysicsLayerNames { get; } = new List<string>();
@@ -33,6 +35,12 @@ namespace SpiceEngine.Entities
         public IEnumerable<int> EntityRenderIDs => GetEntityIDs(RenderLayerNames, _renderLayerStatesByName);
         public IEnumerable<int> EntityScriptIDs => GetEntityIDs(ScriptLayerNames, _scriptLayerStatesByName);
         public IEnumerable<int> EntityPhysicsIDs => GetEntityIDs(PhysicsLayerNames, _physicsLayerStatesByName);
+
+        public LayerManager()
+        {
+            RootLayer = new EntityLayer("Root");
+            AddEntityLayer(RootLayer);
+        }
 
         public void AddEntityLayer(EntityLayer layer)
         {

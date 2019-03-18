@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
@@ -184,7 +185,7 @@ namespace SpiceEngine.Rendering.Processing
             _translateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Vector4()));
+            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Color4()));
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -204,7 +205,7 @@ namespace SpiceEngine.Rendering.Processing
             _rotateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Vector4()));
+            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Color4()));
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -224,7 +225,7 @@ namespace SpiceEngine.Rendering.Processing
             _scaleProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Vector4()));
+            _vertexBuffer.AddVertex(new ColorVertex3D(position, new Color4()));
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -236,12 +237,12 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public static Vector4 GetColorFromID(int id) => new Vector4()
+        public static Color4 GetColorFromID(int id) => new Color4()
         {
-            X = ((id & 0x000000FF) >> 0) / 255.0f,
-            Y = ((id & 0x0000FF00) >> 8) / 255.0f,
-            Z = ((id & 0x00FF0000) >> 16) / 255.0f,
-            W = 1.0f
+            R = ((id & 0x000000FF) >> 0) / 255.0f,
+            G = ((id & 0x0000FF00) >> 8) / 255.0f,
+            B = ((id & 0x00FF0000) >> 16) / 255.0f,
+            A = 1.0f
         };
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)

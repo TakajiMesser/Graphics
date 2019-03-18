@@ -1,4 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Physics.Collisions;
+using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using System;
@@ -59,6 +63,12 @@ namespace SpiceEngine.Helpers
             var boxA = (Box)bodyA.Shape;
             var boxB = (Box)bodyB.Shape;
 
+            int a = 3;
+            if (bodyA.EntityID == 2)
+            {
+                a = 4;
+            }
+
             return bodyA.Position.X - boxA.Width / 2.0f < bodyB.Position.X + boxB.Width / 2.0f
                 && bodyA.Position.X + boxA.Width / 2.0f > bodyB.Position.X - boxB.Width / 2.0f
                 && bodyA.Position.Y - boxA.Height / 2.0f < bodyB.Position.Y + boxB.Height / 2.0f
@@ -76,9 +86,9 @@ namespace SpiceEngine.Helpers
 
             var contactPoint = new Vector3()
             {
-                X = MathHelper.Clamp(bodyA.Position.X, bodyB.Position.X - box.Width / 2.0f, bodyB.Position.X + box.Width / 2.0f),
-                Y = MathHelper.Clamp(bodyA.Position.Y, bodyB.Position.Y - box.Height / 2.0f, bodyB.Position.Y + box.Height / 2.0f),
-                Z = MathHelper.Clamp(bodyA.Position.Z, bodyB.Position.Z - box.Depth / 2.0f, bodyB.Position.Z + box.Depth / 2.0f)
+                X = MathHelper.Clamp(bodyA.Position.X, bodyB.Position.X - boxB.Width / 2.0f, bodyB.Position.X + boxB.Width / 2.0f),
+                Y = MathHelper.Clamp(bodyA.Position.Y, bodyB.Position.Y - boxB.Height / 2.0f, bodyB.Position.Y + boxB.Height / 2.0f),
+                Z = MathHelper.Clamp(bodyA.Position.Z, bodyB.Position.Z - boxB.Depth / 2.0f, bodyB.Position.Z + boxB.Depth / 2.0f)
             };
 
             var offset = bodyA.Position - contactPoint;
@@ -86,8 +96,9 @@ namespace SpiceEngine.Helpers
             if (offset.IsSignificant())
             {
                 var offsetLengthSquared = offset.LengthSquared;
+                var offsetLengthASquared = boxA.GetFurthestPointInDirection(-offset.Normalized()).LengthSquared;
 
-                if (offsetLengthSquared < (boxA.GetFurthestPointInDirection(-offset.Normalized()) - bodyA.Position).LengthSquared)
+                if (offsetLengthSquared < offsetLengthASquared)
                 {
                     // BoxA center is outside BoxB
                     var offsetLength = (float)Math.Sqrt(offsetLengthSquared);
@@ -95,13 +106,15 @@ namespace SpiceEngine.Helpers
                     collision.HasCollision = true;
                     collision.ContactNormal = offset / offsetLength;
                     collision.ContactPoint = contactPoint;
-                    collision.PenetrationDepth = sphere.Radius + Vector3.Dot(-offset, collision.ContactNormal);//offsetLength;
+                    collision.PenetrationDepth = (float)Math.Sqrt(offsetLengthASquared) + Vector3.Dot(-offset, collision.ContactNormal);
+                    // TODO - Fix this
+                    //collision.PenetrationDepth = sphere.Radius + Vector3.Dot(-offset, collision.ContactNormal);//offsetLength;
                 }
             }
             else
             {
                 // BoxA center is inside BoxB
-                var penetration = bodyA.Position - bodyB.Position;
+                //var penetration = bodyA.Position - bodyB.Position;
 
                 // Vector V = Position - body.Position;
                 // X = body.Position.X + penetration.X * t
@@ -109,7 +122,7 @@ namespace SpiceEngine.Helpers
                 var v = bodyA.Position - bodyB.Position;
 
                 // Check against the X-face
-                var x = bodyA.Position.X >= bodyB.Position.X ? bodyB.Position.X + box.Width / 2.0f : bodyB.Position.X - box.Width / 2.0f;
+                var x = bodyA.Position.X >= bodyB.Position.X ? bodyB.Position.X + boxB.Width / 2.0f : bodyB.Position.X - boxB.Width / 2.0f;
                 var tx = (x - bodyB.Position.X) / v.X;
                 var xPenetration = new Vector3()
                 {
@@ -119,8 +132,8 @@ namespace SpiceEngine.Helpers
                 };
 
                 // Check against the Y-face
-                var y = bodyA.Position.Y >= bodyB.Position.Y ? bodyB.Position.Y + box.Height / 2.0f : bodyB.Position.Y - box.Height / 2.0f;
-                var ty = (y - body.Position.Y) / v.Y;
+                var y = bodyA.Position.Y >= bodyB.Position.Y ? bodyB.Position.Y + boxB.Height / 2.0f : bodyB.Position.Y - boxB.Height / 2.0f;
+                var ty = (y - bodyB.Position.Y) / v.Y;
                 var yPenetration = new Vector3()
                 {
                     X = bodyB.Position.X + v.X * ty,
@@ -129,7 +142,7 @@ namespace SpiceEngine.Helpers
                 };
 
                 // Check against the Z-face
-                var z = bodyA.Position.Z >= bodyB.Position.Z ? bodyB.Position.Z + box.Depth / 2.0f : bodyB.Position.Z - box.Depth / 2.0f;
+                var z = bodyA.Position.Z >= bodyB.Position.Z ? bodyB.Position.Z + boxB.Depth / 2.0f : bodyB.Position.Z - boxB.Depth / 2.0f;
                 var tz = (z - bodyB.Position.Z) / v.Z;
                 var zPenetration = new Vector3()
                 {
@@ -146,12 +159,12 @@ namespace SpiceEngine.Helpers
 
                 if (xDiff.LengthSquared < yDiff.LengthSquared && xDiff.LengthSquared < zDiff.LengthSquared)
                 {
-                    collision.ContactPoints = xPenetration;
+                    collision.ContactPoint = xPenetration;
                     penetration = xDiff - bodyA.Position;
                 }
                 else if (yDiff.LengthSquared < zDiff.LengthSquared)
                 {
-                    collision.ContactPoints = yPenetration;
+                    collision.ContactPoint = yPenetration;
                     penetration = yDiff - bodyA.Position;
                 }
                 else
@@ -255,7 +268,7 @@ namespace SpiceEngine.Helpers
             {
                 // The sphere center is inside the box
                 collision.HasCollision = true;
-                var penetration = bodyA.Position - bodyB.Position;
+                //var penetration = bodyA.Position - bodyB.Position;
 
                 // Vector V = Position - bodyB.Position;
                 // X = bodyB.Position.X + penetration.X * t
@@ -365,7 +378,7 @@ namespace SpiceEngine.Helpers
 
         public static Collision3D GetSpherePolyhedronCollision(Body3D bodyA, Body3D bodyB)
         {
-            var collision = new Collision3D(bodyA, body);
+            var collision = new Collision3D(bodyA, bodyB);
 
             var sphere = (Sphere)bodyA.Shape;
             var polygon = (Polyhedron)bodyB.Shape;
@@ -380,7 +393,7 @@ namespace SpiceEngine.Helpers
 
         public static Collision3D GetBoxPolyhedronCollision(Body3D bodyA, Body3D bodyB)
         {
-            var collision = new Collision3D(bodyA, body);
+            var collision = new Collision3D(bodyA, bodyB);
 
             var box = (Box)bodyA.Shape;
             var polygon = (Polyhedron)bodyB.Shape;

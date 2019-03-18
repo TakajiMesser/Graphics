@@ -133,7 +133,7 @@ namespace SpiceEngine.Physics.Bodies
                 {
                     return CollisionHelper.GetBoxPolyhedronCollision(this, body);
                 }
-                else if (CollisionHelper.GetBoxPolyhedronCollision(this, body))
+                else if (CollisionHelper.HasBoxPolyhedronCollision(this, body))
                 {
                     return new Collision3D(this, body)
                     {
@@ -147,7 +147,7 @@ namespace SpiceEngine.Physics.Bodies
                 {
                     return CollisionHelper.GetBoxPolyhedronCollision(body, this);
                 }
-                else if (CollisionHelper.GetBoxPolyhedronCollision(body, this))
+                else if (CollisionHelper.HasBoxPolyhedronCollision(body, this))
                 {
                     return new Collision3D(body, this)
                     {
@@ -198,7 +198,8 @@ namespace SpiceEngine.Physics.Bodies
                 return CollisionHelper.HasBoxPolyhedronCollision(body, this);
             }
 
-            return new Collision3D(this, body);
+            // TODO - Maybe throw NotImplementedException?
+            return false;
         }
     }
 }

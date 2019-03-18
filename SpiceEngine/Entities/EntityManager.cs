@@ -87,6 +87,8 @@ namespace SpiceEngine.Entities
                 entity.ID = id;
             }
 
+            _layerManager.RootLayer.Add(entity.ID);
+
             switch (entity)
             {
                 case Actor actor:

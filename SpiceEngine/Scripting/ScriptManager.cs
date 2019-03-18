@@ -1,7 +1,6 @@
-﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Game;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
 using SpiceEngine.Scripting.Behaviors;
@@ -17,10 +16,14 @@ namespace SpiceEngine.Scripting
     /// Each command can be something this object needs to communicate to another object, or performed by itself
     /// Each command either needs to be associated with 
     /// </summary>
-    public class ScriptManager : IStimulusProvider
+    public class ScriptManager : UpdateManager, IStimulusProvider
     {
+        private bool _isLoaded = false;
+
+        private Camera _camera;
         private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
+        private IInputProvider _inputProvider;
 
         private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
@@ -30,6 +33,40 @@ namespace SpiceEngine.Scripting
         {
             _entityProvider = entityProvider;
             _collisionProvider = collisionProvider;
+        }
+
+        public void SetCamera(Camera camera)
+        {
+            _camera = camera;
+
+            if (_isLoaded)
+            {
+                foreach (var actor in _entityProvider.Actors)
+                {
+                    if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                    {
+                        var behavior = _behaviorsByEntityID[actor.ID];
+                        behavior.Context.Camera = _camera;
+                    }
+                }
+            }
+        }
+
+        public void SetInputProvider(IInputProvider inputProvider)
+        {
+            _inputProvider = inputProvider;
+
+            if (_isLoaded)
+            {
+                foreach (var actor in _entityProvider.Actors)
+                {
+                    if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                    {
+                        var behavior = _behaviorsByEntityID[actor.ID];
+                        behavior.Context.SetInputProvider(inputProvider);
+                    }
+                }
+            }
         }
 
         public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
@@ -64,11 +101,12 @@ namespace SpiceEngine.Scripting
                 if (_behaviorsByEntityID.ContainsKey(actor.ID))
                 {
                     var behavior = _behaviorsByEntityID[actor.ID];
-                    behavior.Context.Actor = actor;
 
-                    //Behaviors.Context.Rotation = Rotation;
+                    behavior.Context.Actor = actor;
+                    behavior.Context.Camera = _camera;
                     behavior.Context.SetEntityProvider(_entityProvider);
                     behavior.Context.SetCollisionProvider(_collisionProvider);
+                    behavior.Context.SetInputProvider(_inputProvider);
                     behavior.Context.SetStimulusProvider(this);
 
                     /*foreach (var property in Properties)
@@ -80,52 +118,11 @@ namespace SpiceEngine.Scripting
                     }*/
                 }
             }
+
+            _isLoaded = true;
         }
 
-        /*public virtual void OnHandleInput(InputManager inputManager, Camera camera)
-        {
-            if (Behaviors != null)
-            {
-                Behaviors.Context.InputManager = inputManager;
-                Behaviors.Context.InputMapping = InputMapping;
-                Behaviors.Context.Camera = camera;
-            }
-        }*/
-
-        public InputBinding InputMapping { get; set; } = new InputBinding();
-
-        public void HandleInput(InputManager inputManager, Camera camera)
-        {
-            foreach (var actor in _entityProvider.Actors)
-            {
-                if (_behaviorsByEntityID.ContainsKey(actor.ID))
-                {
-                    var behavior = _behaviorsByEntityID[actor.ID];
-
-                    behavior.Context.InputManager = inputManager;
-                    behavior.Context.InputMapping = InputMapping;
-                    behavior.Context.Camera = camera;
-                }
-            }
-        }
-
-        /*public void UpdateCollisions(IEnumerable<EntityCollision> entityCollisions)
-        {
-            foreach (var entityCollision in entityCollisions)
-            {
-                if (_behaviorsByEntityID.ContainsKey(entityCollision.EntityID))
-                {
-                    var behavior = _behaviorsByEntityID[entityCollision.EntityID];
-
-                    behavior.Context.ActorShape = entityCollision.Shape;
-                    //behavior.Context.ActorBounds = entityCollision.Bounds;
-                    //behavior.Context.ColliderBounds = entityCollision.Colliders;
-                    behavior.Context.ColliderBodies = entityCollision.Bodies;
-                }
-            }
-        }*/
-
-        public void Update()
+        protected override void Update()
         {
             foreach (var actor in _entityProvider.Actors)
             {
@@ -139,11 +136,6 @@ namespace SpiceEngine.Scripting
                     }
 
                     behavior.Tick();
-
-                    if (actor is AnimatedActor animatedActor)
-                    {
-                        animatedActor.UpdateAnimation();
-                    }
                 }
             }
         }

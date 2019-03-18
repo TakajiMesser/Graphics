@@ -1,15 +1,19 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Game;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Constraints;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Physics
 {
-    public class PhysicsManager : ICollisionProvider
+    public class PhysicsManager : UpdateManager, ICollisionProvider
     {
         private IEntityProvider _entityProvider;
 
@@ -25,8 +29,6 @@ namespace SpiceEngine.Physics
         private Dictionary<int, IBody> _awakeBodyByEntityID = new Dictionary<int, IBody>();
 
         private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
-
-        public int TickRate { get; set; } = 1;
 
         public PhysicsManager(IEntityProvider entityProvider, Quad worldBoundaries)
         {
@@ -68,7 +70,7 @@ namespace SpiceEngine.Physics
                     AddActor(actor, shape, body.IsPhysical);
                     break;
                 case Brush brush:
-                    AddBrush(brush, shape);
+                    AddBrush(brush, shape, body.IsPhysical);
                     break;
                 case Volume volume:
                     AddVolume(volume, shape);
@@ -86,7 +88,7 @@ namespace SpiceEngine.Physics
                 IsPhysical = isPhysical
             };
             body.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
-            body.Updated += (s, args) => entity.Position = args.Body.Position;
+            body.Updated += (s, args) => actor.Position = args.Body.Position;
             _bodyByEntityID.Add(actor.ID, body);
 
             if (body.State == BodyStates.Awake)
@@ -95,12 +97,15 @@ namespace SpiceEngine.Physics
             }
         }
 
-        public void AddBrush(Brush brush, Shape3D shape)
+        public void AddBrush(Brush brush, Shape3D shape, bool isPhysical)
         {
             var partition = shape.ToPartition(brush.Position);
             _brushTree.Insert(new Bounds(brush.ID, partition));
 
-            var body = new StaticBody3D(brush, shape);
+            var body = new StaticBody3D(brush, shape)
+            {
+                IsPhysical = isPhysical
+            };
             _bodyByEntityID.Add(brush.ID, body);
         }
 
@@ -128,7 +133,7 @@ namespace SpiceEngine.Physics
             return null;
         }
 
-        public void Update()
+        protected override void Update()
         {
             _collisionManager.Clear();
 
@@ -182,6 +187,12 @@ namespace SpiceEngine.Physics
                 var firstEntity = _entityProvider.GetEntity(collisionPair.FirstEntityID);
                 var secondEntity = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
+                int a = 3;
+                if (firstEntity.ID == 2 && secondEntity.ID == 3 || firstEntity.ID == 3 && secondEntity.ID == 2)
+                {
+                    a = 4;
+                }
+
                 var collision = firstBody.GetCollision(secondBody);
                 if (collision.HasCollision)
                 {
@@ -194,6 +205,12 @@ namespace SpiceEngine.Physics
         {
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
+                int a = 3;
+                if (collision.FirstBody.EntityID == 2 && collision.SecondBody.EntityID == 3 || collision.FirstBody.EntityID == 3 && collision.SecondBody.EntityID == 2)
+                {
+                    a = 4;
+                }
+
                 // Only resolve the penetration constraint if both bodies are physical. Resolve by determining and applying impulses to each body
                 if (collision.FirstBody.IsPhysical && collision.SecondBody.IsPhysical)
                 {
@@ -217,16 +234,16 @@ namespace SpiceEngine.Physics
             {
                 var physicsVolume = (PhysicsVolume)entityA;
 
-                if (entityB is RigidBody3D rigidBody)
+                if (bodyB is RigidBody3D rigidBody)
                 {
                     rigidBody.ApplyForce(physicsVolume.Gravity);
                 }
             }
             else if (entityB is PhysicsVolume)
             {
-                var physicsVolume = (physicsVolume)entityB;
+                var physicsVolume = (PhysicsVolume)entityB;
 
-                if (entityA is RigidBody3D rigidBody)
+                if (bodyA is RigidBody3D rigidBody)
                 {
                     rigidBody.ApplyForce(physicsVolume.Gravity);
                 }

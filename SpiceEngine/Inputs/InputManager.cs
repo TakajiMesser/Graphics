@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Game;
 using SpiceEngine.Outputs;
 using System;
 using System.Collections.Generic;
@@ -6,7 +7,7 @@ using System.Linq;
 
 namespace SpiceEngine.Inputs
 {
-    public class InputManager
+    public class InputManager : UpdateManager, IInputProvider
     {
         public const int DEFAULT_NUMBER_OF_TRACKED_STATES = 2;
 
@@ -17,6 +18,8 @@ namespace SpiceEngine.Inputs
         {
             _mouseDelta = mouseDelta;
         }
+
+        public InputBinding InputMapping { get; set; } = new InputBinding();
 
         public bool IsMouseInWindow => _mouseDelta.IsMouseInWindow;
         public Vector2? MouseCoordinates => _mouseDelta.MouseCoordinates;
@@ -34,13 +37,21 @@ namespace SpiceEngine.Inputs
                 : _inputStates[_inputStates.Count - 1].MouseWheel
             : 0;
 
-        public void Update()
+        public event EventHandler<EventArgs> EscapePressed;
+
+        protected override void Update()
         {
-            _inputStates.Add(new InputState());
+            var inputState = new InputState();
+            _inputStates.Add(inputState);
 
             while (_inputStates.Count > TrackedStates)
             {
                 _inputStates.RemoveAt(0);
+            }
+
+            if (EscapePressed != null && inputState.IsDown(new Input(OpenTK.Input.Key.Escape)))
+            {
+                EscapePressed.Invoke(this, new EventArgs());
             }
         }
 

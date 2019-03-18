@@ -21,13 +21,14 @@ namespace Jidai.Helpers.Builders
             map.Actors.Add(new Enemy());
 
             var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 50.0f, 50.0f);
+            floor.IsPhysical = true;
             //floor = MapBrush.RectangularPrism(new Vector3(0.0f, 0.0f, -2.5f), 50.0f, 50.0f, 1.0f);
             //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             map.Brushes.Add(floor);
 
             var wall = MapBrush.RectangularPrism(new Vector3(10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
-            wall.HasCollision = true;
+            wall.IsPhysical = true;
             wall.TexturesPaths = new TexturePaths()
             {
                 DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
@@ -36,7 +37,7 @@ namespace Jidai.Helpers.Builders
             map.Brushes.Add(wall);
 
             var wall2 = MapBrush.RectangularPrism(new Vector3(-10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
-            wall2.HasCollision = true;
+            wall2.IsPhysical = true;
             wall2.TexturesPaths = new TexturePaths()
             {
                 DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
@@ -68,9 +69,9 @@ namespace Jidai.Helpers.Builders
                 Height = 20.0f
             });
 
-            var physicsVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 20.0f);
+            var physicsVolume = MapVolume.RectangularPrism(Vector3.Zero, 20.0f, 20.0f, 20.0f);
             physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
-            physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
+            physicsVolume.Gravity = -0.1f * Vector3.UnitZ;
             map.Volumes.Add(physicsVolume);
 
             map.SkyboxTextureFilePaths = new List<string>

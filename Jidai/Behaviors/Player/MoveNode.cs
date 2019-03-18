@@ -10,6 +10,7 @@ using SpiceEngine.Entities;
 using System.Runtime.Serialization;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Utilities;
 
 namespace Jidai.Behaviors.Player
 {
@@ -28,45 +29,54 @@ namespace Jidai.Behaviors.Player
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var speed = context.InputManager.IsDown(context.InputMapping.Run)
+            var speed = context.InputProvider.IsDown(context.InputProvider.InputMapping.Run)
                 ? RunSpeed
-                : context.InputManager.IsDown(context.InputMapping.Crawl)
+                : context.InputProvider.IsDown(context.InputProvider.InputMapping.Crawl)
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, context.InputManager, context.InputMapping);
+            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, context.InputProvider, context.InputProvider.InputMapping);
 
-            if (context.InputManager.IsDown(context.InputMapping.In))
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.In))
             {
                 translation.Z += speed;
             }
 
-            if (context.InputManager.IsDown(context.InputMapping.Out))
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.Out))
             {
                 translation.Z -= speed;
             }
 
-            if (context.InputManager.IsDown(context.InputMapping.ItemSlot1))
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.Evade))
+            {
+                translation.Z += 5.0f;
+            }
+
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot1))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y + 0.1f, context.EulerRotation.Z);
             }
 
-            if (context.InputManager.IsDown(context.InputMapping.ItemSlot2))
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot2))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y - 0.1f, context.EulerRotation.Z);
             }
 
-            if (context.InputManager.IsDown(context.InputMapping.ItemSlot3))
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot3))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z + 0.1f);
             }
 
-            if (context.InputManager.IsDown(context.InputMapping.ItemSlot4))
+            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot4))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }
 
-            ((RigidBody3D)context.Body).ApplyVelocity(translation);
+            //if (translation.IsSignificant())
+            //{
+                ((RigidBody3D)context.Body).ApplyVelocity(translation);
+            //}
+            
             return BehaviorStatus.Success;
         }
 

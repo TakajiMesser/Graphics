@@ -75,16 +75,20 @@ namespace SpiceEngine.Rendering.Batches
             switch (entityType)
             {
                 case EntityTypes.Actor:
-                    _actorBatches.Remove((ModelBatch)batch);
+                    _actorIDs.Remove(entityID);
+                    //_actorBatches.Remove((ModelBatch)batch);
                     break;
                 case EntityTypes.Brush:
-                    _brushBatches.Remove((MeshBatch)batch);
+                    //_brushBatches.Remove((MeshBatch)batch);
+                    _brushIDs.Remove(entityID);
                     break;
                 case EntityTypes.Volume:
-                    _volumeBatches.Remove((MeshBatch)batch);
+                    //_volumeBatches.Remove((MeshBatch)batch);
+                    _volumeIDs.Remove(entityID);
                     break;
                 case EntityTypes.Joint:
-                    _jointBatches.Remove((ModelBatch)batch);
+                    //_jointBatches.Remove((ModelBatch)batch);
+                    _jointIDs.Remove(entityID);
                     break;
             }
 
@@ -95,22 +99,19 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new MeshBatch(entityID, mesh);
 
-            if (mesh is Mesh3D mesh3D)
+            mesh.AlphaChanged += (s, args) =>
             {
-                mesh3D.AlphaChanged += (s, args) =>
+                if (!args.WasTransparent && args.IsTransparent)
                 {
-                    if (!args.WasTransparent && args.IsTransparent)
-                    {
-                        _brushIDs.Remove(entityID);
-                        _transparentBrushIDs.Add(entityID);
-                    }
-                    else if (args.WasTransparent && !args.IsTransparent)
-                    {
-                        _transparentBrushIDs.Remove(entityID);
-                        _brushIDs.Add(entityID);
-                    }
-                };
-            }
+                    _brushIDs.Remove(entityID);
+                    _transparentBrushIDs.Add(entityID);
+                }
+                else if (args.WasTransparent && !args.IsTransparent)
+                {
+                    _transparentBrushIDs.Remove(entityID);
+                    _brushIDs.Add(entityID);
+                }
+            };
 
             if (mesh.Alpha < 1.0f)
             {
@@ -128,22 +129,19 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batch = new MeshBatch(entityID, mesh);
 
-            if (mesh is Mesh3D mesh3D)
+            mesh.AlphaChanged += (s, args) =>
             {
-                mesh3D.AlphaChanged += (s, args) =>
+                if (!args.WasTransparent && args.IsTransparent)
                 {
-                    if (!args.WasTransparent && args.IsTransparent)
-                    {
-                        _volumeIDs.Remove(entityID);
-                        _transparentVolumeIDs.Add(entityID);
-                    }
-                    else if (args.WasTransparent && !args.IsTransparent)
-                    {
-                        _transparentVolumeIDs.Remove(entityID);
-                        _volumeIDs.Add(entityID);
-                    }
-                };
-            }
+                    _volumeIDs.Remove(entityID);
+                    _transparentVolumeIDs.Add(entityID);
+                }
+                else if (args.WasTransparent && !args.IsTransparent)
+                {
+                    _transparentVolumeIDs.Remove(entityID);
+                    _volumeIDs.Add(entityID);
+                }
+            };
 
             if (mesh.Alpha < 1.0f)
             {
@@ -163,22 +161,19 @@ namespace SpiceEngine.Rendering.Batches
 
             foreach (var mesh in meshes)
             {
-                if (mesh is Mesh3D mesh3D)
+                mesh.AlphaChanged += (s, args) =>
                 {
-                    mesh3D.AlphaChanged += (s, args) =>
+                    if (!args.WasTransparent && args.IsTransparent)
                     {
-                        if (!args.WasTransparent && args.IsTransparent)
-                        {
-                            _actorIDs.Remove(entityID);
-                            _transparentActorIDs.Add(entityID);
-                        }
-                        else if (args.WasTransparent && !args.IsTransparent)
-                        {
-                            _transparentActorIDs.Remove(entityID);
-                            _actorIDs.Add(entityID);
-                        }
-                    };
-                }
+                        _actorIDs.Remove(entityID);
+                        _transparentActorIDs.Add(entityID);
+                    }
+                    else if (args.WasTransparent && !args.IsTransparent)
+                    {
+                        _transparentActorIDs.Remove(entityID);
+                        _actorIDs.Add(entityID);
+                    }
+                };
             }
 
             if (meshes.Any(m => m.Alpha < 1.0f))
@@ -199,22 +194,19 @@ namespace SpiceEngine.Rendering.Batches
 
             foreach (var mesh in meshes)
             {
-                if (mesh is Mesh3D mesh3D)
+                mesh.AlphaChanged += (s, args) =>
                 {
-                    mesh3D.AlphaChanged += (s, args) =>
+                    if (!args.WasTransparent && args.IsTransparent)
                     {
-                        if (!args.WasTransparent && args.IsTransparent)
-                        {
-                            _jointIDs.Remove(entityID);
-                            _transparentJointIDs.Add(entityID);
-                        }
-                        else if (args.WasTransparent && !args.IsTransparent)
-                        {
-                            _transparentJointIDs.Remove(entityID);
-                            _jointIDs.Add(entityID);
-                        }
-                    };
-                }
+                        _jointIDs.Remove(entityID);
+                        _transparentJointIDs.Add(entityID);
+                    }
+                    else if (args.WasTransparent && !args.IsTransparent)
+                    {
+                        _transparentJointIDs.Remove(entityID);
+                        _jointIDs.Add(entityID);
+                    }
+                };
             }
 
             if (meshes.Any(m => m.Alpha < 1.0f))

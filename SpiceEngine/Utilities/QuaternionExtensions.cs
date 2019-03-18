@@ -17,6 +17,6 @@ namespace SpiceEngine.Utilities
         }
 
         public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
-            || W >= MathExtensions.EPSILON || W <= -MathExtensions.EPSILON;
+            || quaternion.W >= MathExtensions.EPSILON || quaternion.W <= -MathExtensions.EPSILON;
     }
 }

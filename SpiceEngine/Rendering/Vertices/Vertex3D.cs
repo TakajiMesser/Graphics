@@ -31,7 +31,7 @@ namespace SpiceEngine.Rendering.Vertices
             TextureCoords = textureCoords;
         }
 
-        public Vertex3D Colored(Color4 color) => new Vertex3D()
+        public IColorVertex Colored(Color4 color) => new Vertex3D()
         {
             Position = Position,
             Color = color,

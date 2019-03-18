@@ -79,6 +79,7 @@ namespace SpiceEngine.Game
             var map = Map.Load(_mapPath);
 
             _gameManager = new GameManager(Resolution, this);
+            _gameManager.InputManager.EscapePressed += (s, args) => Close();
             var entityMapping = _gameManager.LoadFromMap(map);
 
             _renderManager = new RenderManager(Resolution, WindowSize);

@@ -1,9 +1,12 @@
-﻿namespace SpiceEngine.Rendering.Vertices
+﻿using OpenTK;
+using OpenTK.Graphics;
+
+namespace SpiceEngine.Rendering.Vertices
 {
     public interface IColorVertex : IVertex
     {
-        Vector4 Color { get; }
+        Color4 Color { get; }
 
-        IColorVertex Colored(Vector4 color);
+        IColorVertex Colored(Color4 color);
     }
 }

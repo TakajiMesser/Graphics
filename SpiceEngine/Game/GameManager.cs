@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
+using System.Linq;
 
 namespace SpiceEngine.Game
 {
@@ -26,7 +27,7 @@ namespace SpiceEngine.Game
         public EntityManager EntityManager { get; } = new EntityManager();
         public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
-        public PhysicsManager PhysicsManager { get; set; }
+        public PhysicsManager PhysicsManager { get; private set; }
         public ScriptManager ScriptManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
@@ -94,10 +95,13 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            ScriptManager = new ScriptManager(EntityManager, PhysicsManager);
-            EntityManager.ClearEntities();
-
             Camera = map.Camera.ToCamera(_resolution);
+
+            ScriptManager = new ScriptManager(EntityManager, PhysicsManager);
+            ScriptManager.SetCamera(Camera);
+            ScriptManager.SetInputProvider(InputManager);
+
+            EntityManager.ClearEntities();
 
             var lightIDs = LoadLights(map.Lights);
             var brushIDs = LoadBrushes(map.Brushes);
@@ -134,7 +138,7 @@ namespace SpiceEngine.Game
                 if (mapBrush.IsPhysical)
                 {
                     var shape = mapBrush.ToShape();
-                    PhysicsManager.AddBrush(brush, shape);
+                    PhysicsManager.AddBrush(brush, shape, mapBrush.IsPhysical);
                 }
 
                 yield return entityID;
@@ -211,15 +215,14 @@ namespace SpiceEngine.Game
             Camera.OnHandleInput(InputManager);
             Camera.OnUpdateFrame();
 
-            ScriptManager.HandleInput(InputManager, Camera);
-            PhysicsManager.Update();
+            PhysicsManager.Tick();
+            ScriptManager.Tick();
+            InputManager.Tick();
 
-            //ScriptManager.UpdateCollisions(PhysicsManager.EntityCollisions);
-            ScriptManager.Update();
-
-            //PhysicsManager.HandleActorCollisions();
-
-            InputManager.Update();
+            foreach (var animatedActor in EntityManager.Actors.OfType<AnimatedActor>())
+            {
+                animatedActor.UpdateAnimation();
+            }
         }
 
         public void SaveToFile(string path) => throw new NotImplementedException();

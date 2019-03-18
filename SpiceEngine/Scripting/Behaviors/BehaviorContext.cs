@@ -5,8 +5,6 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
 using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Physics.Collisions;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,11 +13,11 @@ namespace SpiceEngine.Scripting.Behaviors
 {
     public class BehaviorContext
     {
-        public Actor Actor { get; internal set; }
-
         private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
         private IStimulusProvider _stimulusProvider;
+
+        public Actor Actor { get; internal set; }
 
         public Vector3 Position
         {
@@ -40,8 +38,7 @@ namespace SpiceEngine.Scripting.Behaviors
         public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
 
         public Camera Camera { get; internal set; }
-        public InputManager InputManager { get; internal set; }
-        public InputBinding InputMapping { get; internal set; }
+        public IInputProvider InputProvider { get; internal set; }
 
         public Vector3 EulerRotation { get; set; }
         //public Vector3 Translation { get; set; }
@@ -71,6 +68,7 @@ namespace SpiceEngine.Scripting.Behaviors
 
         public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
         public void SetCollisionProvider(ICollisionProvider collisionProvider) => _collisionProvider = collisionProvider;
+        public void SetInputProvider(IInputProvider inputProvider) => InputProvider = inputProvider;
         public void SetStimulusProvider(IStimulusProvider stimulusProvider) => _stimulusProvider = stimulusProvider;
     }
 }

@@ -123,6 +123,7 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\UpdateManager.cs" />
     <Compile Include="Game\DuplicatedEntityEventArgs.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
     <Compile Include="Game\GameSettings\ControlSettings.cs" />
@@ -147,11 +148,13 @@
     <Compile Include="Entities\Models\AnimatedModel3D.cs" />
     <Compile Include="Entities\Actors\Actor.cs" />
     <Compile Include="Game\GameWindow.cs" />
+    <Compile Include="Helpers\CollisionHelper.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MinkowskiHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\IMouseDelta.cs" />
+    <Compile Include="Inputs\IInputProvider.cs" />
     <Compile Include="Inputs\InputManager.cs" />
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
@@ -216,6 +219,7 @@
     <Compile Include="Rendering\Buffers\MatrixBuffer.cs" />
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
+    <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
     <Compile Include="Rendering\Meshes\IMesh3D.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
@@ -279,6 +283,7 @@
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Vertices\IColorVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex2D.cs" />
     <Compile Include="Rendering\Vertices\Simple3DVertex.cs" />
@@ -325,6 +330,7 @@
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Utilities\OpenTKExtensions.cs" />
     <Compile Include="Utilities\QuaternionExtensions.cs" />
+    <Compile Include="Utilities\ColorExtensions.cs" />
     <Compile Include="Utilities\VectorExtensions.cs" />
     <Compile Include="Utilities\MathExtensions.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />

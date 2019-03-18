@@ -56,7 +56,7 @@ namespace Jidai.GameObjects
             });*/
 
             BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH;
-            HasCollision = true;
+            IsPhysical = true;
 
             SaveBehaviorTree();
         }

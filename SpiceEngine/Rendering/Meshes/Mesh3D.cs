@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,7 +25,7 @@ namespace SpiceEngine.Rendering.Meshes
 
                         if (vertex is IColorVertex colorVertex)
                         {
-                            _vertices[i] = colorVertex.Colored(colorVertex.Color.Xyz, value); ;
+                            _vertices[i] = (T)colorVertex.Colored(new Color4(colorVertex.Color.R, colorVertex.Color.G, colorVertex.Color.B, value));
                         }
                     }
 

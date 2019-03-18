@@ -17,7 +17,7 @@ namespace Jidai.Behaviors.Enemy
     {
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (((RigidBody3D)context.Body).LinearVelocity != Vector3.Zero)
+            if (((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
             {
                 float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 

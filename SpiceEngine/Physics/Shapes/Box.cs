@@ -46,18 +46,48 @@ namespace SpiceEngine.Physics.Shapes
 
         public override Vector3 GetFurthestPointInDirection(Vector3 direction)
         {
-            var xRatio = (Width / 2.0f) / direction.X;
-            var yRatio = (Height / 2.0f) / direction.Y;
-            var zRatio = (Depth / 2.0f) / direction.Z;
+            // Check against the X-face
+            var x = Math.Sign(direction.X) * (Width / 2.0f);
+            var tx = x / direction.X;
+            var xPenetration = new Vector3()
+            {
+                X = x,
+                Y = direction.Y * tx,
+                Z = direction.Z * tx
+            };
 
-            var newX = direction.X * yRatio;
-            var newY = direction.Y * xRatio;
-            var newZ = direction.Z * zRatio;
+            // Check against the Y-face
+            var y = Math.Sign(direction.Y) * (Height / 2.0f);
+            var ty = y / direction.Y;
+            var yPenetration = new Vector3()
+            {
+                X = direction.X * ty,
+                Y = y,
+                Z = direction.Z * ty
+            };
 
-            return new Vector3();
-            /*return (Math.Abs(newX) < Width / 2.0f)
-                ? new Vector2(newX, direction.Y * yRatio)
-                : new Vector2(direction.X * xRatio, newY);*/
+            // Check against the Z-face
+            var z = Math.Sign(direction.Z) * (Depth / 2.0f);
+            var tz = z / direction.Z;
+            var zPenetration = new Vector3()
+            {
+                X = direction.X * tz,
+                Y = direction.Y * tz,
+                Z = z
+            };
+
+            if (xPenetration.LengthSquared < yPenetration.LengthSquared && xPenetration.LengthSquared < zPenetration.LengthSquared)
+            {
+                return xPenetration;
+            }
+            else if (yPenetration.LengthSquared < zPenetration.LengthSquared)
+            {
+                return yPenetration;
+            }
+            else
+            {
+                return zPenetration;
+            }
         }
 
         // TODO - Correct this (right now it calculates the same as 2D, but just tags on the Z position)

@@ -43,37 +43,34 @@ namespace SpiceEngine.Physics.Constraints
                     + ", " + rigidBodyB.LinearVelocity.Z.ToString("0.##"));*
             }*/
 
-            foreach (var contactPoint in collision.ContactPoints)
+            var relativeVelocity = GetRelativeVelocity(collision.ContactPoint, bodyA, bodyB);
+
+            float velocityAlongNormal = Vector3.Dot(relativeVelocity, collision.ContactNormal);
+
+            if (velocityAlongNormal > 0)
             {
-                var relativeVelocity = GetRelativeVelocity(contactPoint, bodyA, bodyB);
-
-                float velocityAlongNormal = Vector3.Dot(relativeVelocity, collision.ContactNormal);
-
-                if (velocityAlongNormal > 0)
-                {
-                    return;
-                }
-
-                var restitution = GetRestitution(bodyA, bodyB);
-                float impulseScalar = -(1 + restitution) * velocityAlongNormal;
-
-                var combinedInverseMass = GetInverseMass(bodyA, bodyB);
-                if (combinedInverseMass > 0)
-                {
-                    impulseScalar /= combinedInverseMass;
-                }
-
-                var impulse = impulseScalar * collision.ContactNormal;
-                ApplyImpulse(bodyA, impulse);
-                ApplyImpulse(bodyB, -impulse);
-
-                // Intelligently distribute impulse scalar over the two objects
-                /*var combinedMass = rigidBodyA.Mass + rigidBodyB.Mass;
-                rigidBodyA.Velocity -= (rigidBodyA.Mass / combinedMass) * impulse;
-                rigidBodyB.Velocity += (rigidBodyB.Mass / combinedMass) * impulse;*
-
-                PositionalCorrection(rigidBodyA, rigidBodyB);*/
+                return;
             }
+
+            var restitution = GetRestitution(bodyA, bodyB);
+            float impulseScalar = -(1 + restitution) * velocityAlongNormal;
+
+            var combinedInverseMass = GetInverseMass(bodyA, bodyB);
+            if (combinedInverseMass > 0)
+            {
+                impulseScalar /= combinedInverseMass;
+            }
+
+            var impulse = impulseScalar * collision.ContactNormal;
+            ApplyImpulse(bodyA, impulse);
+            ApplyImpulse(bodyB, -impulse);
+
+            // Intelligently distribute impulse scalar over the two objects
+            /*var combinedMass = rigidBodyA.Mass + rigidBodyB.Mass;
+            rigidBodyA.Velocity -= (rigidBodyA.Mass / combinedMass) * impulse;
+            rigidBodyB.Velocity += (rigidBodyB.Mass / combinedMass) * impulse;*
+
+            PositionalCorrection(rigidBodyA, rigidBodyB);*/
         }
 
         private static Vector3 GetRelativeVelocity(Body3D bodyA, Body3D bodyB)

@@ -29,11 +29,11 @@ namespace Jidai.Behaviors.Player
         {
             var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
-            if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputManager.IsPressed(context.InputMapping.Evade))
+            if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputProvider.IsPressed(context.InputProvider.InputMapping.Evade))
             {
-                var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputManager, context.InputMapping);
+                var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputProvider, context.InputProvider.InputMapping);
 
-                if (evadeTranslation != Vector3.Zero)
+                if (evadeTranslation.IsSignificant())
                 {
                     // Find angle between possible evade and cover direction
                     var coverDirection = context.GetVariable<Vector2>("coverDirection");
@@ -51,11 +51,11 @@ namespace Jidai.Behaviors.Player
                 }
             }
 
-            if (nEvadeTicks == 0 && context.InputManager.IsPressed(context.InputMapping.Evade))
+            if (nEvadeTicks == 0 && context.InputProvider.IsPressed(context.InputProvider.InputMapping.Evade))
             {
-                var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputManager, context.InputMapping);
+                var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputProvider, context.InputProvider.InputMapping);
 
-                if (evadeTranslation != Vector3.Zero)
+                if (evadeTranslation.IsSignificant())
                 {
                     nEvadeTicks++;
 

@@ -13,7 +13,7 @@ namespace Jidai.GameObjects
         public Player()
         {
             Name = NAME;
-            Position = new Vector3(0.0f, 12.0f, 0.0f);
+            Position = new Vector3(0.0f, 0.0f, 5.0f);
             Scale = Vector3.One;
             Rotation = Vector3.Zero;
             Orientation = Vector3.Zero;
@@ -35,7 +35,7 @@ namespace Jidai.GameObjects
 
             //ParallaxMapFilePath = FilePathHelper.BRICK_01_H_TEXTURE_PATH,
             BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH;
-            HasCollision = true;
+            IsPhysical = true;
 
             Stimuli.Add(SpiceEngine.Scripting.StimResponse.Stimulus.Player);
 

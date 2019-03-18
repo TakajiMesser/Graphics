@@ -26,7 +26,7 @@ namespace SpiceEngine.Rendering.Vertices
             BoneWeights = boneWeights;
         }
 
-        public JointVertex3D Colored(Color4 color)
+        public IColorVertex Colored(Color4 color)
         {
             return new JointVertex3D()
             {

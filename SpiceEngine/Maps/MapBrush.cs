@@ -42,26 +42,21 @@ namespace SpiceEngine.Maps
 
         public void AddTestColors()
         {
-            var vertices = new List<Vertex3D>();
-
             for (var i = 0; i < Vertices.Count; i++)
             {
                 if (i % 3 == 0)
                 {
-                    vertices.Add(Vertices[i].Colored(Color4.Lime));
+                    Vertices[i] = (Vertex3D)Vertices[i].Colored(Color4.Lime);
                 }
                 else if (i % 3 == 1)
                 {
-                    vertices.Add(Vertices[i].Colored(Color4.Red));
+                    Vertices[i] = (Vertex3D)Vertices[i].Colored(Color4.Red);
                 }
                 else if (i % 3 == 2)
                 {
-                    vertices.Add(Vertices[i].Colored(Color4.Blue));
+                    Vertices[i] = (Vertex3D)Vertices[i].Colored(Color4.Blue);
                 }
             }
-
-            Vertices.Clear();
-            Vertices.AddRange(vertices);
         }
 
         public static MapBrush Rectangle(Vector3 center, float width, float height)

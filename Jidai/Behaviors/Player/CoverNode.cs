@@ -13,6 +13,7 @@ using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Utilities;
 
 namespace Jidai.Behaviors.Player
 {
@@ -46,9 +47,9 @@ namespace Jidai.Behaviors.Player
                     if (context.GetVariable<float>("coverDistance") < 0.1f)
                     {
                         // Handle movement while in cover here
-                        var translation = GeometryHelper.GetHeldTranslation(context.Camera, CoverSpeed, context.InputManager, context.InputMapping);
+                        var translation = GeometryHelper.GetHeldTranslation(context.Camera, CoverSpeed, context.InputProvider, context.InputProvider.InputMapping);
 
-                        if (translation != Vector3.Zero)
+                        if (translation.IsSignificant())
                         {
                             var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is Brush);
 

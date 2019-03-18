@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Rendering.Textures;
 
@@ -125,6 +126,12 @@ namespace SpiceEngine.Rendering.Shaders
         {
             int location = GetUniformLocation(name);
             GL.Uniform4(location, vector);
+        }
+
+        public void SetUniform(string name, Color4 color)
+        {
+            int location = GetUniformLocation(name);
+            GL.Uniform4(location, color);
         }
 
         public void SetUniform(string name, float value)

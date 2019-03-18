@@ -6,7 +6,7 @@ namespace SpiceEngine.Helpers
 {
     public static class GeometryHelper
     {
-        public static Vector3 GetHeldTranslation(Camera camera, float speed, InputManager inputManager, InputBinding inputMapping)
+        public static Vector3 GetHeldTranslation(Camera camera, float speed, IInputProvider inputProvider, InputBinding inputMapping)
         {
             Vector3 translation = new Vector3();
 
@@ -15,22 +15,22 @@ namespace SpiceEngine.Helpers
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
 
-            if (inputManager.IsDown(inputMapping.Forward))
+            if (inputProvider.IsDown(inputMapping.Forward))
             {
                 translation += up.Normalized() * speed;
             }
 
-            if (inputManager.IsDown(inputMapping.Left))
+            if (inputProvider.IsDown(inputMapping.Left))
             {
                 translation -= right.Normalized() * speed;
             }
 
-            if (inputManager.IsDown(inputMapping.Backward))
+            if (inputProvider.IsDown(inputMapping.Backward))
             {
                 translation -= up.Normalized() * speed;
             }
 
-            if (inputManager.IsDown(inputMapping.Right))
+            if (inputProvider.IsDown(inputMapping.Right))
             {
                 translation += right.Normalized() * speed;
             }
@@ -38,7 +38,7 @@ namespace SpiceEngine.Helpers
             return translation;
         }
 
-        public static Vector3 GetPressedTranslation(Camera camera, float speed, InputManager inputManager, InputBinding inputMapping)
+        public static Vector3 GetPressedTranslation(Camera camera, float speed, IInputProvider inputProvider, InputBinding inputMapping)
         {
             Vector3 translation = new Vector3();
 
@@ -47,22 +47,22 @@ namespace SpiceEngine.Helpers
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
 
-            if (inputManager.IsDown(inputMapping.Forward))
+            if (inputProvider.IsDown(inputMapping.Forward))
             {
                 translation += up.Normalized() * speed;
             }
 
-            if (inputManager.IsDown(inputMapping.Left))
+            if (inputProvider.IsDown(inputMapping.Left))
             {
                 translation -= right.Normalized() * speed;
             }
 
-            if (inputManager.IsDown(inputMapping.Backward))
+            if (inputProvider.IsDown(inputMapping.Backward))
             {
                 translation -= up.Normalized() * speed;
             }
 
-            if (inputManager.IsDown(inputMapping.Right))
+            if (inputProvider.IsDown(inputMapping.Right))
             {
                 translation += right.Normalized() * speed;
             }

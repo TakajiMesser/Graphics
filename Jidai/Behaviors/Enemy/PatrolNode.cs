@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Utilities;
 
 namespace Jidai.Behaviors.Enemy
 {
@@ -25,7 +26,7 @@ namespace Jidai.Behaviors.Enemy
         {
             var difference = Destination - context.Position;
 
-            if (difference == Vector3.Zero)
+            if (!difference.IsSignificant())
             {
                 return BehaviorStatus.Success;
             }
@@ -38,7 +39,7 @@ namespace Jidai.Behaviors.Enemy
                 ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
             }
 
-            if (((RigidBody3D)context.Body).LinearVelocity != Vector3.Zero)
+            if (((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
             {
                 float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 
