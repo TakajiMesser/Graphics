@@ -1,24 +1,28 @@
-﻿using OpenTK.Audio.OpenAL;
-using OpenTK.Audio.OpenAL.ALC;
+﻿using OpenTK;
+using OpenTK.Audio.OpenAL;
+using OpenTK.Graphics;
+using SpiceEngine.Entities;
 using SpiceEngine.Game;
+using System;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Sounds
 {
     public class SoundManager : UpdateManager, IDisposable
     {
-        private readonly int _device;
-        private Context _context;
+        private IntPtr _device = IntPtr.Zero;
+        private ContextHandle _context;
 
         private Listener _listener;
 
-        private Dictionary<int, Sound> _soundByID = new Dictionary<int, IEntity>();
+        private Dictionary<int, Sound> _soundByID = new Dictionary<int, Sound>();
         private Dictionary<int, SoundBuffer> _bufferByID = new Dictionary<int, SoundBuffer>();
         private int _nextAvailableID = 1;
 
         public SoundManager()
         {
             _device = Alc.OpenDevice(null);
-            _context = Alc.CreateContext(_device, null);
+            _context = Alc.CreateContext(_device, (int[])null);
 
             Alc.MakeContextCurrent(_context);
 
@@ -65,7 +69,7 @@ namespace SpiceEngine.Sounds
             var source = new Source();
 
             // Default to playing the sound at the listener's location
-            source.Position;
+            //source.Position;
         }
 
         protected override void Update()
@@ -100,7 +104,7 @@ namespace SpiceEngine.Sounds
                     _context = ContextHandle.Zero;
                 }
 
-                if (_device != 0)
+                if (_device != IntPtr.Zero)
                 {
                     Alc.CloseDevice(_device);
                 }

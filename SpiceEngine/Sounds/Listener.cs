@@ -1,4 +1,6 @@
-﻿using SpiceEngine.Game;
+﻿using OpenTK;
+using OpenTK.Audio.OpenAL;
+using SpiceEngine.Game;
 
 namespace SpiceEngine.Sounds
 {
@@ -15,7 +17,7 @@ namespace SpiceEngine.Sounds
             set
             {
                 _position = value;
-                AL.Listener(ALListener3f.Position, value);
+                AL.Listener(ALListener3f.Position, ref _position);
             }
         }
 
@@ -25,7 +27,7 @@ namespace SpiceEngine.Sounds
             set
             {
                 _velocity = value;
-                AL.Listener(ALListener3f.Velocity, value);
+                AL.Listener(ALListener3f.Velocity, ref _velocity);
             }
         }
 
@@ -35,7 +37,7 @@ namespace SpiceEngine.Sounds
             set
             {
                 _direction = value;
-                AL.Listener(ALListenerfv.Orientation, value, _up);
+                AL.Listener(ALListenerfv.Orientation, ref _direction, ref _up);
             }
         }
 
@@ -45,7 +47,7 @@ namespace SpiceEngine.Sounds
             set
             {
                 _up = value;
-                AL.Listener(ALListenerfv.Orientation, _direction, value);
+                AL.Listener(ALListenerfv.Orientation, ref _direction, ref _up);
             }
         }
     }

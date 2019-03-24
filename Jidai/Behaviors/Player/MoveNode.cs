@@ -49,7 +49,7 @@ namespace Jidai.Behaviors.Player
 
             if (context.InputProvider.IsDown(context.InputProvider.InputMapping.Evade))
             {
-                translation.Z += 5.0f;
+                translation.Z += 0.6f;
             }
 
             if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot1))

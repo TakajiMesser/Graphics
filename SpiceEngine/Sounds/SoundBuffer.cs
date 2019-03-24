@@ -1,24 +1,27 @@
-﻿using OpenTK.Audio.OpenAL;
+﻿using OpenTK.Audio;
+using OpenTK.Audio.OpenAL;
+using OpenTK.Graphics;
 using SpiceEngine.Game;
+using System;
 
 namespace SpiceEngine.Sounds
 {
     public class SoundBuffer : IDisposable
     {
-        private readonly int _handle;
+        public int Handle { get; }
 
         public SoundBuffer()
         {
-            _handle = AL.GenBuffer();
+            Handle = AL.GenBuffer();
         }
 
         public void Buffer(Sound sound)
         {
-            AL.BufferData(_handle, sound.Format, sound.Data, sound.Data.Length, sound.SampleRate);
+            AL.BufferData(Handle, sound.Format, sound.Data, sound.Data.Length, sound.SampleRate);
             var error = AL.GetError();
             if (error > 0)
             {
-                throw new SoundException("Sound " + sound.ID + " failed to buffer: " + error.ToString());
+                throw new AudioException("Sound " + sound.ID + " failed to buffer: " + error.ToString());
             }
 
             //GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, _vertices.ToArray(), BufferUsageHint.StreamDraw);
@@ -39,7 +42,7 @@ namespace SpiceEngine.Sounds
                     // TODO: dispose managed state (managed objects).
                 }
 
-                AL.DeleteBuffer(_handle);
+                AL.DeleteBuffer(Handle);
                 disposedValue = true;
             }
         }

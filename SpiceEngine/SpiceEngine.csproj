@@ -152,6 +152,7 @@
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MinkowskiHelper.cs" />
+    <Compile Include="Helpers\SoundHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\IMouseDelta.cs" />
     <Compile Include="Inputs\IInputProvider.cs" />
@@ -220,6 +221,7 @@
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Meshes\MeshShape.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
     <Compile Include="Rendering\Meshes\IMesh3D.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
@@ -324,7 +326,11 @@
     <Compile Include="Scripting\StimResponse\StimulusCollection.cs" />
     <Compile Include="Scripting\StimResponse\StimulusTriggeredEventArgs.cs" />
     <Compile Include="Scripting\StimResponse\Stimulus.cs" />
+    <Compile Include="Sounds\Listener.cs" />
+    <Compile Include="Sounds\Sound.cs" />
+    <Compile Include="Sounds\SoundBuffer.cs" />
     <Compile Include="Sounds\SoundManager.cs" />
+    <Compile Include="Sounds\Source.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />

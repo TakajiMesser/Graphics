@@ -1,4 +1,8 @@
-﻿using SpiceEngine.Game;
+﻿using OpenTK;
+using OpenTK.Audio.OpenAL;
+using OpenTK.Graphics;
+using SpiceEngine.Game;
+using System;
 
 namespace SpiceEngine.Sounds
 {
@@ -21,7 +25,7 @@ namespace SpiceEngine.Sounds
             set
             {
                 _position = value;
-                AL.Source(_handle, ALSource3f.Position, value);
+                AL.Source(_handle, ALSource3f.Position, ref _position);
             }
         }
 
@@ -31,7 +35,7 @@ namespace SpiceEngine.Sounds
             set
             {
                 _velocity = value;
-                AL.Source(_handle, ALSource3f.Velocity, value);
+                AL.Source(_handle, ALSource3f.Velocity, ref _velocity);
             }
         }
 
@@ -41,16 +45,17 @@ namespace SpiceEngine.Sounds
             set
             {
                 _direction = value;
-                AL.Source(_handle, ALSource3f.Direction, value);
+                AL.Source(_handle, ALSource3f.Direction, ref _direction);
             }
         }
 
-        public ALSourceState GetState() => AL.GetSource(_handle, ALGetSourcei.SourceState);
+        public ALSourceState GetState() => AL.GetSourceState(_handle);
 
         // TODO - determine how to structure Sound-SoundBuffer relationship
         public void Swap(SoundBuffer buffer)
         {
-            AL.SourcePlay(_handle, ALSourcei.Buffer, buffer);
+            // TODO - Determine if we need to unqueue the previous buffer first
+            AL.SourceQueueBuffer(_handle, buffer.Handle);
         }
 
         public void Play()
@@ -90,7 +95,7 @@ namespace SpiceEngine.Sounds
             }
         }
 
-        ~SoundBuffer()
+        ~Source()
         {
             Dispose(false);
         }

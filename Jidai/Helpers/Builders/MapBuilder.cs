@@ -71,7 +71,7 @@ namespace Jidai.Helpers.Builders
 
             var physicsVolume = MapVolume.RectangularPrism(Vector3.Zero, 20.0f, 20.0f, 20.0f);
             physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
-            physicsVolume.Gravity = -0.1f * Vector3.UnitZ;
+            physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
             map.Volumes.Add(physicsVolume);
 
             map.SkyboxTextureFilePaths = new List<string>

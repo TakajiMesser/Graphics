@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Game;
+﻿using OpenTK.Audio.OpenAL;
+using SpiceEngine.Game;
 
 namespace SpiceEngine.Sounds
 {

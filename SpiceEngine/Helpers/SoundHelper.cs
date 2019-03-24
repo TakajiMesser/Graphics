@@ -1,6 +1,9 @@
 ﻿using OpenTK;
+using OpenTK.Audio.OpenAL;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Inputs;
+using SpiceEngine.Sounds;
+using System;
 using System.IO;
 
 namespace SpiceEngine.Helpers
@@ -14,7 +17,7 @@ namespace SpiceEngine.Helpers
             switch (extension)
             {
                 case ".wav":
-                    return LoadWave(filePath);
+                    return ParseWaveFile(filePath);
                 default:
                     throw new NotImplementedException("Cannot handle file type " + extension);
             }
@@ -50,7 +53,7 @@ namespace SpiceEngine.Helpers
                 if (dataSignature != "data") throw new NotSupportedException("Specified wave file is not supported.");
 
                 var dataChunkSize = reader.ReadInt32();
-                data = reader.ReadBytes((int)reader.BaseStream.Length);
+                var data = reader.ReadBytes((int)reader.BaseStream.Length);
 
                 return new Sound(data, GetFormat(nChannels, nBitsPerSample), sampleRate);
             }
