@@ -13,9 +13,9 @@ using Xceed.Wpf.AvalonDock.Layout;
 namespace SauceEditor.Views.Controls.GamePanels
 {
     /// <summary>
-    /// Interaction logic for DockableGamePanel.xaml
+    /// Interaction logic for GamePanelView.xaml
     /// </summary>
-    public partial class DockableGamePanel : LayoutAnchorablePane
+    public partial class GamePanelView : LayoutAnchorablePane
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
@@ -81,8 +81,8 @@ namespace SauceEditor.Views.Controls.GamePanels
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
-        public DockableGamePanel() => InitializeComponent();
-        public DockableGamePanel(ViewTypes viewType)// : base(dockManager)
+        public GamePanelView() => InitializeComponent();
+        public GamePanelView(ViewTypes viewType)
         {
             InitializeComponent();
 

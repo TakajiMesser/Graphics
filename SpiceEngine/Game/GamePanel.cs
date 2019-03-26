@@ -35,6 +35,51 @@ namespace SpiceEngine.Game
 
     public class GamePanel : GLControl, IMouseDelta
     {
+        private PanelCamera _panelCamera;
+        private GameManager _gameManager;
+        private EntityMapping _entityMapping;
+        private RenderManager _renderManager;
+
+        private bool _invalidated = false;
+        private bool _isDuplicating = false;
+
+        private Point _currentMouseLocation;
+        private Point _startMouseLocation;
+        private Timer _pollTimer = new Timer();
+
+        private Tools _selectedTool = Tools.Brush;
+        private Volume _toolVolume;
+
+        private ViewTypes _viewType;
+
+        private bool _isLoaded = false;
+        private object _loadLock = new object();
+
+        /*private bool _isCursorVisible = true;
+        private object _cursorLock = new object();
+        
+        /*public bool IsCursorVisible
+        {
+            get
+            {
+                lock (_cursorLock)
+                {
+                    return _isCursorVisible;
+                }
+            }
+            set
+            {
+                lock (_cursorLock)
+                {
+                    if (value != _isCursorVisible)
+                    {
+                        ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(value));
+                        _isCursorVisible = value;
+                    }
+                }
+            }
+        }*/
+
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
@@ -110,54 +155,6 @@ namespace SpiceEngine.Game
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
 
-        private object _loadLock = new object();
-        private bool _isLoaded = false;
-        private Map _map;
-        private EntityMapping _entityMapping;
-
-        private PanelCamera _panelCamera;
-        private EntityManager _entityManager;
-        private TextureManager _textureManager;
-        private InputManager _inputManager;
-        //private SoundManager _soundManager;
-        private RenderManager _renderManager;
-
-        private bool _invalidated = false;
-        private bool _isDuplicating = false;
-
-        private Point _currentMouseLocation;
-        private Point _startMouseLocation;
-        private Timer _pollTimer = new Timer();
-
-        private Tools _selectedTool = Tools.Brush;
-        private Volume _toolVolume;
-
-        private ViewTypes _viewType;
-
-        private object _cursorLock = new object();
-        private bool _isCursorVisible = true;
-        public bool IsCursorVisible
-        {
-            get
-            {
-                lock (_cursorLock)
-                {
-                    return _isCursorVisible;
-                }
-            }
-            set
-            {
-                lock (_cursorLock)
-                {
-                    if (value != _isCursorVisible)
-                    {
-                        ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(value));
-                        _isCursorVisible = value;
-                    }
-                }
-            }
-        }
-
         public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
@@ -216,91 +213,63 @@ namespace SpiceEngine.Game
         {
             Location = new Point(0, 0);
 
-            _inputManager = new InputManager(this);
             _renderManager = new RenderManager(Resolution, WindowSize);
 
             lock (_loadLock)
             {
                 _isLoaded = true;
 
-                if (_map != null)
+                if (_gameManager != null && _entityMapping != null)
                 {
-                    //LoadBrushes(map.Brushes, entityMapping.BrushIDs);
-                    //LoadActors(map.Actors, entityMapping.ActorIDs);
-                    _panelCamera = new PanelCamera(Resolution, _renderManager)
-                    {
-                        ViewType = _viewType
-                    };
-                    _panelCamera.Load();
-
-                    _renderManager = new RenderManager(Resolution, WindowSize);
-                    _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
-
-                    if (_selectedTool == Tools.Volume && _toolVolume != null)
-                    {
-                        // TODO - Correct this, shouldn't be creating another MapVolume here
-                        var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                        var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                        _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
-                        _renderManager.BatchManager.Load(_toolVolume.ID);
-                    }
-
-                    // Clear pointers
-                    _map = null;
-                    _entityMapping = null;
-
-                    Invalidate();
-                    IsLoaded = true;
-                    PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+                    LoadFromGameManager();
                 }
             }
 
             base.OnLoad(e);
         }
 
-        public void LoadFromMap(Map map, EntityManager entityManager, TextureManager textureManager, EntityMapping entityMapping)
+        public void LoadGameManager(GameManager gameManager, EntityMapping entityMapping)
         {
+            _gameManager = gameManager;
+            _entityMapping = entityMapping;
+
             lock (_loadLock)
             {
-                _map = map;
-                _entityManager = entityManager;
-                _textureManager = textureManager;
-                _entityMapping = entityMapping;
-
                 if (_isLoaded)
                 {
-                    //LoadBrushes(map.Brushes, entityMapping.BrushIDs);
-                    //LoadActors(map.Actors, entityMapping.ActorIDs);
-                    _panelCamera = new PanelCamera(Resolution, _renderManager);
-                    _panelCamera.ViewType = _viewType;
-                    _panelCamera.Load();
-
-                    _renderManager = new RenderManager(Resolution, WindowSize);
-                    _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
-
-                    // Clear pointers
-                    _map = null;
-                    _entityMapping = null;
-
-                    Invalidate();
-                    IsLoaded = true;
-                    PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+                    LoadFromGameManager();
                 }
             }
         }
 
-        /*public void LoadFromEntities(EntityManager entities, Map map)
+        private void LoadFromGameManager()
         {
-            entities.LoadEntities();
-            _gameManager.LoadFromEntities(entities, map);
-            LoadCamera();
+            _panelCamera = new PanelCamera(Resolution, _renderManager)
+            {
+                ViewType = _viewType
+            };
+            _panelCamera.Load();
 
-            _renderManager.Load(_entityManager, map.SkyboxTextureFilePaths);
+            _renderManager = new RenderManager(Resolution, WindowSize);
+            _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
+
+            // Clear pointers
+            //_map = null;
+            //_entityMapping = null;
+
+            /*if (_selectedTool == Tools.Volume && _toolVolume != null)
+            {
+                // TODO - Correct this, shouldn't be creating another MapVolume here
+                var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
+                _renderManager.BatchManager.Load(_toolVolume.ID);
+            }*/
+
             Invalidate();
-
             IsLoaded = true;
             PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
-        }*/
+        }
 
         public void SelectEntity(IEntity entity)
         {
@@ -312,7 +281,7 @@ namespace SpiceEngine.Game
             {
                 SelectedEntities.Clear();
             }
-            //SelectedEntity = (entity != null) ? _gameState.GetEntityByID(entity.ID) : null;
+
             RenderFrame();
         }
 
@@ -579,7 +548,7 @@ namespace SpiceEngine.Game
 
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
-            _inputManager.Tick();
+            _gameManager.InputManager.Tick();
 
             if (_invalidated)
             {
@@ -595,14 +564,14 @@ namespace SpiceEngine.Game
 
         public bool IsHeld()
         {
-            _inputManager.Tick();
-            return _inputManager.IsDown(new Input(MouseButton.Left)) || _inputManager.IsDown(new Input(MouseButton.Right));
+            _gameManager.InputManager.Tick();
+            return _gameManager.InputManager.IsDown(new Input(MouseButton.Left)) || _gameManager.InputManager.IsDown(new Input(MouseButton.Right));
         }
 
         public void EndDrag()
         {
             IsDragging = false;
-            _inputManager.Clear();
+            _gameManager.InputManager.Clear();
             SelectionType = SelectionTypes.None;
             _pollTimer.Stop();
         }
@@ -632,19 +601,19 @@ namespace SpiceEngine.Game
 
         private void HandleInput()
         {
-            if (_isDuplicating && !_inputManager.IsDown(new Input(Key.ShiftLeft)))
+            if (_isDuplicating && !_gameManager.InputManager.IsDown(new Input(Key.ShiftLeft)))
             {
                 _isDuplicating = false;
             }
 
-            if (_inputManager.IsReleased(new Input(MouseButton.Left)))
+            if (_gameManager.InputManager.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionType = SelectionTypes.None;
             }
 
-            if (_inputManager.IsDown(new Input(MouseButton.Left)) && _inputManager.IsDown(new Input(MouseButton.Right)))
+            if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)) && _gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
             {
-                _panelCamera.Strafe(_inputManager.MouseDelta);
+                _panelCamera.Strafe(_gameManager.InputManager.MouseDelta);
 
                 //IsCursorVisible = false;
                 SelectionType = SelectionTypes.None;
@@ -652,9 +621,9 @@ namespace SpiceEngine.Game
             }
             else if (SelectionType != SelectionTypes.None)
             {
-                if (_inputManager.IsDown(new Input(MouseButton.Left)))
+                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
                 {
-                    if (!_isDuplicating && _inputManager.IsDown(new Input(Key.ShiftLeft)))
+                    if (!_isDuplicating && _gameManager.InputManager.IsDown(new Input(Key.ShiftLeft)))
                     {
                         _isDuplicating = true;
                         DuplicateSelectedItems();
@@ -684,21 +653,21 @@ namespace SpiceEngine.Game
             }
             else if (_panelCamera.ViewType == ViewTypes.Perspective)
             {
-                if (_inputManager.IsDown(new Input(MouseButton.Left)))
+                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
                 {
-                    _panelCamera.Travel(_inputManager.MouseDelta);
+                    _panelCamera.Travel(_gameManager.InputManager.MouseDelta);
 
                     //IsCursorVisible = false;
                     _invalidated = true;
                 }
-                else if (_inputManager.IsDown(new Input(MouseButton.Right)))
+                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
                 {
-                    _panelCamera.Turn(_inputManager.MouseDelta);
+                    _panelCamera.Turn(_gameManager.InputManager.MouseDelta);
 
                     //IsCursorVisible = false;
                     _invalidated = true;
                 }
-                else if (_inputManager.IsDown(new Input(MouseButton.Button1)))
+                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Button1)))
                 {
                     if (SelectedEntities.Count > 0)
                     {
@@ -709,7 +678,7 @@ namespace SpiceEngine.Game
                             Z = SelectedEntities.Average(e => e.Position.Z)
                         };
 
-                        _panelCamera.Pivot(_inputManager.MouseDelta, _inputManager.MouseWheelDelta, pivotPosition);
+                        _panelCamera.Pivot(_gameManager.InputManager.MouseDelta, _gameManager.InputManager.MouseWheelDelta, pivotPosition);
 
                         //IsCursorVisible = false;
                         _invalidated = true;
@@ -725,25 +694,25 @@ namespace SpiceEngine.Game
             switch (SelectionType)
             {
                 case SelectionTypes.Red:
-                    position.X -= _inputManager.MouseDelta.Y * 0.002f;
+                    position.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Green:
-                    position.Y -= _inputManager.MouseDelta.Y * 0.002f;
+                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Blue:
-                    position.Z -= _inputManager.MouseDelta.Y * 0.002f;
+                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Cyan:
-                    position.Y += _inputManager.MouseDelta.X * 0.002f;
-                    position.Z -= _inputManager.MouseDelta.Y * 0.002f;
+                    position.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
                 case SelectionTypes.Magenta:
-                    position.Z -= _inputManager.MouseDelta.Y * 0.002f;
-                    position.X += _inputManager.MouseDelta.X * 0.002f;
+                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
                     break;
                 case SelectionTypes.Yellow:
-                    position.X += _inputManager.MouseDelta.X * 0.002f;
-                    position.Y -= _inputManager.MouseDelta.Y * 0.002f;
+                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                     break;
             }
 
@@ -759,25 +728,25 @@ namespace SpiceEngine.Game
                 switch (SelectionType)
                 {
                     case SelectionTypes.Red:
-                        rotation.X -= _inputManager.MouseDelta.Y * 0.002f;
+                        rotation.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Green:
-                        rotation.Y -= _inputManager.MouseDelta.Y * 0.002f;
+                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Blue:
-                        rotation.Z -= _inputManager.MouseDelta.Y * 0.002f;
+                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Cyan:
-                        rotation.Y += _inputManager.MouseDelta.X * 0.002f;
-                        rotation.Z -= _inputManager.MouseDelta.Y * 0.002f;
+                        rotation.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Magenta:
-                        rotation.Z -= _inputManager.MouseDelta.Y * 0.002f;
-                        rotation.X += _inputManager.MouseDelta.X * 0.002f;
+                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
                         break;
                     case SelectionTypes.Yellow:
-                        rotation.X += _inputManager.MouseDelta.X * 0.002f;
-                        rotation.Y -= _inputManager.MouseDelta.Y * 0.002f;
+                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                 }
 
@@ -794,25 +763,25 @@ namespace SpiceEngine.Game
                 switch (SelectionType)
                 {
                     case SelectionTypes.Red:
-                        scale.X -= _inputManager.MouseDelta.Y * 0.002f;
+                        scale.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Green:
-                        scale.Y -= _inputManager.MouseDelta.Y * 0.002f;
+                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Blue:
-                        scale.Z -= _inputManager.MouseDelta.Y * 0.002f;
+                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Cyan:
-                        scale.Y += _inputManager.MouseDelta.X * 0.002f;
-                        scale.Z -= _inputManager.MouseDelta.Y * 0.002f;
+                        scale.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                     case SelectionTypes.Magenta:
-                        scale.Z -= _inputManager.MouseDelta.Y * 0.002f;
-                        scale.X += _inputManager.MouseDelta.X * 0.002f;
+                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
                         break;
                     case SelectionTypes.Yellow:
-                        scale.X += _inputManager.MouseDelta.X * 0.002f;
-                        scale.Y -= _inputManager.MouseDelta.Y * 0.002f;
+                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
+                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
                         break;
                 }
 
