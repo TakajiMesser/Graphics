@@ -25,7 +25,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         };
 
-        public static MeshShape RectangularPrism(float width, float height, float depth) => new MeshShape()
+        public static MeshShape Box(float width, float height, float depth) => new MeshShape()
         {
             Vertices = new List<Vector3>
             {
@@ -48,5 +48,13 @@ namespace SpiceEngine.Rendering.Meshes
                 6, 5, 1, 6, 1, 2
             }
         };
+
+        public static MeshShape Circle(float radius) => new MeshShape();
+
+        public static MeshShape Sphere(float radius) => new MeshShape();
+
+        public static MeshShape Cylinder(float radius, float height) => new MeshShape();
+
+        public static MeshShape Cone(float radius, float height) => new MeshShape();
     }
 }

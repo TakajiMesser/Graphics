@@ -125,8 +125,8 @@ namespace SauceEditor.Views.Controls.GamePanels
                     // We need to STORE the drawn Brush entityID, since we will need reference to it (and we will want to remove it if they switch selection tools later)
                     // We can share the same Brush between placing volumes and placing brushes
 
-                    var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                    //_toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
+                    var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                    //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                     _toolVolume = mapVolume.ToEntity();
                     int entityID = _entityManager.AddEntity(_toolVolume);
 

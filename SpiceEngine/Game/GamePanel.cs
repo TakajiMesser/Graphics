@@ -98,8 +98,8 @@ namespace SpiceEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                        //_toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
+                        var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                         _toolVolume = mapVolume.ToEntity();
                         int entityID = _entityManager.AddEntity(_toolVolume);
 
@@ -260,7 +260,7 @@ namespace SpiceEngine.Game
             /*if (_selectedTool == Tools.Volume && _toolVolume != null)
             {
                 // TODO - Correct this, shouldn't be creating another MapVolume here
-                var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
                 var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
                 _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
                 _renderManager.BatchManager.Load(_toolVolume.ID);
