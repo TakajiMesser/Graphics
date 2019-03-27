@@ -12,5 +12,10 @@ namespace SpiceEngine.Maps
 
         public abstract T ToEntity();
         public abstract Shape3D ToShape();
+
+        public virtual void UpdateFrom(T entity)
+        {
+            Position = entity.Position;
+        }
     }
 }

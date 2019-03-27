@@ -78,6 +78,7 @@ namespace SauceEditor.Views.Controls.GamePanels
         }
 
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public GamePanelManager(string mapPath)
         {
@@ -90,6 +91,7 @@ namespace SauceEditor.Views.Controls.GamePanels
         private int AddActor(MapActor mapActor)
         {
             int entityID = _gameManager.AddEntity(mapActor);
+            _mapManager.AddActor(mapActor, entityID);
             _renderManager.AddActor(mapActor, entityID);
 
             return entityID;
@@ -98,6 +100,7 @@ namespace SauceEditor.Views.Controls.GamePanels
         private void AddBrush(MapBrush mapBrush)
         {
             int entityID = _gameManager.AddBrush(mapBrush);
+            _mapManager.AddBrush(mapBrush, entityID);
             _renderManager.AddBrush(mapBrush, entityID);
 
             return entityID;
@@ -106,12 +109,14 @@ namespace SauceEditor.Views.Controls.GamePanels
         private void AddVolume(MapVolume mapVolume)
         {
             int entityID = _gameManager.AddVolume(mapVolume);
+            _mapManager.AddVolume(mapVolume, entityID);
             return entityID;
         }
 
         private void AddLight(Light light)
         {
             int entityID = _gameManager.AddLight(light);
+            _mapManager.AddLight(light, entityID);
             return entityID;
         }
 

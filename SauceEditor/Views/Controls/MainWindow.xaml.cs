@@ -260,6 +260,39 @@ namespace SauceEditor.Views.Controls
             Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
         }
 
+        private void ExecuteCommand(ICommand command)
+        {
+            CommandStack.Push(command);
+
+            if (CommandStack.CanUndo)
+            {
+                UndoButton.Enabled = true;
+            }
+            else
+            {
+                UndoButton.Enabled = false;
+            }
+
+            if (CommandStack.CanRedo)
+            {
+                RedoButton.Enabled = true;
+            }
+            else
+            {
+                RedoButton.Enabled = false;
+            }
+        }
+
+        private void Menu_UndoCalled(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void Menu_RedoCalled(object sender, EventArgs e)
+        {
+
+        }
+
         private void OpenMap(string filePath)
         {
             Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
@@ -275,6 +308,7 @@ namespace SauceEditor.Views.Controls
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };
+            _gamePanelManager.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
 
             LayoutAnchorable anchorable = new LayoutAnchorable
             {

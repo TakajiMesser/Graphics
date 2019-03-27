@@ -4,7 +4,7 @@ using SpiceEngine.Rendering.Shaders;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public class DirectionalLight : Light, IRotate
+    public class DirectionalLight<DLight> : Light, IRotate
     {
         public Vector3 OriginalRotation { get; set; }
         public Quaternion Rotation { get; set; }

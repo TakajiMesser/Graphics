@@ -50,11 +50,13 @@
             MapOpened="Menu_MapOpened"
             ProjectOpened="Menu_ProjectOpened"
             ModelOpened="Menu_ModelOpened"
-            BehaviorOpened="Menu_BehaviorOpened"/>
+            BehaviorOpened="Menu_BehaviorOpened"
+            UndoCalled="Menu_UndoCalled"
+            RedoCalled="Menu_RedoCalled"/>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button Command="Undo" Content="Undo"/>
-                <Button Command="Redo" Content="Redo"/>
+                <Button Name="UndoButton" Command="Undo" Content="Undo" Click="UndoButton_Click"/>
+                <Button Name="RedoButton" Command="Redo" Content="Redo" Click="RedoButton_Click"/>
                 <Button Name="PlayButton" Content="Play" Click="PlayButton_Click" Visibility="Hidden"/>
             </ToolBar>
         </ToolBarTray>

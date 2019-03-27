@@ -43,6 +43,8 @@ namespace SauceEditor.Views.Controls
         public event EventHandler<FileEventArgs> ProjectOpened;
         public event EventHandler<FileEventArgs> ModelOpened;
         public event EventHandler<FileEventArgs> BehaviorOpened;
+        public event EventHandler<EventArgs> UndoCalled;
+        public event EventHandler<EventArgs> RedoCalled;
 
         public MainMenu()
         {

@@ -4,7 +4,7 @@ using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public abstract class Light : IEntity
+    public abstract class Light<T> : IEntity where T : struct
     {
         public int ID { get; set; }
 
@@ -27,5 +27,6 @@ namespace SpiceEngine.Entities.Lights
 
         public abstract void DrawForStencilPass(ShaderProgram program);
         public abstract void DrawForLightPass(ShaderProgram program);
+        public abstract T ToStruct();
     }
 }

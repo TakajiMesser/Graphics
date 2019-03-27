@@ -13,6 +13,16 @@ namespace SauceEditor.Models
         public List<Light> Lights { get; set; } = new List<Light>();
         public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();*/
 
+        private enum MapEntityType
+        {
+            Actor,
+            Brush,
+            Volume,
+            Light
+        }
+        
+        private Dictionary<int, MapEntityType> _entityTypeByEntityID = new Dictionary<int, MapEntityType>();
+
         private Dictionary<int, int> _mapActorIndexByEntityID = new Dictionary<int, int>();
         private Dictionary<int, int> _mapBrushIndexByEntityID = new Dictionary<int, int>();
         private Dictionary<int, int> _mapVolumeIndexByEntityID = new Dictionary<int, int>();
@@ -48,6 +58,38 @@ namespace SauceEditor.Models
             }
         }
 
+        public void AddMapActor(MapActor mapActor, int entityID)
+        {
+            Map.Actors.Add(mapActor);
+            var index = Map.Actors.Count - 1;
+
+            _mapActorIndexByEntityID.Add(entityID, index);
+        }
+
+        public void AddMapBrush(MapBrush mapBrush, int entityID)
+        {
+            Map.Brushes.Add(mapBrush);
+            var index = Map.Brushes.Count - 1;
+
+            _mapBrushIndexByEntityID.Add(entityID, index);
+        }
+
+        public void AddMapVolume(MapVolume mapVolume, int entityID)
+        {
+            Map.Volumes.Add(mapVolume);
+            var index = Map.Volumes.Count - 1;
+
+            _mapVolumeIndexByEntityID.Add(entityID, index);
+        }
+
+        public void AddMapLight(Light light, int entityID)
+        {
+            Map.Lights.Add(light);
+            var index = Map.Lights.Count - 1;
+
+            _mapLightIndexByEntityID.Add(entityID, index);
+        }
+
         public void UpdateEntities(IEnumerable<IEntity> entities)
         {
             foreach (var entity in entities)
@@ -61,7 +103,10 @@ namespace SauceEditor.Models
                         UpdateMapBrush(brush);
                         break;
                     case Volume volume:
-                        //UpdateMapVolume(volume);
+                        UpdateMapVolume(volume);
+                        break;
+                    case Light light:
+                        UpdateMapLight(light);
                         break;
                 }
             }
@@ -87,10 +132,23 @@ namespace SauceEditor.Models
             mapBrush.Scale = brush.Scale;
         }
 
-        /*public void AddMapActor(int entityID)
+        private void UpdateMapVolume(Volume volume)
         {
+            var index = _mapVolumeIndexByEntityID[volume.ID];
+            var mapVolume = Map.Volumes[index];
 
-        }*/
+            mapVolume.Position = volume.Position;
+            mapVolume.Rotation = volume.Rotation;
+            mapVolume.Scale = volume.Scale;
+        }
+
+        private void UpdateMapLight(Light light)
+        {
+            var index = _mapLightIndexByEntityID[light.ID];
+            var mapLight = Map.Lights[index];
+
+            mapLight.Position = light.Position;
+        }
 
         public MapCamera GetMapCamera() => Map.Camera;
 

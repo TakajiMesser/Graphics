@@ -27,6 +27,7 @@ namespace SauceEditor.Views.Controls.GamePanels
 
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public float WireframeThickness
         {

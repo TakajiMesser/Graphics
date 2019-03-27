@@ -6,7 +6,7 @@ using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public class PointLight : Light
+    public class PointLight<PLight> : Light
     {
         public float Radius { get; set; }
 

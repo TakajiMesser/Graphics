@@ -34,6 +34,7 @@ namespace SauceEditor.Views.Controls.Properties
         }
 
         public event EventHandler<EntityUpdatedEventArgs> EntityUpdated;
+        public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public PropertyWindow()
         {
