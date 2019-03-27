@@ -187,12 +187,6 @@ namespace SpiceEngine.Physics
                 var firstEntity = _entityProvider.GetEntity(collisionPair.FirstEntityID);
                 var secondEntity = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
-                int a = 3;
-                if (firstEntity.ID == 2 && secondEntity.ID == 3 || firstEntity.ID == 3 && secondEntity.ID == 2)
-                {
-                    a = 4;
-                }
-
                 var collision = firstBody.GetCollision(secondBody);
                 if (collision.HasCollision)
                 {
@@ -205,12 +199,6 @@ namespace SpiceEngine.Physics
         {
             foreach (var collision in _collisionManager.NarrowCollisions)
             {
-                int a = 3;
-                if (collision.FirstBody.EntityID == 2 && collision.SecondBody.EntityID == 3 || collision.FirstBody.EntityID == 3 && collision.SecondBody.EntityID == 2)
-                {
-                    a = 4;
-                }
-
                 // Only resolve the penetration constraint if both bodies are physical. Resolve by determining and applying impulses to each body
                 if (collision.FirstBody.IsPhysical && collision.SecondBody.IsPhysical)
                 {

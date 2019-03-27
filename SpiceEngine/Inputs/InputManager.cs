@@ -14,6 +14,7 @@ namespace SpiceEngine.Inputs
         private List<InputState> _inputStates = new List<InputState>();
         private IMouseDelta _mouseDelta;
 
+        public InputManager() { }
         public InputManager(IMouseDelta mouseDelta)
         {
             _mouseDelta = mouseDelta;

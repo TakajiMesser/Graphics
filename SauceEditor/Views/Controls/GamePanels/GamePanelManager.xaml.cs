@@ -25,6 +25,17 @@ namespace SauceEditor.Views.Controls.GamePanels
     /// </summary>
     public partial class GamePanelManager : DockPanel
     {
+        private MapManager _mapManager;
+        private GameManager _gameManager;
+        private EntityMapping _entityMapping;
+
+        private GamePanelView _perspectiveView;
+        private GamePanelView _xView;
+        private GamePanelView _yView;
+        private GamePanelView _zView;
+
+        private TransformModes _transformMode;
+
         public Resolution Resolution { get; set; }
         public TransformModes TransformMode
         {
@@ -68,20 +79,6 @@ namespace SauceEditor.Views.Controls.GamePanels
 
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
 
-        private TransformModes _transformMode;
-
-        private Map _map;
-
-        private EntityManager _entityManager = new EntityManager();
-        private TextureManager _textureManager = new TextureManager();
-        private PhysicsManager _physicsManager;
-        private ScriptManager _scriptManager;
-
-        private DockableGamePanel _perspectiveView;
-        private DockableGamePanel _xView;
-        private DockableGamePanel _yView;
-        private DockableGamePanel _zView;
-
         public GamePanelManager(string mapPath)
         {
             InitializeComponent();
@@ -90,8 +87,78 @@ namespace SauceEditor.Views.Controls.GamePanels
             TransformMode = TransformModes.Translate;
         }
 
+        private int AddActor(MapActor mapActor)
+        {
+            int entityID = _gameManager.AddEntity(mapActor);
+            _renderManager.AddActor(mapActor, entityID);
+
+            return entityID;
+        }
+
+        private void AddBrush(MapBrush mapBrush)
+        {
+            int entityID = _gameManager.AddBrush(mapBrush);
+            _renderManager.AddBrush(mapBrush, entityID);
+
+            return entityID;
+        }
+
+        private void AddVolume(MapVolume mapVolume)
+        {
+            int entityID = _gameManager.AddVolume(mapVolume);
+            return entityID;
+        }
+
+        private void AddLight(Light light)
+        {
+            int entityID = _gameManager.AddLight(light);
+            return entityID;
+        }
+
         public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
+            switch (_selectedTool)
+            {
+                case Tools.Volume:
+                    // We need to use a MeshShape here to generate a MapBrush, which is purely WIREFRAME
+                    // We need to STORE this MeshShape, since the user might want to create this entity here (but it might not be a Brush type)
+                    // We need to STORE the drawn Brush entityID, since we will need reference to it (and we will want to remove it if they switch selection tools later)
+                    // We can share the same Brush between placing volumes and placing brushes
+
+                    var mapVolume = MapVolume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                    //_toolVolume = Volume.RectangularPrism(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
+                    _toolVolume = mapVolume.ToEntity();
+                    int entityID = _entityManager.AddEntity(_toolVolume);
+
+                    lock (_loadLock)
+                    {
+                        if (_renderManager != null)
+                        {
+                            //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
+                            var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                            _renderManager.BatchManager.AddVolume(entityID, mesh);
+                            _renderManager.BatchManager.Load(entityID);
+                        }
+                    }
+                    break;
+                default:
+                    if (_toolVolume != null)
+                    {
+                        _entityManager.RemoveEntityByID(_toolVolume.ID);
+
+                        lock (_loadLock)
+                        {
+                            if (_renderManager != null)
+                            {
+                                _renderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
+                                _toolVolume = null;
+                            }
+                        }
+                    }
+                    break;
+            }
+
+
             _perspectiveView.Panel.SelectedTool = tool;
             _xView.Panel.SelectedTool = tool;
             _yView.Panel.SelectedTool = tool;
@@ -139,112 +206,21 @@ namespace SauceEditor.Views.Controls.GamePanels
         {
             Resolution = new Resolution((int)Width, (int)Height);
 
-            _textureManager.EnableMipMapping = true;
-            _textureManager.EnableAnisotropy = true;
+            _mapManager = new MapManager(mapPath);
+            _gameManager = new GameManager(Resolution, this);
+            _entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
 
-            _map = Map.Load(mapPath);
+            _mapManager.SetEntityMapping(_entityMapping);
+
             CreateAndShowPanels();
-        }
-
-        private void LoadPanels()
-        {
-            // Wait for at least one panel to finish loading so that we can be sure the GLContext is properly loaded
-            lock (_panelLock)
-            {
-                // Lock and check to ensure that this only happens once
-                if (!_isGLContextLoaded)
-                {
-                    // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                    var entityMapping = LoadFromMap(_map);
-
-                    _perspectiveView.Panel.LoadFromMap(_map, _entityManager, _textureManager, entityMapping);
-                    _xView.Panel.LoadFromMap(_map, _entityManager, _textureManager, entityMapping);
-                    _yView.Panel.LoadFromMap(_map, _entityManager, _textureManager, entityMapping);
-                    _zView.Panel.LoadFromMap(_map, _entityManager, _textureManager, entityMapping);
-                }
-
-                _isGLContextLoaded = true;
-            }
-        }
-
-        private void DuplicateEntity(int entityID, int duplicateEntityID)
-        {
-            _perspectiveView.Panel.Duplicate(entityID, duplicateEntityID);
-            _xView.Panel.Duplicate(entityID, duplicateEntityID);
-            _yView.Panel.Duplicate(entityID, duplicateEntityID);
-            _zView.Panel.Duplicate(entityID, duplicateEntityID);
-
-            _physicsManager.DuplicateBody(entityID, duplicateEntityID);
-            //_scriptManager;
-        }
-
-        private DockableGamePanel CreatePanel(ViewTypes viewType, AnchorableShowStrategy showStrategy)
-        {
-            var gamePanel = new DockableGamePanel(viewType);
-            gamePanel.Panel.Load += (s, args) => LoadPanels();
-            gamePanel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
-            gamePanel.EntitySelectionChanged += (s, args) => OnEntitySelectionChanged(viewType, args);
-
-            /*var anchorable = new LayoutAnchorable
-            {
-                Title = GetTitle(viewType),
-                //FloatingHeight = 400,
-                //FloatingWidth = 500,
-                Content = gamePanel
-            };
-
-            anchorable.AddToLayout(MainDockingManager, showStrategy);
-            anchorable.DockAsDocument();*/
-            gamePanel.Anchorable.Show();
-
-            return gamePanel;
-        }
-
-        private void OnEntitySelectionChanged(ViewTypes viewType, EntitiesEventArgs args)
-        {
-            if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.SelectEntities(args.Entities);
-            if (viewType != ViewTypes.X) _xView.Panel.SelectEntities(args.Entities);
-            if (viewType != ViewTypes.Y) _yView.Panel.SelectEntities(args.Entities);
-            if (viewType != ViewTypes.Z) _zView.Panel.SelectEntities(args.Entities);
-
-            if (args.Entities.Count > 0)
-            {
-                if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.UpdateEntities(args.Entities);
-                if (viewType != ViewTypes.X) _xView.Panel.UpdateEntities(args.Entities);
-                if (viewType != ViewTypes.Y) _yView.Panel.UpdateEntities(args.Entities);
-                if (viewType != ViewTypes.Z) _zView.Panel.UpdateEntities(args.Entities);
-            }
-
-            EntitySelectionChanged?.Invoke(this, args);
         }
 
         private void CreateAndShowPanels()
         {
             _perspectiveView = CreatePanel(ViewTypes.Perspective, AnchorableShowStrategy.Most);
-            //_perspectiveView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
-            //_perspectiveView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            //_perspectiveView.Width = MainDockingManager.Width / 2.0;
-            //_perspectiveView.Height = MainDockingManager.Height / 2.0;
-            //_perspectiveView.Show();
-
             _xView = CreatePanel(ViewTypes.X, AnchorableShowStrategy.Right);
-            //_xView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
-            //_xView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            //_xView.Width = MainDockingManager.Width / 2.0;
-            //_xView.Height = MainDockingManager.Height / 2.0;
-            //_xView.Show(Docks.Right);
-
             _yView = CreatePanel(ViewTypes.Y, AnchorableShowStrategy.Bottom);
-            //_yView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
-            //_yView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            //_yView.Width = MainDockingManager.Width;// / 2.0;
-            //_yView.Height = MainDockingManager.Height / 2.0;
-            //_yView.Show(Docks.Bottom);
-
             _zView = CreatePanel(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
-            //_zView.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
-            //_zView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            //_zView.Show(Docks.Right | Docks.Bottom);
 
             //Get the main LayoutDocumentPane of your DockingManager 
             var rootPanel = MainDockingManager.Layout.RootPanel;
@@ -271,7 +247,68 @@ namespace SauceEditor.Views.Controls.GamePanels
             rootPanel.Children.Add(bottomPaneGroup);
         }
 
-        public EntityMapping LoadFromMap(Map map)
+        private GamePanelView CreatePanel(ViewTypes viewType, AnchorableShowStrategy showStrategy)
+        {
+            var gamePanel = new GamePanelView(viewType);
+            gamePanel.Panel.Load += (s, args) => LoadPanels();
+            gamePanel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            gamePanel.EntitySelectionChanged += (s, args) => OnEntitySelectionChanged(viewType, args);
+            gamePanel.Anchorable.Show();
+
+            return gamePanel;
+        }
+
+        private void LoadPanels()
+        {
+            // Wait for at least one panel to finish loading so that we can be sure the GLContext is properly loaded
+            lock (_panelLock)
+            {
+                // Lock and check to ensure that this only happens once
+                if (!_isGLContextLoaded)
+                {
+                    // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
+                    _perspectiveView.Panel.LoadGameManager(_gameManager, _entityMapping);
+                    _xView.Panel.LoadGameManager(_gameManager, _entityMapping);
+                    _yView.Panel.LoadGameManager(_gameManager, _entityMapping);
+                    _zView.Panel.LoadGameManager(_gameManager, _entityMapping);
+                }
+
+                _isGLContextLoaded = true;
+            }
+        }
+
+        private void DuplicateEntity(int entityID, int duplicateEntityID)
+        {
+            _perspectiveView.Panel.Duplicate(entityID, duplicateEntityID);
+            _xView.Panel.Duplicate(entityID, duplicateEntityID);
+            _yView.Panel.Duplicate(entityID, duplicateEntityID);
+            _zView.Panel.Duplicate(entityID, duplicateEntityID);
+
+            _physicsManager.DuplicateBody(entityID, duplicateEntityID);
+            //_scriptManager;
+        }
+
+        private void OnEntitySelectionChanged(ViewTypes viewType, EntitiesEventArgs args)
+        {
+            if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.SelectEntities(args.Entities);
+            if (viewType != ViewTypes.X) _xView.Panel.SelectEntities(args.Entities);
+            if (viewType != ViewTypes.Y) _yView.Panel.SelectEntities(args.Entities);
+            if (viewType != ViewTypes.Z) _zView.Panel.SelectEntities(args.Entities);
+
+            if (args.Entities.Count > 0)
+            {
+                if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.UpdateEntities(args.Entities);
+                if (viewType != ViewTypes.X) _xView.Panel.UpdateEntities(args.Entities);
+                if (viewType != ViewTypes.Y) _yView.Panel.UpdateEntities(args.Entities);
+                if (viewType != ViewTypes.Z) _zView.Panel.UpdateEntities(args.Entities);
+
+                _mapManager.UpdateEntities(args.Entities);
+            }
+
+            EntitySelectionChanged?.Invoke(this, args);
+        }
+
+        /*public EntityMapping LoadFromMap(Map map)
         {
             switch (map)
             {
@@ -341,7 +378,7 @@ namespace SauceEditor.Views.Controls.GamePanels
         {
             foreach (var mapActor in mapActors)
             {
-                var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
+                var actor = mapActor.ToEntity(/*_gameManager.TextureManager*);
                 int entityID = _entityManager.AddEntity(actor);
 
                 var meshes = mapActor.ToMeshes();
@@ -352,7 +389,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                 /*actor.HasCollision = mapActor.HasCollision;
                 actor.Bounds = actor.Name == "Player"
                     ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*
 
                 var behavior = mapActor.ToBehavior();
                 _scriptManager.AddBehavior(entityID, behavior);
@@ -386,7 +423,7 @@ namespace SauceEditor.Views.Controls.GamePanels
 
                 yield return entityID;
             }
-        }
+        }*/
 
         private void TranslateButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Translate;
 
@@ -460,13 +497,13 @@ namespace SauceEditor.Views.Controls.GamePanels
             }
         }
 
-        private void Show(DockableGamePanel gamePanel)
+        private void Show(GamePanelView gamePanel)
         {
             ((LayoutAnchorablePaneGroup)gamePanel.Parent).DockMinHeight = MainDockingManager.ActualHeight;
             gamePanel.Anchorable.Show();
         }
 
-        private void Hide(DockableGamePanel gamePanel)
+        private void Hide(GamePanelView gamePanel)
         {
             ((LayoutAnchorablePaneGroup)gamePanel.Parent).DockMinHeight = 0;
             gamePanel.Anchorable.Hide();
