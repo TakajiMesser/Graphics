@@ -48,6 +48,45 @@ namespace SauceEditor.Models
             }
         }
 
+        public void UpdateEntities(IEnumerable<IEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                switch (entity)
+                {
+                    case Actor actor:
+                        UpdateMapActor(actor);
+                        break;
+                    case Brush brush:
+                        UpdateMapBrush(brush);
+                        break;
+                    case Volume volume:
+                        //UpdateMapVolume(volume);
+                        break;
+                }
+            }
+        }
+
+        private void UpdateMapActor(Actor actor)
+        {
+            var index = _mapActorIndexByEntityID[actor.ID];
+            var mapActor = Map.Actors[index];
+
+            mapActor.Position = actor.Position;
+            mapActor.Rotation = actor.Rotation;
+            mapActor.Scale = actor.Scale;
+        }
+
+        private void UpdateMapBrush(Brush brush)
+        {
+            var index = _mapBrushIndexByEntityID[brush.ID];
+            var mapBrush = Map.Brushes[index];
+
+            mapBrush.Position = brush.Position;
+            mapBrush.Rotation = brush.Rotation;
+            mapBrush.Scale = brush.Scale;
+        }
+
         /*public void AddMapActor(int entityID)
         {
 

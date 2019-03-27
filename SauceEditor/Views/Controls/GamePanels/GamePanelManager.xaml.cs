@@ -301,6 +301,8 @@ namespace SauceEditor.Views.Controls.GamePanels
                 if (viewType != ViewTypes.X) _xView.Panel.UpdateEntities(args.Entities);
                 if (viewType != ViewTypes.Y) _yView.Panel.UpdateEntities(args.Entities);
                 if (viewType != ViewTypes.Z) _zView.Panel.UpdateEntities(args.Entities);
+
+                _mapManager.UpdateEntities(args.Entities);
             }
 
             EntitySelectionChanged?.Invoke(this, args);
