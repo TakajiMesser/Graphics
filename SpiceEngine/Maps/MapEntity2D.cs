@@ -11,6 +11,5 @@ namespace SpiceEngine.Maps
         public Vector2 Scale { get; set; } = Vector2.One;
 
         public abstract T ToEntity();
-        public abstract Shape2D ToShape();
     }
 }

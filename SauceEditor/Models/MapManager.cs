@@ -86,7 +86,7 @@ namespace SauceEditor.Models
             _mapVolumeIndexByEntityID.Add(entityID, index);
         }
 
-        public void AddMapLight(ILight light, int entityID)
+        public void AddMapLight(MapLight light, int entityID)
         {
             Map.Lights.Add(light);
             var index = Map.Lights.Count - 1;
@@ -121,9 +121,7 @@ namespace SauceEditor.Models
             var index = _mapActorIndexByEntityID[actor.ID];
             var mapActor = Map.Actors[index];
 
-            mapActor.Position = actor.Position;
-            mapActor.Rotation = actor.OriginalRotation;
-            mapActor.Scale = actor.Scale;
+            mapActor.UpdateFrom(actor);
         }
 
         private void UpdateMapBrush(Brush brush)
@@ -131,9 +129,7 @@ namespace SauceEditor.Models
             var index = _mapBrushIndexByEntityID[brush.ID];
             var mapBrush = Map.Brushes[index];
 
-            mapBrush.Position = brush.Position;
-            mapBrush.Rotation = brush.OriginalRotation;
-            mapBrush.Scale = brush.Scale;
+            mapBrush.UpdateFrom(brush);
         }
 
         private void UpdateMapVolume(Volume volume)
@@ -141,9 +137,7 @@ namespace SauceEditor.Models
             var index = _mapVolumeIndexByEntityID[volume.ID];
             var mapVolume = Map.Volumes[index];
 
-            mapVolume.Position = volume.Position;
-            mapVolume.Rotation = volume.OriginalRotation;
-            mapVolume.Scale = volume.Scale;
+            mapVolume.UpdateFrom(volume);
         }
 
         private void UpdateMapLight(ILight light)
@@ -151,7 +145,7 @@ namespace SauceEditor.Models
             var index = _mapLightIndexByEntityID[light.ID];
             var mapLight = Map.Lights[index];
 
-            mapLight.Position = light.Position;
+            mapLight.UpdateFrom(light);
         }
 
         public MapCamera GetMapCamera() => Map.Camera;
@@ -174,7 +168,7 @@ namespace SauceEditor.Models
             return Map.Volumes[index];
         }
 
-        public ILight GetMapLight(int entityID)
+        public MapLight GetMapLight(int entityID)
         {
             var index = _mapLightIndexByEntityID[entityID];
             return Map.Lights[index];

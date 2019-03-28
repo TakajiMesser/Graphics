@@ -33,12 +33,12 @@ namespace SpiceEngine.Maps
         public override Brush ToEntity() => new Brush(Material)
         {
             Position = Position,
-            OriginalRotation = Rotation,
+            Rotation = Quaternion.FromEulerAngles(Rotation),
             Scale = Scale,
             //HasCollision = HasCollision
         };
 
-        public override Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
+        public Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

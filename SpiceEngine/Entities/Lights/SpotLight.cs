@@ -9,7 +9,6 @@ namespace SpiceEngine.Entities.Lights
         public float Radius { get; set; }
         public float Height { get; set; }
 
-        public Vector3 OriginalRotation { get; set; }
         public Quaternion Rotation { get; set; }
 
         public Vector3 Direction => (new Vector4(0.0f, 0.0f, -Height, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;

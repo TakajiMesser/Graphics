@@ -14,7 +14,7 @@ namespace Jidai
     {
         static void Main(string[] args)
         {
-            MapBuilder.CreateTestMap();
+            MapBuilder.GenerateTestMap(FilePathHelper.MAP_PATH);
             var map = Map.Load(FilePathHelper.MAP_PATH);
 
             using (var gameWindow = new GameWindow())

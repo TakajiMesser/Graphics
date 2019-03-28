@@ -22,8 +22,6 @@ namespace SpiceEngine.Entities.Volumes
             set => _modelMatrix.Translation = value;
         }
 
-        public Vector3 OriginalRotation { get; set; }
-
         public Quaternion Rotation
         {
             get => _modelMatrix.Rotation;

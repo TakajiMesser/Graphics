@@ -93,7 +93,11 @@ namespace SpiceEngine.Game
             return entityMapping;
         }
 
-        public int AddLight(ILight light) => EntityManager.AddEntity(light);
+        public int AddLight(MapLight mapLight)
+        {
+            var light = mapLight.ToEntity();
+            return EntityManager.AddEntity(light);
+        }
 
         public int AddBrush(MapBrush mapBrush)
         {
@@ -170,12 +174,11 @@ namespace SpiceEngine.Game
             return entityID;
         }
 
-        private IEnumerable<int> LoadLights(IEnumerable<ILight> lights)
+        private IEnumerable<int> LoadLights(IEnumerable<MapLight> mapLights)
         {
-            foreach (var light in lights)
+            foreach (var mapLight in mapLights)
             {
-                int entityID = EntityManager.AddEntity(light);
-                yield return entityID;
+                yield return AddLight(mapLight);
             }
         }
 

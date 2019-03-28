@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : IEntity, IRotate, IScale
+    public class ActorArchetype : IEntity, IRotate, IScale
     {
         public int ID { get; set; }
         public string Name { get; private set; }

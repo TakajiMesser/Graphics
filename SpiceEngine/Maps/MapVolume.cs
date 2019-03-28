@@ -37,14 +37,14 @@ namespace SpiceEngine.Maps
                     return new BlockingVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        OriginalRotation = Rotation,
+                        Rotation = Quaternion.FromEulerAngles(Rotation),
                         Scale = Scale
                     };
                 case VolumeTypes.Physics:
                     return new PhysicsVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        OriginalRotation = Rotation,
+                        Rotation = Quaternion.FromEulerAngles(Rotation),
                         Scale = Scale,
                         Gravity = Gravity
                     };
@@ -52,7 +52,7 @@ namespace SpiceEngine.Maps
                     return new TriggerVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        OriginalRotation = Rotation,
+                        Rotation = Quaternion.FromEulerAngles(Rotation),
                         Scale = Scale
                     };
             }
@@ -60,12 +60,12 @@ namespace SpiceEngine.Maps
             return new Volume()//Vertices, TriangleIndices, Color)
             {
                 Position = Position,
-                OriginalRotation = Rotation,
+                Rotation = Quaternion.FromEulerAngles(Rotation),
                 Scale = Scale
             };
         }
 
-        public override Shape3D ToShape() => new Box(Vertices);
+        public Shape3D ToShape() => new Box(Vertices);
 
         public static MapVolume Rectangle(Vector3 center, float width, float height)
         {

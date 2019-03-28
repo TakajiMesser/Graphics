@@ -299,14 +299,14 @@ namespace SpiceEngine.Maps
             }
 
             actor.Position = Position;
-            actor.OriginalRotation = Rotation;
+            actor.Rotation = Quaternion.FromEulerAngles(Rotation);
             actor.Scale = Scale;
             actor.Orientation = Quaternion.FromEulerAngles(Orientation);
 
             return actor;
         }
 
-        public override Shape3D ToShape()
+        public Shape3D ToShape()
         {
             using (var importer = new Assimp.AssimpContext())
             {

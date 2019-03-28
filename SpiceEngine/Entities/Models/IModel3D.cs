@@ -13,7 +13,6 @@ namespace SpiceEngine.Entities.Models
         Vector3 Position { get; set; }
         Quaternion Rotation { get; set; }
         Quaternion Orientation { get; set; }
-        Vector3 OriginalRotation { get; set; }
         Vector3 Scale { get; set; }
 
         void Load();
