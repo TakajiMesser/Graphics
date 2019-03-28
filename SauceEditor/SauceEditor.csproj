@@ -120,16 +120,17 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\Commands\ICommand.cs" />
     <Compile Include="ViewModels\Commands\CommandEventArgs.cs" />
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
-    <Compile Include="Views\Controls\GamePanels\DockableGamePanel.xaml.cs">
-      <DependentUpon>DockableGamePanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Controls\GamePanels\GamePanelManager.xaml.cs">
       <DependentUpon>GamePanelManager.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\GamePanels\GamePanelView.xaml.cs">
+      <DependentUpon>GamePanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
@@ -165,13 +166,13 @@
     <Compile Include="Models\EditorSettings.cs" />
     <Compile Include="Models\GameProject.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
-    <Page Include="Views\Controls\GamePanels\DockableGamePanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Controls\GamePanels\GamePanelManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\GamePanels\GamePanelView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>

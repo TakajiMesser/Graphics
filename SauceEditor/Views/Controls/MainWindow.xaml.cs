@@ -19,6 +19,7 @@ using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
 using GameWindow = SpiceEngine.Game.GameWindow;
+using ICommand = SauceEditor.ViewModels.Commands.ICommand;
 
 namespace SauceEditor.Views.Controls
 {
@@ -204,6 +205,16 @@ namespace SauceEditor.Views.Controls
             _projectTree?.SaveProject();
         }
 
+        private void UndoButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             _gamePanelManager.IsEnabled = false;
@@ -266,20 +277,20 @@ namespace SauceEditor.Views.Controls
 
             if (CommandStack.CanUndo)
             {
-                UndoButton.Enabled = true;
+                UndoButton.IsEnabled = true;
             }
             else
             {
-                UndoButton.Enabled = false;
+                UndoButton.IsEnabled = false;
             }
 
             if (CommandStack.CanRedo)
             {
-                RedoButton.Enabled = true;
+                RedoButton.IsEnabled = true;
             }
             else
             {
-                RedoButton.Enabled = false;
+                RedoButton.IsEnabled = false;
             }
         }
 

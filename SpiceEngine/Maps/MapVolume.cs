@@ -1,12 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Rendering.Meshes;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Maps
 {
@@ -37,14 +34,14 @@ namespace SpiceEngine.Maps
             switch (VolumeType)
             {
                 case VolumeTypes.Blocking:
-                    return new BlockingVolume(Vertices, TriangleIndices, Color)
+                    return new BlockingVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
                         OriginalRotation = Rotation,
                         Scale = Scale
                     };
                 case VolumeTypes.Physics:
-                    return new PhysicsVolume(Vertices, TriangleIndices, Color)
+                    return new PhysicsVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
                         OriginalRotation = Rotation,
@@ -52,7 +49,7 @@ namespace SpiceEngine.Maps
                         Gravity = Gravity
                     };
                 case VolumeTypes.Trigger:
-                    return new TriggerVolume(Vertices, TriangleIndices, Color)
+                    return new TriggerVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
                         OriginalRotation = Rotation,
@@ -60,7 +57,7 @@ namespace SpiceEngine.Maps
                     };
             }
 
-            return new Volume(Vertices, TriangleIndices, Color)
+            return new Volume()//Vertices, TriangleIndices, Color)
             {
                 Position = Position,
                 OriginalRotation = Rotation,

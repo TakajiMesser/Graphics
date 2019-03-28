@@ -35,6 +35,16 @@ namespace SpiceEngine.Game
 
         private Resolution _resolution;
 
+        public GameManager(Resolution resolution)
+        {
+            _resolution = resolution;
+
+            InputManager = new InputManager();
+
+            TextureManager.EnableMipMapping = true;
+            TextureManager.EnableAnisotropy = true;
+        }
+
         public GameManager(Resolution resolution, IMouseDelta mouseDelta)
         {
             _resolution = resolution;
@@ -79,7 +89,7 @@ namespace SpiceEngine.Game
             return entityMapping;
         }
 
-        public int AddLight(Light light) => EntityManager.AddEntity(light);
+        public int AddLight(ILight light) => EntityManager.AddEntity(light);
 
         public int AddBrush(MapBrush mapBrush)
         {
@@ -156,7 +166,7 @@ namespace SpiceEngine.Game
             return entityID;
         }
 
-        private IEnumerable<int> LoadLights(IEnumerable<Light> lights)
+        private IEnumerable<int> LoadLights(IEnumerable<ILight> lights)
         {
             foreach (var light in lights)
             {

@@ -1,22 +1,19 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
+﻿using SauceEditor.Models;
+using SauceEditor.ViewModels.Commands;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
-using SpiceEngine.Physics;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Scripting;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
+using ViewTypes = SpiceEngine.Game.ViewTypes;
 
 namespace SauceEditor.Views.Controls.GamePanels
 {
@@ -88,16 +85,16 @@ namespace SauceEditor.Views.Controls.GamePanels
             TransformMode = TransformModes.Translate;
         }
 
-        private int AddActor(MapActor mapActor)
+        /*private int AddActor(MapActor mapActor)
         {
-            int entityID = _gameManager.AddEntity(mapActor);
+            int entityID = _gameManager.AddActor(mapActor);
             _mapManager.AddActor(mapActor, entityID);
             _renderManager.AddActor(mapActor, entityID);
 
             return entityID;
         }
 
-        private void AddBrush(MapBrush mapBrush)
+        private int AddBrush(MapBrush mapBrush)
         {
             int entityID = _gameManager.AddBrush(mapBrush);
             _mapManager.AddBrush(mapBrush, entityID);
@@ -106,23 +103,23 @@ namespace SauceEditor.Views.Controls.GamePanels
             return entityID;
         }
 
-        private void AddVolume(MapVolume mapVolume)
+        private int AddVolume(MapVolume mapVolume)
         {
             int entityID = _gameManager.AddVolume(mapVolume);
             _mapManager.AddVolume(mapVolume, entityID);
             return entityID;
         }
 
-        private void AddLight(Light light)
+        private int AddLight(ILight light)
         {
             int entityID = _gameManager.AddLight(light);
             _mapManager.AddLight(light, entityID);
             return entityID;
-        }
+        }*/
 
         public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
-            switch (_selectedTool)
+            /*switch (_selectedTool)
             {
                 case Tools.Volume:
                     // We need to use a MeshShape here to generate a MapBrush, which is purely WIREFRAME
@@ -161,8 +158,7 @@ namespace SauceEditor.Views.Controls.GamePanels
                         }
                     }
                     break;
-            }
-
+            }*/
 
             _perspectiveView.Panel.SelectedTool = tool;
             _xView.Panel.SelectedTool = tool;
@@ -212,10 +208,7 @@ namespace SauceEditor.Views.Controls.GamePanels
             Resolution = new Resolution((int)Width, (int)Height);
 
             _mapManager = new MapManager(mapPath);
-            _gameManager = new GameManager(Resolution, this);
-            _entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
-
-            _mapManager.SetEntityMapping(_entityMapping);
+            _gameManager = new GameManager(Resolution);
 
             CreateAndShowPanels();
         }
@@ -271,11 +264,14 @@ namespace SauceEditor.Views.Controls.GamePanels
                 // Lock and check to ensure that this only happens once
                 if (!_isGLContextLoaded)
                 {
+                    _entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
+                    _mapManager.SetEntityMapping(_entityMapping);
+
                     // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                    _perspectiveView.Panel.LoadGameManager(_gameManager, _entityMapping);
-                    _xView.Panel.LoadGameManager(_gameManager, _entityMapping);
-                    _yView.Panel.LoadGameManager(_gameManager, _entityMapping);
-                    _zView.Panel.LoadGameManager(_gameManager, _entityMapping);
+                    _perspectiveView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                    _xView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                    _yView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                    _zView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
                 }
 
                 _isGLContextLoaded = true;
@@ -289,7 +285,7 @@ namespace SauceEditor.Views.Controls.GamePanels
             _yView.Panel.Duplicate(entityID, duplicateEntityID);
             _zView.Panel.Duplicate(entityID, duplicateEntityID);
 
-            _physicsManager.DuplicateBody(entityID, duplicateEntityID);
+            //_physicsManager.DuplicateBody(entityID, duplicateEntityID);
             //_scriptManager;
         }
 

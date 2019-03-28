@@ -122,7 +122,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderLights(Camera camera, IEnumerable<Light> lights)
+        public void RenderLights(Camera camera, IEnumerable<ILight> lights)
         {
             _billboardProgram.Use();
 
@@ -167,7 +167,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderSelection(Camera camera, Light light)
+        public void RenderSelection(Camera camera, ILight light)
         {
             _billboardProgram.Use();
 
@@ -190,7 +190,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(light.Yield());
         }
 
-        public void RenderLightSelections(Camera camera, IEnumerable<Light> lights)
+        public void RenderLightSelections(Camera camera, IEnumerable<ILight> lights)
         {
             _billboardSelectionProgram.Use();
 
@@ -207,7 +207,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
-        private void DrawLights(IEnumerable<Light> lights)
+        private void DrawLights(IEnumerable<ILight> lights)
         {
             _vertexBuffer.Clear();
             foreach (var light in lights)

@@ -4,7 +4,7 @@ using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public class SpotLight<SLight> : Light, IRotate
+    public class SpotLight : Light<SLight>, IRotate
     {
         public float Radius { get; set; }
         public float Height { get; set; }
@@ -55,6 +55,6 @@ namespace SpiceEngine.Entities.Lights
             program.SetUniform("lightIntensity", Intensity);
         }
 
-        public SLight ToStruct() => new SLight(Position, Radius, Color.Xyz, Intensity);
+        public override SLight ToStruct() => new SLight(Position, Radius, Color.Xyz, Intensity);
     }
 }

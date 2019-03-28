@@ -12,7 +12,6 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
@@ -37,6 +36,7 @@ namespace SpiceEngine.Game
     {
         private PanelCamera _panelCamera;
         private GameManager _gameManager;
+        private Map _map;
         private EntityMapping _entityMapping;
         private RenderManager _renderManager;
 
@@ -101,7 +101,7 @@ namespace SpiceEngine.Game
                         var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
                         //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                         _toolVolume = mapVolume.ToEntity();
-                        int entityID = _entityManager.AddEntity(_toolVolume);
+                        int entityID = _gameManager.EntityManager.AddEntity(_toolVolume);
 
                         lock (_loadLock)
                         {
@@ -117,7 +117,7 @@ namespace SpiceEngine.Game
                     default:
                         if (_toolVolume != null)
                         {
-                            _entityManager.RemoveEntityByID(_toolVolume.ID);
+                            _gameManager.EntityManager.RemoveEntityByID(_toolVolume.ID);
 
                             lock (_loadLock)
                             {
@@ -170,7 +170,7 @@ namespace SpiceEngine.Game
 
         public void CenterView()
         {
-            if (_entityManager != null && SelectedEntities.Count > 0)
+            if (_gameManager.EntityManager != null && SelectedEntities.Count > 0)
             {
                 _panelCamera.CenterView(SelectedEntities.Select(e => e.Position));
                 RenderFrame();
@@ -213,8 +213,6 @@ namespace SpiceEngine.Game
         {
             Location = new Point(0, 0);
 
-            _renderManager = new RenderManager(Resolution, WindowSize);
-
             lock (_loadLock)
             {
                 _isLoaded = true;
@@ -228,9 +226,10 @@ namespace SpiceEngine.Game
             base.OnLoad(e);
         }
 
-        public void LoadGameManager(GameManager gameManager, EntityMapping entityMapping)
+        public void LoadGameManager(GameManager gameManager, Map map, EntityMapping entityMapping)
         {
             _gameManager = gameManager;
+            _map = map;
             _entityMapping = entityMapping;
 
             lock (_loadLock)
@@ -244,14 +243,14 @@ namespace SpiceEngine.Game
 
         private void LoadFromGameManager()
         {
+            _renderManager = new RenderManager(Resolution, WindowSize);
+            _renderManager.LoadFromMap(_map, _gameManager.EntityManager, _entityMapping);
+
             _panelCamera = new PanelCamera(Resolution, _renderManager)
             {
                 ViewType = _viewType
             };
             _panelCamera.Load();
-
-            _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.LoadFromMap(_map, _entityManager, _entityMapping);
 
             // Clear pointers
             //_map = null;
@@ -296,7 +295,7 @@ namespace SpiceEngine.Game
         {
             foreach (var entity in entities)
             {
-                var selectedEntity = _entityManager.GetEntity(entity.ID);
+                var selectedEntity = _gameManager.EntityManager.GetEntity(entity.ID);
 
                 if (selectedEntity != null)
                 {
@@ -314,8 +313,8 @@ namespace SpiceEngine.Game
                             selectedBrush.OriginalRotation = brush.OriginalRotation;
                             selectedBrush.Scale = brush.Scale;
                             break;
-                        case Light light:
-                            var selectedLight = selectedEntity as Light;
+                        case ILight light:
+                            var selectedLight = selectedEntity as ILight;
                             selectedLight.Color = light.Color;
                             break;
                     }
@@ -327,7 +326,7 @@ namespace SpiceEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _entityManager != null)
+            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _gameManager != null)
             {
                 base.OnPaint(e);
                 RenderFrame();
@@ -366,25 +365,25 @@ namespace SpiceEngine.Game
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:
-                    _renderManager.RenderWireframe(_entityManager, _panelCamera.Camera);
-                    _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
+                    _renderManager.RenderWireframe(_gameManager.EntityManager, _panelCamera.Camera);
+                    _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame(_entityManager, _panelCamera.Camera, _textureManager);
-                    _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
+                    _renderManager.RenderDiffuseFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
+                    _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Lit:
-                    _renderManager.RenderLitFrame(_entityManager, _panelCamera.Camera, _textureManager);
-                    _renderManager.RenderEntityIDs(_entityManager, _panelCamera.Camera);
+                    _renderManager.RenderLitFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
+                    _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Full:
-                    _renderManager.RenderFullFrame(_entityManager, _panelCamera.Camera, _textureManager);
+                    _renderManager.RenderFullFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
                     break;
             }
 
             if (SelectedEntities.Count > 0)
             {
-                _renderManager.RenderSelection(_entityManager, _panelCamera.Camera, SelectedEntities, TransformMode);
+                _renderManager.RenderSelection(_gameManager.EntityManager, _panelCamera.Camera, SelectedEntities, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -490,34 +489,37 @@ namespace SpiceEngine.Game
             RenderFrame();
             var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
 
-            if (id > 0)
+            if (!SelectionRenderer.IsReservedID(id))
             {
-                var entity = _entityManager.GetEntity(id);
+                if (id > 0)
+                {
+                    var entity = _gameManager.EntityManager.GetEntity(id);
 
-                if (isMultiSelect && SelectedEntities.Select(e => e.ID).Contains(id))
-                {
-                    SelectedEntities.Remove(entity);
-                    EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                    RenderFrame();
-                }
-                else if (!SelectionRenderer.IsReservedID(id) && !SelectedEntities.Select(e => e.ID).Contains(id))
-                {
-                    if (!isMultiSelect)
+                    if (isMultiSelect && SelectedEntities.Select(e => e.ID).Contains(id))
                     {
-                        SelectedEntities.Clear();
+                        SelectedEntities.Remove(entity);
+                        EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
+                        RenderFrame();
                     }
+                    else if (!SelectedEntities.Select(e => e.ID).Contains(id))
+                    {
+                        if (!isMultiSelect)
+                        {
+                            SelectedEntities.Clear();
+                        }
 
-                    SelectedEntities.Add(entity);
+                        SelectedEntities.Add(entity);
+                        EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
+                        RenderFrame();
+                    }
+                }
+                else if (!isMultiSelect)
+                {
+                    SelectedEntities.Clear();
+
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
                     RenderFrame();
                 }
-            }
-            else if (!isMultiSelect)
-            {
-                SelectedEntities.Clear();
-
-                EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                RenderFrame();
             }
         }
 
@@ -583,7 +585,7 @@ namespace SpiceEngine.Game
 
             foreach (var entity in SelectedEntities)
             {
-                var duplicateEntity = _entityManager.DuplicateEntity(entity);
+                var duplicateEntity = _gameManager.EntityManager.DuplicateEntity(entity);
                 // Need to duplicate colliders
                 // Need to duplicate scripts
 

@@ -29,7 +29,7 @@ namespace SpiceEngine.Entities
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
         public List<Volume> Volumes { get; } = new List<Volume>();
-        public List<Light> Lights { get; } = new List<Light>();
+        public List<ILight> Lights { get; } = new List<ILight>();
 
         public IEnumerable<int> EntityRenderIDs => _layerManager.EntityRenderIDs;
         public IEnumerable<int> EntityScriptIDs => _layerManager.EntityScriptIDs;
@@ -105,7 +105,7 @@ namespace SpiceEngine.Entities
                     Volumes.Add(volume);
                     _entityTypeByID.Add(entity.ID, EntityTypes.Volume);
                     break;
-                case Light light:
+                case ILight light:
                     Lights.Add(light);
                     _entityTypeByID.Add(entity.ID, EntityTypes.Light);
                     break;
@@ -130,7 +130,7 @@ namespace SpiceEngine.Entities
                 case Volume volume:
                     duplicateEntity = volume.Duplicate();
                     break;
-                case Light light:
+                case ILight light:
                     /*duplicateEntity = new Light()
                     {
                         Position = light.Position,
@@ -159,7 +159,7 @@ namespace SpiceEngine.Entities
                 case Volume volume:
                     Volumes.Remove(volume);
                     break;
-                case Light light:
+                case ILight light:
                     Lights.Remove(light);
                     break;
             }

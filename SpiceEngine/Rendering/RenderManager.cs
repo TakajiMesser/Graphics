@@ -12,7 +12,6 @@ using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering
@@ -65,9 +64,9 @@ namespace SpiceEngine.Rendering
             BatchManager = new BatchManager(entityProvider);
 
             AddBrushes(map.Brushes, entityMapping.BrushIDs);
-            AddVolumes(map.Volumes, entityMapping.VolumeIDs);
+            //AddVolumes(map.Volumes, entityMapping.VolumeIDs);
             //AddLights(map.Lights, entityMapping.LightIDs);
-            //AddActors(map.Actors, entityMapping.ActorIDs);
+            AddActors(map.Actors, entityMapping.ActorIDs);
 
             BatchManager.Load();
 
@@ -204,7 +203,7 @@ namespace SpiceEngine.Rendering
             {
                 var entity = entities[i];
 
-                if (entity is Light light)
+                if (entity is ILight light)
                 {
                     var lightMesh = _lightRenderer.GetMeshForLight(light);
                     _wireframeRenderer.SelectionPass(camera, light, lightMesh);

@@ -1,6 +1,10 @@
-﻿using SpiceEngine.Maps;
-using System;
-using System.Collections;
+﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Maps;
+using System.Collections.Generic;
 
 namespace SauceEditor.Models
 {
@@ -39,22 +43,22 @@ namespace SauceEditor.Models
         {
             for (var i = 0; i < entityMapping.ActorIDs.Count; i++)
             {
-                _mapActorIndexByEntityID.Add(i, entityMapping.ActorIDs[i]);
+                _mapActorIndexByEntityID.Add(entityMapping.ActorIDs[i], i);
             }
 
             for (var i = 0; i < entityMapping.BrushIDs.Count; i++)
             {
-                _mapBrushIndexByEntityID.Add(i, entityMapping.BrushIDs[i]);
+                _mapBrushIndexByEntityID.Add(entityMapping.BrushIDs[i], i);
             }
 
             for (var i = 0; i < entityMapping.VolumeIDs.Count; i++)
             {
-                _mapVolumeIndexByEntityID.Add(i, entityMapping.VolumeIDs[i]);
+                _mapVolumeIndexByEntityID.Add(entityMapping.VolumeIDs[i], i);
             }
 
             for (var i = 0; i < entityMapping.LightIDs.Count; i++)
             {
-                _mapLightIndexByEntityID.Add(i, entityMapping.LightIDs[i]);
+                _mapLightIndexByEntityID.Add(entityMapping.LightIDs[i], i);
             }
         }
 
@@ -82,7 +86,7 @@ namespace SauceEditor.Models
             _mapVolumeIndexByEntityID.Add(entityID, index);
         }
 
-        public void AddMapLight(Light light, int entityID)
+        public void AddMapLight(ILight light, int entityID)
         {
             Map.Lights.Add(light);
             var index = Map.Lights.Count - 1;
@@ -105,7 +109,7 @@ namespace SauceEditor.Models
                     case Volume volume:
                         UpdateMapVolume(volume);
                         break;
-                    case Light light:
+                    case ILight light:
                         UpdateMapLight(light);
                         break;
                 }
@@ -118,7 +122,7 @@ namespace SauceEditor.Models
             var mapActor = Map.Actors[index];
 
             mapActor.Position = actor.Position;
-            mapActor.Rotation = actor.Rotation;
+            mapActor.Rotation = actor.OriginalRotation;
             mapActor.Scale = actor.Scale;
         }
 
@@ -128,7 +132,7 @@ namespace SauceEditor.Models
             var mapBrush = Map.Brushes[index];
 
             mapBrush.Position = brush.Position;
-            mapBrush.Rotation = brush.Rotation;
+            mapBrush.Rotation = brush.OriginalRotation;
             mapBrush.Scale = brush.Scale;
         }
 
@@ -138,11 +142,11 @@ namespace SauceEditor.Models
             var mapVolume = Map.Volumes[index];
 
             mapVolume.Position = volume.Position;
-            mapVolume.Rotation = volume.Rotation;
+            mapVolume.Rotation = volume.OriginalRotation;
             mapVolume.Scale = volume.Scale;
         }
 
-        private void UpdateMapLight(Light light)
+        private void UpdateMapLight(ILight light)
         {
             var index = _mapLightIndexByEntityID[light.ID];
             var mapLight = Map.Lights[index];
@@ -170,7 +174,7 @@ namespace SauceEditor.Models
             return Map.Volumes[index];
         }
 
-        public Light GetMapLight(int entityID)
+        public ILight GetMapLight(int entityID)
         {
             var index = _mapLightIndexByEntityID[entityID];
             return Map.Lights[index];

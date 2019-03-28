@@ -4,7 +4,7 @@ using SpiceEngine.Rendering.Shaders;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public class DirectionalLight<DLight> : Light, IRotate
+    public class DirectionalLight : Light<DLight>, IRotate
     {
         public Vector3 OriginalRotation { get; set; }
         public Quaternion Rotation { get; set; }
@@ -36,6 +36,6 @@ namespace SpiceEngine.Entities.Lights
             program.SetUniform("lightIntensity", Intensity);*/
         }
 
-        public DLight ToStruct() => new DLight(Color.Xyz, Intensity);
+        public override DLight ToStruct() => new DLight(Color.Xyz, Intensity);
     }
 }

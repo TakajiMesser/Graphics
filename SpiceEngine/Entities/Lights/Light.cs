@@ -4,7 +4,7 @@ using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public abstract class Light<T> : IEntity where T : struct
+    public abstract class Light<T> : ILight where T : struct
     {
         public int ID { get; set; }
 

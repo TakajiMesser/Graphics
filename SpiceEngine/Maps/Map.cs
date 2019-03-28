@@ -15,7 +15,7 @@ namespace SpiceEngine.Maps
         public List<MapActor> Actors { get; set; } = new List<MapActor>();
         public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
         public List<MapVolume> Volumes { get; set; } = new List<MapVolume>();
-        public List<Light> Lights { get; set; } = new List<Light>();
+        public List<ILight> Lights { get; set; } = new List<ILight>();
         public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();
 
         protected abstract void CalculateBounds();

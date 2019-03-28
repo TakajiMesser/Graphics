@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Utilities;
+using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Controls.UpDowns;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;

@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Utilities;
+using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
@@ -80,7 +81,7 @@ namespace SauceEditor.Views.Controls.Properties
 
             ColorPick.SelectedColorChanged += (s, args) =>
             {
-                if (_entity != null && _entity is Light light)
+                if (_entity != null && _entity is ILight light)
                 {
                     light.Color = args.NewValue.Value.ToVector4();
                 }
@@ -125,7 +126,7 @@ namespace SauceEditor.Views.Controls.Properties
                 ScaleTransform.SetValues(brush.Scale);
             }
 
-            if (_entity is Light light)
+            if (_entity is ILight light)
             {
                 PropertyGrid.RowDefinitions[5].Height = GridLength.Auto;
                 ColorPick.Visibility = Visibility.Visible;

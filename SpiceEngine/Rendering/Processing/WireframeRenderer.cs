@@ -202,7 +202,7 @@ namespace SpiceEngine.Rendering.Processing
             batch.Draw(entityProvider, program);
         }
 
-        public void SelectionPass(Camera camera, Light light, SimpleMesh mesh)
+        public void SelectionPass(Camera camera, ILight light, SimpleMesh mesh)
         {
             _wireframeProgram.Use();
 

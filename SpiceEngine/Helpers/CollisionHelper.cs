@@ -63,12 +63,6 @@ namespace SpiceEngine.Helpers
             var boxA = (Box)bodyA.Shape;
             var boxB = (Box)bodyB.Shape;
 
-            int a = 3;
-            if (bodyA.EntityID == 2)
-            {
-                a = 4;
-            }
-
             return bodyA.Position.X - boxA.Width / 2.0f < bodyB.Position.X + boxB.Width / 2.0f
                 && bodyA.Position.X + boxA.Width / 2.0f > bodyB.Position.X - boxB.Width / 2.0f
                 && bodyA.Position.Y - boxA.Height / 2.0f < bodyB.Position.Y + boxB.Height / 2.0f
