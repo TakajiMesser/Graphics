@@ -205,16 +205,6 @@ namespace SauceEditor.Views.Controls
             _projectTree?.SaveProject();
         }
 
-        private void UndoButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void RedoButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             _gamePanelManager.IsEnabled = false;
@@ -223,7 +213,7 @@ namespace SauceEditor.Views.Controls
             _yView.Panel.Enabled = false;
             _zView.Panel.Enabled = false;*/
 
-            _gameWindow = new GameWindow(_mapPath)
+            _gameWindow = new GameWindow()
             {
                 VSync = VSyncMode.Adaptive
             };
@@ -236,6 +226,7 @@ namespace SauceEditor.Views.Controls
                 _zView.Panel.Enabled = true;*/
             };
             _gameWindow.Run(60.0, 0.0);
+            _gameWindow.LoadMap(_gamePanelManager.Map);
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
@@ -271,37 +262,36 @@ namespace SauceEditor.Views.Controls
             Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
         }
 
-        private void ExecuteCommand(ICommand command)
+        private void Menu_UndoCalled(object sender, EventArgs e) => CommandStack.Undo();
+
+        private void Menu_RedoCalled(object sender, EventArgs e) => CommandStack.Redo();
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e) => CommandStack.Undo();
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e) => CommandStack.Redo();
+
+        private void CommandExecuted(ICommand command)
         {
             CommandStack.Push(command);
 
+            // TODO - Also need to enable/disable menu items for undo/redo
             if (CommandStack.CanUndo)
             {
-                UndoButton.IsEnabled = true;
+                UndoButton.Enabled = true;
             }
             else
             {
-                UndoButton.IsEnabled = false;
+                UndoButton.Enabled = false;
             }
 
             if (CommandStack.CanRedo)
             {
-                RedoButton.IsEnabled = true;
+                RedoButton.Enabled = true;
             }
             else
             {
-                RedoButton.IsEnabled = false;
+                RedoButton.Enabled = false;
             }
-        }
-
-        private void Menu_UndoCalled(object sender, EventArgs e)
-        {
-            
-        }
-
-        private void Menu_RedoCalled(object sender, EventArgs e)
-        {
-
         }
 
         private void OpenMap(string filePath)
@@ -319,7 +309,7 @@ namespace SauceEditor.Views.Controls
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };
-            _gamePanelManager.CommandExecuted += (s, args) => CommandStack.Push(args.Command);
+            _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
 
             LayoutAnchorable anchorable = new LayoutAnchorable
             {

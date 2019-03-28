@@ -57,6 +57,8 @@ namespace SpiceEngine.Game
 
         public EntityMapping LoadFromMap(Map map)
         {
+            IsLoaded = false;
+
             switch (map)
             {
                 case Map2D map2D:
@@ -85,6 +87,8 @@ namespace SpiceEngine.Game
             var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
             Camera.AttachToEntity(actor, true, false);
             ScriptManager.Load();
+
+            IsLoaded = true;
 
             return entityMapping;
         }

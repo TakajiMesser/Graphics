@@ -17,8 +17,6 @@ namespace SpiceEngine.Game
 {
     public class GameWindow : OpenTK.GameWindow, IMouseDelta
     {
-        private string _mapPath;
-
         private GameManager _gameManager;
         private RenderManager _renderManager;
 
@@ -27,15 +25,19 @@ namespace SpiceEngine.Game
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
 
+        private Map _map;
+        private object _loadLock = new object();
+
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
-        public GameWindow(string mapPath) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public bool IsLoaded { get; private set; }
+
+        public GameWindow() : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
             WindowSize = new Resolution(Width, Height);
 
-            _mapPath = mapPath;
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
             _fpsTimer.Elapsed += (s, e) =>
@@ -76,16 +78,36 @@ namespace SpiceEngine.Game
             //WindowState = WindowState.Maximized;
             //Size = new System.Drawing.Size(1280, 720);
 
-            var map = Map.Load(_mapPath);
-
             _gameManager = new GameManager(Resolution, this);
             _gameManager.InputManager.EscapePressed += (s, args) => Close();
-            var entityMapping = _gameManager.LoadFromMap(map);
 
             _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.LoadFromMap(map, _gameManager.EntityManager, entityMapping);
-
             _fpsTimer.Start();
+
+            lock (_loadLock)
+            {
+                IsLoaded = true;
+
+                if (_map != null)
+                {
+                    var entityMapping = _gameManager.LoadFromMap(_map);
+                    _renderManager.LoadFromMap(_map, _gameManager.EntityManager, entityMapping);
+                }
+            }
+        }
+
+        public void LoadMap(Map map)
+        {
+            lock (_loadLock)
+            {
+                _map = map;
+
+                if (IsLoaded)
+                {
+                    var entityMapping = _gameManager.LoadFromMap(_map);
+                    _renderManager.LoadFromMap(_map, _gameManager.EntityManager, entityMapping);
+                }
+            }
         }
 
         //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;

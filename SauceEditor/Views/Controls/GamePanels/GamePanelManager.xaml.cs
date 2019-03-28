@@ -74,6 +74,8 @@ namespace SauceEditor.Views.Controls.GamePanels
             }
         }
 
+        public Map Map => _mapManager.Map;
+
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;
 

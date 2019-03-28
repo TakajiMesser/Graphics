@@ -15,11 +15,13 @@ namespace Jidai
         static void Main(string[] args)
         {
             MapBuilder.CreateTestMap();
+            var map = Map.Load(FilePathHelper.MAP_PATH);
 
-            using (var game = new GameWindow(FilePathHelper.MAP_PATH))
+            using (var gameWindow = new GameWindow())
             {
-                game.VSync = VSyncMode.Adaptive;
-                game.Run(60.0, 0.0);
+                gameWindow.VSync = VSyncMode.Adaptive;
+                gameWindow.Run(60.0, 0.0);
+                gameWindow.LoadMap(map);
             }
         }
     }
