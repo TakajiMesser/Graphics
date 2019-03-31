@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class ActorArchetype : IEntity, IRotate, IScale
+    public class ActorArchetype// : IEntity, IRotate, IScale
     {
-        public int ID { get; set; }
+        /*public int ID { get; set; }
         public string Name { get; private set; }
 
         /// <summary>
@@ -107,12 +107,12 @@ namespace SpiceEngine.Entities.Actors
         /*On Model Position Change -> if (Bounds != null)
         {
             Bounds.Center = value;
-        }*/
+        }*
 
         //public void ClearLights() => Model.ClearLights();
         //public void AddPointLights(IEnumerable<PointLight> lights) => Model.AddPointLights(lights);
 
         // Define how this object's state will be saved, if desired
-        public virtual void OnSaveState() { }
+        public virtual void OnSaveState() { }*/
     }
 }

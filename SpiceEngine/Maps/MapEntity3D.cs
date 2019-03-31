@@ -24,7 +24,7 @@ namespace SpiceEngine.Maps
 
             if (entity is IScale scaler)
             {
-                Scale = entity.Scale;
+                Scale = scaler.Scale;
             }
         }
     }

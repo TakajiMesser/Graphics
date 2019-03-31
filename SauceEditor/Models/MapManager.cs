@@ -32,6 +32,8 @@ namespace SauceEditor.Models
         private Dictionary<int, int> _mapVolumeIndexByEntityID = new Dictionary<int, int>();
         private Dictionary<int, int> _mapLightIndexByEntityID = new Dictionary<int, int>();
 
+        //private Dictionary<int, IMapEntity3D> _entityIDByMapEntity = new Dictionary<int, IMapEntity3D>();
+
         public Map Map { get; }
 
         public MapManager(string mapPath)
@@ -146,6 +148,32 @@ namespace SauceEditor.Models
             var mapLight = Map.Lights[index];
 
             mapLight.UpdateFrom(light);
+        }
+
+        public IEnumerable<EditorEntity> GetEditorEntities(IEnumerable<IEntity> entities)
+        {
+            foreach (var entity in entities)
+            {
+                switch (entity)
+                {
+                    case Actor actor:
+                        var mapActor = GetMapActor(actor.ID);
+                        yield return new EditorEntity(actor, mapActor);
+                        break;
+                    case Brush brush:
+                        var mapBrush = GetMapBrush(brush.ID);
+                        yield return new EditorEntity(brush, mapBrush);
+                        break;
+                    case Volume volume:
+                        var mapVolume = GetMapVolume(volume.ID);
+                        yield return new EditorEntity(volume, mapVolume);
+                        break;
+                    case ILight light:
+                        var mapLight = GetMapLight(light.ID);
+                        yield return new EditorEntity(light, mapLight);
+                        break;
+                }
+            }
         }
 
         public MapCamera GetMapCamera() => Map.Camera;

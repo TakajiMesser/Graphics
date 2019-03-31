@@ -5,6 +5,8 @@ using SpiceEngine.Entities.Lights;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
+using static SpiceEngine.Maps.MapLight;
+using OpenTK.Graphics;
 
 namespace Jidai.Helpers.Builders
 {
@@ -37,8 +39,8 @@ namespace Jidai.Helpers.Builders
 
         private static IEnumerable<MapActor> GenerateActors()
         {
-            map.Actors.Add(new Player());
-            map.Actors.Add(new Enemy());
+            yield return new Player();
+            yield return new Enemy();
         }
 
         private static IEnumerable<MapBrush> GenerateBrushes()
@@ -73,28 +75,28 @@ namespace Jidai.Helpers.Builders
         {
             yield return new MapLight()
             {
-                LightType = LightTypes.PointLight,
+                LightType = LightTypes.Point,
                 Position = new Vector3(0.0f, 0.0f, 5.0f),
                 Radius = 20.0f,
-                Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f
             };
 
             yield return new MapLight()
             {
-                LightType = LightTypes.PointLight,
+                LightType = LightTypes.Point,
                 Position = new Vector3(0.0f, 20.0f, 3.0f),
                 Radius = 30.0f,
-                Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f),
                 Intensity = 0.25f
             };
 
             yield return new MapLight()
             {
-                LightType = LightTypes.SpotLight,
+                LightType = LightTypes.Spot,
                 Position = new Vector3(-17.0f, -2.0f, 3.0f),
                 Radius = 10.0f,
-                Color = new Vector4(1.0f, 1.0f, 1.0f, 1.0f),
+                Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f,
                 Rotation = new Vector3(0.0f, -45.0f, -45.0f),//Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
                 Height = 20.0f

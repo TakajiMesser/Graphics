@@ -4,12 +4,13 @@ using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Maps
 {
-    public class MapLight : MapEntity3D<Light>
+    public class MapLight : MapEntity3D<ILight>
     {
         public enum LightTypes
         {
@@ -26,15 +27,13 @@ namespace SpiceEngine.Maps
         public float Radius { get; set; }
         public float Height { get; set; }
 
-        public Quaternion Rotation { get; set; }
-
         /*public Mesh3D<Vertex3D> ToMesh()
         {
             var vertices = Vertices.Select(v => new Vertex3D(v, v, v, Vector2.Zero, Color4.Blue)).ToList();
             return new Mesh3D<Vertex3D>(vertices, TriangleIndices);
         }*/
 
-        public override Light ToEntity()
+        public override ILight ToEntity()
         {
             switch (LightType)
             {
@@ -42,7 +41,7 @@ namespace SpiceEngine.Maps
                     return new PointLight()
                     {
                         Position = Position,
-                        Color = Color,
+                        Color = Color.ToVector4(),
                         Intensity = Intensity,
                         Radius = Radius
                     };
@@ -51,7 +50,7 @@ namespace SpiceEngine.Maps
                     {
                         Position = Position,
                         Rotation = Quaternion.FromEulerAngles(Rotation),
-                        Color = Color,
+                        Color = Color.ToVector4(),
                         Intensity = Intensity,
                         Radius = Radius,
                         Height = Height
@@ -61,7 +60,7 @@ namespace SpiceEngine.Maps
                     {
                         Position = Position,
                         Rotation = Quaternion.FromEulerAngles(Rotation),
-                        Color = Color,
+                        Color = Color.ToVector4(),
                         Intensity = Intensity,
                     };
             }

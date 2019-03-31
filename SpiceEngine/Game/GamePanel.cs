@@ -305,12 +305,12 @@ namespace SpiceEngine.Game
                     {
                         case Actor actor:
                             var selectedActor = selectedEntity as Actor;
-                            selectedActor.OriginalRotation = actor.OriginalRotation;
+                            selectedActor.Rotation = actor.Rotation;
                             selectedActor.Scale = actor.Scale;
                             break;
                         case Brush brush:
                             var selectedBrush = selectedEntity as Brush;
-                            selectedBrush.OriginalRotation = brush.OriginalRotation;
+                            selectedBrush.Rotation = brush.Rotation;
                             selectedBrush.Scale = brush.Scale;
                             break;
                         case ILight light:
@@ -725,18 +725,24 @@ namespace SpiceEngine.Game
         {
             if (entity is IRotate rotater)
             {
-                var rotation = rotater.OriginalRotation;
+                var rotation = rotater.Rotation;
 
                 switch (SelectionType)
                 {
                     case SelectionTypes.Red:
-                        rotation.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        //rotation.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitZ, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
+                        rotation = Quaternion.FromEulerAngles(-_gameManager.InputManager.MouseDelta.Y * 0.002f, 0.0f, 0.0f) * rotation;
                         break;
                     case SelectionTypes.Green:
-                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        //rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitX, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
+                        rotation = Quaternion.FromEulerAngles(0.0f, -_gameManager.InputManager.MouseDelta.Y * 0.002f, 0.0f) * rotation;
                         break;
                     case SelectionTypes.Blue:
-                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        //rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
+                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitY, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
+                        rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, -_gameManager.InputManager.MouseDelta.Y * 0.002f) * rotation;
                         break;
                     case SelectionTypes.Cyan:
                         rotation.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
@@ -752,7 +758,7 @@ namespace SpiceEngine.Game
                         break;
                 }
 
-                rotater.OriginalRotation = rotation;
+                rotater.Rotation = rotation;
             }
         }
 

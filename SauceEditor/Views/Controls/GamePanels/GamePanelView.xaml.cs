@@ -27,7 +27,7 @@ namespace SauceEditor.Views.Controls.GamePanels
         public readonly static DependencyProperty GridUnitProperty = DependencyProperty.Register("GridUnit", typeof(float), typeof(NumericUpDown));
 
         //public event EventHandler<CommandEventArgs> CommandExecuted;
-        public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        public event EventHandler<SpiceEngine.Game.EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public float WireframeThickness

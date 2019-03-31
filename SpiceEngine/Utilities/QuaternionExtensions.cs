@@ -32,12 +32,18 @@ namespace SpiceEngine.Utilities
             }
 
             // This is assuming that phi = X, theta = Y, and psi = Z
-            return new Vector3()
+            var phi = (float)Math.Atan2(quaternion.Z * quaternion.W + quaternion.X * quaternion.Y, 0.5f - (quaternion.Y * quaternion.Y + quaternion.Z * quaternion.Z));
+            var theta = (float)Math.Asin(lockValue);
+            var psi = (float)Math.Atan2(quaternion.Y * quaternion.Z + quaternion.X * quaternion.W, 0.5f - (quaternion.Z * quaternion.Z + quaternion.W * quaternion.W));
+
+            var eulerAngles = new Vector3()
             {
-                X = Math.Atan2(quaternion.Z * quaternion.W + quaternion.X * quaternion.Y, 0.5f - (quaternion.Y * quaternion.Y + quaternion.Z * quaternion.Z)),
-                Y = Math.Asin(lockValue),
-                Z = Math.Atan2(quaternion.Y * quaternion.Z + quaternion.X * quaternion.W, 0.5f - (quaternion.Z * quaternion.Z + quaternion.W * quaternion.W))
+                X = UnitConversions.ToDegrees(phi),
+                Y = UnitConversions.ToDegrees(theta),
+                Z = UnitConversions.ToDegrees(psi)
             };
+
+            return eulerAngles;
         }
     }
 }

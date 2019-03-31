@@ -120,6 +120,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\EditorEntity.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\Commands\ICommand.cs" />
     <Compile Include="ViewModels\Commands\CommandEventArgs.cs" />
@@ -132,6 +133,7 @@
     <Compile Include="Views\Controls\GamePanels\GamePanelView.xaml.cs">
       <DependentUpon>GamePanelView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\GamePanels\EntitiesEventArgs.cs" />
     <Compile Include="Views\Controls\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
@@ -159,7 +161,7 @@
       <DependentUpon>TransformPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Transform\TransformChangedEventArgs.cs" />
-    <Compile Include="Views\Controls\Properties\EntityUpdatedEventArgs.cs" />
+    <Compile Include="Views\Controls\Properties\EntityEventArgs.cs" />
     <Compile Include="Views\Controls\UpDowns\ValueChangedEventArgs.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Models\SettingsEventArgs.cs" />

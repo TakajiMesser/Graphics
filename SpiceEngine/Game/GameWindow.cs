@@ -33,8 +33,10 @@ namespace SpiceEngine.Game
 
         public bool IsLoaded { get; private set; }
 
-        public GameWindow() : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameWindow(Map map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
+            _map = map;
+
             Resolution = new Resolution(Width, Height);
             WindowSize = new Resolution(Width, Height);
 
@@ -96,7 +98,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void LoadMap(Map map)
+        /*public void LoadMap(Map map)
         {
             lock (_loadLock)
             {
@@ -108,7 +110,7 @@ namespace SpiceEngine.Game
                     _renderManager.LoadFromMap(_map, _gameManager.EntityManager, entityMapping);
                 }
             }
-        }
+        }*/
 
         //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;
 

@@ -213,7 +213,7 @@ namespace SauceEditor.Views.Controls
             _yView.Panel.Enabled = false;
             _zView.Panel.Enabled = false;*/
 
-            _gameWindow = new GameWindow()
+            _gameWindow = new GameWindow(_gamePanelManager.Map)
             {
                 VSync = VSyncMode.Adaptive
             };
@@ -226,7 +226,7 @@ namespace SauceEditor.Views.Controls
                 _zView.Panel.Enabled = true;*/
             };
             _gameWindow.Run(60.0, 0.0);
-            _gameWindow.LoadMap(_gamePanelManager.Map);
+            //_gameWindow.LoadMap(_gamePanelManager.Map);
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
@@ -277,20 +277,20 @@ namespace SauceEditor.Views.Controls
             // TODO - Also need to enable/disable menu items for undo/redo
             if (CommandStack.CanUndo)
             {
-                UndoButton.Enabled = true;
+                UndoButton.IsEnabled = true;
             }
             else
             {
-                UndoButton.Enabled = false;
+                UndoButton.IsEnabled = false;
             }
 
             if (CommandStack.CanRedo)
             {
-                RedoButton.Enabled = true;
+                RedoButton.IsEnabled = true;
             }
             else
             {
-                RedoButton.Enabled = false;
+                RedoButton.IsEnabled = false;
             }
         }
 
@@ -305,6 +305,7 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager = new GamePanelManager(_mapPath);
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
+                // For now, just go with the last entity that was selected
                 _propertyPanel.Entity = args.Entities.LastOrDefault();
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;

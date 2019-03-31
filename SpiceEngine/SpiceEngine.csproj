@@ -106,6 +106,7 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Actors\ActorArchetype.cs" />
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
@@ -166,10 +167,12 @@
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
     <Compile Include="Maps\EntityMapping.cs" />
+    <Compile Include="Maps\IMapEntity3D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />
     <Compile Include="Maps\MapEntity2D.cs" />
     <Compile Include="Maps\MapEntity3D.cs" />
+    <Compile Include="Maps\MapLight.cs" />
     <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />

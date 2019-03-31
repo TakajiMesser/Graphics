@@ -1,12 +1,13 @@
-﻿using SauceEditor.Utilities;
+﻿using OpenTK;
+using SauceEditor.Models;
+using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Maps;
 using System;
 using System.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
-using Brush = SpiceEngine.Entities.Brushes.Brush;
 
 namespace SauceEditor.Views.Controls.Properties
 {
@@ -15,8 +16,8 @@ namespace SauceEditor.Views.Controls.Properties
     /// </summary>
     public partial class PropertyWindow : LayoutAnchorable
     {
-        private IEntity _entity;
-        public IEntity Entity
+        private EditorEntity _entity;
+        public EditorEntity Entity
         {
             get => _entity;
             set
@@ -34,7 +35,7 @@ namespace SauceEditor.Views.Controls.Properties
             }
         }
 
-        public event EventHandler<EntityUpdatedEventArgs> EntityUpdated;
+        public event EventHandler<EntityEventArgs> EntityUpdated;
         public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public PropertyWindow()
@@ -46,91 +47,101 @@ namespace SauceEditor.Views.Controls.Properties
             {
                 if (_entity != null)
                 {
-                    _entity.Position = args.Transform;
-                    EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
+                    _entity.Entity.Position = args.Transform;
+                    _entity.MapEntity.Position = args.Transform;
+
+                    EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
                 }
             };
 
             RotationTransform.TransformChanged += (s, args) =>
             {
-                if (_entity != null && _entity is Actor actor)
+                if (_entity != null)
                 {
-                    actor.OriginalRotation = args.Transform;
-                }
-                else if (_entity != null && _entity is Brush brush)
-                {
-                    brush.OriginalRotation = args.Transform;
+                    if (_entity.Entity is IRotate rotator)
+                    {
+                        //rotator.Rotation = Quaternion.FromEulerAngles(args.Transform);
+                    }
+
+                    _entity.MapEntity.Rotation = args.Transform;
+                    EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
                 }
 
-                EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
+                EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
             };
 
             ScaleTransform.TransformChanged += (s, args) =>
             {
-                if (_entity != null && _entity is Actor actor)
+                if (_entity != null)
                 {
-                    actor.Scale = args.Transform;
-                }
-                else if (_entity != null && _entity is Brush brush)
-                {
-                    brush.Scale = args.Transform;
-                }
+                    if (_entity is IScale scaler)
+                    {
+                        scaler.Scale = args.Transform;
+                    }
 
-                EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
+                    _entity.MapEntity.Scale = args.Transform;
+                    EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
+                }
             };
 
             ColorPick.SelectedColorChanged += (s, args) =>
             {
-                if (_entity != null && _entity is ILight light)
+                if (_entity != null)
                 {
-                    light.Color = args.NewValue.Value.ToVector4();
-                }
+                    if (_entity.Entity is ILight light)
+                    {
+                        light.Color = args.NewValue.Value.ToVector4();
+                    }
 
-                EntityUpdated?.Invoke(this, new EntityUpdatedEventArgs(_entity));
+                    if (_entity.MapEntity is MapLight mapLight)
+                    {
+                        mapLight.Color = args.NewValue.Value.ToColor4();
+                    }
+
+                    EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
+                }
             };
         }
 
         private void SetProperties()
         {
             ClearProperties();
-            EntityType.Content = _entity.GetType().Name;
+            EntityType.Content = _entity.Entity.GetType().Name;
 
             PropertyGrid.Visibility = Visibility.Visible;
-            IDTextbox.Text = _entity.ID.ToString();
+            //IDTextbox.Text = _mapEntity.ID.ToString();
 
             PositionTransform.Visibility = Visibility.Visible;
-            PositionTransform.SetValues(_entity.Position);
+            PositionTransform.SetValues(_entity.MapEntity.Position);
 
-            if (_entity is Actor actor)
+            switch (_entity.MapEntity)
             {
-                PropertyGrid.RowDefinitions[1].Height = GridLength.Auto;
-                NameTextBox.Text = actor.Name;
+                case MapActor mapActor:
+                    PropertyGrid.RowDefinitions[1].Height = GridLength.Auto;
+                    NameTextBox.Text = mapActor.Name;
 
-                PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
-                RotationTransform.Visibility = Visibility.Visible;
-                RotationTransform.SetValues(actor.OriginalRotation);
+                    PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
+                    RotationTransform.Visibility = Visibility.Visible;
+                    RotationTransform.SetValues(mapActor.Rotation);
 
-                PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
-                ScaleTransform.Visibility = Visibility.Visible;
-                ScaleTransform.SetValues(actor.Scale);
-            }
+                    PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
+                    ScaleTransform.Visibility = Visibility.Visible;
+                    ScaleTransform.SetValues(mapActor.Scale);
+                    break;
+                case MapBrush mapBrush:
+                    PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
+                    RotationTransform.Visibility = Visibility.Visible;
+                    RotationTransform.SetValues(mapBrush.Rotation);
 
-            if (_entity is Brush brush)
-            {
-                PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
-                RotationTransform.Visibility = Visibility.Visible;
-                RotationTransform.SetValues(brush.OriginalRotation);
-
-                PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
-                ScaleTransform.Visibility = Visibility.Visible;
-                ScaleTransform.SetValues(brush.Scale);
-            }
-
-            if (_entity is ILight light)
-            {
-                PropertyGrid.RowDefinitions[5].Height = GridLength.Auto;
-                ColorPick.Visibility = Visibility.Visible;
-                ColorPick.SelectedColor = light.Color.ToColor();
+                    PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
+                    ScaleTransform.Visibility = Visibility.Visible;
+                    ScaleTransform.SetValues(mapBrush.Scale);
+                    break;
+                case MapLight mapLight:
+                    PropertyGrid.RowDefinitions[5].Height = GridLength.Auto;
+                    ColorPick.Visibility = Visibility.Visible;
+                    ColorPick.SelectedColor = mapLight.Color.ToMediaColor();
+                    break;
             }
         }
 

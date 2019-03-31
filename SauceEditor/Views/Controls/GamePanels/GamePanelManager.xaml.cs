@@ -9,6 +9,7 @@ using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -168,12 +169,12 @@ namespace SauceEditor.Views.Controls.GamePanels
             _zView.Panel.SelectedTool = tool;
         }
 
-        public void UpdateEntity(IEntity entity)
+        public void UpdateEntity(EditorEntity entity)
         {
-            _perspectiveView.Panel.UpdateEntities(entity.Yield());
-            _xView.Panel.UpdateEntities(entity.Yield());
-            _yView.Panel.UpdateEntities(entity.Yield());
-            _zView.Panel.UpdateEntities(entity.Yield());
+            _perspectiveView.Panel.UpdateEntities(entity.Entity.Yield());
+            _xView.Panel.UpdateEntities(entity.Entity.Yield());
+            _yView.Panel.UpdateEntities(entity.Entity.Yield());
+            _zView.Panel.UpdateEntities(entity.Entity.Yield());
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
@@ -291,7 +292,7 @@ namespace SauceEditor.Views.Controls.GamePanels
             //_scriptManager;
         }
 
-        private void OnEntitySelectionChanged(ViewTypes viewType, EntitiesEventArgs args)
+        private void OnEntitySelectionChanged(ViewTypes viewType, SpiceEngine.Game.EntitiesEventArgs args)
         {
             if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.SelectEntities(args.Entities);
             if (viewType != ViewTypes.X) _xView.Panel.SelectEntities(args.Entities);
@@ -308,7 +309,9 @@ namespace SauceEditor.Views.Controls.GamePanels
                 _mapManager.UpdateEntities(args.Entities);
             }
 
-            EntitySelectionChanged?.Invoke(this, args);
+            var editorEntities = _mapManager.GetEditorEntities(args.Entities);
+            EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(editorEntities));
+            //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(_mapManager.GetMapEntities(args.Entities)));
         }
 
         /*public EntityMapping LoadFromMap(Map map)

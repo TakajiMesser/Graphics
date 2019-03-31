@@ -1,6 +1,7 @@
 ﻿using Jidai.Helpers;
 using Jidai.Helpers.Builders;
 using OpenTK;
+using SpiceEngine.Maps;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,11 @@ namespace Jidai
             MapBuilder.GenerateTestMap(FilePathHelper.MAP_PATH);
             var map = Map.Load(FilePathHelper.MAP_PATH);
 
-            using (var gameWindow = new GameWindow())
+            using (var gameWindow = new GameWindow(map))
             {
                 gameWindow.VSync = VSyncMode.Adaptive;
                 gameWindow.Run(60.0, 0.0);
-                gameWindow.LoadMap(map);
+                //gameWindow.LoadMap(map);
             }
         }
     }
