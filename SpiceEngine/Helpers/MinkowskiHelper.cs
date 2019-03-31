@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Helpers
 {
