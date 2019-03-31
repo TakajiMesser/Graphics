@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SauceEditor.Models;
+﻿using SauceEditor.Models;
 using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;

@@ -1,11 +1,4 @@
-﻿using OpenTK;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using System.Collections.Generic;
-
-namespace SpiceEngine.Entities.Actors
+﻿namespace SpiceEngine.Entities.Actors
 {
     public class ActorArchetype// : IEntity, IRotate, IScale
     {

@@ -1,9 +1,9 @@
 ﻿using OpenTK;
-using System;
 using SpiceEngine.Helpers;
+using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Utilities;
-using SpiceEngine.Physics.Bodies;
+using System;
 
 namespace Jidai.Behaviors.Player
 {

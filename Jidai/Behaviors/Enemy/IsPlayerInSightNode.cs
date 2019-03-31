@@ -1,13 +1,10 @@
-﻿using System;
-using System.Linq;
-using System.Runtime.Serialization;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics;
+﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Behaviors.Decorators;
+using System;
+using System.Runtime.Serialization;
 
 namespace Jidai.Behaviors.Enemy
 {

@@ -2,11 +2,6 @@
 using Jidai.Helpers.Builders;
 using OpenTK;
 using SpiceEngine.Maps;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace Jidai

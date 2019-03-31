@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Utilities;
 
 namespace Jidai.Behaviors
 {

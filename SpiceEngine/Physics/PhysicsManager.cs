@@ -7,7 +7,6 @@ using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Constraints;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 

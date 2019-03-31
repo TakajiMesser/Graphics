@@ -1,7 +1,6 @@
 ﻿using OpenTK.Graphics;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

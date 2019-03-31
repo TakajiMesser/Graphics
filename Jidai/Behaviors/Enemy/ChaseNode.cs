@@ -1,13 +1,8 @@
 ﻿using OpenTK;
-using System;
-using System.Linq;
-using SpiceEngine.Entities;
-using SpiceEngine.Physics.Raycasting;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Utilities;
+using System;
 
 namespace Jidai.Behaviors.Enemy
 {

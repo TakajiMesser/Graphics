@@ -1,6 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Vertices;
-using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Meshes

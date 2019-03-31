@@ -1,7 +1,6 @@
 ﻿using OpenTK;
-using System;
-using System.Runtime.Serialization;
 using SpiceEngine.Scripting.Behaviors;
+using System;
 
 namespace Jidai.Behaviors.Player
 {

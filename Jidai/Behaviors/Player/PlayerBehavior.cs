@@ -1,10 +1,6 @@
-﻿using OpenTK;
-using System;
-using System.Runtime.Serialization;
-using SpiceEngine.Scripting.Behaviors;
+﻿using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Behaviors.Composites;
 using SpiceEngine.Scripting.Behaviors.Decorators;
-using SpiceEngine.Scripting.Behaviors.Leaves;
 
 namespace Jidai.Behaviors.Player
 {

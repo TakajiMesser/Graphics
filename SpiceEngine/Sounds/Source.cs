@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Audio.OpenAL;
 using OpenTK.Graphics;
-using SpiceEngine.Game;
 using System;
 
 namespace SpiceEngine.Sounds

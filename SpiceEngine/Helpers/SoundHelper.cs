@@ -1,7 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Audio.OpenAL;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Inputs;
+﻿using OpenTK.Audio.OpenAL;
 using SpiceEngine.Sounds;
 using System;
 using System.IO;

@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
-using SpiceEngine.Physics.Shapes;
 
 namespace SpiceEngine.Maps
 {

@@ -1,12 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Utilities;
 using System;
-using System.Collections.Generic;
 
 namespace SpiceEngine.Maps
 {

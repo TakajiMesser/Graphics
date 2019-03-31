@@ -1,6 +1,4 @@
-﻿using SpiceEngine.Rendering.Vertices;
-using System;
-using System.Collections.Generic;
+﻿using System;
 
 namespace SpiceEngine.Rendering.Meshes
 {

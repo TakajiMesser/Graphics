@@ -1,7 +1,6 @@
 ﻿using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
@@ -9,7 +8,6 @@ using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;

@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Shaders;
-using System;
 
 namespace SpiceEngine.Entities.Lights
 {

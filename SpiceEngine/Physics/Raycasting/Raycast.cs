@@ -1,7 +1,5 @@
-﻿using OpenTK;
-using SpiceEngine.Entities;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Physics.Shapes;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Physics.Raycasting

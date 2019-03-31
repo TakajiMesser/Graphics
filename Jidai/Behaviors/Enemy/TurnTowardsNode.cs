@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Entities;
-using SpiceEngine.Physics.Raycasting;
-using OpenTK;
-using System.Runtime.Serialization;
-using SpiceEngine.Utilities;
+﻿using OpenTK;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Utilities;
+using System;
 
 namespace Jidai.Behaviors.Enemy
 {

@@ -1,19 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Physics.Raycasting;
-using OpenTK;
-using SpiceEngine.Entities;
-using System.Runtime.Serialization;
-using SpiceEngine.Physics.Collisions;
-using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Shapes;
+﻿using OpenTK;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Utilities;
+using System.Linq;
 
 namespace Jidai.Behaviors.Player
 {

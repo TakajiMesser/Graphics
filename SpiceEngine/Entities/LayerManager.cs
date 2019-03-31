@@ -1,14 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Maps;
-using SpiceEngine.Physics.Collisions;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Entities
 {

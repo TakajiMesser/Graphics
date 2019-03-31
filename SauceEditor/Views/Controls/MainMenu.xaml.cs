@@ -1,24 +1,11 @@
-﻿using Jidai.Helpers;
-using Microsoft.Win32;
-using OpenTK;
+﻿using Microsoft.Win32;
 using SauceEditor.Models;
-using SauceEditor.ViewModels.Commands;
-using SauceEditor.Views.Controls.GamePanels;
 using SauceEditor.Views.Controls.ProjectTree;
-using SauceEditor.Views.Controls.Properties;
 using SauceEditor.Views.Controls.Settings;
-using SauceEditor.Views.Controls.Tools;
-using SpiceEngine.Maps;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace SauceEditor.Views.Controls
 {

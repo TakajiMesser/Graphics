@@ -1,12 +1,10 @@
 ﻿using Jidai.GameObjects;
 using OpenTK;
-using System.Collections.Generic;
-using SpiceEngine.Entities.Lights;
+using OpenTK.Graphics;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Utilities;
+using System.Collections.Generic;
 using static SpiceEngine.Maps.MapLight;
-using OpenTK.Graphics;
 
 namespace Jidai.Helpers.Builders
 {

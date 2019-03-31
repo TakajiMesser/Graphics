@@ -1,14 +1,8 @@
 ﻿using OpenTK;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Behaviors.Composites;
 using SpiceEngine.Scripting.Behaviors.Decorators;
 using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Scripting.StimResponse;
 
 namespace Jidai.Behaviors.Enemy

@@ -1,12 +1,9 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using System;
-using System.Collections.Generic;
 
 namespace SpiceEngine.Helpers
 {

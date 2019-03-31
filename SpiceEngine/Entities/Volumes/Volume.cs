@@ -1,10 +1,6 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Vertices;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Entities.Volumes
 {

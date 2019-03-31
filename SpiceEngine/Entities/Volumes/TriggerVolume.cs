@@ -1,8 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using System.Collections.Generic;
-
-namespace SpiceEngine.Entities.Volumes
+﻿namespace SpiceEngine.Entities.Volumes
 {
     public class TriggerVolume : Volume
     {

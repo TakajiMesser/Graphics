@@ -1,6 +1,4 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
-using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Volumes
 {
