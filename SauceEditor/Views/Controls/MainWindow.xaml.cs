@@ -35,9 +35,9 @@ namespace SauceEditor.Views.Controls
         private string _mapPath;
         
         // Side panels
-        private ProjectTreeView _projectTree = new ProjectTreeView();
-        private ToolsWindow _toolPanel = new ToolsWindow();
-        private PropertyWindow _propertyPanel = new PropertyWindow();
+        private ProjectTreePanel _projectTree = new ProjectTreePanel();
+        private ToolsPanel _toolPanel = new ToolsPanel();
+        private PropertyPanel _propertyPanel = new PropertyPanel();
 
         // Main views
         private GamePanelManager _gamePanelManager;

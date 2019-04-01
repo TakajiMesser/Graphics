@@ -9,9 +9,9 @@ using Path = System.IO.Path;
 namespace SauceEditor.Views.Controls.ProjectTree
 {
     /// <summary>
-    /// Interaction logic for ProjectTreeView.xaml
+    /// Interaction logic for ProjectTreePanel.xaml
     /// </summary>
-    public partial class ProjectTreeView : LayoutAnchorable
+    public partial class ProjectTreePanel : LayoutAnchorable
     {
         public event EventHandler<ItemSelectedEventArgs> MapSelected;
         public event EventHandler<ItemSelectedEventArgs> ModelSelected;
@@ -22,7 +22,7 @@ namespace SauceEditor.Views.Controls.ProjectTree
         private GameProject _project;
         private string _projectPath;
 
-        public ProjectTreeView()
+        public ProjectTreePanel()
         {
             InitializeComponent();
             ClearProject();

@@ -6,15 +6,15 @@ using Xceed.Wpf.AvalonDock.Layout;
 namespace SauceEditor.Views.Controls.Tools
 {
     /// <summary>
-    /// Interaction logic for PropertyWindow.xaml
+    /// Interaction logic for ToolsPanel.xaml
     /// </summary>
-    public partial class ToolsWindow : LayoutAnchorable
+    public partial class ToolsPanel : LayoutAnchorable
     {
         public SpiceEngine.Game.Tools SelectedTool { get; set; }
 
         public event EventHandler<ToolSelectedEventArgs> ToolSelected;
 
-        public ToolsWindow()
+        public ToolsPanel()
         {
             InitializeComponent();
 

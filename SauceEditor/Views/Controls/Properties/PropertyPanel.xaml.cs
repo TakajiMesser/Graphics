@@ -1,4 +1,5 @@
-﻿using SauceEditor.Models;
+﻿using OpenTK;
+using SauceEditor.Models;
 using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
@@ -11,9 +12,9 @@ using Xceed.Wpf.AvalonDock.Layout;
 namespace SauceEditor.Views.Controls.Properties
 {
     /// <summary>
-    /// Interaction logic for PropertyWindow.xaml
+    /// Interaction logic for PropertyPanel.xaml
     /// </summary>
-    public partial class PropertyWindow : LayoutAnchorable
+    public partial class PropertyPanel : LayoutAnchorable
     {
         private EditorEntity _entity;
         public EditorEntity Entity
@@ -38,7 +39,7 @@ namespace SauceEditor.Views.Controls.Properties
         public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<FileEventArgs> ScriptOpened;
 
-        public PropertyWindow()
+        public PropertyPanel()
         {
             InitializeComponent();
             ClearProperties();
@@ -66,8 +67,6 @@ namespace SauceEditor.Views.Controls.Properties
                     _entity.MapEntity.Rotation = args.Transform;
                     EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
                 }
-
-                EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
             };
 
             ScaleTransform.TransformChanged += (s, args) =>
