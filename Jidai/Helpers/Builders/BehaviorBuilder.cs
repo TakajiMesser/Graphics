@@ -45,27 +45,34 @@ namespace Jidai.Helpers.Builders
                     NodeType = MapNode.NodeTypes.Selector,
                     Children = new List<MapNode>()
                     {
-                        new MapNode(PLAYER_EVADE_SPEED, PLAYER_EVADE_TICK_COUNT)
+                        new MapNode()
                         {
-                            NodeType = MapNode.NodeTypes.Node,
-                            Content = File.ReadAllText(FilePathHelper.BLOCK_NODE_PATH)
-                        }
-                    }
-                },
-                new MapNode()
-                {
-                    NodeType = MapNode.NodeTypes.Parallel,
-                    Children = new List<MapNode>()
-                    {
-                        new MapNode(PLAYER_RUN_SPEED, PLAYER_CREEP_SPEED, PLAYER_WALK_SPEED)
-                        {
-                            NodeType = MapNode.NodeTypes.Node,
-                            Content = File.ReadAllText(FilePathHelper.MOVE_NODE_PATH)
+                            NodeType = MapNode.NodeTypes.Selector,
+                            Children = new List<MapNode>()
+                            {
+                                new MapNode(PLAYER_EVADE_SPEED, PLAYER_EVADE_TICK_COUNT)
+                                {
+                                    NodeType = MapNode.NodeTypes.Node,
+                                    Content = File.ReadAllText(FilePathHelper.BLOCK_NODE_PATH)
+                                }
+                            }
                         },
                         new MapNode()
                         {
-                            NodeType = MapNode.NodeTypes.Node,
-                            Content = File.ReadAllText(FilePathHelper.TURN_NODE_PATH)
+                            NodeType = MapNode.NodeTypes.Parallel,
+                            Children = new List<MapNode>()
+                            {
+                                new MapNode(PLAYER_RUN_SPEED, PLAYER_CREEP_SPEED, PLAYER_WALK_SPEED)
+                                {
+                                    NodeType = MapNode.NodeTypes.Node,
+                                    Content = File.ReadAllText(FilePathHelper.MOVE_NODE_PATH)
+                                },
+                                new MapNode()
+                                {
+                                    NodeType = MapNode.NodeTypes.Node,
+                                    Content = File.ReadAllText(FilePathHelper.TURN_NODE_PATH)
+                                }
+                            }
                         }
                     }
                 }
