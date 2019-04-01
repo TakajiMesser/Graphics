@@ -3,7 +3,7 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Game;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
@@ -11,12 +11,7 @@ using System.Linq;
 
 namespace SpiceEngine.Scripting
 {
-    /// <summary>
-    /// A script is a set of sequential commands
-    /// Each command can be something this object needs to communicate to another object, or performed by itself
-    /// Each command either needs to be associated with 
-    /// </summary>
-    public class ScriptManager : UpdateManager, IStimulusProvider
+    public class BehaviorManager : UpdateManager, IStimulusProvider
     {
         private bool _isLoaded = false;
 
@@ -29,7 +24,7 @@ namespace SpiceEngine.Scripting
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
 
-        public ScriptManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
+        public BehaviorManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
         {
             _entityProvider = entityProvider;
             _collisionProvider = collisionProvider;

@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Scripting.Behaviors;
+﻿using SpiceEngine.Scripting.Nodes;
 using System;
 
 namespace SpiceEngine.Scripting.Properties

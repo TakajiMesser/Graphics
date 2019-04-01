@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpiceEngine.Scripting.Behaviors
+namespace SpiceEngine.Scripting
 {
     public class BehaviorInterruptedEventArgs : EventArgs
     {

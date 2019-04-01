@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Scripting.Behaviors;
+﻿using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -14,13 +14,14 @@ namespace SpiceEngine.Maps
         public MapNode RootNode { get; set; }
         public List<Response> Responses { get; set; } = new List<Response>();
 
-        public Behavior ToBehavior()
+        public Behavior ToBehavior(IScriptCompiler scriptCompiler)
         {
             var behavior = new Behavior();
 
             if (RootNode != null)
             {
-                behavior.PushRootNode(RootNode.ToNode());
+                var rootNode = RootNode.ToNode(scriptCompiler);
+                behavior.PushRootNode(rootNode);
             }
 
             foreach (var response in Responses)

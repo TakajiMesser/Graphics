@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpiceEngine.Scripting.Behaviors.Composites
+namespace SpiceEngine.Scripting.Nodes.Composites
 {
     public abstract class CompositeNode : Node
     {

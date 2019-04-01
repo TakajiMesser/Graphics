@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpiceEngine.Scripting.Behaviors
+namespace SpiceEngine.Scripting.Nodes
 {
     public abstract class Node
     {

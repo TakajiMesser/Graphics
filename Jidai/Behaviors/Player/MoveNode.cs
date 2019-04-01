@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 
 namespace Jidai.Behaviors.Player
 {

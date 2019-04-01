@@ -2,7 +2,7 @@
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Utilities;
 using System.Linq;
 

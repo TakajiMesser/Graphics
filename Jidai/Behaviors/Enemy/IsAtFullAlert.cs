@@ -1,5 +1,5 @@
-﻿using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.Behaviors.Decorators;
+﻿using SpiceEngine.Scripting.Nodes;
+using SpiceEngine.Scripting.Nodes.Decorators;
 using System.Runtime.Serialization;
 
 namespace Jidai.Behaviors.Enemy

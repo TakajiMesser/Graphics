@@ -1,4 +1,4 @@
-﻿namespace SpiceEngine.Scripting.Behaviors
+﻿namespace SpiceEngine.Scripting.Nodes
 {
     public enum BehaviorStatus
     {

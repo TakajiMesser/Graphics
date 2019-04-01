@@ -6,7 +6,7 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Utilities;

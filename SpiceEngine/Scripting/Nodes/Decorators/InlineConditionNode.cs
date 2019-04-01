@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpiceEngine.Scripting.Behaviors.Decorators
+namespace SpiceEngine.Scripting.Nodes.Decorators
 {
     public class InlineConditionNode : ConditionNode
     {

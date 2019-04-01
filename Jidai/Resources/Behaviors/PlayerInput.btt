@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?><MapBehavior xmlns:i="http://www.w3.org/2001/XMLSchema-instance" z:Id="1" z:Type="SpiceEngine.Maps.MapBehavior" z:Assembly="SpiceEngine, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null" xmlns:z="http://schemas.microsoft.com/2003/10/Serialization/" xmlns="http://schemas.datacontract.org/2004/07/SpiceEngine.Maps"><FilePath i:nil="true" /><Name i:nil="true" /><Responses xmlns:d2p1="http://schemas.datacontract.org/2004/07/SpiceEngine.Scripting.StimResponse" z:Id="2"><d2p1:_items z:Id="3" z:Size="0" /><d2p1:_size>0</d2p1:_size><d2p1:_version>0</d2p1:_version></Responses><RootNode z:Id="4"><Arguments xmlns:d3p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="5"><d3p1:_items z:Id="6" z:Size="0" /><d3p1:_size>0</d3p1:_size><d3p1:_version>0</d3p1:_version></Arguments><Children z:Id="7"><_items z:Id="8" z:Size="4"><MapNode z:Id="9"><Arguments xmlns:d6p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="10"><d6p1:_items z:Ref="6" i:nil="true" /><d6p1:_size>0</d6p1:_size><d6p1:_version>0</d6p1:_version></Arguments><Children z:Id="11"><_items z:Id="12" z:Size="4"><MapNode z:Id="13"><Arguments xmlns:d9p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="14"><d9p1:_items z:Ref="6" i:nil="true" /><d9p1:_size>0</d9p1:_size><d9p1:_version>0</d9p1:_version></Arguments><Children z:Id="15"><_items z:Id="16" z:Size="4"><MapNode z:Id="17"><Arguments xmlns:d12p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="18"><d12p1:_items z:Id="19" z:Size="4"><d12p1:anyType z:Id="20" z:Type="System.Single" z:Assembly="0">0.175</d12p1:anyType><d12p1:anyType z:Id="21" z:Type="System.Int32" z:Assembly="0">20</d12p1:anyType><d12p1:anyType i:nil="true" /><d12p1:anyType i:nil="true" /></d12p1:_items><d12p1:_size>2</d12p1:_size><d12p1:_version>1</d12p1:_version></Arguments><Children z:Id="22"><_items z:Id="23" z:Size="0" /><_size>0</_size><_version>0</_version></Children><Content z:Id="24">using OpenTK;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Utilities;
 using System;
 
@@ -89,7 +89,7 @@ namespace Jidai.Resources.Behaviors.Nodes
 </Content><InlineAction xmlns:d12p1="http://schemas.datacontract.org/2004/07/System" i:nil="true" /><InlineCondition xmlns:d12p1="http://schemas.datacontract.org/2004/07/System" i:nil="true" /><NodeType>Node</NodeType></MapNode><MapNode i:nil="true" /><MapNode i:nil="true" /><MapNode i:nil="true" /></_items><_size>1</_size><_version>1</_version></Children><Content i:nil="true" /><InlineAction xmlns:d9p1="http://schemas.datacontract.org/2004/07/System" i:nil="true" /><InlineCondition xmlns:d9p1="http://schemas.datacontract.org/2004/07/System" i:nil="true" /><NodeType>Selector</NodeType></MapNode><MapNode z:Id="25"><Arguments xmlns:d9p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="26"><d9p1:_items z:Ref="6" i:nil="true" /><d9p1:_size>0</d9p1:_size><d9p1:_version>0</d9p1:_version></Arguments><Children z:Id="27"><_items z:Id="28" z:Size="4"><MapNode z:Id="29"><Arguments xmlns:d12p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="30"><d12p1:_items z:Id="31" z:Size="4"><d12p1:anyType z:Id="32" z:Type="System.Single" z:Assembly="0">0.15</d12p1:anyType><d12p1:anyType z:Id="33" z:Type="System.Single" z:Assembly="0">0.04</d12p1:anyType><d12p1:anyType z:Id="34" z:Type="System.Single" z:Assembly="0">0.1</d12p1:anyType><d12p1:anyType i:nil="true" /></d12p1:_items><d12p1:_size>3</d12p1:_size><d12p1:_version>1</d12p1:_version></Arguments><Children z:Id="35"><_items z:Ref="23" i:nil="true" /><_size>0</_size><_version>0</_version></Children><Content z:Id="36">using OpenTK;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 
 namespace Jidai.Resources.Behaviors.Nodes
 {
@@ -163,7 +163,7 @@ namespace Jidai.Resources.Behaviors.Nodes
     }
 }
 </Content><InlineAction xmlns:d12p1="http://schemas.datacontract.org/2004/07/System" i:nil="true" /><InlineCondition xmlns:d12p1="http://schemas.datacontract.org/2004/07/System" i:nil="true" /><NodeType>Node</NodeType></MapNode><MapNode z:Id="37"><Arguments xmlns:d12p1="http://schemas.microsoft.com/2003/10/Serialization/Arrays" z:Id="38"><d12p1:_items z:Ref="6" i:nil="true" /><d12p1:_size>0</d12p1:_size><d12p1:_version>0</d12p1:_version></Arguments><Children z:Id="39"><_items z:Ref="23" i:nil="true" /><_size>0</_size><_version>0</_version></Children><Content z:Id="40">using OpenTK;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 using System;
 
 namespace Jidai.Resources.Behaviors.Nodes

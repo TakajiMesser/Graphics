@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 
-namespace SpiceEngine.Scripting.Behaviors
+namespace SpiceEngine.Scripting
 {
     public class Behavior
     {

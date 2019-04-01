@@ -1,8 +1,8 @@
 ﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Raycasting;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.Behaviors.Decorators;
+using SpiceEngine.Scripting.Nodes;
+using SpiceEngine.Scripting.Nodes.Decorators;
 using System;
 using System.Runtime.Serialization;
 

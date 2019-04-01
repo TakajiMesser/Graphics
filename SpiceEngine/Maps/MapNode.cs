@@ -1,7 +1,8 @@
-﻿using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.Behaviors.Composites;
-using SpiceEngine.Scripting.Behaviors.Decorators;
-using SpiceEngine.Scripting.Behaviors.Leaves;
+﻿using SpiceEngine.Scripting.Nodes;
+using SpiceEngine.Scripting.Nodes.Composites;
+using SpiceEngine.Scripting.Nodes.Decorators;
+using SpiceEngine.Scripting.Nodes.Leaves;
+using SpiceEngine.Scripting.Scripts;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -37,9 +38,9 @@ namespace SpiceEngine.Maps
         public Func<BehaviorContext, BehaviorStatus> InlineAction { get; set; }
 
         // For more complex custom nodes, we must parse and analyze the node's C# code
-        public string Content { get; set; }
+        public Script Script { get; set; }
 
-        public Node ToNode()
+        public Node ToNode(IScriptCompiler scriptCompiler)
         {
             switch (NodeType)
             {
@@ -56,45 +57,25 @@ namespace SpiceEngine.Maps
                 case NodeTypes.InlineLeaf:
                     return new InlineLeafNode(InlineAction);
                 case NodeTypes.Node:
-                    return ParseContent();
+                    return ParseContent(scriptCompiler);
             }
 
             // TODO - Perform a better default case
             return null;
         }
 
-        private Node ParseContent()
+        private Node ParseContent(IScriptCompiler scriptCompiler)
         {
-            // Need to use new provider for Roslyn features
-            var provider = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
+            // TODO - Perform script compilation in an earlier step
+            scriptCompiler.Add(Script);
+            scriptCompiler.CompileScripts();
 
-            var compileParameters = new CompilerParameters()
-            {
-                GenerateExecutable = false,
-                GenerateInMemory = true
-            };
-
-            var executingAssembly = Assembly.GetExecutingAssembly();
-            var assemblyPath = new Uri(executingAssembly.EscapedCodeBase).LocalPath;
-            compileParameters.ReferencedAssemblies.Add(assemblyPath);
-
-            var assemblyNames = executingAssembly.GetReferencedAssemblies();
-
-            var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
-            compileParameters.ReferencedAssemblies.Add("OpenTK.dll");
-            //compileParameters.ReferencedAssemblies.Add(openTKAssembly.Name);
-            //var openTKAssemblyPath = new Uri(openTKAssembly.EscapedCodeBase).LocalPath;
-            //compileParameters.ReferencedAssemblies.Add(openTKAssemblyPath);
-
-            var results = provider.CompileAssemblyFromSource(compileParameters, Content);
-
-            if (results.Errors.HasErrors)
+            if (Script.HasErrors)
             {
                 // TODO - Handle errors by notifying user
             }
             else
             {
-                var assembly = results.CompiledAssembly;
                 var type = assembly.GetExportedTypes().First();
 
                 if (type.IsSubclassOf(typeof(CompositeNode)))
@@ -137,7 +118,6 @@ namespace SpiceEngine.Maps
             }
 
             return null;
-            //var provider = CodeDomProvider.CreateProvider("C#");
         }
     }
 }

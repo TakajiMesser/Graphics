@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SpiceEngine.Scripting.Behaviors.Leaves
+namespace SpiceEngine.Scripting.Nodes.Leaves
 {
     public class InlineLeafNode : Node
     {

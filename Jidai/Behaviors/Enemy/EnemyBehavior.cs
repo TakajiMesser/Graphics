@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Scripting.Behaviors;
+﻿using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Scripting.StimResponse;
 

@@ -9,7 +9,7 @@ using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Scripting.Behaviors
+namespace SpiceEngine.Scripting
 {
     public class BehaviorContext
     {

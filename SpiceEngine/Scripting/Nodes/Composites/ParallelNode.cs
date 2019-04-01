@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpiceEngine.Scripting.Behaviors.Composites
+namespace SpiceEngine.Scripting.Nodes.Composites
 {
     /// <summary>
     /// Ticks all children forward simultaneously. Returns failure as soon as one child fails. Returns success once all children have succeeded.

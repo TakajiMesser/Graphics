@@ -27,6 +27,7 @@ namespace SpiceEngine.Game
         public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; private set; }
+        public BehaviorManager BehaviorManager { get; private set; }
         public ScriptManager ScriptManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
@@ -70,9 +71,10 @@ namespace SpiceEngine.Game
 
             Camera = map.Camera.ToCamera(_resolution);
 
-            ScriptManager = new ScriptManager(EntityManager, PhysicsManager);
-            ScriptManager.SetCamera(Camera);
-            ScriptManager.SetInputProvider(InputManager);
+            ScriptManager = new ScriptManager();
+            BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
+            BehaviorManager.SetCamera(Camera);
+            BehaviorManager.SetInputProvider(InputManager);
 
             EntityManager.ClearEntities();
 
@@ -85,7 +87,7 @@ namespace SpiceEngine.Game
 
             var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
             Camera.AttachToEntity(actor, true, false);
-            ScriptManager.Load();
+            BehaviorManager.Load();
 
             IsLoaded = true;
 
@@ -131,12 +133,12 @@ namespace SpiceEngine.Game
             
             if (mapActor.Behavior != null)
             {
-                var behavior = mapActor.Behavior.ToBehavior();
-                ScriptManager.AddBehavior(entityID, behavior);
+                var behavior = mapActor.Behavior.ToBehavior(ScriptManager);
+                BehaviorManager.AddBehavior(entityID, behavior);
             }
 
-            ScriptManager.AddProperties(entityID, mapActor.Properties);
-            ScriptManager.AddStimuli(entityID, mapActor.Stimuli);
+            BehaviorManager.AddProperties(entityID, mapActor.Properties);
+            BehaviorManager.AddStimuli(entityID, mapActor.Stimuli);
 
             if (actor is AnimatedActor)
             {
@@ -214,7 +216,7 @@ namespace SpiceEngine.Game
             Camera.OnUpdateFrame();
 
             PhysicsManager.Tick();
-            ScriptManager.Tick();
+            BehaviorManager.Tick();
             InputManager.Tick();
 
             foreach (var animatedActor in EntityManager.Actors.OfType<AnimatedActor>())
