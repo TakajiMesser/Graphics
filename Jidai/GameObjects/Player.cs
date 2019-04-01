@@ -34,18 +34,10 @@ namespace Jidai.GameObjects
             });
 
             //ParallaxMapFilePath = FilePathHelper.BRICK_01_H_TEXTURE_PATH,
-            BehaviorFilePath = FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH;
+            Behavior = MapBehavior.Load(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
             IsPhysical = true;
 
             Stimuli.Add(SpiceEngine.Scripting.StimResponse.Stimulus.Player);
-
-            SaveBehaviorTree();
-        }
-
-        private void SaveBehaviorTree()
-        {
-            var behavior = new PlayerBehavior();
-            behavior.Save(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
         }
     }
 }

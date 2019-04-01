@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using SauceEditor.Models;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Maps;
+using System;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace SauceEditor.Views.Controls.Scripts
 {
@@ -21,9 +11,25 @@ namespace SauceEditor.Views.Controls.Scripts
     /// </summary>
     public partial class ScriptView : DockPanel
     {
+        private Script _script;
+
+        public EventHandler<ScriptEventArgs> Saved;
+
         public ScriptView(string scriptPath)
         {
             InitializeComponent();
+
+            _script = new Script();
+            Open(scriptPath);
+        }
+
+        public ScriptView(string scriptPath, Actor actor, MapActor mapActor)
+        {
+            InitializeComponent();
+
+            _script = new Script();
+            _script.SetEntities(actor, mapActor);
+
             Open(scriptPath);
         }
 
@@ -31,6 +37,7 @@ namespace SauceEditor.Views.Controls.Scripts
         {
             LockEditor();
             //TextEditor.Text = File.ReadAllText(filePath);
+            _script.Load(filePath);
             TextEditor.Load(filePath);
             UnlockEditor();
         }
@@ -38,7 +45,10 @@ namespace SauceEditor.Views.Controls.Scripts
         public void Save(string filePath)
         {
             LockEditor();
+
             TextEditor.Save(filePath);
+            Saved?.Invoke(this, new ScriptEventArgs(_script));
+
             UnlockEditor();
         }
 

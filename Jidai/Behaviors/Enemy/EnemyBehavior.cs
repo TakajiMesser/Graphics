@@ -1,7 +1,4 @@
-﻿using OpenTK;
-using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.Behaviors.Composites;
-using SpiceEngine.Scripting.Behaviors.Decorators;
+﻿using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Scripting.StimResponse;
 
@@ -23,7 +20,7 @@ namespace Jidai.Behaviors.Enemy
             _alertMeter.Triggered += AlertMeter_Triggered;
         }
 
-        protected override void SetRootNodes()
+        /*protected override void SetRootNodes()
         {
             var rootNode = new RepeaterNode(
                 new SequenceNode(
@@ -60,7 +57,7 @@ namespace Jidai.Behaviors.Enemy
             };
             playerResponse.Triggered += PlayerResponse_Triggered;
             Responses.Add(playerResponse);
-        }
+        }*/
 
         private void AlertMeter_Triggered(object sender, MeterTriggeredEventArgs e)
         {

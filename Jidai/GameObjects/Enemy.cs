@@ -55,16 +55,17 @@ namespace Jidai.GameObjects
                 NormalMapFilePath = FilePathHelper.BRICK_02_N_NORMAL_PATH
             });*/
 
-            BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH;
+            //BehaviorFilePath = FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH;
+            Behavior = MapBehavior.Load(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
             IsPhysical = true;
 
-            SaveBehaviorTree();
+            //SaveBehaviorTree();
         }
 
         private void SaveBehaviorTree()
         {
-            var behavior = new EnemyBehavior();
-            behavior.Save(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
+            //var behavior = new EnemyBehavior();
+            //behavior.Save(FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
 
             /*var rootNode = new SelectorNode(
                 new RepeaterNode(

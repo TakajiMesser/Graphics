@@ -25,7 +25,7 @@ namespace SpiceEngine.Maps
         public string ModelFilePath { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
-        public string BehaviorFilePath { get; set; }
+        public MapBehavior Behavior { get; set; }
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<Property> Properties { get; set; } = new List<Property>();
 
@@ -347,16 +347,6 @@ namespace SpiceEngine.Maps
             actor.Bounds = actor.Name == "Player"
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
-        }
-
-        public Behavior ToBehavior()
-        {
-            if (!string.IsNullOrEmpty(BehaviorFilePath))
-            {
-                return Behavior.Load(BehaviorFilePath);
-            }
-
-            return null;
         }
 
         /*public Script ToScript()

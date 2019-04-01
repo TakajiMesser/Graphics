@@ -175,7 +175,7 @@ namespace SauceEditor.Views.Controls.Properties
         {
             if (_entity != null && _entity.MapEntity is MapActor mapActor)
             {
-                ScriptOpened?.Invoke(this, new FileEventArgs(mapActor.BehaviorFilePath));
+                ScriptOpened?.Invoke(this, new FileEventArgs(mapActor.Behavior.FilePath));
             }
         }
     }

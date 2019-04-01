@@ -9,6 +9,7 @@ using SauceEditor.Views.Controls.Properties;
 using SauceEditor.Views.Controls.Scripts;
 using SauceEditor.Views.Controls.Settings;
 using SauceEditor.Views.Controls.Tools;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Maps;
 using System;
 using System.ComponentModel;
@@ -317,7 +318,7 @@ namespace SauceEditor.Views.Controls
             };
             _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
 
-            LayoutAnchorable anchorable = new LayoutAnchorable
+            var anchorable = new LayoutAnchorable
             {
                 Title = Path.GetFileNameWithoutExtension(filePath),
                 Content = _gamePanelManager,
@@ -334,7 +335,23 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
-            _propertyPanel.ScriptOpened += (s, args) => OpenBehavior(args.FileName);
+            _propertyPanel.ScriptOpened += (s, args) =>
+            {
+                if (_propertyPanel.Entity != null && _propertyPanel.Entity.Entity is Actor actor && _propertyPanel.Entity.MapEntity is MapActor mapActor)
+                {
+                    _scriptView = new ScriptView(filePath, actor, mapActor);
+                    _scriptView.Saved += (sender, e) =>
+                    {
+                        //mapActor.Behavior.e.Script;
+                    };
+
+                    OpenBehavior(args.FileName);
+                }
+                else
+                {
+                    // TODO - Throw some error to the user here?
+                }
+            };
         }
 
         private void OpenModel(string filePath)
@@ -356,9 +373,13 @@ namespace SauceEditor.Views.Controls
 
         private void OpenBehavior(string filePath)
         {
-            _scriptView = new ScriptView(filePath);
+            // Temporary measures...
+            if (_scriptView == null)
+            {
+                _scriptView = new ScriptView(filePath);
+            }
 
-            LayoutAnchorable anchorable = new LayoutAnchorable
+            var anchorable = new LayoutAnchorable
             {
                 Title = Path.GetFileNameWithoutExtension(filePath),
                 Content = _scriptView,

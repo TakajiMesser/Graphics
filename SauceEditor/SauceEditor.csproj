@@ -123,6 +123,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\Script.cs" />
     <Compile Include="Models\EditorEntity.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\Commands\ICommand.cs" />
@@ -144,6 +145,7 @@
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Views\Controls\Scripts\ScriptEventArgs.cs" />
     <Compile Include="Views\Controls\Scripts\ScriptView.xaml.cs">
       <DependentUpon>ScriptView.xaml</DependentUpon>
     </Compile>

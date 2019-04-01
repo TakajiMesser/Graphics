@@ -1,62 +1,41 @@
 ﻿using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Xml;
 
 namespace SpiceEngine.Scripting.Behaviors
 {
-    public abstract class Behavior
+    public class Behavior
     {
-        public Stack<Node> RootStack { get; private set; } = new Stack<Node>();
-        public BehaviorContext Context { get; private set; } = new BehaviorContext();
-        public List<Response> Responses { get; private set; } = new List<Response>();
+        private Stack<Node> _rootStack = new Stack<Node>();
+        private List<Response> _responses = new List<Response>();
 
-        public Behavior()
+        public BehaviorContext Context { get; private set; } = new BehaviorContext();
+
+        public void PushRootNode(Node node)
         {
-            SetRootNodes();
-            SetResponses();
+            _rootStack.Push(node);
         }
 
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext c) => Context = new BehaviorContext();
-
-        protected abstract void SetRootNodes();
-        protected abstract void SetResponses();
-
-        public virtual BehaviorStatus Tick()
+        public void AddResponse(Response response)
         {
-            foreach (var response in Responses)
+            _responses.Add(response);
+        }
+
+        public BehaviorStatus Tick()
+        {
+            foreach (var response in _responses)
             {
                 response.Tick(Context);
             }
 
-            var root = RootStack.Peek();
+            var root = _rootStack.Peek();
             var rootStatus = root.Tick(Context);
 
             if (rootStatus.IsComplete())
             {
-                RootStack.Pop();
+                _rootStack.Pop();
             }
 
             return rootStatus;
-        }
-
-        public void Save(string path)
-        {
-            using (var writer = XmlWriter.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                serializer.WriteObject(writer, this);
-            }
-        }
-
-        public static Behavior Load(string path)
-        {
-            using (var reader = XmlReader.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                return serializer.ReadObject(reader, true) as Behavior;
-            }
         }
     }
 }

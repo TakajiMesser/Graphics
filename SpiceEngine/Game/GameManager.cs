@@ -128,9 +128,12 @@ namespace SpiceEngine.Game
             actor.Bounds = actor.Name == "Player"
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
-
-            var behavior = mapActor.ToBehavior();
-            ScriptManager.AddBehavior(entityID, behavior);
+            
+            if (mapActor.Behavior != null)
+            {
+                var behavior = mapActor.Behavior.ToBehavior();
+                ScriptManager.AddBehavior(entityID, behavior);
+            }
 
             ScriptManager.AddProperties(entityID, mapActor.Properties);
             ScriptManager.AddStimuli(entityID, mapActor.Stimuli);

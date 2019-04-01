@@ -1,6 +1,4 @@
 ﻿using SpiceEngine.Scripting.Behaviors;
-using SpiceEngine.Scripting.Behaviors.Composites;
-using SpiceEngine.Scripting.Behaviors.Decorators;
 
 namespace Jidai.Behaviors.Player
 {
@@ -17,7 +15,7 @@ namespace Jidai.Behaviors.Player
 
         public PlayerBehavior() : base() { }
 
-        protected override void SetRootNodes()
+        /*protected override void SetRootNodes()
         {
             var rootNode = new RepeaterNode(
                 new SelectorNode(
@@ -34,6 +32,6 @@ namespace Jidai.Behaviors.Player
             RootStack.Push(rootNode);
         }
 
-        protected override void SetResponses() { }
+        protected override void SetResponses() { }*/
     }
 }

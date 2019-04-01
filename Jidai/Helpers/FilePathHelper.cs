@@ -76,6 +76,12 @@ namespace Jidai.Helpers
         public static string PLAYER_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\PlayerTurn.btt";
         public static string PLAYER_EVADE_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\PlayerEvade.btt";
         public static string PLAYER_COVER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\PlayerCover.btt";
+
+        public static string BLOCK_NODE_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\Nodes\BlockNode.cs";
+        public static string MOVE_NODE_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\Nodes\MoveNode.cs";
+        public static string MOVE_TO_NODE_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\Nodes\MoveToNode.cs";
+        public static string TURN_NODE_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\Nodes\TurnNode.cs";
+        public static string TURN_TOWARDS_NODE_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Behaviors\Nodes\TurnTowardsNode.cs";
         #endregion
     }
 }
