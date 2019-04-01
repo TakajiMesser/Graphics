@@ -36,6 +36,7 @@ namespace SauceEditor.Views.Controls.Properties
 
         public event EventHandler<EntityEventArgs> EntityUpdated;
         public event EventHandler<CommandEventArgs> CommandExecuted;
+        public event EventHandler<FileEventArgs> ScriptOpened;
 
         public PropertyWindow()
         {
@@ -126,6 +127,9 @@ namespace SauceEditor.Views.Controls.Properties
                     PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
                     ScaleTransform.Visibility = Visibility.Visible;
                     ScaleTransform.SetValues(mapActor.Scale);
+
+                    PropertyGrid.RowDefinitions[6].Height = GridLength.Auto;
+                    ScriptButton.Visibility = Visibility.Visible;
                     break;
                 case MapBrush mapBrush:
                     PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
@@ -162,6 +166,17 @@ namespace SauceEditor.Views.Controls.Properties
 
             PropertyGrid.RowDefinitions[5].Height = new GridLength(0);
             ColorPick.Visibility = Visibility.Hidden;
+
+            PropertyGrid.RowDefinitions[6].Height = new GridLength(0);
+            ScriptButton.Visibility = Visibility.Hidden;
+        }
+
+        private void ScriptButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (_entity != null && _entity.MapEntity is MapActor mapActor)
+            {
+                ScriptOpened?.Invoke(this, new FileEventArgs(mapActor.BehaviorFilePath));
+            }
         }
     }
 }

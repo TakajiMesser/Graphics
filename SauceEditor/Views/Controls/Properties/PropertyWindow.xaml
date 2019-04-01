@@ -30,6 +30,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0">
                 <Label Content="ID" Margin="4"/>
@@ -66,6 +67,12 @@
             </Border>
             <Border Grid.Row="5" Grid.Column="1">
                 <xctk:ColorPicker x:Name="ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="0">
+                <Label Name="ScriptLabel" Content="Behavior" Margin="4"/>
+            </Border>
+            <Border Grid.Row="6" Grid.Column="1">
+                <Button Name="ScriptButton" Click="ScriptButton_Click">Open Script</Button>
             </Border>
         </Grid>
     </StackPanel>

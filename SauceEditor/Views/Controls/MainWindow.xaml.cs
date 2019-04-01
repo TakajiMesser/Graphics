@@ -6,6 +6,7 @@ using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Controls.GamePanels;
 using SauceEditor.Views.Controls.ProjectTree;
 using SauceEditor.Views.Controls.Properties;
+using SauceEditor.Views.Controls.Scripts;
 using SauceEditor.Views.Controls.Settings;
 using SauceEditor.Views.Controls.Tools;
 using SpiceEngine.Maps;
@@ -32,12 +33,17 @@ namespace SauceEditor.Views.Controls
         private Map _map;
         private string _mapPath;
         
+        // Side panels
         private ProjectTreeView _projectTree = new ProjectTreeView();
         private ToolsWindow _toolPanel = new ToolsWindow();
         private PropertyWindow _propertyPanel = new PropertyWindow();
-        private GamePanelManager _gamePanelManager;
-        private GameWindow _gameWindow;
 
+        // Main views
+        private GamePanelManager _gamePanelManager;
+        private ScriptView _scriptView;
+
+        // Separate windows
+        private GameWindow _gameWindow;
         private SettingsWindow _settingsWindow;
         private EditorSettings _settings;
 
@@ -328,6 +334,7 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
+            _propertyPanel.ScriptOpened += (s, args) => OpenBehavior(args.FileName);
         }
 
         private void OpenModel(string filePath)
@@ -349,7 +356,21 @@ namespace SauceEditor.Views.Controls
 
         private void OpenBehavior(string filePath)
         {
+            _scriptView = new ScriptView(filePath);
 
+            LayoutAnchorable anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _scriptView,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();
         }
 
         private void OpenTexture(string filePath)
