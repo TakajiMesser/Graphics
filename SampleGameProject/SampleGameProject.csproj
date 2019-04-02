@@ -1,0 +1,246 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{B1232132-96A3-402A-9FE3-06856466DCD4}</ProjectGuid>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>SampleGameProject</RootNamespace>
+    <AssemblyName>SampleGameProject</AssemblyName>
+    <TargetFrameworkVersion>v4.7.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <TargetFrameworkProfile />
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
+    </Reference>
+    <Reference Include="DevILSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DevILSharp.0.1.2\lib\net45\DevILSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Behaviors\Enemy\PatrolNode.cs" />
+    <Compile Include="Behaviors\Enemy\EnemyBehavior.cs" />
+    <Compile Include="Behaviors\Enemy\IsAtFullAlert.cs" />
+    <Compile Include="Behaviors\Enemy\ChaseNode.cs" />
+    <Compile Include="Behaviors\Enemy\TurnTowardsNode.cs" />
+    <Compile Include="Behaviors\Enemy\IsPlayerInSightNode.cs" />
+    <Compile Include="Behaviors\MoveToNode.cs" />
+    <Compile Include="Behaviors\Player\BlockNode.cs" />
+    <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
+    <Compile Include="Behaviors\Player\PlayerBehavior.cs" />
+    <Compile Include="Behaviors\Player\TurnNode.cs" />
+    <Compile Include="Behaviors\Player\MoveNode.cs" />
+    <Compile Include="Behaviors\Player\EvadeNode.cs" />
+    <Compile Include="Behaviors\Player\CoverNode.cs" />
+    <Compile Include="GameObjects\Camera.cs" />
+    <Compile Include="GameObjects\Enemy.cs" />
+    <Compile Include="GameObjects\Player.cs" />
+    <Compile Include="Helpers\Builders\BehaviorBuilder.cs" />
+    <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\Builders\ProjectBuilder.cs" />
+    <Compile Include="Helpers\FilePathHelper.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\MoveToNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\TurnNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\MoveNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\TurnTowardsNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\BlockNode.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="OpenTK.dll.config" />
+    <None Include="packages.config" />
+    <None Include="Resources\Animations\boblampclean.md5anim" />
+    <None Include="Resources\Animations\boblampclean.md5mesh" />
+    <None Include="Resources\Behaviors\Enemy.btt" />
+    <None Include="Resources\Behaviors\EnemyPatrol.btt" />
+    <None Include="Resources\Behaviors\EnemyTurn.btt" />
+    <None Include="Resources\Behaviors\PlayerCover.btt" />
+    <None Include="Resources\Behaviors\PlayerEvade.btt" />
+    <None Include="Resources\Behaviors\PlayerInput.btt" />
+    <None Include="Resources\Behaviors\PlayerMovement.btt" />
+    <None Include="Resources\Behaviors\PlayerTurn.btt" />
+    <None Include="Resources\Behaviors\SearchForPlayer.btt" />
+    <None Include="Resources\Fonts\Roboto-Black.ttf" />
+    <None Include="Resources\Fonts\Roboto-BlackItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Bold.ttf" />
+    <None Include="Resources\Fonts\Roboto-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Italic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Light.ttf" />
+    <None Include="Resources\Fonts\Roboto-LightItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Medium.ttf" />
+    <None Include="Resources\Fonts\Roboto-MediumItalic.ttf" />
+    <None Include="Resources\Fonts\Roboto-Regular.ttf" />
+    <None Include="Resources\Fonts\Roboto-Thin.ttf" />
+    <None Include="Resources\Fonts\Roboto-ThinItalic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Bold.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-BoldItalic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Italic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Light.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-LightItalic.ttf" />
+    <None Include="Resources\Fonts\RobotoCondensed-Regular.ttf" />
+    <None Include="Resources\Maps\TestMap.map" />
+    <None Include="Resources\Meshes\Enemy.obj" />
+    <None Include="Resources\Meshes\Floor.obj" />
+    <None Include="Resources\Meshes\Player.obj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Resources\Maps\TestMap.xml" />
+    <Content Include="Resources\Screenshots\20180108_211355.png" />
+    <Content Include="Resources\Screenshots\20180111_085059.png" />
+    <Content Include="Resources\Screenshots\20180111_104600.png" />
+    <Content Include="Resources\Screenshots\20180111_105008.png" />
+    <Content Include="Resources\Screenshots\20180111_105110.png" />
+    <Content Include="Resources\Screenshots\20180111_120726.png" />
+    <Content Include="Resources\Screenshots\20180111_120727.png" />
+    <Content Include="Resources\Screenshots\20180111_120733.png" />
+    <Content Include="Resources\Screenshots\20180111_120755.png" />
+    <Content Include="Resources\Screenshots\20180111_120756.png" />
+    <Content Include="Resources\Screenshots\20180111_120951.png" />
+    <Content Include="Resources\Screenshots\20180111_120952.png" />
+    <Content Include="Resources\Screenshots\20180111_121008.png" />
+    <Content Include="Resources\Screenshots\20180111_121600.png" />
+    <Content Include="Resources\Screenshots\20180111_121603.png" />
+    <Content Include="Resources\Screenshots\20180111_121608.png" />
+    <Content Include="Resources\Screenshots\20180111_121808.png" />
+    <Content Include="Resources\Screenshots\20180111_132005.png" />
+    <Content Include="Resources\Screenshots\20180111_141348.png" />
+    <Content Include="Resources\Screenshots\20180111_142537.png" />
+    <Content Include="Resources\Screenshots\20180111_142558.png" />
+    <Content Include="Resources\Screenshots\20180111_142602.png" />
+    <Content Include="Resources\Screenshots\20180111_142606.png" />
+    <Content Include="Resources\Screenshots\20180113_132119.png" />
+    <Content Include="Resources\Screenshots\20180113_132156.png" />
+    <Content Include="Resources\Screenshots\20180116_103605.png" />
+    <Content Include="Resources\Screenshots\20180116_104146.png" />
+    <Content Include="Resources\Screenshots\20180116_104610.png" />
+    <Content Include="Resources\Screenshots\20180116_150804.png" />
+    <Content Include="Resources\Screenshots\20180117_091234.png" />
+    <Content Include="Resources\Screenshots\20180117_122045.png" />
+    <Content Include="Resources\Screenshots\20180117_135332.png" />
+    <Content Include="Resources\Screenshots\20180121_211955.png" />
+    <Content Include="Resources\Screenshots\20180122_140542.png" />
+    <Content Include="Resources\Screenshots\20180122_142103.png" />
+    <Content Include="Resources\Screenshots\20180123_153709.png" />
+    <Content Include="Resources\Screenshots\20180124_084350.png" />
+    <Content Include="Resources\Textures\brick1-d.jpg" />
+    <Content Include="Resources\Textures\brick1-h.jpg" />
+    <Content Include="Resources\Textures\brick1-n.jpg" />
+    <Content Include="Resources\Textures\brick1-s.jpg" />
+    <Content Include="Resources\Textures\brick2-b.jpg" />
+    <Content Include="Resources\Textures\brick2-d.jpg" />
+    <Content Include="Resources\Textures\brick2-h.jpg" />
+    <Content Include="Resources\Textures\brick2-n.jpg" />
+    <Content Include="Resources\Textures\brick2-s.jpg" />
+    <Content Include="Resources\Textures\cement-d.png" />
+    <Content Include="Resources\Textures\cement-n.png" />
+    <Content Include="Resources\Textures\cement-s.png" />
+    <Content Include="Resources\Textures\ceramic-tile-d.jpg" />
+    <Content Include="Resources\Textures\ceramic-tile-n.jpg" />
+    <Content Include="Resources\Textures\flashlight1.jpg" />
+    <Content Include="Resources\Textures\Grass01.png" />
+    <Content Include="Resources\Textures\Grass01_disp.png" />
+    <Content Include="Resources\Textures\Grass01_normal.png" />
+    <Content Include="Resources\Textures\plane-d.png" />
+    <Content Include="Resources\Textures\plane-n.png" />
+    <Content Include="Resources\Textures\plane-s.png" />
+    <Content Include="Resources\Textures\Skybox\space_back6.png" />
+    <Content Include="Resources\Textures\Skybox\space_bottom4.png" />
+    <Content Include="Resources\Textures\Skybox\space_front5.png" />
+    <Content Include="Resources\Textures\Skybox\space_left2.png" />
+    <Content Include="Resources\Textures\Skybox\space_right1.png" />
+    <Content Include="Resources\Textures\Skybox\space_top3.png" />
+    <Content Include="Resources\Textures\Steinwand_C1_Diffuse.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C2_Displacement.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C3_Normal.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C4_Specular.jpg" />
+    <Content Include="Resources\Textures\Steinwand_C5_Bump.jpg" />
+    <Content Include="Resources\Textures\water1-d.jpg" />
+    <Content Include="Resources\Textures\water1-h.jpg" />
+    <Content Include="Resources\Textures\water1-n.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
+      <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
+      <Name>SpiceEngine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\AssimpNet.3.3.2\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.3.3.2\build\AssimpNet.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props'))" />
+  </Target>
+</Project>

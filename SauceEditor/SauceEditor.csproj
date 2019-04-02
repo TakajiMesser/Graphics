@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -70,6 +72,12 @@
     <Reference Include="GongSolutions.WPF.DragDrop, Version=2.0.0.0, Culture=neutral, PublicKeyToken=91f1945125b7a587, processorArchitecture=MSIL">
       <HintPath>..\packages\gong-wpf-dragdrop.2.0.0-alpha0106\lib\net47\GongSolutions.WPF.DragDrop.dll</HintPath>
     </Reference>
+    <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
+      <HintPath>..\packages\AvalonEdit.5.0.4\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -120,17 +128,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\Script.cs" />
+    <Compile Include="Models\EditorEntity.cs" />
+    <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\Commands\ICommand.cs" />
     <Compile Include="ViewModels\Commands\CommandEventArgs.cs" />
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
-    <Compile Include="Views\Controls\GamePanels\DockableGamePanel.xaml.cs">
-      <DependentUpon>DockableGamePanel.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\Controls\GamePanels\GamePanelManager.xaml.cs">
       <DependentUpon>GamePanelManager.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Controls\GamePanels\GamePanelView.xaml.cs">
+      <DependentUpon>GamePanelView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Controls\GamePanels\EntitiesEventArgs.cs" />
     <Compile Include="Views\Controls\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
@@ -138,40 +150,44 @@
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Views\Controls\Scripts\ScriptEventArgs.cs" />
+    <Compile Include="Views\Controls\Scripts\ScriptView.xaml.cs">
+      <DependentUpon>ScriptView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\Controls\Settings\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Tools\ToolSelectedEventArgs.cs" />
-    <Compile Include="Views\Controls\Tools\ToolsWindow.xaml.cs">
-      <DependentUpon>ToolsWindow.xaml</DependentUpon>
+    <Compile Include="Views\Controls\Tools\ToolsPanel.xaml.cs">
+      <DependentUpon>ToolsPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\UpDowns\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Properties\PropertyWindow.xaml.cs">
-      <DependentUpon>PropertyWindow.xaml</DependentUpon>
+    <Compile Include="Views\Controls\Properties\PropertyPanel.xaml.cs">
+      <DependentUpon>PropertyPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\ProjectTree\ProjectTreeView.xaml.cs">
-      <DependentUpon>ProjectTreeView.xaml</DependentUpon>
+    <Compile Include="Views\Controls\ProjectTree\ProjectTreePanel.xaml.cs">
+      <DependentUpon>ProjectTreePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Transform\TransformPanel.xaml.cs">
       <DependentUpon>TransformPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Controls\Transform\TransformChangedEventArgs.cs" />
-    <Compile Include="Views\Controls\Properties\EntityUpdatedEventArgs.cs" />
+    <Compile Include="Views\Controls\Properties\EntityEventArgs.cs" />
     <Compile Include="Views\Controls\UpDowns\ValueChangedEventArgs.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Models\SettingsEventArgs.cs" />
     <Compile Include="Models\EditorSettings.cs" />
     <Compile Include="Models\GameProject.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
-    <Page Include="Views\Controls\GamePanels\DockableGamePanel.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
     <Page Include="Views\Controls\GamePanels\GamePanelManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Controls\GamePanels\GamePanelView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Controls\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -181,11 +197,15 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\Controls\Scripts\ScriptView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\Controls\Settings\SettingsWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Tools\ToolsWindow.xaml">
+    <Page Include="Views\Controls\Tools\ToolsPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -193,11 +213,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Properties\PropertyWindow.xaml">
+    <Page Include="Views\Controls\Properties\PropertyPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\ProjectTree\ProjectTreeView.xaml">
+    <Page Include="Views\Controls\ProjectTree\ProjectTreePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -253,9 +273,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jidai\Jidai.csproj">
+    <ProjectReference Include="..\SampleGameProject\SampleGameProject.csproj">
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
-      <Name>Jidai</Name>
+      <Name>SampleGameProject</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
@@ -274,5 +294,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.3.3.2\build\AssimpNet.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props'))" />
   </Target>
 </Project>

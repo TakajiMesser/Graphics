@@ -3,8 +3,6 @@ using SpiceEngine.Entities;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Utilities;
-using System;
 
 namespace SpiceEngine.Physics.Bodies
 {

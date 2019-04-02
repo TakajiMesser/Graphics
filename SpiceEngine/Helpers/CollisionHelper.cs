@@ -1,12 +1,9 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using System;
-using System.Collections.Generic;
 
 namespace SpiceEngine.Helpers
 {
@@ -62,12 +59,6 @@ namespace SpiceEngine.Helpers
         {
             var boxA = (Box)bodyA.Shape;
             var boxB = (Box)bodyB.Shape;
-
-            int a = 3;
-            if (bodyA.EntityID == 2)
-            {
-                a = 4;
-            }
 
             return bodyA.Position.X - boxA.Width / 2.0f < bodyB.Position.X + boxB.Width / 2.0f
                 && bodyA.Position.X + boxA.Width / 2.0f > bodyB.Position.X - boxB.Width / 2.0f

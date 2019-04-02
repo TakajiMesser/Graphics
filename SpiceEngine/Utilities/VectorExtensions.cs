@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using System;
 
 namespace SpiceEngine.Utilities
@@ -23,5 +24,7 @@ namespace SpiceEngine.Utilities
         public static bool IsSignificant(this Vector3 vector) => vector.X >= MathExtensions.EPSILON || vector.X <= -MathExtensions.EPSILON
             || vector.Y >= MathExtensions.EPSILON || vector.Y <= -MathExtensions.EPSILON
             || vector.Z >= MathExtensions.EPSILON || vector.Z <= -MathExtensions.EPSILON;
+
+        public static Color4 ToColor4(this Vector4 vector) => new Color4(vector.X, vector.Y, vector.Z, vector.W);
     }
 }

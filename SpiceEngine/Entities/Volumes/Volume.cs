@@ -1,10 +1,6 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Vertices;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Entities.Volumes
 {
@@ -21,8 +17,6 @@ namespace SpiceEngine.Entities.Volumes
             get => _modelMatrix.Translation;
             set => _modelMatrix.Translation = value;
         }
-
-        public Vector3 OriginalRotation { get; set; }
 
         public Quaternion Rotation
         {
@@ -43,11 +37,11 @@ namespace SpiceEngine.Entities.Volumes
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
         public Volume() { }
-        public Volume(List<Vector3> vertices, List<int> triangleIndices, Color4 color)
+        /*public Volume(List<Vector3> vertices, List<int> triangleIndices, Color4 color)
         {
             var simpleVertices = vertices.Select(v => new ColorVertex3D(v, color)).ToList();
             //Mesh = new Mesh3D<ColorVertex3D>(simpleVertices, triangleIndices);
-        }
+        }*/
 
         public Volume Duplicate() => new Volume()
         {
@@ -65,7 +59,7 @@ namespace SpiceEngine.Entities.Volumes
             //Mesh.SetUniforms(program);
         }
 
-        public static Volume RectangularPrism(Vector3 center, float xLength, float yLength, float zLength, Color4 color)
+        /*public static Volume Box(Vector3 center, float xLength, float yLength, float zLength, Color4 color)
         {
             var vertices = new List<Vector3>
             {
@@ -96,6 +90,6 @@ namespace SpiceEngine.Entities.Volumes
             };
 
             return new Volume(vertices, triangleIndices, color);
-        }
+        }*/
     }
 }

@@ -4,12 +4,11 @@ using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public class SpotLight : Light, IRotate
+    public class SpotLight : Light<SLight>, IRotate
     {
         public float Radius { get; set; }
         public float Height { get; set; }
 
-        public Vector3 OriginalRotation { get; set; }
         public Quaternion Rotation { get; set; }
 
         public Vector3 Direction => (new Vector4(0.0f, 0.0f, -Height, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;
@@ -54,5 +53,7 @@ namespace SpiceEngine.Entities.Lights
             program.SetUniform("lightColor", Color.Xyz);
             program.SetUniform("lightIntensity", Intensity);
         }
+
+        public override SLight ToStruct() => new SLight(Position, Radius, Color.Xyz, Intensity);
     }
 }

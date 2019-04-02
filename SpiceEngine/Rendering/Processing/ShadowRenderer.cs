@@ -193,7 +193,7 @@ namespace SpiceEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        public void Render(Camera camera, Light light, BatchManager batchManager)
+        public void Render(Camera camera, ILight light, BatchManager batchManager)
         {
             switch (light)
             {

@@ -6,7 +6,6 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Scripting.Behaviors;
 using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Utilities;
@@ -25,7 +24,7 @@ namespace SpiceEngine.Maps
         public string ModelFilePath { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
-        public string BehaviorFilePath { get; set; }
+        public MapBehavior Behavior { get; set; }
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<Property> Properties { get; set; } = new List<Property>();
 
@@ -299,14 +298,14 @@ namespace SpiceEngine.Maps
             }
 
             actor.Position = Position;
-            actor.OriginalRotation = Rotation;
+            actor.Rotation = Quaternion.FromEulerAngles(Rotation);
             actor.Scale = Scale;
             actor.Orientation = Quaternion.FromEulerAngles(Orientation);
 
             return actor;
         }
 
-        public override Shape3D ToShape()
+        public Shape3D ToShape()
         {
             using (var importer = new Assimp.AssimpContext())
             {
@@ -347,16 +346,6 @@ namespace SpiceEngine.Maps
             actor.Bounds = actor.Name == "Player"
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
-        }
-
-        public Behavior ToBehavior()
-        {
-            if (!string.IsNullOrEmpty(BehaviorFilePath))
-            {
-                return Behavior.Load(BehaviorFilePath);
-            }
-
-            return null;
         }
 
         /*public Script ToScript()

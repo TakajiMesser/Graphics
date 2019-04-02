@@ -9,7 +9,7 @@ namespace SpiceEngine.Helpers
     {
         private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"\..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine";
 
-        public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\Jidai\Resources\Screenshots\";
+        public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Screenshots\";
 
         #region Meshes
         public static string SQUARE_MESH_PATH = SOLUTION_DIRECTORY + @"\SpiceEngine\Resources\Meshes\Square.obj";

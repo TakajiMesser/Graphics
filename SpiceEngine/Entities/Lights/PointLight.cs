@@ -6,7 +6,7 @@ using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public class PointLight : Light
+    public class PointLight : Light<PLight>
     {
         public float Radius { get; set; }
 
@@ -55,6 +55,6 @@ namespace SpiceEngine.Entities.Lights
             program.SetUniform("lightIntensity", Intensity);
         }
 
-        public PLight ToStruct() => new PLight(Position, Radius, Color.Xyz, Intensity);
+        public override PLight ToStruct() => new PLight(Position, Radius, Color.Xyz, Intensity);
     }
 }

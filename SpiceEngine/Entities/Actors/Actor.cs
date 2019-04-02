@@ -31,17 +31,6 @@ namespace SpiceEngine.Entities.Actors
             set => _modelMatrix.Rotation = Orientation * value;
         }
 
-        private Vector3 _originalRotation;
-        public Vector3 OriginalRotation
-        {
-            get => _originalRotation;
-            set
-            {
-                _originalRotation = value;
-                _modelMatrix.Rotation = Quaternion.FromEulerAngles(value);
-            }
-        }
-
         public Vector3 Scale
         {
             get => _modelMatrix.Scale;

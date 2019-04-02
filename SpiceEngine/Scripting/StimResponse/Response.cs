@@ -1,22 +1,21 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Raycasting;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Scripting.Behaviors;
+using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Meters;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 
 namespace SpiceEngine.Scripting.StimResponse
 {
     public class Response
     {
-        public Stimulus Stimulus { get; private set; }
+        public Stimulus Stimulus { get; set; }
 
         public bool TriggerOnContact { get; set; }
         public bool TriggerOnProximity { get; set; }
@@ -46,8 +45,10 @@ namespace SpiceEngine.Scripting.StimResponse
             set => _tickMeter.TriggerValue = value;
         }
 
+        //[IgnoreDataMember]
         public event EventHandler<StimulusTriggeredEventArgs> Triggered;
 
+        //[IgnoreDataMember]
         private Meter _tickMeter = new Meter();
 
         public Response(Stimulus stimulus)

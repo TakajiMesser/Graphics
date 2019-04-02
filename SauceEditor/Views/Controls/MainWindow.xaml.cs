@@ -1,24 +1,26 @@
-﻿using Jidai.Helpers;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using OpenTK;
+using SampleGameProject.Helpers;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Controls.GamePanels;
 using SauceEditor.Views.Controls.ProjectTree;
 using SauceEditor.Views.Controls.Properties;
+using SauceEditor.Views.Controls.Scripts;
 using SauceEditor.Views.Controls.Settings;
 using SauceEditor.Views.Controls.Tools;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Maps;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
 using GameWindow = SpiceEngine.Game.GameWindow;
+using ICommand = SauceEditor.ViewModels.Commands.ICommand;
 
 namespace SauceEditor.Views.Controls
 {
@@ -32,12 +34,17 @@ namespace SauceEditor.Views.Controls
         private Map _map;
         private string _mapPath;
         
-        private ProjectTreeView _projectTree = new ProjectTreeView();
-        private ToolsWindow _toolPanel = new ToolsWindow();
-        private PropertyWindow _propertyPanel = new PropertyWindow();
-        private GamePanelManager _gamePanelManager;
-        private GameWindow _gameWindow;
+        // Side panels
+        private ProjectTreePanel _projectTree = new ProjectTreePanel();
+        private ToolsPanel _toolPanel = new ToolsPanel();
+        private PropertyPanel _propertyPanel = new PropertyPanel();
 
+        // Main views
+        private GamePanelManager _gamePanelManager;
+        private ScriptView _scriptView;
+
+        // Separate windows
+        private GameWindow _gameWindow;
         private SettingsWindow _settingsWindow;
         private EditorSettings _settings;
 
@@ -212,7 +219,7 @@ namespace SauceEditor.Views.Controls
             _yView.Panel.Enabled = false;
             _zView.Panel.Enabled = false;*/
 
-            _gameWindow = new GameWindow(_mapPath)
+            _gameWindow = new GameWindow(_gamePanelManager.Map)
             {
                 VSync = VSyncMode.Adaptive
             };
@@ -225,6 +232,7 @@ namespace SauceEditor.Views.Controls
                 _zView.Panel.Enabled = true;*/
             };
             _gameWindow.Run(60.0, 0.0);
+            //_gameWindow.LoadMap(_gamePanelManager.Map);
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
@@ -260,6 +268,38 @@ namespace SauceEditor.Views.Controls
             Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
         }
 
+        private void Menu_UndoCalled(object sender, EventArgs e) => CommandStack.Undo();
+
+        private void Menu_RedoCalled(object sender, EventArgs e) => CommandStack.Redo();
+
+        private void UndoButton_Click(object sender, RoutedEventArgs e) => CommandStack.Undo();
+
+        private void RedoButton_Click(object sender, RoutedEventArgs e) => CommandStack.Redo();
+
+        private void CommandExecuted(ICommand command)
+        {
+            CommandStack.Push(command);
+
+            // TODO - Also need to enable/disable menu items for undo/redo
+            if (CommandStack.CanUndo)
+            {
+                UndoButton.IsEnabled = true;
+            }
+            else
+            {
+                UndoButton.IsEnabled = false;
+            }
+
+            if (CommandStack.CanRedo)
+            {
+                RedoButton.IsEnabled = true;
+            }
+            else
+            {
+                RedoButton.IsEnabled = false;
+            }
+        }
+
         private void OpenMap(string filePath)
         {
             Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
@@ -271,12 +311,14 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager = new GamePanelManager(_mapPath);
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
+                // For now, just go with the last entity that was selected
                 _propertyPanel.Entity = args.Entities.LastOrDefault();
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };
+            _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
 
-            LayoutAnchorable anchorable = new LayoutAnchorable
+            var anchorable = new LayoutAnchorable
             {
                 Title = Path.GetFileNameWithoutExtension(filePath),
                 Content = _gamePanelManager,
@@ -293,6 +335,23 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
+            _propertyPanel.ScriptOpened += (s, args) =>
+            {
+                if (_propertyPanel.Entity != null && _propertyPanel.Entity.Entity is Actor actor && _propertyPanel.Entity.MapEntity is MapActor mapActor)
+                {
+                    _scriptView = new ScriptView(filePath, actor, mapActor);
+                    _scriptView.Saved += (sender, e) =>
+                    {
+                        //mapActor.Behavior.e.Script;
+                    };
+
+                    OpenBehavior(args.FileName);
+                }
+                else
+                {
+                    // TODO - Throw some error to the user here?
+                }
+            };
         }
 
         private void OpenModel(string filePath)
@@ -314,7 +373,25 @@ namespace SauceEditor.Views.Controls
 
         private void OpenBehavior(string filePath)
         {
+            // Temporary measures...
+            if (_scriptView == null)
+            {
+                _scriptView = new ScriptView(filePath);
+            }
 
+            var anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _scriptView,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();
         }
 
         private void OpenTexture(string filePath)

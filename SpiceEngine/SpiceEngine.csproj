@@ -1,5 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" />
+  <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -82,6 +84,9 @@
       <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
+    </Reference>
     <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
     </Reference>
@@ -106,11 +111,13 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\Actors\ActorArchetype.cs" />
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
     <Compile Include="Entities\LayerManager.cs" />
+    <Compile Include="Entities\Lights\ILight.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
     <Compile Include="Entities\Volumes\PhysicsVolume.cs" />
     <Compile Include="Entities\Volumes\TriggerVolume.cs" />
@@ -152,6 +159,7 @@
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MinkowskiHelper.cs" />
+    <Compile Include="Helpers\SoundHelper.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\IMouseDelta.cs" />
     <Compile Include="Inputs\IInputProvider.cs" />
@@ -164,10 +172,14 @@
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
     <Compile Include="Maps\EntityMapping.cs" />
+    <Compile Include="Maps\IMapEntity3D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />
+    <Compile Include="Maps\MapNode.cs" />
+    <Compile Include="Maps\MapBehavior.cs" />
     <Compile Include="Maps\MapEntity2D.cs" />
     <Compile Include="Maps\MapEntity3D.cs" />
+    <Compile Include="Maps\MapLight.cs" />
     <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapBrush.cs" />
@@ -220,6 +232,7 @@
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Meshes\MeshShape.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
     <Compile Include="Rendering\Meshes\IMesh3D.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
@@ -295,37 +308,43 @@
     <Compile Include="Rendering\Vertices\Vertex3D.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
-    <Compile Include="Scripting\Behaviors\BehaviorContext.cs" />
-    <Compile Include="Scripting\Behaviors\BehaviorExtensions.cs" />
-    <Compile Include="Scripting\Behaviors\BehaviorInterruptedEventArgs.cs" />
-    <Compile Include="Scripting\Behaviors\BehaviorCompletedEventArgs.cs" />
-    <Compile Include="Scripting\Behaviors\Behavior.cs" />
-    <Compile Include="Scripting\Behaviors\Decorators\ConditionNode.cs" />
-    <Compile Include="Scripting\Behaviors\Decorators\RepeaterNode.cs" />
-    <Compile Include="Scripting\Behaviors\Leaves\InlineLeafNode.cs" />
-    <Compile Include="Scripting\Behaviors\Decorators\InlineConditionNode.cs" />
-    <Compile Include="Scripting\Behaviors\Decorators\DecoratorNode.cs" />
-    <Compile Include="Scripting\Behaviors\Composites\ParallelNode.cs" />
-    <Compile Include="Scripting\Behaviors\Composites\SelectorNode.cs" />
-    <Compile Include="Scripting\Behaviors\Composites\SequenceNode.cs" />
-    <Compile Include="Scripting\Behaviors\Composites\CompositeNode.cs" />
-    <Compile Include="Scripting\Behaviors\Node.cs" />
+    <Compile Include="Scripting\Behavior.cs" />
+    <Compile Include="Scripting\BehaviorCompletedEventArgs.cs" />
+    <Compile Include="Scripting\BehaviorContext.cs" />
+    <Compile Include="Scripting\BehaviorInterruptedEventArgs.cs" />
+    <Compile Include="Scripting\BehaviorManager.cs" />
     <Compile Include="Scripting\Meters\MeterTriggeredEventArgs.cs" />
     <Compile Include="Scripting\Meters\Meter.cs" />
+    <Compile Include="Scripting\Nodes\Composites\CompositeNode.cs" />
+    <Compile Include="Scripting\Nodes\Composites\ParallelNode.cs" />
+    <Compile Include="Scripting\Nodes\Composites\SelectorNode.cs" />
+    <Compile Include="Scripting\Nodes\Composites\SequenceNode.cs" />
+    <Compile Include="Scripting\Nodes\Decorators\ConditionNode.cs" />
+    <Compile Include="Scripting\Nodes\Decorators\DecoratorNode.cs" />
+    <Compile Include="Scripting\Nodes\Decorators\InlineConditionNode.cs" />
+    <Compile Include="Scripting\Nodes\Decorators\RepeaterNode.cs" />
+    <Compile Include="Scripting\Nodes\Leaves\InlineLeafNode.cs" />
+    <Compile Include="Scripting\Nodes\Node.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
     <Compile Include="Scripting\Properties\PropertyCollection.cs" />
     <Compile Include="Scripting\Properties\Property.cs" />
     <Compile Include="Scripting\IStimulusProvider.cs" />
-    <Compile Include="Scripting\ScriptManager.cs" />
-    <Compile Include="Scripting\Script.cs" />
     <Compile Include="Scripting\Director.cs" />
+    <Compile Include="Scripting\Scripts\IScriptCompiler.cs" />
+    <Compile Include="Scripting\Scripts\Script.cs" />
+    <Compile Include="Scripting\Scripts\ScriptManager.cs" />
     <Compile Include="Scripting\States\State.cs" />
     <Compile Include="Scripting\StimResponse\Response.cs" />
     <Compile Include="Scripting\StimResponse\StimulusCollection.cs" />
     <Compile Include="Scripting\StimResponse\StimulusTriggeredEventArgs.cs" />
     <Compile Include="Scripting\StimResponse\Stimulus.cs" />
+    <Compile Include="Sounds\Listener.cs" />
+    <Compile Include="Sounds\Sound.cs" />
+    <Compile Include="Sounds\SoundBuffer.cs" />
     <Compile Include="Sounds\SoundManager.cs" />
+    <Compile Include="Sounds\Source.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
+    <Compile Include="Utilities\BehaviorExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Utilities\OpenTKExtensions.cs" />
@@ -441,5 +460,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.3.3.2\build\AssimpNet.targets'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props'))" />
   </Target>
 </Project>

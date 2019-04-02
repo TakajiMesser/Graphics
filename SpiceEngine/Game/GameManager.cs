@@ -2,7 +2,6 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Helpers;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
@@ -10,6 +9,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Physics;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Scripting;
+using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Sounds;
 using System;
 using System.Collections.Generic;
@@ -28,12 +28,23 @@ namespace SpiceEngine.Game
         public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; private set; }
+        public BehaviorManager BehaviorManager { get; private set; }
         public ScriptManager ScriptManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
 
         private Resolution _resolution;
+
+        public GameManager(Resolution resolution)
+        {
+            _resolution = resolution;
+
+            InputManager = new InputManager();
+
+            TextureManager.EnableMipMapping = true;
+            TextureManager.EnableAnisotropy = true;
+        }
 
         public GameManager(Resolution resolution, IMouseDelta mouseDelta)
         {
@@ -45,46 +56,10 @@ namespace SpiceEngine.Game
             TextureManager.EnableAnisotropy = true;
         }
 
-        public void LoadFromEntities(EntityManager entityManager, Map map)
-        {
-            //EntityManager = entityManager;
-
-            /*foreach (var mapActor in map.Actors)
-            {
-                var actor = EntityManager.GetActorByName(mapActor.Name);
-
-                switch (actor.Model)
-                {
-                    case Model3D<Vertex3D> s:
-                        for (var i = 0; i < s.Meshes.Count; i++)
-                        {
-                            if (i < mapActor.TexturesPaths.Count)
-                            {
-                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
-                            }
-                        }
-                        break;
-
-                    case AnimatedModel3D a:
-                        using (var importer = new Assimp.AssimpContext())
-                        {
-                            var scene = importer.ImportFile(mapActor.ModelFilePath);
-                            for (var i = 0; i < a.Meshes.Count; i++)
-                            {
-                                a.Meshes[i].TextureMapping = (i < mapActor.TexturesPaths.Count)
-                                    ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                    : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-                            }
-                        }
-                        break;
-                }
-            }*/
-
-            IsLoaded = true;
-        }
-
         public EntityMapping LoadFromMap(Map map)
         {
+            IsLoaded = false;
+
             switch (map)
             {
                 case Map2D map2D:
@@ -97,9 +72,10 @@ namespace SpiceEngine.Game
 
             Camera = map.Camera.ToCamera(_resolution);
 
-            ScriptManager = new ScriptManager(EntityManager, PhysicsManager);
-            ScriptManager.SetCamera(Camera);
-            ScriptManager.SetInputProvider(InputManager);
+            ScriptManager = new ScriptManager();
+            BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
+            BehaviorManager.SetCamera(Camera);
+            BehaviorManager.SetInputProvider(InputManager);
 
             EntityManager.ClearEntities();
 
@@ -112,17 +88,102 @@ namespace SpiceEngine.Game
 
             var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
             Camera.AttachToEntity(actor, true, false);
-            ScriptManager.Load();
+            BehaviorManager.Load();
+
+            IsLoaded = true;
 
             return entityMapping;
         }
 
-        private IEnumerable<int> LoadLights(IEnumerable<Light> lights)
+        public int AddLight(MapLight mapLight)
         {
-            foreach (var light in lights)
+            var light = mapLight.ToEntity();
+            return EntityManager.AddEntity(light);
+        }
+
+        public int AddBrush(MapBrush mapBrush)
+        {
+            var brush = mapBrush.ToEntity();
+            brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
+
+            int entityID = EntityManager.AddEntity(brush);
+
+            if (mapBrush.IsPhysical)
             {
-                int entityID = EntityManager.AddEntity(light);
-                yield return entityID;
+                var shape = mapBrush.ToShape();
+                PhysicsManager.AddBrush(brush, shape, mapBrush.IsPhysical);
+            }
+
+            return entityID;
+        }
+
+        public int AddActor(MapActor mapActor)
+        {
+            var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
+            int entityID = EntityManager.AddEntity(actor);
+
+            var meshes = mapActor.ToMeshes();
+
+            var shape = mapActor.ToShape();
+            PhysicsManager.AddActor(actor, shape, mapActor.IsPhysical);
+
+            /*actor.HasCollision = mapActor.HasCollision;
+            actor.Bounds = actor.Name == "Player"
+                ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
+                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+            
+            if (mapActor.Behavior != null)
+            {
+                var behavior = mapActor.Behavior.ToBehavior(ScriptManager);
+                BehaviorManager.AddBehavior(entityID, behavior);
+            }
+
+            BehaviorManager.AddProperties(entityID, mapActor.Properties);
+            BehaviorManager.AddStimuli(entityID, mapActor.Stimuli);
+
+            if (actor is AnimatedActor)
+            {
+                using (var importer = new Assimp.AssimpContext())
+                {
+                    var scene = importer.ImportFile(mapActor.ModelFilePath);
+
+                    for (var i = 0; i < scene.Meshes.Count; i++)
+                    {
+                        var textureMapping = i < mapActor.TexturesPaths.Count
+                            ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                            : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+
+                        actor.AddTextureMapping(i, textureMapping);
+                    }
+                }
+            }
+            else
+            {
+                for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
+                {
+                    actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(TextureManager));
+                }
+            }
+
+            return entityID;
+        }
+
+        public int AddVolume(MapVolume mapVolume)
+        {
+            var volume = mapVolume.ToEntity();
+            int entityID = EntityManager.AddEntity(volume);
+
+            var shape = mapVolume.ToShape();
+            PhysicsManager.AddVolume(volume, shape);
+
+            return entityID;
+        }
+
+        private IEnumerable<int> LoadLights(IEnumerable<MapLight> mapLights)
+        {
+            foreach (var mapLight in mapLights)
+            {
+                yield return AddLight(mapLight);
             }
         }
 
@@ -130,18 +191,7 @@ namespace SpiceEngine.Game
         {
             foreach (var mapBrush in mapBrushes)
             {
-                var brush = mapBrush.ToEntity();
-                brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-
-                int entityID = EntityManager.AddEntity(brush);
-
-                if (mapBrush.IsPhysical)
-                {
-                    var shape = mapBrush.ToShape();
-                    PhysicsManager.AddBrush(brush, shape, mapBrush.IsPhysical);
-                }
-
-                yield return entityID;
+                yield return AddBrush(mapBrush);
             }
         }
 
@@ -149,13 +199,7 @@ namespace SpiceEngine.Game
         {
             foreach (var mapVolume in mapVolumes)
             {
-                var volume = mapVolume.ToEntity();
-                int entityID = EntityManager.AddEntity(volume);
-
-                var shape = mapVolume.ToShape();
-                PhysicsManager.AddVolume(volume, shape);
-
-                yield return entityID;
+                yield return AddVolume(mapVolume);
             }
         }
 
@@ -163,50 +207,7 @@ namespace SpiceEngine.Game
         {
             foreach (var mapActor in mapActors)
             {
-                var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
-                int entityID = EntityManager.AddEntity(actor);
-
-                var meshes = mapActor.ToMeshes();
-
-                var shape = mapActor.ToShape();
-                PhysicsManager.AddActor(actor, shape, mapActor.IsPhysical);
-
-                /*actor.HasCollision = mapActor.HasCollision;
-                actor.Bounds = actor.Name == "Player"
-                    ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
-
-                var behavior = mapActor.ToBehavior();
-                ScriptManager.AddBehavior(entityID, behavior);
-
-                ScriptManager.AddProperties(entityID, mapActor.Properties);
-                ScriptManager.AddStimuli(entityID, mapActor.Stimuli);
-
-                if (actor is AnimatedActor)
-                {
-                    using (var importer = new Assimp.AssimpContext())
-                    {
-                        var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                        for (var i = 0; i < scene.Meshes.Count; i++)
-                        {
-                            var textureMapping = i < mapActor.TexturesPaths.Count
-                                ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-
-                            actor.AddTextureMapping(i, textureMapping);
-                        }
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
-                    {
-                        actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(TextureManager));
-                    }
-                }
-
-                yield return entityID;
+                yield return AddActor(mapActor);
             }
         }
 
@@ -216,7 +217,7 @@ namespace SpiceEngine.Game
             Camera.OnUpdateFrame();
 
             PhysicsManager.Tick();
-            ScriptManager.Tick();
+            BehaviorManager.Tick();
             InputManager.Tick();
 
             foreach (var animatedActor in EntityManager.Actors.OfType<AnimatedActor>())

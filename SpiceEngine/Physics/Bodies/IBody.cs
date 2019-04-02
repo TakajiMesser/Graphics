@@ -1,6 +1,4 @@
-﻿using SpiceEngine.Physics.Shapes;
-
-namespace SpiceEngine.Physics.Bodies
+﻿namespace SpiceEngine.Physics.Bodies
 {
     public enum BodyStates
     {

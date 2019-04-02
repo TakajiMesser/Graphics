@@ -1,24 +1,11 @@
-﻿using Jidai.Helpers;
-using Microsoft.Win32;
-using OpenTK;
+﻿using Microsoft.Win32;
 using SauceEditor.Models;
-using SauceEditor.ViewModels.Commands;
-using SauceEditor.Views.Controls.GamePanels;
 using SauceEditor.Views.Controls.ProjectTree;
-using SauceEditor.Views.Controls.Properties;
 using SauceEditor.Views.Controls.Settings;
-using SauceEditor.Views.Controls.Tools;
-using SpiceEngine.Maps;
 using System;
-using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace SauceEditor.Views.Controls
 {
@@ -43,6 +30,8 @@ namespace SauceEditor.Views.Controls
         public event EventHandler<FileEventArgs> ProjectOpened;
         public event EventHandler<FileEventArgs> ModelOpened;
         public event EventHandler<FileEventArgs> BehaviorOpened;
+        public event EventHandler<EventArgs> UndoCalled;
+        public event EventHandler<EventArgs> RedoCalled;
 
         public MainMenu()
         {
@@ -162,7 +151,7 @@ namespace SauceEditor.Views.Controls
                 Filter = "Project Files|*.pro",
                 DefaultExt = GameProject.FILE_EXTENSION,
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -181,7 +170,7 @@ namespace SauceEditor.Views.Controls
                 DefaultExt = "map",
                 Filter = "Map Files|*.map",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -199,7 +188,7 @@ namespace SauceEditor.Views.Controls
                 CheckPathExists = true,
                 DefaultExt = "obj",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 
@@ -217,7 +206,7 @@ namespace SauceEditor.Views.Controls
                 CheckPathExists = true,
                 DefaultExt = "bhv",
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
-                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\Jidai\Maps"
+                    ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)
             };
 

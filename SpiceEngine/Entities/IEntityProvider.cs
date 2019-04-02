@@ -13,7 +13,7 @@ namespace SpiceEngine.Entities
         IEntity GetEntity(int id);
         Actor GetActor(string name);
         EntityTypes GetEntityType(int id);
-        List<Light> Lights { get; }
+        List<ILight> Lights { get; }
         List<Actor> Actors { get; }
     }
 }

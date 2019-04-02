@@ -12,7 +12,6 @@ using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering
@@ -64,10 +63,10 @@ namespace SpiceEngine.Rendering
         {
             BatchManager = new BatchManager(entityProvider);
 
-            LoadBrushes(map.Brushes, entityMapping.BrushIDs);
-            LoadLights(map.Lights, entityMapping.LightIDs);
-            LoadActors(map.Actors, entityMapping.ActorIDs);
-            LoadVolumes(map.Volumes, entityMapping.VolumeIDs);
+            AddBrushes(map.Brushes, entityMapping.BrushIDs);
+            //AddVolumes(map.Volumes, entityMapping.VolumeIDs);
+            //AddLights(map.Lights, entityMapping.LightIDs);
+            AddActors(map.Actors, entityMapping.ActorIDs);
 
             BatchManager.Load();
 
@@ -92,53 +91,60 @@ namespace SpiceEngine.Rendering
             IsLoaded = true;
         }
 
-        private void LoadBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
+        public void AddBrush(MapBrush mapBrush, int entityID)
         {
-            for (var i = 0; i < mapBrushes.Count; i++)
-            {
-                var entityID = brushIDs[i];
-                var mesh = mapBrushes[i].ToMesh();
+            var mesh = mapBrush.ToMesh();
+            BatchManager.AddBrush(entityID, mesh);
+        }
 
-                BatchManager.AddBrush(entityID, mesh);
+        public void AddActor(MapActor mapActor, int entityID)
+        {
+            var meshes = mapActor.ToMeshes();
+
+            if (mapActor.HasAnimations)
+            {
+                BatchManager.AddJoint(entityID, meshes);
+            }
+            else
+            {
+                BatchManager.AddActor(entityID, meshes);
             }
         }
 
-        private void LoadVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
+        private void AddBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
         {
-            /*for (var i = 0; i < mapVolumes.Count; i++)
+            for (var i = 0; i < mapBrushes.Count; i++)
+            {
+                AddBrush(mapBrushes[i], brushIDs[i]);
+            }
+        }
+
+        private void AddActors(IList<MapActor> mapActors, IList<int> actorIDs)
+        {
+            for (var i = 0; i < mapActors.Count; i++)
+            {
+                AddActor(mapActors[i], actorIDs[i]);
+            }
+        }
+
+        /*private void AddVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
+        {
+            for (var i = 0; i < mapVolumes.Count; i++)
             {
                 var entityID = volumeIDs[i];
                 var mesh = mapVolumes[i].ToMesh();
 
                 BatchManager.AddVolume(entityID, mesh);
-            }*/
-        }
+            }
+        }*/
 
-        private void LoadLights(IList<Light> lights, IList<int> lightIDs)
+        /*private void AddLights(IList<Light> lights, IList<int> lightIDs)
         {
             foreach (var light in lights)
             {
                 //BatchManager.light.ID;
             }
-        }
-
-        private void LoadActors(IList<MapActor> mapActors, IList<int> actorIDs)
-        {
-            for (var i = 0; i < mapActors.Count; i++)
-            {
-                var entityID = actorIDs[i];
-                var meshes = mapActors[i].ToMeshes();
-
-                if (mapActors[i].HasAnimations)
-                {
-                    BatchManager.AddJoint(entityID, meshes);
-                }
-                else
-                {
-                    BatchManager.AddActor(entityID, meshes);
-                }
-            }
-        }
+        }*/
 
         public void ResizeResolution()
         {
@@ -197,7 +203,7 @@ namespace SpiceEngine.Rendering
             {
                 var entity = entities[i];
 
-                if (entity is Light light)
+                if (entity is ILight light)
                 {
                     var lightMesh = _lightRenderer.GetMeshForLight(light);
                     _wireframeRenderer.SelectionPass(camera, light, lightMesh);
