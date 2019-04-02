@@ -1,13 +1,12 @@
-﻿using SpiceEngine.Scripting.Nodes;
+﻿using SpiceEngine.Scripting;
+using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Nodes.Composites;
 using SpiceEngine.Scripting.Nodes.Decorators;
 using SpiceEngine.Scripting.Nodes.Leaves;
 using SpiceEngine.Scripting.Scripts;
 using System;
-using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 
 namespace SpiceEngine.Maps
 {
@@ -45,15 +44,15 @@ namespace SpiceEngine.Maps
             switch (NodeType)
             {
                 case NodeTypes.Parallel:
-                    return new ParallelNode(Children.Select(c => c.ToNode()));
+                    return new ParallelNode(Children.Select(c => c.ToNode(scriptCompiler)));
                 case NodeTypes.Selector:
-                    return new SelectorNode(Children.Select(c => c.ToNode()));
+                    return new SelectorNode(Children.Select(c => c.ToNode(scriptCompiler)));
                 case NodeTypes.Sequence:
-                    return new SequenceNode(Children.Select(c => c.ToNode()));
+                    return new SequenceNode(Children.Select(c => c.ToNode(scriptCompiler)));
                 case NodeTypes.InlineCondition:
-                    return new InlineConditionNode(InlineCondition, Children.First().ToNode());
+                    return new InlineConditionNode(InlineCondition, Children.First().ToNode(scriptCompiler));
                 case NodeTypes.Repeater:
-                    return new RepeaterNode(Children.First().ToNode());
+                    return new RepeaterNode(Children.First().ToNode(scriptCompiler));
                 case NodeTypes.InlineLeaf:
                     return new InlineLeafNode(InlineAction);
                 case NodeTypes.Node:
@@ -67,8 +66,9 @@ namespace SpiceEngine.Maps
         private Node ParseContent(IScriptCompiler scriptCompiler)
         {
             // TODO - Perform script compilation in an earlier step
-            scriptCompiler.Add(Script);
+            scriptCompiler.AddScript(Script);
             scriptCompiler.CompileScripts();
+            scriptCompiler.ClearScripts();
 
             if (Script.HasErrors)
             {
@@ -76,28 +76,28 @@ namespace SpiceEngine.Maps
             }
             else
             {
-                var type = assembly.GetExportedTypes().First();
+                var type = Script.ExportedType;
 
                 if (type.IsSubclassOf(typeof(CompositeNode)))
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode()), Arguments.ToArray());
+                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode(scriptCompiler)), Arguments.ToArray());
                     }
                     else
                     {
-                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode()));
+                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode(scriptCompiler)));
                     }
                 }
                 else if (type.IsSubclassOf(typeof(DecoratorNode)))
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(), Arguments.ToArray());
+                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(scriptCompiler), Arguments.ToArray());
                     }
                     else
                     {
-                        return (Node)Activator.CreateInstance(type, Children.First().ToNode());
+                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(scriptCompiler));
                     }
                 }
                 else if (type.IsSubclassOf(typeof(Node)))

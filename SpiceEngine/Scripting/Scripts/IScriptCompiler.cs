@@ -4,5 +4,6 @@
     {
         void AddScript(Script script);
         void CompileScripts();
+        void ClearScripts();
     }
 }

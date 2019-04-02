@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngine.Scripting.Nodes;
+using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Scripting

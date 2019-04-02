@@ -273,9 +273,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Jidai\Jidai.csproj">
+    <ProjectReference Include="..\SampleGameProject\SampleGameProject.csproj">
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
-      <Name>Jidai</Name>
+      <Name>SampleGameProject</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>

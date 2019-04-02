@@ -1,4 +1,8 @@
-﻿using System.Runtime.Serialization;
+﻿using System;
+using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization;
 
 namespace SpiceEngine.Scripting.Scripts
 {
@@ -9,14 +13,14 @@ namespace SpiceEngine.Scripting.Scripts
     /// </summary>
     public class Script
     {
-        public string Name { get; }
-        public string SourcePath { get; }
+        public string Name { get; set; }
+        public string SourcePath { get; set; }
 
         [IgnoreDataMember]
-        public Type ExportedType { get; private set; }
+        public Type ExportedType { get; set; }
 
         [IgnoreDataMember]
-        public List<CompileError> Errors { get; private set; } = new List<CompileError>();
+        public List<CompilerError> Errors { get; private set; } = new List<CompilerError>();
 
         [IgnoreDataMember]
         public bool HasErrors => Errors.Count > 0;
@@ -24,10 +28,6 @@ namespace SpiceEngine.Scripting.Scripts
         [IgnoreDataMember]
         public bool IsCompiled => ExportedType != null || HasErrors;
 
-        public Script(string name, string sourcePath)
-        {
-            Name = name;
-            SourcePath = sourcePath;
-        }
+        public string GetContent() => File.ReadAllText(SourcePath);
     }
 }

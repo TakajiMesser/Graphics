@@ -1,6 +1,6 @@
-﻿using Jidai.Helpers;
-using Microsoft.Win32;
+﻿using Microsoft.Win32;
 using OpenTK;
+using SampleGameProject.Helpers;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Controls.GamePanels;

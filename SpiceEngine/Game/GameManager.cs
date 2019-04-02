@@ -9,6 +9,7 @@ using SpiceEngine.Outputs;
 using SpiceEngine.Physics;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Scripting;
+using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Sounds;
 using System;
 using System.Collections.Generic;
