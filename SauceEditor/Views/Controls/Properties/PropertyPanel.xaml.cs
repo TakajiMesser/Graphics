@@ -42,6 +42,9 @@ namespace SauceEditor.Views.Controls.Properties
         public PropertyPanel()
         {
             InitializeComponent();
+
+            DataContext = new PropertiesViewModel();
+
             ClearProperties();
 
             PositionTransform.TransformChanged += (s, args) =>

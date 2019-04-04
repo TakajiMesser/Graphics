@@ -10,8 +10,8 @@
         mc:Ignorable="d"
         Title="Properties">
     <StackPanel Orientation="Vertical">
-        <Label Name="EntityType" FontSize="14"/>
-        <Grid Name="PropertyGrid">
+        <Label Name="EntityType" Content="{Binding Path=EntityType}" FontSize="14"/>
+        <Grid Name="PropertyGrid" Visibility="{Binding Path=EntitySelected}">
             <Grid.Resources>
                 <Style TargetType="{x:Type Border}">
                     <Setter Property="BorderBrush" Value="Black" />
