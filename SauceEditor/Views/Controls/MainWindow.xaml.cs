@@ -312,7 +312,8 @@ namespace SauceEditor.Views.Controls
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 // For now, just go with the last entity that was selected
-                _propertyPanel.Entity = args.Entities.LastOrDefault();
+                //_propertyPanel.Entity = args.Entities.LastOrDefault();
+                _propertyPanel.PropertiesViewModel.SetValues(args.Entities.LastOrDefault());
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };

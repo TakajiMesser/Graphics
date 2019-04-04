@@ -11,6 +11,7 @@ namespace SauceEditor.Views.Controls.Transform
     public partial class TransformPanel : UserControl
     {
         public readonly static DependencyProperty LabelProperty = DependencyProperty.Register("Label", typeof(string), typeof(TransformPanel));
+        public readonly static DependencyProperty TransformProperty = DependencyProperty.Register("Transform", typeof(Vector3), typeof(TransformPanel));
 
         public event EventHandler<TransformChangedEventArgs> TransformChanged;
 
@@ -34,11 +35,13 @@ namespace SauceEditor.Views.Controls.Transform
             }
         }
 
-        public void SetValues(Vector3 values)
+        public Vector3 Transform
         {
-            X.Value = values.X;
-            Y.Value = values.Y;
-            Z.Value = values.Z;
+            get => (Vector3)GetValue(TransformProperty);
+            set
+            {
+                SetValue(TransformProperty, value);
+            }
         }
     }
 }

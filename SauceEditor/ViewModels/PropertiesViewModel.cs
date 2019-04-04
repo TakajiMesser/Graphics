@@ -1,7 +1,11 @@
 using OpenTK;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Runtime.CompilerServices;
+using SauceEditor.Models;
+using SauceEditor.Utilities;
+using SpiceEngine.Entities;
+using SpiceEngine.Maps;
+using System.Windows;
+using System.Windows.Input;
+using System.Windows.Media;
 
 namespace SauceEditor.ViewModels
 {
@@ -9,27 +13,88 @@ namespace SauceEditor.ViewModels
     {
         private readonly DelegateCommand _openScriptCommand;
 
-        public bool EntitySelected { get; set; }
-        public string EntityType { get; set; }
+        private Visibility _entitySelected;
+        private string _entityType;
+        private int _id;
+        private string _name;
+        private Vector3 _position;
+        private Vector3? _rotation;
+        private Vector3? _scale;
+        private Color? _color;
 
-        public int ID { get; set; }
-        public string Name { get; set; }
-        public Vector3 Position { get; set; }
-        public Vector3? Rotation { get; set; }
-        public Vector3? Scale { get; set; }
-        public Color4? Color { get; set; }
+        public Visibility EntitySelected
+        {
+            get => _entitySelected;
+            set => SetProperty(ref _entitySelected, value);
+        }
+
+        public string EntityType
+        {
+            get => _entityType;
+            set => SetProperty(ref _entityType, value);
+        }
+
+        public int ID
+        {
+            get => _id;
+            set => SetProperty(ref _id, value);
+        }
+
+        public string Name
+        {
+            get => _name;
+            set => SetProperty(ref _name, value);
+        }
+
+        public Vector3 Position
+        {
+            get => _position;
+            set => SetProperty(ref _position, value);
+        }
+
+        public Vector3? Rotation
+        {
+            get => _rotation;
+            set => SetProperty(ref _rotation, value);
+        }
+
+        public Vector3? Scale
+        {
+            get => _scale;
+            set => SetProperty(ref _scale, value);
+        }
+
+        public Color? Color
+        {
+            get => _color;
+            set => SetProperty(ref _color, value);
+        }
 
         public ICommand OpenScriptCommand => _openScriptCommand;
 
-        public PropertiesViewModel(EditorEntity editorEntity)
+        public PropertiesViewModel()
         {
-            EntitySelected = editorEntity != null;
-            EntityType = "No Properties to Show";
+            SetValues(null);
+
+            _openScriptCommand = new DelegateCommand(
+                p =>
+                {
+                    _openScriptCommand.InvokeCanExecuteChanged();
+                },
+                p =>
+                {
+                    return true;
+                }
+            );
+        }
+
+        public void SetValues(EditorEntity editorEntity)
+        {
+            EntitySelected = editorEntity != null ? Visibility.Visible : Visibility.Collapsed;
+            EntityType = editorEntity != null ? editorEntity.Entity.GetType().Name : "No Properties to Show";
 
             if (editorEntity != null)
             {
-                EntityType = editorEntity.Entity.GetType().Name;
-
                 Position = editorEntity.MapEntity.Position;
 
                 if (editorEntity.Entity is IRotate)
@@ -52,19 +117,14 @@ namespace SauceEditor.ViewModels
                     Color = mapLight.Color.ToMediaColor();
                 }
             }
-            
-            
-
-            _openScriptCommand = new DelegateCommand(
-                (p) =>
-                {
-                    _openScriptCommand.InvokeCanExecuteChanged();
-                },
-                (p) =>
-                {
-                    return true;
-                }
-            );
+            else
+            {
+                Position = Vector3.Zero;
+                Rotation = null;
+                Scale = null;
+                Name = null;
+                Color = null;
+            }
         }
     }
 }

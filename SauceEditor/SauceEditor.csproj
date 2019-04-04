@@ -136,6 +136,9 @@
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
+    <Compile Include="ViewModels\DelegateCommand.cs" />
+    <Compile Include="ViewModels\PropertiesViewModel.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="Views\Controls\GamePanels\GamePanelManager.xaml.cs">
       <DependentUpon>GamePanelManager.xaml</DependentUpon>
     </Compile>

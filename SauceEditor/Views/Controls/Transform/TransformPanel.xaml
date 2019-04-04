@@ -8,9 +8,9 @@
     <StackPanel Orientation="Vertical">
         <Label Name="Title" Content="{Binding Label}" Visibility="Collapsed" FontSize="16"/>
         <StackPanel Orientation="Horizontal">
-            <local:NumericUpDown x:Name="X" Grid.Column="0" Label="X" Margin="4, 2, 2, 4"/>
-            <local:NumericUpDown x:Name="Y" Grid.Column="1" Label="Y" Margin="4, 2, 2, 4"/>
-            <local:NumericUpDown x:Name="Z" Grid.Column="2" Label="Z" Margin="4, 2, 2, 4"/>
+            <local:NumericUpDown x:Name="X" Grid.Column="0" Label="X" Value="{Binding Transform.X}" Margin="4, 2, 2, 4"/>
+            <local:NumericUpDown x:Name="Y" Grid.Column="1" Label="Y" Value="{Binding Transform.Y}" Margin="4, 2, 2, 4"/>
+            <local:NumericUpDown x:Name="Z" Grid.Column="2" Label="Z" Value="{Binding Transform.Z}" Margin="4, 2, 2, 4"/>
         </StackPanel>
     </StackPanel>
 </UserControl>

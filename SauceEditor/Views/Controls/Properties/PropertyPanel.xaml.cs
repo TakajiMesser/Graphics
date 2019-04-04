@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SauceEditor.Models;
 using SauceEditor.Utilities;
+using SauceEditor.ViewModels;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Lights;
@@ -24,14 +25,14 @@ namespace SauceEditor.Views.Controls.Properties
             {
                 _entity = value;
 
-                if (_entity != null)
+                /*if (_entity != null)
                 {
                     SetProperties();
                 }
                 else
                 {
                     ClearProperties();
-                }
+                }*/
             }
         }
 
@@ -43,9 +44,7 @@ namespace SauceEditor.Views.Controls.Properties
         {
             InitializeComponent();
 
-            DataContext = new PropertiesViewModel();
-
-            ClearProperties();
+            /*ClearProperties();
 
             PositionTransform.TransformChanged += (s, args) =>
             {
@@ -102,19 +101,19 @@ namespace SauceEditor.Views.Controls.Properties
 
                     EntityUpdated?.Invoke(this, new EntityEventArgs(_entity));
                 }
-            };
+            };*/
         }
 
         private void SetProperties()
         {
             ClearProperties();
-            EntityType.Content = _entity.Entity.GetType().Name;
+            //EntityType.Content = _entity.Entity.GetType().Name;
 
-            PropertyGrid.Visibility = Visibility.Visible;
+            //PropertyGrid.Visibility = Visibility.Visible;
             //IDTextbox.Text = _mapEntity.ID.ToString();
 
             PositionTransform.Visibility = Visibility.Visible;
-            PositionTransform.SetValues(_entity.MapEntity.Position);
+            PositionTransform.Transform = _entity.MapEntity.Position;
 
             switch (_entity.MapEntity)
             {
@@ -124,11 +123,11 @@ namespace SauceEditor.Views.Controls.Properties
 
                     PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
                     RotationTransform.Visibility = Visibility.Visible;
-                    RotationTransform.SetValues(mapActor.Rotation);
+                    RotationTransform.Transform = mapActor.Rotation;
 
                     PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
                     ScaleTransform.Visibility = Visibility.Visible;
-                    ScaleTransform.SetValues(mapActor.Scale);
+                    ScaleTransform.Transform = mapActor.Scale;
 
                     PropertyGrid.RowDefinitions[6].Height = GridLength.Auto;
                     ScriptButton.Visibility = Visibility.Visible;
@@ -136,11 +135,11 @@ namespace SauceEditor.Views.Controls.Properties
                 case MapBrush mapBrush:
                     PropertyGrid.RowDefinitions[3].Height = GridLength.Auto;
                     RotationTransform.Visibility = Visibility.Visible;
-                    RotationTransform.SetValues(mapBrush.Rotation);
+                    RotationTransform.Transform = mapBrush.Rotation;
 
                     PropertyGrid.RowDefinitions[4].Height = GridLength.Auto;
                     ScaleTransform.Visibility = Visibility.Visible;
-                    ScaleTransform.SetValues(mapBrush.Scale);
+                    ScaleTransform.Transform = mapBrush.Scale;
                     break;
                 case MapLight mapLight:
                     PropertyGrid.RowDefinitions[5].Height = GridLength.Auto;
@@ -152,9 +151,9 @@ namespace SauceEditor.Views.Controls.Properties
 
         private void ClearProperties()
         {
-            EntityType.Content = "No Properties to Show";
+            //EntityType.Content = "No Properties to Show";
 
-            PropertyGrid.Visibility = Visibility.Hidden;
+            //PropertyGrid.Visibility = Visibility.Hidden;
 
             PropertyGrid.RowDefinitions[1].Height = new GridLength(0);
 
