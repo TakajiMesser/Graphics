@@ -29,12 +29,12 @@
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="{Binding NameRowHeight}"/>
                 <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="{Binding RotationRowHeight}"/>
+                <RowDefinition Height="{Binding ScaleRowHeight}"/>
+                <RowDefinition Height="{Binding ColorRowHeight}"/>
+                <RowDefinition Height="{Binding ScriptRowHeight}"/>
             </Grid.RowDefinitions>
             <Border Grid.Row="0" Grid.Column="0">
                 <Label Content="ID" Margin="4"/>
