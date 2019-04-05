@@ -11,7 +11,9 @@ namespace SauceEditor.ViewModels
 {
     public class PropertiesViewModel : ViewModel
     {
-        private readonly DelegateCommand _openScriptCommand;
+        private readonly RelayCommand _openScriptCommand;
+
+        private EditorEntity _editorEntity;
 
         private Visibility _entitySelected;
         private string _entityType;
@@ -27,6 +29,8 @@ namespace SauceEditor.ViewModels
         private GridLength _scaleRowHeight;
         private GridLength _colorRowHeight;
         private GridLength _scriptRowHeight;
+
+        private string _behaviorFilePath;
 
         public Visibility EntitySelected
         {
@@ -106,26 +110,22 @@ namespace SauceEditor.ViewModels
             set => SetProperty(ref _scriptRowHeight, value);
         }
 
-        public ICommand OpenScriptCommand => _openScriptCommand;
+        public ICommand OpenScriptCommand => _openScriptCommand ?? new RelayCommand(
+            p => ScriptOpened?.Invoke(this, new FileEventArgs(mapActor.Behavior.FilePath)),
+            p => _behaviorFilePath != null
+        );
+
+        public event EventHandler<FileEventArgs> ScriptOpened;
 
         public PropertiesViewModel()
         {
             SetValues(null);
-
-            _openScriptCommand = new DelegateCommand(
-                p =>
-                {
-                    _openScriptCommand.InvokeCanExecuteChanged();
-                },
-                p =>
-                {
-                    return true;
-                }
-            );
         }
 
         public void SetValues(EditorEntity editorEntity)
         {
+            _editorEntity = editorEntity;
+
             EntitySelected = editorEntity != null ? Visibility.Visible : Visibility.Collapsed;
             EntityType = editorEntity != null ? editorEntity.Entity.GetType().Name : "No Properties to Show";
             ID = editorEntity != null ? editorEntity.Entity.ID : "";
@@ -135,12 +135,16 @@ namespace SauceEditor.ViewModels
                 Name = mapActor.Name;
                 NameRowHeight = GridLength.Auto;
                 ScriptRowHeight = GridLength.Auto;
+                _behaviorFilePath = mapActor.Behavior.FilePath;
+                _openScriptCommand.InvokeCanExecuteChanged();
             }
             else
             {
                 Name = "";
                 NameRowHeight = new GridLength(0);
                 ScriptRowHeight = new GridLength(0);
+                _behaviorFilePath = mapActor.Behavior.FilePath;
+                _openScriptCommand.InvokeCanExecuteChanged();
             }
 
             Position = editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero;

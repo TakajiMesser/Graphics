@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="SauceEditor.Views.Transform.TransformPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SauceEditor.Views.UpDowns"
+             mc:Ignorable="d" >
+    <StackPanel Orientation="Vertical">
+        <StackPanel.DataContext>
+            <vm:TransformPanelViewModel x:Name="TransformPanelViewModel"/>
+        </StackPanel.DataContext>
+        <Label Name="Title" Content="{Binding Label}" Visibility="Collapsed" FontSize="16"/>
+        <StackPanel Orientation="Horizontal">
+            <local:NumericUpDown x:Name="X" Grid.Column="0" Label="X" Value="{Binding Transform.X}" Margin="4, 2, 2, 4"/>
+            <local:NumericUpDown x:Name="Y" Grid.Column="1" Label="Y" Value="{Binding Transform.Y}" Margin="4, 2, 2, 4"/>
+            <local:NumericUpDown x:Name="Z" Grid.Column="2" Label="Z" Value="{Binding Transform.Z}" Margin="4, 2, 2, 4"/>
+        </StackPanel>
+    </StackPanel>
+</UserControl>
