@@ -136,6 +136,8 @@ namespace SauceEditor.ViewModels
                 NameRowHeight = GridLength.Auto;
                 ScriptRowHeight = GridLength.Auto;
                 _behaviorFilePath = mapActor.Behavior.FilePath;
+
+                // TODO - Determine smarter way to invoke this...
                 _openScriptCommand.InvokeCanExecuteChanged();
             }
             else
@@ -149,9 +151,9 @@ namespace SauceEditor.ViewModels
 
             Position = editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero;
 
-            if (editorEntity != null && editorEntity.MapEntity is IRotate rotator)
+            if (editorEntity != null && editorEntity.Entity is IRotate)
             {
-                Rotation = rotator.Rotation;
+                Rotation = editorEntity.MapEntity.Rotation;
                 RotationRowHeight = GridLength.Auto;
             }
             else
@@ -160,9 +162,9 @@ namespace SauceEditor.ViewModels
                 RotationRowHeight = new GridLength(0);
             }
 
-            if (editorEntity != null && editorEntity.MapEntity is IScale scaler)
+            if (editorEntity != null && editorEntity.Entity is IScale)
             {
-                Scale = scaler.Scale;
+                Scale = editorEntity.MapEntity.Scale;
                 ScaleRowHeight = GridLength.Auto;
             }
             else

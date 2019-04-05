@@ -24,9 +24,8 @@ namespace SauceEditor.Views.UpDowns
 
         public NumericUpDown()
         {
-            DataContext = this;
             InitializeComponent();
-            NumericUpDownViewModel.Value = DefaultValue;
+            ViewModel.Value = DefaultValue;
         }
 
         public string Label

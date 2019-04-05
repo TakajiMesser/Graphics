@@ -20,9 +20,9 @@ namespace SauceEditor.Views.Transform
             DataContext = this;
             InitializeComponent();
 
-            X.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(args.NewValue, Y.Value, Z.Value)));
-            Y.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(X.Value, args.NewValue, Z.Value)));
-            Z.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(X.Value, Y.Value, args.NewValue)));
+            X_UpDown.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(args.NewValue, Y_UpDown.Value, Z_UpDown.Value)));
+            Y_UpDown.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(X_UpDown.Value, args.NewValue, Z_UpDown.Value)));
+            Z_UpDown.ValueChanged += (s, args) => TransformChanged?.Invoke(this, new TransformChangedEventArgs(Label, new Vector3(X_UpDown.Value, Y_UpDown.Value, args.NewValue)));
         }
 
         public string Label

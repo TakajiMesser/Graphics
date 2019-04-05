@@ -12,7 +12,7 @@
         Title="Properties">
     <StackPanel Orientation="Vertical">
         <StackPanel.DataContext>
-            <vm:PropertiesViewModel x:Name="PropertiesViewModel"/>
+            <vm:PropertiesViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
         <Label Name="EntityType" Content="{Binding EntityType}" FontSize="14"/>
         <Grid Name="PropertyGrid" Visibility="{Binding EntitySelected}">

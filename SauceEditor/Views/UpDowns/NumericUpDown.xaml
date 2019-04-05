@@ -7,7 +7,7 @@
              mc:Ignorable="d" >
     <StackPanel Orientation="Vertical">
         <StackPanel.DataContext>
-            <vm:NumericUpDownViewModel x:Name="NumericUpDownViewModel"/>
+            <vm:NumericUpDownViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
         <StackPanel.Resources>
             <ImageBrush x:Key="UpButtonImage" ImageSource="/SauceEditor;component/Resources/Images/DockTop.png" Stretch="UniformToFill"/>

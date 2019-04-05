@@ -11,33 +11,56 @@ namespace SauceEditor.ViewModels
 {
     public class TransformPanelViewModel : ViewModel
     {
-        private float _x;
-        private float _y;
-        private float _z;
+        private Vector3 _transform;
+        private ObservableCollection<NumericUpDownViewModel> _children;
 
-        public void SetValues(Vector3 transform)
+        public Vector3 Transform
         {
-            X = transform.X;
-            Y = transform.Y;
-            Z = transform.Z;
+            get => _transform;
+            set => SetProperty(ref _transform, value);
+        }
+        
+        public ObservableCollection<NumericUpDownViewModel> Children
+        {
+            get => _children;
+            set
+            {
+                if (_children != value)
+                {
+                    _children = value;
+
+                    foreach (var child in _children)
+                    {
+                        child.PropertyChanged += OnChildPropertyChanged;
+                    }
+
+                    SetProperty(ref _children, value);
+                }
+            }
         }
 
-        public float X
+        public TransformPanelViewModel()
         {
-            get => _x;
-            set => SetProperty(ref _x, value);
+            AddChild(X_UpDown.ViewModel, OnChildPropertyChanged);
+            AddChild(Y_UpDown.ViewModel, OnChildPropertyChanged);
+            AddChild(Z_UpDown.ViewModel, OnChildPropertyChanged);
+
+            Children = new ObservableCollection<NumericUpDownViewModel>()
+            {
+                X_UpDown.ViewModel,
+                Y_UpDown.ViewModel,
+                Z_UpDown.ViewModel
+            };
         }
 
-        public float Y
+        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs args)
         {
-            get => _y;
-            set => SetProperty(ref _y, value);
-        }
-
-        public float Z
-        {
-            get => _z;
-            set => SetProperty(ref _z, value);
+            Transform = new Vector3()
+            {
+                X = X_UpDown.ViewModel.Value,
+                Y = Y_UpDown.ViewModel.Value,
+                Z = Z_UpDown.ViewModel.Value
+            };
         }
     }
 }
