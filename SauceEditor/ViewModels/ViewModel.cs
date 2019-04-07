@@ -1,4 +1,6 @@
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -6,7 +8,7 @@ namespace SauceEditor.ViewModels
 {
     public abstract class ViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<ViewModel> _childViewModels;
+        private ObservableCollection<ViewModel> _childViewModels = new ObservableCollection<ViewModel>();
 
         public ObservableCollection<ViewModel> ChildViewModels
         {
@@ -42,7 +44,7 @@ namespace SauceEditor.ViewModels
             return false;
         }
 
-        protected void AddChild(ViewModel childViewModel, EventHandler<PropertyChangedEventArgs> changeHandler)
+        public void AddChild(ViewModel childViewModel, PropertyChangedEventHandler changeHandler)
         {
             childViewModel.PropertyChanged += changeHandler;
             _childViewModels.Add(childViewModel);

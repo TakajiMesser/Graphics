@@ -57,6 +57,9 @@ namespace SauceEditor.Views
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
 
             InitializeComponent();
+
+            ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
+            ViewModel.EntityUpdated += (s, args) => _gamePanelManager.RequestUpdate();
         }
 
         private void CreateTestProject()
@@ -313,7 +316,7 @@ namespace SauceEditor.Views
             {
                 // For now, just go with the last entity that was selected
                 //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _propertyPanel.PropertiesViewModel.SetValues(args.Entities.LastOrDefault());
+                _propertyPanel.ViewModel.SetValues(args.Entities.LastOrDefault());
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };
@@ -336,7 +339,7 @@ namespace SauceEditor.Views
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
-            _propertyPanel.ScriptOpened += (s, args) =>
+            /*_propertyPanel.ScriptOpened += (s, args) =>
             {
                 if (_propertyPanel.Entity != null && _propertyPanel.Entity.Entity is Actor actor && _propertyPanel.Entity.MapEntity is MapActor mapActor)
                 {
@@ -352,7 +355,7 @@ namespace SauceEditor.Views
                 {
                     // TODO - Throw some error to the user here?
                 }
-            };
+            };*/
         }
 
         private void OpenModel(string filePath)

@@ -1,8 +1,13 @@
 using OpenTK;
+using OpenTK.Graphics;
 using SauceEditor.Models;
 using SauceEditor.Utilities;
+using SauceEditor.Views;
+using SauceEditor.Views.Properties;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
+using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -12,8 +17,6 @@ namespace SauceEditor.ViewModels
     public class PropertiesViewModel : ViewModel
     {
         private readonly RelayCommand _openScriptCommand;
-
-        private EditorEntity _editorEntity;
 
         private Visibility _entitySelected;
         private string _entityType;
@@ -32,6 +35,17 @@ namespace SauceEditor.ViewModels
 
         private string _behaviorFilePath;
 
+        private TransformPanelViewModel _positionViewModel;
+        private TransformPanelViewModel _rotationViewModel;
+        private TransformPanelViewModel _scaleViewModel;
+
+        public ICommand OpenScriptCommand => _openScriptCommand ?? new RelayCommand(
+            p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath)),
+            p => _behaviorFilePath != null
+        );
+
+        public EditorEntity EditorEntity { get; set; }
+
         public Visibility EntitySelected
         {
             get => _entitySelected;
@@ -44,7 +58,7 @@ namespace SauceEditor.ViewModels
             set => SetProperty(ref _entityType, value);
         }
 
-        public int ID
+        public string ID
         {
             get => _id;
             set => SetProperty(ref _id, value);
@@ -59,19 +73,39 @@ namespace SauceEditor.ViewModels
         public Vector3 Position
         {
             get => _position;
-            set => SetProperty(ref _position, value);
+            set
+            {
+                EditorEntity.Entity.Position = value;
+                EditorEntity.MapEntity.Position = value;
+
+                SetProperty(ref _position, value);
+            }
         }
 
         public Vector3 Rotation
         {
             get => _rotation;
-            set => SetProperty(ref _rotation, value);
+            set
+            {
+                var rotator = EditorEntity.Entity as IRotate;
+                rotator.Rotation = Quaternion.FromEulerAngles(value);
+                EditorEntity.MapEntity.Rotation = value;
+
+                SetProperty(ref _rotation, value);
+            }
         }
 
         public Vector3 Scale
         {
             get => _scale;
-            set => SetProperty(ref _scale, value);
+            set
+            {
+                var scaler = EditorEntity.Entity as IScale;
+                scaler.Scale = value;
+                EditorEntity.MapEntity.Scale = value;
+
+                SetProperty(ref _scale, value);
+            }
         }
 
         public Color Color
@@ -110,25 +144,46 @@ namespace SauceEditor.ViewModels
             set => SetProperty(ref _scriptRowHeight, value);
         }
 
-        public ICommand OpenScriptCommand => _openScriptCommand ?? new RelayCommand(
-            p => ScriptOpened?.Invoke(this, new FileEventArgs(mapActor.Behavior.FilePath)),
-            p => _behaviorFilePath != null
-        );
-
-        public event EventHandler<FileEventArgs> ScriptOpened;
-
-        public PropertiesViewModel()
+        public TransformPanelViewModel PositionViewModel
         {
-            SetValues(null);
+            get => _positionViewModel;
+            set
+            {
+                _positionViewModel = value;
+                AddChild(_positionViewModel, (s, args) => Position = _positionViewModel.Transform);
+            }
         }
+
+        public TransformPanelViewModel RotationViewModel
+        {
+            get => _rotationViewModel;
+            set
+            {
+                _rotationViewModel = value;
+                AddChild(_rotationViewModel, (s, args) => Rotation = _rotationViewModel.Transform);
+            }
+        }
+
+        public TransformPanelViewModel ScaleViewModel
+        {
+            get => _scaleViewModel;
+            set
+            {
+                _scaleViewModel = value;
+                AddChild(_scaleViewModel, (s, args) => Scale = _scaleViewModel.Transform);
+            }
+        }
+
+        //public event EventHandler<EntityEventArgs> EntityUpdated;
+        public event EventHandler<FileEventArgs> ScriptOpened;
 
         public void SetValues(EditorEntity editorEntity)
         {
-            _editorEntity = editorEntity;
+            EditorEntity = editorEntity;
 
             EntitySelected = editorEntity != null ? Visibility.Visible : Visibility.Collapsed;
             EntityType = editorEntity != null ? editorEntity.Entity.GetType().Name : "No Properties to Show";
-            ID = editorEntity != null ? editorEntity.Entity.ID : "";
+            ID = editorEntity != null ? editorEntity.Entity.ID.ToString() : "";
 
             if (editorEntity != null && editorEntity.MapEntity is MapActor mapActor)
             {
@@ -138,18 +193,21 @@ namespace SauceEditor.ViewModels
                 _behaviorFilePath = mapActor.Behavior.FilePath;
 
                 // TODO - Determine smarter way to invoke this...
-                _openScriptCommand.InvokeCanExecuteChanged();
+                //_openScriptCommand.InvokeCanExecuteChanged();
             }
             else
             {
                 Name = "";
                 NameRowHeight = new GridLength(0);
                 ScriptRowHeight = new GridLength(0);
-                _behaviorFilePath = mapActor.Behavior.FilePath;
-                _openScriptCommand.InvokeCanExecuteChanged();
+                _behaviorFilePath = "";
+
+                //_openScriptCommand.InvokeCanExecuteChanged();
             }
 
-            Position = editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero;
+            //Position = editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero;
+            //_positionViewModel.Transform = editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero;
+            _positionViewModel.UpdateTransform(editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero);
 
             if (editorEntity != null && editorEntity.Entity is IRotate)
             {
@@ -180,7 +238,7 @@ namespace SauceEditor.ViewModels
             }
             else
             {
-                Color = Color.White;
+                Color = Color4.White.ToMediaColor();
                 ColorRowHeight = new GridLength(0);
             }
         }

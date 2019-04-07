@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:controls="clr-namespace:SauceEditor.Views" Loaded="OnLoaded" Closing="OnClosing"
@@ -41,6 +42,9 @@
 
         <CommandBinding Command="{StaticResource SettingsCommand}" CanExecute="Settings_CanExecute" Executed="Settings_Executed"/>
     </Window.CommandBindings>-->
+    <Window.DataContext>
+        <vm:MainWindowViewModel x:Name="ViewModel"/>
+    </Window.DataContext>
     <Window.InputBindings>
         <KeyBinding Command="{Binding Path=Menu/NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
         <KeyBinding Command="{Binding Path=Menu/OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>

@@ -11,9 +11,7 @@ namespace SauceEditor.ViewModels
         public RelayCommand(Action<object> executeAction) : this(executeAction, null) { }
         public RelayCommand(Action<object> executeAction, Predicate<object> canExecuteAction)
         {
-            if (executeAction == null) throw new ArgumentNullException(nameof(executeAction));
-
-            _executeAction = executeAction;
+            _executeAction = executeAction ?? throw new ArgumentNullException(nameof(executeAction));
             _canExecuteAction = canExecuteAction;
         }
 

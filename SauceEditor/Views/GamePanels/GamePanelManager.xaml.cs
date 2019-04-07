@@ -86,6 +86,14 @@ namespace SauceEditor.Views.GamePanels
             TransformMode = TransformModes.Translate;
         }
 
+        public void RequestUpdate()
+        {
+            _perspectiveView.Panel.Invalidate();
+            _xView.Panel.Invalidate();
+            _yView.Panel.Invalidate();
+            _zView.Panel.Invalidate();
+        }
+
         /*private int AddActor(MapActor mapActor)
         {
             int entityID = _gameManager.AddActor(mapActor);

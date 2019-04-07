@@ -3,6 +3,8 @@ using SauceEditor.Models;
 using SauceEditor.Utilities;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -12,55 +14,57 @@ namespace SauceEditor.ViewModels
     public class TransformPanelViewModel : ViewModel
     {
         private Vector3 _transform;
-        private ObservableCollection<NumericUpDownViewModel> _children;
+
+        private NumericUpDownViewModel _xViewModel;
+        private NumericUpDownViewModel _yViewModel;
+        private NumericUpDownViewModel _zViewModel;
 
         public Vector3 Transform
         {
             get => _transform;
             set => SetProperty(ref _transform, value);
         }
-        
-        public ObservableCollection<NumericUpDownViewModel> Children
+
+        public NumericUpDownViewModel XViewModel
         {
-            get => _children;
+            get => _xViewModel;
             set
             {
-                if (_children != value)
-                {
-                    _children = value;
-
-                    foreach (var child in _children)
-                    {
-                        child.PropertyChanged += OnChildPropertyChanged;
-                    }
-
-                    SetProperty(ref _children, value);
-                }
+                _xViewModel = value;
+                AddChild(_xViewModel, OnChildViewModelUpdated);
             }
         }
 
-        public TransformPanelViewModel()
+        public NumericUpDownViewModel YViewModel
         {
-            AddChild(X_UpDown.ViewModel, OnChildPropertyChanged);
-            AddChild(Y_UpDown.ViewModel, OnChildPropertyChanged);
-            AddChild(Z_UpDown.ViewModel, OnChildPropertyChanged);
-
-            Children = new ObservableCollection<NumericUpDownViewModel>()
+            get => _yViewModel;
+            set
             {
-                X_UpDown.ViewModel,
-                Y_UpDown.ViewModel,
-                Z_UpDown.ViewModel
-            };
+                _yViewModel = value;
+                AddChild(_yViewModel, OnChildViewModelUpdated);
+            }
         }
 
-        private void OnChildPropertyChanged(object sender, PropertyChangedEventArgs args)
+        public NumericUpDownViewModel ZViewModel
         {
-            Transform = new Vector3()
+            get => _zViewModel;
+            set
             {
-                X = X_UpDown.ViewModel.Value,
-                Y = Y_UpDown.ViewModel.Value,
-                Z = Z_UpDown.ViewModel.Value
-            };
+                _zViewModel = value;
+                AddChild(_zViewModel, OnChildViewModelUpdated);
+            }
         }
+
+        public void UpdateTransform(Vector3 transform)
+        {
+            _transform = transform;
+
+            XViewModel.Value = transform.X;
+            YViewModel.Value = transform.Y;
+            ZViewModel.Value = transform.Z;
+        }
+
+        private void OnChildViewModelUpdated(object sender, PropertyChangedEventArgs args) =>
+            Transform = new Vector3(XViewModel.Value, YViewModel.Value, ZViewModel.Value);
     }
 }

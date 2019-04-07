@@ -52,19 +52,19 @@
                 <Label Content="Position" Margin="4"/>
             </Border>
             <Border Grid.Row="2" Grid.Column="1">
-                <transform:TransformPanel x:Name="PositionTransform" Transform="{Binding Position}"/>
+                <transform:TransformPanel x:Name="PositionTransform"/>
             </Border>
             <Border Grid.Row="3" Grid.Column="0">
                 <Label Content="Rotation" Margin="4"/>
             </Border>
             <Border Grid.Row="3" Grid.Column="1">
-                <transform:TransformPanel x:Name="RotationTransform" Transform="{Binding Rotation}"/>
+                <transform:TransformPanel x:Name="RotationTransform"/>
             </Border>
             <Border Grid.Row="4" Grid.Column="0">
                 <Label Content="Scale" Margin="4"/>
             </Border>
             <Border Grid.Row="4" Grid.Column="1">
-                <transform:TransformPanel x:Name="ScaleTransform" Transform="{Binding Scale}"/>
+                <transform:TransformPanel x:Name="ScaleTransform"/>
             </Border>
             <Border Grid.Row="5" Grid.Column="0">
                 <Label Name="ColorLabel" Content="Color" Margin="4"/>

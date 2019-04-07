@@ -136,8 +136,11 @@
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
-    <Compile Include="ViewModels\DelegateCommand.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
     <Compile Include="ViewModels\PropertiesViewModel.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
+    <Compile Include="ViewModels\TransformPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="Views\GamePanels\GamePanelManager.xaml.cs">
       <DependentUpon>GamePanelManager.xaml</DependentUpon>

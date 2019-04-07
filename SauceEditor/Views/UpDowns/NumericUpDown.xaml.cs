@@ -60,19 +60,19 @@ namespace SauceEditor.Views.UpDowns
 
         private void UpButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _downValue = Value;
+            _downValue = ViewModel.Value;
             _cursorStart = Mouse.GetPosition(this);
         }
 
         private void DownButton_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            _downValue = Value;
+            _downValue = ViewModel.Value;
             _cursorStart = Mouse.GetPosition(this);
         }
 
         private void Button_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            ValueHoldChanged?.Invoke(this, new ValueChangedEventArgs(_downValue, Value));
+            ValueHoldChanged?.Invoke(this, new ValueChangedEventArgs(_downValue, ViewModel.Value));
         }
 
         private void UpButton_Click(object sender, RoutedEventArgs e)
@@ -86,7 +86,7 @@ namespace SauceEditor.Views.UpDowns
                 step *= dy;
             }
 
-            Value += step;
+            ViewModel.Value += step;
         }
 
         private void DownButton_Click(object sender, RoutedEventArgs e)
@@ -100,7 +100,7 @@ namespace SauceEditor.Views.UpDowns
                 step *= dy;
             }
 
-            Value -= step;
+            ViewModel.Value -= step;
         }
     }
 }

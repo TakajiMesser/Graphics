@@ -44,6 +44,9 @@ namespace SauceEditor.Views.Properties
         {
             InitializeComponent();
 
+            ViewModel.PositionViewModel = PositionTransform.ViewModel;
+            ViewModel.SetValues(null);
+
             /*PositionTransform.TransformChanged += (s, args) =>
             {
                 if (_entity != null)

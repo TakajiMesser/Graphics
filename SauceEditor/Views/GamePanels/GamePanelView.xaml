@@ -28,7 +28,7 @@
                         <StackPanel Orientation="Vertical" Margin="10, 4, 0, 0" Background="White">
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="WireframeThicknessLabel" Content="Wireframe Thickness"/>
-                                <updowns:NumericUpDown x:Name="WireframeThicknessUpDown" Value="{Binding WireframeThickness}" Margin="4, 2, 2, 4"/>
+                                <updowns:NumericUpDown x:Name="WireframeThicknessUpDown" DefaultValue="{Binding WireframeThickness}" Margin="4, 2, 2, 4"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="WireframeColorLabel" Content="Wireframe Color"/>
@@ -36,7 +36,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="SelectedWireframeThicknessLabel" Content="Selected Wireframe Thickness"/>
-                                <updowns:NumericUpDown x:Name="SelectedWireframeThicknessUpDown" Value="{Binding SelectedWireframeThickness}" Margin="4, 2, 2, 4"/>
+                                <updowns:NumericUpDown x:Name="SelectedWireframeThicknessUpDown" DefaultValue="{Binding SelectedWireframeThickness}" Margin="4, 2, 2, 4"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="SelectedWireframeColorLabel" Content="Selected Wireframe Color"/>
@@ -44,7 +44,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="SelectedLightWireframeThicknessLabel" Content="Selected Light Wireframe Thickness"/>
-                                <updowns:NumericUpDown x:Name="SelectedLightWireframeThicknessUpDown" Value="{Binding SelectedLightWireframeThickness}" Margin="4, 2, 2, 4"/>
+                                <updowns:NumericUpDown x:Name="SelectedLightWireframeThicknessUpDown" DefaultValue="{Binding SelectedLightWireframeThickness}" Margin="4, 2, 2, 4"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="SelectedLightWireframeColorLabel" Content="Selected Light Wireframe Color"/>
@@ -52,7 +52,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="GridThicknessLabel" Content="Grid Thickness"/>
-                                <updowns:NumericUpDown x:Name="GridThicknessUpDown" Value="{Binding GridThickness}" Margin="4, 2, 2, 4"/>
+                                <updowns:NumericUpDown x:Name="GridThicknessUpDown" DefaultValue="{Binding GridThickness}" Margin="4, 2, 2, 4"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="GridUnitColorLabel" Content="Grid Unit Color"/>
@@ -72,7 +72,7 @@
                             </StackPanel>
                             <StackPanel Orientation="Horizontal">
                                 <Label Name="GridUnitLabel" Content="Grid Scale Unit"/>
-                                <updowns:NumericUpDown x:Name="GridUnitUpDown" Value="{Binding GridUnit}" Margin="4, 2, 2, 4"/>
+                                <updowns:NumericUpDown x:Name="GridUnitUpDown" DefaultValue="{Binding GridUnit}" Margin="4, 2, 2, 4"/>
                             </StackPanel>
                         </StackPanel>
                     </Popup>
