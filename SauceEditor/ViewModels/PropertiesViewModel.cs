@@ -16,7 +16,7 @@ namespace SauceEditor.ViewModels
 {
     public class PropertiesViewModel : ViewModel
     {
-        private readonly RelayCommand _openScriptCommand;
+        private RelayCommand _openScriptCommand;
 
         private Visibility _entitySelected;
         private string _entityType;
@@ -39,10 +39,21 @@ namespace SauceEditor.ViewModels
         private TransformPanelViewModel _rotationViewModel;
         private TransformPanelViewModel _scaleViewModel;
 
-        public ICommand OpenScriptCommand => _openScriptCommand ?? new RelayCommand(
-            p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath)),
-            p => _behaviorFilePath != null
-        );
+        public RelayCommand OpenScriptCommand
+        {
+            get
+            {
+                if (_openScriptCommand == null)
+                {
+                    _openScriptCommand = new RelayCommand(
+                        p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath))//,
+                        //p => _behaviorFilePath != null
+                    );
+                }
+
+                return _openScriptCommand;
+            }
+        }
 
         public EditorEntity EditorEntity { get; set; }
 
@@ -202,7 +213,8 @@ namespace SauceEditor.ViewModels
                 _behaviorFilePath = mapActor.Behavior.FilePath;
 
                 // TODO - Determine smarter way to invoke this...
-                //_openScriptCommand.InvokeCanExecuteChanged();
+                //CommandManager.InvalidateRequerySuggested();
+                //OpenScriptCommand.InvokeCanExecuteChanged();
             }
             else
             {
@@ -211,7 +223,8 @@ namespace SauceEditor.ViewModels
                 ScriptRowHeight = new GridLength(0);
                 _behaviorFilePath = "";
 
-                //_openScriptCommand.InvokeCanExecuteChanged();
+                //CommandManager.InvalidateRequerySuggested();
+                //OpenScriptCommand.InvokeCanExecuteChanged();
             }
 
             //Position = editorEntity != null ? editorEntity.MapEntity.Position : Vector3.Zero;
@@ -254,6 +267,8 @@ namespace SauceEditor.ViewModels
                 Color = Color4.White.ToMediaColor();
                 ColorRowHeight = new GridLength(0);
             }
+
+            CommandManager.InvalidateRequerySuggested();
         }
     }
 }

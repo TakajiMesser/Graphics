@@ -3,6 +3,7 @@ using OpenTK;
 using SampleGameProject.Helpers;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
+using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.GamePanels;
 using SauceEditor.Views.ProjectTree;
 using SauceEditor.Views.Properties;
@@ -41,6 +42,7 @@ namespace SauceEditor.Views
 
         // Main views
         private GamePanelManager _gamePanelManager;
+        private BehaviorView _behaviorView;
         private ScriptView _scriptView;
 
         // Separate windows
@@ -339,15 +341,16 @@ namespace SauceEditor.Views
             _gamePanelManager.SetView(_settings.DefaultView);
 
             _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
-            /*_propertyPanel.ScriptOpened += (s, args) =>
+
+            _propertyPanel.ScriptOpened += (s, args) =>
             {
-                if (_propertyPanel.Entity != null && _propertyPanel.Entity.Entity is Actor actor && _propertyPanel.Entity.MapEntity is MapActor mapActor)
+                if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)
                 {
-                    _scriptView = new ScriptView(filePath, actor, mapActor);
+                    /*_scriptView = new ScriptView(filePath, actor, mapActor);
                     _scriptView.Saved += (sender, e) =>
                     {
                         //mapActor.Behavior.e.Script;
-                    };
+                    };*/
 
                     OpenBehavior(args.FileName);
                 }
@@ -355,7 +358,7 @@ namespace SauceEditor.Views
                 {
                     // TODO - Throw some error to the user here?
                 }
-            };*/
+            };
         }
 
         private void OpenModel(string filePath)
@@ -378,7 +381,7 @@ namespace SauceEditor.Views
         private void OpenBehavior(string filePath)
         {
             // Temporary measures...
-            if (_scriptView == null)
+            /*if (_scriptView == null)
             {
                 _scriptView = new ScriptView(filePath);
             }
@@ -387,6 +390,25 @@ namespace SauceEditor.Views
             {
                 Title = Path.GetFileNameWithoutExtension(filePath),
                 Content = _scriptView,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();*/
+
+            if (_behaviorView == null)
+            {
+                _behaviorView = new BehaviorView();
+            }
+
+            var anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _behaviorView,
                 CanClose = true
             };
             anchorable.Closed += (s, args) =>

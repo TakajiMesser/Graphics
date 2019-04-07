@@ -24,5 +24,12 @@ namespace SauceEditor.ViewModels
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
         }
+
+        /*public void InvokeCanExecuteChanged()
+        {
+            CommandManager.InvalidateRequerySuggested();
+            //CommandManager.RequerySuggested += CanExecuteChanged;
+            //CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        }*/
     }
 }

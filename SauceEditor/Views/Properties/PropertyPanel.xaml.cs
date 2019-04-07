@@ -38,7 +38,7 @@ namespace SauceEditor.Views.Properties
 
         public event EventHandler<EntityEventArgs> EntityUpdated;
         public event EventHandler<CommandEventArgs> CommandExecuted;
-        //public event EventHandler<FileEventArgs> ScriptOpened;
+        public event EventHandler<FileEventArgs> ScriptOpened;
 
         public PropertyPanel()
         {
@@ -47,6 +47,11 @@ namespace SauceEditor.Views.Properties
             ViewModel.PositionViewModel = PositionTransform.ViewModel;
             ViewModel.RotationViewModel = RotationTransform.ViewModel;
             ViewModel.ScaleViewModel = ScaleTransform.ViewModel;
+
+            ViewModel.ScriptOpened += (s, args) =>
+            {
+                ScriptOpened?.Invoke(s, args);
+            };
             ViewModel.SetValues(null);
 
             /*PositionTransform.TransformChanged += (s, args) =>

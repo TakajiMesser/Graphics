@@ -1,0 +1,20 @@
+﻿<DockPanel x:Class="SauceEditor.Views.Behaviors.BehaviorView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:SauceEditor.Views.Behaviors"
+             xmlns:vm="clr-namespace:SauceEditor.ViewModels.Behaviors"
+             xmlns:nodes="clr-namespace:NodeNetwork.Toolkit.NodeList;assembly=NodeNetworkToolkit"
+             xmlns:xcae="http://icsharpcode.net/sharpdevelop/avalonedit"
+             xmlns:network="clr-namespace:NodeNetwork.Views;assembly=NodeNetwork"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800">
+    <StackPanel Orientation="Horizontal">
+        <!--<StackPanel.DataContext>
+            <vm:BehaviorViewModel x:Name="ViewModel"/>
+        </StackPanel.DataContext>-->
+        <network:NetworkView x:Name="Network"></network:NetworkView>
+        <!--<nodes:NodeListView></nodes:NodeListView>-->
+    </StackPanel>
+</DockPanel>
