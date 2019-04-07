@@ -298,9 +298,9 @@ namespace SpiceEngine.Maps
             }
 
             actor.Position = Position;
+            actor.Orientation = Quaternion.FromEulerAngles(Orientation);
             actor.Rotation = Quaternion.FromEulerAngles(Rotation);
             actor.Scale = Scale;
-            actor.Orientation = Quaternion.FromEulerAngles(Orientation);
 
             return actor;
         }

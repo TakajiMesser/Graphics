@@ -75,8 +75,11 @@ namespace SauceEditor.ViewModels
             get => _position;
             set
             {
-                EditorEntity.Entity.Position = value;
-                EditorEntity.MapEntity.Position = value;
+                if (EditorEntity != null)
+                {
+                    EditorEntity.Entity.Position = value;
+                    EditorEntity.MapEntity.Position = value;
+                }
 
                 SetProperty(ref _position, value);
             }
@@ -87,9 +90,12 @@ namespace SauceEditor.ViewModels
             get => _rotation;
             set
             {
-                var rotator = EditorEntity.Entity as IRotate;
-                rotator.Rotation = Quaternion.FromEulerAngles(value);
-                EditorEntity.MapEntity.Rotation = value;
+                if (EditorEntity != null)
+                {
+                    var rotator = EditorEntity.Entity as IRotate;
+                    rotator.Rotation = Quaternion.FromEulerAngles(value);
+                    EditorEntity.MapEntity.Rotation = value;
+                }
 
                 SetProperty(ref _rotation, value);
             }
@@ -100,9 +106,12 @@ namespace SauceEditor.ViewModels
             get => _scale;
             set
             {
-                var scaler = EditorEntity.Entity as IScale;
-                scaler.Scale = value;
-                EditorEntity.MapEntity.Scale = value;
+                if (EditorEntity != null)
+                {
+                    var scaler = EditorEntity.Entity as IScale;
+                    scaler.Scale = value;
+                    EditorEntity.MapEntity.Scale = value;
+                }
 
                 SetProperty(ref _scale, value);
             }
@@ -211,23 +220,27 @@ namespace SauceEditor.ViewModels
 
             if (editorEntity != null && editorEntity.Entity is IRotate)
             {
-                Rotation = editorEntity.MapEntity.Rotation;
+                //Rotation = editorEntity.MapEntity.Rotation;
+                _rotationViewModel.UpdateTransform(editorEntity.MapEntity.Rotation);
                 RotationRowHeight = GridLength.Auto;
             }
             else
             {
-                Rotation = Vector3.Zero;
+                //Rotation = Vector3.Zero;
+                _rotationViewModel.UpdateTransform(Vector3.Zero);
                 RotationRowHeight = new GridLength(0);
             }
 
             if (editorEntity != null && editorEntity.Entity is IScale)
             {
-                Scale = editorEntity.MapEntity.Scale;
+                //Scale = editorEntity.MapEntity.Scale;
+                _scaleViewModel.UpdateTransform(editorEntity.MapEntity.Scale);
                 ScaleRowHeight = GridLength.Auto;
             }
             else
             {
-                Scale = Vector3.Zero;
+                //Scale = Vector3.Zero;
+                _scaleViewModel.UpdateTransform(Vector3.Zero);
                 ScaleRowHeight = new GridLength(0);
             }
 

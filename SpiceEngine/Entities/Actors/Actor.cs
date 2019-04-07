@@ -27,7 +27,8 @@ namespace SpiceEngine.Entities.Actors
 
         public Quaternion Rotation
         {
-            get => Orientation * _modelMatrix.Rotation;
+            // TODO - Determine if quaternion multiplication order matters here
+            get => _modelMatrix.Rotation * Orientation.Inverted();
             set => _modelMatrix.Rotation = Orientation * value;
         }
 
@@ -59,9 +60,9 @@ namespace SpiceEngine.Entities.Actors
         protected void FromActor(Actor actor)
         {
             Position = actor.Position;
+            Orientation = actor.Orientation;
             Rotation = actor.Rotation;
             Scale = actor.Scale;
-            Orientation = actor.Orientation;
 
             foreach (var kvp in actor._materialByMeshIndex)
             {

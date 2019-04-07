@@ -14,7 +14,7 @@ namespace SpiceEngine.Maps
 
         public virtual void UpdateFrom(T entity)
         {
-            Position = entity.Position;
+            /*Position = entity.Position;
 
             if (entity is IRotate rotator)
             {
@@ -24,7 +24,7 @@ namespace SpiceEngine.Maps
             if (entity is IScale scaler)
             {
                 Scale = scaler.Scale;
-            }
+            }*/
         }
     }
 }

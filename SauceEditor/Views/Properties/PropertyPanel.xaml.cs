@@ -45,6 +45,8 @@ namespace SauceEditor.Views.Properties
             InitializeComponent();
 
             ViewModel.PositionViewModel = PositionTransform.ViewModel;
+            ViewModel.RotationViewModel = RotationTransform.ViewModel;
+            ViewModel.ScaleViewModel = ScaleTransform.ViewModel;
             ViewModel.SetValues(null);
 
             /*PositionTransform.TransformChanged += (s, args) =>
