@@ -38,9 +38,9 @@ namespace SpiceEngine.Utilities
 
             var eulerAngles = new Vector3()
             {
-                X = UnitConversions.ToDegrees(phi),
-                Y = UnitConversions.ToDegrees(theta),
-                Z = UnitConversions.ToDegrees(psi)
+                X = phi,
+                Y = theta,
+                Z = psi
             };
 
             return eulerAngles;

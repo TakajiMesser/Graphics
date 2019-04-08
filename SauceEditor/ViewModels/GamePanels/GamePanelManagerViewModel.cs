@@ -22,10 +22,62 @@ namespace SauceEditor.ViewModels
 
         private TransformModes _transformMode;
 
+        private RelayCommand _translateCommand;
+        private RelayCommand _rotateCommand;
+        private RelayCommand _scaleCommand;
+
         private GamePanelViewModel _perspectiveViewModel;
         private GamePanelViewModel _xViewModel;
         private GamePanelViewModel _yViewModel;
         private GamePanelViewModel _zViewModel;
+
+        public RelayCommand TranslateCommand
+        {
+            get
+            {
+                if (_translateCommand == null)
+                {
+                    _translateCommand = new RelayCommand(
+                        p => SetTransformMode(TransformModes.Translate),
+                        p => _transformMode != TransformModes.Translate
+                    );
+                }
+
+                return _translateCommand;
+            }
+        }
+
+        public RelayCommand RotateCommand
+        {
+            get
+            {
+                if (_rotateCommand == null)
+                {
+                    _rotateCommand = new RelayCommand(
+                        p => SetTransformMode(TransformModes.Rotate),
+                        p => _transformMode != TransformModes.Rotate
+                    );
+                }
+
+                return _rotateCommand;
+            }
+        }
+
+        public RelayCommand ScaleCommand
+        {
+            get
+            {
+                if (_scaleCommand == null)
+                {
+                    _scaleCommand = new RelayCommand(
+                        p => SetTransformMode(TransformModes.Scale),
+                        p => _transformMode != TransformModes.Scale
+                    );
+                }
+
+                return _scaleCommand;
+            }
+        }
 
         public GamePanelViewModel PerspectiveViewModel
         {
@@ -112,5 +164,24 @@ namespace SauceEditor.ViewModels
 
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;
+
+        private void SetTransformMode(TransformModes transformMode)
+        {
+            _transformMode = transformMode;
+
+            _perspectiveViewModel.Panel.TransformMode = value;
+            _perspectiveViewModel.Panel.Invalidate();
+
+            _xViewModel.Panel.TransformMode = value;
+            _xViewModel.Panel.Invalidate();
+
+            _yViewModel.Panel.TransformMode = value;
+            _yViewModel.Panel.Invalidate();
+
+            _zViewModel.Panel.TransformMode = value;
+            _zViewModel.Panel.Invalidate();
+
+            CommandManager.InvalidateRequerySuggested();
+        }
     }
 }

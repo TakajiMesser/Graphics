@@ -30,48 +30,7 @@ namespace SauceEditor.Views.GamePanels
         private GamePanelView _yView;
         private GamePanelView _zView;
 
-        private TransformModes _transformMode;
-
         public Resolution Resolution { get; set; }
-        public TransformModes TransformMode
-        {
-            get => _transformMode;
-            set
-            {
-                _transformMode = value;
-
-                switch (_transformMode)
-                {
-                    case TransformModes.Translate:
-                        TranslateButton.IsEnabled = false;
-                        RotateButton.IsEnabled = true;
-                        ScaleButton.IsEnabled = true;
-                        break;
-                    case TransformModes.Rotate:
-                        TranslateButton.IsEnabled = true;
-                        RotateButton.IsEnabled = false;
-                        ScaleButton.IsEnabled = true;
-                        break;
-                    case TransformModes.Scale:
-                        TranslateButton.IsEnabled = true;
-                        RotateButton.IsEnabled = true;
-                        ScaleButton.IsEnabled = false;
-                        break;
-                }
-
-                _perspectiveView.Panel.TransformMode = value;
-                _perspectiveView.Panel.Invalidate();
-
-                _xView.Panel.TransformMode = value;
-                _xView.Panel.Invalidate();
-
-                _yView.Panel.TransformMode = value;
-                _yView.Panel.Invalidate();
-
-                _zView.Panel.TransformMode = value;
-                _zView.Panel.Invalidate();
-            }
-        }
 
         public Map Map => _mapManager.Map;
 
@@ -87,8 +46,6 @@ namespace SauceEditor.Views.GamePanels
             ViewModel.XViewModel = _xView.ViewModel;
             ViewModel.YViewModel = _yView.ViewModel;
             ViewModel.ZViewModel = _zView.ViewModel;
-
-            TransformMode = TransformModes.Translate;
         }
 
         public void RequestUpdate()
@@ -441,12 +398,6 @@ namespace SauceEditor.Views.GamePanels
                 yield return entityID;
             }
         }*/
-
-        private void TranslateButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Translate;
-
-        private void RotateButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Rotate;
-
-        private void ScaleButton_Click(object sender, RoutedEventArgs e) => TransformMode = TransformModes.Scale;
 
         public void SetView(Models.ViewTypes view)
         {

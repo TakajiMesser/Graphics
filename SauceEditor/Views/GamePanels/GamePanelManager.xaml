@@ -15,9 +15,9 @@
         <vm:GamePanelManagerViewModel x:Name="ViewModel"></vm:GamePanelManagerViewModel>
     </DockPanel.DataContext>
     <ToolBar DockPanel.Dock="Top">
-        <Button Name="TranslateButton" Content="Translate" Click="TranslateButton_Click"/>
-        <Button Name="RotateButton" Content="Rotate" Click="RotateButton_Click"/>
-        <Button Name="ScaleButton" Content="Scale" Click="ScaleButton_Click"/>
+        <Button Name="TranslateButton" Content="Translate" Command="{Binding TranslateCommand}"/>
+        <Button Name="RotateButton" Content="Rotate" Command="{Binding RotateCommand}"/>
+        <Button Name="ScaleButton" Content="Scale" Command="{Binding ScaleCommand}"/>
         <Separator/>
         <ComboBox Name="ViewComboBox" SelectionChanged="ViewComboBox_SelectionChanged">
             <ComboBoxItem Name="View_All">All</ComboBoxItem>
