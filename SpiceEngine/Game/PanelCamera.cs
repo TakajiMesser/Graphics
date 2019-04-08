@@ -20,8 +20,13 @@ namespace SpiceEngine.Game
     public class PanelCamera
     {
         public const float MIN_DISTANCE = 1.0f;
-        public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
-        public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;
+
+        public const float MIN_PITCH = -(float)Math.PI / 2.0f + 0.1f;
+        public const float MAX_PITCH = (float)Math.PI / 2.0f + 0.1f;
+
+        // Math.Atan2(), which is used to calculate YAW, has a range of -pi to +pi
+        // When we calculate YAW, we then add pi, resulting in a range of 0 to 2pi
+        public const float MAX_YAW = (float)Math.PI * 2.0f;
 
         private Resolution _resolution;
         private RenderManager _renderManager;
@@ -154,7 +159,7 @@ namespace SpiceEngine.Game
                 var translation = (Camera._viewMatrix.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
                 Camera.Position -= translation;
 
-                _yaw -= mouseDelta.X * 0.001f;
+                _yaw = (_yaw - mouseDelta.X * 0.001f) % MAX_YAW;
                 CalculateLookAt();
                 CalculateUp();
             }
@@ -165,9 +170,9 @@ namespace SpiceEngine.Game
             // Right mouse button allows "turning"
             if (mouseDelta != Vector2.Zero)
             {
-                _yaw -= mouseDelta.X * 0.001f;
+                _yaw = (_yaw - mouseDelta.X * 0.001f) % MAX_YAW;
                 _pitch += mouseDelta.Y * 0.001f;
-                _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                _pitch = _pitch.Clamp(MIN_PITCH, MAX_PITCH);
 
                 CalculateLookAt();
                 CalculateUp();
@@ -207,9 +212,9 @@ namespace SpiceEngine.Game
                 if (mouseDelta != Vector2.Zero)
                 {
                     // Now, we can adjust our position accordingly
-                    _yaw += mouseDelta.X * 0.001f;
+                    _yaw = (_yaw + mouseDelta.X * 0.001f) % MAX_YAW;//_yaw += mouseDelta.X * 0.001f;
                     _pitch += mouseDelta.Y * 0.001f;
-                    _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                    _pitch = _pitch.Clamp(MIN_PITCH, MAX_PITCH);
 
                     CalculateTranslation(position);
                 }
