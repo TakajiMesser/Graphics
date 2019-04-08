@@ -26,5 +26,9 @@ namespace SpiceEngine.Utilities
             || vector.Z >= MathExtensions.EPSILON || vector.Z <= -MathExtensions.EPSILON;
 
         public static Color4 ToColor4(this Vector4 vector) => new Color4(vector.X, vector.Y, vector.Z, vector.W);
+
+        public static Vector3 ToRadians(this Vector3 vector) => new Vector3(UnitConversions.ToRadians(vector.X), UnitConversions.ToRadians(vector.Y), UnitConversions.ToRadians(vector.Z));
+
+        public static Vector3 ToDegrees(this Vector3 vector) => new Vector3(UnitConversions.ToDegrees(vector.X), UnitConversions.ToDegrees(vector.Y), UnitConversions.ToDegrees(vector.Z));
     }
 }

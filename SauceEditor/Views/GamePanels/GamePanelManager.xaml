@@ -5,11 +5,15 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
              xmlns:local="clr-namespace:SauceEditor.Views.GamePanels"
+             xmlns:vm="clr-namespace:SauceEditor.ViewModels"
              mc:Ignorable="d" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
              d:DesignHeight="300" d:DesignWidth="300"
              PreviewKeyDown="MainDock_PreviewKeyDown">
+    <DockPanel.DataContext>
+        <vm:GamePanelManagerViewModel x:Name="ViewModel"></vm:GamePanelManagerViewModel>
+    </DockPanel.DataContext>
     <ToolBar DockPanel.Dock="Top">
         <Button Name="TranslateButton" Content="Translate" Click="TranslateButton_Click"/>
         <Button Name="RotateButton" Content="Rotate" Click="RotateButton_Click"/>

@@ -121,7 +121,7 @@ namespace SpiceEngine.Scripting.StimResponse
 
                 stimulusDirection.Z = 0.0f;
                 //var actorDirection = actor.Rotation * Vector3.UnitX;
-                var actorDirection = Quaternion.FromEulerAngles(eulerRotation) * Vector3.UnitX;
+                var actorDirection = Quaternion.FromEulerAngles(eulerRotation.ToRadians()) * Vector3.UnitX;
                 var angleDifference = actorDirection.AngleBetween(stimulusDirection);
                 var angleDegrees = UnitConversions.ToDegrees(Math.Abs(angleDifference));
                 //var angleDifference = eulerRotation.AngleBetween(stimulusDirection);

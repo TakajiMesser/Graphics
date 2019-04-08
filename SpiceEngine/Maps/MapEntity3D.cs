@@ -14,17 +14,17 @@ namespace SpiceEngine.Maps
 
         public virtual void UpdateFrom(T entity)
         {
-            /*Position = entity.Position;
+            Position = entity.Position;
 
             if (entity is IRotate rotator)
             {
-                Rotation = rotator.Rotation.ToEulerAngles();
+                Rotation = rotator.Rotation.ToEulerAngles().ToDegrees();
             }
 
             if (entity is IScale scaler)
             {
                 Scale = scaler.Scale;
-            }*/
+            }
         }
     }
 }

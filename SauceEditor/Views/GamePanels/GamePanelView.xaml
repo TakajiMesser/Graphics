@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views.GamePanels"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels"
         xmlns:updowns="clr-namespace:SauceEditor.Views.UpDowns"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
@@ -20,8 +21,11 @@
                 </Style.Triggers>
             </Style>
         </DockPanel.Resources>-->
-    <xcad:LayoutAnchorable x:Name="Anchorable">
+    <xcad:LayoutAnchorable x:Name="Anchorable" Title="{Binding Title}">
         <DockPanel Name="DockPanel" Loaded="OnLoaded">
+            <DockPanel.DataContext>
+                <vm:GamePanelViewModel x:Name="ViewModel"></vm:GamePanelViewModel>
+            </DockPanel.DataContext>
             <ToolBar DockPanel.Dock="Top">
                 <Expander x:Name="SettingsExpander" ExpandDirection="Down" Margin="0" VerticalAlignment="Top" Height="22">
                     <Popup PlacementTarget="{Binding ElementName=SettingsExpander}" Placement="Bottom" IsOpen="{Binding IsExpanded, ElementName=SettingsExpander}">
@@ -78,11 +82,11 @@
                     </Popup>
                 </Expander>
                 <Separator/>
-                <Button Name="WireframeButton" Content="Wireframe" Click="WireframeButton_Click"/>
-                <Button Name="DiffuseButton" Content="Diffuse" Click="DiffuseButton_Click"/>
-                <Button Name="LitButton" Content="Lit" Click="LitButton_Click"/>
+                <Button Name="WireframeButton" Content="Wireframe" Command="{Binding WireframeCommand}"/>
+                <Button Name="DiffuseButton" Content="Diffuse" Command="{Binding DiffuseCommand}"/>
+                <Button Name="LitButton" Content="Lit" Command="{Binding LitCommand}"/>
                 <Separator/>
-                <ToggleButton Name="GridButton" Content="Grid" Checked="GridButton_Checked" Unchecked="GridButton_Unchecked"/>
+                <ToggleButton Name="GridButton" Content="Grid" IsChecked="{Binding ShowGrid}"/>
             </ToolBar>
             <WindowsFormsHost x:Name="PanelHost">
                 <spice:GamePanel x:Name="Panel" Dock="Fill"></spice:GamePanel>

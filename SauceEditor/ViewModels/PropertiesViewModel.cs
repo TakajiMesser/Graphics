@@ -6,6 +6,7 @@ using SauceEditor.Views;
 using SauceEditor.Views.Properties;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
+using SpiceEngine.Utilities;
 using System;
 using System.ComponentModel;
 using System.Windows;
@@ -104,7 +105,7 @@ namespace SauceEditor.ViewModels
                 if (EditorEntity != null)
                 {
                     var rotator = EditorEntity.Entity as IRotate;
-                    rotator.Rotation = Quaternion.FromEulerAngles(value);
+                    rotator.Rotation = Quaternion.FromEulerAngles(value.ToRadians());
                     EditorEntity.MapEntity.Rotation = value;
                 }
 

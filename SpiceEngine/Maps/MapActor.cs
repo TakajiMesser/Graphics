@@ -298,8 +298,8 @@ namespace SpiceEngine.Maps
             }
 
             actor.Position = Position;
-            actor.Orientation = Quaternion.FromEulerAngles(Orientation);
-            actor.Rotation = Quaternion.FromEulerAngles(Rotation);
+            actor.Orientation = Quaternion.FromEulerAngles(Orientation.ToRadians());
+            actor.Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians());
             actor.Scale = Scale;
 
             return actor;
@@ -328,8 +328,8 @@ namespace SpiceEngine.Maps
                     .SelectMany(m => m.Vertices
                         .Select(v => v.ToVector3()))
                     .Select(v => (Matrix4.CreateScale(Scale)
-                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation)
-                        * Quaternion.FromEulerAngles(Rotation))
+                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
+                        * Quaternion.FromEulerAngles(Rotation.ToRadians()))
                         * new Vector4(v, 1.0f)).Xyz);
 
                 if (Name == "Player")

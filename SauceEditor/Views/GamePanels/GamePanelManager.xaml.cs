@@ -83,6 +83,11 @@ namespace SauceEditor.Views.GamePanels
             InitializeComponent();
             Open(mapPath);
 
+            ViewModel.PerspectiveViewModel = _perspectiveView.ViewModel;
+            ViewModel.XViewModel = _xView.ViewModel;
+            ViewModel.YViewModel = _yView.ViewModel;
+            ViewModel.ZViewModel = _zView.ViewModel;
+
             TransformMode = TransformModes.Translate;
         }
 

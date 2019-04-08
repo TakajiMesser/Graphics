@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Utilities;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Maps
@@ -37,14 +38,14 @@ namespace SpiceEngine.Maps
                     return new BlockingVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Scale = Scale
                     };
                 case VolumeTypes.Physics:
                     return new PhysicsVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Scale = Scale,
                         Gravity = Gravity
                     };
@@ -52,7 +53,7 @@ namespace SpiceEngine.Maps
                     return new TriggerVolume()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Scale = Scale
                     };
             }
@@ -60,7 +61,7 @@ namespace SpiceEngine.Maps
             return new Volume()//Vertices, TriangleIndices, Color)
             {
                 Position = Position,
-                Rotation = Quaternion.FromEulerAngles(Rotation),
+                Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                 Scale = Scale
             };
         }

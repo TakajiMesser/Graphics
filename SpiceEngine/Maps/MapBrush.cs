@@ -7,6 +7,7 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -33,7 +34,7 @@ namespace SpiceEngine.Maps
         public override Brush ToEntity() => new Brush(Material)
         {
             Position = Position,
-            Rotation = Quaternion.FromEulerAngles(Rotation),
+            Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
             Scale = Scale,
             //HasCollision = HasCollision
         };

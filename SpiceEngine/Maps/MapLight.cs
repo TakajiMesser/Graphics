@@ -45,7 +45,7 @@ namespace SpiceEngine.Maps
                     return new SpotLight()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Color = Color.ToVector4(),
                         Intensity = Intensity,
                         Radius = Radius,
@@ -55,7 +55,7 @@ namespace SpiceEngine.Maps
                     return new DirectionalLight()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Color = Color.ToVector4(),
                         Intensity = Intensity,
                     };
