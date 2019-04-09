@@ -303,6 +303,7 @@ namespace SpiceEngine.Rendering
 
             _fxaaRenderer.Render(_wireframeRenderer.FinalTexture);
             _renderToScreen.Render(_fxaaRenderer.FinalTexture);
+            _logManager.RenderToScreen();
         }
 
         public void RenderDiffuseFrame(IEntityProvider entityProvider, Camera camera, TextureManager textureManager)
@@ -341,6 +342,7 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.DepthTest);
 
             _renderToScreen.Render(_deferredRenderer.ColorTexture);
+            _logManager.RenderToScreen();
         }
 
         public void RenderLitFrame(IEntityProvider entityProvider, Camera camera, TextureManager textureManager)
@@ -381,6 +383,7 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.DepthTest);
 
             _renderToScreen.Render(_deferredRenderer.FinalTexture);
+            _logManager.RenderToScreen();
         }
 
         public void RenderFullFrame(IEntityProvider entityProvider, Camera camera, TextureManager textureManager)

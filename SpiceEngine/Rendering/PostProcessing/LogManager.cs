@@ -60,7 +60,7 @@ namespace SpiceEngine.Rendering.PostProcessing
         {
             var line = new LogLine(text)
             {
-                ClearFrameDelay = 180
+                ClearFrameDelay = 1
             };
 
             _lineQueue.Enqueue(line);

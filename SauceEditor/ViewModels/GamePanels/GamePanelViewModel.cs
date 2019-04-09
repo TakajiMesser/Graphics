@@ -37,6 +37,8 @@ namespace SauceEditor.ViewModels
 
         private bool _showGrid;
 
+        public GamePanel Panel => _gamePanel;
+
         public string Title
         {
             get => _title;

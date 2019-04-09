@@ -31,6 +31,8 @@ namespace SauceEditor.ViewModels
         private GamePanelViewModel _yViewModel;
         private GamePanelViewModel _zViewModel;
 
+        public TransformModes TransformMode => _transformMode;
+
         public RelayCommand TranslateCommand
         {
             get
@@ -165,20 +167,20 @@ namespace SauceEditor.ViewModels
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;
 
-        private void SetTransformMode(TransformModes transformMode)
+        public void SetTransformMode(TransformModes transformMode)
         {
             _transformMode = transformMode;
 
-            _perspectiveViewModel.Panel.TransformMode = value;
+            _perspectiveViewModel.Panel.TransformMode = transformMode;
             _perspectiveViewModel.Panel.Invalidate();
 
-            _xViewModel.Panel.TransformMode = value;
+            _xViewModel.Panel.TransformMode = transformMode;
             _xViewModel.Panel.Invalidate();
 
-            _yViewModel.Panel.TransformMode = value;
+            _yViewModel.Panel.TransformMode = transformMode;
             _yViewModel.Panel.Invalidate();
 
-            _zViewModel.Panel.TransformMode = value;
+            _zViewModel.Panel.TransformMode = transformMode;
             _zViewModel.Panel.Invalidate();
 
             CommandManager.InvalidateRequerySuggested();

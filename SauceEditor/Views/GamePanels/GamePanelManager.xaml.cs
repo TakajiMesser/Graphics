@@ -158,7 +158,7 @@ namespace SauceEditor.Views.GamePanels
             switch (e.Key)
             {
                 case Key.Space:
-                    TransformMode = (TransformModes)((int)(TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length);
+                    ViewModel.SetTransformMode((TransformModes)((int)(ViewModel.TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length));
                     break;
                 case Key.Home:
                     _perspectiveView?.Panel.CenterView();
