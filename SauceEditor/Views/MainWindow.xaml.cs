@@ -318,7 +318,7 @@ namespace SauceEditor.Views
             {
                 // For now, just go with the last entity that was selected
                 //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _propertyPanel.ViewModel.SetValues(args.Entities.LastOrDefault());
+                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };

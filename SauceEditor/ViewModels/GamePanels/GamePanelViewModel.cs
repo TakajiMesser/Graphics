@@ -18,9 +18,6 @@ namespace SauceEditor.ViewModels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
-        private GamePanel _gamePanel;
-        private string _title;
-
         private ViewTypes _viewType;
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
@@ -28,22 +25,6 @@ namespace SauceEditor.ViewModels
         private RelayCommand _wireframeCommand;
         private RelayCommand _diffuseCommand;
         private RelayCommand _litCommand;
-
-        private float _wireframeThickness;
-        private float _selectedWireframeThickness;
-        private float _selectedLightWireframeThickness;
-        private float _gridthickness;
-        private float _gridUnit;
-
-        private bool _showGrid;
-
-        public GamePanel Panel => _gamePanel;
-
-        public string Title
-        {
-            get => _title;
-            set => SetProperty(ref _title, value);
-        }
 
         public RelayCommand WireframeCommand
         {
@@ -54,11 +35,11 @@ namespace SauceEditor.ViewModels
                     _wireframeCommand = new RelayCommand(
                         p =>
                         {
-                            _gamePanel.RenderMode = RenderModes.Wireframe;
-                            _gamePanel.Invalidate();
+                            Panel.RenderMode = RenderModes.Wireframe;
+                            Panel.Invalidate();
                             CommandManager.InvalidateRequerySuggested();
                         },
-                        p => _gamePanel != null && _gamePanel.RenderMode != RenderModes.Wireframe
+                        p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
                     );
                 }
 
@@ -75,11 +56,11 @@ namespace SauceEditor.ViewModels
                     _diffuseCommand = new RelayCommand(
                         p =>
                         {
-                            _gamePanel.RenderMode = RenderModes.Diffuse;
-                            _gamePanel.Invalidate();
+                            Panel.RenderMode = RenderModes.Diffuse;
+                            Panel.Invalidate();
                             CommandManager.InvalidateRequerySuggested();
                         },
-                        p => _gamePanel != null && _gamePanel.RenderMode != RenderModes.Diffuse
+                        p => Panel != null && Panel.RenderMode != RenderModes.Diffuse
                     );
                 }
 
@@ -96,11 +77,11 @@ namespace SauceEditor.ViewModels
                     _litCommand = new RelayCommand(
                         p =>
                         {
-                            _gamePanel.RenderMode = RenderModes.Lit;
-                            _gamePanel.Invalidate();
+                            Panel.RenderMode = RenderModes.Lit;
+                            Panel.Invalidate();
                             CommandManager.InvalidateRequerySuggested();
                         },
-                        p => _gamePanel != null && _gamePanel.RenderMode != RenderModes.Lit
+                        p => Panel != null && Panel.RenderMode != RenderModes.Lit
                     );
                 }
 
@@ -108,47 +89,21 @@ namespace SauceEditor.ViewModels
             }
         }
 
-        public float WireframeThickness
-        {
-            get => _wireframeThickness;
-            set => SetProperty(ref _wireframeThickness, value);
-        }
+        public GamePanel Panel { get; set; }
+        public ViewTypes ViewType { get; set; }
+        public string Title { get; set; }
+        public float WireframeThickness { get; set; }
+        public float SelectedWireframeThickness { get; set; }
+        public float SelecteLightdWireframeThickness { get; set; }
+        public float GridThickness { get; set; }
+        public float GridUnit { get; set; }
+        public bool ShowGrid { get; set; }
 
-        public float SelectedWireframeThickness
+        public void OnShowGridChanged()
         {
-            get => _selectedWireframeThickness;
-            set => SetProperty(ref _selectedWireframeThickness, value);
-        }
-
-        public float SelecteLightdWireframeThickness
-        {
-            get => _selectedLightWireframeThickness;
-            set => SetProperty(ref _selectedLightWireframeThickness, value);
-        }
-
-        public float GridThickness
-        {
-            get => _gridthickness;
-            set => SetProperty(ref _gridthickness, value);
-        }
-
-        public float GridUnit
-        {
-            get => _gridUnit;
-            set => SetProperty(ref _gridUnit, value);
-        }
-
-        public bool ShowGrid
-        {
-            get => _showGrid;
-            set
+            if (Panel != null)
             {
-                if (_gamePanel != null)
-                {
-                    _gamePanel.RenderGrid = value;
-                }
-
-                SetProperty(ref _showGrid, value);
+                Panel.RenderGrid = ShowGrid;
             }
         }
 
@@ -157,26 +112,24 @@ namespace SauceEditor.ViewModels
             _mouseHoldtimer.Elapsed += MouseHoldtimer_Elapsed;
         }
 
-        public void SetGamePanel(GamePanel panel)
+        public void OnPanelChanged()
         {
-            _gamePanel = panel;
-            _gamePanel.MouseWheel += (s, args) => _gamePanel.Zoom(args.Delta);
-            _gamePanel.MouseDown += Panel_MouseDown;
-            _gamePanel.MouseUp += Panel_MouseUp;
-            _gamePanel.PanelLoaded += (s, args) => ShowGrid = true;
-            _gamePanel.ChangeCursorVisibility += GamePanel_ChangeCursorVisibility;
-            _gamePanel.SetViewType(_viewType);
+            Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
+            Panel.MouseDown += Panel_MouseDown;
+            Panel.MouseUp += Panel_MouseUp;
+            Panel.PanelLoaded += (s, args) => ShowGrid = true;
+            Panel.ChangeCursorVisibility += GamePanel_ChangeCursorVisibility;
 
             // Default to wireframe rendering
-            _gamePanel.RenderMode = RenderModes.Wireframe;
+            Panel.RenderMode = RenderModes.Wireframe;
             CommandManager.InvalidateRequerySuggested();
         }
 
-        public void SetViewType(ViewTypes viewType)
+        public void OnViewTypeChanged()
         {
-            _viewType = viewType;
+            Panel.SetViewType(_viewType);
 
-            switch (viewType)
+            switch (ViewType)
             {
                 case ViewTypes.Perspective:
                     Title = "Perspective";
@@ -191,7 +144,7 @@ namespace SauceEditor.ViewModels
                     Title = "Z";
                     break;
                 default:
-                    throw new ArgumentException("Could not handle ViewType " + viewType);
+                    throw new ArgumentException("Could not handle ViewType " + ViewType);
             }
         }
 
@@ -225,22 +178,22 @@ namespace SauceEditor.ViewModels
 
         private void BeginDrag()
         {
-            if (_gamePanel.IsLoaded)
+            if (Panel.IsLoaded)
             {
                 _cursorLocation = System.Windows.Forms.Cursor.Position;
                 System.Windows.Forms.Cursor.Hide();
-                _gamePanel.Capture = true;
+                Panel.Capture = true;
                 //Mouse.Capture(PanelHost);
-                _gamePanel.StartDrag(_cursorLocation);
+                Panel.StartDrag(_cursorLocation);
             }
         }
 
         private void EndDrag()
         {
-            _gamePanel.Capture = false; //PanelHost.ReleaseMouseCapture();
+            Panel.Capture = false; //PanelHost.ReleaseMouseCapture();
             System.Windows.Forms.Cursor.Show();
             System.Windows.Forms.Cursor.Position = _cursorLocation;
-            _gamePanel.EndDrag();
+            Panel.EndDrag();
         }
 
         private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -252,7 +205,7 @@ namespace SauceEditor.ViewModels
                 case System.Windows.Forms.MouseButtons.Left:
                     if (Mouse.RightButton == MouseButtonState.Pressed)
                     {
-                        if (!_gamePanel.IsDragging)
+                        if (!Panel.IsDragging)
                         {
                             BeginDrag();
                         }
@@ -265,7 +218,7 @@ namespace SauceEditor.ViewModels
                 case System.Windows.Forms.MouseButtons.Right:
                     _mouseHoldtimer.Stop();
 
-                    if (!_gamePanel.IsDragging)
+                    if (!Panel.IsDragging)
                     {
                         BeginDrag();
                     }
@@ -273,7 +226,7 @@ namespace SauceEditor.ViewModels
                 case System.Windows.Forms.MouseButtons.XButton1:
                     _mouseHoldtimer.Stop();
 
-                    if (!_gamePanel.IsDragging)
+                    if (!Panel.IsDragging)
                     {
                         BeginDrag();
                     }
@@ -287,9 +240,9 @@ namespace SauceEditor.ViewModels
 
             Application.Current.Dispatcher.Invoke(() =>
             {
-                if (!_gamePanel.IsDragging)
+                if (!Panel.IsDragging)
                 {
-                    _gamePanel.SetSelectionType();
+                    Panel.SetSelectionType();
                     BeginDrag();
                 }
             });
@@ -302,18 +255,18 @@ namespace SauceEditor.ViewModels
             if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released && Mouse.XButton1 == MouseButtonState.Released)
             {
                 // Double-check with Panel, since its input tracking is more reliable
-                if (!_gamePanel.IsHeld())
+                if (!Panel.IsHeld())
                 {
                     _mouseHoldtimer.Stop();
 
-                    if (_gamePanel.IsDragging)
+                    if (Panel.IsDragging)
                     {
                         EndDrag();
                     }
-                    else if (_gamePanel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
+                    else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
                     {
                         var point = e.Location;
-                        _gamePanel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
+                        Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
                     }
                 }
             }

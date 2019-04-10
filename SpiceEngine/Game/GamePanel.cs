@@ -80,12 +80,23 @@ namespace SpiceEngine.Game
             }
         }*/
 
+        private TransformModes _transformMode;
+
+        public TransformModes TransformMode
+        {
+            get => _transformMode;
+            set
+            {
+                _transformMode = value;
+                Invalidate();
+            }
+        }
+
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
         public double Frequency { get; private set; }
         public RenderModes RenderMode { get; set; }
-        public TransformModes TransformMode { get; set; }
         public List<IEntity> SelectedEntities { get; private set; } = new List<IEntity>();
         public SelectionTypes SelectionType { get; private set; }
         public Tools SelectedTool

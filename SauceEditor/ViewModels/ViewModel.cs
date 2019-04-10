@@ -8,46 +8,24 @@ namespace SauceEditor.ViewModels
 {
     public abstract class ViewModel : INotifyPropertyChanged
     {
-        private ObservableCollection<ViewModel> _childViewModels = new ObservableCollection<ViewModel>();
+        public ObservableCollection<ViewModel> ChildViewModels { get; set; } = new ObservableCollection<ViewModel>();
 
-        public ObservableCollection<ViewModel> ChildViewModels
-        {
-            get => _childViewModels;
-            set
-            {
-                if (_childViewModels != value)
-                {
-                    _childViewModels = value;
-
-                    foreach (var childViewModel in _childViewModels)
-                    {
-                        childViewModel.PropertyChanged += ChildPropertyChanged;
-                    }
-
-                    SetProperty(ref _childViewModels, value);
-                }
-            }
-        }
-
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Contracts", "CS0067", Justification = "Fody.PropertyChanged requires this event.")]
         public event PropertyChangedEventHandler PropertyChanged;
         public event PropertyChangedEventHandler ChildPropertyChanged;
 
-        protected bool SetProperty<T>(ref T field, T newValue, [CallerMemberName]string propertyName = null)
+        public void OnChildViewModelsChanged()
         {
-            if (!EqualityComparer<T>.Default.Equals(field, newValue))
+            foreach (var childViewModel in ChildViewModels)
             {
-                field = newValue;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-                return true;
+                childViewModel.PropertyChanged += ChildPropertyChanged;
             }
-            
-            return false;
         }
 
         public void AddChild(ViewModel childViewModel, PropertyChangedEventHandler changeHandler)
         {
             childViewModel.PropertyChanged += changeHandler;
-            _childViewModels.Add(childViewModel);
+            ChildViewModels.Add(childViewModel);
         }
     }
 }

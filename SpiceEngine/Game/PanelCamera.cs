@@ -261,8 +261,8 @@ namespace SpiceEngine.Game
 
             Camera._viewMatrix.Up = new Vector3()
             {
-                X = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
-                Y = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
+                X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
                 Z = -(float)(Math.Sin(yAngle))
             };
 

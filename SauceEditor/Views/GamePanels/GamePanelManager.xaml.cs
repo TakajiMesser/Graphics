@@ -158,7 +158,7 @@ namespace SauceEditor.Views.GamePanels
             switch (e.Key)
             {
                 case Key.Space:
-                    ViewModel.SetTransformMode((TransformModes)((int)(ViewModel.TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length));
+                    ViewModel.TransformMode = (TransformModes)((int)(ViewModel.TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length);
                     break;
                 case Key.Home:
                     _perspectiveView?.Panel.CenterView();
@@ -218,7 +218,8 @@ namespace SauceEditor.Views.GamePanels
 
         private GamePanelView CreatePanel(ViewTypes viewType, AnchorableShowStrategy showStrategy)
         {
-            var gamePanel = new GamePanelView(viewType);
+            var gamePanel = new GamePanelView();
+            gamePanel.ViewModel.ViewType = viewType;
             gamePanel.Panel.Load += (s, args) => LoadPanels();
             gamePanel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
             gamePanel.EntitySelectionChanged += (s, args) => OnEntitySelectionChanged(viewType, args);

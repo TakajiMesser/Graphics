@@ -11,12 +11,6 @@ namespace SauceEditor.ViewModels
 {
     public class NumericUpDownViewModel : ViewModel
     {
-        private float _value;
-
-        public float Value
-        {
-            get => _value;
-            set => SetProperty(ref _value, value);
-        }
+        public float Value { get; set; }
     }
 }

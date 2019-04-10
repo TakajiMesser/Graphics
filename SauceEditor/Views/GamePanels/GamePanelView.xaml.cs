@@ -78,14 +78,12 @@ namespace SauceEditor.Views.GamePanels
             }
         }
 
-        public GamePanelView() => InitializeComponent();
-        public GamePanelView(ViewTypes viewType)
+        public GamePanelView()
         {
             InitializeComponent();
 
             DockPanel.Focusable = true;
-            ViewModel.SetViewType(viewType);
-            ViewModel.SetGamePanel(Panel);
+            ViewModel.Panel = Panel;
 
             Panel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
             //Panel.TransformModeChanged += GamePanel_TransformModeChanged;

@@ -52,7 +52,7 @@ namespace SauceEditor.Views.Properties
             {
                 ScriptOpened?.Invoke(s, args);
             };
-            ViewModel.SetValues(null);
+            ViewModel.UpdateFromModel(null);
 
             /*PositionTransform.TransformChanged += (s, args) =>
             {

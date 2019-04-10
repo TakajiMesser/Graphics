@@ -18,7 +18,6 @@ namespace SauceEditor.ViewModels
     {
         private ProjectTreePanelViewModel _projectTreePanelViewModel;
         private ToolsPanelViewModel _toolsPanelViewModel;
-        private PropertiesViewModel _propertiesViewModel;
 
         private GamePanelManagerViewModel _gamePanelManagerViewModel;
         private BehaviorViewModel _behaviorViewModel;
@@ -28,14 +27,11 @@ namespace SauceEditor.ViewModels
 
         public CommandStack CommandStack { get; private set; } = new CommandStack();
 
-        public PropertiesViewModel PropertiesViewModel
+        public PropertiesViewModel PropertiesViewModel { get; set; }
+
+        public void OnPropertiesViewModelChanged()
         {
-            get => _propertiesViewModel;
-            set
-            {
-                _propertiesViewModel = value;
-                AddChild(_propertiesViewModel, (s, args) => EntityUpdated?.Invoke(this, new EntityEventArgs(_propertiesViewModel.EditorEntity)));
-            }
+            AddChild(PropertiesViewModel, (s, args) => EntityUpdated?.Invoke(this, new EntityEventArgs(PropertiesViewModel.EditorEntity)));
         }
 
         public event EventHandler<EntityEventArgs> EntityUpdated;

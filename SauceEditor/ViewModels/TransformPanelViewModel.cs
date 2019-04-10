@@ -1,70 +1,32 @@
 using OpenTK;
-using SauceEditor.Models;
-using SauceEditor.Utilities;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace SauceEditor.ViewModels
 {
     public class TransformPanelViewModel : ViewModel
     {
-        private Vector3 _transform;
+        public Vector3 Transform { get; set; }
 
-        private NumericUpDownViewModel _xViewModel;
-        private NumericUpDownViewModel _yViewModel;
-        private NumericUpDownViewModel _zViewModel;
+        public NumericUpDownViewModel XViewModel { get; set; }
+        public NumericUpDownViewModel YViewModel { get; set; }
+        public NumericUpDownViewModel ZViewModel { get; set; }
 
-        public Vector3 Transform
+        public void OnXViewModelChanged() => ChildViewModels.Add(XViewModel);
+        public void OnYViewModelChanged() => ChildViewModels.Add(YViewModel);
+        public void OnZViewModelChanged() => ChildViewModels.Add(ZViewModel);
+
+        public TransformPanelViewModel()
         {
-            get => _transform;
-            set => SetProperty(ref _transform, value);
+            ChildPropertyChanged += (s, args) => Transform = new Vector3(XViewModel.Value, YViewModel.Value, ZViewModel.Value);
         }
 
-        public NumericUpDownViewModel XViewModel
+        public void UpdateFromModel(Vector3 transform)
         {
-            get => _xViewModel;
-            set
-            {
-                _xViewModel = value;
-                AddChild(_xViewModel, OnChildViewModelUpdated);
-            }
-        }
-
-        public NumericUpDownViewModel YViewModel
-        {
-            get => _yViewModel;
-            set
-            {
-                _yViewModel = value;
-                AddChild(_yViewModel, OnChildViewModelUpdated);
-            }
-        }
-
-        public NumericUpDownViewModel ZViewModel
-        {
-            get => _zViewModel;
-            set
-            {
-                _zViewModel = value;
-                AddChild(_zViewModel, OnChildViewModelUpdated);
-            }
-        }
-
-        public void UpdateTransform(Vector3 transform)
-        {
-            _transform = transform;
+            Transform = transform;
 
             XViewModel.Value = transform.X;
             YViewModel.Value = transform.Y;
             ZViewModel.Value = transform.Z;
         }
-
-        private void OnChildViewModelUpdated(object sender, PropertyChangedEventArgs args) =>
-            Transform = new Vector3(XViewModel.Value, YViewModel.Value, ZViewModel.Value);
     }
 }
