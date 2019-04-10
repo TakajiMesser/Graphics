@@ -73,6 +73,7 @@ namespace SauceEditor.ViewModels
         }
 
         public TransformModes TransformMode { get; set; }
+        public ViewModels.ViewTypes ViewType { get; set; }
 
         public GamePanelViewModel PerspectiveViewModel { get; set; }
         public GamePanelViewModel XViewModel { get; set; }
@@ -94,6 +95,11 @@ namespace SauceEditor.ViewModels
             ZViewModel.Panel.TransformMode = TransformMode;
 
             CommandManager.InvalidateRequerySuggested();
+        }
+
+        public void OnViewTypeChanged()
+        {
+            
         }
     }
 }

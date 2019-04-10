@@ -102,15 +102,12 @@ namespace SauceEditor.Views
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
             _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
-            _projectTree.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
-            _projectTree.DockAsDocument();
 
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
-            _toolPanel.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
-            _toolPanel.DockAsDocument();
 
-            _propertyPanel.AddToLayout(SideDockingManager, AnchorableShowStrategy.Most);
-            _propertyPanel.DockAsDocument();
+            DockHelper.AddToDockAsDocument(SideDockingManager, _projectTree);
+            DockHelper.AddToDockAsDocument(SideDockingManager, _toolPanel);
+            DockHelper.AddToDockAsDocument(SideDockingManager, _propertyPanel);
 
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;
@@ -324,19 +321,11 @@ namespace SauceEditor.Views
             };
             _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
 
-            var anchorable = new LayoutAnchorable
-            {
-                Title = Path.GetFileNameWithoutExtension(filePath),
-                Content = _gamePanelManager,
-                CanClose = true
-            };
-            anchorable.Closed += (s, args) =>
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(_filePath), () =>
             {
                 PlayButton.Visibility = Visibility.Hidden;
                 _map = null;
-            };
-            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
-            anchorable.DockAsDocument();
+            });
 
             _gamePanelManager.SetView(_settings.DefaultView);
 
@@ -400,24 +389,18 @@ namespace SauceEditor.Views
             anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
             anchorable.DockAsDocument();*/
 
-            if (_behaviorView == null)
+            /* if (_behaviorView == null)
             {
                 _behaviorView = new BehaviorView();
-            }
+            }*/
 
-            var anchorable = new LayoutAnchorable
-            {
-                Title = Path.GetFileNameWithoutExtension(filePath),
-                Content = _behaviorView,
-                CanClose = true
-            };
-            anchorable.Closed += (s, args) =>
+            _behaviorView = _behaviorView ?? new BehaviorView();
+
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _behaviorView, Path.GetFileNameWithoutExtension(filePath), () =>
             {
                 PlayButton.Visibility = Visibility.Hidden;
                 _map = null;
-            };
-            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
-            anchorable.DockAsDocument();
+            });
         }
 
         private void OpenTexture(string filePath)

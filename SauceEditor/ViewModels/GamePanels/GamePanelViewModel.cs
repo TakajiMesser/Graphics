@@ -18,9 +18,8 @@ namespace SauceEditor.ViewModels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
-        private ViewTypes _viewType;
         private System.Drawing.Point _cursorLocation;
-        private Timer _mouseHoldtimer = new Timer(MOUSE_HOLD_MILLISECONDS);
+        private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
         private RelayCommand _wireframeCommand;
         private RelayCommand _diffuseCommand;
@@ -36,7 +35,6 @@ namespace SauceEditor.ViewModels
                         p =>
                         {
                             Panel.RenderMode = RenderModes.Wireframe;
-                            Panel.Invalidate();
                             CommandManager.InvalidateRequerySuggested();
                         },
                         p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
@@ -57,7 +55,6 @@ namespace SauceEditor.ViewModels
                         p =>
                         {
                             Panel.RenderMode = RenderModes.Diffuse;
-                            Panel.Invalidate();
                             CommandManager.InvalidateRequerySuggested();
                         },
                         p => Panel != null && Panel.RenderMode != RenderModes.Diffuse
@@ -78,7 +75,6 @@ namespace SauceEditor.ViewModels
                         p =>
                         {
                             Panel.RenderMode = RenderModes.Lit;
-                            Panel.Invalidate();
                             CommandManager.InvalidateRequerySuggested();
                         },
                         p => Panel != null && Panel.RenderMode != RenderModes.Lit
@@ -99,6 +95,11 @@ namespace SauceEditor.ViewModels
         public float GridUnit { get; set; }
         public bool ShowGrid { get; set; }
 
+        public GamePanelViewModel()
+        {
+            _mouseHoldTimer.Elapsed += MouseHoldTimer_Elapsed;
+        }
+
         public void OnShowGridChanged()
         {
             if (Panel != null)
@@ -107,18 +108,12 @@ namespace SauceEditor.ViewModels
             }
         }
 
-        public GamePanelViewModel()
-        {
-            _mouseHoldtimer.Elapsed += MouseHoldtimer_Elapsed;
-        }
-
         public void OnPanelChanged()
         {
             Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
             Panel.MouseDown += Panel_MouseDown;
             Panel.MouseUp += Panel_MouseUp;
             Panel.PanelLoaded += (s, args) => ShowGrid = true;
-            Panel.ChangeCursorVisibility += GamePanel_ChangeCursorVisibility;
 
             // Default to wireframe rendering
             Panel.RenderMode = RenderModes.Wireframe;
@@ -127,7 +122,7 @@ namespace SauceEditor.ViewModels
 
         public void OnViewTypeChanged()
         {
-            Panel.SetViewType(_viewType);
+            Panel.SetViewType(ViewType);
 
             switch (ViewType)
             {
@@ -145,34 +140,6 @@ namespace SauceEditor.ViewModels
                     break;
                 default:
                     throw new ArgumentException("Could not handle ViewType " + ViewType);
-            }
-        }
-
-        private void GamePanel_ChangeCursorVisibility(object sender, CursorEventArgs e)
-        {
-            if (e.ShowCursor)
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    //System.Windows.Forms.Cursor.Clip = Rectangle.Empty;
-                    System.Windows.Forms.Cursor.Position = _cursorLocation;
-                    System.Windows.Forms.Cursor.Show();
-                    //Mouse.Capture(_previousCapture);
-                });
-            }
-            else
-            {
-                Application.Current.Dispatcher.Invoke(() =>
-                {
-                    //var bounds = RenderTransform.TransformBounds(new Rect(RenderSize));
-                    //System.Windows.Forms.Cursor.Clip = new Rectangle((int)bounds.X, (int)bounds.Y, (int)bounds.Width, (int)bounds.Height);
-                    //System.Windows.Forms.Cursor.Clip = new Rectangle((int)Top, (int)Left, (int)Width, (int)Height);
-                    //Visibility = Visibility.Visible;
-                    //IsEnabled = true;
-
-                    _cursorLocation = System.Windows.Forms.Cursor.Position;
-                    System.Windows.Forms.Cursor.Hide();
-                });
             }
         }
 
@@ -196,6 +163,20 @@ namespace SauceEditor.ViewModels
             Panel.EndDrag();
         }
 
+        private void MouseHoldTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _mouseHoldTimer.Stop();
+
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (!Panel.IsDragging)
+                {
+                    Panel.SetSelectionType();
+                    BeginDrag();
+                }
+            });
+        }
+
         private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             //Panel.Capture = true;//.Capture(PanelHost);
@@ -212,11 +193,11 @@ namespace SauceEditor.ViewModels
                     }
                     else
                     {
-                        _mouseHoldtimer.Start();
+                        _mouseHoldTimer.Start();
                     }
                     break;
                 case System.Windows.Forms.MouseButtons.Right:
-                    _mouseHoldtimer.Stop();
+                    _mouseHoldTimer.Stop();
 
                     if (!Panel.IsDragging)
                     {
@@ -224,7 +205,7 @@ namespace SauceEditor.ViewModels
                     }
                     break;
                 case System.Windows.Forms.MouseButtons.XButton1:
-                    _mouseHoldtimer.Stop();
+                    _mouseHoldTimer.Stop();
 
                     if (!Panel.IsDragging)
                     {
@@ -232,20 +213,6 @@ namespace SauceEditor.ViewModels
                     }
                     break;
             }
-        }
-
-        private void MouseHoldtimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            _mouseHoldtimer.Stop();
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (!Panel.IsDragging)
-                {
-                    Panel.SetSelectionType();
-                    BeginDrag();
-                }
-            });
         }
 
         private void Panel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -257,7 +224,7 @@ namespace SauceEditor.ViewModels
                 // Double-check with Panel, since its input tracking is more reliable
                 if (!Panel.IsHeld())
                 {
-                    _mouseHoldtimer.Stop();
+                    _mouseHoldTimer.Stop();
 
                     if (Panel.IsDragging)
                     {

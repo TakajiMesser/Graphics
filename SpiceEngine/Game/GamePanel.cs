@@ -55,32 +55,8 @@ namespace SpiceEngine.Game
         private bool _isLoaded = false;
         private object _loadLock = new object();
 
-        /*private bool _isCursorVisible = true;
-        private object _cursorLock = new object();
-        
-        /*public bool IsCursorVisible
-        {
-            get
-            {
-                lock (_cursorLock)
-                {
-                    return _isCursorVisible;
-                }
-            }
-            set
-            {
-                lock (_cursorLock)
-                {
-                    if (value != _isCursorVisible)
-                    {
-                        ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(value));
-                        _isCursorVisible = value;
-                    }
-                }
-            }
-        }*/
-
         private TransformModes _transformMode;
+        private RenderModes _renderMode;
 
         public TransformModes TransformMode
         {
@@ -92,11 +68,20 @@ namespace SpiceEngine.Game
             }
         }
 
+        public RenderModes RenderMode
+        {
+            get => _renderMode;
+            set
+            {
+                _renderMode = value;
+                Invalidate();
+            }
+        }
+
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
         public double Frequency { get; private set; }
-        public RenderModes RenderMode { get; set; }
         public List<IEntity> SelectedEntities { get; private set; } = new List<IEntity>();
         public SelectionTypes SelectionType { get; private set; }
         public Tools SelectedTool
@@ -162,7 +147,6 @@ namespace SpiceEngine.Game
         }
 
         public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
-        public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
 

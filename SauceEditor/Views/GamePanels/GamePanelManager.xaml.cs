@@ -56,81 +56,8 @@ namespace SauceEditor.Views.GamePanels
             _zView.Panel.Invalidate();
         }
 
-        /*private int AddActor(MapActor mapActor)
-        {
-            int entityID = _gameManager.AddActor(mapActor);
-            _mapManager.AddActor(mapActor, entityID);
-            _renderManager.AddActor(mapActor, entityID);
-
-            return entityID;
-        }
-
-        private int AddBrush(MapBrush mapBrush)
-        {
-            int entityID = _gameManager.AddBrush(mapBrush);
-            _mapManager.AddBrush(mapBrush, entityID);
-            _renderManager.AddBrush(mapBrush, entityID);
-
-            return entityID;
-        }
-
-        private int AddVolume(MapVolume mapVolume)
-        {
-            int entityID = _gameManager.AddVolume(mapVolume);
-            _mapManager.AddVolume(mapVolume, entityID);
-            return entityID;
-        }
-
-        private int AddLight(ILight light)
-        {
-            int entityID = _gameManager.AddLight(light);
-            _mapManager.AddLight(light, entityID);
-            return entityID;
-        }*/
-
         public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
-            /*switch (_selectedTool)
-            {
-                case Tools.Volume:
-                    // We need to use a MeshShape here to generate a MapBrush, which is purely WIREFRAME
-                    // We need to STORE this MeshShape, since the user might want to create this entity here (but it might not be a Brush type)
-                    // We need to STORE the drawn Brush entityID, since we will need reference to it (and we will want to remove it if they switch selection tools later)
-                    // We can share the same Brush between placing volumes and placing brushes
-
-                    var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                    //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
-                    _toolVolume = mapVolume.ToEntity();
-                    int entityID = _entityManager.AddEntity(_toolVolume);
-
-                    lock (_loadLock)
-                    {
-                        if (_renderManager != null)
-                        {
-                            //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
-                            var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                            _renderManager.BatchManager.AddVolume(entityID, mesh);
-                            _renderManager.BatchManager.Load(entityID);
-                        }
-                    }
-                    break;
-                default:
-                    if (_toolVolume != null)
-                    {
-                        _entityManager.RemoveEntityByID(_toolVolume.ID);
-
-                        lock (_loadLock)
-                        {
-                            if (_renderManager != null)
-                            {
-                                _renderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
-                                _toolVolume = null;
-                            }
-                        }
-                    }
-                    break;
-            }*/
-
             _perspectiveView.Panel.SelectedTool = tool;
             _xView.Panel.SelectedTool = tool;
             _yView.Panel.SelectedTool = tool;
@@ -191,29 +118,7 @@ namespace SauceEditor.Views.GamePanels
             _yView = CreatePanel(ViewTypes.Y, AnchorableShowStrategy.Bottom);
             _zView = CreatePanel(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
 
-            //Get the main LayoutDocumentPane of your DockingManager 
-            var rootPanel = MainDockingManager.Layout.RootPanel;
-            rootPanel.Children.Clear();
-            rootPanel.Orientation = Orientation.Vertical;
-
-            var topPaneGroup = new LayoutAnchorablePaneGroup()
-            {
-                Orientation = Orientation.Horizontal,
-                DockMinHeight = MainDockingManager.ActualHeight / 2.0
-            };
-            topPaneGroup.Children.Add(_perspectiveView);
-            topPaneGroup.Children.Add(_xView);
-
-            var bottomPaneGroup = new LayoutAnchorablePaneGroup()
-            {
-                Orientation = Orientation.Horizontal,
-                DockMinHeight = MainDockingManager.ActualHeight / 2.0
-            };
-            bottomPaneGroup.Children.Add(_yView);
-            bottomPaneGroup.Children.Add(_zView);
-
-            rootPanel.Children.Add(topPaneGroup);
-            rootPanel.Children.Add(bottomPaneGroup);
+            DockHelper.AddPanesToDockAsGrid(MainDockingManager, 2, _perspectiveView, _xView, _yView, _zView);
         }
 
         private GamePanelView CreatePanel(ViewTypes viewType, AnchorableShowStrategy showStrategy)
@@ -283,123 +188,6 @@ namespace SauceEditor.Views.GamePanels
             //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(_mapManager.GetMapEntities(args.Entities)));
         }
 
-        /*public EntityMapping LoadFromMap(Map map)
-        {
-            switch (map)
-            {
-                case Map2D map2D:
-                    _physicsManager = new PhysicsManager(_entityManager, map2D.Boundaries);
-                    break;
-                case Map3D map3D:
-                    _physicsManager = new PhysicsManager(_entityManager, map3D.Boundaries);
-                    break;
-            }
-
-            _scriptManager = new ScriptManager(_entityManager, _physicsManager);
-            _entityManager.ClearEntities();
-
-            var lightIDs = LoadLights(map.Lights);
-            var brushIDs = LoadBrushes(map.Brushes);
-            var volumeIDs = LoadVolumes(map.Volumes);
-            var actorIDs = LoadActors(map.Actors);
-
-            var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
-
-            _scriptManager.Load();
-
-            return entityMapping;
-        }
-
-        private IEnumerable<int> LoadLights(IEnumerable<Light> lights)
-        {
-            foreach (var light in lights)
-            {
-                int entityID = _entityManager.AddEntity(light);
-                yield return entityID;
-            }
-        }
-
-        private IEnumerable<int> LoadBrushes(IEnumerable<MapBrush> mapBrushes)
-        {
-            foreach (var mapBrush in mapBrushes)
-            {
-                var brush = mapBrush.ToEntity();
-                int entityID = _entityManager.AddEntity(brush);
-
-                brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(_textureManager);
-
-                var shape = mapBrush.ToShape();
-                _physicsManager.AddBrush(brush, shape, mapBrush.IsPhysical);
-
-                yield return entityID;
-            }
-        }
-
-        private IEnumerable<int> LoadVolumes(IEnumerable<MapVolume> mapVolumes)
-        {
-            foreach (var mapVolume in mapVolumes)
-            {
-                var volume = mapVolume.ToEntity();
-                int entityID = _entityManager.AddEntity(volume);
-
-                var shape = mapVolume.ToShape();
-                _physicsManager.AddVolume(volume, shape);
-
-                yield return entityID;
-            }
-        }
-
-        private IEnumerable<int> LoadActors(IList<MapActor> mapActors)
-        {
-            foreach (var mapActor in mapActors)
-            {
-                var actor = mapActor.ToEntity(/*_gameManager.TextureManager*);
-                int entityID = _entityManager.AddEntity(actor);
-
-                var meshes = mapActor.ToMeshes();
-
-                var shape = mapActor.ToShape();
-                _physicsManager.AddActor(actor, shape, mapActor.IsPhysical);
-
-                /*actor.HasCollision = mapActor.HasCollision;
-                actor.Bounds = actor.Name == "Player"
-                    ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                    : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*
-
-                var behavior = mapActor.ToBehavior();
-                _scriptManager.AddBehavior(entityID, behavior);
-
-                _scriptManager.AddProperties(entityID, mapActor.Properties);
-                _scriptManager.AddStimuli(entityID, mapActor.Stimuli);
-
-                if (actor is AnimatedActor)
-                {
-                    using (var importer = new Assimp.AssimpContext())
-                    {
-                        var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                        for (var i = 0; i < scene.Meshes.Count; i++)
-                        {
-                            var textureMapping = i < mapActor.TexturesPaths.Count
-                                ? mapActor.TexturesPaths[i].ToTextureMapping(_textureManager)
-                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(_textureManager);
-
-                            actor.AddTextureMapping(i, textureMapping);
-                        }
-                    }
-                }
-                else
-                {
-                    for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
-                    {
-                        actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(_textureManager));
-                    }
-                }
-
-                yield return entityID;
-            }
-        }*/
-
         public void SetView(Models.ViewTypes view)
         {
             switch (view)
@@ -429,53 +217,21 @@ namespace SauceEditor.Views.GamePanels
             switch (selectedItem.Content)
             {
                 case "All":
-                    ((LayoutAnchorablePaneGroup)_zView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
-                    ((LayoutAnchorablePaneGroup)_yView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
-                    ((LayoutAnchorablePaneGroup)_perspectiveView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
-                    ((LayoutAnchorablePaneGroup)_xView.Parent).DockMinHeight = MainDockingManager.ActualHeight / 2.0;
-
-                    _perspectiveView.Anchorable.Show();
-                    _xView.Anchorable.Show();
-                    _yView.Anchorable.Show();
-                    _zView.Anchorable.Show();
+                    DockHelper.ShowAllPanesInDockAsGrid(MainDockingManager);
                     break;
                 case "Perspective":
-                    Hide(_zView);
-                    Hide(_yView);
-                    Hide(_xView);
-                    Show(_perspectiveView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _perspectiveView);
                     break;
                 case "X":
-                    Hide(_zView);
-                    Hide(_yView);
-                    Hide(_perspectiveView);
-                    Show(_xView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _xView);
                     break;
                 case "Y":
-                    Hide(_zView);
-                    Hide(_xView);
-                    Hide(_perspectiveView);
-                    Show(_yView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _yView);
                     break;
                 case "Z":
-                    Hide(_yView);
-                    Hide(_xView);
-                    Hide(_perspectiveView);
-                    Show(_zView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _zView);
                     break;
             }
-        }
-
-        private void Show(GamePanelView gamePanel)
-        {
-            ((LayoutAnchorablePaneGroup)gamePanel.Parent).DockMinHeight = MainDockingManager.ActualHeight;
-            gamePanel.Anchorable.Show();
-        }
-
-        private void Hide(GamePanelView gamePanel)
-        {
-            ((LayoutAnchorablePaneGroup)gamePanel.Parent).DockMinHeight = 0;
-            gamePanel.Anchorable.Hide();
         }
     }
 }
