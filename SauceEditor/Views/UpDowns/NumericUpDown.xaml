@@ -20,7 +20,7 @@
                 <RepeatButton Name="UpButton" MinWidth="20" MinHeight="20" Background="{StaticResource UpButtonImage}" Click="UpButton_Click" PreviewMouseLeftButtonDown="UpButton_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
                 <RepeatButton Name="DownButton" MinWidth="20" MinHeight="20" Background="{StaticResource DownButtonImage}" Click="DownButton_Click" PreviewMouseLeftButtonDown="DownButton_PreviewMouseLeftButtonDown" PreviewMouseLeftButtonUp="Button_PreviewMouseLeftButtonUp"/>
             </StackPanel>
-            <TextBox Name="ValueText" FontSize="16" Text="{Binding Value, Mode=BindingMode.TwoWay, StringFormat={}{0:0.00}}"/>
+            <TextBox Name="ValueText" FontSize="16" Text="{Binding Value, Mode=TwoWay, StringFormat={}{0:0.00}}"/>
         </DockPanel>
     </StackPanel>
 </UserControl>

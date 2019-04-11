@@ -1,4 +1,5 @@
-﻿using SauceEditor.Utilities;
+﻿using SauceEditor.Models;
+using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.UpDowns;
 using SpiceEngine.Game;
@@ -16,7 +17,7 @@ namespace SauceEditor.Views.GamePanels
     /// <summary>
     /// Interaction logic for GamePanelView.xaml
     /// </summary>
-    public partial class GamePanelView : LayoutAnchorablePane
+    public partial class GamePanelView : LayoutAnchorablePane, IAnchor
     {
         public readonly static DependencyProperty WireframeThicknessProperty = DependencyProperty.Register("WireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty SelectedWireframeThicknessProperty = DependencyProperty.Register("SelectedWireframeThickness", typeof(float), typeof(NumericUpDown));
@@ -27,6 +28,8 @@ namespace SauceEditor.Views.GamePanels
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<SpiceEngine.Game.EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;
+
+        public LayoutAnchorable Anchor => Anchorable;
 
         public float WireframeThickness
         {

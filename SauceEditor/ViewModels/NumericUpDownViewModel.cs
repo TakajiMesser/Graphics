@@ -13,7 +13,7 @@ namespace SauceEditor.ViewModels
     {
         public float Value { get; set; }
 
-        private RelayCommand _litCommand;
+        /*private RelayCommand _litCommand;
 
         public RelayCommand WireframeCommand
         {
@@ -33,6 +33,6 @@ namespace SauceEditor.ViewModels
 
                 return _wireframeCommand;
             }
-        }
+        }*/
     }
 }

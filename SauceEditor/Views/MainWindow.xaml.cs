@@ -1,6 +1,7 @@
 ﻿using Microsoft.Win32;
 using OpenTK;
 using SampleGameProject.Helpers;
+using SauceEditor.Helpers;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Behaviors;
@@ -70,9 +71,9 @@ namespace SauceEditor.Views
             {
                 Name = "MyFirstProject"
             };
-            gameProject.MapPaths.Add(FilePathHelper.MAP_PATH);
-            gameProject.ModelPaths.Add(FilePathHelper.BOB_LAMP_MESH_PATH);
-            gameProject.Save(Path.GetDirectoryName(FilePathHelper.MAP_PATH) + "\\" + gameProject.Name + GameProject.FILE_EXTENSION);
+            gameProject.MapPaths.Add(SampleGameProject.Helpers.FilePathHelper.MAP_PATH);
+            gameProject.ModelPaths.Add(SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH);
+            gameProject.Save(Path.GetDirectoryName(SampleGameProject.Helpers.FilePathHelper.MAP_PATH) + "\\" + gameProject.Name + GameProject.FILE_EXTENSION);
         }
 
         private void LoadOrCreateSettings()
@@ -309,7 +310,7 @@ namespace SauceEditor.Views
             };
             _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
 
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(_filePath), () =>
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () =>
             {
                 PlayButton.Visibility = Visibility.Hidden;
                 _map = null;

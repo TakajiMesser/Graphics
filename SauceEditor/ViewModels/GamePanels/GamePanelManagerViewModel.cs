@@ -7,7 +7,9 @@ using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
+using SpiceEngine.Utilities;
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
@@ -73,7 +75,7 @@ namespace SauceEditor.ViewModels
         }
 
         public TransformModes TransformMode { get; set; }
-        public ViewModels.ViewTypes ViewType { get; set; }
+        public Models.ViewTypes ViewType { get; set; }
 
         public GamePanelViewModel PerspectiveViewModel { get; set; }
         public GamePanelViewModel XViewModel { get; set; }

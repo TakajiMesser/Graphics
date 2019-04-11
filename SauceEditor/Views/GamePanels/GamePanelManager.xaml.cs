@@ -1,4 +1,5 @@
-﻿using SauceEditor.Models;
+﻿using SauceEditor.Helpers;
+using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
 using SpiceEngine.Game;

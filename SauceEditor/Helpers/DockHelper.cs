@@ -1,5 +1,9 @@
 ﻿using SauceEditor.Models;
 using System;
+using System.Linq;
+using System.Windows.Controls;
+using Xceed.Wpf.AvalonDock;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Helpers
 {
@@ -49,7 +53,7 @@ namespace SauceEditor.Helpers
 
                 for (var j = 0; j < nPanesInRow + (i < nExtraPanes ? 1 : 0); j++)
                 {
-                    paneGroup.Add(panes[currentPaneIndex]);
+                    paneGroup.Children.Add(panes[currentPaneIndex]);
                     currentPaneIndex++;
                 }
 
@@ -61,13 +65,20 @@ namespace SauceEditor.Helpers
         {
             var rootPanel = dockingManager.Layout.RootPanel;
 
-            foreach (var childPaneGroup in rootPanel.Children)
+            foreach (var childPaneGroup in rootPanel.Children.OfType<LayoutAnchorablePaneGroup>())
             {
-                ((LayoutAnchorablePaneGroup)childPaneGroup).DockMinHeight = dockingManager.ActualHeight / rootPanel.Children.Count;
+                childPaneGroup.DockMinHeight = dockingManager.ActualHeight / rootPanel.Children.Count;
 
-                foreach (var childPane in childPaneGroup)
+                foreach (var child in childPaneGroup.Children)
                 {
-                    ((LayoutAnchorablePane)childPane).Anchorable.Show();
+                    if (child is LayoutAnchorablePane childPane)
+                    {
+                        //childPane.Children.First().Show();
+                        if (childPane is IAnchor anchor)
+                        {
+                            anchor.Anchor.Show();
+                        }
+                    }
                 }
             }
         }
@@ -76,20 +87,31 @@ namespace SauceEditor.Helpers
         {
             var rootPanel = dockingManager.Layout.RootPanel;
 
-            foreach (var childPaneGroup in rootPanel.Children)
+            foreach (var childPaneGroup in rootPanel.Children.OfType<LayoutAnchorablePaneGroup>())
             {
-                ((LayoutAnchorablePaneGroup)childPaneGroup).DockMinHeight = 0;
+                childPaneGroup.DockMinHeight = 0;
 
-                foreach (var childPane in childPaneGroup)
+                foreach (var child in childPaneGroup.Children)
                 {
-                    if (childPane == pane)
+                    if (child is LayoutAnchorablePane childPane)
                     {
-                        ((LayoutAnchorablePaneGroup)childPaneGroup).DockMinHeight = dockingManager.ActualHeight;
-                        ((LayoutAnchorablePane)childPane).Anchorable.Show();
-                    }
-                    else
-                    {
-                        ((LayoutAnchorablePane)childPane).Anchorable.Hide();
+                        if (childPane == pane)
+                        {
+                            childPaneGroup.DockMinHeight = dockingManager.ActualHeight;
+                            //childPane.Children.First().Show();
+                            if (childPane is IAnchor anchor)
+                            {
+                                anchor.Anchor.Show();
+                            }
+                        }
+                        else
+                        {
+                            //childPane.Children.First().Hide();
+                            if (childPane is IAnchor anchor)
+                            {
+                                anchor.Anchor.Hide();
+                            }
+                        }
                     }
                 }
             }
