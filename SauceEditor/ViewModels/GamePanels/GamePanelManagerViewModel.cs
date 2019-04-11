@@ -99,7 +99,47 @@ namespace SauceEditor.ViewModels
 
         public void OnViewTypeChanged()
         {
-            
+
+        }
+
+        public void RequestUpdate()
+        {
+            PerspectiveViewModel.Panel.Invalidate();
+            XViewModel.Panel.Invalidate();
+            YViewModel.Panel.Invalidate();
+            ZViewModel.Panel.Invalidate();
+        }
+
+        public void SetSelectedTool(SpiceEngine.Game.Tools tool)
+        {
+            PerspectiveViewModel.Panel.SelectedTool = tool;
+            XViewModel.Panel.SelectedTool = tool;
+            YViewModel.Panel.SelectedTool = tool;
+            ZViewModel.Panel.SelectedTool = tool;
+        }
+
+        public void UpdateEntity(EditorEntity entity)
+        {
+            PerspectiveViewModel.Panel.UpdateEntities(entity.Entity.Yield());
+            XViewModel.Panel.UpdateEntities(entity.Entity.Yield());
+            YViewModel.Panel.UpdateEntities(entity.Entity.Yield());
+            ZViewModel.Panel.UpdateEntities(entity.Entity.Yield());
+        }
+
+        public void UpdateEntities(IEnumerable<IEntity> entities)
+        {
+            PerspectiveViewModel.Panel.UpdateEntities(entities);
+            XViewModel.Panel.UpdateEntities(entities);
+            YViewModel.Panel.UpdateEntities(entities);
+            ZViewModel.Panel.UpdateEntities(entities);
+        }
+
+        public void CenterView()
+        {
+            PerspectiveViewModel?.Panel.CenterView();
+            XViewModel?.Panel.CenterView();
+            YViewModel?.Panel.CenterView();
+            ZViewModel?.Panel.CenterView();
         }
     }
 }

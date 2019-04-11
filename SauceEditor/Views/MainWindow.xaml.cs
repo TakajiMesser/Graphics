@@ -61,7 +61,7 @@ namespace SauceEditor.Views
             InitializeComponent();
 
             ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
-            ViewModel.EntityUpdated += (s, args) => _gamePanelManager.RequestUpdate();
+            ViewModel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.RequestUpdate();
         }
 
         private void CreateTestProject()
@@ -115,7 +115,7 @@ namespace SauceEditor.Views
 
         private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
         {
-            _gamePanelManager?.SetSelectedTool(e.NewTool);
+            _gamePanelManager?.ViewModel.SetSelectedTool(e.NewTool);
         }
 
         private void OnClosing(object sender, EventArgs e)
@@ -216,25 +216,13 @@ namespace SauceEditor.Views
         private void PlayButton_Click(object sender, RoutedEventArgs e)
         {
             _gamePanelManager.IsEnabled = false;
-            /*_perspectiveView.Panel.Enabled = false;
-            _xView.Panel.Enabled = false;
-            _yView.Panel.Enabled = false;
-            _zView.Panel.Enabled = false;*/
 
             _gameWindow = new GameWindow(_gamePanelManager.Map)
             {
                 VSync = VSyncMode.Adaptive
             };
-            _gameWindow.Closed += (s, args) =>
-            {
-                _gamePanelManager.IsEnabled = true;
-                /*_perspectiveView.Panel.Enabled = true;
-                _xView.Panel.Enabled = true;
-                _yView.Panel.Enabled = true;
-                _zView.Panel.Enabled = true;*/
-            };
+            _gameWindow.Closed += (s, args) => _gamePanelManager.IsEnabled = true;
             _gameWindow.Run(60.0, 0.0);
-            //_gameWindow.LoadMap(_gamePanelManager.Map);
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
@@ -329,8 +317,7 @@ namespace SauceEditor.Views
 
             _gamePanelManager.SetView(_settings.DefaultView);
 
-            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.UpdateEntity(args.Entity);
-
+            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
             _propertyPanel.ScriptOpened += (s, args) =>
             {
                 if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)

@@ -10,6 +10,7 @@ namespace SauceEditor.Views.UpDowns
     /// </summary>
     public partial class NumericUpDown : UserControl
     {
+        public readonly static DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty LabelProperty = DependencyProperty.Register("Label", typeof(string), typeof(NumericUpDown));
         public readonly static DependencyProperty DefaultValueProperty = DependencyProperty.Register("DefaultValue", typeof(float), typeof(NumericUpDown), new UIPropertyMetadata(0.00f));
         public readonly static DependencyProperty StepProperty = DependencyProperty.Register("Step", typeof(float), typeof(NumericUpDown), new UIPropertyMetadata(0.01f));
@@ -26,6 +27,12 @@ namespace SauceEditor.Views.UpDowns
         {
             InitializeComponent();
             ViewModel.Value = DefaultValue;
+        }
+
+        public float Value
+        {
+            get => (float)GetValue(ValueProperty);
+            set => SetValue(ValueProperty, value);
         }
 
         public string Label

@@ -30,6 +30,9 @@ namespace SauceEditor.Views.GamePanels
         private GamePanelView _yView;
         private GamePanelView _zView;
 
+        private object _panelLock = new object();
+        private bool _isGLContextLoaded = false;
+
         public Resolution Resolution { get; set; }
 
         public Map Map => _mapManager.Map;
@@ -48,38 +51,6 @@ namespace SauceEditor.Views.GamePanels
             ViewModel.ZViewModel = _zView.ViewModel;
         }
 
-        public void RequestUpdate()
-        {
-            _perspectiveView.Panel.Invalidate();
-            _xView.Panel.Invalidate();
-            _yView.Panel.Invalidate();
-            _zView.Panel.Invalidate();
-        }
-
-        public void SetSelectedTool(SpiceEngine.Game.Tools tool)
-        {
-            _perspectiveView.Panel.SelectedTool = tool;
-            _xView.Panel.SelectedTool = tool;
-            _yView.Panel.SelectedTool = tool;
-            _zView.Panel.SelectedTool = tool;
-        }
-
-        public void UpdateEntity(EditorEntity entity)
-        {
-            _perspectiveView.Panel.UpdateEntities(entity.Entity.Yield());
-            _xView.Panel.UpdateEntities(entity.Entity.Yield());
-            _yView.Panel.UpdateEntities(entity.Entity.Yield());
-            _zView.Panel.UpdateEntities(entity.Entity.Yield());
-        }
-
-        public void UpdateEntities(IEnumerable<IEntity> entities)
-        {
-            _perspectiveView.Panel.UpdateEntities(entities);
-            _xView.Panel.UpdateEntities(entities);
-            _yView.Panel.UpdateEntities(entities);
-            _zView.Panel.UpdateEntities(entities);
-        }
-
         private void MainDock_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             switch (e.Key)
@@ -88,18 +59,12 @@ namespace SauceEditor.Views.GamePanels
                     ViewModel.TransformMode = (TransformModes)((int)(ViewModel.TransformMode + 1) % Enum.GetValues(typeof(TransformModes)).Length);
                     break;
                 case Key.Home:
-                    _perspectiveView?.Panel.CenterView();
-                    _xView?.Panel.CenterView();
-                    _yView?.Panel.CenterView();
-                    _zView?.Panel.CenterView();
+                    ViewModel.CenterView();
                     break;
             }
 
             e.Handled = true;
         }
-
-        private object _panelLock = new object();
-        private bool _isGLContextLoaded = false;
 
         public void Open(string mapPath)
         {
@@ -161,9 +126,6 @@ namespace SauceEditor.Views.GamePanels
             _xView.Panel.Duplicate(entityID, duplicateEntityID);
             _yView.Panel.Duplicate(entityID, duplicateEntityID);
             _zView.Panel.Duplicate(entityID, duplicateEntityID);
-
-            //_physicsManager.DuplicateBody(entityID, duplicateEntityID);
-            //_scriptManager;
         }
 
         private void OnEntitySelectionChanged(ViewTypes viewType, SpiceEngine.Game.EntitiesEventArgs args)
