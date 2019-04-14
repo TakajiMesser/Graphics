@@ -266,6 +266,16 @@ namespace SpiceEngine.Game
                 Z = -(float)(Math.Sin(yAngle))
             };
 
+            int a = 3;
+            if (Camera._viewMatrix.Up.Y >= 0)
+            {
+                a = 4;
+            }
+            else
+            {
+                a = 5;
+            }
+
             //var right = Vector3.Cross(Vector3.UnitZ, Camera._viewMatrix.LookAt).Normalized();
             //Camera._viewMatrix.Up = Vector3.Cross(Camera._viewMatrix.LookAt, right);
 
