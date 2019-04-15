@@ -24,6 +24,7 @@ namespace SpiceEngine.Entities
         
         private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
         private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
+        private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
         private int _nextAvailableID = 1;
 
         public List<Actor> Actors { get; } = new List<Actor>();

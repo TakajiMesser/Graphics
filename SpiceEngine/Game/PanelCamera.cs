@@ -241,10 +241,17 @@ namespace SpiceEngine.Game
 
             var translation = new Vector3()
             {
+                X = distance * (float)(Math.Sin(_pitch) * Math.Sin(_yaw)),
+                Y = distance * (float)Math.Cos(_pitch),
+                Z = distance * (float)(Math.Sin(_pitch) * Math.Cos(_yaw))
+            };
+
+            /*var translation = new Vector3()
+            {
                 X = distance * (float)(Math.Cos(_pitch) * Math.Cos(_yaw)),
                 Y = distance * (float)(Math.Cos(_pitch) * Math.Sin(_yaw)),
                 Z = distance * (float)Math.Sin(_pitch)
-            };
+            };*/
 
             /*var translation = new Vector3()
             {
@@ -289,37 +296,7 @@ namespace SpiceEngine.Game
                 Z = (float)Math.Sin(yAngle)
             };
 
-            /*var upDirection = new Vector3()
-            {
-                X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
-                Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
-                Z = -(float)(Math.Sin(yAngle))
-            };*/
-
-            Camera._viewMatrix.Up = /*Camera.Position + */upDirection.Normalized();
-
-            //var right = Vector3.Cross(Vector3.UnitZ, Camera._viewMatrix.LookAt).Normalized();
-            //Camera._viewMatrix.Up = Vector3.Cross(Camera._viewMatrix.LookAt, right);
-
-            /*Camera._viewMatrix.Up  = new Vector3()
-            {
-                X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
-                Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
-                Z = -(float)Math.Sin(yAngle)
-            };*/
-
-            /*var distance = 1.0f;
-            var yAngle = _pitch - (float)Math.PI / 2.0f;*/
-
-            /*var horizontal = /*distance * *Math.Cos(yAngle);
-            var vertical = /*distance * *Math.Sin(yAngle);
-
-            Camera._viewMatrix.Up = new Vector3()
-            {
-                X = (float)(horizontal * Math.Sin(_yaw)),
-                Y = (float)(horizontal * Math.Cos(_yaw)),
-                Z = -(float)Math.Sin(yAngle)
-            };*/
+            Camera._viewMatrix.Up = upDirection.Normalized();
         }
 
         private void LogSomeShit()
