@@ -168,7 +168,7 @@ namespace SpiceEngine.Game
             if (_gameManager.EntityManager != null && SelectedEntities.Count > 0)
             {
                 _panelCamera.CenterView(SelectedEntities.Select(e => e.Position));
-                RenderFrame();
+                Invalidate();
             }
         }
 
@@ -276,14 +276,14 @@ namespace SpiceEngine.Game
                 SelectedEntities.Clear();
             }
 
-            RenderFrame();
+            Invalidate();
         }
 
         public void SelectEntities(IEnumerable<IEntity> entities)
         {
             SelectedEntities.Clear();
             SelectedEntities.AddRange(entities);
-            RenderFrame();
+            Invalidate();
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
@@ -401,7 +401,7 @@ namespace SpiceEngine.Game
         {
             if (_panelCamera.Zoom(wheelDelta))
             {
-                RenderFrame();
+                Invalidate();
             }
         }
 
@@ -494,7 +494,7 @@ namespace SpiceEngine.Game
                     {
                         SelectedEntities.Remove(entity);
                         EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                        RenderFrame();
+                        Invalidate();
                     }
                     else if (!SelectedEntities.Select(e => e.ID).Contains(id))
                     {
@@ -505,7 +505,7 @@ namespace SpiceEngine.Game
 
                         SelectedEntities.Add(entity);
                         EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                        RenderFrame();
+                        Invalidate();
                     }
                 }
                 else if (!isMultiSelect)
@@ -513,7 +513,7 @@ namespace SpiceEngine.Game
                     SelectedEntities.Clear();
 
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                    RenderFrame();
+                    Invalidate();
                 }
             }
         }
@@ -644,7 +644,7 @@ namespace SpiceEngine.Game
                     }
 
                     //IsCursorVisible = false;
-                    Invoke(new Action(() => RenderFrame()));
+                    Invalidate();
                     Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities))));
                 }
             }

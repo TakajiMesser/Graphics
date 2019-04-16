@@ -67,9 +67,8 @@ namespace SauceEditor.ViewModels
 
         public void OnRotationChanged()
         {
-            if (EditorEntity != null)
+            if (EditorEntity != null && EditorEntity.Entity is IRotate rotator)
             {
-                var rotator = EditorEntity.Entity as IRotate;
                 rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians());
                 EditorEntity.MapEntity.Rotation = Rotation;
             }
@@ -77,9 +76,8 @@ namespace SauceEditor.ViewModels
 
         public void OnScaleChanged()
         {
-            if (EditorEntity != null)
+            if (EditorEntity != null && EditorEntity.Entity is IScale scaler)
             {
-                var scaler = EditorEntity.Entity as IScale;
                 scaler.Scale = Scale;
                 EditorEntity.MapEntity.Scale = Scale;
             }
