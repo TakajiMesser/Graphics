@@ -292,6 +292,7 @@
     <Compile Include="Rendering\Processing\DeferredRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Textures\IMapTextures.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
     <Compile Include="Rendering\Textures\TexturePaths.cs" />
     <Compile Include="Rendering\Textures\TextureMapping.cs" />

@@ -126,7 +126,7 @@ namespace SpiceEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.RenderFullFrame(_gameManager.EntityManager, _gameManager.Camera, _gameManager.TextureManager);
+            _renderManager.RenderFullFrame(_gameManager.EntityManager, _gameManager.Camera);
 
             GL.UseProgram(0);
             SwapBuffers();

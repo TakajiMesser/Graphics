@@ -1,4 +1,6 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
@@ -40,11 +42,13 @@ namespace SpiceEngine.Rendering.Batches
             {
                 case EntityTypes.Actor:
                     var actorBatch = (ModelBatch)batch;
-                    AddActor(newID, actorBatch.Meshes.Select(m => m.Duplicate()));
+                    var actor = _entityProvider.GetEntity(entityID) as Actor;
+                    AddActor(newID, actorBatch.Meshes.Select(m => m.Duplicate()), actor.TextureMappings);
                     break;
                 case EntityTypes.Brush:
                     var brushBatch = (MeshBatch)batch;
-                    AddBrush(newID, brushBatch.Mesh.Duplicate());
+                    var brush = _entityProvider.GetEntity(entityID) as Brush;
+                    AddBrush(newID, brushBatch.Mesh.Duplicate(), brush.TextureMapping);
                     break;
                 case EntityTypes.Volume:
                     var volumeBatch = (MeshBatch)batch;
@@ -52,7 +56,8 @@ namespace SpiceEngine.Rendering.Batches
                     break;
                 case EntityTypes.Joint:
                     var jointBatch = (ModelBatch)batch;
-                    AddJoint(newID, jointBatch.Meshes.Select(m => m.Duplicate()));
+                    var jointActor = _entityProvider.GetEntity(entityID) as Actor;
+                    AddJoint(newID, jointBatch.Meshes.Select(m => m.Duplicate()), jointActor.TextureMappings);
                     break;
             }
         }
@@ -95,9 +100,12 @@ namespace SpiceEngine.Rendering.Batches
             _batchesByEntityID.Remove(entityID);
         }
 
-        public void AddBrush(int entityID, IMesh3D mesh)
+        public void AddBrush(int entityID, IMesh3D mesh, TextureMapping? textureMapping)
         {
             var batch = new MeshBatch(entityID, mesh);
+
+            var brush = _entityProvider.GetEntity(entityID) as Brush;
+            brush.TextureMapping = textureMapping;
 
             mesh.AlphaChanged += (s, args) =>
             {
@@ -155,9 +163,12 @@ namespace SpiceEngine.Rendering.Batches
             AddBatch(entityID, batch);
         }
 
-        public void AddActor(int entityID, IEnumerable<IMesh3D> meshes)
+        public void AddActor(int entityID, IEnumerable<IMesh3D> meshes, IEnumerable<TextureMapping?> textureMappings)
         {
             var batch = new ModelBatch(entityID, meshes);
+
+            var actor = _entityProvider.GetEntity(entityID) as Actor;
+            actor.TextureMappings.AddRange(textureMappings);
 
             foreach (var mesh in meshes)
             {
@@ -188,9 +199,12 @@ namespace SpiceEngine.Rendering.Batches
             AddBatch(entityID, batch);
         }
 
-        public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes)
+        public void AddJoint(int entityID, IEnumerable<IMesh3D> meshes, IEnumerable<TextureMapping?> textureMappings)
         {
             var batch = new ModelBatch(entityID, meshes);
+
+            var actor = _entityProvider.GetEntity(entityID) as Actor;
+            actor.TextureMappings.AddRange(textureMappings);
 
             foreach (var mesh in meshes)
             {

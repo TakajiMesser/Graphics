@@ -9,6 +9,8 @@ namespace SpiceEngine.Entities.Actors
 {
     public class Actor : IEntity, IRotate, IScale
     {
+        private ModelMatrix _modelMatrix = new ModelMatrix();
+
         public int ID { get; set; }
         public string Name { get; private set; }
 
@@ -40,10 +42,8 @@ namespace SpiceEngine.Entities.Actors
 
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
 
-        private ModelMatrix _modelMatrix = new ModelMatrix();
-
-        private Dictionary<int, Material> _materialByMeshIndex = new Dictionary<int, Material>();
-        private Dictionary<int, TextureMapping> _textureMappingByMeshIndex = new Dictionary<int, TextureMapping>();
+        public List<Material> Materials { get; set; } = new List<Material>();
+        public List<TextureMapping?> TextureMappings { get; set; } = new List<TextureMapping?>();
 
         public Actor(string name)
         {
@@ -64,28 +64,9 @@ namespace SpiceEngine.Entities.Actors
             Rotation = actor.Rotation;
             Scale = actor.Scale;
 
-            foreach (var kvp in actor._materialByMeshIndex)
-            {
-                _materialByMeshIndex.Add(kvp.Key, kvp.Value);
-            }
-
-            foreach (var kvp in actor._textureMappingByMeshIndex)
-            {
-                var textureMapping = new TextureMapping()
-                {
-                    DiffuseMapID = kvp.Value.DiffuseMapID,
-                    NormalMapID = kvp.Value.NormalMapID,
-                    ParallaxMapID = kvp.Value.ParallaxMapID,
-                    SpecularMapID = kvp.Value.SpecularMapID
-                };
-
-                _textureMappingByMeshIndex.Add(kvp.Key, textureMapping);
-            }
+            Materials.AddRange(actor.Materials);
+            TextureMappings.AddRange(actor.TextureMappings);
         }
-
-        public void AddMaterial(int meshIndex, Material material) => _materialByMeshIndex.Add(meshIndex, material);
-
-        public void AddTextureMapping(int meshIndex, TextureMapping textureMapping) => _textureMappingByMeshIndex.Add(meshIndex, textureMapping);
 
         public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager)
         {
@@ -94,10 +75,10 @@ namespace SpiceEngine.Entities.Actors
 
         public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
         {
-            _materialByMeshIndex[meshIndex].SetUniforms(program);
-            if (textureManager != null && _textureMappingByMeshIndex.ContainsKey(meshIndex))
+            Materials[meshIndex].SetUniforms(program);
+            if (textureManager != null && TextureMappings[meshIndex].HasValue)
             {
-                program.BindTextures(textureManager, _textureMappingByMeshIndex[meshIndex]);
+                program.BindTextures(textureManager, TextureMappings[meshIndex].Value);
             }
             else
             {

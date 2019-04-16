@@ -9,8 +9,8 @@ namespace SpiceEngine.Rendering.Textures
         private Dictionary<string, int> _pathsByID = new Dictionary<string, int>(); 
         private List<Texture> _textures = new List<Texture>();
 
-        public bool EnableMipMapping { get; set; }
-        public bool EnableAnisotropy { get; set; }
+        public bool EnableMipMapping { get; set; } = true;
+        public bool EnableAnisotropy { get; set; } = true;
 
         public TextureManager() { }
 

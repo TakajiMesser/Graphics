@@ -364,15 +364,15 @@ namespace SpiceEngine.Game
                     _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
+                    _renderManager.RenderDiffuseFrame(_gameManager.EntityManager, _panelCamera.Camera);
                     _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Lit:
-                    _renderManager.RenderLitFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
+                    _renderManager.RenderLitFrame(_gameManager.EntityManager, _panelCamera.Camera);
                     _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
                 case RenderModes.Full:
-                    _renderManager.RenderFullFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
+                    _renderManager.RenderFullFrame(_gameManager.EntityManager, _panelCamera.Camera);
                     break;
             }
 

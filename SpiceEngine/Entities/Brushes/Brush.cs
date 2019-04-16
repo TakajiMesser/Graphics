@@ -36,7 +36,7 @@ namespace SpiceEngine.Entities.Brushes
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
 
         public Material Material { get; set; }
-        public TextureMapping TextureMapping { get; set; }
+        public TextureMapping? TextureMapping { get; set; }
 
         private ModelMatrix _modelMatrix = new ModelMatrix();
 
@@ -52,15 +52,14 @@ namespace SpiceEngine.Entities.Brushes
             {
                 Position = Position,
                 Rotation = Rotation,
-                Scale = Scale,
-                TextureMapping = new TextureMapping()
-                {
-                    DiffuseMapID = TextureMapping.DiffuseMapID,
-                    NormalMapID = TextureMapping.NormalMapID,
-                    ParallaxMapID = TextureMapping.ParallaxMapID,
-                    SpecularMapID = TextureMapping.SpecularMapID
-                }
+                Scale = Scale
             };
+
+            if (TextureMapping.HasValue)
+            {
+                var textureMapping = TextureMapping.Value;
+                brush.TextureMapping = new TextureMapping(textureMapping.DiffuseMapID, textureMapping.NormalMapID, textureMapping.ParallaxMapID, textureMapping.SpecularMapID);
+            }
 
             return brush;
         }
@@ -70,9 +69,9 @@ namespace SpiceEngine.Entities.Brushes
             _modelMatrix.Set(program);
             Material.SetUniforms(program);
 
-            if (textureManager != null && TextureMapping != null)
+            if (textureManager != null && TextureMapping.HasValue)
             {
-                program.BindTextures(textureManager, TextureMapping);
+                program.BindTextures(textureManager, TextureMapping.Value);
             }
             else
             {

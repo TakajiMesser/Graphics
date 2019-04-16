@@ -1,15 +1,11 @@
 ﻿using SauceEditor.Helpers;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
-using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
@@ -74,8 +70,8 @@ namespace SauceEditor.Views.GamePanels
             _mapManager = new MapManager(mapPath);
             _gameManager = new GameManager(Resolution);
 
-            //_entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
-            //_mapManager.SetEntityMapping(_entityMapping);
+            _entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
+            _mapManager.SetEntityMapping(_entityMapping);
 
             CreateAndShowPanels();
         }
@@ -110,9 +106,6 @@ namespace SauceEditor.Views.GamePanels
                 // Lock and check to ensure that this only happens once
                 if (!_isGLContextLoaded)
                 {
-                    _entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
-                    _mapManager.SetEntityMapping(_entityMapping);
-
                     // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
                     _perspectiveView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
                     _xView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);

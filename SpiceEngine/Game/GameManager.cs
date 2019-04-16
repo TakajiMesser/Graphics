@@ -25,7 +25,6 @@ namespace SpiceEngine.Game
         public Camera Camera { get; set; }
 
         public EntityManager EntityManager { get; } = new EntityManager();
-        public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; private set; }
         public BehaviorManager BehaviorManager { get; private set; }
@@ -41,9 +40,6 @@ namespace SpiceEngine.Game
             _resolution = resolution;
 
             InputManager = new InputManager();
-
-            TextureManager.EnableMipMapping = true;
-            TextureManager.EnableAnisotropy = true;
         }
 
         public GameManager(Resolution resolution, IMouseDelta mouseDelta)
@@ -51,9 +47,6 @@ namespace SpiceEngine.Game
             _resolution = resolution;
 
             InputManager = new InputManager(mouseDelta);
-
-            TextureManager.EnableMipMapping = true;
-            TextureManager.EnableAnisotropy = true;
         }
 
         public EntityMapping LoadFromMap(Map map)
@@ -104,8 +97,6 @@ namespace SpiceEngine.Game
         public int AddBrush(MapBrush mapBrush)
         {
             var brush = mapBrush.ToEntity();
-            brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-
             int entityID = EntityManager.AddEntity(brush);
 
             if (mapBrush.IsPhysical)
@@ -140,30 +131,6 @@ namespace SpiceEngine.Game
 
             BehaviorManager.AddProperties(entityID, mapActor.Properties);
             BehaviorManager.AddStimuli(entityID, mapActor.Stimuli);
-
-            if (actor is AnimatedActor)
-            {
-                using (var importer = new Assimp.AssimpContext())
-                {
-                    var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                    for (var i = 0; i < scene.Meshes.Count; i++)
-                    {
-                        var textureMapping = i < mapActor.TexturesPaths.Count
-                            ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                            : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-
-                        actor.AddTextureMapping(i, textureMapping);
-                    }
-                }
-            }
-            else
-            {
-                for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
-                {
-                    actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(TextureManager));
-                }
-            }
 
             return entityID;
         }
