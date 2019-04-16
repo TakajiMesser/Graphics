@@ -7,13 +7,13 @@ namespace SpiceEngine.Utilities
     {
         public static float AngleBetween(this Quaternion quaternionA, Quaternion quaternionB)
         {
-            var angle = Math.Acos((quaternionA * quaternionB.Inverted()).W);
-            if (angle > Math.PI)
+            var angle = (float)Math.Acos((quaternionA * quaternionB.Inverted()).W);
+            if (angle > MathExtensions.PI)
             {
-                angle = 2.0 * Math.PI - angle;
+                angle = 2.0f * MathExtensions.PI - angle;
             }
 
-            return (float)angle;
+            return angle;
         }
 
         public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
@@ -39,14 +39,14 @@ namespace SpiceEngine.Utilities
             {
                 // Singularity at north pole
                 yaw = 2.0f * (float)Math.Atan2(quaternion.X, quaternion.W);
-                pitch = 0.5f * (float)Math.PI;
+                pitch = 0.5f * MathExtensions.PI;
                 roll = 0.0f;
             }
             else if (testValue < -0.499f * correctionFactor)
             {
                 // Singularity at south pole
                 yaw = -2.0f * (float)Math.Atan2(quaternion.X, quaternion.W);
-                pitch = -0.5f * (float)Math.PI;
+                pitch = -0.5f * MathExtensions.PI;
                 roll = 0.0f;
             }
             else

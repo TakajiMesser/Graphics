@@ -1,8 +1,13 @@
-﻿namespace SpiceEngine.Utilities
+﻿using System;
+
+namespace SpiceEngine.Utilities
 {
     public static class MathExtensions
     {
         public const float EPSILON = 1E-5f;
+        public const float PI = (float)Math.PI;
+        public const float HALF_PI = (float)Math.PI / 2.0f;
+        public const float TWO_PI = 2.0f * (float)Math.PI;
 
         public static bool IsSignificant(this int value) => value >= EPSILON || value <= -EPSILON;
         public static bool IsSignificant(this float value) => value >= EPSILON || value <= -EPSILON;

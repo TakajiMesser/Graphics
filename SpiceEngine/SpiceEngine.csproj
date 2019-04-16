@@ -111,8 +111,8 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\Actors\ActorArchetype.cs" />
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
+    <Compile Include="Entities\Archetype.cs" />
     <Compile Include="Entities\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
@@ -175,6 +175,7 @@
     <Compile Include="Maps\IMapEntity3D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />
+    <Compile Include="Maps\MapArchetype.cs" />
     <Compile Include="Maps\MapNode.cs" />
     <Compile Include="Maps\MapBehavior.cs" />
     <Compile Include="Maps\MapEntity2D.cs" />

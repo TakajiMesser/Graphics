@@ -1,15 +1,9 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Helpers;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Maps
 {
