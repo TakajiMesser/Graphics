@@ -1,41 +1,61 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Scripting.Meters
 {
     public class Meter
     {
+        private List<Trigger> _triggers = new List<Trigger>();
+
         public int Value { get; private set; }
-        public int TriggerValue { get; set; }
-        public bool ResetOnTrigger { get; set; }
-        public bool IsTriggered => Value >= TriggerValue;
+        public int MinimumTriggerValue => _triggers.Min(t => t.Value);
 
-        public event EventHandler<MeterTriggeredEventArgs> Triggered;
+        public event EventHandler<TriggeredEventArgs> Triggered;
 
-        public Meter() { }
-        public Meter(int triggerValue) => TriggerValue = triggerValue;
+        public void AddTrigger(Trigger trigger) => _triggers.Add(trigger);
 
-        public void Increment(int amount = 1)
+        public void ClearTriggers() => _triggers.Clear();
+
+        public bool Increment(int amount = 1)
         {
             Value += amount;
 
-            if (IsTriggered)
+            bool isTriggered = false;
+            bool shouldReset = false;
+
+            foreach (var trigger in _triggers)
             {
-                Trigger();
+                if (trigger.Check(Value))
+                {
+                    if (trigger.ResetOnTrigger)
+                    {
+                        shouldReset = true;
+                    }
+
+                    isTriggered = true;
+                    Triggered?.Invoke(this, new TriggeredEventArgs(trigger));
+                }
             }
-        }
 
-        public void Decrement(int amount = 1) => Value -= amount;
-
-        public void Trigger()
-        {
-            if (ResetOnTrigger)
+            if (shouldReset)
             {
                 Reset();
             }
 
-            Triggered?.Invoke(this, new MeterTriggeredEventArgs());
+            return isTriggered;
         }
 
-        public void Reset() => Value = 0;
+        public void Decrement(int amount = 1) => Value -= amount;
+
+        public void Reset()
+        {
+            Value = 0;
+
+            foreach (var trigger in _triggers)
+            {
+                trigger.Reset();
+            }
+        }
     }
 }

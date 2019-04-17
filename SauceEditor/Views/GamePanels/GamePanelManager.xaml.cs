@@ -29,6 +29,7 @@ namespace SauceEditor.Views.GamePanels
 
         private object _panelLock = new object();
         private bool _isGLContextLoaded = false;
+        private bool _isMapLoadedInPanels = false;
 
         public Resolution Resolution { get; set; }
 
@@ -37,10 +38,12 @@ namespace SauceEditor.Views.GamePanels
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;
 
-        public GamePanelManager(string mapPath)
+        public GamePanelManager()
         {
             InitializeComponent();
-            Open(mapPath);
+            Resolution = new Resolution((int)Width, (int)Height);
+
+            CreateAndShowPanels();
 
             ViewModel.PerspectiveViewModel = _perspectiveView.ViewModel;
             ViewModel.XViewModel = _xView.ViewModel;
@@ -63,17 +66,27 @@ namespace SauceEditor.Views.GamePanels
             e.Handled = true;
         }
 
-        public void Open(string mapPath)
+        public void Open(Map map)
         {
-            Resolution = new Resolution((int)Width, (int)Height);
-
-            _mapManager = new MapManager(mapPath);
+            _mapManager = new MapManager(map);
             _gameManager = new GameManager(Resolution);
 
             _entityMapping = _gameManager.LoadFromMap(_mapManager.Map);
             _mapManager.SetEntityMapping(_entityMapping);
 
-            CreateAndShowPanels();
+            lock (_panelLock)
+            {
+                // Lock and check to ensure that this only happens once
+                if (_isGLContextLoaded && !_isMapLoadedInPanels)
+                {
+                    _perspectiveView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                    _xView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                    _yView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                    _zView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+
+                    _isMapLoadedInPanels = true;
+                }
+            }
         }
 
         private void CreateAndShowPanels()
@@ -101,20 +114,26 @@ namespace SauceEditor.Views.GamePanels
         private void LoadPanels()
         {
             // Wait for at least one panel to finish loading so that we can be sure the GLContext is properly loaded
-            lock (_panelLock)
+            if (!_isGLContextLoaded)
             {
-                // Lock and check to ensure that this only happens once
-                if (!_isGLContextLoaded)
+                lock (_panelLock)
                 {
-                    // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                    _perspectiveView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
-                    _xView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
-                    _yView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
-                    _zView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
-                }
+                    // Lock and check to ensure that this only happens once
+                    _isGLContextLoaded = true;
 
-                _isGLContextLoaded = true;
+                    if (!_isMapLoadedInPanels && _mapManager != null)
+                    {
+                        // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
+                        _perspectiveView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                        _xView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                        _yView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+                        _zView.Panel.LoadGameManager(_gameManager, _mapManager.Map, _entityMapping);
+
+                        _isMapLoadedInPanels = true;
+                    }
+                }
             }
+            
         }
 
         private void DuplicateEntity(int entityID, int duplicateEntityID)

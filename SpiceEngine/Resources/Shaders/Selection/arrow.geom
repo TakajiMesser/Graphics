@@ -1,6 +1,7 @@
 ﻿#version 400
 
 const float LINE_WIDTH = 0.1;
+const float MIN_LINE_SCREEN_WIDTH = 0.1;
 const float BETWEEN_WIDTH = 0.05;
 
 layout(points) in;
@@ -15,13 +16,30 @@ out vec4 fColor;
 void drawArrow(mat4 viewProjectionMatrix, vec3 position, vec4 color, vec3 direction, vec3 perpendicular)
 {
     fColor = color;
+	//vec4 screenPosition;
+
+	//vec4 initialScreenPosition = viewMatrix * vec4(position, 1.0);
 
     position -= perpendicular * (LINE_WIDTH / 2.0);
-    gl_Position = viewProjectionMatrix * vec4(position, 1.0);
+	/*screenPosition = viewMatrix * vec4(position, 1.0);
+
+    vec4 outputPosition = viewProjectionMatrix * vec4(position, 1.0);
+
+	vec2 diff = screenPosition.xy - initialScreenPosition.xy;
+	float diffLength = length(diff);
+
+	if (diffLength < MIN_LINE_SCREEN_WIDTH)
+	{
+		outputPosition.x = 5.0;
+		outputPosition.y = 5.0;
+	}*/
+
+	gl_Position = viewProjectionMatrix * vec4(position, 1.0);
     EmitVertex();
 
     position += direction;
-    gl_Position = viewProjectionMatrix * vec4(position, 1.0);
+    //screenPosition = viewProjectionMatrix * vec4(position, 1.0);
+	gl_Position = viewProjectionMatrix * vec4(position, 1.0);
     EmitVertex();
     
     position -= direction;

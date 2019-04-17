@@ -130,6 +130,7 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\ITick.cs" />
     <Compile Include="Game\UpdateManager.cs" />
     <Compile Include="Game\DuplicatedEntityEventArgs.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
@@ -315,7 +316,9 @@
     <Compile Include="Scripting\BehaviorContext.cs" />
     <Compile Include="Scripting\BehaviorInterruptedEventArgs.cs" />
     <Compile Include="Scripting\BehaviorManager.cs" />
-    <Compile Include="Scripting\Meters\MeterTriggeredEventArgs.cs" />
+    <Compile Include="Scripting\Meters\Interpolator.cs" />
+    <Compile Include="Scripting\Meters\Trigger.cs" />
+    <Compile Include="Scripting\Meters\TriggeredEventArgs.cs" />
     <Compile Include="Scripting\Meters\Meter.cs" />
     <Compile Include="Scripting\Nodes\Composites\CompositeNode.cs" />
     <Compile Include="Scripting\Nodes\Composites\ParallelNode.cs" />

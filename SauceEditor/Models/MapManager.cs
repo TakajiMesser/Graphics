@@ -36,9 +36,9 @@ namespace SauceEditor.Models
 
         public Map Map { get; }
 
-        public MapManager(string mapPath)
+        public MapManager(Map map)
         {
-            Map = Map.Load(mapPath);
+            Map = map;
         }
 
         public void SetEntityMapping(EntityMapping entityMapping)

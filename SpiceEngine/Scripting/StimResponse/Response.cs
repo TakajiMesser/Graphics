@@ -39,11 +39,11 @@ namespace SpiceEngine.Scripting.StimResponse
         /// <summary>
         /// How often to check for a received stimulus (in ticks)
         /// </summary>
-        public int CheckFrequency
+        /*public int CheckFrequency
         {
-            get => _tickMeter.TriggerValue;
-            set => _tickMeter.TriggerValue = value;
-        }
+            get => _tickMeter.MinimumTriggerValue;
+            set => _tickMeter.MinimumTriggerValue = value;
+        }*/
 
         //[IgnoreDataMember]
         public event EventHandler<StimulusTriggeredEventArgs> Triggered;
@@ -54,18 +54,20 @@ namespace SpiceEngine.Scripting.StimResponse
         public Response(Stimulus stimulus)
         {
             Stimulus = stimulus;
-            CheckFrequency = 1;
+
+            _tickMeter.AddTrigger(new Trigger("Response", 1)
+            {
+                ResetOnTrigger = true
+            });
+
+            //CheckFrequency = 1;
             //_tickMeter.ResetOnTrigger = true;
         }
 
         public virtual void Tick(BehaviorContext context)
         {
-            _tickMeter.Increment();
-
-            if (_tickMeter.IsTriggered)
+            if (_tickMeter.Increment())
             {
-                _tickMeter.Reset();
-
                 // Filter colliders by those that are stimuli, and those that aren't
                 var stimuliColliders = context.GetBodies().Where(b => context.HasStimuli(b.EntityID, Stimulus));
 

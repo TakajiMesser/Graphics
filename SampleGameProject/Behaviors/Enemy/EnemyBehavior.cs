@@ -13,11 +13,14 @@ namespace SampleGameProject.Behaviors.Enemy
         public const float VIEW_DISTANCE = 5.0f;
         public const int FULL_ALERT_TICKS = 120;
         
-        private Meter _alertMeter = new Meter(120);
+        private Meter _alertMeter = new Meter();
 
         public EnemyBehavior() : base()
         {
-            _alertMeter.ResetOnTrigger = false;
+            _alertMeter.AddTrigger(new Trigger("Alert", 120)
+            {
+                ResetOnTrigger = false
+            });
             _alertMeter.Triggered += AlertMeter_Triggered;
         }
 
@@ -60,14 +63,14 @@ namespace SampleGameProject.Behaviors.Enemy
             Responses.Add(playerResponse);
         }*/
 
-        private void AlertMeter_Triggered(object sender, MeterTriggeredEventArgs e)
+        private void AlertMeter_Triggered(object sender, TriggeredEventArgs e)
         {
             //RootStack.Push(new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player"));
         }
 
         private void PlayerResponse_Triggered(object sender, StimulusTriggeredEventArgs e)
         {
-            if (_alertMeter.Value < _alertMeter.TriggerValue)
+            if (_alertMeter.Value < 120)
             {
                 _alertMeter.Increment();
             }

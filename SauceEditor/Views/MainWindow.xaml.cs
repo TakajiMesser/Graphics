@@ -2,6 +2,7 @@
 using OpenTK;
 using SampleGameProject.Helpers;
 using SauceEditor.Helpers;
+using SauceEditor.Helpers.Builders;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Behaviors;
@@ -53,7 +54,7 @@ namespace SauceEditor.Views
 
         public MainWindow()
         {
-            CreateTestProject();
+            MapBuilder.CreateTestProject();
             LoadOrCreateSettings();
 
             PresentationTraceSources.DataBindingSource.Listeners.Add(new ConsoleTraceListener());
@@ -63,17 +64,6 @@ namespace SauceEditor.Views
 
             ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
             ViewModel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.RequestUpdate();
-        }
-
-        private void CreateTestProject()
-        {
-            var gameProject = new GameProject()
-            {
-                Name = "MyFirstProject"
-            };
-            gameProject.MapPaths.Add(SampleGameProject.Helpers.FilePathHelper.MAP_PATH);
-            gameProject.ModelPaths.Add(SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH);
-            gameProject.Save(Path.GetDirectoryName(SampleGameProject.Helpers.FilePathHelper.MAP_PATH) + "\\" + gameProject.Name + GameProject.FILE_EXTENSION);
         }
 
         private void LoadOrCreateSettings()
@@ -246,7 +236,7 @@ namespace SauceEditor.Views
             _projectTree.OpenProject(e.FileName);
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;
-            Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
+            Title = Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
         }
 
         private void Menu_ModelOpened(object sender, FileEventArgs e)
@@ -293,13 +283,13 @@ namespace SauceEditor.Views
 
         private void OpenMap(string filePath)
         {
-            Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
+            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
 
             _map = Map.Load(filePath);
             _mapPath = filePath;
 
             PlayButton.Visibility = Visibility.Visible;
-            _gamePanelManager = new GamePanelManager(_mapPath);
+            _gamePanelManager = new GamePanelManager();
             _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 // For now, just go with the last entity that was selected
@@ -309,6 +299,7 @@ namespace SauceEditor.Views
                 //SideDockManager.ActiveContent = _propertyPanel;
             };
             _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
+            _gamePanelManager.Open(_map);
 
             DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () =>
             {
@@ -340,19 +331,48 @@ namespace SauceEditor.Views
 
         private void OpenModel(string filePath)
         {
-            PlayButton.Visibility = Visibility.Visible;
+            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
 
-            /*var modelView = new DockableGamePanel(MainDockManager);
-            modelView.Panel.LoadFromModel(filePath);
-            modelView.EntitySelectionChanged += (s, args) =>
+            var map = MapBuilder.GenerateModelMap(filePath);
+
+            //_map = Map.Load(filePath);
+            //_mapPath = filePath;
+
+            //PlayButton.Visibility = Visibility.Visible;
+            _gamePanelManager = new GamePanelManager();
+            _gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
-                _propertyPanel.Entity = args.Entity;
-                SideDockManager.ActiveContent = _propertyPanel;
+                // For now, just go with the last entity that was selected
+                //_propertyPanel.Entity = args.Entities.LastOrDefault();
+                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
+                _propertyPanel.IsActive = true;
+                //SideDockManager.ActiveContent = _propertyPanel;
             };
-            modelView.Closed += (s, args) => PlayButton.Visibility = Visibility.Hidden;
-            modelView.ShowAsDocument();*/
+            _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
+            _gamePanelManager.Open(map);
 
-            //_propertyPanel.TransformChanged += (s, args) => modelView.Panel.Invalidate();
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () => _map = null);
+
+            _gamePanelManager.SetView(ViewTypes.Perspective);
+
+            /*_propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
+            _propertyPanel.ScriptOpened += (s, args) =>
+            {
+                if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)
+                {
+                    /*_scriptView = new ScriptView(filePath, actor, mapActor);
+                    _scriptView.Saved += (sender, e) =>
+                    {
+                        //mapActor.Behavior.e.Script;
+                    };*
+
+                    OpenBehavior(args.FileName);
+                }
+                else
+                {
+                    // TODO - Throw some error to the user here?
+                }
+            };*/
         }
 
         private void OpenBehavior(string filePath)

@@ -178,7 +178,7 @@ namespace SauceEditor.Views.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = Panel.FindResource("ModelMenu") as ContextMenu;
+                    item.ContextMenu = Tree.FindResource("ModelMenu") as ContextMenu;
                 };
                 models.Items.Add(model);
             }
@@ -212,7 +212,7 @@ namespace SauceEditor.Views.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = Panel.FindResource("BehaviorMenu") as ContextMenu;
+                    item.ContextMenu = Tree.FindResource("BehaviorMenu") as ContextMenu;
                 };
                 behaviors.Items.Add(behavior);
             }
@@ -246,7 +246,7 @@ namespace SauceEditor.Views.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = Panel.FindResource("TextureMenu") as ContextMenu;
+                    item.ContextMenu = Tree.FindResource("TextureMenu") as ContextMenu;
                 };
                 textures.Items.Add(texture);
             }
@@ -280,7 +280,7 @@ namespace SauceEditor.Views.ProjectTree
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
-                    item.ContextMenu = Panel.FindResource("AudioMenu") as ContextMenu;
+                    item.ContextMenu = Tree.FindResource("AudioMenu") as ContextMenu;
                 };
                 audios.Items.Add(audio);
             }

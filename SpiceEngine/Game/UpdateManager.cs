@@ -1,6 +1,6 @@
 ﻿namespace SpiceEngine.Game
 {
-    public abstract class UpdateManager
+    public abstract class UpdateManager : ITick
     {
         private int _currentTick = 0;
 

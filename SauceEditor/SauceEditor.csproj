@@ -199,6 +199,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Helpers\Builders\MapBuilder.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\Script.cs" />

@@ -85,6 +85,9 @@ namespace SauceEditor.Views.GamePanels
         {
             InitializeComponent();
 
+            SettingsExpander.Expanded += (s, args) => SettingsPopup.IsOpen = true;
+            SettingsExpander.Collapsed += (s, args) => SettingsPopup.IsOpen = false;
+
             DockPanel.Focusable = true;
             ViewModel.Panel = Panel;
 
