@@ -9,7 +9,7 @@
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:controls="clr-namespace:SauceEditor.Views" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
-        Title="Sauce Editor" Height="600" Width="600" WindowState="Maximized">
+        Title="{Binding Title}" Height="600" Width="600" WindowState="Maximized">
     <!--<Window.Resources>
         <RoutedUICommand x:Key="NewProjectCommand" Text="New Project"/>
         <RoutedUICommand x:Key="NewMapCommand" Text="New Map"/>
@@ -59,9 +59,9 @@
             RedoCalled="Menu_RedoCalled"/>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
-                <Button Name="UndoButton" Command="Undo" Content="Undo" Click="UndoButton_Click"/>
-                <Button Name="RedoButton" Command="Redo" Content="Redo" Click="RedoButton_Click"/>
-                <Button Name="PlayButton" Content="Play" Click="PlayButton_Click" Visibility="Hidden"/>
+                <Button Name="UndoButton" Command="{Binding UndoCommand}" Content="Undo"/>
+                <Button Name="RedoButton" Command="{Binding RedoCommand}" Content="Redo"/>
+                <Button Name="PlayButton" Command="Play" Content="Play" Enabled="{Binding IsPlayable}" Visibility="{Binding PlayVisibility}"/>
             </ToolBar>
         </ToolBarTray>
         <Grid>

@@ -30,10 +30,8 @@ namespace SauceEditor.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : Window, IWindowFactory, IMainViewFactory
     {
-        public CommandStack CommandStack { get; private set; } = new CommandStack();
-
         private Map _map;
         private string _mapPath;
         
@@ -95,6 +93,10 @@ namespace SauceEditor.Views
             _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
 
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
+
+            ViewModels.SideDockViewModels.Add(_projectTree.ViewModel);
+            ViewModels.SideDockViewModels.Add(_toolPanel.ViewModel);
+            ViewModels.SideDockViewModels.Add(_propertyPanel.ViewModel);
 
             DockHelper.AddToDockAsDocument(SideDockingManager, _projectTree);
             DockHelper.AddToDockAsDocument(SideDockingManager, _toolPanel);
@@ -204,16 +206,60 @@ namespace SauceEditor.Views
             _projectTree?.SaveProject();
         }
 
-        private void PlayButton_Click(object sender, RoutedEventArgs e)
+        public void CreateGameWindow(Map map)
         {
-            _gamePanelManager.IsEnabled = false;
+            //_gamePanelManager.IsEnabled = false;
 
-            _gameWindow = new GameWindow(_gamePanelManager.Map)
+            var gameWindow = new GameWindow(map)
             {
                 VSync = VSyncMode.Adaptive
             };
-            _gameWindow.Closed += (s, args) => _gamePanelManager.IsEnabled = true;
-            _gameWindow.Run(60.0, 0.0);
+            //_gameWindow.Closed += (s, args) => _gamePanelManager.IsEnabled = true;
+            gameWindow.Run(60.0, 0.0);
+        }
+
+        public ViewModel CreateGamePanelView(Map map)
+        {
+            var gamePanelManager = new GamePanelManager();
+            gamePanelManager.EntitySelectionChanged += (s, args) =>
+            {
+                // For now, just go with the last entity that was selected
+                //_propertyPanel.Entity = args.Entities.LastOrDefault();
+                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
+                _propertyPanel.IsActive = true;
+                //SideDockManager.ActiveContent = _propertyPanel;
+            };
+            gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
+            gamePanelManager.Open(map);
+
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () =>
+            {
+                ViewModels.PlayVisibility = Visibility.Hidden;
+            });
+
+            gamePanelManager.SetView(ViewModel.Settings.DefaultView);
+        }
+
+        private void OpenMap(string filePath)
+        {
+            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
+            _propertyPanel.ScriptOpened += (s, args) =>
+            {
+                if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)
+                {
+                    /*_scriptView = new ScriptView(filePath, actor, mapActor);
+                    _scriptView.Saved += (sender, e) =>
+                    {
+                        //mapActor.Behavior.e.Script;
+                    };*/
+
+                    OpenBehavior(args.FileName);
+                }
+                else
+                {
+                    // TODO - Throw some error to the user here?
+                }
+            };
         }
 
         private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
@@ -253,81 +299,7 @@ namespace SauceEditor.Views
 
         private void Menu_RedoCalled(object sender, EventArgs e) => CommandStack.Redo();
 
-        private void UndoButton_Click(object sender, RoutedEventArgs e) => CommandStack.Undo();
-
-        private void RedoButton_Click(object sender, RoutedEventArgs e) => CommandStack.Redo();
-
-        private void CommandExecuted(ICommand command)
-        {
-            CommandStack.Push(command);
-
-            // TODO - Also need to enable/disable menu items for undo/redo
-            if (CommandStack.CanUndo)
-            {
-                UndoButton.IsEnabled = true;
-            }
-            else
-            {
-                UndoButton.IsEnabled = false;
-            }
-
-            if (CommandStack.CanRedo)
-            {
-                RedoButton.IsEnabled = true;
-            }
-            else
-            {
-                RedoButton.IsEnabled = false;
-            }
-        }
-
-        private void OpenMap(string filePath)
-        {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
-            _map = Map.Load(filePath);
-            _mapPath = filePath;
-
-            PlayButton.Visibility = Visibility.Visible;
-            _gamePanelManager = new GamePanelManager();
-            _gamePanelManager.EntitySelectionChanged += (s, args) =>
-            {
-                // For now, just go with the last entity that was selected
-                //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
-                _propertyPanel.IsActive = true;
-                //SideDockManager.ActiveContent = _propertyPanel;
-            };
-            _gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
-            _gamePanelManager.Open(_map);
-
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () =>
-            {
-                PlayButton.Visibility = Visibility.Hidden;
-                _map = null;
-            });
-
-            _gamePanelManager.SetView(_settings.DefaultView);
-
-            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
-            _propertyPanel.ScriptOpened += (s, args) =>
-            {
-                if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)
-                {
-                    /*_scriptView = new ScriptView(filePath, actor, mapActor);
-                    _scriptView.Saved += (sender, e) =>
-                    {
-                        //mapActor.Behavior.e.Script;
-                    };*/
-
-                    OpenBehavior(args.FileName);
-                }
-                else
-                {
-                    // TODO - Throw some error to the user here?
-                }
-            };
-        }
+        
 
         private void OpenModel(string filePath)
         {

@@ -7,6 +7,7 @@ using SauceEditor.Views.Properties;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
 using System;
+using System.Collections;
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Input;
@@ -16,6 +17,21 @@ namespace SauceEditor.ViewModels
 {
     public class MainWindowViewModel : ViewModel
     {
+        private readonly IWindowFactor _windowFactory;
+        private readonly IMainViewFactory _mainViewFactory;
+
+        public CommandStack CommandStack { get; private set; } = new CommandStack();
+
+        public DockingManager MainDock { get; set; }
+        public DockingManager SideDock { get; set; }
+
+        public List<ViewModel> MainDockViewModels { get; set; } = new List<ViewModel>();
+        public List<ViewModel> SideDockViewModels { get; set; } = new List<ViewModel>();
+
+        public string Title { get; set; }
+        public bool IsPlayable { get; set; }
+        public Visibility PlayVisibility { get; set; }
+
         private ProjectTreePanelViewModel _projectTreePanelViewModel;
         private ToolsPanelViewModel _toolsPanelViewModel;
 
@@ -25,9 +41,89 @@ namespace SauceEditor.ViewModels
 
         private SettingsWindowViewModel _settingsWindowViewModel;
 
+        public EditorSettings Settings { get; set; }
         public CommandStack CommandStack { get; private set; } = new CommandStack();
 
         public PropertiesViewModel PropertiesViewModel { get; set; }
+
+        private RelayCommand _undoCommand;
+        private RelayCommand _redoCommand;
+        private RelayCommand _playCommand;
+        private RelayCommand _openMapCommand;
+
+        public RelayCommand UndoCommand
+        {
+            get
+            {
+                if (_undoCommand == null)
+                {
+                    _undoCommand = new RelayCommand(
+                        p => CommandStack.Undo(),
+                        p => CommandStack.CanUndo
+                    );
+                }
+
+                return _undoCommand;
+            }
+        }
+
+        public RelayCommand RedoCommand
+        {
+            get
+            {
+                if (_redoCommand == null)
+                {
+                    _redoCommand = new RelayCommand(
+                        p => CommandStack.Redo(),
+                        p => CommandStack.CanRedo
+                    );
+                }
+
+                return _redoCommand;
+            }
+        }
+
+        public RelayCommand PlayCommand
+        {
+            get
+            {
+                if (_playCommand == null)
+                {
+                    _playCommand = new RelayCommand(
+                        p => _windowFactory.CreateGameWindow(),
+                        p => true //???
+                    );
+                }
+
+                return _playCommand;
+            }
+        }
+
+        public RelayCommand OpenMapCommand
+        {
+            get
+            {
+                if (_openMapCommand == null)
+                {
+                    _openMapCommand = new RelayCommand(
+                        p =>
+                        {
+                            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
+                            PlayVisibility = Visibility.Visible;
+                            _mainViewFactory.CreateGamePanelManager();
+                        },
+                        p => true //???
+                    );
+                }
+
+                return _openMapCommand;
+            }
+        }
+
+        public MainWindowViewModel()
+        {
+            Title = "Sauce Editor";
+        }
 
         public void OnPropertiesViewModelChanged()
         {
@@ -40,5 +136,42 @@ namespace SauceEditor.ViewModels
             p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath)),
             p => _behaviorFilePath != null
         );*/
+
+        public void LoadOrCreateSettings()
+        {
+            if (File.Exists(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH))
+            {
+                _settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            }
+            else
+            {
+                _settings = new EditorSettings();
+                _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            }
+        }
+
+        private void CommandExecuted(ICommand command)
+        {
+            CommandStack.Push(command);
+
+            // TODO - Also need to enable/disable menu items for undo/redo
+            /*if (CommandStack.CanUndo)
+            {
+                UndoButton.IsEnabled = true;
+            }
+            else
+            {
+                UndoButton.IsEnabled = false;
+            }
+
+            if (CommandStack.CanRedo)
+            {
+                RedoButton.IsEnabled = true;
+            }
+            else
+            {
+                RedoButton.IsEnabled = false;
+            }*/
+        }
     }
 }
