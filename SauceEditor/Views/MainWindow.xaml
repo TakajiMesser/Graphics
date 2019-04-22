@@ -46,22 +46,23 @@
         <vm:MainWindowViewModel x:Name="ViewModel"/>
     </Window.DataContext>
     <Window.InputBindings>
-        <KeyBinding Command="{Binding Path=Menu/NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
-        <KeyBinding Command="{Binding Path=Menu/OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding Path=Menu.NewProjectCommand}" Key="N" Modifiers="Ctrl"/>
+        <KeyBinding Command="{Binding Path=Menu.OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>
     </Window.InputBindings>
     <DockPanel>
-        <controls:MainMenu x:Name="Menu" DockPanel.Dock="Top" 
-            MapOpened="Menu_MapOpened"
+        <controls:MainMenu x:Name="Menu" DockPanel.Dock="Top"  
+        />
+        <!--MapOpened="Menu_MapOpened"
             ProjectOpened="Menu_ProjectOpened"
             ModelOpened="Menu_ModelOpened"
             BehaviorOpened="Menu_BehaviorOpened"
             UndoCalled="Menu_UndoCalled"
-            RedoCalled="Menu_RedoCalled"/>
+            RedoCalled="Menu_RedoCalled"-->
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Button Name="UndoButton" Command="{Binding UndoCommand}" Content="Undo"/>
                 <Button Name="RedoButton" Command="{Binding RedoCommand}" Content="Redo"/>
-                <Button Name="PlayButton" Command="Play" Content="Play" Enabled="{Binding IsPlayable}" Visibility="{Binding PlayVisibility}"/>
+                <Button Name="PlayButton" Command="{Binding PlayCommand}" Content="Play" Visibility="{Binding PlayVisibility}"/>
             </ToolBar>
         </ToolBarTray>
         <Grid>

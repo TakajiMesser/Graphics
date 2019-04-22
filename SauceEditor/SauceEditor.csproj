@@ -201,6 +201,19 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
+    <Compile Include="Models\Components\Archetype.cs" />
+    <Compile Include="Models\Components\Behavior.cs" />
+    <Compile Include="Models\Components\Component.cs" />
+    <Compile Include="Models\Components\IGameViewable.cs" />
+    <Compile Include="Models\Components\Library.cs" />
+    <Compile Include="Models\Components\LibraryManager.cs" />
+    <Compile Include="Models\Components\Map.cs" />
+    <Compile Include="Models\Components\Material.cs" />
+    <Compile Include="Models\Components\Model.cs" />
+    <Compile Include="Models\Components\Project.cs" />
+    <Compile Include="Models\Components\Script.cs" />
+    <Compile Include="Models\Components\Sound.cs" />
+    <Compile Include="Models\Components\Texture.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\Script.cs" />
     <Compile Include="Models\EditorEntity.cs" />
@@ -229,6 +242,8 @@
     <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
       <DependentUpon>BehaviorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Factories\IMainViewFactory.cs" />
+    <Compile Include="Views\Factories\IWindowFactory.cs" />
     <Compile Include="Views\GamePanels\GamePanelManager.xaml.cs">
       <DependentUpon>GamePanelManager.xaml</DependentUpon>
     </Compile>
@@ -272,7 +287,6 @@
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Models\SettingsEventArgs.cs" />
     <Compile Include="Models\EditorSettings.cs" />
-    <Compile Include="Models\GameProject.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
     <Page Include="Views\Behaviors\BehaviorView.xaml">
       <SubType>Designer</SubType>

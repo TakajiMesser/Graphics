@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Models;
+using SauceEditor.Models.Components;
 using System;
 using System.IO;
 using System.Windows.Controls;
@@ -19,8 +20,7 @@ namespace SauceEditor.Views.ProjectTree
         public event EventHandler<ItemSelectedEventArgs> TextureSelected;
         public event EventHandler<ItemSelectedEventArgs> AudioSelected;
 
-        private GameProject _project;
-        private string _projectPath;
+        private Project _project;
 
         public ProjectTreePanel()
         {
@@ -30,7 +30,6 @@ namespace SauceEditor.Views.ProjectTree
 
         public void ClearProject()
         {
-            _projectPath = null;
             _project = null;
 
             ProjectType.Content = "No Files to Show.";
@@ -45,15 +44,14 @@ namespace SauceEditor.Views.ProjectTree
 
         public void SaveProject()
         {
-            _project.Save(_projectPath);
+            _project.Save();
         }
 
         public void OpenMap(string filePath)
         {
             ClearProject();
 
-            _projectPath = filePath;
-            _project = GameProject.Load(filePath);
+            _project = Project.Load(filePath);
             ProjectType.Content = "Map";
 
             var root = new TreeViewItem()
@@ -97,8 +95,7 @@ namespace SauceEditor.Views.ProjectTree
         {
             ClearProject();
 
-            _projectPath = filePath;
-            _project = GameProject.Load(filePath);
+            _project = Project.Load(filePath);
             ProjectType.Content = "Project";
 
             var root = new TreeViewItem()
@@ -131,21 +128,21 @@ namespace SauceEditor.Views.ProjectTree
                 item.ContextMenu = Tree.FindResource("MapsMenu") as ContextMenu;
             };
 
-            foreach (var mapPath in _project.MapPaths)
+            foreach (var map in _project.Maps)
             {
-                var map = new TreeViewItem()
+                var mapTreeItem = new TreeViewItem()
                 {
-                    Header = Path.GetFileName(mapPath)
+                    Header = Path.GetFileName(map.Path)
                 };
 
-                map.MouseDoubleClick += (s, args) => MapSelected?.Invoke(this, new ItemSelectedEventArgs(mapPath));
-                map.MouseRightButtonDown += (s, args) =>
+                mapTreeItem.MouseDoubleClick += (s, args) => MapSelected?.Invoke(this, new ItemSelectedEventArgs(map.Path));
+                mapTreeItem.MouseRightButtonDown += (s, args) =>
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
                     item.ContextMenu = Tree.FindResource("MapMenu") as ContextMenu;
                 };
-                maps.Items.Add(map);
+                maps.Items.Add(mapTreeItem);
             }
 
             return maps;
@@ -166,21 +163,21 @@ namespace SauceEditor.Views.ProjectTree
                 item.ContextMenu = Tree.FindResource("ModelsMenu") as ContextMenu;
             };
 
-            foreach (var modelPath in _project.ModelPaths)
+            foreach (var model in _project.Models)
             {
-                var model = new TreeViewItem()
+                var modelTreeItem = new TreeViewItem()
                 {
-                    Header = Path.GetFileName(modelPath)
+                    Header = Path.GetFileName(model.Path)
                 };
 
-                model.MouseDoubleClick += (s, args) => ModelSelected?.Invoke(this, new ItemSelectedEventArgs(modelPath));
-                model.MouseRightButtonDown += (s, args) =>
+                modelTreeItem.MouseDoubleClick += (s, args) => ModelSelected?.Invoke(this, new ItemSelectedEventArgs(model.Path));
+                modelTreeItem.MouseRightButtonDown += (s, args) =>
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
                     item.ContextMenu = Tree.FindResource("ModelMenu") as ContextMenu;
                 };
-                models.Items.Add(model);
+                models.Items.Add(modelTreeItem);
             }
 
             return models;
@@ -201,20 +198,20 @@ namespace SauceEditor.Views.ProjectTree
                 item.ContextMenu = Tree.FindResource("BehaviorsMenu") as ContextMenu;
             };
 
-            foreach (var behaviorPath in _project.BehaviorPaths)
+            foreach (var behavior in _project.Behaviors)
             {
-                var behavior = new TreeViewItem()
+                var behaviorTreeItem = new TreeViewItem()
                 {
-                    Header = Path.GetFileName(behaviorPath)
+                    Header = Path.GetFileName(behavior.Path)
                 };
-                behavior.MouseDoubleClick += (s, args) => BehaviorSelected?.Invoke(this, new ItemSelectedEventArgs(behaviorPath));
-                behavior.MouseRightButtonDown += (s, args) =>
+                behaviorTreeItem.MouseDoubleClick += (s, args) => BehaviorSelected?.Invoke(this, new ItemSelectedEventArgs(behavior.Path));
+                behaviorTreeItem.MouseRightButtonDown += (s, args) =>
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
                     item.ContextMenu = Tree.FindResource("BehaviorMenu") as ContextMenu;
                 };
-                behaviors.Items.Add(behavior);
+                behaviors.Items.Add(behaviorTreeItem);
             }
 
             return behaviors;
@@ -235,20 +232,20 @@ namespace SauceEditor.Views.ProjectTree
                 item.ContextMenu = Tree.FindResource("TexturesMenu") as ContextMenu;
             };
 
-            foreach (var texturePath in _project.TexturePaths)
+            foreach (var texture in _project.Textures)
             {
-                var texture = new TreeViewItem()
+                var textureTreeItem = new TreeViewItem()
                 {
-                    Header = Path.GetFileName(texturePath)
+                    Header = Path.GetFileName(texture.Path)
                 };
-                texture.MouseDoubleClick += (s, args) => TextureSelected?.Invoke(this, new ItemSelectedEventArgs(texturePath));
-                texture.MouseRightButtonDown += (s, args) =>
+                textureTreeItem.MouseDoubleClick += (s, args) => TextureSelected?.Invoke(this, new ItemSelectedEventArgs(texture.Path));
+                textureTreeItem.MouseRightButtonDown += (s, args) =>
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
                     item.ContextMenu = Tree.FindResource("TextureMenu") as ContextMenu;
                 };
-                textures.Items.Add(texture);
+                textures.Items.Add(textureTreeItem);
             }
 
             return textures;
@@ -269,20 +266,20 @@ namespace SauceEditor.Views.ProjectTree
                 item.ContextMenu = Tree.FindResource("AudiosMenu") as ContextMenu;
             };
 
-            foreach (var audioPath in _project.AudioPaths)
+            foreach (var sound in _project.Sounds)
             {
-                var audio = new TreeViewItem()
+                var soundTreeItem = new TreeViewItem()
                 {
-                    Header = Path.GetFileName(audioPath)
+                    Header = Path.GetFileName(sound.Path)
                 };
-                audio.MouseDoubleClick += (s, args) => AudioSelected?.Invoke(this, new ItemSelectedEventArgs(audioPath));
-                audio.MouseRightButtonDown += (s, args) =>
+                soundTreeItem.MouseDoubleClick += (s, args) => AudioSelected?.Invoke(this, new ItemSelectedEventArgs(sound.Path));
+                soundTreeItem.MouseRightButtonDown += (s, args) =>
                 {
                     var item = s as TreeViewItem;
                     item.IsSelected = true;
                     item.ContextMenu = Tree.FindResource("AudioMenu") as ContextMenu;
                 };
-                audios.Items.Add(audio);
+                audios.Items.Add(soundTreeItem);
             }
 
             return audios;
@@ -422,6 +419,6 @@ namespace SauceEditor.Views.ProjectTree
             }
         }
 
-        private string GetFileNameFromTreeViewItem(TreeViewItem item) => Path.Combine(Path.GetDirectoryName(_projectPath), (string)item.Header);
+        private string GetFileNameFromTreeViewItem(TreeViewItem item) => Path.Combine(Path.GetDirectoryName(_project.Path), (string)item.Header);
     }
 }

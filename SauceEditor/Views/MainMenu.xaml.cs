@@ -1,5 +1,7 @@
 ﻿using Microsoft.Win32;
 using SauceEditor.Models;
+using SauceEditor.Models.Components;
+using SauceEditor.Views.Factories;
 using SauceEditor.Views.ProjectTree;
 using SauceEditor.Views.Settings;
 using System;
@@ -149,7 +151,7 @@ namespace SauceEditor.Views
                 CheckFileExists = true,
                 CheckPathExists = true,
                 Filter = "Project Files|*.pro",
-                DefaultExt = GameProject.FILE_EXTENSION,
+                DefaultExt = Project.FILE_EXTENSION,
                 InitialDirectory = string.IsNullOrEmpty(_mapPath)
                     ? @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps"
                     : System.IO.Path.GetDirectoryName(_mapPath)

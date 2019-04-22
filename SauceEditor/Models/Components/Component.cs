@@ -9,6 +9,6 @@ namespace SauceEditor.Models.Components
         public string Name { get; set; }
         public string Path { get; set; }
 
-        public abstract void Save();
+        //public abstract void Save();
     }
 }

@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SauceEditor.Models;
+using SauceEditor.Models.Components;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Utilities;
@@ -11,19 +12,29 @@ namespace SauceEditor.Helpers.Builders
     {
         public static void CreateTestProject()
         {
-            var project = new GameProject()
+            var project = new Project()
             {
                 Name = "MyFirstProject"
             };
 
-            project.MapPaths.Add(SampleGameProject.Helpers.FilePathHelper.MAP_PATH);
+            project.Maps.Add(new Models.Components.Map()
+            {
+                Name = "Test Map",
+                Path = SampleGameProject.Helpers.FilePathHelper.MAP_PATH
+            });
 
-            project.ModelPaths.Add(SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH);
+            project.Models.Add(new Model()
+            {
+                Name = "",
+                Path = SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH
+            });
 
-            project.Save(Path.GetDirectoryName(SampleGameProject.Helpers.FilePathHelper.MAP_PATH) + "\\" + project.Name + GameProject.FILE_EXTENSION);
+            //project.MapPaths.Add(SampleGameProject.Helpers.FilePathHelper.MAP_PATH);
+            //project.ModelPaths.Add(SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH);
+            //project.Save(Path.GetDirectoryName(SampleGameProject.Helpers.FilePathHelper.MAP_PATH) + "\\" + project.Name + Project.FILE_EXTENSION);
         }
 
-        public static Map GenerateModelMap(string filePath)
+        public static SpiceEngine.Maps.Map GenerateModelMap(string filePath)
         {
             var map = new Map3D()
             {

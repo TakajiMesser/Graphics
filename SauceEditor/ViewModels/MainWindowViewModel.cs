@@ -3,21 +3,26 @@ using SauceEditor.Models;
 using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Behaviors;
 using SauceEditor.ViewModels.Commands;
+using SauceEditor.Views.Factories;
 using SauceEditor.Views.Properties;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
+using Xceed.Wpf.AvalonDock;
+using ICommand = SauceEditor.ViewModels.Commands.ICommand;
 
 namespace SauceEditor.ViewModels
 {
     public class MainWindowViewModel : ViewModel
     {
-        private readonly IWindowFactor _windowFactory;
+        private readonly IWindowFactory _windowFactory;
         private readonly IMainViewFactory _mainViewFactory;
 
         public CommandStack CommandStack { get; private set; } = new CommandStack();
@@ -35,14 +40,13 @@ namespace SauceEditor.ViewModels
         private ProjectTreePanelViewModel _projectTreePanelViewModel;
         private ToolsPanelViewModel _toolsPanelViewModel;
 
-        private GamePanelManagerViewModel _gamePanelManagerViewModel;
+        public GamePanelManagerViewModel GamePanelManagerViewModel { get; set; }
         private BehaviorViewModel _behaviorViewModel;
         private ScriptViewModel _scriptViewModel;
 
         private SettingsWindowViewModel _settingsWindowViewModel;
 
         public EditorSettings Settings { get; set; }
-        public CommandStack CommandStack { get; private set; } = new CommandStack();
 
         public PropertiesViewModel PropertiesViewModel { get; set; }
 
@@ -90,7 +94,7 @@ namespace SauceEditor.ViewModels
                 if (_playCommand == null)
                 {
                     _playCommand = new RelayCommand(
-                        p => _windowFactory.CreateGameWindow(),
+                        p => _windowFactory.CreateGameWindow(null),
                         p => true //???
                     );
                 }
@@ -108,9 +112,9 @@ namespace SauceEditor.ViewModels
                     _openMapCommand = new RelayCommand(
                         p =>
                         {
-                            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
+                            Title = Path.GetFileNameWithoutExtension(/*filePath*/"") + " - " + "SauceEditor";
                             PlayVisibility = Visibility.Visible;
-                            _mainViewFactory.CreateGamePanelManager();
+                            //_mainViewFactory.CreateGamePanelManager();
                         },
                         p => true //???
                     );
@@ -127,7 +131,7 @@ namespace SauceEditor.ViewModels
 
         public void OnPropertiesViewModelChanged()
         {
-            AddChild(PropertiesViewModel, (s, args) => EntityUpdated?.Invoke(this, new EntityEventArgs(PropertiesViewModel.EditorEntity)));
+            AddChild(PropertiesViewModel, (s, args) => GamePanelManagerViewModel?.RequestUpdate());//EntityUpdated?.Invoke(this, new EntityEventArgs(PropertiesViewModel.EditorEntity)));
         }
 
         public event EventHandler<EntityEventArgs> EntityUpdated;
@@ -141,12 +145,12 @@ namespace SauceEditor.ViewModels
         {
             if (File.Exists(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH))
             {
-                _settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+                Settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
             }
             else
             {
-                _settings = new EditorSettings();
-                _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+                Settings = new EditorSettings();
+                Settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
             }
         }
 

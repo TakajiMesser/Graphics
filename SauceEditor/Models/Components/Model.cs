@@ -4,11 +4,11 @@ using System.Xml;
 
 namespace SauceEditor.Models.Components
 {
-    public class Model : Component, IGameViewable
+    public class Model : Component//, IGameViewable
     {
-        public Map ToMap()
+        /*public Map ToMap()
         {
             
-        }
+        }*/
     }
 }
