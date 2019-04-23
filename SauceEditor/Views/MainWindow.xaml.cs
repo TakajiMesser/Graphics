@@ -1,11 +1,8 @@
-﻿using Microsoft.Win32;
-using OpenTK;
-using SampleGameProject.Helpers;
+﻿using OpenTK;
 using SauceEditor.Helpers;
 using SauceEditor.Helpers.Builders;
 using SauceEditor.Models;
 using SauceEditor.ViewModels;
-using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
@@ -23,30 +20,25 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using Xceed.Wpf.AvalonDock.Layout;
-using Map = SauceEditor.Models.Components.Map;
 using GameWindow = SpiceEngine.Game.GameWindow;
-using ICommand = SauceEditor.ViewModels.Commands.ICommand;
+using Map = SauceEditor.Models.Components.Map;
 
 namespace SauceEditor.Views
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IWindowFactory, IMainViewFactory
+    public partial class MainWindow : Window, IMainViewFactory, IWindowFactory, IComponentFactory 
     {
-        private SpiceEngine.Maps.Map _map;
-        private string _mapPath;
-        
-        // Side panels
-        private ProjectTreePanel _projectTree = new ProjectTreePanel();
-        private ToolsPanel _toolPanel = new ToolsPanel();
-        private PropertyPanel _propertyPanel = new PropertyPanel();
-
         // Main views
         private GamePanelManager _gamePanelManager;
         private BehaviorView _behaviorView;
         private ScriptView _scriptView;
+
+        // Side panels
+        private ProjectTreePanel _projectTree = new ProjectTreePanel();
+        private ToolsPanel _toolPanel = new ToolsPanel();
+        private PropertyPanel _propertyPanel = new PropertyPanel();
 
         // Separate windows
         private GameWindow _gameWindow;
@@ -58,25 +50,11 @@ namespace SauceEditor.Views
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
             InitializeComponent();
 
-            MapBuilder.CreateTestProject();
-            LoadOrCreateSettings();
-
             Menu.ViewModel.MainViewFactory = this;
-            ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
-            ViewModel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.RequestUpdate();
-        }
+            Menu.ViewModel.WindowFactory = this;
+            Menu.ViewModel.ComponentFactory = this;
 
-        private void LoadOrCreateSettings()
-        {
-            if (File.Exists(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH))
-            {
-                ViewModel.Settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            }
-            else
-            {
-                ViewModel.Settings = new EditorSettings();
-                ViewModel.Settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            }
+            ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -92,7 +70,7 @@ namespace SauceEditor.Views
             _projectTree.ModelSelected += (s, args) => OpenModel(args.FilePath);
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
-            _projectTree.AudioSelected += (s, args) => OpenAudio(args.FilePath);
+            _projectTree.AudioSelected += (s, args) => OpenSound(args.FilePath);
 
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
 
@@ -115,76 +93,18 @@ namespace SauceEditor.Views
 
         private void OnClosing(object sender, EventArgs e)
         {
-            //Properties.Settings.Default.DockingLayoutState = DockManager.GetLayoutAsXml();
-            //Properties.Settings.Default.Save();
-        }
-
-        /*private bool ContainsDocument(string title)
-        {
-            foreach (DockingLibrary.DocumentContent doc in MainDockManager.Documents)
-            {
-                if (string.Compare(doc.Title, title, true) == 0)
-                {
-                    return true;
-                }
-            }
-                
-            return false;
-        }*/
-
-        private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            /*var titleBuilder = new StringBuilder("Document");
-
-            int i = 1;
-            while (ContainsDocument(titleBuilder.ToString() + i))
-            {
-                i++;
-            }
-            titleBuilder.Append(i);
-
-            var doc = new DocWindow()
-            {
-                DockManager = MainDockManager,
-                Title = titleBuilder.ToString()
-            };
-            doc.ShowAsDocument();
-
-            //files.Add(new RecentFile(doc.Title, "PATH" + doc.Title, doc.Title.Length * i));*/
-        }
-
-        private void NewProjectCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            var dialog = new FileNameDialog();
-            if (dialog.ShowDialog() == true)
-            {
-
-            }
-        }
-
-        private void NewMapCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-
-        }
-
-        private void NewModelCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-
-        }
-
-        private void NewBehaviorCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-
+            /*Properties.Settings.Default.DockingLayoutState = DockManager.GetLayoutAsXml();
+            Properties.Settings.Default.Save();*/
         }
 
         private void SaveCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            _map.Save(_mapPath);
+            //_map.Save(_mapPath);
         }
 
         private void SaveAsCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
-            var dialog = new OpenFileDialog()
+            /*var dialog = new OpenFileDialog()
             {
                 CheckFileExists = true,
                 CheckPathExists = true,
@@ -199,13 +119,7 @@ namespace SauceEditor.Views
                 _mapPath = dialog.FileName;
                 //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
-            }
-        }
-
-        private void SaveAllCommand_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            _map?.Save(_mapPath);
-            _projectTree?.SaveProject();
+            }*/
         }
 
         public void CreateGameWindow(Map map)
@@ -218,6 +132,17 @@ namespace SauceEditor.Views
             };
             //_gameWindow.Closed += (s, args) => _gamePanelManager.IsEnabled = true;
             gameWindow.Run(60.0, 0.0);
+        }
+
+        public void CreateSettingsWindow()
+        {
+            _settingsWindow = new SettingsWindow(ViewModel.Settings);
+            _settingsWindow.SettingsChanged += (s, args) =>
+            {
+                ViewModel.Settings = args.Settings;
+                ViewModel.Settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            };
+            _settingsWindow.Show();
         }
 
         public ViewModel CreateGamePanelView(Map map)
@@ -242,6 +167,57 @@ namespace SauceEditor.Views
 
             gamePanelManager.SetView(ViewModel.Settings.DefaultView);
             return gamePanelManager.ViewModel;
+        }
+
+        public void SaveAll()
+        {
+            //_map?.Save(_mapPath);
+            _projectTree?.SaveProject();
+        }
+
+        public void CreateProject()
+        {
+
+        }
+
+        public void CreateMap()
+        {
+
+        }
+
+        public void CreateModel()
+        {
+
+        }
+
+        public void CreateBehavior()
+        {
+
+        }
+
+        public void CreateTexture()
+        {
+
+        }
+
+        public void CreateSound()
+        {
+
+        }
+
+        public void CreateMaterial()
+        {
+
+        }
+
+        public void CreateArchetype()
+        {
+
+        }
+
+        public void CreateScript()
+        {
+
         }
 
         public void OpenProject(string filePath)
@@ -305,7 +281,7 @@ namespace SauceEditor.Views
             //_gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
             _gamePanelManager.Open(map);
 
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () => _map = null);
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () => /*_map = null*/{ });
 
             _gamePanelManager.SetView(ViewTypes.Perspective);
 
@@ -329,25 +305,7 @@ namespace SauceEditor.Views
             };*/
         }
 
-        private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
-        private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
-        {
-            _settingsWindow = new SettingsWindow(ViewModel.Settings);
-            _settingsWindow.SettingsChanged += (s, args) =>
-            {
-                ViewModel.Settings = args.Settings;
-                ViewModel.Settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            };
-            _settingsWindow.Show();
-        }
-
-        private void Menu_BehaviorOpened(object sender, FileEventArgs e)
-        {
-            Title = System.IO.Path.GetFileNameWithoutExtension(e.FileName) + " - " + "SauceEditor";
-        }
-
-        private void OpenBehavior(string filePath)
+        public void OpenBehavior(string filePath)
         {
             // Temporary measures...
             /*if (_scriptView == null)
@@ -374,21 +332,38 @@ namespace SauceEditor.Views
                 _behaviorView = new BehaviorView();
             }*/
 
+            Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
+
             _behaviorView = _behaviorView ?? new BehaviorView();
 
             DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _behaviorView, Path.GetFileNameWithoutExtension(filePath), () =>
             {
                 PlayButton.Visibility = Visibility.Hidden;
-                _map = null;
+                //_map = null;
             });
         }
 
-        private void OpenTexture(string filePath)
+        public void OpenTexture(string filePath)
         {
 
         }
 
-        private void OpenAudio(string filePath)
+        public void OpenSound(string filePath)
+        {
+
+        }
+
+        public void OpenMaterial(string filePath)
+        {
+
+        }
+
+        public void OpenArchetype(string filePath)
+        {
+
+        }
+
+        public void OpenScript(string filePath)
         {
 
         }

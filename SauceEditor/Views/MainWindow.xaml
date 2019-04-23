@@ -10,38 +10,6 @@
         xmlns:controls="clr-namespace:SauceEditor.Views" Loaded="OnLoaded" Closing="OnClosing"
         mc:Ignorable="d"
         Title="{Binding Title}" Height="600" Width="600" WindowState="Maximized">
-    <!--<Window.Resources>
-        <RoutedUICommand x:Key="NewProjectCommand" Text="New Project"/>
-        <RoutedUICommand x:Key="NewMapCommand" Text="New Map"/>
-        <RoutedUICommand x:Key="NewModelCommand" Text="New Model"/>
-        <RoutedUICommand x:Key="NewBehaviorCommand" Text="New Behavior"/>
-        
-        <RoutedUICommand x:Key="OpenProjectCommand" Text="Open Project"/>
-        <RoutedUICommand x:Key="OpenMapCommand" Text="Open Map"/>
-        <RoutedUICommand x:Key="OpenModelCommand" Text="Open Model"/>
-        <RoutedUICommand x:Key="OpenBehaviorCommand" Text="Open Behavior"/>
-        
-        <RoutedUICommand x:Key="SaveAllCommand" Text="Save All"/>
-
-        <RoutedUICommand x:Key="SettingsCommand" Text="Settings..."/>
-    </Window.Resources>-->
-    <!--<Window.CommandBindings>
-        <CommandBinding Command="{StaticResource NewProjectCommand}"  CanExecute="NewProjectCommand_CanExecute" Executed="NewProjectCommand_Executed" />
-        <CommandBinding Command="{StaticResource NewMapCommand}"  CanExecute="NewMapCommand_CanExecute" Executed="NewMapCommand_Executed" />
-        <CommandBinding Command="{StaticResource NewModelCommand}"  CanExecute="NewModelCommand_CanExecute" Executed="NewModelCommand_Executed" />
-        <CommandBinding Command="{StaticResource NewBehaviorCommand}"  CanExecute="NewBehaviorCommand_CanExecute" Executed="NewBehaviorCommand_Executed" />
-        
-        <CommandBinding Command="{StaticResource OpenProjectCommand}"  CanExecute="OpenProjectCommand_CanExecute" Executed="OpenProjectCommand_Executed" />
-        <CommandBinding Command="{StaticResource OpenMapCommand}"  CanExecute="OpenMapCommand_CanExecute" Executed="OpenMapCommand_Executed" />
-        <CommandBinding Command="{StaticResource OpenModelCommand}"  CanExecute="OpenModelCommand_CanExecute" Executed="OpenModelCommand_Executed" />
-        <CommandBinding Command="{StaticResource OpenBehaviorCommand}"  CanExecute="OpenBehaviorCommand_CanExecute" Executed="OpenBehaviorCommand_Executed" />
-        
-        <CommandBinding Command="Save" CanExecute="SaveCommand_CanExecute" Executed="SaveCommand_Executed" />
-        <CommandBinding Command="SaveAs" CanExecute="SaveAsCommand_CanExecute" Executed="SaveAsCommand_Executed" />
-        <CommandBinding Command="{StaticResource SaveAllCommand}" CanExecute="SaveAllCommand_CanExecute" Executed="SaveAllCommand_Executed" />
-
-        <CommandBinding Command="{StaticResource SettingsCommand}" CanExecute="Settings_CanExecute" Executed="Settings_Executed"/>
-    </Window.CommandBindings>-->
     <Window.DataContext>
         <vm:MainWindowViewModel x:Name="ViewModel"/>
     </Window.DataContext>
@@ -50,14 +18,7 @@
         <KeyBinding Command="{Binding Path=Menu.OpenProjectCommand}" Key="O" Modifiers="Ctrl"/>
     </Window.InputBindings>
     <DockPanel>
-        <controls:MainMenu x:Name="Menu" DockPanel.Dock="Top"  
-        />
-        <!--MapOpened="Menu_MapOpened"
-            ProjectOpened="Menu_ProjectOpened"
-            ModelOpened="Menu_ModelOpened"
-            BehaviorOpened="Menu_BehaviorOpened"
-            UndoCalled="Menu_UndoCalled"
-            RedoCalled="Menu_RedoCalled"-->
+        <controls:MainMenu x:Name="Menu" DockPanel.Dock="Top"/>
         <ToolBarTray DockPanel.Dock="Top">
             <ToolBar>
                 <Button Name="UndoButton" Command="{Binding UndoCommand}" Content="Undo"/>

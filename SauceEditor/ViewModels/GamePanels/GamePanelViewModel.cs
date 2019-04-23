@@ -1,15 +1,9 @@
-using OpenTK;
-using SauceEditor.Models;
-using SauceEditor.Utilities;
-using SpiceEngine.Entities;
 using SpiceEngine.Game;
-using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using System;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 using ViewTypes = SpiceEngine.Game.ViewTypes;
 
 namespace SauceEditor.ViewModels
@@ -22,66 +16,50 @@ namespace SauceEditor.ViewModels
         private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
         private RelayCommand _wireframeCommand;
-        private RelayCommand _diffuseCommand;
-        private RelayCommand _litCommand;
-
         public RelayCommand WireframeCommand
         {
             get
             {
-                if (_wireframeCommand == null)
-                {
-                    _wireframeCommand = new RelayCommand(
-                        p =>
-                        {
-                            Panel.RenderMode = RenderModes.Wireframe;
-                            CommandManager.InvalidateRequerySuggested();
-                        },
-                        p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
-                    );
-                }
-
-                return _wireframeCommand;
+                return _wireframeCommand ?? (_wireframeCommand = new RelayCommand(
+                    p =>
+                    {
+                        Panel.RenderMode = RenderModes.Wireframe;
+                        CommandManager.InvalidateRequerySuggested();
+                    },
+                    p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
+                ));
             }
         }
 
+        private RelayCommand _diffuseCommand;
         public RelayCommand DiffuseCommand
         {
             get
             {
-                if (_diffuseCommand == null)
-                {
-                    _diffuseCommand = new RelayCommand(
-                        p =>
-                        {
-                            Panel.RenderMode = RenderModes.Diffuse;
-                            CommandManager.InvalidateRequerySuggested();
-                        },
-                        p => Panel != null && Panel.RenderMode != RenderModes.Diffuse
-                    );
-                }
-
-                return _diffuseCommand;
+                return _diffuseCommand ?? (_diffuseCommand = new RelayCommand(
+                    p =>
+                    {
+                        Panel.RenderMode = RenderModes.Diffuse;
+                        CommandManager.InvalidateRequerySuggested();
+                    },
+                    p => Panel != null && Panel.RenderMode != RenderModes.Diffuse
+                ));
             }
         }
 
+        private RelayCommand _litCommand;
         public RelayCommand LitCommand
         {
             get
             {
-                if (_litCommand == null)
-                {
-                    _litCommand = new RelayCommand(
-                        p =>
-                        {
-                            Panel.RenderMode = RenderModes.Lit;
-                            CommandManager.InvalidateRequerySuggested();
-                        },
-                        p => Panel != null && Panel.RenderMode != RenderModes.Lit
-                    );
-                }
-
-                return _litCommand;
+                return _litCommand ?? (_litCommand = new RelayCommand(
+                    p =>
+                    {
+                        Panel.RenderMode = RenderModes.Lit;
+                        CommandManager.InvalidateRequerySuggested();
+                    },
+                    p => Panel != null && Panel.RenderMode != RenderModes.Lit
+                ));
             }
         }
 

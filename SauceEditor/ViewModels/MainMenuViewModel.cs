@@ -1,17 +1,6 @@
 using Microsoft.Win32;
-using OpenTK;
-using SauceEditor.Models;
 using SauceEditor.Models.Components;
-using SauceEditor.Utilities;
 using SauceEditor.Views.Factories;
-using SauceEditor.Views.Properties;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using System;
-using System.ComponentModel;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace SauceEditor.ViewModels
 {
@@ -19,220 +8,310 @@ namespace SauceEditor.ViewModels
     {
         private const string DEFAULT_INITIAL_DIRECTORY = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps";
 
-        private RelayCommand _newProjectCommand;
-        private RelayCommand _newMapCommand;
-        private RelayCommand _newModelCommand;
-        private RelayCommand _newBehaviorCommand;
-
-        private RelayCommand _openProjectCommand;
-        private RelayCommand _openMapCommand;
-        private RelayCommand _openModelCommand;
-        private RelayCommand _openBehaviorCommand;
-
-        private RelayCommand _saveAllCommand;
-        private RelayCommand _settingsCommand;
-
         public IMainViewFactory MainViewFactory { get; set; }
+        public IWindowFactory WindowFactory { get; set; }
+        public IComponentFactory ComponentFactory { get; set; }
 
+        private RelayCommand _newProjectCommand;
         public RelayCommand NewProjectCommand
         {
             get
             {
-                if (_newProjectCommand == null)
-                {
-                    _newProjectCommand = new RelayCommand(
-                        p =>
-                        {
-                            
-                        },
-                        p => true
-                    );
-                }
-
-                return _newProjectCommand;
+                return _newProjectCommand ?? (_newProjectCommand = new RelayCommand(
+                    p => ComponentFactory.CreateProject(),
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _newMapCommand;
         public RelayCommand NewMapCommand
         {
             get
             {
-                if (_newMapCommand == null)
-                {
-                    _newMapCommand = new RelayCommand(
-                        p =>
-                        {
-                            
-                        },
-                        p => true
-                    );
-                }
-
-                return _newMapCommand;
+                return _newMapCommand ?? (_newMapCommand = new RelayCommand(
+                    p => ComponentFactory.CreateMap(),
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _newModelCommand;
         public RelayCommand NewModelCommand
         {
             get
             {
-                if (_newModelCommand == null)
-                {
-                    _newModelCommand = new RelayCommand(
-                        p =>
-                        {
-                            
-                        },
-                        p => true
-                    );
-                }
-
-                return _newModelCommand;
+                return _newModelCommand ?? (_newModelCommand = new RelayCommand(
+                    p => ComponentFactory.CreateModel(),
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _newBehaviorCommand;
         public RelayCommand NewBehaviorCommand
         {
             get
             {
-                if (_newBehaviorCommand == null)
-                {
-                    _newBehaviorCommand = new RelayCommand(
-                        p =>
-                        {
-
-                        },
-                        p => true
-                    );
-                }
-
-                return _newBehaviorCommand;
+                return _newBehaviorCommand ?? (_newBehaviorCommand = new RelayCommand(
+                    p => ComponentFactory.CreateBehavior(),
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _newTextureCommand;
+        public RelayCommand NewTextureCommand
+        {
+            get
+            {
+                return _newTextureCommand ?? (_newTextureCommand = new RelayCommand(
+                    p => ComponentFactory.CreateTexture(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _newSoundCommand;
+        public RelayCommand NewSoundCommand
+        {
+            get
+            {
+                return _newSoundCommand ?? (_newSoundCommand = new RelayCommand(
+                    p => ComponentFactory.CreateSound(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _newMaterialCommand;
+        public RelayCommand NewMaterialCommand
+        {
+            get
+            {
+                return _newMaterialCommand ?? (_newMaterialCommand = new RelayCommand(
+                    p => ComponentFactory.CreateMaterial(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _newArchetypeCommand;
+        public RelayCommand NewArchetypeCommand
+        {
+            get
+            {
+                return _newArchetypeCommand ?? (_newArchetypeCommand = new RelayCommand(
+                    p => ComponentFactory.CreateArchetype(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _newScriptCommand;
+        public RelayCommand NewScriptCommand
+        {
+            get
+            {
+                return _newScriptCommand ?? (_newScriptCommand = new RelayCommand(
+                    p => ComponentFactory.CreateScript(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openProjectCommand;
         public RelayCommand OpenProjectCommand
         {
             get
             {
-                if (_openProjectCommand == null)
-                {
-                    _openProjectCommand = new RelayCommand(
-                        p =>
+                return _openProjectCommand ?? (_openProjectCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog(Project.FILE_EXTENSION, "Project Files|*.pro", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
                         {
-                            var fileName = OpenDialog(Project.FILE_EXTENSION, "Project Files|*.pro", DEFAULT_INITIAL_DIRECTORY);
-                            if (fileName != null)
-                            {
-                                MainViewFactory.OpenProject(fileName);
-                            }
-                        },
-                        p => true
-                    );
-                }
-
-                return _openProjectCommand;
+                            ComponentFactory.OpenProject(fileName);
+                        }
+                    },
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _openMapCommand;
         public RelayCommand OpenMapCommand
         {
             get
             {
-                if (_openMapCommand == null)
-                {
-                    _openMapCommand = new RelayCommand(
-                        p =>
+                return _openMapCommand ?? (_openMapCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
                         {
-                            var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
-                            if (fileName != null)
-                            {
-                                MainViewFactory.OpenMap(fileName);
-                            }
-                        },
-                        p => true
-                    );
-                }
-
-                return _openMapCommand;
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _openModelCommand;
         public RelayCommand OpenModelCommand
         {
             get
             {
-                if (_openModelCommand == null)
-                {
-                    _openModelCommand = new RelayCommand(
-                        p =>
+                return _openModelCommand ?? (_openModelCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("obj", "Model Files|*.obj", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
                         {
-                            var fileName = OpenDialog("obj", "Model Files|*.obj", DEFAULT_INITIAL_DIRECTORY);
-                            if (fileName != null)
-                            {
-                                MainViewFactory.OpenModel(fileName);
-                            }
-                        },
-                        p => true
-                    );
-                }
-
-                return _openModelCommand;
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _openBehaviorCommand;
         public RelayCommand OpenBehaviorCommand
         {
             get
             {
-                if (_openBehaviorCommand == null)
-                {
-                    _openBehaviorCommand = new RelayCommand(
-                        p =>
+                return _openBehaviorCommand ?? (_openBehaviorCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
                         {
-
-                        },
-                        p => true
-                    );
-                }
-
-                return _openBehaviorCommand;
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _openTextureCommand;
+        public RelayCommand OpenTextureCommand
+        {
+            get
+            {
+                return _openTextureCommand ?? (_openTextureCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
+                        {
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openSoundCommand;
+        public RelayCommand OpenSoundCommand
+        {
+            get
+            {
+                return _openSoundCommand ?? (_openSoundCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
+                        {
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openMaterialCommand;
+        public RelayCommand OpenMaterialCommand
+        {
+            get
+            {
+                return _openMaterialCommand ?? (_openMaterialCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
+                        {
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openArchetypeCommand;
+        public RelayCommand OpenArchetypeCommand
+        {
+            get
+            {
+                return _openArchetypeCommand ?? (_openArchetypeCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
+                        {
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openScriptCommand;
+        public RelayCommand OpenScriptCommand
+        {
+            get
+            {
+                return _openScriptCommand ?? (_openScriptCommand = new RelayCommand(
+                    p =>
+                    {
+                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        if (fileName != null)
+                        {
+                            ComponentFactory.OpenMap(fileName);
+                        }
+                    },
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _saveAllCommand;
         public RelayCommand SaveAllCommand
         {
             get
             {
-                if (_saveAllCommand == null)
-                {
-                    _saveAllCommand = new RelayCommand(
-                        p =>
-                        {
-
-                        },
-                        p => true
-                    );
-                }
-
-                return _saveAllCommand;
+                return _saveAllCommand ?? (_saveAllCommand = new RelayCommand(
+                    p => MainViewFactory.SaveAll(),
+                    p => true
+                ));
             }
         }
 
+        private RelayCommand _settingsCommand;
         public RelayCommand SettingsCommand
         {
             get
             {
-                if (_settingsCommand == null)
-                {
-                    _settingsCommand = new RelayCommand(
-                        p =>
-                        {
-
-                        },
-                        p => true
-                    );
-                }
-
-                return _settingsCommand;
+                return _settingsCommand ?? (_settingsCommand = new RelayCommand(
+                    p => WindowFactory.CreateSettingsWindow(),
+                    p => true
+                ));
             }
         }
 

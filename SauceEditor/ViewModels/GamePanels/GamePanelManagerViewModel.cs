@@ -1,6 +1,4 @@
-using OpenTK;
 using SauceEditor.Models;
-using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Commands;
 using SpiceEngine.Entities;
 using SpiceEngine.Game;
@@ -10,9 +8,7 @@ using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
-using System.Windows;
 using System.Windows.Input;
-using System.Windows.Media;
 
 namespace SauceEditor.ViewModels
 {
@@ -21,58 +17,6 @@ namespace SauceEditor.ViewModels
         private MapManager _mapManager;
         private GameManager _gameManager;
         private EntityMapping _entityMapping;
-
-        private RelayCommand _translateCommand;
-        private RelayCommand _rotateCommand;
-        private RelayCommand _scaleCommand;
-
-        public RelayCommand TranslateCommand
-        {
-            get
-            {
-                if (_translateCommand == null)
-                {
-                    _translateCommand = new RelayCommand(
-                        p => TransformMode = TransformModes.Translate,
-                        p => TransformMode != TransformModes.Translate
-                    );
-                }
-
-                return _translateCommand;
-            }
-        }
-
-        public RelayCommand RotateCommand
-        {
-            get
-            {
-                if (_rotateCommand == null)
-                {
-                    _rotateCommand = new RelayCommand(
-                        p => TransformMode = TransformModes.Rotate,
-                        p => TransformMode != TransformModes.Rotate
-                    );
-                }
-
-                return _rotateCommand;
-            }
-        }
-
-        public RelayCommand ScaleCommand
-        {
-            get
-            {
-                if (_scaleCommand == null)
-                {
-                    _scaleCommand = new RelayCommand(
-                        p => TransformMode = TransformModes.Scale,
-                        p => TransformMode != TransformModes.Scale
-                    );
-                }
-
-                return _scaleCommand;
-            }
-        }
 
         public TransformModes TransformMode { get; set; }
         public Models.ViewTypes ViewType { get; set; }
@@ -85,6 +29,42 @@ namespace SauceEditor.ViewModels
         public Resolution Resolution { get; set; }
 
         public Map Map => _mapManager.Map;
+
+        private RelayCommand _translateCommand;
+        public RelayCommand TranslateCommand
+        {
+            get
+            {
+                return _translateCommand ?? (_translateCommand = new RelayCommand(
+                    p => TransformMode = TransformModes.Translate,
+                    p => TransformMode != TransformModes.Translate
+                ));
+            }
+        }
+
+        private RelayCommand _rotateCommand;
+        public RelayCommand RotateCommand
+        {
+            get
+            {
+                return _rotateCommand ?? (_rotateCommand = new RelayCommand(
+                    p => TransformMode = TransformModes.Rotate,
+                    p => TransformMode != TransformModes.Rotate
+                ));
+            }
+        }
+
+        private RelayCommand _scaleCommand;
+        public RelayCommand ScaleCommand
+        {
+            get
+            {
+                return _scaleCommand ?? (_scaleCommand = new RelayCommand(
+                    p => TransformMode = TransformModes.Scale,
+                    p => TransformMode != TransformModes.Scale
+                ));
+            }
+        }
 
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<CommandEventArgs> CommandExecuted;

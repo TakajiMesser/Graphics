@@ -12,27 +12,5 @@ namespace SauceEditor.ViewModels
     public class NumericUpDownViewModel : ViewModel
     {
         public float Value { get; set; }
-
-        /*private RelayCommand _litCommand;
-
-        public RelayCommand WireframeCommand
-        {
-            get
-            {
-                if (_wireframeCommand == null)
-                {
-                    _wireframeCommand = new RelayCommand(
-                        p =>
-                        {
-                            Panel.RenderMode = RenderModes.Wireframe;
-                            CommandManager.InvalidateRequerySuggested();
-                        },
-                        p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
-                    );
-                }
-
-                return _wireframeCommand;
-            }
-        }*/
     }
 }

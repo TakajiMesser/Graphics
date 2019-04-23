@@ -242,6 +242,7 @@
     <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
       <DependentUpon>BehaviorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Factories\IComponentFactory.cs" />
     <Compile Include="Views\Factories\IMainViewFactory.cs" />
     <Compile Include="Views\Factories\IWindowFactory.cs" />
     <Compile Include="Views\GamePanels\GamePanelManager.xaml.cs">
@@ -379,6 +380,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="RelayCommand.snippet" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

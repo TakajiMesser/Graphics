@@ -85,20 +85,6 @@ namespace SauceEditor.Views
             //_propertyPanel.TransformChanged += (s, args) => modelView.Panel.Invalidate();
         }
 
-        private void NewProjectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void NewMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void NewModelCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void NewBehaviorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
-        private void OpenProjectCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void OpenMapCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void OpenModelCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void OpenBehaviorCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
-        private void SaveCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void SaveAsCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-        private void SaveAllCommand_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
-
         private void NewCommand_Executed(object sender, ExecutedRoutedEventArgs e)
         {
             /*var titleBuilder = new StringBuilder("Document");
@@ -248,8 +234,6 @@ namespace SauceEditor.Views
             /*_map?.Save(_mapPath);
             _projectTree?.SaveProject();*/
         }
-
-        private void Settings_CanExecute(object sender, CanExecuteRoutedEventArgs e) => e.CanExecute = true;
 
         private void Settings_Executed(object sender, ExecutedRoutedEventArgs e)
         {

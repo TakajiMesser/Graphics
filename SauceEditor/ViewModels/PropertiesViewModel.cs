@@ -15,24 +15,7 @@ namespace SauceEditor.ViewModels
 {
     public class PropertiesViewModel : ViewModel
     {
-        private RelayCommand _openScriptCommand;
         private string _behaviorFilePath;
-
-        public RelayCommand OpenScriptCommand
-        {
-            get
-            {
-                if (_openScriptCommand == null)
-                {
-                    _openScriptCommand = new RelayCommand(
-                        p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath))//,
-                        //p => _behaviorFilePath != null
-                    );
-                }
-
-                return _openScriptCommand;
-            }
-        }
 
         public EditorEntity EditorEntity { get; set; }
         public Visibility EntitySelected { get; set; }
@@ -52,6 +35,18 @@ namespace SauceEditor.ViewModels
         public TransformPanelViewModel PositionViewModel { get; set; }
         public TransformPanelViewModel RotationViewModel { get; set; }
         public TransformPanelViewModel ScaleViewModel { get; set; }
+
+        private RelayCommand _openScriptCommand;
+        public RelayCommand OpenScriptCommand
+        {
+            get
+            {
+                return _openScriptCommand ?? (_openScriptCommand = new RelayCommand(
+                    p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath)),
+                    p => true
+                ));
+            }
+        }
 
         //public event EventHandler<EntityEventArgs> EntityUpdated;
         public event EventHandler<FileEventArgs> ScriptOpened;
