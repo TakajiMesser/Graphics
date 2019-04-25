@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Matrices;
@@ -14,7 +13,8 @@ namespace SauceEditor.Helpers.Builders
         {
             var project = new Project()
             {
-                Name = "MyFirstProject"
+                Name = "MyFirstProject",
+                Path = SampleGameProject.Helpers.FilePathHelper.PROJECT_PATH
             };
 
             project.Maps.Add(new Models.Components.Map()
@@ -25,9 +25,11 @@ namespace SauceEditor.Helpers.Builders
 
             project.Models.Add(new Model()
             {
-                Name = "",
+                Name = "Bob Lamp",
                 Path = SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH
             });
+
+            project.Save();
 
             //project.MapPaths.Add(SampleGameProject.Helpers.FilePathHelper.MAP_PATH);
             //project.ModelPaths.Add(SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH);

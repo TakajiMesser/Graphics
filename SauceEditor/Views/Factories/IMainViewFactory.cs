@@ -8,5 +8,6 @@ namespace SauceEditor.Views.Factories
         ViewModel CreateGamePanelView(Map map);
 
         void SaveAll();
+        void LoadSettings();
     }
 }

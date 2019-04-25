@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using System;
-using System.ComponentModel;
+﻿using System;
 using System.Windows;
 using System.Windows.Controls;
 

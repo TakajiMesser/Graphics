@@ -4,12 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views"
-        xmlns:vm="clr-namespace:SauceEditor.ViewModels"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels.Trees"
+        xmlns:cb="clr-namespace:SauceEditor.ViewModels.AttachedBehaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         mc:Ignorable="d"
         Title="Project Tree">
     <StackPanel Name="Panel" Orientation="Vertical">
+        <StackPanel.DataContext>
+            <vm:ProjectTreePanelViewModel x:Name="ViewModel"/>
+        </StackPanel.DataContext>
         <StackPanel.Resources>
             <RoutedUICommand x:Key="AddMapCommand" Text="Add Map"/>
             <RoutedUICommand x:Key="AddModelCommand" Text="Add Model"/>
@@ -26,8 +30,28 @@
             <RoutedUICommand x:Key="RenameCommand" Text="Rename"/>
         </StackPanel.Resources>
         <Label Name="ProjectType" FontSize="14"/>
-        <TreeView Name="Tree" BorderBrush="Transparent">
-            <TreeView.CommandBindings>
+        <TreeView Name="Tree" BorderBrush="Transparent" ItemsSource="{Binding Roots}">
+            <TreeView.ItemContainerStyle>
+                <Style TargetType="{x:Type TreeViewItem}">
+                    <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}" />
+                    <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
+                    <Setter Property="FontWeight" Value="Normal" />
+                    <Setter Property="cb:MouseDoubleClick.Command" Value="{Binding OpenCommand}"/>
+                    <Style.Triggers>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="FontWeight" Value="Bold" />
+                        </Trigger>
+                    </Style.Triggers>
+                </Style>
+            </TreeView.ItemContainerStyle>
+            <TreeView.ItemTemplate>
+                <HierarchicalDataTemplate ItemsSource="{Binding Children}">
+                    <TextBlock Text="{Binding Name}" />
+                </HierarchicalDataTemplate>
+            </TreeView.ItemTemplate>
+
+
+            <!--<TreeView.CommandBindings>
                 <CommandBinding Command="{StaticResource AddMapCommand}" CanExecute="AddMapCommand_CanExecute" Executed="AddMapCommand_Executed" />
                 <CommandBinding Command="{StaticResource AddModelCommand}" CanExecute="AddModelCommand_CanExecute" Executed="AddModelCommand_Executed" />
                 <CommandBinding Command="{StaticResource AddBehaviorCommand}" CanExecute="AddBehaviorCommand_CanExecute" Executed="AddBehaviorCommand_Executed" />
@@ -95,7 +119,7 @@
                     <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
                     <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
                 </ContextMenu>
-            </TreeView.Resources>
+            </TreeView.Resources>-->
         </TreeView>
     </StackPanel>
 </xcad:LayoutAnchorable>

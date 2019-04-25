@@ -2,6 +2,7 @@ using SauceEditor.Helpers.Builders;
 using SauceEditor.Models;
 using SauceEditor.ViewModels.Behaviors;
 using SauceEditor.ViewModels.Commands;
+using SauceEditor.ViewModels.Trees;
 using SauceEditor.Views.Factories;
 using System.Collections.Generic;
 using System.IO;
@@ -40,7 +41,6 @@ namespace SauceEditor.ViewModels
 
         public EditorSettings Settings { get; set; }
 
-
         private RelayCommand _undoCommand;
         public RelayCommand UndoCommand
         {
@@ -53,7 +53,6 @@ namespace SauceEditor.ViewModels
             }
         }
 
-
         private RelayCommand _redoCommand;
         public RelayCommand RedoCommand
         {
@@ -65,7 +64,6 @@ namespace SauceEditor.ViewModels
                 ));
             }
         }
-
 
         private RelayCommand _playCommand;
         public RelayCommand PlayCommand

@@ -4,12 +4,16 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views.Settings"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels"
         mc:Ignorable="d"
         Title="SettingsWindow" Height="450" Width="800">
+    <Window.DataContext>
+        <vm:SettingsWindowViewModel x:Name="ViewModel"></vm:SettingsWindowViewModel>
+    </Window.DataContext>
     <DockPanel Margin="20px" Height="Auto">
         <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Height="25px" Orientation="Horizontal">
-            <Button Width="80px" Margin="0, 0, 8px, 0" Click="OKButton_Click">OK</Button>
-            <Button Width="80px" Click="CancelButton_Click">Cancel</Button>
+            <Button Width="80px" Margin="0, 0, 8px, 0" Command="{Binding OKCommand}">OK</Button>
+            <Button Width="80px" Command="{Binding CancelCommand}">Cancel</Button>
         </StackPanel>
         <DockPanel Height="Auto" Margin="0, 0, 0, 10px">
             <ListView DockPanel.Dock="Left" Margin="0, 0, 8px, 0">

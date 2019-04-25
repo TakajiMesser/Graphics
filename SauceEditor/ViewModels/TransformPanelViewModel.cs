@@ -1,5 +1,4 @@
 using OpenTK;
-using System.ComponentModel;
 
 namespace SauceEditor.ViewModels
 {

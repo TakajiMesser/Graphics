@@ -2,13 +2,6 @@ using NodeNetwork.ViewModels;
 using NodeNetwork.Views;
 using OpenTK;
 using ReactiveUI;
-using SauceEditor.Models;
-using SauceEditor.Utilities;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
 
 namespace SauceEditor.ViewModels.Behaviors
 {

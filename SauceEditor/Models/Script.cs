@@ -1,5 +1,4 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
+﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Maps;
 
 namespace SauceEditor.Models

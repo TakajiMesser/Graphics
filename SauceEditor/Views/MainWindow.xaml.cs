@@ -2,6 +2,7 @@
 using SauceEditor.Helpers;
 using SauceEditor.Helpers.Builders;
 using SauceEditor.Models;
+using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
 using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
@@ -66,11 +67,11 @@ namespace SauceEditor.Views
 
         private void OnLoaded(object sender, EventArgs e)
         {
-            _projectTree.MapSelected += (s, args) => OpenMap(args.FilePath);
+            /*_projectTree.MapSelected += (s, args) => OpenMap(args.FilePath);
             _projectTree.ModelSelected += (s, args) => OpenModel(args.FilePath);
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
-            _projectTree.AudioSelected += (s, args) => OpenSound(args.FilePath);
+            _projectTree.AudioSelected += (s, args) => OpenSound(args.FilePath);*/
 
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
 
@@ -136,12 +137,10 @@ namespace SauceEditor.Views
 
         public void CreateSettingsWindow()
         {
-            _settingsWindow = new SettingsWindow(ViewModel.Settings);
-            _settingsWindow.SettingsChanged += (s, args) =>
-            {
-                ViewModel.Settings = args.Settings;
-                ViewModel.Settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            };
+            _settingsWindow = new SettingsWindow();
+            _settingsWindow.ViewModel.MainViewFactory = this;
+
+            ViewModel.SettingsWindowViewModel = _settingsWindow.ViewModel;
             _settingsWindow.Show();
         }
 
@@ -172,7 +171,12 @@ namespace SauceEditor.Views
         public void SaveAll()
         {
             //_map?.Save(_mapPath);
-            _projectTree?.SaveProject();
+            //_projectTree?.SaveProject();
+        }
+
+        public void LoadSettings()
+        {
+            ViewModel.Settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
         }
 
         public void CreateProject()
@@ -222,7 +226,9 @@ namespace SauceEditor.Views
 
         public void OpenProject(string filePath)
         {
-            _projectTree.OpenProject(filePath);
+            var project = Project.Load(filePath);
+            _projectTree.ViewModel.UpdateFromModel(project, this);
+            //_projectTree.OpenProject(filePath);
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;
             Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";

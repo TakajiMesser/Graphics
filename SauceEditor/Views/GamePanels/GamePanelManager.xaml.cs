@@ -133,7 +133,6 @@ namespace SauceEditor.Views.GamePanels
                     }
                 }
             }
-            
         }
 
         private void DuplicateEntity(int entityID, int duplicateEntityID)

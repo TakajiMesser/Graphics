@@ -1,8 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Xml;
-
-namespace SauceEditor.Models.Components
+﻿namespace SauceEditor.Models.Components
 {
     /// <summary>
     /// This interface represents any classes that can be viewed in a GamePanelView,

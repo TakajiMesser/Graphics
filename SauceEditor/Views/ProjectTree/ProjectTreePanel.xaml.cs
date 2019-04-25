@@ -1,5 +1,4 @@
-﻿using SauceEditor.Models;
-using SauceEditor.Models.Components;
+﻿using SauceEditor.Models.Components;
 using System;
 using System.IO;
 using System.Windows.Controls;
@@ -14,21 +13,21 @@ namespace SauceEditor.Views.ProjectTree
     /// </summary>
     public partial class ProjectTreePanel : LayoutAnchorable
     {
-        public event EventHandler<ItemSelectedEventArgs> MapSelected;
+        /*public event EventHandler<ItemSelectedEventArgs> MapSelected;
         public event EventHandler<ItemSelectedEventArgs> ModelSelected;
         public event EventHandler<ItemSelectedEventArgs> BehaviorSelected;
         public event EventHandler<ItemSelectedEventArgs> TextureSelected;
         public event EventHandler<ItemSelectedEventArgs> AudioSelected;
 
-        private Project _project;
+        private Project _project;*/
 
         public ProjectTreePanel()
         {
             InitializeComponent();
-            ClearProject();
+            //ClearProject();
         }
 
-        public void ClearProject()
+        /*public void ClearProject()
         {
             _project = null;
 
@@ -419,6 +418,6 @@ namespace SauceEditor.Views.ProjectTree
             }
         }
 
-        private string GetFileNameFromTreeViewItem(TreeViewItem item) => Path.Combine(Path.GetDirectoryName(_project.Path), (string)item.Header);
+        private string GetFileNameFromTreeViewItem(TreeViewItem item) => Path.Combine(Path.GetDirectoryName(_project.Path), (string)item.Header);*/
     }
 }

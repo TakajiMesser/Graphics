@@ -1,5 +1,5 @@
 ﻿using SauceEditor.Models;
-using System;
+using SauceEditor.Views.Factories;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -8,7 +8,7 @@ namespace SauceEditor.Views.Settings
     /// <summary>
     /// Interaction logic for SettingsWindow.xaml
     /// </summary>
-    public partial class SettingsWindow : Window
+    public partial class SettingsWindow : Window, IWindow
     {
         public EditorSettings Settings
         {
@@ -21,14 +21,12 @@ namespace SauceEditor.Views.Settings
             }
         }
 
-        public event EventHandler<SettingsEventArgs> SettingsChanged;
-
         private EditorSettings _settings;
 
-        public SettingsWindow(EditorSettings settings)
+        public SettingsWindow()
         {
             InitializeComponent();
-            Settings = settings;
+            ViewModel.Window = this;
         }
 
         private void SetDefaultView()
@@ -74,14 +72,6 @@ namespace SauceEditor.Views.Settings
                     break;
             }
         }
-
-        private void OKButton_Click(object sender, RoutedEventArgs e)
-        {
-            SettingsChanged?.Invoke(this, new SettingsEventArgs(Settings));
-            Close();
-        }
-
-        private void CancelButton_Click(object sender, RoutedEventArgs e) => Close();
 
         private void ViewComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {

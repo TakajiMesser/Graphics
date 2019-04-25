@@ -1,16 +1,57 @@
-using OpenTK;
 using SauceEditor.Models;
-using SauceEditor.Utilities;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using System.Windows;
-using System.Windows.Input;
-using System.Windows.Media;
+using SauceEditor.Views.Factories;
 
 namespace SauceEditor.ViewModels
 {
     public class SettingsWindowViewModel : ViewModel
     {
-        
+        private EditorSettings _settings;
+
+        public IWindow Window { get; set; }
+        public IMainViewFactory MainViewFactory { get; set; }
+
+        private RelayCommand _okCommand;
+        public RelayCommand OKCommand
+        {
+            get
+            {
+                return _okCommand ?? (_okCommand = new RelayCommand(
+                    p =>
+                    {
+                        SaveSettings();
+                        Window.Close();
+                    },
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _cancelCommand;
+        public RelayCommand CancelCommand
+        {
+            get
+            {
+                return _cancelCommand ?? (_cancelCommand = new RelayCommand(
+                    p => Window.Close(),
+                    p => true
+                ));
+            }
+        }
+
+        public SettingsWindowViewModel()
+        {
+            LoadSettings();
+        }
+
+        private void LoadSettings()
+        {
+            _settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+        }
+
+        private void SaveSettings()
+        {
+            _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
+            MainViewFactory.LoadSettings();
+        }
     }
 }

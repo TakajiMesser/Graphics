@@ -9,6 +9,10 @@ namespace SampleGameProject.Helpers
     {
         private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine";
 
+        #region Projects
+        public static string PROJECT_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Projects\TestProject.pro";
+        #endregion
+
         #region Maps
         public static string MAP_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Maps\TestMap.map";
         #endregion

@@ -2,14 +2,10 @@
 using SauceEditor.Utilities;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.Views.UpDowns;
-using SpiceEngine.Game;
-using SpiceEngine.Rendering;
 using SpiceEngine.Utilities;
 using System;
-using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.GamePanels

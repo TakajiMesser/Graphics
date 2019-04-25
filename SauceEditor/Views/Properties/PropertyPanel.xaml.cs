@@ -1,13 +1,5 @@
-﻿using OpenTK;
-using SauceEditor.Models;
-using SauceEditor.Utilities;
-using SauceEditor.ViewModels;
-using SauceEditor.ViewModels.Commands;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Maps;
+﻿using SauceEditor.ViewModels.Commands;
 using System;
-using System.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Properties

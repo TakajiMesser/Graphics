@@ -1,6 +1,4 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using Xceed.Wpf.AvalonDock.Layout;
+﻿using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Models
 {
