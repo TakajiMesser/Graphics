@@ -11,8 +11,6 @@ namespace SauceEditor.Views.Transform
     {
         public readonly static DependencyProperty LabelProperty = DependencyProperty.Register("Label", typeof(string), typeof(TransformPanel));
 
-        public event EventHandler<TransformChangedEventArgs> TransformChanged;
-
         public TransformPanel()
         {
             InitializeComponent();

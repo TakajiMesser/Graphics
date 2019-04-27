@@ -14,7 +14,7 @@
         <StackPanel.DataContext>
             <vm:ProjectTreePanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
-        <StackPanel.Resources>
+        <!--<StackPanel.Resources>
             <RoutedUICommand x:Key="AddMapCommand" Text="Add Map"/>
             <RoutedUICommand x:Key="AddModelCommand" Text="Add Model"/>
             <RoutedUICommand x:Key="AddBehaviorCommand" Text="Add Behavior"/>
@@ -28,7 +28,7 @@
             <RoutedUICommand x:Key="ExcludeCommand" Text="Exclude"/>
             <RoutedUICommand x:Key="DeleteCommand" Text="Delete"/>
             <RoutedUICommand x:Key="RenameCommand" Text="Rename"/>
-        </StackPanel.Resources>
+        </StackPanel.Resources>-->
         <Label Name="ProjectType" FontSize="14"/>
         <TreeView Name="Tree" BorderBrush="Transparent" ItemsSource="{Binding Roots}">
             <TreeView.ItemContainerStyle>
@@ -37,6 +37,8 @@
                     <Setter Property="IsSelected" Value="{Binding IsSelected, Mode=TwoWay}" />
                     <Setter Property="FontWeight" Value="Normal" />
                     <Setter Property="cb:MouseDoubleClick.Command" Value="{Binding OpenCommand}"/>
+                    <Setter Property="cb:MouseRightButtonDown.Command" Value="{Binding MenuCommand}"/>
+                    <Setter Property="ContextMenu" Value="{Binding ContextMenu}"/>
                     <Style.Triggers>
                         <Trigger Property="IsSelected" Value="True">
                             <Setter Property="FontWeight" Value="Bold" />
@@ -49,7 +51,6 @@
                     <TextBlock Text="{Binding Name}" />
                 </HierarchicalDataTemplate>
             </TreeView.ItemTemplate>
-
 
             <!--<TreeView.CommandBindings>
                 <CommandBinding Command="{StaticResource AddMapCommand}" CanExecute="AddMapCommand_CanExecute" Executed="AddMapCommand_Executed" />

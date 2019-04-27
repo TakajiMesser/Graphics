@@ -29,7 +29,7 @@ namespace SauceEditor.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IMainViewFactory, IWindowFactory, IComponentFactory 
+    public partial class MainWindow : Window, IMainViewFactory, IWindowFactory
     {
         // Main views
         private GamePanelManager _gamePanelManager;
@@ -51,10 +51,17 @@ namespace SauceEditor.Views
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
             InitializeComponent();
 
+            ViewModel.MainViewFactory = this;
+            ViewModel.WindowFactory = this;
+
             Menu.ViewModel.MainViewFactory = this;
             Menu.ViewModel.WindowFactory = this;
-            Menu.ViewModel.ComponentFactory = this;
 
+            // TODO - Should this binding happen in the ViewModel itself?
+            Menu.ViewModel.ComponentFactory = ViewModel;
+
+            ViewModel.ProjectTreePanelViewModel = _projectTree.ViewModel;
+            ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
             ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
         }
 
@@ -144,7 +151,7 @@ namespace SauceEditor.Views
             _settingsWindow.Show();
         }
 
-        public ViewModel CreateGamePanelView(Map map)
+        public ViewModel CreateGamePanelManager(Map map)
         {
             var gamePanelManager = new GamePanelManager();
             gamePanelManager.EntitySelectionChanged += (s, args) =>
@@ -166,6 +173,56 @@ namespace SauceEditor.Views
 
             gamePanelManager.SetView(ViewModel.Settings.DefaultView);
             return gamePanelManager.ViewModel;
+        }
+
+        public ViewModel CreateScriptView(Script script)
+        {
+            var scriptView = new ScriptView();
+            scriptView.ViewModel.UpdateFromModel(script);
+
+            var title = "";
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, scriptView, title);
+
+            return scriptView.ViewModel;
+        }
+
+        public ViewModel CreateBehaviorView(Behavior behavior)
+        {
+            var behaviorView = new BehaviorView();
+
+            var title = "";// Path.GetFileNameWithoutExtension(filePath);
+            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, behaviorView, title, () =>
+            {
+                ViewModel.PlayVisibility = Visibility.Hidden;
+                //_map = null;
+            });
+
+            return behaviorView.ViewModel;
+
+            // Temporary measures...
+            /*if (_scriptView == null)
+            {
+                _scriptView = new ScriptView(filePath);
+            }
+
+            var anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _scriptView,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();*/
+
+            /* if (_behaviorView == null)
+            {
+                _behaviorView = new BehaviorView();
+            }*/
         }
 
         public void SaveAll()
@@ -222,131 +279,6 @@ namespace SauceEditor.Views
         public void CreateScript()
         {
 
-        }
-
-        public void OpenProject(string filePath)
-        {
-            var project = Project.Load(filePath);
-            _projectTree.ViewModel.UpdateFromModel(project, this);
-            //_projectTree.OpenProject(filePath);
-            _projectTree.IsActive = true;
-            //SideDockManager.ActiveContent = _projectTree;
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-        }
-
-        public void OpenMap(string filePath)
-        {
-            var map = new SauceEditor.Models.Components.Map()
-            {
-                Name = "Test Map",
-                Path = filePath,
-                GameMap = SpiceEngine.Maps.Map.Load(filePath)
-            };
-
-            ViewModel.GamePanelManagerViewModel = (GamePanelManagerViewModel)CreateGamePanelView(map);
-
-            _propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
-            _propertyPanel.ScriptOpened += (s, args) =>
-            {
-                if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)
-                {
-                    /*_scriptView = new ScriptView(filePath, actor, mapActor);
-                    _scriptView.Saved += (sender, e) =>
-                    {
-                        //mapActor.Behavior.e.Script;
-                    };*/
-
-                    OpenBehavior(args.FileName);
-                }
-                else
-                {
-                    // TODO - Throw some error to the user here?
-                }
-            };
-        }
-
-        public void OpenModel(string filePath)
-        {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
-            var map = MapBuilder.GenerateModelMap(filePath);
-
-            //_map = Map.Load(filePath);
-            //_mapPath = filePath;
-
-            //PlayButton.Visibility = Visibility.Visible;
-            _gamePanelManager = new GamePanelManager();
-            _gamePanelManager.EntitySelectionChanged += (s, args) =>
-            {
-                // For now, just go with the last entity that was selected
-                //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
-                _propertyPanel.IsActive = true;
-                //SideDockManager.ActiveContent = _propertyPanel;
-            };
-            //_gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
-            _gamePanelManager.Open(map);
-
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _gamePanelManager, Path.GetFileNameWithoutExtension(filePath), () => /*_map = null*/{ });
-
-            _gamePanelManager.SetView(ViewTypes.Perspective);
-
-            /*_propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
-            _propertyPanel.ScriptOpened += (s, args) =>
-            {
-                if (_propertyPanel.ViewModel.EditorEntity != null && _propertyPanel.ViewModel.EditorEntity.Entity is Actor actor && _propertyPanel.ViewModel.EditorEntity.MapEntity is MapActor mapActor)
-                {
-                    /*_scriptView = new ScriptView(filePath, actor, mapActor);
-                    _scriptView.Saved += (sender, e) =>
-                    {
-                        //mapActor.Behavior.e.Script;
-                    };*
-
-                    OpenBehavior(args.FileName);
-                }
-                else
-                {
-                    // TODO - Throw some error to the user here?
-                }
-            };*/
-        }
-
-        public void OpenBehavior(string filePath)
-        {
-            // Temporary measures...
-            /*if (_scriptView == null)
-            {
-                _scriptView = new ScriptView(filePath);
-            }
-
-            var anchorable = new LayoutAnchorable
-            {
-                Title = Path.GetFileNameWithoutExtension(filePath),
-                Content = _scriptView,
-                CanClose = true
-            };
-            anchorable.Closed += (s, args) =>
-            {
-                PlayButton.Visibility = Visibility.Hidden;
-                _map = null;
-            };
-            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
-            anchorable.DockAsDocument();*/
-
-            /* if (_behaviorView == null)
-            {
-                _behaviorView = new BehaviorView();
-            }*/
-
-            Title = System.IO.Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
-            _behaviorView = _behaviorView ?? new BehaviorView();
-
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, _behaviorView, Path.GetFileNameWithoutExtension(filePath), () =>
-            {
-                PlayButton.Visibility = Visibility.Hidden;
-                //_map = null;
-            });
         }
 
         public void OpenTexture(string filePath)

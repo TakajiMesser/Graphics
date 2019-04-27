@@ -28,8 +28,8 @@ namespace SauceEditor.Views.Properties
             }
         }*/
 
-        public event EventHandler<EntityEventArgs> EntityUpdated;
-        public event EventHandler<CommandEventArgs> CommandExecuted;
+        //public event EventHandler<EntityEventArgs> EntityUpdated;
+        //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<FileEventArgs> ScriptOpened;
 
         public PropertyPanel()

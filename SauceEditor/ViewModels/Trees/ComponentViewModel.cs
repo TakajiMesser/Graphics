@@ -1,50 +1,78 @@
+using SauceEditor.Helpers;
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
+using System;
+using System.Windows.Controls;
 
 namespace SauceEditor.ViewModels.Trees
 {
-    public class ComponentViewModel : ViewModel
+    public class ComponentViewModel<T> : ViewModel where T : Component
     {
-        public string Name => _component.Name;
+        public string Name { get; set; }
         public bool IsSelected { get; set; }
         public bool IsExpanded { get; set; }
 
         public RelayCommand OpenCommand { get; set; }
+        public RelayCommand MenuCommand { get; set; }
+        public RelayCommand ExcludeCommand { get; set; }
+        public RelayCommand DeleteCommand { get; set; }
+        public RelayCommand RenameCommand { get; set; }
 
-        Component _component;
+        public ContextMenu ContextMenu { get; set; }
 
-        public ComponentViewModel(Component component, IComponentFactory componentFactory)
+        T _component;
+
+        public ComponentViewModel(T component, IComponentFactory componentFactory)
         {
             _component = component;
+            Name = _component.Name;
+            OpenCommand = GetOpenCommand(componentFactory);
 
-            switch (component)
+            ContextMenu = new ContextMenu();
+            ContextMenu.Items.Add(new MenuItem()
             {
-                case Map map:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenMap(_component.Path));
-                    break;
-                case Model model:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenModel(_component.Path));
-                    break;
-                case Behavior behavior:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenBehavior(_component.Path));
-                    break;
-                case Texture texture:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenTexture(_component.Path));
-                    break;
-                case Sound sound:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenSound(_component.Path));
-                    break;
-                case Material material:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenMaterial(_component.Path));
-                    break;
-                case Archetype archetype:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenArchetype(_component.Path));
-                    break;
-                case Script script:
-                    OpenCommand = new RelayCommand(p => componentFactory.OpenScript(_component.Path));
-                    break;
-            }
-            
+                Header = "Open " + typeof(T).Name,
+                Command = OpenCommand
+            });
+            ContextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Exclude from Project",
+                Command = ExcludeCommand
+            });
+            ContextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Delete",
+                Command = DeleteCommand
+            });
+            ContextMenu.Items.Add(new MenuItem()
+            {
+                Header = "Rename",
+                Command = RenameCommand
+            });
         }
+
+        private RelayCommand GetOpenCommand(IComponentFactory componentFactory) => new TypeSwitch<RelayCommand>()
+            .Case<Map>(() => new RelayCommand(p => componentFactory.OpenMap(_component.Path)))
+            .Case<Model>(() => new RelayCommand(p => componentFactory.OpenModel(_component.Path)))
+            .Case<Behavior>(() => new RelayCommand(p => componentFactory.OpenBehavior(_component.Path)))
+            .Case<Texture>(() => new RelayCommand(p => componentFactory.OpenTexture(_component.Path)))
+            .Case<Sound>(() => new RelayCommand(p => componentFactory.OpenSound(_component.Path)))
+            .Case<Material>(() => new RelayCommand(p => componentFactory.OpenMaterial(_component.Path)))
+            .Case<Archetype>(() => new RelayCommand(p => componentFactory.OpenArchetype(_component.Path)))
+            .Case<Script>(() => new RelayCommand(p => componentFactory.OpenScript(_component.Path)))
+            .Default(() => throw new NotImplementedException())
+            .Match<T>();
+
+        /*var item = s as TreeViewItem;
+        item.IsSelected = true;
+        item.ContextMenu = Tree.FindResource("MapMenu") as ContextMenu;
+
+        <ContextMenu x:Key="MapMenu">
+            <MenuItem Header="Open Map" Command="{StaticResource OpenMapCommand}"/>
+            <Separator/>
+            <MenuItem Header="Exclude From Project" Command="{StaticResource ExcludeCommand}"/>
+            <MenuItem Header="Delete" Command="{StaticResource DeleteCommand}"/>
+            <MenuItem Header="Rename" Command="{StaticResource RenameCommand}"/>
+        </ContextMenu>*/
     }
 }

@@ -5,12 +5,13 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SauceEditor.Views.UpDowns"
              xmlns:vm="clr-namespace:SauceEditor.ViewModels"
-             mc:Ignorable="d" >
+             mc:Ignorable="d"
+             x:Name="Parent">
     <StackPanel Orientation="Vertical">
         <StackPanel.DataContext>
             <vm:TransformPanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
-        <Label Name="Title" Content="{Binding Label}" Visibility="Collapsed" FontSize="16"/>
+        <Label Name="Title" Content="{Binding ElementName=Parent, Path=Label}" Visibility="Collapsed" FontSize="16"/>
         <StackPanel Orientation="Horizontal">
             <local:NumericUpDown x:Name="X_UpDown" Grid.Column="0" Label="X" Margin="4, 2, 2, 4"/>
             <local:NumericUpDown x:Name="Y_UpDown" Grid.Column="1" Label="Y" Margin="4, 2, 2, 4"/>

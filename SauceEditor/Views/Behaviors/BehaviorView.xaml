@@ -11,9 +11,9 @@
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
     <StackPanel Orientation="Horizontal">
-        <!--<StackPanel.DataContext>
+        <StackPanel.DataContext>
             <vm:BehaviorViewModel x:Name="ViewModel"/>
-        </StackPanel.DataContext>-->
+        </StackPanel.DataContext>
         <network:NetworkView x:Name="Network"></network:NetworkView>
         <!--<nodes:NodeListView></nodes:NodeListView>-->
     </StackPanel>

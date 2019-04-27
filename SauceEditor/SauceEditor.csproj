@@ -29,6 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -38,6 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -201,6 +203,8 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
+    <Compile Include="Helpers\PatternMatcher.cs" />
+    <Compile Include="Helpers\TypeSwitch.cs" />
     <Compile Include="Models\Components\Archetype.cs" />
     <Compile Include="Models\Components\Behavior.cs" />
     <Compile Include="Models\Components\Component.cs" />
@@ -215,7 +219,6 @@
     <Compile Include="Models\Components\Sound.cs" />
     <Compile Include="Models\Components\Texture.cs" />
     <Compile Include="Models\IAnchor.cs" />
-    <Compile Include="Models\Script.cs" />
     <Compile Include="Models\EditorEntity.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
@@ -233,6 +236,7 @@
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
+    <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\ComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\ComponentViewModel.cs" />
     <Compile Include="ViewModels\Trees\ProjectViewModel.cs" />
@@ -249,6 +253,7 @@
     </Compile>
     <Compile Include="Views\Factories\IComponentFactory.cs" />
     <Compile Include="Views\Factories\IMainViewFactory.cs" />
+    <Compile Include="Views\Factories\IFile.cs" />
     <Compile Include="Views\Factories\IWindow.cs" />
     <Compile Include="Views\Factories\IWindowFactory.cs" />
     <Compile Include="Views\GamePanels\GamePanelManager.xaml.cs">

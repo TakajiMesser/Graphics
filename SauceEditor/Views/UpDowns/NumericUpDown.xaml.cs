@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceEngine.Utilities;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -93,7 +94,7 @@ namespace SauceEditor.Views.UpDowns
                 step *= dy;
             }
 
-            ViewModel.Value += step;
+            ViewModel.Value = (ViewModel.Value + step).Clamp(MinValue, MaxValue);
         }
 
         private void DownButton_Click(object sender, RoutedEventArgs e)
@@ -107,7 +108,7 @@ namespace SauceEditor.Views.UpDowns
                 step *= dy;
             }
 
-            ViewModel.Value -= step;
+            ViewModel.Value = (ViewModel.Value - step).Clamp(MinValue, MaxValue);
         }
     }
 }

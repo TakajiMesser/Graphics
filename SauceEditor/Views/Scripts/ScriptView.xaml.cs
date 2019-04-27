@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Models;
+using SauceEditor.Views.Factories;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Maps;
 using System;
@@ -9,35 +10,19 @@ namespace SauceEditor.Views.Scripts
     /// <summary>
     /// Interaction logic for ScriptView.xaml
     /// </summary>
-    public partial class ScriptView : DockPanel
+    public partial class ScriptView : DockPanel, IFile
     {
-        private Script _script;
-
         public EventHandler<ScriptEventArgs> Saved;
 
-        public ScriptView(string scriptPath)
+        public ScriptView()
         {
             InitializeComponent();
-
-            _script = new Script();
-            Open(scriptPath);
+            ViewModel.Filer = this;
         }
 
-        public ScriptView(string scriptPath, Actor actor, MapActor mapActor)
-        {
-            InitializeComponent();
-
-            _script = new Script();
-            _script.SetEntities(actor, mapActor);
-
-            Open(scriptPath);
-        }
-
-        public void Open(string filePath)
+        public void Load(string filePath)
         {
             LockEditor();
-            //TextEditor.Text = File.ReadAllText(filePath);
-            _script.Load(filePath);
             TextEditor.Load(filePath);
             UnlockEditor();
         }
@@ -45,21 +30,13 @@ namespace SauceEditor.Views.Scripts
         public void Save(string filePath)
         {
             LockEditor();
-
             TextEditor.Save(filePath);
-            Saved?.Invoke(this, new ScriptEventArgs(_script));
-
+            Saved?.Invoke(this, new ScriptEventArgs(ViewModel.Script));
             UnlockEditor();
         }
 
-        public void LockEditor()
-        {
-            TextEditor.IsManipulationEnabled = false;
-        }
+        public void LockEditor() => TextEditor.IsManipulationEnabled = false;
 
-        public void UnlockEditor()
-        {
-            TextEditor.IsManipulationEnabled = true;
-        }
+        public void UnlockEditor() => TextEditor.IsManipulationEnabled = true;
     }
 }

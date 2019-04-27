@@ -6,9 +6,13 @@
         xmlns:transform="clr-namespace:SauceEditor.Views.Transform"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels"
         mc:Ignorable="d"
         Title="Tools">
     <StackPanel Orientation="Vertical">
+        <StackPanel.DataContext>
+            <vm:ToolsPanelViewModel x:Name="ViewModel"/>
+        </StackPanel.DataContext>
         <Label FontSize="14">Select Tool</Label>
         <WrapPanel Name="ButtonPanel">
             <Button Name="SelectButton" Click="SelectButton_Click">Select</Button>

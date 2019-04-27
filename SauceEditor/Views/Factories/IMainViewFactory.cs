@@ -5,7 +5,9 @@ namespace SauceEditor.Views.Factories
 {
     public interface IMainViewFactory
     {
-        ViewModel CreateGamePanelView(Map map);
+        ViewModel CreateGamePanelManager(Map map);
+        ViewModel CreateBehaviorView(Behavior behavior);
+        ViewModel CreateScriptView(Script script);
 
         void SaveAll();
         void LoadSettings();

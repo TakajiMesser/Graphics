@@ -11,22 +11,22 @@ namespace SauceEditor.ViewModels.Trees
         public string Name { get; set; }
         public bool IsSelected { get; set; }
         public bool IsExpanded { get; set; }
-        public ReadOnlyCollection<ComponentListViewModel> Children { get; set; }
+        public ReadOnlyCollection<IComponentListViewModel> Children { get; set; }
 
         public ProjectViewModel(Project project, IComponentFactory componentFactory)
         {
             Name = project.Name;
 
-            Children = new ReadOnlyCollection<ComponentListViewModel>(new List<ComponentListViewModel>()
+            Children = new ReadOnlyCollection<IComponentListViewModel>(new List<IComponentListViewModel>()
             {
-                new ComponentListViewModel("Maps", project.Maps, componentFactory),
-                new ComponentListViewModel("Models", project.Models, componentFactory),
-                new ComponentListViewModel("Behaviors", project.Behaviors, componentFactory),
-                new ComponentListViewModel("Textures", project.Textures, componentFactory),
-                new ComponentListViewModel("Sounds", project.Sounds, componentFactory),
-                new ComponentListViewModel("Materials", project.Materials, componentFactory),
-                new ComponentListViewModel("Archetypes", project.Archetypes, componentFactory),
-                new ComponentListViewModel("Scripts", project.Scripts, componentFactory)
+                new ComponentListViewModel<Map>(project.Maps, componentFactory),
+                new ComponentListViewModel<Model>(project.Models, componentFactory),
+                new ComponentListViewModel<Behavior>(project.Behaviors, componentFactory),
+                new ComponentListViewModel<Texture>(project.Textures, componentFactory),
+                new ComponentListViewModel<Sound>(project.Sounds, componentFactory),
+                new ComponentListViewModel<Material>(project.Materials, componentFactory),
+                new ComponentListViewModel<Archetype>(project.Archetypes, componentFactory),
+                new ComponentListViewModel<Script>(project.Scripts, componentFactory)
             });
         }
     }

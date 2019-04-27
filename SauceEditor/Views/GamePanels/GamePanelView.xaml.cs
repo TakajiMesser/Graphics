@@ -81,6 +81,8 @@ namespace SauceEditor.Views.GamePanels
         {
             InitializeComponent();
 
+            SettingsPopup.PlacementTarget = SettingsExpander;
+
             SettingsExpander.Expanded += (s, args) => SettingsPopup.IsOpen = true;
             SettingsExpander.Collapsed += (s, args) => SettingsPopup.IsOpen = false;
 

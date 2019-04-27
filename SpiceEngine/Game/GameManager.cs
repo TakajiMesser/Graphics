@@ -79,8 +79,12 @@ namespace SpiceEngine.Game
 
             var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
 
-            var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
-            Camera.AttachToEntity(actor, true, false);
+            if (!string.IsNullOrEmpty(map.Camera.AttachedActorName))
+            {
+                var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
+                Camera.AttachToEntity(actor, true, false);
+            }
+            
             BehaviorManager.Load();
 
             IsLoaded = true;
