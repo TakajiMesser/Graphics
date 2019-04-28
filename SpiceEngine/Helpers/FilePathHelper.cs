@@ -7,7 +7,7 @@ namespace SpiceEngine.Helpers
     /// </summary>
     public static class FilePathHelper
     {
-        private static string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"\..\..\..";//@"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine";
+        private static readonly string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";
 
         public static string SCREENSHOT_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Screenshots\";
 
@@ -16,6 +16,7 @@ namespace SpiceEngine.Helpers
         public static string CUBE_MESH_PATH = SOLUTION_DIRECTORY + @"\SpiceEngine\Resources\Meshes\Cube.obj";
         public static string SPHERE_MESH_PATH = SOLUTION_DIRECTORY + @"\SpiceEngine\Resources\Meshes\Sphere.obj";
         public static string CONE_MESH_PATH = SOLUTION_DIRECTORY + @"\SpiceEngine\Resources\Meshes\Cone.obj";
+        public static string SPHERE_OUTPUT_PATH = SOLUTION_DIRECTORY + @"\SpiceEngine\Resources\Meshes\SphereOutput.txt";
         #endregion
 
         #region Materials
