@@ -300,6 +300,14 @@
     <Compile Include="Models\SettingsEventArgs.cs" />
     <Compile Include="Models\EditorSettings.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
+    <Page Include="Themes\Light.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Themes\Dark.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="Views\Behaviors\BehaviorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
