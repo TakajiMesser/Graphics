@@ -1,12 +1,15 @@
 using Microsoft.Win32;
+using SauceEditor.Helpers;
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
+using System;
+using System.IO;
 
 namespace SauceEditor.ViewModels
 {
     public class MainMenuViewModel : ViewModel
     {
-        private const string DEFAULT_INITIAL_DIRECTORY = @"C:\Users\Takaji\Documents\Visual Studio 2017\Projects\SpiceEngine\SampleGameProject\Maps";
+        private static readonly string DEFAULT_INITIAL_DIRECTORY = FilePathHelper.INITIAL_FILE_DIRECTORY;
 
         public IMainViewFactory MainViewFactory { get; set; }
         public IWindowFactory WindowFactory { get; set; }
@@ -323,7 +326,7 @@ namespace SauceEditor.ViewModels
                 CheckPathExists = true,
                 DefaultExt = defaultExt,
                 Filter = filter,
-                InitialDirectory = initialDirectory
+                InitialDirectory = Path.GetFullPath(initialDirectory)
             };
 
             return dialog.ShowDialog() == true

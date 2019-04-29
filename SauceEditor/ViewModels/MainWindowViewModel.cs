@@ -224,12 +224,13 @@ namespace SauceEditor.ViewModels
         {
             Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
 
-            var map = new SauceEditor.Models.Components.Map()
+            var model = new Model()
             {
-                Name = "Test Model Map",
-                Path = filePath,
-                GameMap = MapBuilder.GenerateModelMap(filePath)
+                Name = "Test Model",
+                Path = filePath
             };
+
+            var map = MapBuilder.GenerateModelMap(model);
 
             GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
@@ -265,12 +266,7 @@ namespace SauceEditor.ViewModels
                 }
             };
 
-            var map = new SauceEditor.Models.Components.Map()
-            {
-                Name = "Test Texture Map",
-                Path = filePath,
-                GameMap = MapBuilder.GenerateTextureMap(texture)
-            };
+            var map = MapBuilder.GenerateTextureMap(texture);
 
             GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
@@ -293,12 +289,7 @@ namespace SauceEditor.ViewModels
                 Path = filePath
             };
 
-            var map = new SauceEditor.Models.Components.Map()
-            {
-                Name = "Test Material Map",
-                Path = filePath,
-                GameMap = MapBuilder.GenerateMaterialMap(material)
-            };
+            var map = MapBuilder.GenerateMaterialMap(material);
 
             GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;

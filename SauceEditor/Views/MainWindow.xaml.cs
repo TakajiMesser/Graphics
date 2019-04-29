@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using SauceEditor.Helpers;
-using SauceEditor.Helpers.Builders;
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
@@ -12,12 +11,9 @@ using SauceEditor.Views.Properties;
 using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Maps;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
@@ -234,76 +230,6 @@ namespace SauceEditor.Views
         public void LoadSettings()
         {
             ViewModel.Settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-        }
-
-        public void CreateProject()
-        {
-
-        }
-
-        public void CreateMap()
-        {
-
-        }
-
-        public void CreateModel()
-        {
-
-        }
-
-        public void CreateBehavior()
-        {
-
-        }
-
-        public void CreateTexture()
-        {
-
-        }
-
-        public void CreateSound()
-        {
-
-        }
-
-        public void CreateMaterial()
-        {
-
-        }
-
-        public void CreateArchetype()
-        {
-
-        }
-
-        public void CreateScript()
-        {
-
-        }
-
-        public void OpenTexture(string filePath)
-        {
-
-        }
-
-        public void OpenSound(string filePath)
-        {
-
-        }
-
-        public void OpenMaterial(string filePath)
-        {
-
-        }
-
-        public void OpenArchetype(string filePath)
-        {
-
-        }
-
-        public void OpenScript(string filePath)
-        {
-
         }
     }
 }

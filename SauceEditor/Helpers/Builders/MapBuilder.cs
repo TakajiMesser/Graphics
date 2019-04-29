@@ -61,7 +61,7 @@ namespace SauceEditor.Helpers.Builders
             //project.Save(Path.GetDirectoryName(SampleGameProject.Helpers.FilePathHelper.MAP_PATH) + "\\" + project.Name + Project.FILE_EXTENSION);
         }
 
-        public static SpiceEngine.Maps.Map GenerateModelMap(string filePath)
+        public static Models.Components.Map GenerateModelMap(Model model)
         {
             var map = new Map3D()
             {
@@ -84,15 +84,19 @@ namespace SauceEditor.Helpers.Builders
                 Rotation = Vector3.Zero,
                 Orientation = Vector3.Zero,
                 Scale = Vector3.One,
-                ModelFilePath = filePath
+                ModelFilePath = model.Path
             };
 
             map.Actors.Add(mapActor);
 
-            return map;
+            return new Models.Components.Map()
+            {
+                Name = "Model " + model.Name,
+                GameMap = map
+            };
         }
 
-        public static SpiceEngine.Maps.Map GenerateTextureMap(Texture texture)
+        public static Models.Components.Map GenerateTextureMap(Texture texture)
         {
             var map = new Map3D()
             {
@@ -119,10 +123,14 @@ namespace SauceEditor.Helpers.Builders
 
             map.Brushes.Add(mapBrush);
 
-            return map;
+            return new Models.Components.Map()
+            {
+                Name = "Texture " + texture.Name,
+                GameMap = map
+            };
         }
 
-        public static SpiceEngine.Maps.Map GenerateMaterialMap(Material material)
+        public static Models.Components.Map GenerateMaterialMap(Material material)
         {
             var map = new Map3D()
             {
@@ -150,7 +158,11 @@ namespace SauceEditor.Helpers.Builders
 
             map.Brushes.Add(mapBrush);
 
-            return map;
+            return new Models.Components.Map()
+            {
+                Name = "Material " + material.Name,
+                GameMap = map
+            };
         }
     }
 }
