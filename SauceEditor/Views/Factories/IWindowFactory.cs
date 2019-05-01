@@ -1,4 +1,4 @@
-using SauceEditor.Models.Components;
+using SpiceEngine.Maps;
 
 namespace SauceEditor.Views.Factories
 {

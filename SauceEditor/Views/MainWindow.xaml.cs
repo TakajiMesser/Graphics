@@ -18,7 +18,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using GameWindow = SpiceEngine.Game.GameWindow;
-using Map = SauceEditor.Models.Components.Map;
+using Map = SpiceEngine.Maps.Map;
 
 namespace SauceEditor.Views
 {
@@ -35,7 +35,7 @@ namespace SauceEditor.Views
         // Side panels
         private ProjectTreePanel _projectTree = new ProjectTreePanel();
         private ToolsPanel _toolPanel = new ToolsPanel();
-        private PropertyPanel _propertyPanel = new PropertyPanel();
+        private EntityPropertyPanel _entityPropertyPanel = new EntityPropertyPanel();
 
         // Separate windows
         private GameWindow _gameWindow;
@@ -58,7 +58,16 @@ namespace SauceEditor.Views
 
             ViewModel.ProjectTreePanelViewModel = _projectTree.ViewModel;
             ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
-            ViewModel.PropertiesViewModel = _propertyPanel.ViewModel;
+            ViewModel.EntityPropertiesViewModel = _entityPropertyPanel.ViewModel;
+
+            MainDockingManager.ActiveContentChanged += (s, args) =>
+            {
+                if (MainDockingManager.ActiveContent is IHaveViewModel haveViewModel && haveViewModel.GetViewModel() is IMainDockViewModel viewModel)
+                {
+                    ViewModel.CurrentMainDockViewModel = viewModel;
+                    ViewModel.PlayCommand.InvokeCanExecuteChanged();
+                }
+            };
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -80,11 +89,11 @@ namespace SauceEditor.Views
 
             //ViewModel.SideDockViewModels.Add(_projectTree.ViewModel);
             //ViewModel.SideDockViewModels.Add(_toolPanel.ViewModel);
-            ViewModel.SideDockViewModels.Add(_propertyPanel.ViewModel);
+            ViewModel.SideDockViewModels.Add(_entityPropertyPanel.ViewModel);
 
             DockHelper.AddToDockAsDocument(SideDockingManager, _projectTree);
             DockHelper.AddToDockAsDocument(SideDockingManager, _toolPanel);
-            DockHelper.AddToDockAsDocument(SideDockingManager, _propertyPanel);
+            DockHelper.AddToDockAsDocument(SideDockingManager, _entityPropertyPanel);
 
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;
@@ -130,7 +139,7 @@ namespace SauceEditor.Views
         {
             //_gamePanelManager.IsEnabled = false;
 
-            var gameWindow = new GameWindow(map.GameMap)
+            var gameWindow = new GameWindow(map)
             {
                 VSync = VSyncMode.Adaptive
             };
@@ -154,12 +163,12 @@ namespace SauceEditor.Views
             {
                 // For now, just go with the last entity that was selected
                 //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
-                _propertyPanel.IsActive = true;
+                _entityPropertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
+                _entityPropertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
             };
             //gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
-            gamePanelManager.Open(map.GameMap);
+            gamePanelManager.ViewModel.UpdateFromModel(map);
 
             var title = "";// Path.GetFileNameWithoutExtension(filePath);
             DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, gamePanelManager, title, () =>

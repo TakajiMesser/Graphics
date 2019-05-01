@@ -11,11 +11,13 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace SauceEditor.ViewModels
+namespace SauceEditor.ViewModels.Properties
 {
-    public class PropertiesViewModel : ViewModel
+    public class EntityPropertiesViewModel : ViewModel
     {
         private string _behaviorFilePath;
+
+        public EntityProperties Entity { get; set; }
 
         public EditorEntity EditorEntity { get; set; }
         public Visibility EntitySelected { get; set; }
@@ -84,11 +86,17 @@ namespace SauceEditor.ViewModels
 
         public void UpdateFromModel(EditorEntity editorEntity)
         {
+            //Entity = editorEntity != null ? new EntityProperties(editorEntity) : null;
+
+            /*Entity = new EntityProperties(editorEntity?.MapEntity);
             EditorEntity = editorEntity;
 
             EntitySelected = editorEntity != null ? Visibility.Visible : Visibility.Collapsed;
             EntityType = editorEntity != null ? editorEntity.Entity.GetType().Name : "No Properties to Show";
-            ID = editorEntity != null ? editorEntity.Entity.ID.ToString() : "";
+
+            ID = editorEntity != null ? editorEntity.Entity.ID.ToString() : "";*/
+
+            return;
 
             if (editorEntity != null && editorEntity.MapEntity is MapActor mapActor)
             {

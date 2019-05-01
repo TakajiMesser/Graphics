@@ -1,5 +1,6 @@
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
+using Map = SpiceEngine.Maps.Map;
 
 namespace SauceEditor.Views.Factories
 {

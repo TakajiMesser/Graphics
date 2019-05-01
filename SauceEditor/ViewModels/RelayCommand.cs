@@ -19,11 +19,15 @@ namespace SauceEditor.ViewModels
 
         public bool CanExecute(object parameter) => _canExecuteAction?.Invoke(parameter) ?? true;
 
-        public event EventHandler CanExecuteChanged
+        /*public event EventHandler CanExecuteChanged
         {
             add => CommandManager.RequerySuggested += value;
             remove => CommandManager.RequerySuggested -= value;
-        }
+        }*/
+
+        public event EventHandler CanExecuteChanged;
+        public void InvokeCanExecuteChanged() => CanExecuteChanged?.Invoke(this, EventArgs.Empty);
+        //public void InvokeCanExecuteChanged(object parameter) => CanExecuteChanged?.Invoke(this, new EventArgs(parameter) { a });
 
         /*public void InvokeCanExecuteChanged()
         {

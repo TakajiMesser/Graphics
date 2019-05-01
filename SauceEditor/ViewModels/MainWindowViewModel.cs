@@ -3,6 +3,7 @@ using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Behaviors;
 using SauceEditor.ViewModels.Commands;
+using SauceEditor.ViewModels.Properties;
 using SauceEditor.ViewModels.Trees;
 using SauceEditor.Views.Factories;
 using System.Collections.Generic;
@@ -31,9 +32,11 @@ namespace SauceEditor.ViewModels
         public bool IsPlayable { get; set; }
         public Visibility PlayVisibility { get; set; }
 
+        public IMainDockViewModel CurrentMainDockViewModel { get; set; }
+
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
-        public PropertiesViewModel PropertiesViewModel { get; set; }
+        public EntityProperties EntityPropertiesViewModel { get; set; }
 
         public GamePanelManagerViewModel GamePanelManagerViewModel { get; set; }
         public BehaviorViewModel BehaviorViewModel { get; set; }
@@ -73,8 +76,8 @@ namespace SauceEditor.ViewModels
             get
             {
                 return _playCommand ?? (_playCommand = new RelayCommand(
-                    p => WindowFactory.CreateGameWindow(null),
-                    p => true //???
+                    p => WindowFactory.CreateGameWindow(CurrentMainDockViewModel.Map),
+                    p => CurrentMainDockViewModel != null ? CurrentMainDockViewModel.IsPlayable : false
                 ));
             }
         }
@@ -87,9 +90,12 @@ namespace SauceEditor.ViewModels
             MapBuilder.CreateTestProject();
         }
 
-        public void OnPropertiesViewModelChanged()
+        public void OnEntityPropertiesViewModelChanged()
         {
-            AddChild(PropertiesViewModel, (s, args) => GamePanelManagerViewModel?.RequestUpdate());
+            AddChild(EntityPropertiesViewModel, (s, args) =>
+            {
+                GamePanelManagerViewModel?.RequestUpdate();
+            });
         }
 
         /*public ICommand EntityPropertiesUpdatedCommand => _entityPropertiesUpdatedCommand ?? new RelayCommand(
@@ -199,7 +205,7 @@ namespace SauceEditor.ViewModels
                 GameMap = SpiceEngine.Maps.Map.Load(filePath)
             };
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map.GameMap);
             //_propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
             /*_propertyPanel.ScriptOpened += (s, args) =>
             {
@@ -232,7 +238,7 @@ namespace SauceEditor.ViewModels
 
             var map = MapBuilder.GenerateModelMap(model);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map.GameMap);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
         }
 
@@ -268,7 +274,7 @@ namespace SauceEditor.ViewModels
 
             var map = MapBuilder.GenerateTextureMap(texture);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map.GameMap);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
             GamePanelManagerViewModel.PerspectiveViewModel.Panel.RenderMode = SpiceEngine.Rendering.RenderModes.Diffuse;
             CommandManager.InvalidateRequerySuggested();
@@ -291,7 +297,7 @@ namespace SauceEditor.ViewModels
 
             var map = MapBuilder.GenerateMaterialMap(material);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(map.GameMap);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
         }
 

@@ -24,5 +24,7 @@ namespace SauceEditor.ViewModels
             childViewModel.PropertyChanged += changeHandler;
             ChildViewModels.Add(childViewModel);
         }
+
+        public void InvokePropertyChanged(string propertyName) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

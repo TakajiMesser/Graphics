@@ -232,9 +232,13 @@
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
+    <Compile Include="ViewModels\IMainDockViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
+    <Compile Include="ViewModels\Properties\NullVisibilityConverter.cs" />
+    <Compile Include="ViewModels\Properties\TransformProperty.cs" />
+    <Compile Include="ViewModels\Properties\EntityProperties.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
     <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\ComponentListViewModel.cs" />
@@ -244,7 +248,7 @@
     <Compile Include="ViewModels\ToolsPanelViewModel.cs" />
     <Compile Include="ViewModels\ScriptViewModel.cs" />
     <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
-    <Compile Include="ViewModels\PropertiesViewModel.cs" />
+    <Compile Include="ViewModels\Properties\EntityPropertiesViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\TransformPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
@@ -252,6 +256,7 @@
       <DependentUpon>BehaviorView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Factories\IComponentFactory.cs" />
+    <Compile Include="Views\Factories\IHaveViewModel.cs" />
     <Compile Include="Views\Factories\IMainViewFactory.cs" />
     <Compile Include="Views\Factories\IFile.cs" />
     <Compile Include="Views\Factories\IWindow.cs" />
@@ -284,8 +289,8 @@
     <Compile Include="Views\UpDowns\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Properties\PropertyPanel.xaml.cs">
-      <DependentUpon>PropertyPanel.xaml</DependentUpon>
+    <Compile Include="Views\Properties\EntityPropertyPanel.xaml.cs">
+      <DependentUpon>EntityPropertyPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectTree\ProjectTreePanel.xaml.cs">
       <DependentUpon>ProjectTreePanel.xaml</DependentUpon>
@@ -344,7 +349,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Properties\PropertyPanel.xaml">
+    <Page Include="Views\Properties\EntityPropertyPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
