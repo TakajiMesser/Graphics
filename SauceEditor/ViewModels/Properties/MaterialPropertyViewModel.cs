@@ -7,31 +7,34 @@ using SpiceEngine.Utilities;
 using System.ComponentModel;
 using System.Windows.Media;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using SpiceEngine.Rendering.Materials;
+using SauceEditor.Models.Components;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class EntityProperties : ViewModel
+    public class MaterialPropertyViewModel : ViewModel, IPropertyViewModel<MaterialComponent>
     {
-        public string ID { get; private set; }
         public string Name { get; set; }
 
-        [Category("Transforms")]
         [ExpandableObject]
-        public TransformProperty Position { get; set; }
+        public VectorProperty Ambient { get; set; }
 
-        [Category("Transforms")]
         [ExpandableObject]
-        public TransformProperty Rotation { get; set; }
+        public VectorProperty Diffuse { get; set; }
 
-        [Category("Transforms")]
         [ExpandableObject]
-        public TransformProperty Scale { get; set; }
+        public VectorProperty Specular { get; set; }
 
-        public Color Color { get; set; }
+        public float SpecularExponent { get; set; }
 
-        private EditorEntity _editorEntity;
+        private MaterialComponent _materialComponent;
 
-        public void OnPositionChanged()
+        public void UpdateFromModel(MaterialComponent materialComponent)
+        {
+            _materialComponent = materialComponent;
+        }
+
+        /*public void OnPositionChanged()
         {
             AddChild(Position, (s, args) =>
             {
@@ -70,34 +73,32 @@ namespace SauceEditor.ViewModels.Properties
             });
         }
 
-        public void UpdateFromModel(EditorEntity editorEntity)
+        public void UpdateFromModel(Material material)
         {
-            _editorEntity = editorEntity;
-            if (editorEntity == null) return; // Yikes
-
-            ID = editorEntity.Entity.ID.ToString();
+            _material = material;
+            if (material == null) return; // Yikes
             
             if (editorEntity.MapEntity is MapActor mapActor)
             {
                 Name = mapActor.Name;
             }
 
-            Position = new TransformProperty(editorEntity.MapEntity.Position);
+            Position = new VectorProperty(editorEntity.MapEntity.Position);
 
             if (editorEntity.Entity is IRotate)
             {
-                Rotation = new TransformProperty(editorEntity.MapEntity.Rotation);
+                Rotation = new VectorProperty(editorEntity.MapEntity.Rotation);
             }
 
             if (editorEntity.Entity is IScale)
             {
-                Scale = new TransformProperty(editorEntity.MapEntity.Scale);
+                Scale = new VectorProperty(editorEntity.MapEntity.Scale);
             }
 
             if (editorEntity.MapEntity is MapLight mapLight)
             {
                 Color = mapLight.Color.ToMediaColor();
             }
-        }
+        }*/
     }
 }

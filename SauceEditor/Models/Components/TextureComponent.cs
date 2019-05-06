@@ -2,7 +2,7 @@
 
 namespace SauceEditor.Models.Components
 {
-    public class Texture : Component
+    public class TextureComponent : Component
     {
         public TexturePaths TexturePaths { get; set; }
     }

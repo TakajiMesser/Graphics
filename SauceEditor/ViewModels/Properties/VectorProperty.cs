@@ -2,13 +2,13 @@ using OpenTK;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class TransformProperty : ViewModel
+    public class VectorProperty : ViewModel
     {
         public double X { get; set; }
         public double Y { get; set; }
         public double Z { get; set; }
 
-        public TransformProperty(Vector3 vector)
+        public VectorProperty(Vector3 vector)
         {
             X = vector.X;
             Y = vector.Y;

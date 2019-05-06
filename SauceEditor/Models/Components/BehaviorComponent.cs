@@ -1,6 +1,6 @@
 ﻿namespace SauceEditor.Models.Components
 {
-    public class Behavior : Component
+    public class BehaviorComponent : Component
     {
         
     }

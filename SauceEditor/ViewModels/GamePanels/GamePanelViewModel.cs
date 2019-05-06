@@ -1,6 +1,8 @@
+using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
 using System;
+using System.Collections.Generic;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;
@@ -72,6 +74,7 @@ namespace SauceEditor.ViewModels
         public float GridThickness { get; set; }
         public float GridUnit { get; set; }
         public bool ShowGrid { get; set; }
+        //public List<IEntity> SelectedEntities { get; set; }
 
         public GamePanelViewModel()
         {
@@ -86,12 +89,18 @@ namespace SauceEditor.ViewModels
             }
         }
 
+        public void OnSelectedEntitiesChanged()
+        {
+
+        }
+
         public void OnPanelChanged()
         {
             Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
             Panel.MouseDown += Panel_MouseDown;
             Panel.MouseUp += Panel_MouseUp;
             Panel.PanelLoaded += (s, args) => ShowGrid = true;
+            //Panel.EntitySelectionChanged += (s, args) => SelectedEntities = args.Entities;
 
             // Default to wireframe rendering
             Panel.RenderMode = RenderModes.Wireframe;

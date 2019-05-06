@@ -17,25 +17,25 @@ namespace SauceEditor.Helpers.Builders
                 Path = SampleGameProject.Helpers.FilePathHelper.PROJECT_PATH
             };
 
-            project.Maps.Add(new Models.Components.Map()
+            project.MapComponents.Add(new MapComponent()
             {
                 Name = "Test Map",
                 Path = SampleGameProject.Helpers.FilePathHelper.MAP_PATH
             });
 
-            project.Models.Add(new Model()
+            project.ModelComponents.Add(new ModelComponent()
             {
                 Name = "Bob Lamp",
                 Path = SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH
             });
 
-            project.Materials.Add(new Material()
+            project.MaterialComponents.Add(new MaterialComponent()
             {
                 Name = "Test Material",
                 Path = SampleGameProject.Helpers.FilePathHelper.SHINY_MATERIAL_PATH
             });
 
-            project.Textures.Add(new Texture()
+            project.TextureComponents.Add(new TextureComponent()
             {
                 Name = "Test Texture",
                 Path = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
@@ -48,7 +48,7 @@ namespace SauceEditor.Helpers.Builders
                 }
             });
 
-            project.Scripts.Add(new Script()
+            project.ScriptComponents.Add(new ScriptComponent()
             {
                 Name = "Test Script",
                 Path = SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH
@@ -61,7 +61,7 @@ namespace SauceEditor.Helpers.Builders
             //project.Save(Path.GetDirectoryName(SampleGameProject.Helpers.FilePathHelper.MAP_PATH) + "\\" + project.Name + Project.FILE_EXTENSION);
         }
 
-        public static Models.Components.Map GenerateModelMap(Model model)
+        public static MapComponent GenerateModelMap(ModelComponent model)
         {
             var map = new Map3D()
             {
@@ -89,14 +89,14 @@ namespace SauceEditor.Helpers.Builders
 
             map.Actors.Add(mapActor);
 
-            return new Models.Components.Map()
+            return new MapComponent()
             {
                 Name = "Model " + model.Name,
-                GameMap = map
+                Map = map
             };
         }
 
-        public static Models.Components.Map GenerateTextureMap(Texture texture)
+        public static MapComponent GenerateTextureMap(TextureComponent texture)
         {
             var map = new Map3D()
             {
@@ -123,14 +123,14 @@ namespace SauceEditor.Helpers.Builders
 
             map.Brushes.Add(mapBrush);
 
-            return new Models.Components.Map()
+            return new MapComponent()
             {
                 Name = "Texture " + texture.Name,
-                GameMap = map
+                Map = map
             };
         }
 
-        public static Models.Components.Map GenerateMaterialMap(Material material)
+        public static MapComponent GenerateMaterialMap(MaterialComponent material)
         {
             var map = new Map3D()
             {
@@ -158,10 +158,10 @@ namespace SauceEditor.Helpers.Builders
 
             map.Brushes.Add(mapBrush);
 
-            return new Models.Components.Map()
+            return new MapComponent()
             {
                 Name = "Material " + material.Name,
-                GameMap = map
+                Map = map
             };
         }
     }

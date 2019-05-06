@@ -9,26 +9,13 @@ namespace SauceEditor.Helpers
 {
     public static class DockHelper
     {
-        public static void AddToDockAsAnchorableDocument(DockingManager dockingManager, DockPanel content, String title, Action closedAction = null)
+        public static void AddToDockAsDocument(DockingManager dockingManager, LayoutAnchorable content, Action closedAction = null)
         {
-            var anchorable = new LayoutAnchorable
-            {
-                Title = title,
-                Content = content,
-                CanClose = true
-            };
-
             if (closedAction != null)
             {
-                anchorable.Closed += (s, args) => closedAction.Invoke();
+                content.Closed += (s, args) => closedAction.Invoke();
             }
-            
-            anchorable.AddToLayout(dockingManager, AnchorableShowStrategy.Most);
-            anchorable.DockAsDocument();
-        }
 
-        public static void AddToDockAsDocument(DockingManager dockingManager, LayoutAnchorable content)
-        {
             content.AddToLayout(dockingManager, AnchorableShowStrategy.Most);
             content.DockAsDocument();
         }

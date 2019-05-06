@@ -1,6 +1,6 @@
 ﻿namespace SauceEditor.Models.Components
 {
-    public class Model : Component//, IGameViewable
+    public class ModelComponent : Component//, IGameViewable
     {
         /*public Map ToMap()
         {

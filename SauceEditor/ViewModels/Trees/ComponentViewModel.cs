@@ -52,14 +52,14 @@ namespace SauceEditor.ViewModels.Trees
         }
 
         private RelayCommand GetOpenCommand(IComponentFactory componentFactory) => new TypeSwitch<RelayCommand>()
-            .Case<Map>(() => new RelayCommand(p => componentFactory.OpenMap(_component.Path)))
-            .Case<Model>(() => new RelayCommand(p => componentFactory.OpenModel(_component.Path)))
-            .Case<Behavior>(() => new RelayCommand(p => componentFactory.OpenBehavior(_component.Path)))
-            .Case<Texture>(() => new RelayCommand(p => componentFactory.OpenTexture(_component.Path)))
-            .Case<Sound>(() => new RelayCommand(p => componentFactory.OpenSound(_component.Path)))
-            .Case<Material>(() => new RelayCommand(p => componentFactory.OpenMaterial(_component.Path)))
-            .Case<Archetype>(() => new RelayCommand(p => componentFactory.OpenArchetype(_component.Path)))
-            .Case<Script>(() => new RelayCommand(p => componentFactory.OpenScript(_component.Path)))
+            .Case<MapComponent>(() => new RelayCommand(p => componentFactory.OpenMap(_component.Path)))
+            .Case<ModelComponent>(() => new RelayCommand(p => componentFactory.OpenModel(_component.Path)))
+            .Case<BehaviorComponent>(() => new RelayCommand(p => componentFactory.OpenBehavior(_component.Path)))
+            .Case<TextureComponent>(() => new RelayCommand(p => componentFactory.OpenTexture(_component.Path)))
+            .Case<SoundComponent>(() => new RelayCommand(p => componentFactory.OpenSound(_component.Path)))
+            .Case<MaterialComponent>(() => new RelayCommand(p => componentFactory.OpenMaterial(_component.Path)))
+            .Case<ArchetypeComponent>(() => new RelayCommand(p => componentFactory.OpenArchetype(_component.Path)))
+            .Case<ScriptComponent>(() => new RelayCommand(p => componentFactory.OpenScript(_component.Path)))
             .Default(() => throw new NotImplementedException())
             .Match<T>();
 

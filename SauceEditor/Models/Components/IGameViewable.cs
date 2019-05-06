@@ -6,6 +6,6 @@
     /// </summary>
     public interface IGameViewable
     {
-        Map ToMap();
+        MapComponent ToMap();
     }
 }

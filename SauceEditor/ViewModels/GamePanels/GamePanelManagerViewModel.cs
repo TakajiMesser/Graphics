@@ -1,14 +1,15 @@
 using SauceEditor.Models;
-using SauceEditor.ViewModels.Commands;
+using SauceEditor.Models.Components;
 using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows.Input;
+using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
@@ -18,15 +19,19 @@ namespace SauceEditor.ViewModels
         public GameManager GameManager { get; set; }
         public EntityMapping EntityMapping { get; set; }
 
+        public Component Component { get; set; }
         public bool IsPlayable => true;
+        public bool IsActive { get; set; }
 
         public TransformModes TransformMode { get; set; }
-        public Models.ViewTypes ViewType { get; set; }
+        public ViewTypes ViewType { get; set; }
 
         public GamePanelViewModel PerspectiveViewModel { get; set; }
         public GamePanelViewModel XViewModel { get; set; }
         public GamePanelViewModel YViewModel { get; set; }
         public GamePanelViewModel ZViewModel { get; set; }
+
+        public List<EditorEntity> SelectedEntities { get; set; }
 
         public Resolution Resolution { get; set; }
 
@@ -68,8 +73,8 @@ namespace SauceEditor.ViewModels
             }
         }
 
-        public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
-        public event EventHandler<CommandEventArgs> CommandExecuted;
+        //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        //public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public void OnTransformModeChanged()
         {
@@ -86,6 +91,40 @@ namespace SauceEditor.ViewModels
 
         }
 
+        public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange(PerspectiveViewModel);
+        public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
+        public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
+        public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);
+
+        private void OnPanelViewModelChange(GamePanelViewModel panelViewModel)
+        {
+            panelViewModel.Panel.EntitySelectionChanged += (s, args) => SelectedEntities = MapManager.GetEditorEntities(args.Entities).ToList();
+            panelViewModel.Panel.Load += (s, args) => LoadPanels();
+            panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+        }
+
+        public void OnSelectedEntitiesChanged()
+        {
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
+            if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
+            if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
+            if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
+
+            if (SelectedEntities.Any())
+            {
+                if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+                if (ViewType != ViewTypes.X) XViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+                if (ViewType != ViewTypes.Y) YViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+                if (ViewType != ViewTypes.Z) ZViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+
+                MapManager.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+            }
+
+            var editorEntities = MapManager.GetEditorEntities(SelectedEntities.Select(e => e.Entity));
+            //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(editorEntities));
+            //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(_mapManager.GetMapEntities(args.Entities)));
+        }
+
         public void RequestUpdate()
         {
             PerspectiveViewModel.Panel.Invalidate();
@@ -94,7 +133,7 @@ namespace SauceEditor.ViewModels
             ZViewModel.Panel.Invalidate();
         }
 
-        public void SetSelectedTool(SpiceEngine.Game.Tools tool)
+        public void SetSelectedTool(Tools tool)
         {
             PerspectiveViewModel.Panel.SelectedTool = tool;
             XViewModel.Panel.SelectedTool = tool;

@@ -37,14 +37,14 @@ namespace SauceEditor.ViewModels.Trees
         }
 
         private RelayCommand GetCreateCommand(IComponentFactory componentFactory) => new TypeSwitch<RelayCommand>()
-            .Case<Map>(() => new RelayCommand(p => componentFactory.CreateMap()))
-            .Case<Model>(() => new RelayCommand(p => componentFactory.CreateModel()))
-            .Case<Behavior>(() => new RelayCommand(p => componentFactory.CreateBehavior()))
-            .Case<Texture>(() => new RelayCommand(p => componentFactory.CreateTexture()))
-            .Case<Sound>(() => new RelayCommand(p => componentFactory.CreateSound()))
-            .Case<Material>(() => new RelayCommand(p => componentFactory.CreateMaterial()))
-            .Case<Archetype>(() => new RelayCommand(p => componentFactory.CreateArchetype()))
-            .Case<Script>(() => new RelayCommand(p => componentFactory.CreateScript()))
+            .Case<MapComponent>(() => new RelayCommand(p => componentFactory.CreateMap()))
+            .Case<ModelComponent>(() => new RelayCommand(p => componentFactory.CreateModel()))
+            .Case<BehaviorComponent>(() => new RelayCommand(p => componentFactory.CreateBehavior()))
+            .Case<TextureComponent>(() => new RelayCommand(p => componentFactory.CreateTexture()))
+            .Case<SoundComponent>(() => new RelayCommand(p => componentFactory.CreateSound()))
+            .Case<MaterialComponent>(() => new RelayCommand(p => componentFactory.CreateMaterial()))
+            .Case<ArchetypeComponent>(() => new RelayCommand(p => componentFactory.CreateArchetype()))
+            .Case<ScriptComponent>(() => new RelayCommand(p => componentFactory.CreateScript()))
             .Default(() => throw new NotImplementedException())
             .Match<T>();
 

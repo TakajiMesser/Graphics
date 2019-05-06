@@ -19,14 +19,14 @@ namespace SauceEditor.ViewModels.Trees
 
             Children = new ReadOnlyCollection<IComponentListViewModel>(new List<IComponentListViewModel>()
             {
-                new ComponentListViewModel<Map>(project.Maps, componentFactory),
-                new ComponentListViewModel<Model>(project.Models, componentFactory),
-                new ComponentListViewModel<Behavior>(project.Behaviors, componentFactory),
-                new ComponentListViewModel<Texture>(project.Textures, componentFactory),
-                new ComponentListViewModel<Sound>(project.Sounds, componentFactory),
-                new ComponentListViewModel<Material>(project.Materials, componentFactory),
-                new ComponentListViewModel<Archetype>(project.Archetypes, componentFactory),
-                new ComponentListViewModel<Script>(project.Scripts, componentFactory)
+                new ComponentListViewModel<MapComponent>(project.MapComponents, componentFactory),
+                new ComponentListViewModel<ModelComponent>(project.ModelComponents, componentFactory),
+                new ComponentListViewModel<BehaviorComponent>(project.BehaviorComponents, componentFactory),
+                new ComponentListViewModel<TextureComponent>(project.TextureComponents, componentFactory),
+                new ComponentListViewModel<SoundComponent>(project.SoundComponents, componentFactory),
+                new ComponentListViewModel<MaterialComponent>(project.MaterialComponents, componentFactory),
+                new ComponentListViewModel<ArchetypeComponent>(project.ArchetypeComponents, componentFactory),
+                new ComponentListViewModel<ScriptComponent>(project.ScriptComponents, componentFactory)
             });
         }
     }

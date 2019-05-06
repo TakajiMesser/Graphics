@@ -2,10 +2,8 @@
 
 namespace SauceEditor.ViewModels
 {
-    public interface IMainDockViewModel
+    public interface ISideDockViewModel
     {
-        bool IsPlayable { get; }
         bool IsActive { get; set; }
-        Map Map { get; }
     }
 }

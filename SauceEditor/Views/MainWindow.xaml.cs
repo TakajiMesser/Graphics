@@ -12,11 +12,13 @@ using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
+using Xceed.Wpf.AvalonDock.Layout;
 using GameWindow = SpiceEngine.Game.GameWindow;
 using Map = SpiceEngine.Maps.Map;
 
@@ -32,10 +34,13 @@ namespace SauceEditor.Views
         private BehaviorView _behaviorView;
         private ScriptView _scriptView;
 
+        private Dictionary<IMainDockViewModel, LayoutAnchorable> _mainDockViewByViewModel = new Dictionary<IMainDockViewModel, LayoutAnchorable>();
+        private Dictionary<ISideDockViewModel, LayoutAnchorable> _sideDockViewByViewModel = new Dictionary<ISideDockViewModel, LayoutAnchorable>();
+
         // Side panels
         private ProjectTreePanel _projectTree = new ProjectTreePanel();
         private ToolsPanel _toolPanel = new ToolsPanel();
-        private EntityPropertyPanel _entityPropertyPanel = new EntityPropertyPanel();
+        private PropertyPanel _propertyPanel = new PropertyPanel();
 
         // Separate windows
         private GameWindow _gameWindow;
@@ -58,16 +63,28 @@ namespace SauceEditor.Views
 
             ViewModel.ProjectTreePanelViewModel = _projectTree.ViewModel;
             ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
-            ViewModel.EntityPropertiesViewModel = _entityPropertyPanel.ViewModel;
+            ViewModel.PropertyViewModel = _propertyPanel.ViewModel;
 
             MainDockingManager.ActiveContentChanged += (s, args) =>
             {
                 if (MainDockingManager.ActiveContent is IHaveViewModel haveViewModel && haveViewModel.GetViewModel() is IMainDockViewModel viewModel)
                 {
+                    viewModel.IsActive = true;
+
                     ViewModel.CurrentMainDockViewModel = viewModel;
                     ViewModel.PlayCommand.InvokeCanExecuteChanged();
                 }
             };
+        }
+
+        public void SetActiveInMainDock(IMainDockViewModel viewModel)
+        {
+            if (!_mainDockViewByViewModel.ContainsKey(viewModel))
+            {
+                throw new KeyNotFoundException("ViewModel not found in main dock");
+            }
+
+            _mainDockViewByViewModel[viewModel].IsActive = true;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -89,11 +106,11 @@ namespace SauceEditor.Views
 
             //ViewModel.SideDockViewModels.Add(_projectTree.ViewModel);
             //ViewModel.SideDockViewModels.Add(_toolPanel.ViewModel);
-            ViewModel.SideDockViewModels.Add(_entityPropertyPanel.ViewModel);
+            ViewModel.SideDockViewModels.Add(_propertyPanel.ViewModel);
 
             DockHelper.AddToDockAsDocument(SideDockingManager, _projectTree);
             DockHelper.AddToDockAsDocument(SideDockingManager, _toolPanel);
-            DockHelper.AddToDockAsDocument(SideDockingManager, _entityPropertyPanel);
+            DockHelper.AddToDockAsDocument(SideDockingManager, _propertyPanel);
 
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;
@@ -156,51 +173,64 @@ namespace SauceEditor.Views
             _settingsWindow.Show();
         }
 
-        public ViewModel CreateGamePanelManager(Map map)
+        public ViewModel CreateGamePanelManager(MapComponent mapComponent)
         {
-            var gamePanelManager = new GamePanelManager();
-            gamePanelManager.EntitySelectionChanged += (s, args) =>
+            var gamePanelManager = new GamePanelManager()
+            {
+                Title = mapComponent.Name,
+                CanClose = true
+            };
+            /*gamePanelManager.EntitySelectionChanged += (s, args) =>
             {
                 // For now, just go with the last entity that was selected
                 //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _entityPropertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
-                _entityPropertyPanel.IsActive = true;
+                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
+                _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
-            };
+            };*/
             //gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
-            gamePanelManager.ViewModel.UpdateFromModel(map);
+            gamePanelManager.ViewModel.UpdateFromModel(mapComponent.Map);
 
-            var title = "";// Path.GetFileNameWithoutExtension(filePath);
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, gamePanelManager, title, () =>
+            DockHelper.AddToDockAsDocument(MainDockingManager, gamePanelManager, () => ViewModel.PlayVisibility = Visibility.Hidden);
+            _mainDockViewByViewModel.Add(gamePanelManager.ViewModel, gamePanelManager);
+
+            /*MainDockingManager.ActiveContentChanged += (s, args) =>
             {
-                ViewModel.PlayVisibility = Visibility.Hidden;
-            });
+                if (MainDockingManager.ActiveContent == gamePanelManager)
+                {
+                    _propertyPanel.ViewModel = ;
+                }
+            };*/
 
             gamePanelManager.SetView(ViewModel.Settings.DefaultView);
             return gamePanelManager.ViewModel;
         }
 
-        public ViewModel CreateScriptView(Script script)
+        public ViewModel CreateScriptView(ScriptComponent scriptComponent)
         {
-            var scriptView = new ScriptView();
-            scriptView.ViewModel.UpdateFromModel(script);
+            var scriptView = new ScriptView()
+            {
+                Title = scriptComponent.Name,
+                CanClose = true
+            };
+            scriptView.ViewModel.UpdateFromModel(scriptComponent);
 
-            var title = "";
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, scriptView, title);
+            DockHelper.AddToDockAsDocument(MainDockingManager, scriptView);
+            _mainDockViewByViewModel.Add(scriptView.ViewModel, scriptView);
 
             return scriptView.ViewModel;
         }
 
-        public ViewModel CreateBehaviorView(Behavior behavior)
+        public ViewModel CreateBehaviorView(BehaviorComponent behaviorComponent)
         {
-            var behaviorView = new BehaviorView();
-
-            var title = "";// Path.GetFileNameWithoutExtension(filePath);
-            DockHelper.AddToDockAsAnchorableDocument(MainDockingManager, behaviorView, title, () =>
+            var behaviorView = new BehaviorView()
             {
-                ViewModel.PlayVisibility = Visibility.Hidden;
-                //_map = null;
-            });
+                Title = behaviorComponent.Name,
+                CanClose = true
+            };
+
+            DockHelper.AddToDockAsDocument(MainDockingManager, behaviorView);
+            _mainDockViewByViewModel.Add(behaviorView.ViewModel, behaviorView);
 
             return behaviorView.ViewModel;
 

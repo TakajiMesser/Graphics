@@ -205,19 +205,19 @@
     <Compile Include="Helpers\DockHelper.cs" />
     <Compile Include="Helpers\PatternMatcher.cs" />
     <Compile Include="Helpers\TypeSwitch.cs" />
-    <Compile Include="Models\Components\Archetype.cs" />
-    <Compile Include="Models\Components\Behavior.cs" />
+    <Compile Include="Models\Components\ArchetypeComponent.cs" />
+    <Compile Include="Models\Components\BehaviorComponent.cs" />
     <Compile Include="Models\Components\Component.cs" />
     <Compile Include="Models\Components\IGameViewable.cs" />
     <Compile Include="Models\Components\Library.cs" />
     <Compile Include="Models\Components\LibraryManager.cs" />
-    <Compile Include="Models\Components\Map.cs" />
-    <Compile Include="Models\Components\Material.cs" />
-    <Compile Include="Models\Components\Model.cs" />
+    <Compile Include="Models\Components\MapComponent.cs" />
+    <Compile Include="Models\Components\MaterialComponent.cs" />
+    <Compile Include="Models\Components\ModelComponent.cs" />
     <Compile Include="Models\Components\Project.cs" />
-    <Compile Include="Models\Components\Script.cs" />
-    <Compile Include="Models\Components\Sound.cs" />
-    <Compile Include="Models\Components\Texture.cs" />
+    <Compile Include="Models\Components\ScriptComponent.cs" />
+    <Compile Include="Models\Components\SoundComponent.cs" />
+    <Compile Include="Models\Components\TextureComponent.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\EditorEntity.cs" />
     <Compile Include="Models\MapManager.cs" />
@@ -232,13 +232,18 @@
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
+    <Compile Include="ViewModels\ISideDockViewModel.cs" />
     <Compile Include="ViewModels\IMainDockViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
+    <Compile Include="ViewModels\Properties\PropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\IPropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\TexturePropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\MaterialPropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\NullVisibilityConverter.cs" />
-    <Compile Include="ViewModels\Properties\TransformProperty.cs" />
-    <Compile Include="ViewModels\Properties\EntityProperties.cs" />
+    <Compile Include="ViewModels\Properties\VectorProperty.cs" />
+    <Compile Include="ViewModels\Properties\EntityPropertyViewModel.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
     <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\ComponentListViewModel.cs" />
@@ -248,7 +253,6 @@
     <Compile Include="ViewModels\ToolsPanelViewModel.cs" />
     <Compile Include="ViewModels\ScriptViewModel.cs" />
     <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
-    <Compile Include="ViewModels\Properties\EntityPropertiesViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\TransformPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
@@ -289,8 +293,8 @@
     <Compile Include="Views\UpDowns\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Properties\EntityPropertyPanel.xaml.cs">
-      <DependentUpon>EntityPropertyPanel.xaml</DependentUpon>
+    <Compile Include="Views\Properties\PropertyPanel.xaml.cs">
+      <DependentUpon>PropertyPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ProjectTree\ProjectTreePanel.xaml.cs">
       <DependentUpon>ProjectTreePanel.xaml</DependentUpon>
@@ -349,7 +353,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Properties\EntityPropertyPanel.xaml">
+    <Page Include="Views\Properties\PropertyPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

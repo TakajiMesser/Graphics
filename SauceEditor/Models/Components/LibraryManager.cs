@@ -5,14 +5,14 @@ namespace SauceEditor.Models.Components
 {
     public class LibraryManager
     {
-        public Library<Map> MapLibrary { get; set; } = new Library<Map>();
-        public Library<Model> ModelLibrary { get; set; } = new Library<Model>();
-        public Library<Behavior> BehaviorLibrary { get; set; } = new Library<Behavior>();
-        public Library<Texture> TextureLibrary { get; set; } = new Library<Texture>();
-        public Library<Sound> SoundLibrary { get; set; } = new Library<Sound>();
-        public Library<Material> MaterialLibrary { get; set; } = new Library<Material>();
-        public Library<Archetype> ArchetypeLibrary { get; set; } = new Library<Archetype>();
-        public Library<Script> ScriptLibrary { get; set; } = new Library<Script>();
+        public Library<MapComponent> MapLibrary { get; set; } = new Library<MapComponent>();
+        public Library<ModelComponent> ModelLibrary { get; set; } = new Library<ModelComponent>();
+        public Library<BehaviorComponent> BehaviorLibrary { get; set; } = new Library<BehaviorComponent>();
+        public Library<TextureComponent> TextureLibrary { get; set; } = new Library<TextureComponent>();
+        public Library<SoundComponent> SoundLibrary { get; set; } = new Library<SoundComponent>();
+        public Library<MaterialComponent> MaterialLibrary { get; set; } = new Library<MaterialComponent>();
+        public Library<ArchetypeComponent> ArchetypeLibrary { get; set; } = new Library<ArchetypeComponent>();
+        public Library<ScriptComponent> ScriptLibrary { get; set; } = new Library<ScriptComponent>();
 
         public void Save(string path)
         {

@@ -1,14 +1,19 @@
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
+using SpiceEngine.Maps;
 
 namespace SauceEditor.ViewModels
 {
-    public class ScriptViewModel : ViewModel
+    public class ScriptViewModel : ViewModel, IMainDockViewModel
     {
-        public IFile Filer { get; set; }
-        public Script Script { get; set; }
+        public bool IsPlayable => false;
+        public bool IsActive { get; set; }
+        public Map Map => null;
 
-        public void UpdateFromModel(Script script)
+        public IFile Filer { get; set; }
+        public ScriptComponent Script { get; set; }
+
+        public void UpdateFromModel(ScriptComponent script)
         {
             Script = script;
             Filer?.Load(script.Path);

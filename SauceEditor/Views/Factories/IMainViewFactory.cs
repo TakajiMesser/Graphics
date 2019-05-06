@@ -1,14 +1,15 @@
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
-using Map = SpiceEngine.Maps.Map;
 
 namespace SauceEditor.Views.Factories
 {
     public interface IMainViewFactory
     {
-        ViewModel CreateGamePanelManager(Map map);
-        ViewModel CreateBehaviorView(Behavior behavior);
-        ViewModel CreateScriptView(Script script);
+        ViewModel CreateGamePanelManager(MapComponent mapComponent);
+        ViewModel CreateBehaviorView(BehaviorComponent behaviorComponent);
+        ViewModel CreateScriptView(ScriptComponent scriptComponent);
+
+        void SetActiveInMainDock(IMainDockViewModel viewModel);
 
         void SaveAll();
         void LoadSettings();

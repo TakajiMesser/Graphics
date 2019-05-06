@@ -1,12 +1,13 @@
 ﻿using NodeNetwork.ViewModels;
 using System.Windows.Controls;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Behaviors
 {
     /// <summary>
     /// Interaction logic for BehaviorView.xaml
     /// </summary>
-    public partial class BehaviorView : DockPanel
+    public partial class BehaviorView : LayoutAnchorable
     {
         public BehaviorView()
         {

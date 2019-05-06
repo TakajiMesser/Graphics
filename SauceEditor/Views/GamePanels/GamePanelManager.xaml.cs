@@ -16,20 +16,20 @@ namespace SauceEditor.Views.GamePanels
     /// <summary>
     /// Interaction logic for GamePanelManager.xaml
     /// </summary>
-    public partial class GamePanelManager : DockPanel, IHaveViewModel
+    public partial class GamePanelManager : LayoutAnchorable, IHaveViewModel
     {
         private GamePanelView _perspectiveView;
         private GamePanelView _xView;
         private GamePanelView _yView;
         private GamePanelView _zView;
 
-        public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
-        public event EventHandler<CommandEventArgs> CommandExecuted;
+        //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        //public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public GamePanelManager()
         {
             InitializeComponent();
-            ViewModel.Resolution = new Resolution((int)Width, (int)Height);
+            ViewModel.Resolution = new Resolution((int)Panel.Width, (int)Panel.Height);
 
             CreateAndShowPanels();
 
@@ -70,15 +70,12 @@ namespace SauceEditor.Views.GamePanels
         {
             var gamePanel = new GamePanelView();
             gamePanel.ViewModel.ViewType = viewType;
-            gamePanel.Panel.Load += (s, args) => ViewModel.LoadPanels();
-            gamePanel.Panel.EntityDuplicated += (s, args) => ViewModel.DuplicateEntity(args.ID, args.NewID);
-            gamePanel.EntitySelectionChanged += (s, args) => OnEntitySelectionChanged(viewType, args);
             gamePanel.Anchorable.Show();
 
             return gamePanel;
         }
 
-        private void OnEntitySelectionChanged(ViewTypes viewType, SpiceEngine.Game.EntitiesEventArgs args)
+        /*private void OnEntitySelectionChanged(ViewTypes viewType, SpiceEngine.Game.EntitiesEventArgs args)
         {
             if (viewType != ViewTypes.Perspective) _perspectiveView.Panel.SelectEntities(args.Entities);
             if (viewType != ViewTypes.X) _xView.Panel.SelectEntities(args.Entities);
@@ -98,7 +95,7 @@ namespace SauceEditor.Views.GamePanels
             var editorEntities = ViewModel.MapManager.GetEditorEntities(args.Entities);
             EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(editorEntities));
             //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(_mapManager.GetMapEntities(args.Entities)));
-        }
+        }*/
 
         public void SetView(Models.ViewTypes view)
         {

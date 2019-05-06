@@ -1,4 +1,4 @@
-﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Properties.EntityPropertyPanel"
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Properties.PropertyPanel"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -10,13 +10,13 @@
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         mc:Ignorable="d"
         Title="Properties">
-    <xctk:PropertyGrid x:Name="PropertyGrid" Margin="4" SelectedObject="{Binding}" AutoGenerateProperties="True">
+    <xctk:PropertyGrid x:Name="PropertyGrid" Margin="4" SelectedObject="{Binding Properties}">
+        <xctk:PropertyGrid.DataContext>
+            <vm:PropertyViewModel x:Name="ViewModel"/>
+        </xctk:PropertyGrid.DataContext>
         <!--<xctk:PropertyGrid.Resources>
             <vm:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
         </xctk:PropertyGrid.Resources>-->
-        <xctk:PropertyGrid.DataContext>
-            <vm:EntityProperties x:Name="ViewModel"/>
-        </xctk:PropertyGrid.DataContext>
         <xctk:PropertyGrid.EditorDefinitions>
             <xctk:EditorDefinition>
                 <xctk:EditorDefinition.PropertiesDefinitions>

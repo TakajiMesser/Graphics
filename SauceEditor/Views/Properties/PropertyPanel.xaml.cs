@@ -7,7 +7,7 @@ namespace SauceEditor.Views.Properties
     /// <summary>
     /// Interaction logic for PropertyPanel.xaml
     /// </summary>
-    public partial class EntityPropertyPanel : LayoutAnchorable
+    public partial class PropertyPanel : LayoutAnchorable
     {
         /*private EditorEntity _entity;
         public EditorEntity Entity
@@ -32,21 +32,20 @@ namespace SauceEditor.Views.Properties
         //public event EventHandler<CommandEventArgs> CommandExecuted;
         public event EventHandler<FileEventArgs> ScriptOpened;
 
-        public EntityPropertyPanel()
+        public PropertyPanel()
         {
             InitializeComponent();
-
-            //ViewModel.PositionViewModel = PositionTransform.ViewModel;
-            //ViewModel.RotationViewModel = RotationTransform.ViewModel;
-            //ViewModel.ScaleViewModel = ScaleTransform.ViewModel;
-
-            /*ViewModel.ScriptOpened += (s, args) =>
-            {
-                ScriptOpened?.Invoke(s, args);
-            };*/
             ViewModel.UpdateFromModel(null);
 
-            /*PositionTransform.TransformChanged += (s, args) =>
+            /*ViewModel.PositionViewModel = PositionTransform.ViewModel;
+            ViewModel.RotationViewModel = RotationTransform.ViewModel;
+            ViewModel.ScaleViewModel = ScaleTransform.ViewModel;
+
+            ViewModel.ScriptOpened += (s, args) =>
+            {
+                ScriptOpened?.Invoke(s, args);
+            };
+            PositionTransform.TransformChanged += (s, args) =>
             {
                 if (_entity != null)
                 {

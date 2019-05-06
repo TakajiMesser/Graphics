@@ -22,8 +22,8 @@ namespace SauceEditor.Views.GamePanels
         public readonly static DependencyProperty GridUnitProperty = DependencyProperty.Register("GridUnit", typeof(float), typeof(NumericUpDown));
 
         //public event EventHandler<CommandEventArgs> CommandExecuted;
-        public event EventHandler<SpiceEngine.Game.EntitiesEventArgs> EntitySelectionChanged;
-        public event EventHandler<CommandEventArgs> CommandExecuted;
+        //public event EventHandler<SpiceEngine.Game.EntitiesEventArgs> EntitySelectionChanged;
+        //public event EventHandler<CommandEventArgs> CommandExecuted;
 
         public LayoutAnchorable Anchor => Anchorable;
 
@@ -89,7 +89,7 @@ namespace SauceEditor.Views.GamePanels
             DockPanel.Focusable = true;
             ViewModel.Panel = Panel;
 
-            Panel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
+            //Panel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
             //Panel.TransformModeChanged += GamePanel_TransformModeChanged;
 
             // Default to wireframe rendering

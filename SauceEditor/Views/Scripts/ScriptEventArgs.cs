@@ -6,9 +6,9 @@ namespace SauceEditor.Views.Scripts
 {
     public class ScriptEventArgs : EventArgs
     {
-        public Script Script { get; private set; }
+        public ScriptComponent Script { get; private set; }
 
-        public ScriptEventArgs(Script script)
+        public ScriptEventArgs(ScriptComponent script)
         {
             Script = script;
         }

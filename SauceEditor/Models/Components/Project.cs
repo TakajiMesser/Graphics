@@ -11,14 +11,14 @@ namespace SauceEditor.Models.Components
     {
         public const string FILE_EXTENSION = ".pro";
 
-        public List<Map> Maps { get; set; } = new List<Map>();
-        public List<Model> Models { get; set; } = new List<Model>();
-        public List<Behavior> Behaviors { get; set; } = new List<Behavior>();
-        public List<Texture> Textures { get; set; } = new List<Texture>();
-        public List<Sound> Sounds { get; set; } = new List<Sound>();
-        public List<Material> Materials { get; set; } = new List<Material>();
-        public List<Archetype> Archetypes { get; set; } = new List<Archetype>();
-        public List<Script> Scripts { get; set; } = new List<Script>();
+        public List<MapComponent> MapComponents { get; set; } = new List<MapComponent>();
+        public List<ModelComponent> ModelComponents { get; set; } = new List<ModelComponent>();
+        public List<BehaviorComponent> BehaviorComponents { get; set; } = new List<BehaviorComponent>();
+        public List<TextureComponent> TextureComponents { get; set; } = new List<TextureComponent>();
+        public List<SoundComponent> SoundComponents { get; set; } = new List<SoundComponent>();
+        public List<MaterialComponent> MaterialComponents { get; set; } = new List<MaterialComponent>();
+        public List<ArchetypeComponent> ArchetypeComponents { get; set; } = new List<ArchetypeComponent>();
+        public List<ScriptComponent> ScriptComponents { get; set; } = new List<ScriptComponent>();
 
         public void Save()
         {

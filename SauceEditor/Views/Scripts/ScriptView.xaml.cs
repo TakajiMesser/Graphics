@@ -4,13 +4,14 @@ using SpiceEngine.Entities.Actors;
 using SpiceEngine.Maps;
 using System;
 using System.Windows.Controls;
+using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Scripts
 {
     /// <summary>
     /// Interaction logic for ScriptView.xaml
     /// </summary>
-    public partial class ScriptView : DockPanel, IFile
+    public partial class ScriptView : LayoutAnchorable, IFile
     {
         public EventHandler<ScriptEventArgs> Saved;
 
