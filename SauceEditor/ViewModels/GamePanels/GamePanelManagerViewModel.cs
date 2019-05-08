@@ -1,5 +1,6 @@
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
+using SauceEditor.Views.Factories;
 using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
@@ -13,15 +14,15 @@ using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
-    public class GamePanelManagerViewModel : ViewModel, IMainDockViewModel
+    public class GamePanelManagerViewModel : MainDockViewModel
     {
-        public MapManager MapManager { get; set; }
+        public GamePanelManagerViewModel()
+        {
+            IsPlayable = true;
+        }
+
         public GameManager GameManager { get; set; }
         public EntityMapping EntityMapping { get; set; }
-
-        public Component Component { get; set; }
-        public bool IsPlayable => true;
-        public bool IsActive { get; set; }
 
         public TransformModes TransformMode { get; set; }
         public ViewTypes ViewType { get; set; }
@@ -34,8 +35,6 @@ namespace SauceEditor.ViewModels
         public List<EditorEntity> SelectedEntities { get; set; }
 
         public Resolution Resolution { get; set; }
-
-        public Map Map => MapManager.Map;
 
         private RelayCommand _translateCommand;
         public RelayCommand TranslateCommand
@@ -173,7 +172,7 @@ namespace SauceEditor.ViewModels
             ZViewModel?.Panel.CenterView();
         }
 
-        private object _panelLock = new object();
+        private readonly object _panelLock = new object();
         private bool _isGLContextLoaded = false;
         private bool _isMapLoadedInPanels = false;
 

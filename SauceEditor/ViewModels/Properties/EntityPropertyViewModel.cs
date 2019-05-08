@@ -73,13 +73,17 @@ namespace SauceEditor.ViewModels.Properties
         public void UpdateFromModel(EditorEntity editorEntity)
         {
             _editorEntity = editorEntity;
-            if (editorEntity == null) return; // Yikes
+            //if (editorEntity == null) return; // Yikes
 
             ID = editorEntity.Entity.ID.ToString();
             
             if (editorEntity.MapEntity is MapActor mapActor)
             {
                 Name = mapActor.Name;
+            }
+            else
+            {
+                Name = null;
             }
 
             Position = new VectorProperty(editorEntity.MapEntity.Position);

@@ -8,7 +8,7 @@ namespace SauceEditor.ViewModels
         private EditorSettings _settings;
 
         public IWindow Window { get; set; }
-        public IMainViewFactory MainViewFactory { get; set; }
+        public IMainView MainView { get; set; }
 
         private RelayCommand _okCommand;
         public RelayCommand OKCommand
@@ -51,7 +51,7 @@ namespace SauceEditor.ViewModels
         private void SaveSettings()
         {
             _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            MainViewFactory.LoadSettings();
+            MainView.LoadSettings();
         }
     }
 }

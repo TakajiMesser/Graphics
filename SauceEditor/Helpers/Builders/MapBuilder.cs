@@ -19,25 +19,21 @@ namespace SauceEditor.Helpers.Builders
 
             project.MapComponents.Add(new MapComponent()
             {
-                Name = "Test Map",
                 Path = SampleGameProject.Helpers.FilePathHelper.MAP_PATH
             });
 
             project.ModelComponents.Add(new ModelComponent()
             {
-                Name = "Bob Lamp",
                 Path = SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH
             });
 
             project.MaterialComponents.Add(new MaterialComponent()
             {
-                Name = "Test Material",
                 Path = SampleGameProject.Helpers.FilePathHelper.SHINY_MATERIAL_PATH
             });
 
             project.TextureComponents.Add(new TextureComponent()
             {
-                Name = "Test Texture",
                 Path = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                 TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
                 {
@@ -50,7 +46,6 @@ namespace SauceEditor.Helpers.Builders
 
             project.ScriptComponents.Add(new ScriptComponent()
             {
-                Name = "Test Script",
                 Path = SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH
             });
 

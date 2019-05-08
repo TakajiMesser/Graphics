@@ -11,6 +11,7 @@ namespace SauceEditor.ViewModels
     {
         private static readonly string DEFAULT_INITIAL_DIRECTORY = FilePathHelper.INITIAL_FILE_DIRECTORY;
 
+        public IMainView MainView { get; set; }
         public IMainViewFactory MainViewFactory { get; set; }
         public IWindowFactory WindowFactory { get; set; }
         public IComponentFactory ComponentFactory { get; set; }
@@ -300,7 +301,7 @@ namespace SauceEditor.ViewModels
             get
             {
                 return _saveAllCommand ?? (_saveAllCommand = new RelayCommand(
-                    p => MainViewFactory.SaveAll(),
+                    p => MainView.SaveAll(),
                     p => true
                 ));
             }

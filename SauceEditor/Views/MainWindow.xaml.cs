@@ -3,6 +3,7 @@ using SauceEditor.Helpers;
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
+using SauceEditor.ViewModels.Properties;
 using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
@@ -27,14 +28,9 @@ namespace SauceEditor.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IMainViewFactory, IWindowFactory
+    public partial class MainWindow : Window, IMainView, IWindowFactory
     {
-        // Main views
-        private GamePanelManager _gamePanelManager;
-        private BehaviorView _behaviorView;
-        private ScriptView _scriptView;
-
-        private Dictionary<IMainDockViewModel, LayoutAnchorable> _mainDockViewByViewModel = new Dictionary<IMainDockViewModel, LayoutAnchorable>();
+        private MainDockManager _mainDockManager;
         private Dictionary<ISideDockViewModel, LayoutAnchorable> _sideDockViewByViewModel = new Dictionary<ISideDockViewModel, LayoutAnchorable>();
 
         // Side panels
@@ -52,10 +48,16 @@ namespace SauceEditor.Views
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
             InitializeComponent();
 
-            ViewModel.MainViewFactory = this;
+            _mainDockManager = new MainDockManager(MainDockingManager)
+            {
+                MainWindowViewModel = ViewModel
+            };
+
+            ViewModel.MainViewFactory = _mainDockManager;
             ViewModel.WindowFactory = this;
 
-            Menu.ViewModel.MainViewFactory = this;
+            Menu.ViewModel.MainView = this;
+            Menu.ViewModel.MainViewFactory = _mainDockManager;
             Menu.ViewModel.WindowFactory = this;
 
             // TODO - Should this binding happen in the ViewModel itself?
@@ -67,24 +69,9 @@ namespace SauceEditor.Views
 
             MainDockingManager.ActiveContentChanged += (s, args) =>
             {
-                if (MainDockingManager.ActiveContent is IHaveViewModel haveViewModel && haveViewModel.GetViewModel() is IMainDockViewModel viewModel)
-                {
-                    viewModel.IsActive = true;
-
-                    ViewModel.CurrentMainDockViewModel = viewModel;
-                    ViewModel.PlayCommand.InvokeCanExecuteChanged();
-                }
+                ViewModel.PlayCommand.InvokeCanExecuteChanged();
+                //_propertyPanel.ViewModel.Properties = new EntityPropertyViewModel();
             };
-        }
-
-        public void SetActiveInMainDock(IMainDockViewModel viewModel)
-        {
-            if (!_mainDockViewByViewModel.ContainsKey(viewModel))
-            {
-                throw new KeyNotFoundException("ViewModel not found in main dock");
-            }
-
-            _mainDockViewByViewModel[viewModel].IsActive = true;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -118,7 +105,7 @@ namespace SauceEditor.Views
 
         private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
         {
-            _gamePanelManager?.ViewModel.SetSelectedTool(e.NewTool);
+            //_gamePanelManager?.ViewModel.SetSelectedTool(e.NewTool);
         }
 
         private void OnClosing(object sender, EventArgs e)
@@ -167,97 +154,10 @@ namespace SauceEditor.Views
         public void CreateSettingsWindow()
         {
             _settingsWindow = new SettingsWindow();
-            _settingsWindow.ViewModel.MainViewFactory = this;
+            _settingsWindow.ViewModel.MainView = this;
 
             ViewModel.SettingsWindowViewModel = _settingsWindow.ViewModel;
             _settingsWindow.Show();
-        }
-
-        public ViewModel CreateGamePanelManager(MapComponent mapComponent)
-        {
-            var gamePanelManager = new GamePanelManager()
-            {
-                Title = mapComponent.Name,
-                CanClose = true
-            };
-            /*gamePanelManager.EntitySelectionChanged += (s, args) =>
-            {
-                // For now, just go with the last entity that was selected
-                //_propertyPanel.Entity = args.Entities.LastOrDefault();
-                _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
-                _propertyPanel.IsActive = true;
-                //SideDockManager.ActiveContent = _propertyPanel;
-            };*/
-            //gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
-            gamePanelManager.ViewModel.UpdateFromModel(mapComponent.Map);
-
-            DockHelper.AddToDockAsDocument(MainDockingManager, gamePanelManager, () => ViewModel.PlayVisibility = Visibility.Hidden);
-            _mainDockViewByViewModel.Add(gamePanelManager.ViewModel, gamePanelManager);
-
-            /*MainDockingManager.ActiveContentChanged += (s, args) =>
-            {
-                if (MainDockingManager.ActiveContent == gamePanelManager)
-                {
-                    _propertyPanel.ViewModel = ;
-                }
-            };*/
-
-            gamePanelManager.SetView(ViewModel.Settings.DefaultView);
-            return gamePanelManager.ViewModel;
-        }
-
-        public ViewModel CreateScriptView(ScriptComponent scriptComponent)
-        {
-            var scriptView = new ScriptView()
-            {
-                Title = scriptComponent.Name,
-                CanClose = true
-            };
-            scriptView.ViewModel.UpdateFromModel(scriptComponent);
-
-            DockHelper.AddToDockAsDocument(MainDockingManager, scriptView);
-            _mainDockViewByViewModel.Add(scriptView.ViewModel, scriptView);
-
-            return scriptView.ViewModel;
-        }
-
-        public ViewModel CreateBehaviorView(BehaviorComponent behaviorComponent)
-        {
-            var behaviorView = new BehaviorView()
-            {
-                Title = behaviorComponent.Name,
-                CanClose = true
-            };
-
-            DockHelper.AddToDockAsDocument(MainDockingManager, behaviorView);
-            _mainDockViewByViewModel.Add(behaviorView.ViewModel, behaviorView);
-
-            return behaviorView.ViewModel;
-
-            // Temporary measures...
-            /*if (_scriptView == null)
-            {
-                _scriptView = new ScriptView(filePath);
-            }
-
-            var anchorable = new LayoutAnchorable
-            {
-                Title = Path.GetFileNameWithoutExtension(filePath),
-                Content = _scriptView,
-                CanClose = true
-            };
-            anchorable.Closed += (s, args) =>
-            {
-                PlayButton.Visibility = Visibility.Hidden;
-                _map = null;
-            };
-            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
-            anchorable.DockAsDocument();*/
-
-            /* if (_behaviorView == null)
-            {
-                _behaviorView = new BehaviorView();
-            }*/
         }
 
         public void SaveAll()

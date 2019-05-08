@@ -4,12 +4,8 @@ using SpiceEngine.Maps;
 
 namespace SauceEditor.ViewModels
 {
-    public class ScriptViewModel : ViewModel, IMainDockViewModel
+    public class ScriptViewModel : MainDockViewModel
     {
-        public bool IsPlayable => false;
-        public bool IsActive { get; set; }
-        public Map Map => null;
-
         public IFile Filer { get; set; }
         public ScriptComponent Script { get; set; }
 

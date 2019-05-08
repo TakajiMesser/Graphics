@@ -2,9 +2,14 @@
 {
     public class ModelComponent : Component//, IGameViewable
     {
-        /*public Map ToMap()
+        public override void Save()
         {
-            
-        }*/
+
+        }
+
+        public override void Load()
+        {
+
+        }
     }
 }

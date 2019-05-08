@@ -7,9 +7,12 @@ namespace SauceEditor.Models.Components
     /// <summary>
     /// All component paths are relative to parent Project path
     /// </summary>
-    public class Project : Component
+    public class Project
     {
         public const string FILE_EXTENSION = ".pro";
+
+        public string Name { get; set; }
+        public string Path { get; set; }
 
         public List<MapComponent> MapComponents { get; set; } = new List<MapComponent>();
         public List<ModelComponent> ModelComponents { get; set; } = new List<ModelComponent>();

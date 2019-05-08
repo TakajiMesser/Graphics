@@ -27,14 +27,14 @@ namespace SauceEditor.ViewModels
         public DockingManager MainDock { get; set; }
         public DockingManager SideDock { get; set; }
 
-        public List<ViewModel> MainDockViewModels { get; set; } = new List<ViewModel>();
+        public List<MainDockViewModel> MainDockViewModels { get; set; } = new List<MainDockViewModel>();
         public List<ViewModel> SideDockViewModels { get; set; } = new List<ViewModel>();
+
+        public MainDockViewModel CurrentMainDockViewModel { get; set; }
 
         public string Title { get; set; }
         public bool IsPlayable { get; set; }
         public Visibility PlayVisibility { get; set; }
-
-        public IMainDockViewModel CurrentMainDockViewModel { get; set; }
 
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
@@ -97,13 +97,13 @@ namespace SauceEditor.ViewModels
             AddChild(GamePanelManagerViewModel, (s, args) =>
             {
                 // We are "listening" to IsActive changing here
-                if (args.PropertyName == "IsActive" && GamePanelManagerViewModel.IsActive)
+                /*if (args.PropertyName == "IsActive" && GamePanelManagerViewModel.IsActive)
                 {
                     // We want to set the property panel's view model here
                     // The issue is that we STILL need a way to tell what "type" of map we have loaded, and we aren't storing that anywhere...
                     PropertyViewModel.Properties = new EntityPropertyViewModel();
                 }
-                else if (args.PropertyName == "SelectedEntities")
+                else */if (args.PropertyName == "SelectedEntities")
                 {
                     // Need to check first if this is an entity map...
                     PropertyViewModel.UpdateFromModel(GamePanelManagerViewModel.SelectedEntities.LastOrDefault());
@@ -181,13 +181,13 @@ namespace SauceEditor.ViewModels
         {
             var mapComponent = new MapComponent()
             {
-                Name = Path.GetFileNameWithoutExtension(filePath),
                 Path = filePath,
                 Map = Map.Load(filePath)
             };
 
+            Title = mapComponent.Name + " - SauceEditor";
+
             GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent);
-            GamePanelManagerViewModel.Component = mapComponent;
             //_propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
             /*_propertyPanel.ScriptOpened += (s, args) =>
             {
@@ -210,41 +210,33 @@ namespace SauceEditor.ViewModels
 
         public void OpenModel(string filePath)
         {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
             var modelComponent = new ModelComponent()
             {
-                Name = Path.GetFileNameWithoutExtension(filePath),
                 Path = filePath
             };
 
+            Title = modelComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateModelMap(modelComponent);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent, modelComponent);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
-            GamePanelManagerViewModel.Component = modelComponent;
         }
 
         public void OpenBehavior(string filePath)
         {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
             var behaviorComponent = new BehaviorComponent()
             {
-                Name = "Test Behavior",
                 Path = filePath
             };
 
+            Title = behaviorComponent.Name + " - SauceEditor";
             BehaviorViewModel = (BehaviorViewModel)MainViewFactory.CreateBehaviorView(behaviorComponent);
         }
 
         public void OpenTexture(string filePath)
         {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
             var textureComponent = new TextureComponent()
             {
-                Name = Path.GetFileNameWithoutExtension(filePath),
                 Path = filePath,
                 TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
                 {
@@ -255,11 +247,11 @@ namespace SauceEditor.ViewModels
                 }
             };
 
+            Title = textureComponent.Name + " - " + "SauceEditor";
             var mapComponent = MapBuilder.GenerateTextureMap(textureComponent);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent, textureComponent);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
-            GamePanelManagerViewModel.Component = textureComponent;
             GamePanelManagerViewModel.PerspectiveViewModel.Panel.RenderMode = SpiceEngine.Rendering.RenderModes.Diffuse;
 
             CommandManager.InvalidateRequerySuggested();
@@ -272,19 +264,16 @@ namespace SauceEditor.ViewModels
 
         public void OpenMaterial(string filePath)
         {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
             var materialComponent = new MaterialComponent()
             {
-                Name = Path.GetFileNameWithoutExtension(filePath),
                 Path = filePath
             };
 
+            Title = materialComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateMaterialMap(materialComponent);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent, materialComponent);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
-            GamePanelManagerViewModel.Component = materialComponent;
         }
 
         public void OpenArchetype(string filePath)
@@ -294,14 +283,12 @@ namespace SauceEditor.ViewModels
 
         public void OpenScript(string filePath)
         {
-            Title = Path.GetFileNameWithoutExtension(filePath) + " - " + "SauceEditor";
-
             var scriptComponent = new ScriptComponent()
             {
-                Name = Path.GetFileNameWithoutExtension(filePath),
                 Path = filePath
             };
 
+            Title = scriptComponent.Name + " - SauceEditor";
             ScriptViewModel = (ScriptViewModel)MainViewFactory.CreateScriptView(scriptComponent);
         }
     }

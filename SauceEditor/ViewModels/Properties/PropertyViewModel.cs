@@ -1,13 +1,6 @@
-using OpenTK;
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
-using SauceEditor.Utilities;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using SpiceEngine.Utilities;
-using System.ComponentModel;
-using System.Windows.Media;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
+using Component = SauceEditor.Models.Components.Component;
 
 namespace SauceEditor.ViewModels.Properties
 {
@@ -16,18 +9,42 @@ namespace SauceEditor.ViewModels.Properties
         public IPropertyViewModel Properties { get; set; }
         public bool IsActive { get; set; }
 
+        public void OnPropertiesChanged() => AddChild((ViewModel)Properties, (s, args) => InvokePropertyChanged(nameof(Properties)));
+
+        public void InitializeProperties(Component component)
+        {
+            switch (component)
+            {
+                case MapComponent mapComponent:
+                    Properties = new EntityPropertyViewModel();
+                    UpdateFromModel(null);
+                    break;
+                case MaterialComponent materialComponent:
+                    Properties = new MaterialPropertyViewModel();
+                    UpdateFromModel(component);
+                    break;
+                case TextureComponent textureComponent:
+                    Properties = new TexturePropertyViewModel();
+                    UpdateFromModel(component);
+                    break;
+            }
+        }
+
         public void UpdateFromModel(object model)
         {
-            if (model == null)
+            /*if (model == null)
             {
                 // Find way to disable binding?
             }
             else
-            {
+            {*/
                 switch (model)
                 {
                     case EditorEntity editorEntity:
-                        ((EntityPropertyViewModel)Properties).UpdateFromModel(editorEntity);
+                        if (Properties is EntityPropertyViewModel entityPropertyViewModel)
+                        {
+                            entityPropertyViewModel.UpdateFromModel(editorEntity);
+                        }
                         break;
                     case MaterialComponent materialComponent:
                         ((MaterialPropertyViewModel)Properties).UpdateFromModel(materialComponent);
@@ -36,7 +53,7 @@ namespace SauceEditor.ViewModels.Properties
                         ((TexturePropertyViewModel)Properties).UpdateFromModel(textureComponent);
                         break;
                 }
-            }
+            //}
         }
     }
 }

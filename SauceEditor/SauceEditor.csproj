@@ -233,7 +233,7 @@
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
     <Compile Include="ViewModels\ISideDockViewModel.cs" />
-    <Compile Include="ViewModels\IMainDockViewModel.cs" />
+    <Compile Include="ViewModels\MainDockViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
@@ -259,6 +259,8 @@
     <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
       <DependentUpon>BehaviorView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Factories\IMainView.cs" />
+    <Compile Include="Views\MainDockManager.cs" />
     <Compile Include="Views\Factories\IComponentFactory.cs" />
     <Compile Include="Views\Factories\IHaveViewModel.cs" />
     <Compile Include="Views\Factories\IMainViewFactory.cs" />

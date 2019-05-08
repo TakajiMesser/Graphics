@@ -10,11 +10,13 @@
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         mc:Ignorable="d"
         Title="Properties">
-    <xctk:PropertyGrid x:Name="PropertyGrid" Margin="4" SelectedObject="{Binding Properties}">
+    <xctk:PropertyGrid x:Name="PropertyGrid"
+                       Margin="4"
+                       SelectedObject="{Binding Properties}">
         <xctk:PropertyGrid.DataContext>
             <vm:PropertyViewModel x:Name="ViewModel"/>
         </xctk:PropertyGrid.DataContext>
-        <!--<xctk:PropertyGrid.Resources>
+        <!--Visibility="{Binding Properties, Converter={Dyna NullToVisibilityConverter}}"<xctk:PropertyGrid.Resources>
             <vm:NullVisibilityConverter x:Key="NullVisibilityConverter"/>
         </xctk:PropertyGrid.Resources>-->
         <xctk:PropertyGrid.EditorDefinitions>
