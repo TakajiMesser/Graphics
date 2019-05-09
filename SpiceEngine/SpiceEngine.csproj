@@ -236,9 +236,12 @@
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Meshes\MeshBuild.cs" />
+    <Compile Include="Rendering\Meshes\MeshVertex.cs" />
     <Compile Include="Rendering\Meshes\MeshShape.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
     <Compile Include="Rendering\Meshes\IMesh3D.cs" />
+    <Compile Include="Rendering\Meshes\MeshFace.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />

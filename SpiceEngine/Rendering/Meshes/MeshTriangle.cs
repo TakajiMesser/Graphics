@@ -1,16 +1,22 @@
-﻿namespace SpiceEngine.Rendering.Meshes
-{
-    public struct MeshTriangle
-    {
-        public int VertexIndexA { get; set; }
-        public int VertexIndexB { get; set; }
-        public int VertexIndexC { get; set; }
+﻿using OpenTK;
 
-        public MeshTriangle(int vertexIndexA, int vertexIndexB, int vertexIndexC)
+namespace SpiceEngine.Rendering.Meshes
+{
+    public class MeshTriangle
+    {
+        public Vector3 VertexA { get; set; }
+        public Vector3 VertexB { get; set; }
+        public Vector3 VertexC { get; set; }
+
+        public Vector3 Normal { get; set; }
+        public Vector3 Tangent { get; set; }
+
+        public MeshTriangle() { }
+        public MeshTriangle(Vector3 vertexA, Vector3 vertexB, Vector3 vertexC)
         {
-            VertexIndexA = vertexIndexA;
-            VertexIndexB = vertexIndexB;
-            VertexIndexC = vertexIndexC;
+            VertexA = vertexA;
+            VertexB = vertexB;
+            VertexC = vertexC;
         }
     }
 }
