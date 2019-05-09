@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,20 +12,58 @@ namespace SpiceEngine.Rendering.Meshes
         public List<MeshVertex> Vertices { get; set; } = new List<MeshVertex>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
 
-        public void AddTriangle(MeshTriangle triangle)
+        public void AddFace(MeshFace face)
         {
-            var indexA = AddVertex(triangle.VertexA, triangle.Normal, triangle.Tangent);
-            var indexB = AddVertex(triangle.VertexB, triangle.Normal, triangle.Tangent);
-            var indexC = AddVertex(triangle.VertexC, triangle.Normal, triangle.Tangent);
+            var tangentOrigin = face.Vertices.Min(v => Vector3.Dot(face.Tangent, v));
+            var bitangentOrigin = face.Vertices.Min(v => Vector3.Dot(face.Bitangent, v));
+
+            foreach (var triangle in face.GetMeshTriangles())
+            {
+                AddTriangle(triangle, tangentOrigin, bitangentOrigin);
+            }
+        }
+
+        public void Normalize()
+        {
+            foreach (var vertex in Vertices)
+            {
+                vertex.Normal.Normalize();
+                vertex.Tangent.Normalize();
+            }
+        }
+
+        private void AddTriangle(MeshTriangle triangle, float tangentOrigin, float bitangentOrigin)
+        {
+            var uvA = new Vector2()
+            {
+                X = Vector3.Dot(triangle.Tangent, triangle.VertexA) - tangentOrigin,
+                Y = Vector3.Dot(triangle.Bitangent, triangle.VertexA) - bitangentOrigin
+            };
+
+            var uvB = new Vector2()
+            {
+                X = Vector3.Dot(triangle.Tangent, triangle.VertexB) - tangentOrigin,
+                Y = Vector3.Dot(triangle.Bitangent, triangle.VertexB) - bitangentOrigin
+            };
+
+            var uvC = new Vector2()
+            {
+                X = Vector3.Dot(triangle.Tangent, triangle.VertexC) - tangentOrigin,
+                Y = Vector3.Dot(triangle.Bitangent, triangle.VertexC) - bitangentOrigin
+            };
+
+            var indexA = AddVertex(triangle.VertexA, triangle.Normal, triangle.Tangent, uvA);
+            var indexB = AddVertex(triangle.VertexB, triangle.Normal, triangle.Tangent, uvB);
+            var indexC = AddVertex(triangle.VertexC, triangle.Normal, triangle.Tangent, uvC);
 
             TriangleIndices.Add(indexA);
             TriangleIndices.Add(indexB);
             TriangleIndices.Add(indexC);
         }
 
-        private int AddVertex(Vector3 position, Vector3 normal, Vector3 tangent)
+        private int AddVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 uv)
         {
-            var index = Vertices.FindIndex(v => v.Position == position);
+            var index = Vertices.FindIndex(v => v.Position == position && v.UV == uv);
             MeshVertex vertex;
 
             if (index >= 0)
@@ -35,7 +74,8 @@ namespace SpiceEngine.Rendering.Meshes
             {
                 vertex = new MeshVertex()
                 {
-                    Position = position
+                    Position = position,
+                    UV = uv,
                 };
 
                 index = Vertices.Count;

@@ -84,8 +84,17 @@ namespace SpiceEngine.Maps
         public static MapBrush Box(Vector3 center, float width, float height, float depth)
         {
             var meshShape = MeshShape.Box(width, height, depth);
+            var meshBuild = meshShape.GetMeshBuild();
 
-            var uvs = new List<Vector2>
+            return new MapBrush()
+            {
+                Position = center,
+                Vertices = meshBuild.Vertices,
+                TriangleIndices = meshBuild.TriangleIndices,
+                Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
+            };
+
+            /*var uvs = new List<Vector2>
             {
                 new Vector2(0, 0),
                 new Vector2(0, 2),
@@ -888,7 +897,7 @@ namespace SpiceEngine.Maps
                 Vertices = vertices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices
-            };
+            }; */
         }
     }
 }

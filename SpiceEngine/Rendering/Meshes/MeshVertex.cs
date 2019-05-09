@@ -9,6 +9,6 @@ namespace SpiceEngine.Rendering.Meshes
         public Vector3 Position { get; set; }
         public Vector3 Normal { get; set; }
         public Vector3 Tangent { get; set; }
-        public Vector2 TextureCoordinates { get; set; }
+        public Vector2 UV { get; set; }
     }
 }

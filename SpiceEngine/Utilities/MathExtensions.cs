@@ -8,6 +8,7 @@ namespace SpiceEngine.Utilities
         public const float PI = (float)Math.PI;
         public const float HALF_PI = (float)Math.PI / 2.0f;
         public const float TWO_PI = 2.0f * (float)Math.PI;
+        public const float THREE_HALVES_PI = (float)Math.PI * 3.0f / 2.0f;
 
         public static bool IsSignificant(this int value) => value >= EPSILON || value <= -EPSILON;
         public static bool IsSignificant(this float value) => value >= EPSILON || value <= -EPSILON;

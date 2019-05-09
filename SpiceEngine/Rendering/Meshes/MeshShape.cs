@@ -13,12 +13,10 @@ namespace SpiceEngine.Rendering.Meshes
 
             foreach (var face in Faces)
             {
-                foreach (var triangle in face.GetMeshTriangles())
-                {
-                    meshBuild.AddTriangle(triangle);
-                }
+                meshBuild.AddFace(face);
             }
 
+            meshBuild.Normalize();
             return meshBuild;
         }
 
@@ -26,10 +24,18 @@ namespace SpiceEngine.Rendering.Meshes
         {
             var shape = new MeshShape();
 
-            shape.Faces.Add(new MeshFace(
-                new Vector3()
-                
-            ));
+            var xFace = MeshFace.Rectangle(depth, height).Translated(width / 2.0f, 0.0f, 0.0f);
+            var yFace = MeshFace.Rectangle(width, depth).Translated(0.0f, height / 2.0f, 0.0f);
+            var zFace = MeshFace.Rectangle(width, height).Translated(0.0f, 0.0f, depth / 2.0f);
+
+            shape.Faces.Add(xFace.Rotated(Vector.Y, MathExtensions.HALF_PI));
+            shape.Faces.Add(xFace.Rotated(Vector.Y, MathExtensions.THREE_HALVES_PI));
+
+            shape.Faces.Add(yFace.Rotated(Vector.X, MathExtensions.HALF_PI));
+            shape.Faces.Add(yFace.Rotated(Vector.X, MathExtensions.THREE_HALVES_PI));
+
+            shape.Faces.Add(zFace);
+            shape.Faces.Add(zFace.Rotated(Vector.Y, MathExtensions.PI));
 
             return shape;
         }

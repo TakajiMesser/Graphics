@@ -10,6 +10,7 @@ namespace SpiceEngine.Rendering.Meshes
 
         public Vector3 Normal { get; set; }
         public Vector3 Tangent { get; set; }
+        public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
 
         public MeshTriangle() { }
         public MeshTriangle(Vector3 vertexA, Vector3 vertexB, Vector3 vertexC)
