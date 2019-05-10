@@ -53,7 +53,7 @@ namespace SpiceEngine.Rendering.Meshes
 
             for (var i = 0; i < Vertices.Count; i++)
             {
-                Vertices[i] *= rotation;
+                Vertices[i] = rotation * Vertices[i];
             }
         }
 
@@ -69,7 +69,7 @@ namespace SpiceEngine.Rendering.Meshes
 
             for (var i = 0; i < Vertices.Count; i++)
             {
-                rotated.Vertices[i] = Vertices[i] * rotation;
+                rotated.Vertices[i] = rotation * Vertices[i];
             }
 
             return rotated;
@@ -127,8 +127,8 @@ namespace SpiceEngine.Rendering.Meshes
                 {
                     new Vector3(-width / 2.0f, -height / 2.0f, 0.0f),
                     new Vector3(-width / 2.0f, height / 2.0f, 0.0f),
-                    new Vector3(width / 2.0f, -height / 2.0f, 0.0f),
-                    new Vector3(width / 2.0f, height / 2.0f, 0.0f)
+                    new Vector3(width / 2.0f, height / 2.0f, 0.0f),
+                    new Vector3(width / 2.0f, -height / 2.0f, 0.0f)
                 },
                 Normal = Vector3.UnitZ,
                 Tangent = Vector3.UnitY

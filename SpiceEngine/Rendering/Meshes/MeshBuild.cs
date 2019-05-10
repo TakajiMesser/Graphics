@@ -36,29 +36,29 @@ namespace SpiceEngine.Rendering.Meshes
         {
             var uvA = new Vector2()
             {
-                X = Vector3.Dot(triangle.Tangent, triangle.VertexA) - tangentOrigin,
-                Y = Vector3.Dot(triangle.Bitangent, triangle.VertexA) - bitangentOrigin
+                X = Vector3.Dot(triangle.Bitangent, triangle.VertexA) - bitangentOrigin,
+                Y = Vector3.Dot(triangle.Tangent, triangle.VertexA) - tangentOrigin
             };
 
             var uvB = new Vector2()
             {
-                X = Vector3.Dot(triangle.Tangent, triangle.VertexB) - tangentOrigin,
-                Y = Vector3.Dot(triangle.Bitangent, triangle.VertexB) - bitangentOrigin
+                X = Vector3.Dot(triangle.Bitangent, triangle.VertexB) - bitangentOrigin,
+                Y = Vector3.Dot(triangle.Tangent, triangle.VertexB) - tangentOrigin
             };
 
             var uvC = new Vector2()
             {
-                X = Vector3.Dot(triangle.Tangent, triangle.VertexC) - tangentOrigin,
-                Y = Vector3.Dot(triangle.Bitangent, triangle.VertexC) - bitangentOrigin
+                X = Vector3.Dot(triangle.Bitangent, triangle.VertexC) - bitangentOrigin,
+                Y = Vector3.Dot(triangle.Tangent, triangle.VertexC) - tangentOrigin
             };
 
             var indexA = AddVertex(triangle.VertexA, triangle.Normal, triangle.Tangent, uvA);
             var indexB = AddVertex(triangle.VertexB, triangle.Normal, triangle.Tangent, uvB);
             var indexC = AddVertex(triangle.VertexC, triangle.Normal, triangle.Tangent, uvC);
 
-            TriangleIndices.Add(indexA);
+            TriangleIndices.Add(indexC);//indexA);
             TriangleIndices.Add(indexB);
-            TriangleIndices.Add(indexC);
+            TriangleIndices.Add(indexA);//indexC);
         }
 
         private int AddVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 uv)

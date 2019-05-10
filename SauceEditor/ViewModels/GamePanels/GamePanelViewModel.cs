@@ -26,9 +26,16 @@ namespace SauceEditor.ViewModels
                     p =>
                     {
                         Panel.RenderMode = RenderModes.Wireframe;
-                        CommandManager.InvalidateRequerySuggested();
+                        //CommandManager.InvalidateRequerySuggested();
+                        WireframeCommand.InvokeCanExecuteChanged();
+                        DiffuseCommand.InvokeCanExecuteChanged();
+                        LitCommand.InvokeCanExecuteChanged();
                     },
-                    p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
+                    //p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
+                    p =>
+                    {
+                        return Panel != null && Panel.RenderMode != RenderModes.Wireframe;
+                    }
                 ));
             }
         }
@@ -42,7 +49,10 @@ namespace SauceEditor.ViewModels
                     p =>
                     {
                         Panel.RenderMode = RenderModes.Diffuse;
-                        CommandManager.InvalidateRequerySuggested();
+                        //CommandManager.InvalidateRequerySuggested();
+                        WireframeCommand.InvokeCanExecuteChanged();
+                        DiffuseCommand.InvokeCanExecuteChanged();
+                        LitCommand.InvokeCanExecuteChanged();
                     },
                     p => Panel != null && Panel.RenderMode != RenderModes.Diffuse
                 ));
@@ -58,7 +68,10 @@ namespace SauceEditor.ViewModels
                     p =>
                     {
                         Panel.RenderMode = RenderModes.Lit;
-                        CommandManager.InvalidateRequerySuggested();
+                        //CommandManager.InvalidateRequerySuggested();
+                        WireframeCommand.InvokeCanExecuteChanged();
+                        DiffuseCommand.InvokeCanExecuteChanged();
+                        LitCommand.InvokeCanExecuteChanged();
                     },
                     p => Panel != null && Panel.RenderMode != RenderModes.Lit
                 ));
@@ -104,7 +117,10 @@ namespace SauceEditor.ViewModels
 
             // Default to wireframe rendering
             Panel.RenderMode = RenderModes.Wireframe;
-            CommandManager.InvalidateRequerySuggested();
+            //CommandManager.InvalidateRequerySuggested();
+            WireframeCommand.InvokeCanExecuteChanged();
+            DiffuseCommand.InvokeCanExecuteChanged();
+            LitCommand.InvokeCanExecuteChanged();
         }
 
         public void OnViewTypeChanged()

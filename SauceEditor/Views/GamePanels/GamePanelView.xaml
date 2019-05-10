@@ -21,7 +21,7 @@
                 </Style.Triggers>
             </Style>
         </DockPanel.Resources>-->
-    <xcad:LayoutAnchorable x:Name="Anchorable" Title="{Binding Title}">
+    <xcad:LayoutAnchorable x:Name="Anchorable">
         <DockPanel Name="DockPanel" Loaded="OnLoaded">
             <DockPanel.DataContext>
                 <vm:GamePanelViewModel x:Name="ViewModel"></vm:GamePanelViewModel>

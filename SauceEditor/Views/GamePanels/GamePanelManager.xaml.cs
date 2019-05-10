@@ -70,8 +70,27 @@ namespace SauceEditor.Views.GamePanels
         {
             var gamePanel = new GamePanelView();
             gamePanel.ViewModel.ViewType = viewType;
-            gamePanel.Anchorable.Show();
 
+            // TODO - This isn't MVVM
+            switch (viewType)
+            {
+                case ViewTypes.Perspective:
+                    gamePanel.Anchorable.Title = "Perspective";
+                    break;
+                case ViewTypes.X:
+                    gamePanel.Anchorable.Title = "X";
+                    break;
+                case ViewTypes.Y:
+                    gamePanel.Anchorable.Title = "Y";
+                    break;
+                case ViewTypes.Z:
+                    gamePanel.Anchorable.Title = "Z";
+                    break;
+                default:
+                    throw new ArgumentException("Could not handle ViewType " + viewType);
+            }
+
+            gamePanel.Anchorable.Show();
             return gamePanel;
         }
 

@@ -38,9 +38,9 @@ namespace SauceEditor.Helpers.Builders
                 TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                    NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,
-                    SpecularMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_S_TEXTURE_PATH,
-                    ParallaxMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_H_TEXTURE_PATH
+                    //NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,
+                    //SpecularMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_S_TEXTURE_PATH,
+                    //ParallaxMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_H_TEXTURE_PATH
                 }
             });
 
@@ -141,7 +141,7 @@ namespace SauceEditor.Helpers.Builders
                 }
             };
 
-            var mapBrush = MapBrush.Sphere(Vector3.Zero, 5.0f);
+            //var mapBrush = MapBrush.Sphere(Vector3.Zero, 5.0f);
             //mapBrush.Material = SpiceEngine.Rendering.Materials.Material.LoadFromFile();
             /*mapBrush.TexturesPaths = new SpiceEngine.Rendering.Textures.TexturePaths()
             {
@@ -151,7 +151,7 @@ namespace SauceEditor.Helpers.Builders
                 ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
             };*/
 
-            map.Brushes.Add(mapBrush);
+            //map.Brushes.Add(mapBrush);
 
             return new MapComponent()
             {

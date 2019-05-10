@@ -67,6 +67,7 @@ namespace SauceEditor.Views
             };*/
 
             //gamePanelManager.SetView(ViewModel.Settings.DefaultView);
+            gamePanelManager.SetView(MainWindowViewModel.Settings.DefaultView);
             return gamePanelManager.ViewModel;
         }
 

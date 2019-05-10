@@ -62,7 +62,19 @@ namespace SpiceEngine.Maps
 
         public static MapBrush Rectangle(Vector3 center, float width, float height)
         {
-            var meshShape = MeshShape.Rectangle(width, height);
+            var meshShape = new MeshShape();
+            meshShape.Faces.Add(MeshFace.Rectangle(width, height));
+            var meshBuild = meshShape.GetMeshBuild();
+
+            return new MapBrush()
+            {
+                Position = center,
+                Vertices = meshBuild.Vertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList(),
+                TriangleIndices = meshBuild.TriangleIndices,
+                Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
+            };
+
+            /*var meshShape = MeshShape.Rectangle(width, height);
 
             var vertices = new List<Vertex3D>()
             {
@@ -78,7 +90,7 @@ namespace SpiceEngine.Maps
                 Position = center,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = meshShape.TriangleIndices
-            };
+            };*/
         }
 
         public static MapBrush Box(Vector3 center, float width, float height, float depth)
@@ -89,7 +101,7 @@ namespace SpiceEngine.Maps
             return new MapBrush()
             {
                 Position = center,
-                Vertices = meshBuild.Vertices,
+                Vertices = meshBuild.Vertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList(),
                 TriangleIndices = meshBuild.TriangleIndices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
             };
