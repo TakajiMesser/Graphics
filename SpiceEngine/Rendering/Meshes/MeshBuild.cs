@@ -56,6 +56,7 @@ namespace SpiceEngine.Rendering.Meshes
             var indexB = AddVertex(triangle.VertexB, triangle.Normal, triangle.Tangent, uvB);
             var indexC = AddVertex(triangle.VertexC, triangle.Normal, triangle.Tangent, uvC);
 
+            // Be mindful of wind-order here
             TriangleIndices.Add(indexC);//indexA);
             TriangleIndices.Add(indexB);
             TriangleIndices.Add(indexA);//indexC);

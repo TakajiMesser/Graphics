@@ -42,6 +42,34 @@ namespace SpiceEngine.Rendering.Meshes
             return shape;
         }
 
+        /// <summary>
+        /// Generate a polygon with equal angles and sidelengths
+        /// </summary>
+        /// <param name="nSides">The number of sides for the polygon</param>
+        /// <param name="apothem">The distance from the center to the midpoint of a side</param>
+        /// <returns></returns>
+        public static MeshShape RegularPolyhedron(int nSides, float apothem)
+        {
+            var meshShape = new MeshShape();
+
+            var meshFace = new MeshFace();
+
+            var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
+            var exteriorAngle = MathExtensions.TWO_PI / nSides;
+            var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, exteriorAngle);
+
+            var direction = Vector3.UnitX;
+            meshFace.Vertices.Add(new Vector3(-sideLength, -apothem, 0.0f));
+
+            for (var i = 0; i < nSides; i++)
+            {
+                meshFace.Vertices.Add(meshFace.Vertices[i] + direction);
+                direction = rotation * direction;
+            }
+
+            return meshShape;
+        }
+
         /*public static MeshShape Box(float width, float height, float depth) => new MeshShape()
         {
             Vertices = new List<Vector3>

@@ -243,9 +243,9 @@ namespace SpiceEngine.Rendering.Textures
 
             GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (float)MinFilter);
             GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (float)MinFilter);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapR, (int)TextureWrapMode.ClampToEdge);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapR, (int)TextureWrapMode.Repeat);
 
             if (BorderColor != Vector4.Zero)
             {
@@ -466,7 +466,7 @@ namespace SpiceEngine.Rendering.Textures
                 Target = target,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.ClampToEdge,
+                WrapMode = TextureWrapMode.Repeat,
                 EnableMipMap = enableMipMap,
                 EnableAnisotropy = enableAnisotrophy
             };

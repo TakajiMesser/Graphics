@@ -7,9 +7,12 @@ namespace SpiceEngine.Rendering.Meshes
 {
     public class MeshFace
     {
+        /// <summary>
+        /// The vertices should be in clockwise order.
+        /// </summary>
         public List<Vector3> Vertices { get; set; } = new List<Vector3>();
-        public Vector3 Normal { get; set; }
-        public Vector3 Tangent { get; set; }
+        public Vector3 Normal { get; set; } = Vector3.UnitZ;
+        public Vector3 Tangent { get; set; } = Vector3.UnitY;
         public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
 
         public MeshFace() { }
@@ -130,9 +133,33 @@ namespace SpiceEngine.Rendering.Meshes
                     new Vector3(width / 2.0f, height / 2.0f, 0.0f),
                     new Vector3(width / 2.0f, -height / 2.0f, 0.0f)
                 },
-                Normal = Vector3.UnitZ,
-                Tangent = Vector3.UnitY
             };
+        }
+
+        /// <summary>
+        /// Generate a polygon with equal angles and sidelengths
+        /// </summary>
+        /// <param name="nSides">The number of sides for the polygon</param>
+        /// <param name="apothem">The distance from the center to the midpoint of a side</param>
+        /// <returns></returns>
+        public static MeshFace RegularPolygon(int nSides, float apothem)
+        {
+            var meshFace = new MeshFace();
+
+            var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
+            var exteriorAngle = MathExtensions.TWO_PI / nSides;
+            var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, exteriorAngle);
+
+            var direction = Vector3.UnitX;
+            meshFace.Vertices.Add(new Vector3(-sideLength, -apothem, 0.0f));
+
+            for (var i = 0; i < nSides; i++)
+            {
+                meshFace.Vertices.Add(meshFace.Vertices[i] + direction);
+                direction = rotation * direction;
+            }
+
+            return meshFace;
         }
 
         /*public static MeshShape Rectangle(float width, float height) => new MeshShape()
