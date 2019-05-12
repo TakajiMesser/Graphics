@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Meshes
@@ -29,15 +30,15 @@ namespace SpiceEngine.Rendering.Meshes
             var yFace = MeshFace.Rectangle(width, depth).Translated(0.0f, 0.0f, height / 2.0f);
             var zFace = MeshFace.Rectangle(width, height).Translated(0.0f, 0.0f, depth / 2.0f);
 
-            shape.Faces.Add(xFace);
-            //shape.Faces.Add(xFace.Rotated(Vector3.UnitY, MathExtensions.HALF_PI));
-            //shape.Faces.Add(xFace.Rotated(Vector3.UnitY, MathExtensions.THREE_HALVES_PI));
+            //shape.Faces.Add(xFace);
+            shape.Faces.Add(xFace.Rotated(Vector3.UnitY, MathExtensions.HALF_PI));
+            shape.Faces.Add(xFace.Rotated(Vector3.UnitY, MathExtensions.THREE_HALVES_PI));
 
-            //shape.Faces.Add(yFace.Rotated(Vector3.UnitX, MathExtensions.HALF_PI));
-            //shape.Faces.Add(yFace.Rotated(Vector3.UnitX, MathExtensions.THREE_HALVES_PI));
+            shape.Faces.Add(yFace.Rotated(Vector3.UnitX, MathExtensions.HALF_PI));
+            shape.Faces.Add(yFace.Rotated(Vector3.UnitX, MathExtensions.THREE_HALVES_PI));
 
-            //shape.Faces.Add(zFace);
-            //shape.Faces.Add(zFace.Rotated(Vector3.UnitY, MathExtensions.PI));
+            shape.Faces.Add(zFace);
+            shape.Faces.Add(zFace.Rotated(Vector3.UnitY, MathExtensions.PI));
 
             return shape;
         }

@@ -79,7 +79,7 @@ namespace SauceEditor.ViewModels
             {
                 return _playCommand ?? (_playCommand = new RelayCommand(
                     p => WindowFactory.CreateGameWindow(CurrentMainDockViewModel.Map),
-                    p => CurrentMainDockViewModel != null ? CurrentMainDockViewModel.IsPlayable : false
+                    p => true//CurrentMainDockViewModel != null ? CurrentMainDockViewModel.IsPlayable : false
                 ));
             }
         }

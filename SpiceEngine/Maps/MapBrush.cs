@@ -105,7 +105,7 @@ namespace SpiceEngine.Maps
                 TriangleIndices = meshBuild.TriangleIndices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
             };
-
+            
             /*var uvs = new List<Vector2>
             {
                 new Vector2(0, 0),
@@ -190,10 +190,10 @@ namespace SpiceEngine.Maps
                 Vertices = vertices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices
-            };
+            };*/
         }
 
-        public static MapBrush Sphere(Vector3 center, float radius)
+        /*public static MapBrush Sphere(Vector3 center, float radius)
         {
             var meshShape = MeshShape.Sphere(radius);
 
@@ -909,7 +909,7 @@ namespace SpiceEngine.Maps
                 Vertices = vertices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2,
                 TriangleIndices = triangleIndices
-            }; */
-        }
+            }; *
+        }*/
     }
 }

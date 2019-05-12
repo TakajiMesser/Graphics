@@ -243,9 +243,9 @@ namespace SpiceEngine.Rendering.Textures
 
             GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (float)MinFilter);
             GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (float)MinFilter);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.Repeat);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapR, (int)TextureWrapMode.Repeat);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)WrapMode);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)WrapMode);
+            GL.TexParameter(Target, TextureParameterName.TextureWrapR, (int)WrapMode);
 
             if (BorderColor != Vector4.Zero)
             {

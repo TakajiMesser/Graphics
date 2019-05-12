@@ -20,7 +20,7 @@ namespace SampleGameProject.Helpers.Builders
             map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
-            map.Volumes.AddRange(GenerateVolumes());
+            //map.Volumes.AddRange(GenerateVolumes());
 
             map.SkyboxTextureFilePaths = new List<string>
             {
@@ -101,12 +101,12 @@ namespace SampleGameProject.Helpers.Builders
             };
         }
 
-        private static IEnumerable<MapVolume> GenerateVolumes()
+        /*private static IEnumerable<MapVolume> GenerateVolumes()
         {
             var physicsVolume = MapVolume.Box(Vector3.Zero, 20.0f, 20.0f, 20.0f);
             physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
             physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
             yield return physicsVolume;
-        }
+        }*/
     }
 }

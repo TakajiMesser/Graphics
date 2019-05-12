@@ -134,6 +134,7 @@ namespace SauceEditor.Views
 
             _mainDockViewByViewModel[viewModel].IsActive = true;
             CurrentMainDockViewModel = viewModel;
+            MainWindowViewModel.CurrentMainDockViewModel = viewModel;
         }
     }
 }

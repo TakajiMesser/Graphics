@@ -24,48 +24,48 @@ namespace SpiceEngine.Maps
                 {
                     X = new float[]
                     {
-                        Actors.Min(a => a.Position.X),
-                        Brushes.Min(b => b.Position.X),
+                        Actors.Any() ? Actors.Min(a => a.Position.X) : 0.0f,
+                        Brushes.Any() ? Brushes.Min(b => b.Position.X) : 0.0f,
                         //Volumes.Min(v => v.Position.X),
-                        Lights.Min(l => l.Position.X)
+                        Lights.Any() ? Lights.Min(l => l.Position.X) : 0.0f
                     }.Min(),
                     Y = new float[]
                     {
-                        Actors.Min(a => a.Position.Y),
-                        Brushes.Min(b => b.Position.Y),
+                        Actors.Any() ? Actors.Min(a => a.Position.Y) : 0.0f,
+                        Brushes.Any() ? Brushes.Min(b => b.Position.Y) : 0.0f,
                         //Volumes.Min(v => v.Position.Y),
-                        Lights.Min(l => l.Position.Y)
+                        Lights.Any() ? Lights.Min(l => l.Position.Y) : 0.0f
                     }.Min(),
                     Z = new float[]
                     {
-                        Actors.Min(a => a.Position.Z),
-                        Brushes.Min(b => b.Position.Z),
+                        Actors.Any() ? Actors.Min(a => a.Position.Z) : 0.0f,
+                        Brushes.Any() ? Brushes.Min(b => b.Position.Z) : 0.0f,
                         //Volumes.Min(v => v.Position.Z),
-                        Lights.Min(l => l.Position.Z)
+                        Lights.Any() ? Lights.Min(l => l.Position.Z) : 0.0f
                     }.Min()
                 },
                 Max = new Vector3
                 {
                     X = new float[]
                     {
-                        Actors.Max(a => a.Position.X),
-                        Brushes.Max(b => b.Position.X),
+                        Actors.Any() ? Actors.Max(a => a.Position.X) : 0.0f,
+                        Brushes.Any() ? Brushes.Max(b => b.Position.X) : 0.0f,
                         //Volumes.Max(v => v.Position.X),
-                        Lights.Max(l => l.Position.X)
+                        Lights.Any() ? Lights.Max(l => l.Position.X) : 0.0f
                     }.Max(),
                     Y = new float[]
                     {
-                        Actors.Max(a => a.Position.Y),
-                        Brushes.Max(b => b.Position.Y),
+                        Actors.Any() ? Actors.Max(a => a.Position.Y) : 0.0f,
+                        Brushes.Any() ? Brushes.Max(b => b.Position.Y) : 0.0f,
                         //Volumes.Max(v => v.Position.Y),
-                        Lights.Max(l => l.Position.Y)
+                        Lights.Any() ? Lights.Max(l => l.Position.Y) : 0.0f
                     }.Max(),
                     Z = new float[]
                     {
-                        Actors.Max(a => a.Position.Z),
-                        Brushes.Max(b => b.Position.Z),
+                        Actors.Any() ? Actors.Max(a => a.Position.Z) : 0.0f,
+                        Brushes.Any() ? Brushes.Max(b => b.Position.Z) : 0.0f,
                         //Volumes.Max(v => v.Position.Z),
-                        Lights.Max(l => l.Position.Z)
+                        Lights.Any() ? Lights.Max(l => l.Position.Z) : 0.0f
                     }.Max()
                 }
             };

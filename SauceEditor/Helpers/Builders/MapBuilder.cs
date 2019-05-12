@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using SauceEditor.Models.Components;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Matrices;
@@ -99,7 +100,7 @@ namespace SauceEditor.Helpers.Builders
                 {
                     Name = "MainCamera",
                     //AttachedActorName = "Player",
-                    Position = new Vector3(10.0f, 0.0f, 0.0f),
+                    Position = new Vector3(0.0f, -20.0f, -20.0f),
                     Type = ProjectionTypes.Perspective,
                     ZNear = 0.1f,
                     ZFar = 1000.0f,
@@ -112,16 +113,29 @@ namespace SauceEditor.Helpers.Builders
             {
                 DiffuseMapFilePath = texture.TexturePaths.DiffuseMapFilePath,
                 NormalMapFilePath = texture.TexturePaths.NormalMapFilePath,
-                SpecularMapFilePath = texture.TexturePaths.SpecularMapFilePath,
-                ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
+                //SpecularMapFilePath = texture.TexturePaths.SpecularMapFilePath,
+                //ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
             };
 
             map.Brushes.Add(mapBrush);
 
+            map.Lights.Add(new MapLight()
+            {
+                Radius = 30.0f,
+                Intensity = 1.0f,
+                Color = Color4.White,
+                LightType = MapLight.LightTypes.Point,
+                Position = new Vector3(20.0f, 20.0f, 20.0f)
+            });
+
+            var tempPath = FilePathHelper.INITIAL_FILE_DIRECTORY + "/../Resources/Maps/TempPath.map";
+            map.Save(tempPath);
+            var loadedMap = Map.Load(tempPath);
+
             return new MapComponent()
             {
                 Name = "Texture " + texture.Name,
-                Map = map
+                Map = loadedMap//map
             };
         }
 

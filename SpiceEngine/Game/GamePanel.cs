@@ -94,9 +94,9 @@ namespace SpiceEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        //var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
                         //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
-                        _toolVolume = mapVolume.ToEntity();
+                        //_toolVolume = mapVolume.ToEntity();
                         int entityID = _gameManager.EntityManager.AddEntity(_toolVolume);
 
                         lock (_loadLock)
@@ -104,8 +104,8 @@ namespace SpiceEngine.Game
                             if (_renderManager != null)
                             {
                                 //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
-                                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                                _renderManager.BatchManager.AddVolume(entityID, mesh);
+                                //var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                                //_renderManager.BatchManager.AddVolume(entityID, mesh);
                                 _renderManager.BatchManager.Load(entityID);
                             }
                         }
