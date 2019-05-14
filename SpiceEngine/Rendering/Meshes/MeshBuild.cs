@@ -1,6 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngine.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -14,12 +12,13 @@ namespace SpiceEngine.Rendering.Meshes
 
         public void AddFace(MeshFace face)
         {
-            var tangentOrigin = face.Vertices.Min(v => Vector3.Dot(face.Tangent, v));
-            var bitangentOrigin = face.Vertices.Min(v => Vector3.Dot(face.Bitangent, v));
+            var uvRotation = Quaternion.FromAxisAngle(face.Normal, face.UVMap.Rotation);
+            var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v));
+            var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v));
 
             foreach (var triangle in face.GetMeshTriangles())
             {
-                AddTriangle(triangle, tangentOrigin, bitangentOrigin);
+                AddTriangle(triangle, uvXOrigin, uvYOrigin, uvRotation, face.UVMap);
             }
         }
 
@@ -32,24 +31,24 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        private void AddTriangle(MeshTriangle triangle, float tangentOrigin, float bitangentOrigin)
+        private void AddTriangle(MeshTriangle triangle, float uvXOrigin, float uvYOrigin, Quaternion uvRotation, UVMap uvMap)
         {
             var uvA = new Vector2()
             {
-                X = Vector3.Dot(triangle.Bitangent, triangle.VertexA) - bitangentOrigin,
-                Y = Vector3.Dot(triangle.Tangent, triangle.VertexA) - tangentOrigin
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexA) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexA) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
             var uvB = new Vector2()
             {
-                X = Vector3.Dot(triangle.Bitangent, triangle.VertexB) - bitangentOrigin,
-                Y = Vector3.Dot(triangle.Tangent, triangle.VertexB) - tangentOrigin
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexB) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexB) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
             var uvC = new Vector2()
             {
-                X = Vector3.Dot(triangle.Bitangent, triangle.VertexC) - bitangentOrigin,
-                Y = Vector3.Dot(triangle.Tangent, triangle.VertexC) - tangentOrigin
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexC) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexC) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
             var indexA = AddVertex(triangle.VertexA, triangle.Normal, triangle.Tangent, uvA);

@@ -8,6 +8,16 @@ namespace SpiceEngine.Rendering.Meshes
     public class MeshShape
     {
         public List<MeshFace> Faces { get; set; } = new List<MeshFace>();
+        public UVMap UVMap
+        {
+            set
+            {
+                foreach (var face in Faces)
+                {
+                    face.UVMap = value;
+                }
+            }
+        }
 
         public MeshBuild GetMeshBuild()
         {
@@ -26,19 +36,37 @@ namespace SpiceEngine.Rendering.Meshes
         {
             var shape = new MeshShape();
 
-            var xFace = MeshFace.Rectangle(depth, height).Translated(0.0f, 0.0f, width / 2.0f);
-            var yFace = MeshFace.Rectangle(width, depth).Translated(0.0f, 0.0f, height / 2.0f);
-            var zFace = MeshFace.Rectangle(width, height).Translated(0.0f, 0.0f, depth / 2.0f);
+            // +X Face
+            shape.Faces.Add(MeshFace.Rectangle(height, depth)
+                .Rotated(Vector3.UnitZ, MathExtensions.HALF_PI)
+                .Translated(0.0f, 0.0f, width / 2.0f)
+                .Rotated(Vector3.UnitY, MathExtensions.HALF_PI));
 
-            //shape.Faces.Add(xFace);
-            shape.Faces.Add(xFace.Rotated(Vector3.UnitY, MathExtensions.HALF_PI));
-            shape.Faces.Add(xFace.Rotated(Vector3.UnitY, MathExtensions.THREE_HALVES_PI));
+            // -X Face
+            shape.Faces.Add(MeshFace.Rectangle(height, depth)
+                .Rotated(Vector3.UnitZ, -MathExtensions.HALF_PI)
+                .Translated(0.0f, 0.0f, width / 2.0f)
+                .Rotated(Vector3.UnitY, -MathExtensions.HALF_PI));
 
-            shape.Faces.Add(yFace.Rotated(Vector3.UnitX, MathExtensions.HALF_PI));
-            shape.Faces.Add(yFace.Rotated(Vector3.UnitX, MathExtensions.THREE_HALVES_PI));
+            // +Y Face
+            shape.Faces.Add(MeshFace.Rectangle(width, depth)
+                .Rotated(Vector3.UnitZ, MathExtensions.PI)
+                .Translated(0.0f, 0.0f, height / 2.0f)
+                .Rotated(Vector3.UnitX, -MathExtensions.HALF_PI));
 
-            shape.Faces.Add(zFace);
-            shape.Faces.Add(zFace.Rotated(Vector3.UnitY, MathExtensions.PI));
+            // -Y Face
+            shape.Faces.Add(MeshFace.Rectangle(width, depth)
+                .Translated(0.0f, 0.0f, height / 2.0f)
+                .Rotated(Vector3.UnitX, MathExtensions.HALF_PI));
+
+            // +Z Face
+            shape.Faces.Add(MeshFace.Rectangle(width, height)
+                .Translated(0.0f, 0.0f, depth / 2.0f));
+
+            // -Z Face
+            shape.Faces.Add(MeshFace.Rectangle(width, height)
+                .Translated(0.0f, 0.0f, depth / 2.0f)
+                .Rotated(Vector3.UnitY, MathExtensions.PI));
 
             return shape;
         }

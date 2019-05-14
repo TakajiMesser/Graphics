@@ -2,8 +2,12 @@
 using OpenTK.Graphics;
 using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Materials;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
+using System.Linq;
 using static SpiceEngine.Maps.MapLight;
 
 namespace SampleGameProject.Helpers.Builders
@@ -20,7 +24,7 @@ namespace SampleGameProject.Helpers.Builders
             map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
-            //map.Volumes.AddRange(GenerateVolumes());
+            map.Volumes.AddRange(GenerateVolumes());
 
             map.SkyboxTextureFilePaths = new List<string>
             {
@@ -50,21 +54,32 @@ namespace SampleGameProject.Helpers.Builders
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             yield return floor;
 
-            var wall = MapBrush.Box(new Vector3(10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
-            wall.IsPhysical = true;
-            wall.TexturesPaths = new TexturePaths()
+            var wallShape = MeshShape.Box(5.0f, 10.0f, 5.0f);
+            wallShape.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
+            var wall = new MapBrush(wallShape.GetMeshBuild())
             {
-                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                Position = new Vector3(10.0f, 0.0f, 0.0f),
+                IsPhysical = true,
+                TexturesPaths = new TexturePaths()
+                {
+                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                }
             };
             yield return wall;
 
-            var wall2 = MapBrush.Box(new Vector3(-10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
-            wall2.IsPhysical = true;
-            wall2.TexturesPaths = new TexturePaths()
+
+            var wallShape2 = MeshShape.Box(5.0f, 10.0f, 5.0f);
+            wallShape2.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
+            var wall2 = new MapBrush(wallShape2.GetMeshBuild())
             {
-                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                Position = new Vector3(-10.0f, 0.0f, 0.0f),
+                IsPhysical = true,
+                TexturesPaths = new TexturePaths()
+                {
+                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                }
             };
             yield return wall2;
         }
@@ -101,12 +116,12 @@ namespace SampleGameProject.Helpers.Builders
             };
         }
 
-        /*private static IEnumerable<MapVolume> GenerateVolumes()
+        private static IEnumerable<MapVolume> GenerateVolumes()
         {
             var physicsVolume = MapVolume.Box(Vector3.Zero, 20.0f, 20.0f, 20.0f);
             physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
             physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
             yield return physicsVolume;
-        }*/
+        }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using SpiceEngine.Utilities;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
@@ -14,6 +15,10 @@ namespace SpiceEngine.Rendering.Meshes
         public Vector3 Normal { get; set; } = Vector3.UnitZ;
         public Vector3 Tangent { get; set; } = Vector3.UnitY;
         public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
+
+        public UVMap UVMap { get; set; } = UVMap.Standard;
+        public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v));
+        public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v));
 
         public MeshFace() { }
         public MeshFace(params Vector3[] vertices) : this(LINQExtensions.Generate(vertices)) { }

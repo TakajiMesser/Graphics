@@ -128,14 +128,10 @@ namespace SauceEditor.Helpers.Builders
                 Position = new Vector3(20.0f, 20.0f, 20.0f)
             });
 
-            var tempPath = FilePathHelper.INITIAL_FILE_DIRECTORY + "/../Resources/Maps/TempPath.map";
-            map.Save(tempPath);
-            var loadedMap = Map.Load(tempPath);
-
             return new MapComponent()
             {
                 Name = "Texture " + texture.Name,
-                Map = loadedMap//map
+                Map = map
             };
         }
 

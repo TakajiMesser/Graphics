@@ -21,6 +21,14 @@ namespace SpiceEngine.Maps
         public bool IsPhysical { get; set; }
         public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
 
+        public MapBrush() { }
+        public MapBrush(MeshBuild meshBuild)
+        {
+            Vertices = meshBuild.Vertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();
+            TriangleIndices = meshBuild.TriangleIndices;
+            Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
+        }
+
         public Mesh3D<Vertex3D> ToMesh()
         {
             if (TexturesPaths.IsEmpty)

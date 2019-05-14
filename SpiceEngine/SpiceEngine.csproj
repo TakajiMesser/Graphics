@@ -237,6 +237,7 @@
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
     <Compile Include="Rendering\Meshes\MeshBuild.cs" />
+    <Compile Include="Rendering\Meshes\UVMap.cs" />
     <Compile Include="Rendering\Meshes\MeshVertex.cs" />
     <Compile Include="Rendering\Meshes\MeshShape.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
