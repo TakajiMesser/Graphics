@@ -449,8 +449,9 @@
     <Folder Include="Resources\Shaders\Lens\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Textures\volume-vertex.png" />
+    <None Include="Resources\Textures\vertex.png" />
     <None Include="Resources\Textures\light.png" />
+    <Content Include="Resources\Textures\circle.png" />
     <Content Include="Resources\Textures\point-light.png" />
     <Content Include="Resources\Textures\selected-directional-light.png" />
     <Content Include="Resources\Textures\selected-point-light.png" />
@@ -462,6 +463,7 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

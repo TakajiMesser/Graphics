@@ -89,6 +89,9 @@ namespace SauceEditor.Views.GamePanels
             DockPanel.Focusable = true;
             ViewModel.Panel = Panel;
 
+            //ViewModeButton.Value = ViewModel.ViewType;
+            //ViewModel.OnViewTypeChanged;
+
             //Panel.EntitySelectionChanged += (s, args) => EntitySelectionChanged?.Invoke(this, args);
             //Panel.TransformModeChanged += GamePanel_TransformModeChanged;
 

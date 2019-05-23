@@ -82,6 +82,7 @@ namespace SpiceEngine.Properties {
         ///   Looks up a localized string similar to #version 400
         ///
         ///const float LINE_WIDTH = 0.1;
+        ///const float MIN_LINE_SCREEN_WIDTH = 0.1;
         ///const float BETWEEN_WIDTH = 0.05;
         ///
         ///layout(points) in;
@@ -96,10 +97,9 @@ namespace SpiceEngine.Properties {
         ///void drawArrow(mat4 viewProjectionMatrix, vec3 position, vec4 color, vec3 direction, vec3 perpendicular)
         ///{
         ///    fColor = color;
+        ///	//vec4 screenPosition;
         ///
-        ///    position -= perpendicular * (LINE_WIDTH / 2.0);
-        ///    gl_Position = viewProjectionMatrix * vec4(position, 1.0);
-        /// [rest of string was truncated]&quot;;.
+        ///	//vec4 initialScreenPosition = viewMatrix * vec4 [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string arrow_geom {
             get {
@@ -409,10 +409,10 @@ namespace SpiceEngine.Properties {
         ///uniform mat4[MAX_JOINTS] jointTransforms;
         ///
         ///layout(location = 0) in vec3 vPosition;
-        ///layout(location = 1) in vec4 vColor;
-        ///layout(location = 2) in vec3 vNormal;
-        ///layout(location = 3) in vec3 vTangent;
-        ///layout(location = 4) in vec2 vUV;
+        ///layout(location = 1) in vec3 vNormal;
+        ///layout(location = 2) in vec3 vTangent;
+        ///layout(location = 3) in vec2 vUV;
+        ///layout(location = 4) in vec4 vColor;
         ///lay [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string deferred_skinning_vert {
@@ -497,10 +497,10 @@ namespace SpiceEngine.Properties {
         ///uniform mat4 previousProjectionMatrix;
         ///
         ///layout(location = 0) in vec3 vPosition;
-        ///layout(location = 1) in vec4 vColor;
-        ///layout(location = 2) in vec3 vNormal;
-        ///layout(location = 3) in vec3 vTangent;
-        ///layout(location = 4) in vec2 vUV;
+        ///layout(location = 1) in vec3 vNormal;
+        ///layout(location = 2) in vec3 vTangent;
+        ///layout(location = 3) in vec2 vUV;
+        ///layout(location = 4) in vec4 vColor;
         ///
         ///out vec3 fPosition;
         ///out vec4 fClipPosition;
@@ -720,8 +720,13 @@ namespace SpiceEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #version 440
         ///
-        ///uniform float thickness;
+        ///uniform float unit;
         ///uniform float length;
+        ///uniform float thickness;
+        ///uniform vec4 lineUnitColor;
+        ///uniform vec4 lineAxisColor;
+        ///uniform vec4 line5Color;
+        ///uniform vec4 line10Color;
         ///
         ///in vec2 fPosition;
         ///in vec2 fUV;
@@ -729,21 +734,12 @@ namespace SpiceEngine.Properties {
         ///layout(location = 0) out vec4 color;
         ///
         ///void main() {
-        ///    float x = fract(fUV.x * length);
+        ///    float x = fract(fUV.x * (1.0f / unit) * length);
         ///    x = min(x, 1.0 - x);
         ///    float xdelta = fwidth(x);
         ///    x = smoothstep(x - xdelta, x + xdelta, thickness);
         ///
-        ///    float y = fract(fUV.y * length);
-        ///    y = min(y, 1.0 - y);
-        ///    float ydelta = fwidth(y);
-        ///    y = smoothstep(y - ydelta, y + ydelta, thickness);
-        ///
-        ///	float xy = x + y;
-        ///
-        ///	if (xy &lt;= 0.0)
-        ///	{
-        ///		dis [rest of string was truncated]&quot;;.
+        ///    float y = fract(fUV.y * (1.0f / unit) * length);        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string grid_frag {
             get {
@@ -1574,8 +1570,7 @@ namespace SpiceEngine.Properties {
         ///uniform vec3 lightColor;
         ///uniform float lightIntensity;
         ///
-        ///layout(location = 0) out vec4 finalColor;
-        /// [rest of string was truncated]&quot;;.
+        ///layout(location = 0) out vec4 finalColor;        /// [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string spot_light_frag {
             get {
@@ -1788,9 +1783,9 @@ namespace SpiceEngine.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
-        internal static System.Drawing.Bitmap volume_vertex {
+        internal static System.Drawing.Bitmap vertex {
             get {
-                object obj = ResourceManager.GetObject("volume_vertex", resourceCulture);
+                object obj = ResourceManager.GetObject("vertex", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

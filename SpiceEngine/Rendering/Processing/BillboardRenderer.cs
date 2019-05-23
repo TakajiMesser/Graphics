@@ -87,7 +87,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexArray.Load();
             _vertexBuffer.Unbind();
 
-            _volumeVertexTexture = Texture.Load(Resources.volume_vertex, false, false);
+            _volumeVertexTexture = Texture.Load(Resources.vertex, false, false);
 
             _pointLightTexture = Texture.Load(Resources.point_light_billboard, false, false);
             _spotLightTexture = Texture.Load(Resources.spot_light_billboard, false, false);

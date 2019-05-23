@@ -225,6 +225,8 @@
     <Compile Include="ViewModels\AttachedBehaviors\MouseDoubleClick.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorNetworkViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorNodeViewModel.cs" />
+    <Compile Include="ViewModels\Buttons\ButtonViewModel.cs" />
+    <Compile Include="ViewModels\Buttons\ToggleEnumButtonViewModel.cs" />
     <Compile Include="ViewModels\Commands\ICommand.cs" />
     <Compile Include="ViewModels\Commands\CommandEventArgs.cs" />
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
@@ -258,6 +260,12 @@
     <Compile Include="ViewModels\ViewModel.cs" />
     <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
       <DependentUpon>BehaviorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Buttons\InverseBooleanConverter.cs" />
+    <Compile Include="Views\Buttons\EnumToStringConverter.cs" />
+    <Compile Include="Views\Buttons\EnumSourceExtension.cs" />
+    <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
+      <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Factories\IMainView.cs" />
     <Compile Include="Views\MainDockManager.cs" />
@@ -320,6 +328,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Views\Behaviors\BehaviorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Buttons\ToggleEnumButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

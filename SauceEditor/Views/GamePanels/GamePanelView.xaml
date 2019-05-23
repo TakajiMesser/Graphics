@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views.GamePanels"
+        xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
         xmlns:vm="clr-namespace:SauceEditor.ViewModels"
         xmlns:updowns="clr-namespace:SauceEditor.Views.UpDowns"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -82,9 +83,10 @@
                     </Popup>
                 </Expander>
                 <Separator/>
-                <Button Name="WireframeButton" Content="Wireframe" Command="{Binding WireframeCommand}"/>
+                <btns:ToggleEnumButton x:Name="ViewModeButton" Orientation="Horizontal" Value="{Binding Path=Panel.RenderMode, Mode=TwoWay}" />
+                <!--<Button Name="WireframeButton" Content="Wireframe" Command="{Binding WireframeCommand}"/>
                 <Button Name="DiffuseButton" Content="Diffuse" Command="{Binding DiffuseCommand}"/>
-                <Button Name="LitButton" Content="Lit" Command="{Binding LitCommand}"/>
+                <Button Name="LitButton" Content="Lit" Command="{Binding LitCommand}"/>-->
                 <Separator/>
                 <ToggleButton Name="GridButton" Content="Grid" IsChecked="{Binding ShowGrid}"/>
             </ToolBar>
