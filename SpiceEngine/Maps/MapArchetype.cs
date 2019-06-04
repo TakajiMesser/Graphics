@@ -17,7 +17,7 @@ namespace SpiceEngine.Maps
 
         public List<IMapEntity3D> Entities { get; set; } = new List<IMapEntity3D>();
 
-        public IEnumerable<Mesh3D<Vertex3D>> ToMeshes()
+        public IEnumerable<Mesh<Vertex3D>> ToMeshes()
         {
             throw new NotImplementedException();
         }

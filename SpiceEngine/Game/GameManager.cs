@@ -117,7 +117,7 @@ namespace SpiceEngine.Game
             var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
             int entityID = EntityManager.AddEntity(actor);
 
-            var meshes = mapActor.ToMeshes();
+            //var meshes = mapActor.ToMeshes();
 
             var shape = mapActor.ToShape();
             PhysicsManager.AddActor(actor, shape, mapActor.IsPhysical);

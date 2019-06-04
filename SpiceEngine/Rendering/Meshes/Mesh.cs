@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class Mesh3D<T> : IMesh3D, IDisposable where T : IVertex3D
+    public class Mesh<T> : IMesh, IDisposable where T : IVertex3D
     {
         public IEnumerable<IVertex3D> Vertices => _vertices.Cast<IVertex3D>();
         public IEnumerable<int> TriangleIndices => _triangleIndices;
@@ -46,7 +46,7 @@ namespace SpiceEngine.Rendering.Meshes
 
         private float _alpha = 1.0f;
 
-        public Mesh3D(List<T> vertices, List<int> triangleIndices)
+        public Mesh(List<T> vertices, List<int> triangleIndices)
         {
             if (triangleIndices.Count % 3 != 0)
             {
@@ -57,7 +57,7 @@ namespace SpiceEngine.Rendering.Meshes
             _triangleIndices = triangleIndices;
         }
 
-        public IMesh3D Duplicate() => new Mesh3D<T>(_vertices.ToList(), _triangleIndices.ToList());
+        public IMesh Duplicate() => new Mesh<T>(_vertices.ToList(), _triangleIndices.ToList());
 
         public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
         public void ClearVertices() => _vertices.Clear();
@@ -264,7 +264,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        ~Mesh3D()
+        ~Mesh()
         {
             Dispose(false);
         }

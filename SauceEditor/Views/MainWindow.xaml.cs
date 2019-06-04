@@ -1,22 +1,16 @@
 ﻿using OpenTK;
 using SauceEditor.Helpers;
 using SauceEditor.Models;
-using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
-using SauceEditor.ViewModels.Properties;
-using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
-using SauceEditor.Views.GamePanels;
 using SauceEditor.Views.ProjectTree;
 using SauceEditor.Views.Properties;
-using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
 using System.Windows;
 using System.Windows.Input;
 using Xceed.Wpf.AvalonDock.Layout;
@@ -36,6 +30,7 @@ namespace SauceEditor.Views
         // Side panels
         private ProjectTreePanel _projectTree = new ProjectTreePanel();
         private ToolsPanel _toolPanel = new ToolsPanel();
+        private ModelToolPanel _modelToolPanel = new ModelToolPanel();
         private PropertyPanel _propertyPanel = new PropertyPanel();
 
         // Separate windows
@@ -95,9 +90,11 @@ namespace SauceEditor.Views
             //ViewModel.SideDockViewModels.Add(_toolPanel.ViewModel);
             ViewModel.SideDockViewModels.Add(_propertyPanel.ViewModel);
 
-            DockHelper.AddToDockAsDocument(SideDockingManager, _projectTree);
-            DockHelper.AddToDockAsDocument(SideDockingManager, _toolPanel);
-            DockHelper.AddToDockAsDocument(SideDockingManager, _propertyPanel);
+            DockHelper.AddToDockAsDocument(PropertyDockingManager, _projectTree);
+            DockHelper.AddToDockAsDocument(PropertyDockingManager, _propertyPanel);
+
+            //DockHelper.AddToDockAsDocument(ToolDockingManager, _toolPanel);
+            DockHelper.AddToDockAsDocument(ToolDockingManager, _modelToolPanel);
 
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;

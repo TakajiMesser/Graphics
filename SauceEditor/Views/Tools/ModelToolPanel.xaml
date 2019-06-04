@@ -1,4 +1,4 @@
-﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Tools.ToolsPanel"
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Tools.ModelToolPanel"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -12,16 +12,10 @@
         Title="Tools">
     <StackPanel Orientation="Vertical">
         <StackPanel.DataContext>
-            <vm:ToolsPanelViewModel x:Name="ViewModel"/>
+            <vm:ModelToolPanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
         <Label FontSize="14">Select Tool</Label>
-        <WrapPanel Name="ButtonPanel">
-            <Button Name="SelectButton" Click="SelectButton_Click">Select</Button>
-            <Button Name="VolumeButton" Click="VolumeButton_Click">Volume</Button>
-            <Button Name="BrushButton" Click="BrushButton_Click">Brush</Button>
-            <Button Name="MeshButton" Click="MeshButton_Click">Mesh</Button>
-            <Button Name="TextureButton" Click="TextureButton_Click">Texture</Button>
-        </WrapPanel>
+        <btns:ToggleEnumButton x:Name="ToolTypeButton" Orientation="Horizontal" Value="{Binding Path=ModelToolType, Mode=TwoWay}" />
         <Label FontSize="14">Tool Properties</Label>
         <Grid Name="PropertyGrid">
             <Grid.Resources>

@@ -103,7 +103,7 @@ namespace SpiceEngine.Rendering
 
         public void AddActor(MapActor mapActor, int entityID)
         {
-            var meshes = mapActor.ToMeshes();
+            var model = mapActor.ToModel();
 
             if (mapActor.HasAnimations)
             {
@@ -123,12 +123,12 @@ namespace SpiceEngine.Rendering
                     }
                 }
 
-                BatchManager.AddJoint(entityID, meshes, textureMappings);
+                BatchManager.AddJoint(entityID, model, textureMappings);
             }
             else
             {
                 var textureMappings = mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager));
-                BatchManager.AddActor(entityID, meshes, textureMappings);
+                BatchManager.AddActor(entityID, model, textureMappings);
             }
         }
 
@@ -211,7 +211,7 @@ namespace SpiceEngine.Rendering
             return _selectionRenderer.GetEntityIDFromPoint(point);
         }
 
-        public void RenderSelection(IEntityProvider entityProvider, Camera camera, List<IEntity> entities, TransformModes transformMode)
+        public void RenderSelection(IEntityProvider entityProvider, Camera camera, IList<IEntity> entities, TransformModes transformMode)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 

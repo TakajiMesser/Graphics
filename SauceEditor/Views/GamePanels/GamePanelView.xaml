@@ -84,9 +84,6 @@
                 </Expander>
                 <Separator/>
                 <btns:ToggleEnumButton x:Name="ViewModeButton" Orientation="Horizontal" Value="{Binding Path=Panel.RenderMode, Mode=TwoWay}" />
-                <!--<Button Name="WireframeButton" Content="Wireframe" Command="{Binding WireframeCommand}"/>
-                <Button Name="DiffuseButton" Content="Diffuse" Command="{Binding DiffuseCommand}"/>
-                <Button Name="LitButton" Content="Lit" Command="{Binding LitCommand}"/>-->
                 <Separator/>
                 <ToggleButton Name="GridButton" Content="Grid" IsChecked="{Binding ShowGrid}"/>
             </ToolBar>

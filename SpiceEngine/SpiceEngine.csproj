@@ -132,6 +132,7 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\SelectionManager.cs" />
     <Compile Include="Game\ITick.cs" />
     <Compile Include="Game\UpdateManager.cs" />
     <Compile Include="Game\DuplicatedEntityEventArgs.cs" />
@@ -236,12 +237,13 @@
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Meshes\Model.cs" />
     <Compile Include="Rendering\Meshes\MeshBuild.cs" />
     <Compile Include="Rendering\Meshes\UVMap.cs" />
     <Compile Include="Rendering\Meshes\MeshVertex.cs" />
     <Compile Include="Rendering\Meshes\MeshShape.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
-    <Compile Include="Rendering\Meshes\IMesh3D.cs" />
+    <Compile Include="Rendering\Meshes\IMesh.cs" />
     <Compile Include="Rendering\Meshes\MeshFace.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
@@ -268,7 +270,7 @@
     <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
     <Compile Include="Rendering\Meshes\MeshManager.cs" />
     <Compile Include="Rendering\Meshes\MeshTriangle.cs" />
-    <Compile Include="Rendering\Meshes\Mesh3D.cs" />
+    <Compile Include="Rendering\Meshes\Mesh.cs" />
     <Compile Include="Physics\Collisions\QuadTree.cs" />
     <Compile Include="Physics\Collisions\Bounds.cs" />
     <Compile Include="Rendering\Animations\KeyFrame.cs" />

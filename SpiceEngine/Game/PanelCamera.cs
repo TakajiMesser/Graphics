@@ -48,7 +48,7 @@ namespace SpiceEngine.Game
             _renderManager = renderManager;
         }
 
-        public void CenterView(IEnumerable<Vector3> positions)
+        public void CenterView(Vector3 position)
         {
             switch (ViewType)
             {
@@ -58,8 +58,8 @@ namespace SpiceEngine.Game
                     var translationX = new Vector3()
                     {
                         X = 0.0f,
-                        Y = positions.Average(p => p.Y) - Camera.Position.Y,
-                        Z = positions.Average(p => p.Z) - Camera.Position.Z
+                        Y = position.Y - Camera.Position.Y,
+                        Z = position.Z - Camera.Position.Z
                     };
 
                     Camera.Position += translationX;
@@ -68,9 +68,9 @@ namespace SpiceEngine.Game
                 case ViewTypes.Y:
                     var translationY = new Vector3()
                     {
-                        X = positions.Average(p => p.X) - Camera.Position.X,
+                        X = position.X - Camera.Position.X,
                         Y = 0.0f,
-                        Z = positions.Average(p => p.Z) - Camera.Position.Z
+                        Z = position.Z - Camera.Position.Z
                     };
 
                     Camera.Position += translationY;
@@ -79,8 +79,8 @@ namespace SpiceEngine.Game
                 case ViewTypes.Z:
                     var translationZ = new Vector3()
                     {
-                        X = positions.Average(p => p.X) - Camera.Position.X,
-                        Y = positions.Average(p => p.Y) - Camera.Position.Y,
+                        X = position.X - Camera.Position.X,
+                        Y = position.Y - Camera.Position.Y,
                         Z = 0.0f
                     };
 

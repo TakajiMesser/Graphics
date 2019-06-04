@@ -4,6 +4,7 @@ using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Behaviors;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.ViewModels.Properties;
+using SauceEditor.ViewModels.Tools;
 using SauceEditor.ViewModels.Trees;
 using SauceEditor.Views.Factories;
 using SpiceEngine.Maps;
@@ -37,8 +38,9 @@ namespace SauceEditor.ViewModels
         public Visibility PlayVisibility { get; set; }
 
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
-        public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
         public PropertyViewModel PropertyViewModel { get; set; }
+        public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
+        public ModelToolPanelViewModel ModelToolPanelViewModel { get; set; }
 
         public GamePanelManagerViewModel GamePanelManagerViewModel { get; set; }
         public BehaviorViewModel BehaviorViewModel { get; set; }
@@ -181,9 +183,9 @@ namespace SauceEditor.ViewModels
         {
             var mapComponent = new MapComponent()
             {
-                Path = filePath,
-                Map = Map.Load(filePath)
+                Path = filePath
             };
+            mapComponent.Load();
 
             Title = mapComponent.Name + " - SauceEditor";
 
@@ -214,6 +216,7 @@ namespace SauceEditor.ViewModels
             {
                 Path = filePath
             };
+            modelComponent.Load();
 
             Title = modelComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateModelMap(modelComponent);

@@ -4,7 +4,6 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SauceEditor.Views.Buttons"
-             xmlns:vm="clr-namespace:SauceEditor.ViewModels.Buttons"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800"
              x:Name="MainControl">
@@ -12,10 +11,10 @@
         <local:EnumToStringConverter x:Key="EnumToStringConverter"/>
         <local:InverseBooleanConverter x:Key="InverseBooleanConverter"/>
     </UserControl.Resources>
-    <ListBox Name="MainList" SelectedItem="{Binding Value, Mode=TwoWay, ElementName=MainControl}">
+    <ListBox Name="MainList" ScrollViewer.HorizontalScrollBarVisibility="Disabled" SelectedItem="{Binding Value, Mode=TwoWay, ElementName=MainControl}">
         <ListBox.ItemsPanel>
             <ItemsPanelTemplate>
-                <StackPanel Orientation="{Binding Orientation, ElementName=MainControl}"/>
+                <WrapPanel Orientation="{Binding Orientation, ElementName=MainControl}"/>
             </ItemsPanelTemplate>
         </ListBox.ItemsPanel>
         <ListBox.ItemContainerStyle>

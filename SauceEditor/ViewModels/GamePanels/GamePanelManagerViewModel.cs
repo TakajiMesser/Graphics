@@ -36,42 +36,6 @@ namespace SauceEditor.ViewModels
 
         public Resolution Resolution { get; set; }
 
-        private RelayCommand _translateCommand;
-        public RelayCommand TranslateCommand
-        {
-            get
-            {
-                return _translateCommand ?? (_translateCommand = new RelayCommand(
-                    p => TransformMode = TransformModes.Translate,
-                    p => TransformMode != TransformModes.Translate
-                ));
-            }
-        }
-
-        private RelayCommand _rotateCommand;
-        public RelayCommand RotateCommand
-        {
-            get
-            {
-                return _rotateCommand ?? (_rotateCommand = new RelayCommand(
-                    p => TransformMode = TransformModes.Rotate,
-                    p => TransformMode != TransformModes.Rotate
-                ));
-            }
-        }
-
-        private RelayCommand _scaleCommand;
-        public RelayCommand ScaleCommand
-        {
-            get
-            {
-                return _scaleCommand ?? (_scaleCommand = new RelayCommand(
-                    p => TransformMode = TransformModes.Scale,
-                    p => TransformMode != TransformModes.Scale
-                ));
-            }
-        }
-
         //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         //public event EventHandler<CommandEventArgs> CommandExecuted;
 
@@ -132,7 +96,7 @@ namespace SauceEditor.ViewModels
             ZViewModel.Panel.Invalidate();
         }
 
-        public void SetSelectedTool(Tools tool)
+        public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
             PerspectiveViewModel.Panel.SelectedTool = tool;
             XViewModel.Panel.SelectedTool = tool;

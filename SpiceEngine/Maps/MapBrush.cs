@@ -29,14 +29,14 @@ namespace SpiceEngine.Maps
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
 
-        public Mesh3D<Vertex3D> ToMesh()
+        public Mesh<Vertex3D> ToMesh()
         {
             if (TexturesPaths.IsEmpty)
             {
                 AddTestColors();
             }
             
-            return new Mesh3D<Vertex3D>(Vertices, TriangleIndices);
+            return new Mesh<Vertex3D>(Vertices, TriangleIndices);
         }
 
         public override Brush ToEntity() => new Brush(Material)

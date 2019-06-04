@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
              xmlns:local="clr-namespace:SauceEditor.Views.GamePanels"
+             xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
              xmlns:vm="clr-namespace:SauceEditor.ViewModels"
              mc:Ignorable="d" 
              xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
@@ -14,9 +15,7 @@
             <vm:GamePanelManagerViewModel x:Name="ViewModel"></vm:GamePanelManagerViewModel>
         </DockPanel.DataContext>
         <ToolBar DockPanel.Dock="Top">
-            <Button Name="TranslateButton" Content="Translate" Command="{Binding TranslateCommand}"/>
-            <Button Name="RotateButton" Content="Rotate" Command="{Binding RotateCommand}"/>
-            <Button Name="ScaleButton" Content="Scale" Command="{Binding ScaleCommand}"/>
+            <btns:ToggleEnumButton x:Name="ViewModeButton" Orientation="Horizontal" Value="{Binding Path=TransformMode, Mode=TwoWay}" />
             <Separator/>
             <ComboBox Name="ViewComboBox" SelectionChanged="ViewComboBox_SelectionChanged">
                 <ComboBoxItem Name="View_All">All</ComboBoxItem>

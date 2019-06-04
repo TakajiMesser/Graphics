@@ -34,7 +34,7 @@
             </Grid.ColumnDefinitions>
             <xcad:DockingManager Name ="ToolDockingManager" Grid.Column="0"/>
             <xcad:DockingManager Name ="MainDockingManager" Grid.Column="1"/>
-            <xcad:DockingManager Name ="SideDockingManager" Grid.Column="2"/>
+            <xcad:DockingManager Name ="PropertyDockingManager" Grid.Column="2"/>
         </Grid>
     </DockPanel>
 </Window>

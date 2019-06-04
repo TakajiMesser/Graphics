@@ -12,10 +12,10 @@ namespace SpiceEngine.Rendering.Batches
     public class MeshBatch : IBatch
     {
         public int EntityID { get; private set; }
-        public IMesh3D Mesh { get; }
+        public IMesh Mesh { get; }
         public IEnumerable<IVertex3D> Vertices => Mesh.Vertices;
 
-        public MeshBatch(int entityID, IMesh3D mesh)
+        public MeshBatch(int entityID, IMesh mesh)
         {
             EntityID = entityID;
             Mesh = mesh;

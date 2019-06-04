@@ -17,67 +17,6 @@ namespace SauceEditor.ViewModels
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
-        private RelayCommand _wireframeCommand;
-        public RelayCommand WireframeCommand
-        {
-            get
-            {
-                return _wireframeCommand ?? (_wireframeCommand = new RelayCommand(
-                    p =>
-                    {
-                        Panel.RenderMode = RenderModes.Wireframe;
-                        //CommandManager.InvalidateRequerySuggested();
-                        WireframeCommand.InvokeCanExecuteChanged();
-                        DiffuseCommand.InvokeCanExecuteChanged();
-                        LitCommand.InvokeCanExecuteChanged();
-                    },
-                    //p => Panel != null && Panel.RenderMode != RenderModes.Wireframe
-                    p =>
-                    {
-                        return Panel != null && Panel.RenderMode != RenderModes.Wireframe;
-                    }
-                ));
-            }
-        }
-
-        private RelayCommand _diffuseCommand;
-        public RelayCommand DiffuseCommand
-        {
-            get
-            {
-                return _diffuseCommand ?? (_diffuseCommand = new RelayCommand(
-                    p =>
-                    {
-                        Panel.RenderMode = RenderModes.Diffuse;
-                        //CommandManager.InvalidateRequerySuggested();
-                        WireframeCommand.InvokeCanExecuteChanged();
-                        DiffuseCommand.InvokeCanExecuteChanged();
-                        LitCommand.InvokeCanExecuteChanged();
-                    },
-                    p => Panel != null && Panel.RenderMode != RenderModes.Diffuse
-                ));
-            }
-        }
-
-        private RelayCommand _litCommand;
-        public RelayCommand LitCommand
-        {
-            get
-            {
-                return _litCommand ?? (_litCommand = new RelayCommand(
-                    p =>
-                    {
-                        Panel.RenderMode = RenderModes.Lit;
-                        //CommandManager.InvalidateRequerySuggested();
-                        WireframeCommand.InvokeCanExecuteChanged();
-                        DiffuseCommand.InvokeCanExecuteChanged();
-                        LitCommand.InvokeCanExecuteChanged();
-                    },
-                    p => Panel != null && Panel.RenderMode != RenderModes.Lit
-                ));
-            }
-        }
-
         public GamePanel Panel { get; set; }
         public ViewTypes ViewType { get; set; }
         public string Title { get; set; }
@@ -118,9 +57,6 @@ namespace SauceEditor.ViewModels
             // Default to wireframe rendering
             Panel.RenderMode = RenderModes.Wireframe;
             //CommandManager.InvalidateRequerySuggested();
-            WireframeCommand.InvokeCanExecuteChanged();
-            DiffuseCommand.InvokeCanExecuteChanged();
-            LitCommand.InvokeCanExecuteChanged();
         }
 
         public void OnViewTypeChanged()

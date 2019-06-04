@@ -49,7 +49,7 @@ namespace SpiceEngine.Maps
             }
         }
 
-        public IEnumerable<IMesh3D> ToMeshes()
+        public Model ToModel()
         {
             using (var importer = new Assimp.AssimpContext())
             {
@@ -62,6 +62,8 @@ namespace SpiceEngine.Maps
 
                 if (scene.HasAnimations)
                 {
+                    var model = new Model();
+
                     foreach (var mesh in scene.Meshes)
                     {
                         var vertices = new List<JointVertex3D>();
@@ -91,11 +93,15 @@ namespace SpiceEngine.Maps
                             vertices.Add(new JointVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                         }
 
-                        yield return new Mesh3D<JointVertex3D>(vertices, mesh.GetIndices().ToList());
+                        model.Add(new Mesh<JointVertex3D>(vertices, mesh.GetIndices().ToList()));
                     }
+
+                    return model;
                 }
                 else
                 {
+                    var model = new Model();
+
                     foreach (var mesh in scene.Meshes)
                     {
                         var vertices = new List<Vertex3D>();
@@ -110,8 +116,10 @@ namespace SpiceEngine.Maps
                             vertices.Add(new Vertex3D(position, normals, tangents, textureCoords));
                         }
 
-                        yield return new Mesh3D<Vertex3D>(vertices, mesh.GetIndices().ToList());
+                        model.Add(new Mesh<Vertex3D>(vertices, mesh.GetIndices().ToList()));
                     }
+
+                    return model;
                 }
             }
         }

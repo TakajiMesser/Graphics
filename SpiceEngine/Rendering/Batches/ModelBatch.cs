@@ -12,34 +12,31 @@ namespace SpiceEngine.Rendering.Batches
     public class ModelBatch : IBatch
     {
         public int EntityID { get; private set; }
-        public List<IMesh3D> Meshes { get; } = new List<IMesh3D>();
-        public IEnumerable<IVertex3D> Vertices => Meshes.SelectMany(m => m.Vertices);
+        public Model Model { get; }
+        public IEnumerable<IVertex3D> Vertices => Model?.Meshes.SelectMany(m => m.Vertices);
 
-        public ModelBatch(int entityID, IEnumerable<IMesh3D> meshes)
+        public ModelBatch(int entityID, Model model)
         {
             EntityID = entityID;
-            Meshes.AddRange(meshes);
+            Model = model;
         }
 
-        public IBatch Duplicate(int entityID) => new ModelBatch(entityID, Meshes.Select(m => m.Duplicate()));
+        public IBatch Duplicate(int entityID) => new ModelBatch(entityID, Model.Duplicate());
 
-        public void Load()
-        {
-            foreach (var mesh in Meshes)
-            {
-                mesh.Load();
-            }
-        }
+        public void Load() => Model.Load();
 
         public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
             var actor = (Actor)entityProvider.GetEntity(EntityID);
             actor.SetUniforms(shaderProgram, textureManager);
 
-            for (var i = 0; i < Meshes.Count; i++)
+            int meshIndex = 0;
+
+            foreach (var mesh in Model.Meshes)
             {
-                actor.SetUniforms(shaderProgram, textureManager, i);
-                Meshes[i].Draw();
+                actor.SetUniforms(shaderProgram, textureManager, meshIndex);
+                mesh.Draw();
+                meshIndex++;
             }
         }
     }
