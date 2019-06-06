@@ -10,5 +10,7 @@ namespace SpiceEngine.Rendering.Meshes
         public Vector3 Normal { get; set; }
         public Vector3 Tangent { get; set; }
         public Vector2 UV { get; set; }
+        public Vector4? BoneIDs { get; set; }
+        public Vector4? BoneWeights { get; set; }
     }
 }

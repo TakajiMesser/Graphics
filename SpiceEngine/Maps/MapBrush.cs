@@ -24,8 +24,12 @@ namespace SpiceEngine.Maps
         public MapBrush() { }
         public MapBrush(MeshBuild meshBuild)
         {
-            Vertices = meshBuild.Vertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();
-            TriangleIndices = meshBuild.TriangleIndices;
+            for (var i = 0; i < meshBuild.Vertices.Count; i++)
+            {
+                Vertices.Add(new Vertex3D(meshBuild.Vertices[i], meshBuild.Normals[i], meshBuild.Tangents[i], meshBuild.UVs[i]));
+            }
+
+            TriangleIndices.AddRange(meshBuild.TriangleIndices);
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
 

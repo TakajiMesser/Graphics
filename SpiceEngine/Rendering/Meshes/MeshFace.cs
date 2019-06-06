@@ -11,103 +11,48 @@ namespace SpiceEngine.Rendering.Meshes
         /// <summary>
         /// The vertices should be in clockwise order.
         /// </summary>
-        public List<Vector3> Vertices { get; set; } = new List<Vector3>();
-        public Vector3 Normal { get; set; } = Vector3.UnitZ;
-        public Vector3 Tangent { get; set; } = Vector3.UnitY;
-        public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
+        public List<MeshVertex> Vertices { get; set; } = new List<MeshVertex>();
+        //public List<MeshTriangle> Triangles { get; set; } = new List<MeshTriangle>();
 
+        private Vector3 _normal = Vector3.UnitZ;
+        public Vector3 Normal
+        {
+            get => _normal;
+            set
+            {
+                _normal = value;
+
+                foreach (var vertex in Vertices)
+                {
+                    vertex.Normal = value;
+                }
+            }
+        }
+
+        private Vector3 _tangent = Vector3.UnitY;
+        public Vector3 Tangent
+        {
+            get => _tangent;
+            set
+            {
+                _tangent = value;
+
+                foreach (var vertex in Vertices)
+                {
+                    vertex.Tangent = value;
+                }
+            }
+        }
         public UVMap UVMap { get; set; } = UVMap.Standard;
+
+        public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
         public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v));
         public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v));
 
         public MeshFace() { }
-        public MeshFace(params Vector3[] vertices) : this(LINQExtensions.Generate(vertices)) { }
-        public MeshFace(IEnumerable<Vector3> vertices)
-        {
-            Vertices.AddRange(vertices);
-        }
-
-        public void Translate(float x, float y, float z)
-        {
-            var translation = new Vector3(x, y, z);
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                Vertices[i] += translation;
-            }
-        }
-
-        public MeshFace Translated(float x, float y, float z)
-        {
-            var translated = new MeshFace(Vertices)
-            {
-                Normal = Normal,
-                Tangent = Tangent
-            };
-
-            var translation = new Vector3(x, y, z);
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                translated.Vertices[i] = Vertices[i] + translation;
-            }
-
-            return translated;
-        }
-
-        public void Rotate(Vector3 axis, float angle)
-        {
-            var rotation = Quaternion.FromAxisAngle(axis, angle);
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                Vertices[i] = rotation * Vertices[i];
-            }
-        }
-
-        public MeshFace Rotated(Vector3 axis, float angle)
-        {
-            var rotation = Quaternion.FromAxisAngle(axis, angle);
-
-            var rotated = new MeshFace(Vertices)
-            {
-                Normal = rotation * Normal,
-                Tangent = rotation * Tangent
-            };
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                rotated.Vertices[i] = rotation * Vertices[i];
-            }
-
-            return rotated;
-        }
-
-        public void Scale(float amount)
-        {
-            if (amount <= 0.0f) throw new ArgumentOutOfRangeException("Scale amount cannot be less than or equal to zero");
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                Vertices[i] *= amount;
-            }
-        }
-
-        public MeshFace Scaled(float amount)
-        {
-            var scaled = new MeshFace(Vertices)
-            {
-                Normal = Normal,
-                Tangent = Tangent
-            };
-
-            for (var i = 0; i < Vertices.Count; i++)
-            {
-                scaled.Vertices[i] = Vertices[i] * amount;
-            }
-
-            return scaled;
-        }
+        public MeshFace(params MeshVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
+        public MeshFace(IEnumerable<MeshVertex> vertices) => Vertices.AddRange(vertices);
+        public MeshFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new MeshVertex() { Position = v })) { }
 
         public IEnumerable<MeshTriangle> GetMeshTriangles()
         {
@@ -125,6 +70,88 @@ namespace SpiceEngine.Rendering.Meshes
                     Tangent = Tangent
                 };
             }
+        }
+
+        public void Translate(float x, float y, float z)
+        {
+            var translation = new Vector3(x, y, z);
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                Vertices[i].Position += translation;
+            }
+        }
+
+        public MeshFace Translated(float x, float y, float z)
+        {
+            var translated = new MeshFace(Vertices)
+            {
+                Normal = Normal,
+                Tangent = Tangent
+            };
+
+            var translation = new Vector3(x, y, z);
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                translated.Vertices[i].Position = Vertices[i].Position + translation;
+            }
+
+            return translated;
+        }
+
+        public void Rotate(Vector3 axis, float angle)
+        {
+            var rotation = Quaternion.FromAxisAngle(axis, angle);
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                Vertices[i].Position = rotation * Vertices[i].Position;
+            }
+        }
+
+        public MeshFace Rotated(Vector3 axis, float angle)
+        {
+            var rotation = Quaternion.FromAxisAngle(axis, angle);
+
+            var rotated = new MeshFace(Vertices)
+            {
+                Normal = rotation * Normal,
+                Tangent = rotation * Tangent
+            };
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                rotated.Vertices[i].Position = rotation * Vertices[i].Position;
+            }
+
+            return rotated;
+        }
+
+        public void Scale(float amount)
+        {
+            if (amount <= 0.0f) throw new ArgumentOutOfRangeException("Scale amount cannot be less than or equal to zero");
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                Vertices[i].Position *= amount;
+            }
+        }
+
+        public MeshFace Scaled(float amount)
+        {
+            var scaled = new MeshFace(Vertices)
+            {
+                Normal = Normal,
+                Tangent = Tangent
+            };
+
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                scaled.Vertices[i].Position = Vertices[i].Position * amount;
+            }
+
+            return scaled;
         }
 
         public static MeshFace Rectangle(float width, float height)

@@ -6,6 +6,7 @@ namespace SpiceEngine.Rendering.Animations
     /// </summary>
     public class Skeleton
     {
-        
+        public string Name { get; set; }
+        public Bone Root { get; set; }
     }
 }

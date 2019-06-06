@@ -19,19 +19,6 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public MeshBuild GetMeshBuild()
-        {
-            var meshBuild = new MeshBuild();
-
-            foreach (var face in Faces)
-            {
-                meshBuild.AddFace(face);
-            }
-
-            meshBuild.Normalize();
-            return meshBuild;
-        }
-
         public static MeshShape Box(float width, float height, float depth)
         {
             var shape = new MeshShape();

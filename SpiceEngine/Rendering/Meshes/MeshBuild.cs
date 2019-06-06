@@ -7,19 +7,22 @@ namespace SpiceEngine.Rendering.Meshes
     // TODO - Pick a name that isn't shit
     public class MeshBuild
     {
-        public List<MeshVertex> Vertices { get; set; } = new List<MeshVertex>();
+        public List<Vector3> Positions { get; set; } = new List<Vector3>();
+        public List<Vector3> Normals { get; set; } = new List<Vector3>();
+        public List<Vector3> Tangents { get; set; } = new List<Vector3>();
+        public List<Vector3> UVs { get; set; } = new List<Vector3>();
+        public List<Vector3> BoneIDs { get; set; } = new List<Vector3>();
+        public List<Vector3> BoneWeights { get; set; } = new List<Vector3>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
 
-        public void AddFace(MeshFace face)
+        public MeshBuild(MeshShape meshShape)
         {
-            var uvRotation = Quaternion.FromAxisAngle(face.Normal, face.UVMap.Rotation);
-            var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v));
-            var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v));
-
-            foreach (var triangle in face.GetMeshTriangles())
+            foreach (var face in Faces)
             {
-                AddTriangle(triangle, uvXOrigin, uvYOrigin, uvRotation, face.UVMap);
+                AddFace(face);
             }
+
+            Normalize();
         }
 
         public void Normalize()
@@ -28,6 +31,18 @@ namespace SpiceEngine.Rendering.Meshes
             {
                 vertex.Normal.Normalize();
                 vertex.Tangent.Normalize();
+            }
+        }
+
+        private void AddFace(MeshFace face)
+        {
+            var uvRotation = Quaternion.FromAxisAngle(face.Normal, face.UVMap.Rotation);
+            var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v));
+            var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v));
+
+            foreach (var triangle in face.GetMeshTriangles())
+            {
+                AddTriangle(triangle, uvXOrigin, uvYOrigin, uvRotation, face.UVMap);
             }
         }
 
