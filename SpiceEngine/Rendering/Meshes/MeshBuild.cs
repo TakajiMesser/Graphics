@@ -10,14 +10,14 @@ namespace SpiceEngine.Rendering.Meshes
         public List<Vector3> Positions { get; set; } = new List<Vector3>();
         public List<Vector3> Normals { get; set; } = new List<Vector3>();
         public List<Vector3> Tangents { get; set; } = new List<Vector3>();
-        public List<Vector3> UVs { get; set; } = new List<Vector3>();
-        public List<Vector3> BoneIDs { get; set; } = new List<Vector3>();
-        public List<Vector3> BoneWeights { get; set; } = new List<Vector3>();
+        public List<Vector2> UVs { get; set; } = new List<Vector2>();
+        public List<Vector4> BoneIDs { get; set; } = new List<Vector4>();
+        public List<Vector4> BoneWeights { get; set; } = new List<Vector4>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
 
         public MeshBuild(MeshShape meshShape)
         {
-            foreach (var face in Faces)
+            foreach (var face in meshShape.Faces)
             {
                 AddFace(face);
             }
@@ -25,20 +25,51 @@ namespace SpiceEngine.Rendering.Meshes
             Normalize();
         }
 
+        public IEnumerable<MeshVertex> GetVertices()
+        {
+            for (var i = 0; i < Positions.Count; i++)
+            {
+                yield return GetVertexAt(i);
+            }
+        }
+
+        public MeshVertex GetVertexAt(int index)
+        {
+            var meshVertex = new MeshVertex()
+            {
+                Position = Positions[index],
+                Normal = Normals[index],
+                Tangent = Tangents[index],
+                UV = UVs[index]
+            };
+
+            if (index < BoneIDs.Count && index < BoneWeights.Count)
+            {
+                meshVertex.BoneIDs = BoneIDs[index];
+                meshVertex.BoneWeights = BoneWeights[index];
+            }
+
+            return meshVertex;
+        }
+
         public void Normalize()
         {
-            foreach (var vertex in Vertices)
+            foreach (var normal in Normals)
             {
-                vertex.Normal.Normalize();
-                vertex.Tangent.Normalize();
+                normal.Normalize();
+            }
+
+            foreach (var tangent in Tangents)
+            {
+                tangent.Normalize();
             }
         }
 
         private void AddFace(MeshFace face)
         {
             var uvRotation = Quaternion.FromAxisAngle(face.Normal, face.UVMap.Rotation);
-            var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v));
-            var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v));
+            var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v.Position));
+            var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v.Position));
 
             foreach (var triangle in face.GetMeshTriangles())
             {
@@ -50,25 +81,25 @@ namespace SpiceEngine.Rendering.Meshes
         {
             var uvA = new Vector2()
             {
-                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexA) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
-                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexA) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexA.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexA.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
             var uvB = new Vector2()
             {
-                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexB) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
-                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexB) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexB.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexB.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
             var uvC = new Vector2()
             {
-                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexC) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
-                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexC) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexC.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexC.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
-            var indexA = AddVertex(triangle.VertexA, triangle.Normal, triangle.Tangent, uvA);
-            var indexB = AddVertex(triangle.VertexB, triangle.Normal, triangle.Tangent, uvB);
-            var indexC = AddVertex(triangle.VertexC, triangle.Normal, triangle.Tangent, uvC);
+            var indexA = AddVertex(triangle.VertexA.Position, triangle.Normal, triangle.Tangent, uvA);
+            var indexB = AddVertex(triangle.VertexB.Position, triangle.Normal, triangle.Tangent, uvB);
+            var indexC = AddVertex(triangle.VertexC.Position, triangle.Normal, triangle.Tangent, uvC);
 
             // Be mindful of wind-order here
             TriangleIndices.Add(indexC);//indexA);
@@ -78,27 +109,29 @@ namespace SpiceEngine.Rendering.Meshes
 
         private int AddVertex(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 uv)
         {
-            var index = Vertices.FindIndex(v => v.Position == position && v.UV == uv);
-            MeshVertex vertex;
+            var index = -1;
+            for (var i = 0; i < Positions.Count; i++)
+            {
+                if (Positions[i] == position && UVs[i] == uv)
+                {
+                    index = i;
+                }
+            }
 
             if (index >= 0)
             {
-                vertex = Vertices[index];
+                Normals[index] += normal;
+                Tangents[index] += tangent;
             }
             else
             {
-                vertex = new MeshVertex()
-                {
-                    Position = position,
-                    UV = uv,
-                };
+                index = Positions.Count;
 
-                index = Vertices.Count;
-                Vertices.Add(vertex);
+                Positions.Add(position);
+                Normals.Add(normal);
+                Tangents.Add(tangent);
+                UVs.Add(uv);
             }
-
-            vertex.Normal += normal;
-            vertex.Tangent += tangent;
 
             return index;
         }

@@ -46,13 +46,16 @@ namespace SpiceEngine.Rendering.Meshes
         public UVMap UVMap { get; set; } = UVMap.Standard;
 
         public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
-        public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v));
-        public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v));
+        public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v.Position));
+        public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v.Position));
 
         public MeshFace() { }
         public MeshFace(params MeshVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
         public MeshFace(IEnumerable<MeshVertex> vertices) => Vertices.AddRange(vertices);
         public MeshFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new MeshVertex() { Position = v })) { }
+
+        public void AddVertex(MeshVertex vertex) => Vertices.Add(vertex);
+        public void AddVertex(Vector3 vertex) => Vertices.Add(new MeshVertex() { Position = vertex });
 
         public IEnumerable<MeshTriangle> GetMeshTriangles()
         {
@@ -156,16 +159,13 @@ namespace SpiceEngine.Rendering.Meshes
 
         public static MeshFace Rectangle(float width, float height)
         {
-            return new MeshFace()
+            return new MeshFace(new List<Vector3>()
             {
-                Vertices = new List<Vector3>()
-                {
-                    new Vector3(-width / 2.0f, -height / 2.0f, 0.0f),
-                    new Vector3(-width / 2.0f, height / 2.0f, 0.0f),
-                    new Vector3(width / 2.0f, height / 2.0f, 0.0f),
-                    new Vector3(width / 2.0f, -height / 2.0f, 0.0f)
-                },
-            };
+                new Vector3(-width / 2.0f, -height / 2.0f, 0.0f),
+                new Vector3(-width / 2.0f, height / 2.0f, 0.0f),
+                new Vector3(width / 2.0f, height / 2.0f, 0.0f),
+                new Vector3(width / 2.0f, -height / 2.0f, 0.0f)
+            });
         }
 
         /// <summary>
@@ -176,22 +176,22 @@ namespace SpiceEngine.Rendering.Meshes
         /// <returns></returns>
         public static MeshFace RegularPolygon(int nSides, float apothem)
         {
-            var meshFace = new MeshFace();
+            var vertices = new List<Vector3>();
 
             var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
             var exteriorAngle = MathExtensions.TWO_PI / nSides;
             var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, exteriorAngle);
 
             var direction = Vector3.UnitX;
-            meshFace.Vertices.Add(new Vector3(-sideLength, -apothem, 0.0f));
+            vertices.Add(new Vector3(-sideLength, -apothem, 0.0f));
 
             for (var i = 0; i < nSides; i++)
             {
-                meshFace.Vertices.Add(meshFace.Vertices[i] + direction);
+                vertices.Add(vertices[i] + direction);
                 direction = rotation * direction;
             }
 
-            return meshFace;
+            return new MeshFace(vertices);
         }
 
         /*public static MeshShape Rectangle(float width, float height) => new MeshShape()

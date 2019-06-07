@@ -229,6 +229,8 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Animations\Bone.cs" />
+    <Compile Include="Rendering\Animations\Skeleton.cs" />
     <Compile Include="Rendering\Batches\IBatch.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Batches\ModelBatch.cs" />
@@ -237,8 +239,10 @@
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Meshes\MeshBone.cs" />
     <Compile Include="Rendering\Meshes\Model.cs" />
     <Compile Include="Rendering\Meshes\MeshBuild.cs" />
+    <Compile Include="Rendering\Meshes\ModelShape.cs" />
     <Compile Include="Rendering\Meshes\UVMap.cs" />
     <Compile Include="Rendering\Meshes\MeshVertex.cs" />
     <Compile Include="Rendering\Meshes\MeshShape.cs" />

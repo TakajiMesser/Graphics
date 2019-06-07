@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace SpiceEngine.Rendering.Animations
 {
     public class Bone

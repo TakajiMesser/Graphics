@@ -75,11 +75,11 @@ namespace SpiceEngine.Rendering.Meshes
             var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, exteriorAngle);
 
             var direction = Vector3.UnitX;
-            meshFace.Vertices.Add(new Vector3(-sideLength, -apothem, 0.0f));
+            meshFace.AddVertex(new Vector3(-sideLength, -apothem, 0.0f));
 
             for (var i = 0; i < nSides; i++)
             {
-                meshFace.Vertices.Add(meshFace.Vertices[i] + direction);
+                meshFace.AddVertex(meshFace.Vertices[i].Position + direction);
                 direction = rotation * direction;
             }
 

@@ -24,11 +24,7 @@ namespace SpiceEngine.Maps
         public MapBrush() { }
         public MapBrush(MeshBuild meshBuild)
         {
-            for (var i = 0; i < meshBuild.Vertices.Count; i++)
-            {
-                Vertices.Add(new Vertex3D(meshBuild.Vertices[i], meshBuild.Normals[i], meshBuild.Tangents[i], meshBuild.UVs[i]));
-            }
-
+            Vertices.AddRange(meshBuild.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)));
             TriangleIndices.AddRange(meshBuild.TriangleIndices);
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
@@ -76,12 +72,12 @@ namespace SpiceEngine.Maps
         {
             var meshShape = new MeshShape();
             meshShape.Faces.Add(MeshFace.Rectangle(width, height));
-            var meshBuild = meshShape.GetMeshBuild();
+            var meshBuild = new MeshBuild(meshShape);
 
             return new MapBrush()
             {
                 Position = center,
-                Vertices = meshBuild.Vertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList(),
+                Vertices = meshBuild.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList(),
                 TriangleIndices = meshBuild.TriangleIndices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
             };
@@ -108,12 +104,12 @@ namespace SpiceEngine.Maps
         public static MapBrush Box(Vector3 center, float width, float height, float depth)
         {
             var meshShape = MeshShape.Box(width, height, depth);
-            var meshBuild = meshShape.GetMeshBuild();
+            var meshBuild = new MeshBuild(meshShape);
 
             return new MapBrush()
             {
                 Position = center,
-                Vertices = meshBuild.Vertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList(),
+                Vertices = meshBuild.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList(),
                 TriangleIndices = meshBuild.TriangleIndices,
                 Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2
             };

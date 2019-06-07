@@ -1,7 +1,7 @@
-﻿using OpenTK;
+﻿using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Utilities;
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
@@ -28,24 +28,19 @@ namespace SpiceEngine.Rendering.Meshes
 
         public bool HasAnimations => Skeleton != null;
 
-        public MeshBuild GetMeshBuild()
+        public IEnumerable<MeshBuild> GetMeshBuilds()
         {
-            var meshBuild = new MeshBuild();
-
-            foreach (var face in Faces)
+            foreach (var mesh in Meshes)
             {
-                meshBuild.AddFace(face);
+                yield return new MeshBuild(mesh);
             }
-
-            meshBuild.Normalize();
-            return meshBuild;
         }
 
         public static ModelShape LoadFromFile(string filePath)
         {
             using (var importer = new Assimp.AssimpContext())
             {
-                var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                var scene = importer.ImportFile(filePath, Assimp.PostProcessSteps.JoinIdenticalVertices
                     | Assimp.PostProcessSteps.CalculateTangentSpace
                     | Assimp.PostProcessSteps.LimitBoneWeights
                     | Assimp.PostProcessSteps.Triangulate
@@ -69,29 +64,22 @@ namespace SpiceEngine.Rendering.Meshes
 
                     foreach (var face in mesh.Faces)
                     {
-                        var meshFace = new MeshFace();
-
-                        var meshFace = new MeshFace()
-                        {
-                            Vertices = face.Indices.Select(i => mesh.Vertices[i].ToVector3())
-                        };
+                        var meshFace = new MeshFace(face.Indices.Select(i => mesh.Vertices[i].ToVector3()));
 
                         if (mesh.HasNormals)
                         {
-                            face.Indices.Select(i => mesh.Normals[i].ToVector3()).Average();
+                            meshFace.Normal = face.Indices.Select(i => mesh.Normals[i].ToVector3()).Average();
                         }
 
                         if (mesh.HasTangentBasis)
                         {
-                            face.Indices.Select(i => mesh.Tangents[i].ToVector3()).Average();
+                            meshFace.Tangent = face.Indices.Select(i => mesh.Tangents[i].ToVector3()).Average();
                         }
 
                         // TODO - Figure out how to handle texture coords
 
                         meshShape.Faces.Add(meshFace);
                     }
-
-                    
 
                     modelShape.Meshes.Add(meshShape);
                 }

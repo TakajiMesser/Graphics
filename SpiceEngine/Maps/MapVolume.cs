@@ -73,12 +73,12 @@ namespace SpiceEngine.Maps
         {
             var meshShape = new MeshShape();
             meshShape.Faces.Add(MeshFace.Rectangle(width, height));
-            var meshBuild = meshShape.GetMeshBuild();
+            var meshBuild = new MeshBuild(meshShape);
 
             return new MapVolume()
             {
                 Position = center,
-                Vertices = meshBuild.Vertices.Select(v => v.Position).ToList(),
+                Vertices = meshBuild.Positions.ToList(),
                 TriangleIndices = meshBuild.TriangleIndices
             };
         }
@@ -86,12 +86,12 @@ namespace SpiceEngine.Maps
         public static MapVolume Box(Vector3 center, float width, float height, float depth)
         {
             var meshShape = MeshShape.Box(width, height, depth);
-            var meshBuild = meshShape.GetMeshBuild();
+            var meshBuild = new MeshBuild(meshShape);
 
             return new MapVolume()
             {
                 Position = center,
-                Vertices = meshBuild.Vertices.Select(v => v.Position).ToList(),
+                Vertices = meshBuild.Positions.ToList(),
                 TriangleIndices = meshBuild.TriangleIndices
             };
         }
