@@ -1,3 +1,5 @@
+using SauceEditor.ViewModels.Docks;
+
 namespace SauceEditor.ViewModels.Tools
 {
     public enum ModelToolTypes
@@ -9,8 +11,13 @@ namespace SauceEditor.ViewModels.Tools
         Texture
     }
 
-    public class ModelToolPanelViewModel : ViewModel
+    public class ModelToolPanelViewModel : DockViewModel
     {
         public ModelToolTypes ModelToolType { get; set; }
+
+        public void OnModelToolTypeChanged()
+        {
+
+        }
     }
 }

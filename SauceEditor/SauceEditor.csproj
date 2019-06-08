@@ -234,13 +234,17 @@
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
+    <Compile Include="ViewModels\Docks\IHaveDockViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
-    <Compile Include="ViewModels\ISideDockViewModel.cs" />
-    <Compile Include="ViewModels\MainDockViewModel.cs" />
+    <Compile Include="ViewModels\ISelectEntities.cs" />
+    <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
+    <Compile Include="ViewModels\Docks\DockViewModel.cs" />
+    <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
+    <Compile Include="ViewModels\Properties\IDisplayProperties.cs" />
     <Compile Include="ViewModels\Properties\PropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\IPropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\TexturePropertyViewModel.cs" />
@@ -270,10 +274,12 @@
     <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
       <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Docks\ITrackDocks.cs" />
+    <Compile Include="Views\Docks\DockTracker.cs" />
     <Compile Include="Views\Factories\IMainView.cs" />
-    <Compile Include="Views\MainDockManager.cs" />
     <Compile Include="Views\Factories\IComponentFactory.cs" />
     <Compile Include="Views\Factories\IHaveViewModel.cs" />
+    <Compile Include="Views\Factories\IGameDockFactory.cs" />
     <Compile Include="Views\Factories\IMainViewFactory.cs" />
     <Compile Include="Views\Factories\IFile.cs" />
     <Compile Include="Views\Factories\IWindow.cs" />
@@ -285,6 +291,7 @@
       <DependentUpon>GamePanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
+    <Compile Include="Views\MainDockManager.cs" />
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>

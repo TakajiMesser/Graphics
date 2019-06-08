@@ -2,9 +2,9 @@
 using SauceEditor.Views.Factories;
 using SpiceEngine.Maps;
 
-namespace SauceEditor.ViewModels
+namespace SauceEditor.ViewModels.Docks
 {
-    public abstract class MainDockViewModel : ViewModel
+    /*public abstract class MainDockViewModel : ViewModel
     {
         private bool _isActive = false;
 
@@ -27,8 +27,5 @@ namespace SauceEditor.ViewModels
                 }
             }
         }
-
-        protected MapManager MapManager { get; set; }
-        public Map Map => MapManager?.Map;
-    }
+    }*/
 }

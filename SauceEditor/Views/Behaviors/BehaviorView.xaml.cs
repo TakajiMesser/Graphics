@@ -1,4 +1,5 @@
 ﻿using NodeNetwork.ViewModels;
+using SauceEditor.ViewModels.Docks;
 using System.Windows.Controls;
 using Xceed.Wpf.AvalonDock.Layout;
 
@@ -7,7 +8,7 @@ namespace SauceEditor.Views.Behaviors
     /// <summary>
     /// Interaction logic for BehaviorView.xaml
     /// </summary>
-    public partial class BehaviorView : LayoutAnchorable
+    public partial class BehaviorView : LayoutAnchorable, IHaveDockViewModel
     {
         public BehaviorView()
         {
@@ -51,5 +52,7 @@ namespace SauceEditor.Views.Behaviors
             Network.ViewModel = network;
             Network.UpdateLayout();
         }
+
+        public DockViewModel GetViewModel() => ViewModel;
     }
 }

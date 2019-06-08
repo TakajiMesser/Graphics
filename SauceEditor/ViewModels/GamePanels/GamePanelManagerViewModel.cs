@@ -1,6 +1,6 @@
 using SauceEditor.Models;
-using SauceEditor.Models.Components;
-using SauceEditor.Views.Factories;
+using SauceEditor.ViewModels.Docks;
+using SauceEditor.ViewModels.Properties;
 using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
@@ -14,12 +14,17 @@ using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
-    public class GamePanelManagerViewModel : MainDockViewModel
+    public class GamePanelManagerViewModel : DockViewModel
     {
         public GamePanelManagerViewModel()
         {
             IsPlayable = true;
         }
+
+        public IDisplayProperties PropertyDisplayer { get; set; }
+
+        protected MapManager MapManager { get; set; }
+        public Map Map => MapManager?.Map;
 
         public GameManager GameManager { get; set; }
         public EntityMapping EntityMapping { get; set; }
@@ -32,6 +37,7 @@ namespace SauceEditor.ViewModels
         public GamePanelViewModel YViewModel { get; set; }
         public GamePanelViewModel ZViewModel { get; set; }
 
+        public SelectionManager SelectionManager { get; set; }
         public List<EditorEntity> SelectedEntities { get; set; }
 
         public Resolution Resolution { get; set; }
@@ -61,6 +67,8 @@ namespace SauceEditor.ViewModels
 
         private void OnPanelViewModelChange(GamePanelViewModel panelViewModel)
         {
+            SelectionManager = panelViewModel.Panel.SelectionManager;
+
             panelViewModel.Panel.EntitySelectionChanged += (s, args) => SelectedEntities = MapManager.GetEditorEntities(args.Entities).ToList();
             panelViewModel.Panel.Load += (s, args) => LoadPanels();
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);

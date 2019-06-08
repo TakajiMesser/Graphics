@@ -14,7 +14,7 @@ namespace SauceEditor.Models.Components
     {
         public Model Model { get; set; }
 
-        public IEnumerable<FaceEntity> GetShapeEntities()
+        public IEnumerable<ShapeEntity> GetShapeEntities()
         {
             foreach (var mesh in Model.Meshes)
             {
@@ -25,6 +25,10 @@ namespace SauceEditor.Models.Components
         }
 
         public IEnumerable<FaceEntity> GetFaceEntities() => throw new NotImplementedException();
+
+        public IEnumerable<TriangleEntity> GetTriangleEntities() => throw new NotImplementedException();
+
+        public IEnumerable<VertexEntity> GetVertexEntities() => throw new NotImplementedException();
 
         public override void Save()
         {

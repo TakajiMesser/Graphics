@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Models.Components;
+using SauceEditor.ViewModels.Docks;
 using System;
 using System.IO;
 using System.Windows.Controls;
@@ -11,7 +12,7 @@ namespace SauceEditor.Views.ProjectTree
     /// <summary>
     /// Interaction logic for ProjectTreePanel.xaml
     /// </summary>
-    public partial class ProjectTreePanel : LayoutAnchorable
+    public partial class ProjectTreePanel : LayoutAnchorable, IHaveDockViewModel
     {
         /*public event EventHandler<ItemSelectedEventArgs> MapSelected;
         public event EventHandler<ItemSelectedEventArgs> ModelSelected;
@@ -26,6 +27,8 @@ namespace SauceEditor.Views.ProjectTree
             InitializeComponent();
             //ClearProject();
         }
+
+        public DockViewModel GetViewModel() => ViewModel;
 
         /*public void ClearProject()
         {

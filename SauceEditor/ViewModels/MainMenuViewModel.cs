@@ -2,7 +2,6 @@ using Microsoft.Win32;
 using SauceEditor.Helpers;
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
-using System;
 using System.IO;
 
 namespace SauceEditor.ViewModels
@@ -12,7 +11,7 @@ namespace SauceEditor.ViewModels
         private static readonly string DEFAULT_INITIAL_DIRECTORY = FilePathHelper.INITIAL_FILE_DIRECTORY;
 
         public IMainView MainView { get; set; }
-        public IMainViewFactory MainViewFactory { get; set; }
+        //public IMainViewFactory MainViewFactory { get; set; }
         public IWindowFactory WindowFactory { get; set; }
         public IComponentFactory ComponentFactory { get; set; }
 

@@ -1,10 +1,11 @@
 using SauceEditor.Models.Components;
+using SauceEditor.ViewModels.Docks;
 using SauceEditor.Views.Factories;
 using SpiceEngine.Maps;
 
 namespace SauceEditor.ViewModels
 {
-    public class ScriptViewModel : MainDockViewModel
+    public class ScriptViewModel : DockViewModel
     {
         public IFile Filer { get; set; }
         public ScriptComponent Script { get; set; }

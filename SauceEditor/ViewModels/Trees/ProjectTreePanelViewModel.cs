@@ -1,11 +1,12 @@
 using SauceEditor.Models.Components;
+using SauceEditor.ViewModels.Docks;
 using SauceEditor.Views.Factories;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace SauceEditor.ViewModels.Trees
 {
-    public class ProjectTreePanelViewModel : ViewModel
+    public class ProjectTreePanelViewModel : DockViewModel
     {
         public ReadOnlyCollection<ProjectViewModel> Roots { get; set; }
 

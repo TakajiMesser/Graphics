@@ -1,4 +1,5 @@
 ﻿using SauceEditor.ViewModels.Commands;
+using SauceEditor.ViewModels.Docks;
 using System;
 using Xceed.Wpf.AvalonDock.Layout;
 
@@ -7,7 +8,7 @@ namespace SauceEditor.Views.Properties
     /// <summary>
     /// Interaction logic for PropertyPanel.xaml
     /// </summary>
-    public partial class PropertyPanel : LayoutAnchorable
+    public partial class PropertyPanel : LayoutAnchorable, IHaveDockViewModel
     {
         /*private EditorEntity _entity;
         public EditorEntity Entity
@@ -102,6 +103,8 @@ namespace SauceEditor.Views.Properties
                 }
             };*/
         }
+
+        public DockViewModel GetViewModel() => ViewModel;
 
         /*private void ScriptButton_Click(object sender, RoutedEventArgs e)
         {

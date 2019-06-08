@@ -1,6 +1,4 @@
-﻿using SpiceEngine.Maps;
-
-namespace SauceEditor.ViewModels
+﻿namespace SauceEditor.ViewModels.Docks
 {
     public interface ISideDockViewModel
     {

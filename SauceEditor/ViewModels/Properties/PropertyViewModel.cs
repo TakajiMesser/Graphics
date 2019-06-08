@@ -1,10 +1,11 @@
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
+using SauceEditor.ViewModels.Docks;
 using Component = SauceEditor.Models.Components.Component;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class PropertyViewModel : ViewModel, ISideDockViewModel
+    public class PropertyViewModel : DockViewModel, /*ISideDockViewModel, */IDisplayProperties
     {
         public IPropertyViewModel Properties { get; set; }
         public bool IsActive { get; set; }
@@ -27,6 +28,15 @@ namespace SauceEditor.ViewModels.Properties
                     Properties = new TexturePropertyViewModel();
                     UpdateFromModel(component);
                     break;
+            }
+        }
+
+        public void UpdateFromEntity(EditorEntity entity)
+        {
+            if (Properties is EntityPropertyViewModel entityPropertyViewModel)
+            {
+                entityPropertyViewModel.UpdateFromModel(entity);
+                IsActive = true;
             }
         }
 

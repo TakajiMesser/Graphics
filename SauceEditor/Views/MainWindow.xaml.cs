@@ -1,19 +1,21 @@
 ﻿using OpenTK;
 using SauceEditor.Helpers;
 using SauceEditor.Models;
+using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
+using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
+using SauceEditor.Views.GamePanels;
 using SauceEditor.Views.ProjectTree;
 using SauceEditor.Views.Properties;
+using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Input;
-using Xceed.Wpf.AvalonDock.Layout;
 using GameWindow = SpiceEngine.Game.GameWindow;
 using Map = SpiceEngine.Maps.Map;
 
@@ -22,10 +24,9 @@ namespace SauceEditor.Views
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, IMainView, IWindowFactory
+    public partial class MainWindow : Window, IMainView, IWindowFactory, IGameDockFactory
     {
-        private MainDockManager _mainDockManager;
-        private Dictionary<ISideDockViewModel, LayoutAnchorable> _sideDockViewByViewModel = new Dictionary<ISideDockViewModel, LayoutAnchorable>();
+        private DockTracker _dockTracker;
 
         // Side panels
         private ProjectTreePanel _projectTree = new ProjectTreePanel();
@@ -43,16 +44,17 @@ namespace SauceEditor.Views
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
             InitializeComponent();
 
-            _mainDockManager = new MainDockManager(MainDockingManager)
+            _dockTracker = new DockTracker(MainDockingManager, PropertyDockingManager, ToolDockingManager)
             {
-                MainWindowViewModel = ViewModel
+                MainWindowVM = ViewModel
             };
 
-            ViewModel.MainViewFactory = _mainDockManager;
+            //ViewModel.MainViewFactory = _dockTracker;
+            ViewModel.GameDockFactory = this;
             ViewModel.WindowFactory = this;
 
             Menu.ViewModel.MainView = this;
-            Menu.ViewModel.MainViewFactory = _mainDockManager;
+            //Menu.ViewModel.MainViewFactory = _dockTracker;
             Menu.ViewModel.WindowFactory = this;
 
             // TODO - Should this binding happen in the ViewModel itself?
@@ -86,15 +88,9 @@ namespace SauceEditor.Views
 
             _toolPanel.ToolSelected += ToolPanel_ToolSelected;
 
-            //ViewModel.SideDockViewModels.Add(_projectTree.ViewModel);
-            //ViewModel.SideDockViewModels.Add(_toolPanel.ViewModel);
-            ViewModel.SideDockViewModels.Add(_propertyPanel.ViewModel);
-
-            DockHelper.AddToDockAsDocument(PropertyDockingManager, _projectTree);
-            DockHelper.AddToDockAsDocument(PropertyDockingManager, _propertyPanel);
-
-            //DockHelper.AddToDockAsDocument(ToolDockingManager, _toolPanel);
-            DockHelper.AddToDockAsDocument(ToolDockingManager, _modelToolPanel);
+            _dockTracker.AddToPropertyDock(_projectTree);
+            _dockTracker.AddToPropertyDock(_propertyPanel);
+            _dockTracker.AddToToolDock(_modelToolPanel);
 
             _projectTree.IsActive = true;
             //SideDockManager.ActiveContent = _projectTree;
@@ -133,6 +129,76 @@ namespace SauceEditor.Views
                 _mapPath = dialog.FileName;
                 //RunButton.IsEnabled = true;
                 Title = System.IO.Path.GetFileNameWithoutExtension(dialog.FileName) + " - " + "SauceEditor";
+            }*/
+        }
+
+        public ViewModel CreateGamePanelManager(MapComponent mapComponent, Models.Components.Component component = null)
+        {
+            var gamePanelManager = new GamePanelManager()
+            {
+                Title = mapComponent.Name,
+                CanClose = true
+            };
+
+            //gamePanelManager.ViewModel.Factory = this;
+            gamePanelManager.ViewModel.UpdateFromModel(mapComponent.Map);
+            gamePanelManager.IsActiveChanged += (s, args) => ViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
+
+            _dockTracker.AddToGameDock(gamePanelManager);
+
+            gamePanelManager.SetView(ViewModel.Settings.DefaultView);
+            return gamePanelManager.ViewModel;
+        }
+
+        public ViewModel CreateScriptView(ScriptComponent scriptComponent)
+        {
+            var scriptView = new ScriptView()
+            {
+                Title = scriptComponent.Name,
+                CanClose = true
+            };
+            scriptView.ViewModel.UpdateFromModel(scriptComponent);
+
+            _dockTracker.AddToGameDock(scriptView);
+
+            return scriptView.ViewModel;
+        }
+
+        public ViewModel CreateBehaviorView(BehaviorComponent behaviorComponent)
+        {
+            var behaviorView = new BehaviorView()
+            {
+                Title = behaviorComponent.Name,
+                CanClose = true
+            };
+
+            _dockTracker.AddToGameDock(behaviorView);
+
+            return behaviorView.ViewModel;
+
+            // Temporary measures...
+            /*if (_scriptView == null)
+            {
+                _scriptView = new ScriptView(filePath);
+            }
+
+            var anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _scriptView,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();*/
+
+            /* if (_behaviorView == null)
+            {
+                _behaviorView = new BehaviorView();
             }*/
         }
 

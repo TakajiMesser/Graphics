@@ -16,7 +16,7 @@ using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views
 {
-    public class MainDockManager : IMainViewFactory
+    /*public class MainDockManager : IMainViewFactory
     {
         private DockingManager _dockingManager;
         private Dictionary<MainDockViewModel, LayoutAnchorable> _mainDockViewByViewModel = new Dictionary<MainDockViewModel, LayoutAnchorable>();
@@ -43,7 +43,7 @@ namespace SauceEditor.Views
                 _propertyPanel.ViewModel.UpdateFromModel(args.Entities.LastOrDefault());
                 _propertyPanel.IsActive = true;
                 //SideDockManager.ActiveContent = _propertyPanel;
-            };*/
+            };*
             //gamePanelManager.CommandExecuted += (s, args) => CommandExecuted(args.Command);
             gamePanelManager.ViewModel.MainViewFactory = this;
             gamePanelManager.ViewModel.UpdateFromModel(mapComponent.Map);
@@ -54,7 +54,7 @@ namespace SauceEditor.Views
             };
 
             _mainDockViewByViewModel.Add(gamePanelManager.ViewModel, gamePanelManager);
-            DockHelper.AddToDockAsDocument(_dockingManager, gamePanelManager/*, () => ViewModel.PlayVisibility = Visibility.Hidden*/);
+            DockHelper.AddToDockAsDocument(_dockingManager, gamePanelManager/*, () => ViewModel.PlayVisibility = Visibility.Hidden*);
 
             //gamePanelManager.IsActive = true;
 
@@ -64,7 +64,7 @@ namespace SauceEditor.Views
                 {
                     _propertyPanel.ViewModel = ;
                 }
-            };*/
+            };*
 
             //gamePanelManager.SetView(ViewModel.Settings.DefaultView);
             gamePanelManager.SetView(MainWindowViewModel.Settings.DefaultView);
@@ -122,7 +122,7 @@ namespace SauceEditor.Views
             /* if (_behaviorView == null)
             {
                 _behaviorView = new BehaviorView();
-            }*/
+            }*
         }
 
         public void SetActiveInMainDock(MainDockViewModel viewModel)
@@ -136,5 +136,5 @@ namespace SauceEditor.Views
             CurrentMainDockViewModel = viewModel;
             MainWindowViewModel.CurrentMainDockViewModel = viewModel;
         }
-    }
+    }*/
 }
