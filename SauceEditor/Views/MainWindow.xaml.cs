@@ -50,6 +50,7 @@ namespace SauceEditor.Views
             };
 
             //ViewModel.MainViewFactory = _dockTracker;
+            ViewModel.DockTracker = _dockTracker;
             ViewModel.GameDockFactory = this;
             ViewModel.WindowFactory = this;
 

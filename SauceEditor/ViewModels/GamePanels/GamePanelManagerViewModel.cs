@@ -16,10 +16,7 @@ namespace SauceEditor.ViewModels
 {
     public class GamePanelManagerViewModel : DockViewModel
     {
-        public GamePanelManagerViewModel()
-        {
-            IsPlayable = true;
-        }
+        public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
         public IDisplayProperties PropertyDisplayer { get; set; }
 
@@ -38,7 +35,7 @@ namespace SauceEditor.ViewModels
         public GamePanelViewModel ZViewModel { get; set; }
 
         public SelectionManager SelectionManager { get; set; }
-        public List<EditorEntity> SelectedEntities { get; set; }
+        //public List<EditorEntity> SelectedEntities { get; set; }
 
         public Resolution Resolution { get; set; }
 
@@ -69,29 +66,32 @@ namespace SauceEditor.ViewModels
         {
             SelectionManager = panelViewModel.Panel.SelectionManager;
 
-            panelViewModel.Panel.EntitySelectionChanged += (s, args) => SelectedEntities = MapManager.GetEditorEntities(args.Entities).ToList();
+            panelViewModel.Panel.EntitySelectionChanged += (s, args) => SelectEntities(args.Entities);
             panelViewModel.Panel.Load += (s, args) => LoadPanels();
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
         }
 
-        public void OnSelectedEntitiesChanged()
+        public void SelectEntities(IEnumerable<IEntity> entities)
         {
-            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
-            if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
-            if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
-            if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(SelectedEntities.Select(e => e.Entity));
+            //SelectedEntities = MapManager.GetEditorEntities(entities).ToList();
+            PropertyDisplayer.UpdateFromEntity(MapManager.GetEditorEntities(entities).FirstOrDefault());
 
-            if (SelectedEntities.Any())
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(entities);
+            if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(entities);
+            if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(entities);
+            if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(entities);
+
+            if (SelectionManager.Count > 0)
             {
-                if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
-                if (ViewType != ViewTypes.X) XViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
-                if (ViewType != ViewTypes.Y) YViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
-                if (ViewType != ViewTypes.Z) ZViewModel.Panel.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+                if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.UpdateEntities(entities);
+                if (ViewType != ViewTypes.X) XViewModel.Panel.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Y) YViewModel.Panel.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Z) ZViewModel.Panel.UpdateEntities(entities);
 
-                MapManager.UpdateEntities(SelectedEntities.Select(e => e.Entity));
+                MapManager.UpdateEntities(entities);
             }
 
-            var editorEntities = MapManager.GetEditorEntities(SelectedEntities.Select(e => e.Entity));
+            //var editorEntities = MapManager.GetEditorEntities(entities);
             //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(editorEntities));
             //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(_mapManager.GetMapEntities(args.Entities)));
         }

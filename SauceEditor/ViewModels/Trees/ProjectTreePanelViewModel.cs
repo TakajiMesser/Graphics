@@ -8,14 +8,11 @@ namespace SauceEditor.ViewModels.Trees
 {
     public class ProjectTreePanelViewModel : DockViewModel
     {
-        public ReadOnlyCollection<ProjectViewModel> Roots { get; set; }
-
         private List<ProjectViewModel> _roots = new List<ProjectViewModel>();
 
-        public ProjectTreePanelViewModel()
-        {
-            Roots = new ReadOnlyCollection<ProjectViewModel>(_roots);
-        }
+        public ProjectTreePanelViewModel() : base(DockTypes.Property) => Roots = new ReadOnlyCollection<ProjectViewModel>(_roots);
+
+        public ReadOnlyCollection<ProjectViewModel> Roots { get; set; }
 
         public void UpdateFromModel(Project project, IComponentFactory componentFactory)
         {

@@ -73,7 +73,7 @@ namespace SauceEditor.ViewModels.Properties
         public void UpdateFromModel(EditorEntity editorEntity)
         {
             _editorEntity = editorEntity;
-            //if (editorEntity == null) return; // Yikes
+            if (editorEntity == null) return; // Yikes
 
             ID = editorEntity.Entity.ID.ToString();
             

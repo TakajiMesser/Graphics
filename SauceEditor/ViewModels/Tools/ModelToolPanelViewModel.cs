@@ -13,6 +13,8 @@ namespace SauceEditor.ViewModels.Tools
 
     public class ModelToolPanelViewModel : DockViewModel
     {
+        public ModelToolPanelViewModel() : base(DockTypes.Tool) { }
+
         public ModelToolTypes ModelToolType { get; set; }
 
         public void OnModelToolTypeChanged()

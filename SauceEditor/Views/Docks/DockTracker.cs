@@ -28,33 +28,6 @@ namespace SauceEditor.Views
             _toolDockingManager = toolDockingManager;
         }
 
-        public void AddToGameDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
-        {
-            var dockViewModel = view.GetViewModel();
-            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
-
-            _gameDockViewByVM.Add(dockViewModel, view);
-            DockHelper.AddToDockAsDocument(_gameDockingManager, view);
-        }
-
-        public void AddToPropertyDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
-        {
-            var dockViewModel = view.GetViewModel();
-            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
-
-            _propertyDockViewByVM.Add(dockViewModel, view);
-            DockHelper.AddToDockAsDocument(_propertyDockingManager, view);
-        }
-
-        public void AddToToolDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
-        {
-            var dockViewModel = view.GetViewModel();
-            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
-
-            _toolDockViewByVM.Add(dockViewModel, view);
-            DockHelper.AddToDockAsDocument(_toolDockingManager, view);
-        }
-
         public MainWindowViewModel MainWindowVM { get; set; }
 
         public DockViewModel ActiveGameDockVM
@@ -93,6 +66,56 @@ namespace SauceEditor.Views
                 _toolDockViewByVM[value].IsActive = true;
                 _activeToolDockVM = value;
                 //MainWindowVM.CurrentMainDockViewModel = value;
+            }
+        }
+
+        public void AddToGameDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
+        {
+            var dockViewModel = view.GetViewModel();
+            dockViewModel.DockTracker = this;
+            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
+
+            _gameDockViewByVM.Add(dockViewModel, view);
+            DockHelper.AddToDockAsDocument(_gameDockingManager, view);
+        }
+
+        public void AddToPropertyDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
+        {
+            var dockViewModel = view.GetViewModel();
+            dockViewModel.DockTracker = this;
+            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
+
+            _propertyDockViewByVM.Add(dockViewModel, view);
+            DockHelper.AddToDockAsDocument(_propertyDockingManager, view);
+        }
+
+        public void AddToToolDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
+        {
+            var dockViewModel = view.GetViewModel();
+            dockViewModel.DockTracker = this;
+            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
+
+            _toolDockViewByVM.Add(dockViewModel, view);
+            DockHelper.AddToDockAsDocument(_toolDockingManager, view);
+        }
+
+        public void SetActive(DockViewModel dockViewModel)
+        {
+            if (_gameDockViewByVM.ContainsKey(dockViewModel))
+            {
+                ActiveGameDockVM = dockViewModel;
+            }
+            else if (_propertyDockViewByVM.ContainsKey(dockViewModel))
+            {
+                ActivePropertyDockVM = dockViewModel;
+            }
+            else if (_toolDockViewByVM.ContainsKey(dockViewModel))
+            {
+                ActiveToolDockVM = dockViewModel;
+            }
+            else
+            {
+                throw new KeyNotFoundException("Could not find in docks");
             }
         }
     }

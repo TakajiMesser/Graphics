@@ -7,8 +7,10 @@ namespace SauceEditor.ViewModels.Properties
 {
     public class PropertyViewModel : DockViewModel, /*ISideDockViewModel, */IDisplayProperties
     {
+        public PropertyViewModel() : base(DockTypes.Property) { }
+
         public IPropertyViewModel Properties { get; set; }
-        public bool IsActive { get; set; }
+        //public bool IsActive { get; set; }
 
         public void OnPropertiesChanged() => AddChild((ViewModel)Properties, (s, args) => InvokePropertyChanged(nameof(Properties)));
 
@@ -36,7 +38,11 @@ namespace SauceEditor.ViewModels.Properties
             if (Properties is EntityPropertyViewModel entityPropertyViewModel)
             {
                 entityPropertyViewModel.UpdateFromModel(entity);
-                IsActive = true;
+
+                if (entity != null)
+                {
+                    IsActive = true;
+                }
             }
         }
 
