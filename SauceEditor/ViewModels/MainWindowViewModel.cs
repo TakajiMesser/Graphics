@@ -18,7 +18,7 @@ namespace SauceEditor.ViewModels
     public class MainWindowViewModel : ViewModel, IComponentFactory
     {
         public IWindowFactory WindowFactory { get; set; }
-        public IMainViewFactory MainViewFactory { get; set; }
+        //public IMainViewFactory MainViewFactory { get; set; }
         public IGameDockFactory GameDockFactory { get; set; }
 
         public CommandStack CommandStack { get; private set; } = new CommandStack();
@@ -82,7 +82,7 @@ namespace SauceEditor.ViewModels
                     {
                         if (DockTracker.ActiveGameDockVM is GamePanelManagerViewModel gamePanelManagerVM)
                         {
-                            WindowFactory.CreateGameWindow(gamePanelManagerVM.Map);
+                            WindowFactory.CreateGameWindow(gamePanelManagerVM.MapComponent.Map);
                         }
                     },
                     p => true//CurrentMainDockViewModel != null ? CurrentMainDockViewModel.IsPlayable : false
@@ -220,7 +220,7 @@ namespace SauceEditor.ViewModels
             Title = modelComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateModelMap(modelComponent);
 
-            GamePanelManagerViewModel = (GamePanelManagerViewModel)MainViewFactory.CreateGamePanelManager(mapComponent, modelComponent);
+            GamePanelManagerViewModel = (GamePanelManagerViewModel)GameDockFactory.CreateGamePanelManager(mapComponent, modelComponent);
             GamePanelManagerViewModel.ViewType = ViewTypes.Perspective;
         }
 

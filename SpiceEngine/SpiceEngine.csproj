@@ -164,6 +164,8 @@
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MinkowskiHelper.cs" />
     <Compile Include="Helpers\SoundHelper.cs" />
+    <Compile Include="Helpers\PatternMatcher.cs" />
+    <Compile Include="Helpers\TypeSwitch.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
     <Compile Include="Inputs\IMouseDelta.cs" />
     <Compile Include="Inputs\IInputProvider.cs" />

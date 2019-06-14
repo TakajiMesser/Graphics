@@ -134,7 +134,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Disable(EnableCap.CullFace);
         }
 
-        public void VolumeWireframePass(Camera camera, BatchManager batchManager)
+        /*public void VolumeWireframePass(Camera camera, BatchManager batchManager)
         {
             _wireframeProgram.Use();
 
@@ -143,30 +143,24 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineColor", LineColor);
 
             batchManager.DrawVolumes(_wireframeProgram);
-        }
+        }*/
 
         public void WireframePass(Camera camera, BatchManager batchManager)
         {
-            _wireframeProgram.Use();
-
-            camera.SetUniforms(_wireframeProgram);
-            _wireframeProgram.SetUniform("lineThickness", LineThickness);
-            _wireframeProgram.SetUniform("lineColor", LineColor);
-
-            batchManager.DrawBrushes(_wireframeProgram);
-            batchManager.DrawVolumes(_wireframeProgram);
-            batchManager.DrawActors(_wireframeProgram);
-        }
-
-        public void JointWireframePass(Camera camera, BatchManager batchManager)
-        {
-            _jointWireframeProgram.Use();
-
-            camera.SetUniforms(_jointWireframeProgram);
-            _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
-            _jointWireframeProgram.SetUniform("lineColor", LineColor);
-
-            batchManager.DrawJoints(_jointWireframeProgram);
+            batchManager.CreateBatchAction()
+                .SetShader(_wireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", LineThickness)
+                .SetUniform("lineColor", LineColor)
+                .RenderBrushes()
+                .RenderVolumes()
+                .RenderActors()
+                .SetShader(_jointWireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", LineThickness)
+                .SetUniform("lineColor", LineColor)
+                .RenderJoints()
+                .Execute();
         }
 
         public void RenderGridLines(Camera camera)

@@ -1,4 +1,5 @@
 using SauceEditor.Models;
+using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Properties;
 using SpiceEngine.Entities;
@@ -14,17 +15,15 @@ using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
-    public class GamePanelManagerViewModel : DockViewModel
+    public class GamePanelManagerViewModel : DockViewModel, ISelectEntities
     {
         public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
         public IDisplayProperties PropertyDisplayer { get; set; }
 
-        protected MapManager MapManager { get; set; }
-        public Map Map => MapManager?.Map;
-
         public GameManager GameManager { get; set; }
         public EntityMapping EntityMapping { get; set; }
+        public MapComponent MapComponent { get; set; }
 
         public TransformModes TransformMode { get; set; }
         public ViewTypes ViewType { get; set; }
@@ -52,11 +51,6 @@ namespace SauceEditor.ViewModels
             CommandManager.InvalidateRequerySuggested();
         }
 
-        public void OnViewTypeChanged()
-        {
-
-        }
-
         public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange(PerspectiveViewModel);
         public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
         public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
@@ -66,15 +60,19 @@ namespace SauceEditor.ViewModels
         {
             SelectionManager = panelViewModel.Panel.SelectionManager;
 
-            panelViewModel.Panel.EntitySelectionChanged += (s, args) => SelectEntities(args.Entities);
+            panelViewModel.Panel.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
             panelViewModel.Panel.Load += (s, args) => LoadPanels();
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
         }
 
-        public void SelectEntities(IEnumerable<IEntity> entities)
+        public void SetSelectableEntities(IEnumerable<IEntity> entities) => SelectionManager.SetSelectableEntities(entities);
+
+        public void SelectEntities(IEnumerable<IEntity> entities) => SelectionManager.SelectEntities(entities);
+
+        private void UpdatedSelection(IEnumerable<IEntity> entities)
         {
             //SelectedEntities = MapManager.GetEditorEntities(entities).ToList();
-            PropertyDisplayer.UpdateFromEntity(MapManager.GetEditorEntities(entities).FirstOrDefault());
+            PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
 
             if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(entities);
             if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(entities);
@@ -88,7 +86,7 @@ namespace SauceEditor.ViewModels
                 if (ViewType != ViewTypes.Y) YViewModel.Panel.UpdateEntities(entities);
                 if (ViewType != ViewTypes.Z) ZViewModel.Panel.UpdateEntities(entities);
 
-                MapManager.UpdateEntities(entities);
+                MapComponent.UpdateEntities(entities);
             }
 
             //var editorEntities = MapManager.GetEditorEntities(entities);
@@ -148,23 +146,23 @@ namespace SauceEditor.ViewModels
         private bool _isGLContextLoaded = false;
         private bool _isMapLoadedInPanels = false;
 
-        public void UpdateFromModel(Map map)
+        public void UpdateFromModel(MapComponent mapComponent)
         {
-            MapManager = new MapManager(map);
+            MapComponent = mapComponent;
             GameManager = new GameManager(Resolution);
 
-            EntityMapping = GameManager.LoadFromMap(MapManager.Map);
-            MapManager.SetEntityMapping(EntityMapping);
+            EntityMapping = GameManager.LoadFromMap(MapComponent.Map);
+            MapComponent.SetEntityMapping(EntityMapping);
 
             lock (_panelLock)
             {
                 // Lock and check to ensure that this only happens once
                 if (_isGLContextLoaded && !_isMapLoadedInPanels)
                 {
-                    PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
-                    XViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
-                    YViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
-                    ZViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
+                    PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                    XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                    YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                    ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
 
                     _isMapLoadedInPanels = true;
                 }
@@ -181,13 +179,13 @@ namespace SauceEditor.ViewModels
                     // Lock and check to ensure that this only happens once
                     _isGLContextLoaded = true;
 
-                    if (!_isMapLoadedInPanels && MapManager != null)
+                    if (!_isMapLoadedInPanels && MapComponent != null)
                     {
                         // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                        PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
-                        XViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
-                        YViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
-                        ZViewModel.Panel.LoadGameManager(GameManager, MapManager.Map, EntityMapping);
+                        PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                        XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                        YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                        ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
 
                         _isMapLoadedInPanels = true;
                     }

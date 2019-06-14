@@ -1,11 +1,5 @@
-﻿using SauceEditor.Models.Components;
-using SauceEditor.ViewModels.Docks;
-using System;
-using System.IO;
-using System.Windows.Controls;
-using System.Windows.Input;
+﻿using SauceEditor.ViewModels.Docks;
 using Xceed.Wpf.AvalonDock.Layout;
-using Path = System.IO.Path;
 
 namespace SauceEditor.Views.ProjectTree
 {

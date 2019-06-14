@@ -2,7 +2,6 @@ using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
 
 namespace SauceEditor.ViewModels.Trees
 {

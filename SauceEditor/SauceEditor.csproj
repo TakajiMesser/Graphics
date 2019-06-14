@@ -203,8 +203,6 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
-    <Compile Include="Helpers\PatternMatcher.cs" />
-    <Compile Include="Helpers\TypeSwitch.cs" />
     <Compile Include="Models\Components\ArchetypeComponent.cs" />
     <Compile Include="Models\Components\BehaviorComponent.cs" />
     <Compile Include="Models\Components\Component.cs" />

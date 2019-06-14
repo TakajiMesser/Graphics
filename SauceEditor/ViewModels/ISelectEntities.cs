@@ -1,11 +1,11 @@
-﻿using SauceEditor.Models;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Entities;
 using System.Collections.Generic;
 
 namespace SauceEditor.ViewModels
 {
     public interface ISelectEntities
     {
-        List<EditorEntity> SelectedEntities { get; set; }
+        void SetSelectableEntities(IEnumerable<IEntity> entities);
+        void SelectEntities(IEnumerable<IEntity> entities);
     }
 }

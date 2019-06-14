@@ -191,7 +191,6 @@ namespace SpiceEngine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.JointSelectionPass(camera, BatchManager);
             _selectionRenderer.SelectionPass(camera, BatchManager);
             _billboardRenderer.RenderLightSelections(camera, entityProvider.Lights);
         }
@@ -311,7 +310,6 @@ namespace SpiceEngine.Rendering
             }
 
             _wireframeRenderer.WireframePass(camera, BatchManager);
-            _wireframeRenderer.JointWireframePass(camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
@@ -333,7 +331,6 @@ namespace SpiceEngine.Rendering
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _deferredRenderer.GeometryPass(camera, BatchManager, TextureManager);
-            _deferredRenderer.JointGeometryPass(camera, BatchManager, TextureManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
@@ -355,7 +352,6 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.CullFace);
 
             _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
-            _deferredRenderer.TransparentJointGeometryPass(camera, BatchManager, TextureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -372,7 +368,6 @@ namespace SpiceEngine.Rendering
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _deferredRenderer.GeometryPass(camera, BatchManager, TextureManager);
-            _deferredRenderer.JointGeometryPass(camera, BatchManager, TextureManager);
 
             RenderLights(entityProvider, camera);
 
@@ -396,7 +391,6 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.CullFace);
 
             _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
-            _deferredRenderer.TransparentJointGeometryPass(camera, BatchManager, TextureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -413,7 +407,6 @@ namespace SpiceEngine.Rendering
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             _deferredRenderer.GeometryPass(camera, BatchManager, TextureManager);
-            _deferredRenderer.JointGeometryPass(camera, BatchManager, TextureManager);
 
             RenderLights(entityProvider, camera);
 
@@ -429,7 +422,6 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.CullFace);
 
             _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
-            _deferredRenderer.TransparentJointGeometryPass(camera, BatchManager, TextureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);

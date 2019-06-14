@@ -275,55 +275,41 @@ namespace SpiceEngine.Rendering.Processing
 
         public void GeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
-            _geometryProgram.Use();
+            batchManager.CreateBatchAction()
+                .SetShader(_geometryProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .SetTextureManager(textureManager)
+                .RenderBrushes()
+                .RenderActors()
+                .SetShader(_jointGeometryProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .RenderJoints()
+                .Execute();
 
-            camera.SetUniforms(_geometryProgram);
-            _geometryProgram.SetUniform("cameraPosition", camera.Position);
-
-            batchManager.DrawBrushes(_geometryProgram, textureManager);
-            batchManager.DrawActors(_geometryProgram, textureManager);
+            GL.Enable(EnableCap.CullFace);
         }
 
         public void TransparentGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
         {
-            _geometryProgram.Use();
-
-            camera.SetUniforms(_geometryProgram);
-            _geometryProgram.SetUniform("cameraPosition", camera.Position);
+            batchManager.CreateBatchAction()
+                .SetShader(_geometryProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .PerformAction(() => _geometryProgram.UnbindTextures())
+                .RenderTransparencies()
+                .SetShader(_jointGeometryProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .RenderTransparentJoints()
+                .Execute();
 
             //GL.Enable(EnableCap.Blend);
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
-            // GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
-
-            _geometryProgram.UnbindTextures();
-
-            batchManager.DrawTransparencies(_geometryProgram, textureManager);
+            //GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
 
             //GL.Disable(EnableCap.Blend);
-        }
-
-        public void JointGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
-        {
-            _jointGeometryProgram.Use();
-
-            camera.SetUniforms(_jointGeometryProgram);
-            _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
-
-            batchManager.DrawJoints(_jointGeometryProgram, textureManager);
-
-            GL.Enable(EnableCap.CullFace);
-        }
-
-        public void TransparentJointGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
-        {
-            _jointGeometryProgram.Use();
-
-            camera.SetUniforms(_jointGeometryProgram);
-            _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
-
-            batchManager.DrawTransparentJoints(_jointGeometryProgram, textureManager);
-
-            GL.Enable(EnableCap.CullFace);
         }
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)

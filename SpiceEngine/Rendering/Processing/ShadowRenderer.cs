@@ -111,6 +111,21 @@ namespace SpiceEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
+        public void Render(Camera camera, ILight light, BatchManager batchManager)
+        {
+            switch (light)
+            {
+                case PointLight pLight:
+                    BindForPointShadowDrawing();
+                    PointLightPass(camera, pLight, batchManager);
+                    break;
+                case SpotLight sLight:
+                    BindForSpotShadowDrawing();
+                    SpotLightPass(camera, sLight, batchManager);
+                    break;
+            }
+        }
+
         private void BindForPointShadowDrawing()
         {
             _pointFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
@@ -141,73 +156,36 @@ namespace SpiceEngine.Rendering.Processing
 
         private void PointLightPass(Camera camera, PointLight light, BatchManager batchManager)
         {
-            _pointShadowProgram.Use();
-
-            // Draw camera from the point light's perspective
-            camera.SetUniforms(_pointShadowProgram, light);
-            _pointShadowProgram.SetUniform("lightRadius", light.Radius);
-            _pointShadowProgram.SetUniform("lightPosition", light.Position);
-
-            // Draw all geometry, but only the positions
-            batchManager.DrawBrushes(_pointShadowProgram);
-            batchManager.DrawActors(_pointShadowProgram);
-        }
-
-        private void PointLightJointPass(Camera camera, PointLight light, BatchManager batchManager)
-        {
-            _pointShadowJointProgram.Use();
-
-            // Draw camera from the point light's perspective
-            camera.SetUniforms(_pointShadowJointProgram, light);
-            _pointShadowJointProgram.SetUniform("lightRadius", light.Radius);
-            _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
-
-            // Draw all geometry, but only the positions
-            batchManager.DrawJoints(_pointShadowJointProgram);
+            batchManager.CreateBatchAction()
+                .SetShader(_pointShadowProgram)
+                .SetCamera(camera, light) // Draw camera from the point light's perspective
+                .SetUniform("lightRadius", light.Radius)
+                .SetUniform("lightPosition", light.Position)
+                .RenderBrushes() // Draw all geometry, but only the positions
+                .RenderActors()
+                .SetShader(_pointShadowJointProgram)
+                .SetCamera(camera, light)
+                .SetUniform("lightRadius", light.Radius)
+                .SetUniform("lightPosition", light.Position)
+                .RenderJoints()
+                .Execute();
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         private void SpotLightPass(Camera camera, SpotLight light, BatchManager batchManager)
         {
-            _spotShadowProgram.Use();
-
-            // Draw camera from the spot light's perspective
-            camera.SetUniforms(_spotShadowProgram, light);
-
-            // Draw all geometry, but only the positions
-            batchManager.DrawBrushes(_spotShadowProgram);
-            batchManager.DrawActors(_spotShadowProgram);
-        }
-
-        private void SpotLightJointPass(Camera camera, SpotLight light, BatchManager batchManager)
-        {
-            _spotShadowJointProgram.Use();
-
-            // Draw camera from the spot light's perspective
-            camera.SetUniforms(_spotShadowJointProgram, light);
-
-            // Draw all geometry, but only the positions
-            batchManager.DrawActors(_spotShadowJointProgram);
+            batchManager.CreateBatchAction()
+                .SetShader(_spotShadowProgram)
+                .SetCamera(camera, light) // Draw camera from the point light's perspective
+                .RenderBrushes() // Draw all geometry, but only the positions
+                .RenderActors()
+                .SetShader(_spotShadowJointProgram)
+                .SetCamera(camera, light)
+                .RenderJoints()
+                .Execute();
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
-        }
-
-        public void Render(Camera camera, ILight light, BatchManager batchManager)
-        {
-            switch (light)
-            {
-                case PointLight pLight:
-                    BindForPointShadowDrawing();
-                    PointLightPass(camera, pLight, batchManager);
-                    PointLightJointPass(camera, pLight, batchManager);
-                    break;
-                case SpotLight sLight:
-                    BindForSpotShadowDrawing();
-                    SpotLightPass(camera, sLight, batchManager);
-                    SpotLightJointPass(camera, sLight, batchManager);
-                    break;
-            }
         }
     }
 }

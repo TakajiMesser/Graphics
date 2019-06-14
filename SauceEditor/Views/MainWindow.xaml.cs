@@ -142,10 +142,21 @@ namespace SauceEditor.Views
             };
 
             //gamePanelManager.ViewModel.Factory = this;
-            gamePanelManager.ViewModel.UpdateFromModel(mapComponent.Map);
+            gamePanelManager.ViewModel.UpdateFromModel(mapComponent);
             gamePanelManager.IsActiveChanged += (s, args) => ViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
 
             _dockTracker.AddToGameDock(gamePanelManager);
+
+            if (component != null)
+            {
+                switch (component)
+                {
+                    case ModelComponent modelComponent:
+                        _modelToolPanel.ViewModel.ModelComponent = modelComponent;
+                        _modelToolPanel.ViewModel.EntitySelector = gamePanelManager.ViewModel;
+                        break;
+                }
+            }
 
             gamePanelManager.SetView(ViewModel.Settings.DefaultView);
             return gamePanelManager.ViewModel;

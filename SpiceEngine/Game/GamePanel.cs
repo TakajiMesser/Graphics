@@ -572,7 +572,7 @@ namespace SpiceEngine.Game
                 duplicateEntities.Add(duplicateEntity);
             }
 
-            SelectionManager.Set(duplicateEntities);
+            SelectionManager.SetSelectableEntities(duplicateEntities);
         }
 
         public void Duplicate(int entityID, int duplicateEntityID)

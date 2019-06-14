@@ -19,17 +19,27 @@ namespace SpiceEngine.Game
 
     public class SelectionManager
     {
-        private List<IEntity> _selectedEntities = new List<IEntity>();
+        private class EntitySelection
+        {
+            public IEntity Entity { get; set; }
+            public bool IsSelected { get; set; }
 
-        public ReadOnlyCollection<IEntity> Entities => _selectedEntities.AsReadOnly();
+            public EntitySelection(IEntity entity) => Entity = entity;
+        }
+
+        private List<EntitySelection> _entities = new List<EntitySelection>();
+
+        public ReadOnlyCollection<IEntity> Entities => _entities.Select(e => e.Entity).ToList().AsReadOnly();
         public SelectionTypes SelectionType { get; set; }
 
-        public int Count => _selectedEntities.Count;
+        public int Count => _entities.Count;
+        public int SelectionCount => _entities.Count(e => e.IsSelected);
+
         public Vector3 Position
         {
             get
             {
-                var positions = _selectedEntities.Select(e => e.Position);
+                var positions = _entities.Select(e => e.Entity.Position);
 
                 return new Vector3()
                 {
@@ -40,38 +50,62 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void Set(IEnumerable<IEntity> entities) => _selectedEntities = entities.ToList();
+        public void SetSelectableEntities(IEnumerable<IEntity> entities) => _entities = entities.Select(e => new EntitySelection(e)).ToList();
 
         public void SelectEntity(IEntity entity)
         {
             if (entity != null)
             {
-                _selectedEntities.Add(entity);
+                _entities.First(e => e.Entity.ID == entity.ID).IsSelected = true;
             }
             else
             {
-                _selectedEntities.Clear();
+                ClearSelection();
             }
         }
 
         public void SelectEntities(IEnumerable<IEntity> entities)
         {
-            _selectedEntities.Clear();
-            _selectedEntities.AddRange(entities);
+            var ids = new HashSet<int>(entities.Select(e => e.ID));
+
+            foreach (var entity in _entities)
+            {
+                entity.IsSelected = ids.Contains(entity.Entity.ID);
+            }
         }
 
-        public bool Contains(int id) => _selectedEntities.Select(e => e.ID).Contains(id);
-
-        public void Add(IEntity entity) => _selectedEntities.Add(entity);
-
-        public void Remove(IEntity entity) => _selectedEntities.Remove(entity);
-
-        public void Remove(int id)
+        public void DeselectEntity(IEntity entity)
         {
-            var entity = _selectedEntities.First(e => e.ID == id);
-            _selectedEntities.Remove(entity);
+            if (entity != null)
+            {
+                _entities.First(e => e.Entity.ID == entity.ID).IsSelected = false;
+            }
         }
 
-        public void Clear() => _selectedEntities.Clear();
+        public bool Contains(int id) => _entities.Select(e => e.Entity.ID).Contains(id);
+
+        public void Add(IEntity entity) => _entities.Add(new EntitySelection(entity));
+
+        public void Remove(IEntity entity) => _entities.Remove(_entities.FirstOrDefault(e => e.Entity == entity));
+
+        public void Remove(int id) => _entities.Remove(_entities.FirstOrDefault(e => e.Entity.ID == id));
+
+        public void SelectAll()
+        {
+            foreach (var entity in _entities)
+            {
+                entity.IsSelected = true;
+            }
+        }
+
+        public void Clear() => _entities.Clear();
+
+        public void ClearSelection()
+        {
+            foreach (var entity in _entities)
+            {
+                entity.IsSelected = false;
+            }
+        }
     }
 }

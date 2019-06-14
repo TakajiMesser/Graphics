@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Helpers;
 using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Shaders
@@ -69,6 +70,37 @@ namespace SpiceEngine.Rendering.Shaders
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.BindImageTexture(index);
             GL.Uniform1(location, index);
+        }
+
+        public void SetUniform<T>(string name, T value) where T : struct
+        {
+            switch (value)
+            {
+                case Matrix4 matrix4:
+                    SetUniform(name, matrix4);
+                    break;
+                case Matrix4[] matrices:
+                    SetUniform(name, matrices);
+                    break;
+                case Vector2 vector2:
+                    SetUniform(name, vector2);
+                    break;
+                case Vector3 vector3:
+                    SetUniform(name, vector3);
+                    break;
+                case Vector4 vector4:
+                    SetUniform(name, vector4);
+                    break;
+                case Color4 color4:
+                    SetUniform(name, color4);
+                    break;
+                case float floatValue:
+                    SetUniform(name, floatValue);
+                    break;
+                case int intValue:
+                    SetUniform(name, intValue);
+                    break;
+            }
         }
 
         public void SetUniform(string name, Matrix4 matrix)

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace SauceEditor.Helpers
+namespace SpiceEngine.Helpers
 {
     public class TypeSwitch<U>
     {
