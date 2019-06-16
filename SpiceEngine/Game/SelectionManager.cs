@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace SpiceEngine.Game
@@ -29,7 +28,10 @@ namespace SpiceEngine.Game
 
         private List<EntitySelection> _entities = new List<EntitySelection>();
 
-        public ReadOnlyCollection<IEntity> Entities => _entities.Select(e => e.Entity).ToList().AsReadOnly();
+        public IEnumerable<IEntity> Entities => _entities.Select(e => e.Entity);
+        public IEnumerable<IEntity> SelectedEntities => _entities.Where(e => e.IsSelected).Select(e => e.Entity);
+        public IEnumerable<int> IDs => _entities.Select(e => e.Entity.ID);
+        public IEnumerable<int> SelectedIDs => _entities.Where(e => e.IsSelected).Select(e => e.Entity.ID);
         public SelectionTypes SelectionType { get; set; }
 
         public int Count => _entities.Count;
@@ -74,15 +76,13 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void DeselectEntity(IEntity entity)
-        {
-            if (entity != null)
-            {
-                _entities.First(e => e.Entity.ID == entity.ID).IsSelected = false;
-            }
-        }
+        public void DeselectEntity(IEntity entity) => _entities.First(e => e.Entity.ID == entity.ID).IsSelected = false;
+
+        public void DeselectEntity(int id) => _entities.First(e => e.Entity.ID == id).IsSelected = false;
 
         public bool Contains(int id) => _entities.Select(e => e.Entity.ID).Contains(id);
+
+        public bool IsSelected(int id) => _entities.First(e => e.Entity.ID == id).IsSelected;
 
         public void Add(IEntity entity) => _entities.Add(new EntitySelection(entity));
 

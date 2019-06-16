@@ -250,24 +250,13 @@ namespace SpiceEngine.Rendering.Batches
 
         public BatchAction CreateBatchAction() => new BatchAction(this);
 
-        private void DrawEntities(EntityTypes entityType, ShaderProgram shader, TextureManager textureManager)
+        private void DrawEntities(EntityTypes entityType, ShaderProgram shader, TextureManager textureManager, HashSet<int> ids, Action<int> action = null)
         {
             foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                if (GetEntityIDSet(entityType).Contains(id))
+                if ((ids == null || ids.Contains(id)) && GetEntityIDSet(entityType).Contains(id))
                 {
-                    _batchesByEntityID[id].Draw(_entityProvider, shader, textureManager);
-                }
-            }
-        }
-
-        private void DrawEntitiesWithAction(EntityTypes entityType, Action<int> action, ShaderProgram shader, TextureManager textureManager)
-        {
-            foreach (var id in _entityProvider.EntityRenderIDs)
-            {
-                if (GetEntityIDSet(entityType).Contains(id))
-                {
-                    action(id);
+                    action?.Invoke(id);
                     _batchesByEntityID[id].Draw(_entityProvider, shader, textureManager);
                 }
             }
@@ -316,6 +305,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             private BatchManager _batchManager;
             private Queue<Action> _commandQueue = new Queue<Action>();
+            private HashSet<int> _entityIDs;
 
             public BatchAction(BatchManager batchManager) => _batchManager = batchManager;
 
@@ -369,6 +359,18 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
+            public BatchAction SetEntityIDs(IEnumerable<int> ids)
+            {
+                _commandQueue.Enqueue(() => _entityIDs = new HashSet<int>(ids));
+                return this;
+            }
+
+            public BatchAction ClearEntityIDs()
+            {
+                _commandQueue.Enqueue(() => _entityIDs = null);
+                return this;
+            }
+
             public BatchAction PerformAction(Action action)
             {
                 _commandQueue.Enqueue(action);
@@ -383,49 +385,49 @@ namespace SpiceEngine.Rendering.Batches
 
             public BatchAction RenderBrushes()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Brush, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Brush, Shader, TextureManager, _entityIDs));
                 return this;
             }
 
             public BatchAction RenderBrushesWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntitiesWithAction(EntityTypes.Brush, action, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Brush, Shader, TextureManager, _entityIDs, action));
                 return this;
             }
 
             public BatchAction RenderVolumes()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Volume, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Volume, Shader, TextureManager, _entityIDs));
                 return this;
             }
 
             public BatchAction RenderVolumesWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntitiesWithAction(EntityTypes.Volume, action, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Volume, Shader, TextureManager, _entityIDs, action));
                 return this;
             }
 
             public BatchAction RenderActors()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Actor, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Actor, Shader, TextureManager, _entityIDs));
                 return this;
             }
 
             public BatchAction RenderActorsWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntitiesWithAction(EntityTypes.Actor, action, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Actor, Shader, TextureManager, _entityIDs, action));
                 return this;
             }
 
             public BatchAction RenderJoints()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Joint, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Joint, Shader, TextureManager, _entityIDs));
                 return this;
             }
 
             public BatchAction RenderJointsWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntitiesWithAction(EntityTypes.Joint, action, Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Joint, Shader, TextureManager, _entityIDs, action));
                 return this;
             }
 

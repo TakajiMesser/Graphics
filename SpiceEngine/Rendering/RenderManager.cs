@@ -185,16 +185,6 @@ namespace SpiceEngine.Rendering
 
         public void ResizeWindow() => _renderToScreen.ResizeTextures(WindowSize);
 
-        public void RenderEntityIDs(IEntityProvider entityProvider, Camera camera)
-        {
-            _selectionRenderer.BindForWriting();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            _selectionRenderer.SelectionPass(camera, BatchManager);
-            _billboardRenderer.RenderLightSelections(camera, entityProvider.Lights);
-        }
-
         /*public void RenderEntityIDs(Volume volume)
         {
             _selectionRenderer.BindForWriting();
@@ -204,13 +194,23 @@ namespace SpiceEngine.Rendering
             //_selectionRenderer.SelectionPass();
         }*/
 
+        public void RenderEntityIDs(IEntityProvider entityProvider, Camera camera, IEnumerable<int> ids)
+        {
+            _selectionRenderer.BindForWriting();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            _selectionRenderer.SelectionPass(camera, BatchManager, ids);
+            _billboardRenderer.RenderLightSelections(camera, entityProvider.Lights);
+        }
+
         public int GetEntityIDFromPoint(Vector2 point)
         {
             _selectionRenderer.BindForReading();
             return _selectionRenderer.GetEntityIDFromPoint(point);
         }
 
-        public void RenderSelection(IEntityProvider entityProvider, Camera camera, IList<IEntity> entities, TransformModes transformMode)
+        public void RenderSelection(IEntityProvider entityProvider, Camera camera, IEnumerable<IEntity> entities, TransformModes transformMode)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -219,10 +219,8 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.Blend);
             GL.DepthFunc(DepthFunction.Always);
 
-            for (var i = 0; i < entities.Count; i++)
+            foreach (var entity in entities)
             {
-                var entity = entities[i];
-
                 if (entity is ILight light)
                 {
                     var lightMesh = _lightRenderer.GetMeshForLight(light);
@@ -231,54 +229,56 @@ namespace SpiceEngine.Rendering
                 }
                 else if (entity is Volume volume)
                 {
-                    _wireframeRenderer.SelectionPass(entityProvider, camera, entity, BatchManager);
+                    // TODO - Render volumes (need to add mesh to BatchManager)
+                    /*_wireframeRenderer.SelectionPass(entityProvider, camera, entity, BatchManager);
                     _billboardRenderer.RenderSelection(camera, volume, BatchManager);
 
                     _selectionRenderer.BindForWriting();
-                    _billboardRenderer.RenderSelection(camera, volume, BatchManager);
+                    _billboardRenderer.RenderSelection(camera, volume, BatchManager);*/
                 }
                 else
                 {
                     // TODO - Find out why selection appears to be updating ahead of entity
                     _wireframeRenderer.SelectionPass(entityProvider, camera, entity, BatchManager);
                 }
+            }
 
-                if (i == entities.Count - 1)
+            var lastEntity = entities.LastOrDefault();
+            if (lastEntity != null)
+            {
+                // Render the RGB arrows over the selection
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+                GL.DepthFunc(DepthFunction.Less);
+
+                switch (transformMode)
                 {
-                    // Render the RGB arrows over the selection
-                    GL.Clear(ClearBufferMask.DepthBufferBit);
-                    GL.DepthFunc(DepthFunction.Less);
+                    case TransformModes.Translate:
+                        _selectionRenderer.RenderTranslationArrows(camera, lastEntity.Position);
+                        break;
+                    case TransformModes.Rotate:
+                        _selectionRenderer.RenderRotationRings(camera, lastEntity.Position);
+                        break;
+                    case TransformModes.Scale:
+                        _selectionRenderer.RenderScaleLines(camera, lastEntity.Position);
+                        break;
+                }
 
-                    switch (transformMode)
-                    {
-                        case TransformModes.Translate:
-                            _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
-                            break;
-                        case TransformModes.Rotate:
-                            _selectionRenderer.RenderRotationRings(camera, entity.Position);
-                            break;
-                        case TransformModes.Scale:
-                            _selectionRenderer.RenderScaleLines(camera, entity.Position);
-                            break;
-                    }
+                // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
+                _selectionRenderer.BindForWriting();
+                GL.Clear(ClearBufferMask.DepthBufferBit);
+                GL.DepthFunc(DepthFunction.Less);
 
-                    // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
-                    _selectionRenderer.BindForWriting();
-                    GL.Clear(ClearBufferMask.DepthBufferBit);
-                    GL.DepthFunc(DepthFunction.Less);
-
-                    switch (transformMode)
-                    {
-                        case TransformModes.Translate:
-                            _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
-                            break;
-                        case TransformModes.Rotate:
-                            _selectionRenderer.RenderRotationRings(camera, entity.Position);
-                            break;
-                        case TransformModes.Scale:
-                            _selectionRenderer.RenderScaleLines(camera, entity.Position);
-                            break;
-                    }
+                switch (transformMode)
+                {
+                    case TransformModes.Translate:
+                        _selectionRenderer.RenderTranslationArrows(camera, lastEntity.Position);
+                        break;
+                    case TransformModes.Rotate:
+                        _selectionRenderer.RenderRotationRings(camera, lastEntity.Position);
+                        break;
+                    case TransformModes.Scale:
+                        _selectionRenderer.RenderScaleLines(camera, lastEntity.Position);
+                        break;
                 }
             }
         }

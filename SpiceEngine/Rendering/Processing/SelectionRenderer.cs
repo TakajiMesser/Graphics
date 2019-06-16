@@ -157,11 +157,12 @@ namespace SpiceEngine.Rendering.Processing
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
-        public void SelectionPass(Camera camera, BatchManager batchManager)
+        public void SelectionPass(Camera camera, BatchManager batchManager, IEnumerable<int> ids)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_selectionProgram)
                 .SetCamera(camera)
+                .SetEntityIDs(ids)
                 .RenderBrushesWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
                 .RenderVolumesWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
                 .RenderActorsWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
