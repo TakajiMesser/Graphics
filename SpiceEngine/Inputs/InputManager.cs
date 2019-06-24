@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using SpiceEngine.Game;
 using SpiceEngine.Outputs;
+using SpiceEngine.Rendering.PostProcessing;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +17,32 @@ namespace SpiceEngine.Inputs
         private IMouseDelta _mouseDelta;
 
         public InputManager() { }
-        public InputManager(IMouseDelta mouseDelta)
-        {
-            _mouseDelta = mouseDelta;
-        }
+        public InputManager(IMouseDelta mouseDelta) => _mouseDelta = mouseDelta;
 
         public InputBinding InputMapping { get; set; } = new InputBinding();
+
+        /*public bool IsMouseInWindow
+        {
+            get
+            {
+                if (_inputStates.Any())
+                {
+                    var mousePosition = _inputStates[_inputStates.Count - 1].MousePosition;
+
+                    LogManager.LogToScreen("(" + mousePosition.X + "," + mousePosition.Y + ")");
+                }
+
+                return false;
+            }
+        }*/
+
+        /*public bool IsMouseInWindow => MouseCoordinates.HasValue
+            && MouseCoordinates.Value.X.IsBetween(0, WindowSize.Width)
+            && MouseCoordinates.Value.Y.IsBetween(0, WindowSize.Height);*/
+
+        /*public Vector2? MouseCoordinates => _inputStates.Any()
+            ? _inputStates[_inputStates.Count - 1].MousePosition
+            : (Vector2?)null;*/
 
         public bool IsMouseInWindow => _mouseDelta.IsMouseInWindow;
         public Vector2? MouseCoordinates => _mouseDelta.MouseCoordinates;

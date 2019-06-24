@@ -1,7 +1,10 @@
 ﻿using SpiceEngine.Entities;
 using SpiceEngine.Maps;
+using System;
+using System.Collections.Generic;
+using System.Text;
 
-namespace SauceEditor.Models
+namespace SauceEditorCore.Models.Entities
 {
     public class EditorEntity
     {

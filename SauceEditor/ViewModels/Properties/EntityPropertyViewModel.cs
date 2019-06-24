@@ -1,6 +1,7 @@
 using OpenTK;
 using SauceEditor.Models;
 using SauceEditor.Utilities;
+using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
 using SpiceEngine.Utilities;

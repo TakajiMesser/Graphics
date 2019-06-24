@@ -1,7 +1,8 @@
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
-using Component = SauceEditor.Models.Components.Component;
+using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Entities;
 
 namespace SauceEditor.ViewModels.Properties
 {

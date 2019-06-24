@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Scripting;
+﻿using OpenTK;
+using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Nodes.Composites;
 using SpiceEngine.Scripting.Nodes.Decorators;
@@ -7,6 +8,7 @@ using SpiceEngine.Scripting.Scripts;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using ValueType = SpiceEngineCore.Serialization.ValueType;
 
 namespace SpiceEngine.Maps
 {
@@ -24,12 +26,26 @@ namespace SpiceEngine.Maps
         };
 
         public MapNode() { }
-        public MapNode(params object[] args)
-        {
-            Arguments.AddRange(args);
-        }
+        public MapNode(params object[] args) => Arguments.AddRange(args.Select(a => ValueType.Create(a)));
 
-        public List<object> Arguments { get; set; } = new List<object>();
+        /*public MapNode(params object[] args)
+        {
+            foreach (var arg in args)
+            {
+                int a = 3;
+                if (arg is Vector3)
+                {
+                    a = 4;
+                }
+
+                var valueType = ValueType.Create(arg);
+                Arguments.Add(valueType);
+            }
+        }*/
+
+        //public MapNode(params ValueType[] args) => Arguments.AddRange(args);
+        //public List<object> Arguments { get; set; } = new List<object>();
+        public List<ValueType> Arguments{ get; set; } = new List<ValueType>();
         public NodeTypes NodeType { get; set; }
         public List<MapNode> Children { get; set; } = new List<MapNode>();
 
@@ -82,7 +98,7 @@ namespace SpiceEngine.Maps
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode(scriptCompiler)), Arguments.ToArray());
+                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode(scriptCompiler)), GetConvertedArguments().ToArray());
                     }
                     else
                     {
@@ -93,7 +109,7 @@ namespace SpiceEngine.Maps
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(scriptCompiler), Arguments.ToArray());
+                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(scriptCompiler), GetConvertedArguments().ToArray());
                     }
                     else
                     {
@@ -104,7 +120,7 @@ namespace SpiceEngine.Maps
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Arguments.ToArray());
+                        return (Node)Activator.CreateInstance(type, GetConvertedArguments().ToArray());
                     }
                     else
                     {
@@ -118,6 +134,27 @@ namespace SpiceEngine.Maps
             }
 
             return null;
+        }
+
+        private IEnumerable<object> GetConvertedArguments()
+        {
+            foreach (var arg in Arguments)
+            {
+                yield return arg.Cast();
+
+                /*if (arg is double)
+                {
+                    yield return Convert.ChangeType(arg, typeof(float));
+                }
+                else if (arg is short || arg is long)
+                {
+                    yield return Convert.ChangeType(arg, typeof(int));
+                }
+                else
+                {
+                    yield return arg;
+                }*/
+            }
         }
     }
 }

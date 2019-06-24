@@ -56,6 +56,14 @@ namespace SpiceEngine.Entities
             return _entitiesByID[id];
         }
 
+        public IEnumerable<IEntity> GetEntities(IEnumerable<int> ids)
+        {
+            foreach (var id in ids)
+            {
+                yield return GetEntity(id);
+            }
+        }
+
         public EntityTypes GetEntityType(int id)
         {
             if (!_entityTypeByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
@@ -76,6 +84,23 @@ namespace SpiceEngine.Entities
             {
                 AddEntity(entity);
             }
+        }
+
+        public void AddLayer(string name) => _layerManager.AddLayer(name);
+
+        public void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs)
+        {
+            foreach (var id in entityIDs)
+            {
+                _layerManager.AddToLayer(layerName, id);
+            }
+        }
+
+        public void SetLayerState(string name, LayerManager.LayerState state)
+        {
+            _layerManager.SetPhysicsLayerState(name, state);
+            _layerManager.SetRenderLayerState(name, state);
+            _layerManager.SetScriptLayerState(name, state);
         }
 
         public int AddEntity(IEntity entity)

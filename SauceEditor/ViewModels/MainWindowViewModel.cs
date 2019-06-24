@@ -8,6 +8,7 @@ using SauceEditor.ViewModels.Tools;
 using SauceEditor.ViewModels.Trees;
 using SauceEditor.Views;
 using SauceEditor.Views.Factories;
+using SauceEditorCore.Models.Components;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -180,10 +181,7 @@ namespace SauceEditor.ViewModels
 
         public void OpenMap(string filePath)
         {
-            var mapComponent = new MapComponent()
-            {
-                Path = filePath
-            };
+            var mapComponent = new MapComponent(filePath);
             mapComponent.Load();
 
             Title = mapComponent.Name + " - SauceEditor";
@@ -211,10 +209,7 @@ namespace SauceEditor.ViewModels
 
         public void OpenModel(string filePath)
         {
-            var modelComponent = new ModelComponent()
-            {
-                Path = filePath
-            };
+            var modelComponent = new ModelComponent(filePath);
             modelComponent.Load();
 
             Title = modelComponent.Name + " - SauceEditor";
@@ -226,10 +221,7 @@ namespace SauceEditor.ViewModels
 
         public void OpenBehavior(string filePath)
         {
-            var behaviorComponent = new BehaviorComponent()
-            {
-                Path = filePath
-            };
+            var behaviorComponent = new BehaviorComponent(filePath);
 
             Title = behaviorComponent.Name + " - SauceEditor";
             BehaviorViewModel = (BehaviorViewModel)GameDockFactory.CreateBehaviorView(behaviorComponent);
@@ -237,9 +229,8 @@ namespace SauceEditor.ViewModels
 
         public void OpenTexture(string filePath)
         {
-            var textureComponent = new TextureComponent()
+            var textureComponent = new TextureComponent(filePath)
             {
-                Path = filePath,
                 TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
@@ -266,10 +257,7 @@ namespace SauceEditor.ViewModels
 
         public void OpenMaterial(string filePath)
         {
-            var materialComponent = new MaterialComponent()
-            {
-                Path = filePath
-            };
+            var materialComponent = new MaterialComponent(filePath);
 
             Title = materialComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateMaterialMap(materialComponent);
@@ -285,10 +273,7 @@ namespace SauceEditor.ViewModels
 
         public void OpenScript(string filePath)
         {
-            var scriptComponent = new ScriptComponent()
-            {
-                Path = filePath
-            };
+            var scriptComponent = new ScriptComponent(filePath);
 
             Title = scriptComponent.Name + " - SauceEditor";
             ScriptViewModel = (ScriptViewModel)GameDockFactory.CreateScriptView(scriptComponent);

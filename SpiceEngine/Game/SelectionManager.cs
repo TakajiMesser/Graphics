@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -18,30 +19,27 @@ namespace SpiceEngine.Game
 
     public class SelectionManager
     {
-        private class EntitySelection
-        {
-            public IEntity Entity { get; set; }
-            public bool IsSelected { get; set; }
+        private IEntityProvider _entityProvider;
+        private ConcurrentDictionary<int, bool> _selectedByID = new ConcurrentDictionary<int, bool>();
 
-            public EntitySelection(IEntity entity) => Entity = entity;
-        }
+        public SelectionManager(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        private List<EntitySelection> _entities = new List<EntitySelection>();
+        public IEnumerable<int> IDs => _selectedByID.Keys;
+        public IEnumerable<int> SelectedIDs => _selectedByID.Where(kvp => kvp.Value).Select(kvp => kvp.Key);
 
-        public IEnumerable<IEntity> Entities => _entities.Select(e => e.Entity);
-        public IEnumerable<IEntity> SelectedEntities => _entities.Where(e => e.IsSelected).Select(e => e.Entity);
-        public IEnumerable<int> IDs => _entities.Select(e => e.Entity.ID);
-        public IEnumerable<int> SelectedIDs => _entities.Where(e => e.IsSelected).Select(e => e.Entity.ID);
+        public IEnumerable<IEntity> Entities => _selectedByID.Keys.Select(i => _entityProvider.GetEntity(i));
+        public IEnumerable<IEntity> SelectedEntities => _selectedByID.Where(kvp => kvp.Value).Select(kvp => _entityProvider.GetEntity(kvp.Key));
+
         public SelectionTypes SelectionType { get; set; }
 
-        public int Count => _entities.Count;
-        public int SelectionCount => _entities.Count(e => e.IsSelected);
+        public int Count => _selectedByID.Count;
+        public int SelectionCount => _selectedByID.Count(kvp => kvp.Value);
 
         public Vector3 Position
         {
             get
             {
-                var positions = _entities.Select(e => e.Entity.Position);
+                var positions = _selectedByID.Where(kvp => kvp.Value).Select(kvp => _entityProvider.GetEntity(kvp.Key).Position);
 
                 return new Vector3()
                 {
@@ -52,59 +50,47 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void SetSelectableEntities(IEnumerable<IEntity> entities) => _entities = entities.Select(e => new EntitySelection(e)).ToList();
-
-        public void SelectEntity(IEntity entity)
+        public void SetSelectable(IEnumerable<int> ids)
         {
-            if (entity != null)
+            foreach (var id in ids)
             {
-                _entities.First(e => e.Entity.ID == entity.ID).IsSelected = true;
-            }
-            else
-            {
-                ClearSelection();
+                _selectedByID.AddOrUpdate(id, false, (i, b) => b);
             }
         }
 
-        public void SelectEntities(IEnumerable<IEntity> entities)
-        {
-            var ids = new HashSet<int>(entities.Select(e => e.ID));
+        public void Select(int id) => _selectedByID.AddOrUpdate(id, true, (i, b) => true);
 
-            foreach (var entity in _entities)
+        public void Select(IEnumerable<int> ids)
+        {
+            foreach (var id in ids)
             {
-                entity.IsSelected = ids.Contains(entity.Entity.ID);
+                _selectedByID.AddOrUpdate(id, true, (i, b) => true);
             }
         }
 
-        public void DeselectEntity(IEntity entity) => _entities.First(e => e.Entity.ID == entity.ID).IsSelected = false;
+        public void Deselect(int id) => _selectedByID.TryUpdate(id, false, true);
 
-        public void DeselectEntity(int id) => _entities.First(e => e.Entity.ID == id).IsSelected = false;
+        public bool IsSelectable(int id) => _selectedByID.ContainsKey(id);
 
-        public bool Contains(int id) => _entities.Select(e => e.Entity.ID).Contains(id);
+        public bool IsSelected(int id) => _selectedByID.TryGetValue(id, out bool value) && value;
 
-        public bool IsSelected(int id) => _entities.First(e => e.Entity.ID == id).IsSelected;
-
-        public void Add(IEntity entity) => _entities.Add(new EntitySelection(entity));
-
-        public void Remove(IEntity entity) => _entities.Remove(_entities.FirstOrDefault(e => e.Entity == entity));
-
-        public void Remove(int id) => _entities.Remove(_entities.FirstOrDefault(e => e.Entity.ID == id));
+        public void Remove(int id) => _selectedByID.TryRemove(id, out bool value);
 
         public void SelectAll()
         {
-            foreach (var entity in _entities)
+            foreach (var id in _selectedByID.Keys)
             {
-                entity.IsSelected = true;
+                _selectedByID.TryUpdate(id, true, false);
             }
         }
 
-        public void Clear() => _entities.Clear();
+        public void Clear() => _selectedByID.Clear();
 
         public void ClearSelection()
         {
-            foreach (var entity in _entities)
+            foreach (var id in _selectedByID.Keys)
             {
-                entity.IsSelected = false;
+                _selectedByID.TryUpdate(id, false, true);
             }
         }
     }

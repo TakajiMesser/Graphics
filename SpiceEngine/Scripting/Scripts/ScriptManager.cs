@@ -38,6 +38,7 @@ namespace SpiceEngine.Scripting.Scripts
             //var assemblyNames = executingAssembly.GetReferencedAssemblies();
             //var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
+            _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
         }
 
         public void AddScript(Script script)

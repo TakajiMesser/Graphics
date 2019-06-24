@@ -307,7 +307,7 @@ namespace SpiceEngine.Rendering.Processing
 
             //GL.Enable(EnableCap.Blend);
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
-            //GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcAlpha);
+            //GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
 
             //GL.Disable(EnableCap.Blend);
         }

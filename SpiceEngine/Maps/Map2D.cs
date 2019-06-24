@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Newtonsoft.Json;
+using OpenTK;
 using SpiceEngine.Physics.Collisions;
 using System.Linq;
 using System.Runtime.Serialization;
@@ -11,7 +12,7 @@ namespace SpiceEngine.Maps
     /// </summary>
     public class Map2D : Map
     {
-        [IgnoreDataMember]
+        [JsonIgnore]
         public Quad Boundaries { get; private set; }
 
         public Map2D() { }

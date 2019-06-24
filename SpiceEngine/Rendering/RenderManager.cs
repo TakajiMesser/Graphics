@@ -348,7 +348,7 @@ namespace SpiceEngine.Rendering
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
+            GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
             _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
@@ -387,7 +387,7 @@ namespace SpiceEngine.Rendering
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
+            GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
             _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
@@ -418,7 +418,7 @@ namespace SpiceEngine.Rendering
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.OneMinusSrcColor);
+            GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
             _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
@@ -448,7 +448,7 @@ namespace SpiceEngine.Rendering
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
-            GL.BlendFunc(BlendingFactorSrc.One, BlendingFactorDest.One);
+            GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
             foreach (var light in entityProvider.Lights)
             {

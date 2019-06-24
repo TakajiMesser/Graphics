@@ -1,5 +1,6 @@
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
+using SauceEditorCore.Models.Components;
 using SpiceEngine.Helpers;
 using System;
 using System.Windows.Controls;

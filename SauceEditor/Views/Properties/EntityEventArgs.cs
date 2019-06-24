@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Models;
+using SauceEditorCore.Models.Entities;
 using System;
 
 namespace SauceEditor.Views.Properties

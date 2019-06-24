@@ -31,7 +31,7 @@ namespace SampleGameProject.Behaviors.Player
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
 
                 context.Actor.Rotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);
-                context.Actor.Rotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
+                context.Actor.Rotation *= new Quaternion(0.0f, 0.0f, (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X));
                 context.EulerRotation = new Vector3(context.EulerRotation.X, MathExtensions.TWO_PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
 
                 ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);

@@ -1,4 +1,5 @@
-﻿using System.Runtime.Serialization;
+﻿using SauceEditorCore.Models.Components;
+using System.Runtime.Serialization;
 using System.Xml;
 
 namespace SauceEditor.Models.Components

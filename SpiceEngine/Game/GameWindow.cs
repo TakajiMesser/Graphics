@@ -20,7 +20,8 @@ namespace SpiceEngine.Game
         private GameManager _gameManager;
         private RenderManager _renderManager;
 
-        private MouseDevice _mouseDevice;
+        private MouseDevice _mouseDevice = new MouseDevice();
+        private MouseState? _mouseState = null;
 
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
@@ -52,12 +53,20 @@ namespace SpiceEngine.Game
             };
         }
 
-        public Vector2? MouseCoordinates => _mouseDevice != null
+        /*public Vector2? MouseCoordinates => _mouseDevice != null
             ? new Vector2(_mouseDevice.X, _mouseDevice.Y)
             : (Vector2?)null;
 
         public bool IsMouseInWindow => _mouseDevice != null
             ? (_mouseDevice.X.IsBetween(0, WindowSize.Width) && _mouseDevice.Y.IsBetween(0, WindowSize.Height))
+            : false;*/
+
+        public Vector2? MouseCoordinates => _mouseState.HasValue
+            ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
+            : (Vector2?)null;
+
+        public bool IsMouseInWindow => _mouseState != null
+            ? (_mouseState.Value.X.IsBetween(0, WindowSize.Width) && _mouseState.Value.Y.IsBetween(0, WindowSize.Height))
             : false;
 
         protected override void OnResize(EventArgs e)
@@ -119,7 +128,10 @@ namespace SpiceEngine.Game
         // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            _mouseDevice = Mouse;
+            //OpenTK.Input.
+            //_mouseDevice = InputDriver.Mouse;
+            //_mouseDevice = Mouse;
+            _mouseState = Mouse.GetCursorState();
             _gameManager.Update();
         }
 

@@ -1,5 +1,6 @@
 ﻿using SauceEditor.Models;
 using SauceEditor.Models.Components;
+using SauceEditorCore.Models.Components;
 using System;
 
 namespace SauceEditor.Views.Scripts

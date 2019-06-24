@@ -25,6 +25,22 @@ namespace SpiceEngine.Rendering.Meshes
             Normalize();
         }
 
+        public MeshBuild(MeshFace meshFace)
+        {
+            AddFace(meshFace);
+            Normalize();
+        }
+
+        public MeshBuild(MeshTriangle meshTriangle)
+        {
+            var uvRotation = Quaternion.Identity;//Quaternion.FromAxisAngle(meshTriangle.Normal, meshTriangle.UVMap.Rotation);
+            var uvXOrigin = 0.0f;//face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v.Position));
+            var uvYOrigin = 0.0f;//face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v.Position));
+            var uvMap = UVMap.Standard;
+
+            AddTriangle(meshTriangle, uvXOrigin, uvYOrigin, uvRotation, uvMap);
+        }
+
         public IEnumerable<MeshVertex> GetVertices()
         {
             for (var i = 0; i < Positions.Count; i++)

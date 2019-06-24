@@ -39,8 +39,8 @@ namespace SampleGameProject.Behaviors.Enemy
             {
                 float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 
-                context.Actor.Rotation = new Quaternion(turnAngle, 0.0f, 0.0f);
-                context.EulerRotation = new Vector3(turnAngle, context.EulerRotation.Y, context.EulerRotation.Z);
+                context.Actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
             }
 
             return BehaviorStatus.Running;

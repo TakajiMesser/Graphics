@@ -11,6 +11,7 @@ using SauceEditor.Views.Properties;
 using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
+using SauceEditorCore.Models.Components;
 using System;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -133,7 +134,7 @@ namespace SauceEditor.Views
             }*/
         }
 
-        public ViewModel CreateGamePanelManager(MapComponent mapComponent, Models.Components.Component component = null)
+        public ViewModel CreateGamePanelManager(MapComponent mapComponent, SauceEditorCore.Models.Components.Component component = null)
         {
             var gamePanelManager = new GamePanelManager()
             {

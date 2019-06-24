@@ -1,4 +1,6 @@
-﻿namespace SauceEditor.Models.Components
+﻿using SauceEditorCore.Models.Components;
+
+namespace SauceEditor.Models.Components
 {
     /// <summary>
     /// This interface represents any classes that can be viewed in a GamePanelView,

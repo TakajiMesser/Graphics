@@ -87,14 +87,17 @@
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="NodeNetwork, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NodeNetwork.3.1.0\lib\net47\NodeNetwork.dll</HintPath>
     </Reference>
     <Reference Include="NodeNetworkToolkit, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\NodeNetworkToolkit.3.1.0\lib\net47\NodeNetworkToolkit.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
@@ -203,25 +206,11 @@
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
-    <Compile Include="Models\Components\ArchetypeComponent.cs" />
-    <Compile Include="Models\Components\BehaviorComponent.cs" />
-    <Compile Include="Models\Components\Component.cs" />
     <Compile Include="Models\Components\IGameViewable.cs" />
     <Compile Include="Models\Components\Library.cs" />
     <Compile Include="Models\Components\LibraryManager.cs" />
-    <Compile Include="Models\Components\MapComponent.cs" />
-    <Compile Include="Models\Components\MaterialComponent.cs" />
-    <Compile Include="Models\Components\ModelComponent.cs" />
     <Compile Include="Models\Components\Project.cs" />
-    <Compile Include="Models\Components\ScriptComponent.cs" />
-    <Compile Include="Models\Components\SoundComponent.cs" />
-    <Compile Include="Models\Components\TextureComponent.cs" />
-    <Compile Include="Models\Entities\VertexEntity.cs" />
-    <Compile Include="Models\Entities\TriangleEntity.cs" />
-    <Compile Include="Models\Entities\FaceEntity.cs" />
-    <Compile Include="Models\Entities\ShapeEntity.cs" />
     <Compile Include="Models\IAnchor.cs" />
-    <Compile Include="Models\EditorEntity.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDoubleClick.cs" />
@@ -446,6 +435,14 @@
     <ProjectReference Include="..\SampleGameProject\SampleGameProject.csproj">
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
       <Name>SampleGameProject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SauceEditorCore\SauceEditorCore.csproj">
+      <Project>{277CCF06-76D9-45D3-BC92-25DCCA43E426}</Project>
+      <Name>SauceEditorCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
+      <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
+      <Name>SpiceEngineCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>

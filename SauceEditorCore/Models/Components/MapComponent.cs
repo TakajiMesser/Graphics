@@ -1,15 +1,21 @@
-﻿using SpiceEngine.Entities;
+﻿using SauceEditorCore.Models.Entities;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
+using System;
 using System.Collections.Generic;
+using System.Text;
 
-namespace SauceEditor.Models.Components
+namespace SauceEditorCore.Models.Components
 {
     public class MapComponent : Component
     {
+        public MapComponent() { }
+        public MapComponent(string filePath) : base(filePath) { }
+
         private enum MapEntityType
         {
             Actor,

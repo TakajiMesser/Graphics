@@ -2,12 +2,15 @@ using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Properties;
+using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Input;
@@ -33,7 +36,7 @@ namespace SauceEditor.ViewModels
         public GamePanelViewModel YViewModel { get; set; }
         public GamePanelViewModel ZViewModel { get; set; }
 
-        public SelectionManager SelectionManager { get; set; }
+        //public SelectionManager SelectionManager { get; set; }
         //public List<EditorEntity> SelectedEntities { get; set; }
 
         public Resolution Resolution { get; set; }
@@ -58,16 +61,33 @@ namespace SauceEditor.ViewModels
 
         private void OnPanelViewModelChange(GamePanelViewModel panelViewModel)
         {
-            SelectionManager = panelViewModel.Panel.SelectionManager;
+            //SelectionManager = panelViewModel.Panel.SelectionManager;
 
             panelViewModel.Panel.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
             panelViewModel.Panel.Load += (s, args) => LoadPanels();
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
         }
 
-        public void SetSelectableEntities(IEnumerable<IEntity> entities) => SelectionManager.SetSelectableEntities(entities);
+        public void SetSelectableEntities(string layerName, IEnumerable<IEntity> entities)
+        {
+            // TODO - Correct and reorganize this method
+            // First, we need to ensure that this layer exists in the LayerManager
+            // We then need to add all of these entities to it, then enable the layer
+            // In subsequent calls, we just need to disable the root layer, then enable the requested layers
+            // An issue is that we want to ONLY render the Root layer for diffuse/lit. The new layer should just be for selection/wireframe
 
-        public void SelectEntities(IEnumerable<IEntity> entities) => SelectionManager.SelectEntities(entities);
+            // Add these entities to a new layer, enable it, and disable all other layers
+            GameManager.EntityManager.AddLayer(layerName);
+            GameManager.EntityManager.AddEntitiesToLayer(layerName, entities.Select(e => e.ID));
+            GameManager.EntityManager.SetLayerState(layerName, LayerManager.LayerState.Enabled);
+
+            // If ShapeEntity, FaceEntity, or TriangleEntity, need to get meshes from entity to add to RenderManager as well
+            // If VertexEntity, need to get 
+
+            //SelectionManager.SetSelectableEntities(entities);
+        }
+
+        public void SelectEntities(IEnumerable<IEntity> entities) => throw new NotImplementedException();// SelectionManager.SelectEntities(entities);
 
         private void UpdatedSelection(IEnumerable<IEntity> entities)
         {
@@ -79,7 +99,7 @@ namespace SauceEditor.ViewModels
             if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(entities);
             if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(entities);
 
-            if (SelectionManager.Count > 0)
+            if (entities.Any())
             {
                 if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.UpdateEntities(entities);
                 if (ViewType != ViewTypes.X) XViewModel.Panel.UpdateEntities(entities);

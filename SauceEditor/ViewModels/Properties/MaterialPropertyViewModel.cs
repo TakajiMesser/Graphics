@@ -9,6 +9,7 @@ using System.Windows.Media;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 using SpiceEngine.Rendering.Materials;
 using SauceEditor.Models.Components;
+using SauceEditorCore.Models.Components;
 
 namespace SauceEditor.ViewModels.Properties
 {

@@ -13,6 +13,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
         public float EvadeSpeed { get; set; }
         public int TickCount { get; set; }
 
+        public BlockNode() { }
         public BlockNode(float evadeSpeed, int tickCount)
         {
             EvadeSpeed = evadeSpeed;
@@ -31,7 +32,11 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 context.SetVariable("nEvadeTicks", nEvadeTicks);
 
                 context.Actor.Rotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);
-                context.Actor.Rotation *= new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
+                context.Actor.Rotation *= new Quaternion(0.0f, 0.0f, (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X));
+                
+                //context.Actor.Rotation = new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
+                //context.Actor.Rotation *= Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);
+
                 context.EulerRotation = new Vector3(context.EulerRotation.X, MathExtensions.TWO_PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
 
                 ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);

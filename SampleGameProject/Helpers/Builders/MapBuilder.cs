@@ -111,7 +111,7 @@ namespace SampleGameProject.Helpers.Builders
                 Radius = 10.0f,
                 Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f,
-                Rotation = new Vector3(0.0f, -45.0f, -45.0f),//Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
+                Rotation = new Vector3(-45.0f, -45.0f, 0.0f),//Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
                 Height = 20.0f
             };
         }

@@ -1,5 +1,6 @@
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
+using SauceEditorCore.Models.Components;
 
 namespace SauceEditor.ViewModels.Tools
 {
@@ -25,16 +26,16 @@ namespace SauceEditor.ViewModels.Tools
             switch (ModelToolType)
             {
                 case ModelToolTypes.Shape:
-                    EntitySelector.SetSelectableEntities(ModelComponent.GetShapeEntities());
+                    EntitySelector.SetSelectableEntities("Shape", ModelComponent.GetShapeEntities());
                     break;
                 case ModelToolTypes.Face:
-                    EntitySelector.SetSelectableEntities(ModelComponent.GetFaceEntities());
+                    EntitySelector.SetSelectableEntities("Face", ModelComponent.GetFaceEntities());
                     break;
                 case ModelToolTypes.Triangle:
-                    EntitySelector.SetSelectableEntities(ModelComponent.GetTriangleEntities());
+                    EntitySelector.SetSelectableEntities("Triangle", ModelComponent.GetTriangleEntities());
                     break;
                 case ModelToolTypes.Vertex:
-                    EntitySelector.SetSelectableEntities(ModelComponent.GetVertexEntities());
+                    EntitySelector.SetSelectableEntities("Vertex", ModelComponent.GetVertexEntities());
                     break;
             }
         }

@@ -1,5 +1,6 @@
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
+using SauceEditorCore.Models.Components;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 

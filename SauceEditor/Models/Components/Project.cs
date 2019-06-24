@@ -1,6 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Xml;
+﻿using SauceEditorCore.Models.Components;
+using SpiceEngineCore.Serialization.Converters;
+using System.Collections.Generic;
 
 namespace SauceEditor.Models.Components
 {
@@ -23,26 +23,14 @@ namespace SauceEditor.Models.Components
         public List<ArchetypeComponent> ArchetypeComponents { get; set; } = new List<ArchetypeComponent>();
         public List<ScriptComponent> ScriptComponents { get; set; } = new List<ScriptComponent>();
 
-        public void Save()
-        {
-            using (var writer = XmlWriter.Create(Path))
-            {
-                var serializer = new NetDataContractSerializer();
-                serializer.WriteObject(writer, this);
-            }
-        }
+        public void Save() => Serializer.Save(Path, this);
 
         public static Project Load(string path)
         {
-            using (var reader = XmlReader.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                
-                var project = serializer.ReadObject(reader, true) as Project;
-                project.Path = path;
+            var project = Serializer.Load<Project>(path);
+            project.Path = path;
 
-                return project;
-            }
+            return project;
         }
     }
 }

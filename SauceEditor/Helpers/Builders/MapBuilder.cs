@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SauceEditor.Models.Components;
+using SauceEditorCore.Models.Components;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Utilities;
@@ -18,24 +19,12 @@ namespace SauceEditor.Helpers.Builders
                 Path = SampleGameProject.Helpers.FilePathHelper.PROJECT_PATH
             };
 
-            project.MapComponents.Add(new MapComponent()
+            project.MapComponents.Add(new MapComponent(SampleGameProject.Helpers.FilePathHelper.MAP_PATH));
+            project.ModelComponents.Add(new ModelComponent(SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH));
+            project.MaterialComponents.Add(new MaterialComponent(SampleGameProject.Helpers.FilePathHelper.SHINY_MATERIAL_PATH));
+            project.ScriptComponents.Add(new ScriptComponent(SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH));
+            project.TextureComponents.Add(new TextureComponent(SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH)
             {
-                Path = SampleGameProject.Helpers.FilePathHelper.MAP_PATH
-            });
-
-            project.ModelComponents.Add(new ModelComponent()
-            {
-                Path = SampleGameProject.Helpers.FilePathHelper.BOB_LAMP_MESH_PATH
-            });
-
-            project.MaterialComponents.Add(new MaterialComponent()
-            {
-                Path = SampleGameProject.Helpers.FilePathHelper.SHINY_MATERIAL_PATH
-            });
-
-            project.TextureComponents.Add(new TextureComponent()
-            {
-                Path = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                 TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
@@ -43,11 +32,6 @@ namespace SauceEditor.Helpers.Builders
                     //SpecularMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_S_TEXTURE_PATH,
                     //ParallaxMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_H_TEXTURE_PATH
                 }
-            });
-
-            project.ScriptComponents.Add(new ScriptComponent()
-            {
-                Path = SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH
             });
 
             project.Save();

@@ -5,7 +5,7 @@ namespace SauceEditor.ViewModels
 {
     public interface ISelectEntities
     {
-        void SetSelectableEntities(IEnumerable<IEntity> entities);
+        void SetSelectableEntities(string layerName, IEnumerable<IEntity> entities);
         void SelectEntities(IEnumerable<IEntity> entities);
     }
 }

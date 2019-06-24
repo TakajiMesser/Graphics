@@ -11,9 +11,14 @@ namespace SpiceEngine.Entities
         IEnumerable<int> EntityPhysicsIDs { get; }
 
         IEntity GetEntity(int id);
+        IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
         Actor GetActor(string name);
         EntityTypes GetEntityType(int id);
         List<ILight> Lights { get; }
         List<Actor> Actors { get; }
+
+        void AddLayer(string name);
+        void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs);
+        void SetLayerState(string name, LayerManager.LayerState state);
     }
 }

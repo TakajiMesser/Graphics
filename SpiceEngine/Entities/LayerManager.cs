@@ -34,7 +34,13 @@ namespace SpiceEngine.Entities
             AddEntityLayer(RootLayer);
         }
 
-        public void AddEntityLayer(EntityLayer layer)
+        public void AddToLayer(string layerName, int entityID) => _layersByName[layerName].Add(entityID);
+
+        public void RemoveFromLayer(string layerName, int entityID) => _layersByName[layerName].Remove(entityID);
+
+        public void AddLayer(string name) => AddEntityLayer(new EntityLayer(name));
+
+        private void AddEntityLayer(EntityLayer layer)
         {
             _layersByName.Add(layer.Name, layer);
 
