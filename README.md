@@ -57,6 +57,14 @@ The **Map** class helps to manage all data that needs to be stored in a **Map** 
 
 *SauceEditor* is a Windows WPF application that acts as a front-end interface for creating and testing maps within the *SpiceEngine*.
 
+## SpiceEngineCore
+
+*SpiceEngineCore* is meant to act as a transitional project. While the *SpiceEngine* project targets the .NET Framework, this project instead targets .NET Standard, which will allow for more of the codebase to be cross-platform. I will be transferring appropriate portions of the SpiceEngine project to this one.
+
+## SauceEditorCore
+
+Similar to the *SpiceEngineCore* project, the *SauceEditorCore* project is also meant to aid in transitioning as much of the editor model classes as possible to target .NET Standard. Since much of the editor is written in WPF, it is likely that less of the *SauceEditor* project will be able to move to this project.
+
 ## SampleGameProject
 
 *SampleGameProject* is a simple sample project for launching a window and loading a test map in the *SpiceEngine*.
