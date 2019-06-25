@@ -14,8 +14,11 @@ namespace SpiceEngine.Entities
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
         Actor GetActor(string name);
         EntityTypes GetEntityType(int id);
+
         List<ILight> Lights { get; }
         List<Actor> Actors { get; }
+
+        IEntity DuplicateEntity(IEntity entity);
 
         void AddLayer(string name);
         void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs);

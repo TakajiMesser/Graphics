@@ -15,12 +15,11 @@ using System.Timers;
 
 namespace SpiceEngine.Game
 {
-    public class GameWindow : OpenTK.GameWindow, IMouseDelta
+    public class GameWindow : OpenTK.GameWindow, IMouseTracker
     {
         private GameManager _gameManager;
         private RenderManager _renderManager;
 
-        private MouseDevice _mouseDevice = new MouseDevice();
         private MouseState? _mouseState = null;
 
         private Timer _fpsTimer = new Timer(1000);
@@ -28,11 +27,6 @@ namespace SpiceEngine.Game
 
         private Map _map;
         private object _loadLock = new object();
-
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
-
-        public bool IsLoaded { get; private set; }
 
         public GameWindow(Map map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -53,13 +47,8 @@ namespace SpiceEngine.Game
             };
         }
 
-        /*public Vector2? MouseCoordinates => _mouseDevice != null
-            ? new Vector2(_mouseDevice.X, _mouseDevice.Y)
-            : (Vector2?)null;
-
-        public bool IsMouseInWindow => _mouseDevice != null
-            ? (_mouseDevice.X.IsBetween(0, WindowSize.Width) && _mouseDevice.Y.IsBetween(0, WindowSize.Height))
-            : false;*/
+        public Resolution Resolution { get; private set; }
+        public Resolution WindowSize { get; private set; }
 
         public Vector2? MouseCoordinates => _mouseState.HasValue
             ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
@@ -68,6 +57,8 @@ namespace SpiceEngine.Game
         public bool IsMouseInWindow => _mouseState != null
             ? (_mouseState.Value.X.IsBetween(0, WindowSize.Width) && _mouseState.Value.Y.IsBetween(0, WindowSize.Height))
             : false;
+
+        public bool IsLoaded { get; private set; }
 
         protected override void OnResize(EventArgs e)
         {
@@ -102,7 +93,9 @@ namespace SpiceEngine.Game
                 if (_map != null)
                 {
                     var entityMapping = _gameManager.LoadFromMap(_map);
-                    _renderManager.LoadFromMap(_map, _gameManager.EntityManager, entityMapping);
+                    _renderManager.SetEntityProvider(_gameManager.EntityManager);
+                    _renderManager.SetCamera(_gameManager.Camera);
+                    _renderManager.LoadFromMap(_map, entityMapping);
                 }
             }
         }
@@ -138,7 +131,7 @@ namespace SpiceEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.RenderFullFrame(_gameManager.EntityManager, _gameManager.Camera);
+            _renderManager.RenderFullFrame();
 
             GL.UseProgram(0);
             SwapBuffers();

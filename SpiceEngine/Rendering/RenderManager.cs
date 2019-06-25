@@ -26,7 +26,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager
+    public class RenderManager : IGridRenderer
     {
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
@@ -36,6 +36,9 @@ namespace SpiceEngine.Rendering
 
         public BatchManager BatchManager { get; private set; }
         public TextureManager TextureManager { get; } = new TextureManager();
+
+        private IEntityProvider _entityProvider;
+        private ICamera _camera;
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -62,8 +65,12 @@ namespace SpiceEngine.Rendering
             _logManager = new LogManager(_textRenderer);
         }
 
-        public void LoadFromMap(Map map, IEntityProvider entityProvider, EntityMapping entityMapping)
+        public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public void SetCamera(ICamera camera) => _camera = camera;
+
+        public void LoadFromMap(Map map, EntityMapping entityMapping)
         {
+            _entityProvider = entityProvider;
             BatchManager = new BatchManager(entityProvider);
 
             AddBrushes(map.Brushes, entityMapping.BrushIDs);
@@ -194,14 +201,14 @@ namespace SpiceEngine.Rendering
             //_selectionRenderer.SelectionPass();
         }*/
 
-        public void RenderEntityIDs(IEntityProvider entityProvider, Camera camera, IEnumerable<int> ids)
+        public void RenderEntityIDs(IEnumerable<int> ids)
         {
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(camera, BatchManager, ids);
-            _billboardRenderer.RenderLightSelections(camera, entityProvider.Lights);
+            _selectionRenderer.SelectionPass(_camera, BatchManager, ids);
+            _billboardRenderer.RenderLightSelections(_camera, _entityProvider.Lights);
         }
 
         public int GetEntityIDFromPoint(Vector2 point)
@@ -210,7 +217,7 @@ namespace SpiceEngine.Rendering
             return _selectionRenderer.GetEntityIDFromPoint(point);
         }
 
-        public void RenderSelection(IEntityProvider entityProvider, Camera camera, IEnumerable<IEntity> entities, TransformModes transformMode)
+        public void RenderSelection(IEnumerable<IEntity> entities, TransformModes transformMode)
         {
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -224,8 +231,8 @@ namespace SpiceEngine.Rendering
                 if (entity is ILight light)
                 {
                     var lightMesh = _lightRenderer.GetMeshForLight(light);
-                    _wireframeRenderer.SelectionPass(camera, light, lightMesh);
-                    _billboardRenderer.RenderSelection(camera, light);
+                    _wireframeRenderer.SelectionPass(_camera, light, lightMesh);
+                    _billboardRenderer.RenderSelection(_camera, light);
                 }
                 else if (entity is Volume volume)
                 {
@@ -239,7 +246,7 @@ namespace SpiceEngine.Rendering
                 else
                 {
                     // TODO - Find out why selection appears to be updating ahead of entity
-                    _wireframeRenderer.SelectionPass(entityProvider, camera, entity, BatchManager);
+                    _wireframeRenderer.SelectionPass(_entityProvider, _camera, entity, BatchManager);
                 }
             }
 
@@ -253,13 +260,13 @@ namespace SpiceEngine.Rendering
                 switch (transformMode)
                 {
                     case TransformModes.Translate:
-                        _selectionRenderer.RenderTranslationArrows(camera, lastEntity.Position);
+                        _selectionRenderer.RenderTranslationArrows(_camera, lastEntity.Position);
                         break;
                     case TransformModes.Rotate:
-                        _selectionRenderer.RenderRotationRings(camera, lastEntity.Position);
+                        _selectionRenderer.RenderRotationRings(_camera, lastEntity.Position);
                         break;
                     case TransformModes.Scale:
-                        _selectionRenderer.RenderScaleLines(camera, lastEntity.Position);
+                        _selectionRenderer.RenderScaleLines(_camera, lastEntity.Position);
                         break;
                 }
 
@@ -271,13 +278,13 @@ namespace SpiceEngine.Rendering
                 switch (transformMode)
                 {
                     case TransformModes.Translate:
-                        _selectionRenderer.RenderTranslationArrows(camera, lastEntity.Position);
+                        _selectionRenderer.RenderTranslationArrows(_camera, lastEntity.Position);
                         break;
                     case TransformModes.Rotate:
-                        _selectionRenderer.RenderRotationRings(camera, lastEntity.Position);
+                        _selectionRenderer.RenderRotationRings(_camera, lastEntity.Position);
                         break;
                     case TransformModes.Scale:
-                        _selectionRenderer.RenderScaleLines(camera, lastEntity.Position);
+                        _selectionRenderer.RenderScaleLines(_camera, lastEntity.Position);
                         break;
                 }
             }
@@ -299,24 +306,24 @@ namespace SpiceEngine.Rendering
         public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
         public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
 
-        public void RenderWireframe(IEntityProvider entityProvider, Camera camera)
+        public void RenderWireframe()
         {
             _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
             if (RenderGrid)
             {
-                _wireframeRenderer.RenderGridLines(camera);
+                _wireframeRenderer.RenderGridLines(_camera);
             }
 
-            _wireframeRenderer.WireframePass(camera, BatchManager);
+            _wireframeRenderer.WireframePass(_camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            _billboardRenderer.RenderLights(camera, entityProvider.Lights);
+            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -325,24 +332,24 @@ namespace SpiceEngine.Rendering
             _logManager.RenderToScreen();
         }
 
-        public void RenderDiffuseFrame(IEntityProvider entityProvider, Camera camera)
+        public void RenderDiffuseFrame()
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(camera, BatchManager, TextureManager);
+            _deferredRenderer.GeometryPass(_camera, BatchManager, TextureManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
             if (RenderGrid)
             {
                 GL.Disable(EnableCap.CullFace);
-                _wireframeRenderer.RenderGridLines(camera);
+                _wireframeRenderer.RenderGridLines(_camera);
                 GL.Enable(EnableCap.CullFace);
             }
 
-            _skyboxRenderer.Render(camera);
-            _billboardRenderer.RenderLights(camera, entityProvider.Lights);
+            _skyboxRenderer.Render(_camera);
+            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             _deferredRenderer.BindForLitTransparentWriting();
 
@@ -351,7 +358,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager, TextureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -362,24 +369,24 @@ namespace SpiceEngine.Rendering
             _logManager.RenderToScreen();
         }
 
-        public void RenderLitFrame(IEntityProvider entityProvider, Camera camera)
+        public void RenderLitFrame()
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(camera, BatchManager, TextureManager);
+            _deferredRenderer.GeometryPass(_camera, BatchManager, TextureManager);
 
-            RenderLights(entityProvider, camera);
+            RenderLights();
 
             _deferredRenderer.BindForLitWriting();
 
-            _skyboxRenderer.Render(camera);
-            _billboardRenderer.RenderLights(camera, entityProvider.Lights);
+            _skyboxRenderer.Render(_camera);
+            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             if (RenderGrid)
             {
                 GL.Disable(EnableCap.CullFace);
-                _wireframeRenderer.RenderGridLines(camera);
+                _wireframeRenderer.RenderGridLines(_camera);
                 GL.Enable(EnableCap.CullFace);
             }
 
@@ -390,7 +397,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager, TextureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -401,18 +408,18 @@ namespace SpiceEngine.Rendering
             _logManager.RenderToScreen();
         }
 
-        public void RenderFullFrame(IEntityProvider entityProvider, Camera camera)
+        public void RenderFullFrame()
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(camera, BatchManager, TextureManager);
+            _deferredRenderer.GeometryPass(_camera, BatchManager, TextureManager);
 
-            RenderLights(entityProvider, camera);
+            RenderLights();
 
             _deferredRenderer.BindForLitWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            _skyboxRenderer.Render(camera);
+            _skyboxRenderer.Render(_camera);
 
             _deferredRenderer.BindForLitTransparentWriting();
 
@@ -421,7 +428,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(camera, BatchManager, TextureManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager, TextureManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -443,20 +450,20 @@ namespace SpiceEngine.Rendering
             _logManager.RenderToScreen();
         }
 
-        private void RenderLights(IEntityProvider entityProvider, Camera camera)
+        private void RenderLights()
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
-            foreach (var light in entityProvider.Lights)
+            foreach (var light in _entityProvider.Lights)
             {
                 var lightMesh = _lightRenderer.GetMeshForLight(light);
-                _lightRenderer.StencilPass(light, camera, lightMesh);
+                _lightRenderer.StencilPass(light, _camera, lightMesh);
 
                 GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(camera, light, BatchManager);
+                _shadowRenderer.Render(_camera, light, BatchManager);
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();
@@ -464,7 +471,7 @@ namespace SpiceEngine.Rendering
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);
                 var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
-                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
+                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, _camera, lightMesh, shadowMap, lightProgram);
             }
 
             GL.Enable(EnableCap.CullFace);

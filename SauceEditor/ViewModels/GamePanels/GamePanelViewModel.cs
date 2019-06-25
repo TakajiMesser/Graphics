@@ -61,7 +61,7 @@ namespace SauceEditor.ViewModels
 
         public void OnViewTypeChanged()
         {
-            Panel.SetViewType(ViewType);
+            Panel.ViewType = ViewType;
 
             switch (ViewType)
             {

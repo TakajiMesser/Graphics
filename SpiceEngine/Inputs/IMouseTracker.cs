@@ -3,7 +3,7 @@ using SpiceEngine.Outputs;
 
 namespace SpiceEngine.Inputs
 {
-    public interface IMouseDelta
+    public interface IMouseTracker
     {
         Vector2? MouseCoordinates { get; }
         bool IsMouseInWindow { get; }

@@ -74,6 +74,26 @@ namespace SpiceEngine.Game
 
         public bool IsSelected(int id) => _selectedByID.TryGetValue(id, out bool value) && value;
 
+        public IEnumerable<int> DuplicateSelection()
+        {
+            // Create duplicates and overwrite SelectedEntities with them
+            var duplicateIDs = new List<int>();
+
+            foreach (var entity in SelectedEntities)
+            {
+                var duplicateEntity = _entityProvider.DuplicateEntity(entity);
+                // Need to duplicate colliders
+                // Need to duplicate scripts
+
+                duplicateIDs.Add(duplicateEntity.ID);
+            }
+
+            SelectionManager.ClearSelection();
+            SelectionManager.SetSelectable(duplicateIDs);
+
+            return duplicateIDs;
+        }
+
         public void Remove(int id) => _selectedByID.TryRemove(id, out bool value);
 
         public void SelectAll()

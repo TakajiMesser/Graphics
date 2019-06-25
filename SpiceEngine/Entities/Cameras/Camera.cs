@@ -8,7 +8,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Cameras
 {
-    public abstract class Camera : IEntity
+    public abstract class Camera : ICamera
     {
         public int ID { get; set; }
         public string Name { get; }

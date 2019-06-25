@@ -31,7 +31,7 @@ namespace SpiceEngine.Game
         public const float MAX_YAW = MathExtensions.TWO_PI;
 
         private Resolution _resolution;
-        private RenderManager _renderManager;
+        private IGridRenderer _gridRenderer;
 
         // Yaw of zero should point in the direction of the X-Axis
         private float _yaw;
@@ -42,10 +42,10 @@ namespace SpiceEngine.Game
         public Camera Camera { get; private set; }
         public ViewTypes ViewType { get; set; }
 
-        public PanelCamera(Resolution resolution, RenderManager renderManager)
+        public PanelCamera(Resolution resolution, IGridRenderer gridRenderer)
         {
             _resolution = resolution;
-            _renderManager = renderManager;
+            _gridRenderer = gridRenderer;
         }
 
         public void CenterView(Vector3 position)
@@ -126,7 +126,7 @@ namespace SpiceEngine.Game
                     };
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitX;
-                    _renderManager.RotateGrid(0.0f, MathExtensions.HALF_PI, 0.0f);
+                    _gridRenderer.RotateGrid(0.0f, MathExtensions.HALF_PI, 0.0f);
                     _yaw = 0.0f;
                     _pitch = 0.0f;
                     break;
@@ -137,7 +137,7 @@ namespace SpiceEngine.Game
                     };
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
-                    _renderManager.RotateGrid(0.0f, 0.0f, MathExtensions.HALF_PI);
+                    _gridRenderer.RotateGrid(0.0f, 0.0f, MathExtensions.HALF_PI);
                     _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;
