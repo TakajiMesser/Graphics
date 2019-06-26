@@ -53,6 +53,7 @@ namespace SpiceEngine.Game
 
         private TransformModes _transformMode;
         private RenderModes _renderMode;
+        private ViewTypes _viewType;
 
         public TransformModes TransformMode
         {
@@ -71,6 +72,23 @@ namespace SpiceEngine.Game
             {
                 _renderMode = value;
                 Invalidate();
+            }
+        }
+
+        public ViewTypes ViewType
+        {
+            get => _viewType;
+            set
+            {
+                lock (_loadLock)
+                {
+                    _viewType = value;
+
+                    if (_isLoaded)
+                    {
+                        _panelCamera.ViewType = value;
+                    }
+                }
             }
         }
 
@@ -589,22 +607,7 @@ namespace SpiceEngine.Game
                         }
                     }
 
-                    // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
-                    foreach (var entity in SelectionManager.SelectedEntities)
-                    {
-                        switch (TransformMode)
-                        {
-                            case TransformModes.Translate:
-                                HandleEntityTranslation(entity);
-                                break;
-                            case TransformModes.Rotate:
-                                HandleEntityRotation(entity);
-                                break;
-                            case TransformModes.Scale:
-                                HandleEntityScale(entity);
-                                break;
-                        }
-                    }
+                    SelectionManager.HandleEntityTransforms(TransformMode, _gameManager.InputManager.MouseDelta);
 
                     Invalidate();
                     Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities))));
@@ -630,114 +633,6 @@ namespace SpiceEngine.Game
                         _invalidated = true;
                     }
                 }
-            }
-        }
-
-        private void HandleEntityTranslation(IEntity entity)
-        {
-            var position = entity.Position;
-
-            switch (SelectionManager.SelectionType)
-            {
-                case SelectionTypes.Red:
-                    position.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Green:
-                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Blue:
-                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Cyan:
-                    position.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Magenta:
-                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                    break;
-                case SelectionTypes.Yellow:
-                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-            }
-
-            entity.Position = position;
-        }
-
-        private void HandleEntityRotation(IEntity entity)
-        {
-            if (entity is IRotate rotater)
-            {
-                var rotation = rotater.Rotation;
-
-                switch (SelectionManager.SelectionType)
-                {
-                    case SelectionTypes.Red:
-                        //rotation.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitZ, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
-                        rotation = Quaternion.FromEulerAngles(-_gameManager.InputManager.MouseDelta.Y * 0.002f, 0.0f, 0.0f) * rotation;
-                        break;
-                    case SelectionTypes.Green:
-                        //rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitX, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
-                        rotation = Quaternion.FromEulerAngles(0.0f, -_gameManager.InputManager.MouseDelta.Y * 0.002f, 0.0f) * rotation;
-                        break;
-                    case SelectionTypes.Blue:
-                        //rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitY, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
-                        rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, -_gameManager.InputManager.MouseDelta.Y * 0.002f) * rotation;
-                        break;
-                    case SelectionTypes.Cyan:
-                        rotation.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Magenta:
-                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        break;
-                    case SelectionTypes.Yellow:
-                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                }
-
-                rotater.Rotation = rotation;
-            }
-        }
-
-        private void HandleEntityScale(IEntity entity)
-        {
-            if (entity is IScale scaler)
-            {
-                var scale = scaler.Scale;
-
-                switch (SelectionManager.SelectionType)
-                {
-                    case SelectionTypes.Red:
-                        scale.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Green:
-                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Blue:
-                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Cyan:
-                        scale.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Magenta:
-                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        break;
-                    case SelectionTypes.Yellow:
-                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                }
-
-                scaler.Scale = scale;
             }
         }
 

@@ -31,7 +31,7 @@ namespace SpiceEngine.Rendering.Processing
         private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
         private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
 
-        private Texture _volumeVertexTexture;
+        private Texture _vertexTexture;
 
         private Texture _pointLightTexture;
         private Texture _spotLightTexture;
@@ -87,7 +87,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexArray.Load();
             _vertexBuffer.Unbind();
 
-            _volumeVertexTexture = Texture.Load(Resources.vertex, false, false);
+            _vertexTexture = Texture.Load(Resources.vertex, false, false);
 
             _pointLightTexture = Texture.Load(Resources.point_light_billboard, false, false);
             _spotLightTexture = Texture.Load(Resources.spot_light_billboard, false, false);
@@ -139,6 +139,11 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
+        public void RenderVertices(Camera camera)
+        {
+
+        }
+
         public void RenderSelection(Camera camera, Volume volume, BatchManager batchManager)
         {
             _billboardProgram.Use();
@@ -147,7 +152,7 @@ namespace SpiceEngine.Rendering.Processing
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             // Need to bind a texture for each selectable vertex point
-            _billboardProgram.BindTexture(_volumeVertexTexture, "mainTexture", 0);
+            _billboardProgram.BindTexture(_vertexTexture, "mainTexture", 0);
 
             _vertexBuffer.Clear();
 
