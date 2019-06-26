@@ -139,11 +139,6 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
-        public void RenderVertices(Camera camera)
-        {
-
-        }
-
         public void RenderSelection(Camera camera, Volume volume, BatchManager batchManager)
         {
             _billboardProgram.Use();
@@ -195,7 +190,29 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(light.Yield());
         }
 
-        public void RenderLightSelections(Camera camera, IEnumerable<ILight> lights)
+        public void RenderVertexSelection(Camera camera, IEntity entity)
+        {
+            _billboardProgram.Use();
+
+            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetUniform("cameraPosition", camera.Position);
+
+            _billboardProgram.BindTexture(_vertexTexture, "mainTexture", 0);
+            DrawVertices(entities.Yield());
+        }
+
+        public void RenderVertexSelectIDs(Camera camera, IEnumerable<IEntity> entities)
+        {
+            _billboardSelectionProgram.Use();
+
+            camera.SetUniforms(_billboardSelectionProgram);
+            _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
+
+            _billboardSelectionProgram.BindTexture(_vertexTexture, "mainTexture", 0);
+            DrawVertices(entities);
+        }
+
+        public void RenderLightSelectIDs(Camera camera, IEnumerable<ILight> lights)
         {
             _billboardSelectionProgram.Use();
 
@@ -210,6 +227,24 @@ namespace SpiceEngine.Rendering.Processing
 
             _billboardSelectionProgram.BindTexture(_directionalLightTexture, "mainTexture", 0);
             DrawLights(lights.Where(l => l is DirectionalLight));
+        }
+
+        private void DrawVertices(IEnumerable<IEntity> entities)
+        {
+            _vertexBuffer.Clear();
+            foreach (var entity in entities)
+            {
+                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(entity.ID)));
+            }
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+            _vertexBuffer.Buffer();
+
+            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
         }
 
         private void DrawLights(IEnumerable<ILight> lights)

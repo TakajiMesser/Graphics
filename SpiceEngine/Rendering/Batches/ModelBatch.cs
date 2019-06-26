@@ -13,7 +13,6 @@ namespace SpiceEngine.Rendering.Batches
     {
         public int EntityID { get; private set; }
         public Model Model { get; }
-        public IEnumerable<IVertex3D> Vertices => Model?.Meshes.SelectMany(m => m.Vertices);
 
         public ModelBatch(int entityID, Model model)
         {

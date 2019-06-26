@@ -65,7 +65,7 @@ namespace SauceEditor.ViewModels
 
             panelViewModel.Panel.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
             panelViewModel.Panel.Load += (s, args) => LoadPanels();
-            panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.ID, args.NewID);
+            panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
         }
 
         public void SetSelectableEntities(string layerName, IEnumerable<IEntity> entities)

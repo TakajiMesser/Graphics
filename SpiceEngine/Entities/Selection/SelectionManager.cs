@@ -4,7 +4,7 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Game
+namespace SpiceEngine.Entities.Selection
 {
     public enum SelectionTypes
     {
@@ -74,7 +74,7 @@ namespace SpiceEngine.Game
 
         public bool IsSelected(int id) => _selectedByID.TryGetValue(id, out bool value) && value;
 
-        public IEnumerable<int> DuplicateSelection()
+        public IEnumerable<Duplication> DuplicateSelection()
         {
             // Create duplicates and overwrite SelectedEntities with them
             var duplicateIDs = new List<int>();

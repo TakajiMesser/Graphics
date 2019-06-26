@@ -9,6 +9,7 @@ namespace SpiceEngine.Entities
         IEnumerable<int> EntityRenderIDs { get; }
         IEnumerable<int> EntityScriptIDs { get; }
         IEnumerable<int> EntityPhysicsIDs { get; }
+        IEnumerable<int> EntitySelectIDs { get; }
 
         IEntity GetEntity(int id);
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
@@ -22,6 +23,7 @@ namespace SpiceEngine.Entities
 
         void AddLayer(string name);
         void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs);
+        IEnumerable<int> GetLayerEntityIDs(string layerName);
         void SetLayerState(string name, LayerManager.LayerState state);
     }
 }

@@ -5,6 +5,7 @@ using OpenTK.Input;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
@@ -33,7 +34,10 @@ namespace SpiceEngine.Game
     public class GamePanel : GLControl, IMouseDelta
     {
         private PanelCamera _panelCamera;
-        private GameManager _gameManager;
+
+        private IEntityProvider _entityProvider;
+        private IInputProvider _inputProvider;
+
         private Map _map;
         private EntityMapping _entityMapping;
         private RenderManager _renderManager;
@@ -110,7 +114,7 @@ namespace SpiceEngine.Game
                         //var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
                         //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                         //_toolVolume = mapVolume.ToEntity();
-                        int entityID = _gameManager.EntityManager.AddEntity(_toolVolume);
+                        int entityID = _entityProvider.AddEntity(_toolVolume);
 
                         lock (_loadLock)
                         {
@@ -126,7 +130,7 @@ namespace SpiceEngine.Game
                     default:
                         if (_toolVolume != null)
                         {
-                            _gameManager.EntityManager.RemoveEntityByID(_toolVolume.ID);
+                            _entityProvider.RemoveEntityByID(_toolVolume.ID);
 
                             lock (_loadLock)
                             {
@@ -161,7 +165,7 @@ namespace SpiceEngine.Game
 
         public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
-        public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
+        public event EventHandler<DuplicationEventArgs> EntityDuplicated;
 
         public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -176,7 +180,7 @@ namespace SpiceEngine.Game
 
         public void CenterView()
         {
-            if (_gameManager.EntityManager != null && SelectionManager.Count > 0)
+            if (_entityProvider != null && SelectionManager.Count > 0)
             {
                 _panelCamera.CenterView(SelectionManager.Position);
                 Invalidate();
@@ -191,7 +195,7 @@ namespace SpiceEngine.Game
             {
                 _isLoaded = true;
 
-                if (_gameManager != null && _entityMapping != null)
+                if (_entityProvider != null && _inputProvider != null && _entityMapping != null)
                 {
                     LoadFromGameManager();
                 }
@@ -202,8 +206,9 @@ namespace SpiceEngine.Game
 
         public void LoadGameManager(GameManager gameManager, Map map, EntityMapping entityMapping)
         {
-            _gameManager = gameManager;
-            SelectionManager = new SelectionManager(_gameManager.EntityManager);
+            _entityProvider = gameManager.EntityManager;
+            _inputProvider = gameManager.InputManager;
+            SelectionManager = new SelectionManager(_entityProvider);
 
             _map = map;
             _entityMapping = entityMapping;
@@ -220,7 +225,7 @@ namespace SpiceEngine.Game
         private void LoadFromGameManager()
         {
             _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.SetEntityProvider(_gameManager.EntityManager);
+            _renderManager.SetEntityProvider(_entityProvider);
             _renderManager.LoadFromMap(_map, _entityMapping);
 
             _panelCamera = new PanelCamera(Resolution, _renderManager)
@@ -244,7 +249,7 @@ namespace SpiceEngine.Game
             }*/
 
             // Default to allowing all rendered entities to be selectable
-            SelectionManager.SetSelectable(_gameManager.EntityManager.EntityRenderIDs);
+            SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
 
             Invalidate();
             IsLoaded = true;
@@ -275,7 +280,7 @@ namespace SpiceEngine.Game
         {
             foreach (var entity in entities)
             {
-                var selectedEntity = _gameManager.EntityManager.GetEntity(entity.ID);
+                var selectedEntity = _entityProvider.GetEntity(entity.ID);
 
                 if (selectedEntity != null)
                 {
@@ -306,7 +311,7 @@ namespace SpiceEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _gameManager != null)
+            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _entityProvider != null)
             {
                 base.OnPaint(e);
                 RenderFrame();
@@ -346,15 +351,15 @@ namespace SpiceEngine.Game
             {
                 case RenderModes.Wireframe:
                     _renderManager.RenderWireframe();
-                    _renderManager.RenderEntityIDs(SelectionManager.IDs);
+                    _renderManager.RenderEntityIDs();
                     break;
                 case RenderModes.Diffuse:
                     _renderManager.RenderDiffuseFrame();
-                    _renderManager.RenderEntityIDs(SelectionManager.IDs);
+                    _renderManager.RenderEntityIDs();
                     break;
                 case RenderModes.Lit:
                     _renderManager.RenderLitFrame();
-                    _renderManager.RenderEntityIDs(SelectionManager.IDs);
+                    _renderManager.RenderEntityIDs();
                     break;
                 case RenderModes.Full:
                     _renderManager.RenderFullFrame();
@@ -486,7 +491,7 @@ namespace SpiceEngine.Game
                             SelectionManager.ClearSelection();
                         }
 
-                        var entity = _gameManager.EntityManager.GetEntity(id);
+                        var entity = _entityProvider.GetEntity(id);
                         if (entity != null)
                         {
                             SelectionManager.Select(id);
@@ -534,7 +539,7 @@ namespace SpiceEngine.Game
 
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
-            _gameManager.InputManager.Tick();
+            _inputProvider.Tick();
 
             if (_invalidated)
             {
@@ -550,14 +555,14 @@ namespace SpiceEngine.Game
 
         public bool IsHeld()
         {
-            _gameManager.InputManager.Tick();
-            return _gameManager.InputManager.IsDown(new Input(MouseButton.Left)) || _gameManager.InputManager.IsDown(new Input(MouseButton.Right));
+            _inputProvider.Tick();
+            return _inputProvider.IsDown(new Input(MouseButton.Left)) || _inputProvider.IsDown(new Input(MouseButton.Right));
         }
 
         public void EndDrag()
         {
             IsDragging = false;
-            _gameManager.InputManager.Clear();
+            _inputProvider.Clear();
             SelectionManager.SelectionType = SelectionTypes.None;
             _pollTimer.Stop();
         }
@@ -567,24 +572,34 @@ namespace SpiceEngine.Game
 
         public void SetLayerOrSomeShit(string layerName)
         {
-            //_gameManager.EntityManager.EntityRenderIDs;
+            //_entityProvider.EntityRenderIDs;
+
+            // We have four new entity types to deal with for model rendering...
+            // ShapeEntity -> Maps to a single mesh
+            // FaceEntity -> Maps to a face in MeshBuild
+            // TriangleEntity -> Maps to a triangle in MeshBuild
+            // VertexEntity -> Maps to a vertex billboard texture
+
+            // We have a few options...
+            // When we first open a ModelComponent, we should create ALL necessary entities and split them into the four layers
+            // We then need to give access to 
         }
 
         private void HandleInput()
         {
-            if (_isDuplicating && !_gameManager.InputManager.IsDown(new Input(Key.ShiftLeft)))
+            if (_isDuplicating && !_inputProvider.IsDown(new Input(Key.ShiftLeft)))
             {
                 _isDuplicating = false;
             }
 
-            if (_gameManager.InputManager.IsReleased(new Input(MouseButton.Left)))
+            if (_inputProvider.IsReleased(new Input(MouseButton.Left)))
             {
                 SelectionManager.SelectionType = SelectionTypes.None;
             }
 
-            if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)) && _gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
+            if (_inputProvider.IsDown(new Input(MouseButton.Left)) && _inputProvider.IsDown(new Input(MouseButton.Right)))
             {
-                _panelCamera.Strafe(_gameManager.InputManager.MouseDelta);
+                _panelCamera.Strafe(_inputProvider.MouseDelta);
 
                 //IsCursorVisible = false;
                 SelectionManager.SelectionType = SelectionTypes.None;
@@ -592,22 +607,19 @@ namespace SpiceEngine.Game
             }
             else if (SelectionManager.SelectionType != SelectionTypes.None)
             {
-                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
+                if (_inputProvider.IsDown(new Input(MouseButton.Left)))
                 {
-                    if (!_isDuplicating && _gameManager.InputManager.IsDown(new Input(Key.ShiftLeft)))
+                    if (!_isDuplicating && _inputProvider.IsDown(new Input(Key.ShiftLeft)))
                     {
                         _isDuplicating = true;
 
-                        var selectedIDs = SelectionManager.SelectedIDs.ToList();
-                        var duplicateIDs = SelectionManager.DuplicateSelection().ToList();
-
-                        for (var i = 0; i < selectedIDs.Count; i++)
+                        foreach (var duplication in SelectionManager.DuplicateSelection())
                         {
-                            EntityDuplicated?.Invoke(this, new DuplicatedEntityEventArgs(selectedIDs[i], duplicateIDs[i]));
+                            EntityDuplicated?.Invoke(this, new DuplicationEventArgs(duplication));
                         }
                     }
 
-                    SelectionManager.HandleEntityTransforms(TransformMode, _gameManager.InputManager.MouseDelta);
+                    SelectionManager.HandleEntityTransforms(TransformMode, _inputProvider.MouseDelta);
 
                     Invalidate();
                     Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities))));
@@ -615,21 +627,21 @@ namespace SpiceEngine.Game
             }
             else if (_panelCamera.ViewType == ViewTypes.Perspective)
             {
-                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
+                if (_inputProvider.IsDown(new Input(MouseButton.Left)))
                 {
-                    _panelCamera.Travel(_gameManager.InputManager.MouseDelta);
+                    _panelCamera.Travel(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
+                else if (_inputProvider.IsDown(new Input(MouseButton.Right)))
                 {
-                    _panelCamera.Turn(_gameManager.InputManager.MouseDelta);
+                    _panelCamera.Turn(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Button1)))
+                else if (_inputProvider.IsDown(new Input(MouseButton.Button1)))
                 {
                     if (SelectionManager.Count > 0)
                     {
-                        _panelCamera.Pivot(_gameManager.InputManager.MouseDelta, _gameManager.InputManager.MouseWheelDelta, SelectionManager.Position);
+                        _panelCamera.Pivot(_inputProvider.MouseDelta, _inputProvider.MouseWheelDelta, SelectionManager.Position);
                         _invalidated = true;
                     }
                 }

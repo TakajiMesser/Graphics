@@ -35,6 +35,7 @@ namespace SpiceEngine.Entities
         public IEnumerable<int> EntityRenderIDs => _layerManager.EntityRenderIDs;
         public IEnumerable<int> EntityScriptIDs => _layerManager.EntityScriptIDs;
         public IEnumerable<int> EntityPhysicsIDs => _layerManager.EntityPhysicsIDs;
+        public IEnumerable<int> EntitySelectIDs => _layerManager.EntitySelectIDs;
 
         public EntityManager() { }
 
@@ -101,6 +102,7 @@ namespace SpiceEngine.Entities
             _layerManager.SetPhysicsLayerState(name, state);
             _layerManager.SetRenderLayerState(name, state);
             _layerManager.SetScriptLayerState(name, state);
+            _layerManager.SetSelectLayerState(name, state);
         }
 
         public int AddEntity(IEntity entity)

@@ -12,10 +12,16 @@ namespace SauceEditorCore.Models.Entities
     {
         public int ID { get; set; }
         public Vector3 Position { get; set; }
+        public MeshFace MeshFace { get; set; }
 
         public FaceEntity(MeshFace meshFace)
         {
 
+        }
+
+        public IMesh ToMesh()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -250,6 +250,18 @@ namespace SpiceEngine.Rendering.Batches
 
         public BatchAction CreateBatchAction() => new BatchAction(this);
 
+        private void DrawEntities(ShaderProgram shader, TextureManager textureManager, HashSet<int> ids, Action<int> action = null)
+        {
+            foreach (var id in _entityProvider.EntityRenderIDs)
+            {
+                if ((ids == null || ids.Contains(id)))
+                {
+                    action?.Invoke(id);
+                    _batchesByEntityID[id].Draw(_entityProvider, shader, textureManager);
+                }
+            }
+        }
+
         private void DrawEntities(EntityTypes entityType, ShaderProgram shader, TextureManager textureManager, HashSet<int> ids, Action<int> action = null)
         {
             foreach (var id in _entityProvider.EntityRenderIDs)
@@ -377,9 +389,21 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
+            public BatchAction SetTexture(Texture texture, string name, int index)
+            {
+                _commandQueue.Enqueue(() => Shader.BindTexture(texture, name, index));
+                return this;
+            }
+
             public BatchAction SetTextureManager(TextureManager textureManager)
             {
                 _commandQueue.Enqueue(() => TextureManager = textureManager);
+                return this;
+            }
+
+            public BatchAction RenderEntities()
+            {
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(Shader, TextureManager, _entityIDs));
                 return this;
             }
 

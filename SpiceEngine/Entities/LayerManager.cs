@@ -17,16 +17,19 @@ namespace SpiceEngine.Entities
         private Dictionary<string, LayerState> _renderLayerStatesByName = new Dictionary<string, LayerState>();
         private Dictionary<string, LayerState> _scriptLayerStatesByName = new Dictionary<string, LayerState>();
         private Dictionary<string, LayerState> _physicsLayerStatesByName = new Dictionary<string, LayerState>();
+        private Dictionary<string, LayerState> _selectLayerStatesByName = new Dictionary<string, LayerState>();
 
         public EntityLayer RootLayer { get; } = new EntityLayer("Root");
 
         public List<string> RenderLayerNames { get; } = new List<string>();
         public List<string> ScriptLayerNames { get; } = new List<string>();
         public List<string> PhysicsLayerNames { get; } = new List<string>();
+        public List<string> SelectLayerNames { get; } = new List<string>();
 
         public IEnumerable<int> EntityRenderIDs => GetEntityIDs(RenderLayerNames, _renderLayerStatesByName);
         public IEnumerable<int> EntityScriptIDs => GetEntityIDs(ScriptLayerNames, _scriptLayerStatesByName);
         public IEnumerable<int> EntityPhysicsIDs => GetEntityIDs(PhysicsLayerNames, _physicsLayerStatesByName);
+        public IEnumerable<int> EntitySelectIDs => GetEntityIDs(SelectLayerIDs, _selectLayerStatesByName);
 
         public LayerManager()
         {
@@ -47,10 +50,12 @@ namespace SpiceEngine.Entities
             _renderLayerStatesByName.Add(layer.Name, LayerState.Enabled);
             _scriptLayerStatesByName.Add(layer.Name, LayerState.Enabled);
             _physicsLayerStatesByName.Add(layer.Name, LayerState.Enabled);
+            _selectLayerStatesByName.Add(layer.Name, LayerState.Enabled);
 
             RenderLayerNames.Add(layer.Name);
             ScriptLayerNames.Add(layer.Name);
             PhysicsLayerNames.Add(layer.Name);
+            SelectLayerNames.Add(layer.Name);
         }
 
         public void Clear()
@@ -60,19 +65,25 @@ namespace SpiceEngine.Entities
             _renderLayerStatesByName.Clear();
             _scriptLayerStatesByName.Clear();
             _physicsLayerStatesByName.Clear();
+            _selectLayerStatesByName.Clear();
 
             RenderLayerNames.Clear();
             ScriptLayerNames.Clear();
             PhysicsLayerNames.Clear();
+            SelectLayerNames.Clear();
         }
+
+        public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layersByName[layerName].EntityIDs;
 
         public LayerState GetRenderLayerState(string name) => _renderLayerStatesByName[name];
         public LayerState GetScriptLayerState(string name) => _scriptLayerStatesByName[name];
         public LayerState GetPhysicsLayerState(string name) => _physicsLayerStatesByName[name];
+        public LayerState GetSelectLayerState(string name) => _selectLayerStatesByName[name];
 
         public void SetRenderLayerState(string name, LayerState state) => _renderLayerStatesByName[name] = state;
         public void SetScriptLayerState(string name, LayerState state) => _scriptLayerStatesByName[name] = state;
         public void SetPhysicsLayerState(string name, LayerState state) => _physicsLayerStatesByName[name] = state;
+        public void SetSelectLayerState(string name, LayerState state) => _selectLayerStatesByName[name] = state;
 
         public IEnumerable<EntityLayer> GetLayers(int entityID) => _layersByName.Values.Where(l => l.Contains(entityID));
 

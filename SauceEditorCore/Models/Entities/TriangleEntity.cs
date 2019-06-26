@@ -12,10 +12,16 @@ namespace SauceEditorCore.Models.Entities
     {
         public int ID { get; set; }
         public Vector3 Position { get; set; }
+        public MeshTriangle MeshTriangle { get; set; }
 
         public TriangleEntity(MeshTriangle meshTriangle)
         {
+            MeshTriangle = meshTriangle;
+        }
 
+        public IMesh ToMesh()
+        {
+            throw new NotImplementedException();
         }
     }
 }

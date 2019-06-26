@@ -201,14 +201,20 @@ namespace SpiceEngine.Rendering
             //_selectionRenderer.SelectionPass();
         }*/
 
-        public void RenderEntityIDs(IEnumerable<int> ids)
+        public void RenderEntityIDs()
         {
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(_camera, BatchManager, ids);
-            _billboardRenderer.RenderLightSelections(_camera, _entityProvider.Lights);
+            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.EntitySelectIDs);
+            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.EntitySelectIDs.Contains(l.ID)));
+
+            var vertexEntities = _entityProvider.GetLayerEntityIDs("Vertices");
+            if (vertexEntities.Any())
+            {
+                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities);
+            }
         }
 
         public int GetEntityIDFromPoint(Vector2 point)

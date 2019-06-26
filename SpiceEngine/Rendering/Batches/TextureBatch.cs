@@ -9,48 +9,32 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public class MeshBatch : IBatch
+    public class TextureBatch : IBatch
     {
-        public int EntityID { get; private set; }
-        public IMesh Mesh { get; }
+        private List<Vector3> _positions = new List<Vector3>();
 
-        public MeshBatch(int entityID, IMesh mesh)
+        public TextureBatch(int entityID, Texture texture)
         {
             EntityID = entityID;
-            Mesh = mesh;
+            Texture = texture;
         }
+
+        public int EntityID { get; private set; }
+        public Texture Texture { get; private set; }
 
         public IBatch Duplicate(int entityID) => new MeshBatch(entityID, Mesh.Duplicate());
 
-        public void AddTestColors()
+        public void Load()
         {
-            /*var vertices = new List<Vertex3D>();
 
-            for (var i = 0; i < Mesh.Vertices.Count; i++)
-            {
-                if (i % 3 == 0)
-                {
-                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Lime));
-                }
-                else if (i % 3 == 1)
-                {
-                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Red));
-                }
-                else if (i % 3 == 2)
-                {
-                    vertices.Add(Mesh.Vertices[i].Colored(Color4.Blue));
-                }
-            }
-
-            Mesh.ClearVertices();
-            Mesh.AddVertices(vertices);*/
         }
-
-        public void Load() => Mesh.Load();
 
         public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
         {
             var entity = entityProvider.GetEntity(EntityID);
+            entity.Position;
+
+            shaderProgram.SetTexture(Texture, "mainTexture", 0);
 
             switch (entity)
             {

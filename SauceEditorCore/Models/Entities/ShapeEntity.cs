@@ -18,5 +18,10 @@ namespace SauceEditorCore.Models.Entities
         {
             MeshBuild = new MeshBuild(meshShape);
         }
+
+        public IMesh ToMesh()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
