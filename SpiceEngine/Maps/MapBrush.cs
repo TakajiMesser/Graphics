@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Helpers;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
@@ -29,7 +30,7 @@ namespace SpiceEngine.Maps
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
 
-        public Mesh<Vertex3D> ToMesh()
+        public IRenderable ToRenderable()
         {
             if (TexturesPaths.IsEmpty)
             {

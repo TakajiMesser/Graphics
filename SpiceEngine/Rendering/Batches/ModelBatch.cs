@@ -9,31 +9,26 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public class ModelBatch : IBatch
+    public class ModelBatch : Batch
     {
-        public int EntityID { get; private set; }
         public Model Model { get; }
 
-        public ModelBatch(int entityID, Model model)
+        public ModelBatch(Model model) => Model = model;
+
+        public override IBatch Duplicate() => new ModelBatch(Model.Duplicate());
+
+        public override void Load() => Model.Load();
+
+        public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
-            EntityID = entityID;
-            Model = model;
-        }
-
-        public IBatch Duplicate(int entityID) => new ModelBatch(entityID, Model.Duplicate());
-
-        public void Load() => Model.Load();
-
-        public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
-        {
-            var actor = (Actor)entityProvider.GetEntity(EntityID);
-            actor.SetUniforms(shaderProgram, textureManager);
+            var actor = (Actor)entityProvider.GetEntity(EntityIDs.First());
+            actor.SetUniforms(shaderProgram);
 
             int meshIndex = 0;
 
             foreach (var mesh in Model.Meshes)
             {
-                actor.SetUniforms(shaderProgram, textureManager, meshIndex);
+                actor.SetUniforms(shaderProgram, textureProvider, meshIndex);
                 mesh.Draw();
                 meshIndex++;
             }

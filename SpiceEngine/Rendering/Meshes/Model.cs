@@ -1,15 +1,21 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class Model
+    public class Model : IRenderable
     {
         private List<IMesh> _meshes = new List<IMesh>();
+
         public IEnumerable<IMesh> Meshes => _meshes;
+        public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
+        public bool IsTransparent => Meshes.Any(m => m.Alpha < 1.0f);
+
+        public event EventHandler<AlphaEventArgs> AlphaChanged;
 
         public Model() { }
         public Model(string filePath)
@@ -81,6 +87,7 @@ namespace SpiceEngine.Rendering.Meshes
 
         public void Add(IMesh mesh)
         {
+            mesh.AlphaChanged += (s, args) => AlphaChanged?.Invoke(s, args);
             _meshes.Add(mesh);
         }
 

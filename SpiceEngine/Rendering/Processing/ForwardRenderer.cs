@@ -106,7 +106,7 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(Resolution resolution, Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void Render(Resolution resolution, Camera camera, BatchManager batchManager)
         {
             // TODO - Where does frame buffer binding and GL value setting fit into BatchAction?
             _program.Use();
@@ -119,9 +119,7 @@ namespace SpiceEngine.Rendering.Processing
             batchManager.CreateBatchAction()
                 .SetShader(_program)
                 .SetCamera(camera)
-                .SetTextureManager(textureManager)
-                .RenderBrushes()
-                .RenderActors();
+                .RenderOpaqueStatic();
         }
 
         private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)

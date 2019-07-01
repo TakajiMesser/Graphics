@@ -1,6 +1,4 @@
 ﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Rendering.Meshes;
@@ -12,223 +10,154 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
+    public enum RenderTypes
+    {
+        OpaqueStatic,
+        OpaqueAnimated,
+        TransparentStatic,
+        TransparentAnimated
+    }
+
     public class BatchManager
     {
         private IEntityProvider _entityProvider;
+        private ITextureProvider _textureProvider;
 
-        private HashSet<int> _brushIDs = new HashSet<int>();
-        private HashSet<int> _volumeIDs = new HashSet<int>();
-        private HashSet<int> _actorIDs = new HashSet<int>();
-        private HashSet<int> _jointIDs = new HashSet<int>();
+        private HashSet<int> _opaqueStaticIDs = new HashSet<int>();
+        private HashSet<int> _opaqueAnimatedIDs = new HashSet<int>();
+        private HashSet<int> _transparentStaticIDs = new HashSet<int>();
+        private HashSet<int> _transparentAnimatedIDs = new HashSet<int>();
 
-        private HashSet<int> _transparentBrushIDs = new HashSet<int>();
-        private HashSet<int> _transparentVolumeIDs = new HashSet<int>();
-        private HashSet<int> _transparentActorIDs = new HashSet<int>();
-        private HashSet<int> _transparentJointIDs = new HashSet<int>();
-
-        private Dictionary<int, IBatch> _batchesByEntityID = new Dictionary<int, IBatch>();
+        private Dictionary<int, RenderTypes> _renderTypeByEntityID = new Dictionary<int, RenderTypes>();
+        private Dictionary<int, int> _batchIndexByEntityID = new Dictionary<int, int>();
+        private List<IBatch> _batches = new List<IBatch>();
 
         public bool IsLoaded { get; private set; } = false;
 
-        public BatchManager(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public BatchManager(IEntityProvider entityProvider, ITextureProvider textureProvider)
+        {
+            _entityProvider = entityProvider;
+            _textureProvider = textureProvider;
+        }
 
         public void DuplicateBatch(int entityID, int newID)
         {
             var batch = GetBatch(entityID);
-            var entityType = _entityProvider.GetEntityType(entityID);
-
-            switch (entityType)
+            
+            // TODO = Handle texture mapping duplication outside of here (in RenderManager?)
+            switch (batch)
             {
-                case EntityTypes.Actor:
-                    var actorBatch = (ModelBatch)batch;
-                    var actor = _entityProvider.GetEntity(entityID) as Actor;
-                    AddActor(newID, actorBatch.Model.Duplicate(), actor.TextureMappings);
+                case IMesh mesh:
+                    AddEntity(newID, mesh.Duplicate());
                     break;
-                case EntityTypes.Brush:
-                    var brushBatch = (MeshBatch)batch;
-                    var brush = _entityProvider.GetEntity(entityID) as Brush;
-                    AddBrush(newID, brushBatch.Mesh.Duplicate(), brush.TextureMapping);
+                case Model model:
+                    AddEntity(newID, model.Duplicate());
                     break;
-                case EntityTypes.Volume:
-                    var volumeBatch = (MeshBatch)batch;
-                    AddVolume(newID, volumeBatch.Mesh.Duplicate());
-                    break;
-                case EntityTypes.Joint:
-                    var jointBatch = (ModelBatch)batch;
-                    var jointActor = _entityProvider.GetEntity(entityID) as Actor;
-                    AddJoint(newID, jointBatch.Model.Duplicate(), jointActor.TextureMappings);
+                case TextureID textureID:
+                    AddEntity(newID, textureID.Duplicate());
                     break;
             }
         }
 
         public IBatch GetBatch(int entityID)
         {
-            if (!_batchesByEntityID.ContainsKey(entityID)) throw new KeyNotFoundException("No batch found for entity ID " + entityID);
-            return _batchesByEntityID[entityID];
+            if (!_batchIndexByEntityID.ContainsKey(entityID)) throw new KeyNotFoundException("No batch found for entity ID " + entityID);
+
+            var batchIndex = _batchIndexByEntityID[entityID];
+            return _batches[batchIndex];
         }
 
         public void RemoveByEntityID(int entityID)
         {
-            var batch = GetBatch(entityID);
-            var entityType = _entityProvider.GetEntityType(entityID);
-
-            switch (entityType)
+            switch (_renderTypeByEntityID[entityID])
             {
-                case EntityTypes.Actor:
-                    _actorIDs.Remove(entityID);
+                case RenderTypes.OpaqueStatic:
+                    _opaqueStaticIDs.Remove(entityID);
                     break;
-                case EntityTypes.Brush:
-                    _brushIDs.Remove(entityID);
+                case RenderTypes.OpaqueAnimated:
+                    _opaqueAnimatedIDs.Remove(entityID);
                     break;
-                case EntityTypes.Volume:
-                    _volumeIDs.Remove(entityID);
+                case RenderTypes.TransparentStatic:
+                    _transparentStaticIDs.Remove(entityID);
                     break;
-                case EntityTypes.Joint:
-                    _jointIDs.Remove(entityID);
+                case RenderTypes.TransparentAnimated:
+                    _transparentAnimatedIDs.Remove(entityID);
                     break;
             }
 
-            _batchesByEntityID.Remove(entityID);
+            _renderTypeByEntityID.Remove(entityID);
+
+            var batchIndex = _batchIndexByEntityID[entityID];
+            _batchIndexByEntityID.Remove(entityID);
+
+            var batch = _batches[batchIndex];
+            batch.RemoveEntity(entityID);
+
+            if (!batch.EntityIDs.Any())
+            {
+                _batches.RemoveAt(batchIndex);
+            }
         }
 
-        public void AddBrush(int entityID, IMesh mesh, TextureMapping? textureMapping)
+        public void AddEntity(int entityID, IRenderable renderable)
         {
-            var batch = new MeshBatch(entityID, mesh);
+            var opaqueIDs = renderable.IsAnimated ? _opaqueAnimatedIDs : _opaqueStaticIDs;
+            var transparentIDs = renderable.IsAnimated ? _transparentAnimatedIDs : _transparentStaticIDs;
 
-            var brush = _entityProvider.GetEntity(entityID) as Brush;
-            brush.TextureMapping = textureMapping;
-
-            mesh.AlphaChanged += (s, args) =>
+            renderable.AlphaChanged += (s, args) =>
             {
                 if (!args.WasTransparent && args.IsTransparent)
                 {
-                    _brushIDs.Remove(entityID);
-                    _transparentBrushIDs.Add(entityID);
+                    opaqueIDs.Remove(entityID);
+                    transparentIDs.Add(entityID);
+                    _renderTypeByEntityID[entityID] = renderable.IsAnimated ? RenderTypes.TransparentAnimated : RenderTypes.TransparentStatic;
                 }
                 else if (args.WasTransparent && !args.IsTransparent)
                 {
-                    _transparentBrushIDs.Remove(entityID);
-                    _brushIDs.Add(entityID);
+                    transparentIDs.Remove(entityID);
+                    opaqueIDs.Add(entityID);
+                    _renderTypeByEntityID[entityID] = renderable.IsAnimated ? RenderTypes.OpaqueAnimated : RenderTypes.OpaqueStatic;
                 }
             };
 
-            if (mesh.Alpha < 1.0f)
+            if (renderable.IsTransparent)
             {
-                _transparentBrushIDs.Add(entityID);
+                transparentIDs.Add(entityID);
+                _renderTypeByEntityID.Add(entityID, renderable.IsAnimated ? RenderTypes.TransparentAnimated : RenderTypes.TransparentStatic);
             }
             else
             {
-                _brushIDs.Add(entityID);
+                opaqueIDs.Add(entityID);
+                _renderTypeByEntityID.Add(entityID, renderable.IsAnimated ? RenderTypes.OpaqueAnimated : RenderTypes.OpaqueStatic);
             }
+
+            var batch = CreateBatch(renderable);
+            batch.AddEntity(entityID);
 
             AddBatch(entityID, batch);
         }
 
-        public void AddVolume(int entityID, IMesh mesh)
+        private Batch CreateBatch(IRenderable renderable)
         {
-            var batch = new MeshBatch(entityID, mesh);
-
-            mesh.AlphaChanged += (s, args) =>
+            switch (renderable)
             {
-                if (!args.WasTransparent && args.IsTransparent)
-                {
-                    _volumeIDs.Remove(entityID);
-                    _transparentVolumeIDs.Add(entityID);
-                }
-                else if (args.WasTransparent && !args.IsTransparent)
-                {
-                    _transparentVolumeIDs.Remove(entityID);
-                    _volumeIDs.Add(entityID);
-                }
-            };
-
-            if (mesh.Alpha < 1.0f)
-            {
-                _transparentVolumeIDs.Add(entityID);
-            }
-            else
-            {
-                _volumeIDs.Add(entityID);
+                case IMesh mesh:
+                    return new MeshBatch(mesh);
+                case Model model:
+                    return new ModelBatch(model);
+                case TextureID textureID:
+                    return new BillboardBatch(textureID);
             }
 
-            AddBatch(entityID, batch);
-        }
-
-        public void AddActor(int entityID, Model model, IEnumerable<TextureMapping?> textureMappings)
-        {
-            var batch = new ModelBatch(entityID, model);
-
-            var actor = _entityProvider.GetEntity(entityID) as Actor;
-            actor.TextureMappings.AddRange(textureMappings);
-
-            foreach (var mesh in model.Meshes)
-            {
-                mesh.AlphaChanged += (s, args) =>
-                {
-                    if (!args.WasTransparent && args.IsTransparent)
-                    {
-                        _actorIDs.Remove(entityID);
-                        _transparentActorIDs.Add(entityID);
-                    }
-                    else if (args.WasTransparent && !args.IsTransparent)
-                    {
-                        _transparentActorIDs.Remove(entityID);
-                        _actorIDs.Add(entityID);
-                    }
-                };
-            }
-
-            if (model.Meshes.Any(m => m.Alpha < 1.0f))
-            {
-                _transparentActorIDs.Add(entityID);
-            }
-            else
-            {
-                _actorIDs.Add(entityID);
-            }
-
-            AddBatch(entityID, batch);
-        }
-
-        public void AddJoint(int entityID, Model model, IEnumerable<TextureMapping?> textureMappings)
-        {
-            var batch = new ModelBatch(entityID, model);
-
-            var actor = _entityProvider.GetEntity(entityID) as Actor;
-            actor.TextureMappings.AddRange(textureMappings);
-
-            foreach (var mesh in model.Meshes)
-            {
-                mesh.AlphaChanged += (s, args) =>
-                {
-                    if (!args.WasTransparent && args.IsTransparent)
-                    {
-                        _jointIDs.Remove(entityID);
-                        _transparentJointIDs.Add(entityID);
-                    }
-                    else if (args.WasTransparent && !args.IsTransparent)
-                    {
-                        _transparentJointIDs.Remove(entityID);
-                        _jointIDs.Add(entityID);
-                    }
-                };
-            }
-
-            if (model.Meshes.Any(m => m.Alpha < 1.0f))
-            {
-                _transparentJointIDs.Add(entityID);
-            }
-            else
-            {
-                _jointIDs.Add(entityID);
-            }
-
-            AddBatch(entityID, batch);
+            throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
         }
 
         private void AddBatch(int entityID, IBatch batch)
         {
-            _batchesByEntityID.Add(entityID, batch);
+            _batches.Add(batch);
+
+            var batchIndex = _batches.Count - 1;
+            _batchIndexByEntityID.Add(entityID, batchIndex);
 
             if (IsLoaded)
             {
@@ -236,11 +165,11 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        public void Load(int entityID) => _batchesByEntityID[entityID].Load();
+        public void Load(int entityID) => GetBatch(entityID).Load();
 
         public void Load()
         {
-            foreach (var batch in _batchesByEntityID.Values)
+            foreach (var batch in _batches)
             {
                 batch.Load();
             }
@@ -250,67 +179,49 @@ namespace SpiceEngine.Rendering.Batches
 
         public BatchAction CreateBatchAction() => new BatchAction(this);
 
-        private void DrawEntities(ShaderProgram shader, TextureManager textureManager, HashSet<int> ids, Action<int> action = null)
+        private void DrawEntities(ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
             foreach (var id in _entityProvider.EntityRenderIDs)
             {
                 if ((ids == null || ids.Contains(id)))
                 {
                     action?.Invoke(id);
-                    _batchesByEntityID[id].Draw(_entityProvider, shader, textureManager);
+
+                    var batchIndex = _batchIndexByEntityID[id];
+                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
                 }
             }
         }
 
-        private void DrawEntities(EntityTypes entityType, ShaderProgram shader, TextureManager textureManager, HashSet<int> ids, Action<int> action = null)
+        private void DrawEntities(RenderTypes renderType, ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
             foreach (var id in _entityProvider.EntityRenderIDs)
             {
-                if ((ids == null || ids.Contains(id)) && GetEntityIDSet(entityType).Contains(id))
+                if ((ids == null || ids.Contains(id)) && GetEntityIDSet(renderType).Contains(id))
                 {
                     action?.Invoke(id);
-                    _batchesByEntityID[id].Draw(_entityProvider, shader, textureManager);
+
+                    var batchIndex = _batchIndexByEntityID[id];
+                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
                 }
             }
         }
 
-        private void DrawTransparencies(ShaderProgram shaderProgram, TextureManager textureManager)
+        private HashSet<int> GetEntityIDSet(RenderTypes renderType)
         {
-            // TODO - Sort transparent meshes from furthest from camera to closest
-            var transparencyIDs = _transparentBrushIDs.Concat(_transparentActorIDs).Concat(_transparentVolumeIDs);
-
-            foreach (var id in transparencyIDs)
+            switch (renderType)
             {
-                _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
-            }
-        }
-
-        private void DrawTransparentJoints(ShaderProgram shaderProgram, TextureManager textureManager)
-        {
-            // TODO - Sort transparent meshes from furthest from camera to closest
-            var transparencyIDs = _transparentJointIDs;
-
-            foreach (var id in transparencyIDs)
-            {
-                _batchesByEntityID[id].Draw(_entityProvider, shaderProgram, textureManager);
-            }
-        }
-
-        private HashSet<int> GetEntityIDSet(EntityTypes entityType)
-        {
-            switch (entityType)
-            {
-                case EntityTypes.Brush:
-                    return _brushIDs;
-                case EntityTypes.Volume:
-                    return _volumeIDs;
-                case EntityTypes.Actor:
-                    return _actorIDs;
-                case EntityTypes.Joint:
-                    return _jointIDs;
+                case RenderTypes.OpaqueStatic:
+                    return _opaqueStaticIDs;
+                case RenderTypes.OpaqueAnimated:
+                    return _opaqueAnimatedIDs;
+                case RenderTypes.TransparentStatic:
+                    return _transparentStaticIDs;
+                case RenderTypes.TransparentAnimated:
+                    return _transparentAnimatedIDs;
             }
 
-            throw new ArgumentOutOfRangeException("Could not handle entity type " + entityType);
+            throw new ArgumentOutOfRangeException("Could not handle render type " + renderType);
         }
 
         public class BatchAction
@@ -322,8 +233,7 @@ namespace SpiceEngine.Rendering.Batches
             public BatchAction(BatchManager batchManager) => _batchManager = batchManager;
 
             public ShaderProgram Shader { get; set; }
-            public Camera Camera { get; set; }
-            public TextureManager TextureManager { get; set; }
+            public ICamera Camera { get; set; }
 
             public BatchAction SetShader(ShaderProgram shader)
             {
@@ -335,7 +245,7 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
-            public BatchAction SetCamera(Camera camera)
+            public BatchAction SetCamera(ICamera camera)
             {
                 _commandQueue.Enqueue(() =>
                 {
@@ -345,7 +255,7 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
-            public BatchAction SetCamera(Camera camera, PointLight pointLight)
+            public BatchAction SetCamera(ICamera camera, PointLight pointLight)
             {
                 _commandQueue.Enqueue(() =>
                 {
@@ -355,7 +265,7 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
-            public BatchAction SetCamera(Camera camera, SpotLight spotLight)
+            public BatchAction SetCamera(ICamera camera, SpotLight spotLight)
             {
                 _commandQueue.Enqueue(() =>
                 {
@@ -395,75 +305,57 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
-            public BatchAction SetTextureManager(TextureManager textureManager)
-            {
-                _commandQueue.Enqueue(() => TextureManager = textureManager);
-                return this;
-            }
-
             public BatchAction RenderEntities()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(Shader, TextureManager, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(Shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderBrushes()
+            public BatchAction RenderOpaqueStatic()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Brush, Shader, TextureManager, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, Shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderBrushesWithAction(Action<int> action)
+            public BatchAction RenderOpaqueAnimated()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Brush, Shader, TextureManager, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, Shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderVolumes()
+            public BatchAction RenderTransparentStatic()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Volume, Shader, TextureManager, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, Shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderVolumesWithAction(Action<int> action)
+            public BatchAction RenderTransparentAnimated()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Volume, Shader, TextureManager, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, Shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderActors()
+            public BatchAction RenderOpaqueStaticWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Actor, Shader, TextureManager, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, Shader, _entityIDs, action));
                 return this;
             }
 
-            public BatchAction RenderActorsWithAction(Action<int> action)
+            public BatchAction RenderOpaqueAnimatedWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Actor, Shader, TextureManager, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, Shader, _entityIDs, action));
                 return this;
             }
 
-            public BatchAction RenderJoints()
+            public BatchAction RenderTransparentStaticWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Joint, Shader, TextureManager, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, Shader, _entityIDs, action));
                 return this;
             }
 
-            public BatchAction RenderJointsWithAction(Action<int> action)
+            public BatchAction RenderTransparentAnimatedWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(EntityTypes.Joint, Shader, TextureManager, _entityIDs, action));
-                return this;
-            }
-
-            public BatchAction RenderTransparencies()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawTransparencies(Shader, TextureManager));
-                return this;
-            }
-
-            public BatchAction RenderTransparentJoints()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawTransparentJoints(Shader, TextureManager));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, Shader, _entityIDs, action));
                 return this;
             }
 

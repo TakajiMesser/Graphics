@@ -8,9 +8,13 @@ namespace SpiceEngine.Rendering.Batches
 {
     public interface IBatch
     {
-        int EntityID { get; }
+        IEnumerable<int> EntityIDs { get; }
+        void AddEntity(int id);
+        void RemoveEntity(int id);
+
         void Load();
-        void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null);
-        IBatch Duplicate(int entityID);
+        void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null);
+
+        IBatch Duplicate();
     }
 }

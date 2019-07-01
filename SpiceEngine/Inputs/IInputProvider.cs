@@ -1,9 +1,10 @@
 ﻿using OpenTK;
+using SpiceEngine.Game;
 using SpiceEngine.Outputs;
 
 namespace SpiceEngine.Inputs
 {
-    public interface IInputProvider
+    public interface IInputProvider : ITick
     {
         InputBinding InputMapping { get; set; }
 
@@ -33,5 +34,6 @@ namespace SpiceEngine.Inputs
         bool IsReleased(Input input);
 
         void SwallowInputs(params Input[] inputs);
+        void Clear();
     }
 }

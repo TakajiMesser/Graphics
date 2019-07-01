@@ -101,7 +101,7 @@ namespace SpiceEngine.Rendering.Processing
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
-        public void StencilPass(ILight light, Camera camera, SimpleMesh mesh)
+        public void StencilPass(ILight light, ICamera camera, SimpleMesh mesh)
         {
             _stencilProgram.Use();
             GL.DrawBuffer(DrawBufferMode.None);
@@ -121,7 +121,7 @@ namespace SpiceEngine.Rendering.Processing
             mesh.Draw();
         }
 
-        public void LightPass(Resolution resolution, DeferredRenderer deferredRenderer, ILight light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
+        public void LightPass(DeferredRenderer deferredRenderer, ILight light, ICamera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
             program.Use();
 

@@ -64,14 +64,14 @@ namespace SpiceEngine.Entities.Brushes
             return brush;
         }
 
-        public void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
+        public void SetUniforms(ShaderProgram program, ITextureProvider textureProvider)
         {
             _modelMatrix.Set(program);
             Material.SetUniforms(program);
 
-            if (textureManager != null && TextureMapping.HasValue)
+            if (textureProvider != null && TextureMapping.HasValue)
             {
-                program.BindTextures(textureManager, TextureMapping.Value);
+                program.BindTextures(textureProvider, TextureMapping.Value);
             }
             else
             {

@@ -1,8 +1,6 @@
-using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
 using System;
-using System.Collections.Generic;
 using System.Timers;
 using System.Windows;
 using System.Windows.Input;

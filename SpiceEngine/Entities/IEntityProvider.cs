@@ -11,6 +11,7 @@ namespace SpiceEngine.Entities
         IEnumerable<int> EntityPhysicsIDs { get; }
         IEnumerable<int> EntitySelectIDs { get; }
 
+        int AddEntity(IEntity entity);
         IEntity GetEntity(int id);
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
         Actor GetActor(string name);
@@ -19,8 +20,10 @@ namespace SpiceEngine.Entities
         List<ILight> Lights { get; }
         List<Actor> Actors { get; }
 
+        void RemoveEntityByID(int id);
         IEntity DuplicateEntity(IEntity entity);
 
+        bool ContainsLayer(string layerName);
         void AddLayer(string name);
         void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs);
         IEnumerable<int> GetLayerEntityIDs(string layerName);

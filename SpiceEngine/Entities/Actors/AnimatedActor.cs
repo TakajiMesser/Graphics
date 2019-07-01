@@ -36,9 +36,9 @@ namespace SpiceEngine.Entities.Actors
             return animatedActor;
         }
 
-        public override void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
+        public override void SetUniforms(ShaderProgram program, ITextureProvider textureProvider, int meshIndex)
         {
-            base.SetUniforms(program, textureManager, meshIndex);
+            base.SetUniforms(program, textureProvider, meshIndex);
 
             if (_jointTransformsByMeshIndex.ContainsKey(meshIndex))
             {

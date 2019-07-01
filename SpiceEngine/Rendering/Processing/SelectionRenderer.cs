@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Entities.Selection;
 using SpiceEngine.Game;
 using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
@@ -157,22 +158,22 @@ namespace SpiceEngine.Rendering.Processing
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
-        public void SelectionPass(Camera camera, BatchManager batchManager, IEnumerable<int> ids)
+        public void SelectionPass(ICamera camera, BatchManager batchManager, IEnumerable<int> ids)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_selectionProgram)
                 .SetCamera(camera)
                 .SetEntityIDs(ids)
-                .RenderBrushesWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
-                .RenderVolumesWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
-                .RenderActorsWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                .RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                .RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
                 .SetShader(_jointSelectionProgram)
                 .SetCamera(camera)
-                .RenderJointsWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                .RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                .RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
                 .Execute();
         }
 
-        public void RenderTranslationArrows(Camera camera, Vector3 position)
+        public void RenderTranslationArrows(ICamera camera, Vector3 position)
         {
             _translateProgram.Use();
 
@@ -192,7 +193,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderRotationRings(Camera camera, Vector3 position)
+        public void RenderRotationRings(ICamera camera, Vector3 position)
         {
             _rotateProgram.Use();
 
@@ -212,7 +213,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderScaleLines(Camera camera, Vector3 position)
+        public void RenderScaleLines(ICamera camera, Vector3 position)
         {
             _scaleProgram.Use();
 

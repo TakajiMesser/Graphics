@@ -87,7 +87,9 @@ namespace SpiceEngine.Entities
             }
         }
 
-        public void AddLayer(string name) => _layerManager.AddLayer(name);
+        public void AddLayer(string layerName) => _layerManager.AddLayer(layerName);
+
+        public bool ContainsLayer(string layerName) => _layerManager.ContainsLayer(layerName);
 
         public void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs)
         {
@@ -96,6 +98,8 @@ namespace SpiceEngine.Entities
                 _layerManager.AddToLayer(layerName, id);
             }
         }
+
+        public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layerManager.GetLayerEntityIDs(layerName);
 
         public void SetLayerState(string name, LayerManager.LayerState state)
         {

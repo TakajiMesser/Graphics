@@ -68,17 +68,17 @@ namespace SpiceEngine.Entities.Actors
             TextureMappings.AddRange(actor.TextureMappings);
         }
 
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager)
+        public virtual void SetUniforms(ShaderProgram program)
         {
             _modelMatrix.Set(program);
         }
 
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
+        public virtual void SetUniforms(ShaderProgram program, ITextureProvider textureProvider, int meshIndex)
         {
             Materials[meshIndex].SetUniforms(program);
-            if (textureManager != null && TextureMappings[meshIndex].HasValue)
+            if (textureProvider != null && TextureMappings[meshIndex].HasValue)
             {
-                program.BindTextures(textureManager, TextureMappings[meshIndex].Value);
+                program.BindTextures(textureProvider, TextureMappings[meshIndex].Value);
             }
             else
             {

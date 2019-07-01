@@ -66,7 +66,7 @@ namespace SpiceEngine.Rendering.Processing
             _squareMesh = SimpleMesh.LoadFromFile(FilePathHelper.SQUARE_MESH_PATH, _2DProgram);
         }
 
-        public void Render(Camera camera)
+        public void Render(ICamera camera)
         {
             switch (camera)
             {

@@ -273,36 +273,34 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
         }
 
-        public void GeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void GeometryPass(ICamera camera, BatchManager batchManager)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .SetTextureManager(textureManager)
-                .RenderBrushes()
-                .RenderActors()
+                .RenderOpaqueStatic()
                 .SetShader(_jointGeometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderJoints()
+                .RenderOpaqueAnimated()
                 .Execute();
 
             GL.Enable(EnableCap.CullFace);
         }
 
-        public void TransparentGeometryPass(Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void TransparentGeometryPass(ICamera camera, BatchManager batchManager)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .PerformAction(() => _geometryProgram.UnbindTextures())
-                .RenderTransparencies()
+                .RenderTransparentStatic()
                 .SetShader(_jointGeometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderTransparentJoints()
+                .RenderTransparentAnimated()
                 .Execute();
 
             //GL.Enable(EnableCap.Blend);

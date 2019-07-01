@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Textures
 {
-    public class TextureManager : IDisposable
+    public class TextureManager : ITextureProvider, IDisposable
     {
         private Dictionary<string, int> _pathsByID = new Dictionary<string, int>(); 
         private List<Texture> _textures = new List<Texture>();

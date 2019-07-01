@@ -14,10 +14,10 @@ namespace SpiceEngine.Inputs
         public const int DEFAULT_NUMBER_OF_TRACKED_STATES = 2;
 
         private List<InputState> _inputStates = new List<InputState>();
-        private IMouseDelta _mouseDelta;
+        private IMouseTracker _mouseTracker;
 
         public InputManager() { }
-        public InputManager(IMouseDelta mouseDelta) => _mouseDelta = mouseDelta;
+        public InputManager(IMouseTracker mouseTracker) => _mouseTracker = mouseTracker;
 
         public InputBinding InputMapping { get; set; } = new InputBinding();
 
@@ -44,9 +44,9 @@ namespace SpiceEngine.Inputs
             ? _inputStates[_inputStates.Count - 1].MousePosition
             : (Vector2?)null;*/
 
-        public bool IsMouseInWindow => _mouseDelta.IsMouseInWindow;
-        public Vector2? MouseCoordinates => _mouseDelta.MouseCoordinates;
-        public Resolution WindowSize => _mouseDelta.WindowSize;
+        public bool IsMouseInWindow => _mouseTracker.IsMouseInWindow;
+        public Vector2? MouseCoordinates => _mouseTracker.MouseCoordinates;
+        public Resolution WindowSize => _mouseTracker.WindowSize;
 
         public int TrackedStates { get; set; } = DEFAULT_NUMBER_OF_TRACKED_STATES;
 

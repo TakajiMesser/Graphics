@@ -2,6 +2,8 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
@@ -70,8 +72,7 @@ namespace SpiceEngine.Rendering
 
         public void LoadFromMap(Map map, EntityMapping entityMapping)
         {
-            _entityProvider = entityProvider;
-            BatchManager = new BatchManager(entityProvider);
+            BatchManager = new BatchManager(_entityProvider, TextureManager);
 
             AddBrushes(map.Brushes, entityMapping.BrushIDs);
             //AddVolumes(map.Volumes, entityMapping.VolumeIDs);
@@ -101,21 +102,29 @@ namespace SpiceEngine.Rendering
             IsLoaded = true;
         }
 
+        public void AddEntity(int entityID, IRenderable renderable)
+        {
+            BatchManager.AddEntity(entityID, renderable);
+        }
+
         public void AddBrush(MapBrush mapBrush, int entityID)
         {
-            var mesh = mapBrush.ToMesh();
+            var renderable = mapBrush.ToRenderable();
+
             var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-            BatchManager.AddBrush(entityID, mesh, textureMapping);
+            var brush = _entityProvider.GetEntity(entityID) as Brush;
+            brush.TextureMapping = textureMapping;
+
+            BatchManager.AddEntity(entityID, renderable);
         }
 
         public void AddActor(MapActor mapActor, int entityID)
         {
-            var model = mapActor.ToModel();
+            var renderable = mapActor.ToRenderable();
+            var textureMappings = new List<TextureMapping?>();
 
             if (mapActor.HasAnimations)
             {
-                var textureMappings = new List<TextureMapping?>();
-
                 using (var importer = new Assimp.AssimpContext())
                 {
                     var scene = importer.ImportFile(mapActor.ModelFilePath);
@@ -129,14 +138,15 @@ namespace SpiceEngine.Rendering
                         textureMappings.Add(textureMapping);
                     }
                 }
-
-                BatchManager.AddJoint(entityID, model, textureMappings);
             }
             else
             {
-                var textureMappings = mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager));
-                BatchManager.AddActor(entityID, model, textureMappings);
+                textureMappings.AddRange(mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)));
             }
+
+            var actor = _entityProvider.GetEntity(entityID) as Actor;
+            actor.TextureMappings.AddRange(textureMappings);
+            BatchManager.AddEntity(entityID, renderable);
         }
 
         private void AddBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
@@ -213,7 +223,7 @@ namespace SpiceEngine.Rendering
             var vertexEntities = _entityProvider.GetLayerEntityIDs("Vertices");
             if (vertexEntities.Any())
             {
-                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities);
+                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
             }
         }
 
@@ -343,7 +353,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager, TextureManager);
+            _deferredRenderer.GeometryPass(_camera, BatchManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
@@ -364,7 +374,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager, TextureManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -380,7 +390,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager, TextureManager);
+            _deferredRenderer.GeometryPass(_camera, BatchManager);
 
             RenderLights();
 
@@ -403,7 +413,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager, TextureManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -419,7 +429,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager, TextureManager);
+            _deferredRenderer.GeometryPass(_camera, BatchManager);
 
             RenderLights();
 
@@ -434,7 +444,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager, TextureManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -477,7 +487,7 @@ namespace SpiceEngine.Rendering
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);
                 var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
-                _lightRenderer.LightPass(Resolution, _deferredRenderer, light, _camera, lightMesh, shadowMap, lightProgram);
+                _lightRenderer.LightPass(_deferredRenderer, light, _camera, lightMesh, shadowMap, lightProgram);
             }
 
             GL.Enable(EnableCap.CullFace);

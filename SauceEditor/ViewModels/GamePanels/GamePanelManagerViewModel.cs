@@ -1,5 +1,3 @@
-using SauceEditor.Models;
-using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Properties;
 using SauceEditorCore.Models.Components;
@@ -68,7 +66,9 @@ namespace SauceEditor.ViewModels
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
         }
 
-        public void SetSelectableEntities(string layerName, IEnumerable<IEntity> entities)
+        public void DisableLayer(string layerName) => GameManager.EntityManager.SetLayerState(layerName, LayerManager.LayerState.Disabled);
+
+        public void EnableLayer(string layerName, IEnumerable<IModelEntity> entities)
         {
             // TODO - Correct and reorganize this method
             // First, we need to ensure that this layer exists in the LayerManager
@@ -77,12 +77,28 @@ namespace SauceEditor.ViewModels
             // An issue is that we want to ONLY render the Root layer for diffuse/lit. The new layer should just be for selection/wireframe
 
             // Add these entities to a new layer, enable it, and disable all other layers
-            GameManager.EntityManager.AddLayer(layerName);
-            GameManager.EntityManager.AddEntitiesToLayer(layerName, entities.Select(e => e.ID));
+            if (!GameManager.EntityManager.ContainsLayer(layerName))
+            {
+                GameManager.EntityManager.AddLayer(layerName);
+                GameManager.EntityManager.AddEntitiesToLayer(layerName, entities.Select(e => e.ID));
+
+                foreach (var entity in entities)
+                {
+                    entity.ID = GameManager.EntityManager.AddEntity(entity);
+                }
+            }
+
             GameManager.EntityManager.SetLayerState(layerName, LayerManager.LayerState.Enabled);
 
-            // If ShapeEntity, FaceEntity, or TriangleEntity, need to get meshes from entity to add to RenderManager as well
-            // If VertexEntity, need to get 
+            foreach (var entity in entities)
+            {
+                var renderable = entity.ToRenderable();
+
+                PerspectiveViewModel.Panel.AddEntity(entity.ID, renderable);
+                XViewModel.Panel.AddEntity(entity.ID, renderable);
+                YViewModel.Panel.AddEntity(entity.ID, renderable);
+                ZViewModel.Panel.AddEntity(entity.ID, renderable);
+            }
 
             //SelectionManager.SetSelectableEntities(entities);
         }

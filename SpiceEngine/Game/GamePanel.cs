@@ -31,7 +31,7 @@ namespace SpiceEngine.Game
         Texture
     }
 
-    public class GamePanel : GLControl, IMouseDelta
+    public class GamePanel : GLControl, IMouseTracker
     {
         private PanelCamera _panelCamera;
 
@@ -47,7 +47,7 @@ namespace SpiceEngine.Game
 
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
-        private Timer _pollTimer = new Timer();
+        private Timer _pollTimer = new Timer(); 
 
         private Tools _selectedTool = Tools.Brush;
         private Volume _toolVolume;
@@ -233,7 +233,7 @@ namespace SpiceEngine.Game
                 ViewType = ViewType
             };
             _panelCamera.Load();
-            _renderManager.SetCamera(_panelCamera);
+            _renderManager.SetCamera(_panelCamera.Camera);
 
             // Clear pointers
             //_map = null;
@@ -254,6 +254,11 @@ namespace SpiceEngine.Game
             Invalidate();
             IsLoaded = true;
             PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+        }
+
+        public void AddEntity(int entityID, IRenderable renderable)
+        {
+            _renderManager.AddEntity(entityID, renderable);
         }
 
         public void SelectEntity(IEntity entity)

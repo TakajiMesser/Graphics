@@ -42,11 +42,11 @@ namespace SpiceEngine.Game
             InputManager = new InputManager();
         }
 
-        public GameManager(Resolution resolution, IMouseDelta mouseDelta)
+        public GameManager(Resolution resolution, IMouseTracker mouseTracker)
         {
             _resolution = resolution;
 
-            InputManager = new InputManager(mouseDelta);
+            InputManager = new InputManager(mouseTracker);
         }
 
         public EntityMapping LoadFromMap(Map map)

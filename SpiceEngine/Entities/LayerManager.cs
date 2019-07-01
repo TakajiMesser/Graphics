@@ -29,7 +29,7 @@ namespace SpiceEngine.Entities
         public IEnumerable<int> EntityRenderIDs => GetEntityIDs(RenderLayerNames, _renderLayerStatesByName);
         public IEnumerable<int> EntityScriptIDs => GetEntityIDs(ScriptLayerNames, _scriptLayerStatesByName);
         public IEnumerable<int> EntityPhysicsIDs => GetEntityIDs(PhysicsLayerNames, _physicsLayerStatesByName);
-        public IEnumerable<int> EntitySelectIDs => GetEntityIDs(SelectLayerIDs, _selectLayerStatesByName);
+        public IEnumerable<int> EntitySelectIDs => GetEntityIDs(SelectLayerNames, _selectLayerStatesByName);
 
         public LayerManager()
         {
@@ -40,6 +40,8 @@ namespace SpiceEngine.Entities
         public void AddToLayer(string layerName, int entityID) => _layersByName[layerName].Add(entityID);
 
         public void RemoveFromLayer(string layerName, int entityID) => _layersByName[layerName].Remove(entityID);
+
+        public bool ContainsLayer(string layerName) => _layersByName.ContainsKey(layerName);
 
         public void AddLayer(string name) => AddEntityLayer(new EntityLayer(name));
 
@@ -73,7 +75,9 @@ namespace SpiceEngine.Entities
             SelectLayerNames.Clear();
         }
 
-        public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layersByName[layerName].EntityIDs;
+        public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layersByName.ContainsKey(layerName)
+            ? _layersByName[layerName].EntityIDs
+            : Enumerable.Empty<int>();
 
         public LayerState GetRenderLayerState(string name) => _renderLayerStatesByName[name];
         public LayerState GetScriptLayerState(string name) => _scriptLayerStatesByName[name];

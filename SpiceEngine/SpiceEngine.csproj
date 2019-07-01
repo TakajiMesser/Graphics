@@ -118,12 +118,16 @@
   <ItemGroup>
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\Archetype.cs" />
+    <Compile Include="Entities\Cameras\ICamera.cs" />
     <Compile Include="Entities\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
     <Compile Include="Entities\LayerManager.cs" />
     <Compile Include="Entities\Lights\ILight.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
+    <Compile Include="Entities\Selection\Duplication.cs" />
+    <Compile Include="Entities\Selection\DuplicationEventArgs.cs" />
+    <Compile Include="Entities\Selection\SelectionManager.cs" />
     <Compile Include="Entities\Volumes\PhysicsVolume.cs" />
     <Compile Include="Entities\Volumes\TriggerVolume.cs" />
     <Compile Include="Entities\Volumes\BlockingVolume.cs" />
@@ -135,10 +139,8 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
-    <Compile Include="Game\SelectionManager.cs" />
     <Compile Include="Game\ITick.cs" />
     <Compile Include="Game\UpdateManager.cs" />
-    <Compile Include="Game\DuplicatedEntityEventArgs.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
     <Compile Include="Game\GameSettings\ControlSettings.cs" />
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
@@ -170,8 +172,8 @@
     <Compile Include="Helpers\PatternMatcher.cs" />
     <Compile Include="Helpers\TypeSwitch.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
-    <Compile Include="Inputs\IMouseDelta.cs" />
     <Compile Include="Inputs\IInputProvider.cs" />
+    <Compile Include="Inputs\IMouseTracker.cs" />
     <Compile Include="Inputs\InputManager.cs" />
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
@@ -236,12 +238,16 @@
     </Compile>
     <Compile Include="Rendering\Animations\Bone.cs" />
     <Compile Include="Rendering\Animations\Skeleton.cs" />
+    <Compile Include="Rendering\Batches\Batch.cs" />
     <Compile Include="Rendering\Batches\IBatch.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Batches\ModelBatch.cs" />
     <Compile Include="Rendering\Batches\MeshBatch.cs" />
+    <Compile Include="Rendering\Batches\BillboardBatch.cs" />
     <Compile Include="Rendering\Buffers\MatrixBuffer.cs" />
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
+    <Compile Include="Rendering\IGridRenderer.cs" />
+    <Compile Include="Rendering\IRenderable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
     <Compile Include="Rendering\Meshes\MeshBone.cs" />
@@ -310,8 +316,10 @@
     <Compile Include="Rendering\Processing\DeferredRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Textures\TextureID.cs" />
     <Compile Include="Rendering\Textures\IMapTextures.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\ITextureProvider.cs" />
     <Compile Include="Rendering\Textures\TexturePaths.cs" />
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />

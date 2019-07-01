@@ -145,25 +145,25 @@ namespace SpiceEngine.Rendering.Processing
             batchManager.DrawVolumes(_wireframeProgram);
         }*/
 
-        public void WireframePass(Camera camera, BatchManager batchManager)
+        public void WireframePass(ICamera camera, BatchManager batchManager)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
                 .SetUniform("lineColor", LineColor)
-                .RenderBrushes()
-                .RenderVolumes()
-                .RenderActors()
+                .RenderOpaqueStatic()
+                .RenderTransparentStatic()
                 .SetShader(_jointWireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
                 .SetUniform("lineColor", LineColor)
-                .RenderJoints()
+                .RenderOpaqueAnimated()
+                .RenderTransparentAnimated()
                 .Execute();
         }
 
-        public void RenderGridLines(Camera camera)
+        public void RenderGridLines(ICamera camera)
         {
             _gridProgram.Use();
 
@@ -183,7 +183,7 @@ namespace SpiceEngine.Rendering.Processing
             _gridSquare.Draw();
         }
 
-        public void SelectionPass(IEntityProvider entityProvider, Camera camera, IEntity entity, BatchManager batchManager)
+        public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, BatchManager batchManager)
         {
             var program = (entity is AnimatedActor actor) ? _jointWireframeProgram : _wireframeProgram;
             program.Use();
@@ -196,7 +196,7 @@ namespace SpiceEngine.Rendering.Processing
             batch.Draw(entityProvider, program);
         }
 
-        public void SelectionPass(Camera camera, ILight light, SimpleMesh mesh)
+        public void SelectionPass(ICamera camera, ILight light, SimpleMesh mesh)
         {
             _wireframeProgram.Use();
 

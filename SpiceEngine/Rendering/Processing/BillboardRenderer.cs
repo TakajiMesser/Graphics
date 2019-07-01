@@ -122,7 +122,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderLights(Camera camera, IEnumerable<ILight> lights)
+        public void RenderLights(ICamera camera, IEnumerable<ILight> lights)
         {
             _billboardProgram.Use();
 
@@ -139,7 +139,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
-        public void RenderSelection(Camera camera, Volume volume, BatchManager batchManager)
+        public void RenderSelection(ICamera camera, Volume volume, BatchManager batchManager)
         {
             _billboardProgram.Use();
 
@@ -152,10 +152,10 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
 
             var batch = batchManager.GetBatch(volume.ID);
-            foreach (var vertex in batch.Vertices)
+            /*foreach (var vertex in batch.Vertices)
             {
-                //_vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
-            }
+                _vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
+            }*/
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -167,7 +167,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderSelection(Camera camera, ILight light)
+        public void RenderSelection(ICamera camera, ILight light)
         {
             _billboardProgram.Use();
 
@@ -190,7 +190,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(light.Yield());
         }
 
-        public void RenderVertexSelection(Camera camera, IEntity entity)
+        public void RenderVertexSelection(ICamera camera, IEntity entity)
         {
             _billboardProgram.Use();
 
@@ -198,10 +198,10 @@ namespace SpiceEngine.Rendering.Processing
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardProgram.BindTexture(_vertexTexture, "mainTexture", 0);
-            DrawVertices(entities.Yield());
+            DrawVertices(entity.Yield());
         }
 
-        public void RenderVertexSelectIDs(Camera camera, IEnumerable<IEntity> entities)
+        public void RenderVertexSelectIDs(ICamera camera, IEnumerable<IEntity> entities)
         {
             _billboardSelectionProgram.Use();
 
@@ -212,7 +212,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawVertices(entities);
         }
 
-        public void RenderLightSelectIDs(Camera camera, IEnumerable<ILight> lights)
+        public void RenderLightSelectIDs(ICamera camera, IEnumerable<ILight> lights)
         {
             _billboardSelectionProgram.Use();
 

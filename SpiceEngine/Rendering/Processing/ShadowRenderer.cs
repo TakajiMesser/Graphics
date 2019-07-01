@@ -111,7 +111,7 @@ namespace SpiceEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(Camera camera, ILight light, BatchManager batchManager)
+        public void Render(ICamera camera, ILight light, BatchManager batchManager)
         {
             switch (light)
             {
@@ -154,35 +154,33 @@ namespace SpiceEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.DepthBufferBit);
         }
 
-        private void PointLightPass(Camera camera, PointLight light, BatchManager batchManager)
+        private void PointLightPass(ICamera camera, PointLight light, BatchManager batchManager)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_pointShadowProgram)
                 .SetCamera(camera, light) // Draw camera from the point light's perspective
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
-                .RenderBrushes() // Draw all geometry, but only the positions
-                .RenderActors()
+                .RenderOpaqueStatic() // Draw all geometry, but only the positions
                 .SetShader(_pointShadowJointProgram)
                 .SetCamera(camera, light)
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
-                .RenderJoints()
+                .RenderOpaqueAnimated()
                 .Execute();
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightPass(Camera camera, SpotLight light, BatchManager batchManager)
+        private void SpotLightPass(ICamera camera, SpotLight light, BatchManager batchManager)
         {
             batchManager.CreateBatchAction()
                 .SetShader(_spotShadowProgram)
                 .SetCamera(camera, light) // Draw camera from the point light's perspective
-                .RenderBrushes() // Draw all geometry, but only the positions
-                .RenderActors()
+                .RenderOpaqueStatic() // Draw all geometry, but only the positions
                 .SetShader(_spotShadowJointProgram)
                 .SetCamera(camera, light)
-                .RenderJoints()
+                .RenderOpaqueAnimated()
                 .Execute();
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);

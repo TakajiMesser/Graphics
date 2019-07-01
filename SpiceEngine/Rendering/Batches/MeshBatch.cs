@@ -6,21 +6,17 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public class MeshBatch : IBatch
+    public class MeshBatch : Batch
     {
-        public int EntityID { get; private set; }
         public IMesh Mesh { get; }
 
-        public MeshBatch(int entityID, IMesh mesh)
-        {
-            EntityID = entityID;
-            Mesh = mesh;
-        }
+        public MeshBatch(IMesh mesh) => Mesh = mesh;
 
-        public IBatch Duplicate(int entityID) => new MeshBatch(entityID, Mesh.Duplicate());
+        public override IBatch Duplicate() => new MeshBatch(Mesh.Duplicate());
 
         public void AddTestColors()
         {
@@ -46,16 +42,16 @@ namespace SpiceEngine.Rendering.Batches
             Mesh.AddVertices(vertices);*/
         }
 
-        public void Load() => Mesh.Load();
+        public override void Load() => Mesh.Load();
 
-        public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
+        public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
-            var entity = entityProvider.GetEntity(EntityID);
+            var entity = entityProvider.GetEntity(EntityIDs.First());
 
             switch (entity)
             {
                 case Brush brush:
-                    brush.SetUniforms(shaderProgram, textureManager);
+                    brush.SetUniforms(shaderProgram, textureProvider);
                     break;
                 case Volume volume:
                     volume.SetUniforms(shaderProgram);

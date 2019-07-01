@@ -35,6 +35,9 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
+        public bool IsAnimated => typeof(T) == typeof(JointVertex3D);
+        public bool IsTransparent => Alpha < 1.0f;
+
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
         private List<T> _vertices;

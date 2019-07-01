@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Rendering.Processing;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -77,7 +78,7 @@ namespace SpiceEngine.Entities.Selection
         public IEnumerable<Duplication> DuplicateSelection()
         {
             // Create duplicates and overwrite SelectedEntities with them
-            var duplicateIDs = new List<int>();
+            var duplications = new List<Duplication>();
 
             foreach (var entity in SelectedEntities)
             {
@@ -85,13 +86,13 @@ namespace SpiceEngine.Entities.Selection
                 // Need to duplicate colliders
                 // Need to duplicate scripts
 
-                duplicateIDs.Add(duplicateEntity.ID);
+                duplications.Add(new Duplication(entity.ID, duplicateEntity.ID));
             }
 
-            SelectionManager.ClearSelection();
-            SelectionManager.SetSelectable(duplicateIDs);
+            ClearSelection();
+            SetSelectable(duplications.Select(d => d.DuplicatedID));
 
-            return duplicateIDs;
+            return duplications;
         }
 
         public void Remove(int id) => _selectedByID.TryRemove(id, out bool value);
@@ -188,7 +189,7 @@ namespace SpiceEngine.Entities.Selection
         {
             var rotation = Quaternion.Identity;
 
-            switch (SelectionManager.SelectionType)
+            switch (SelectionType)
             {
                 case SelectionTypes.Red:
                     //rotation.X -= mouseDelta.Y * 0.002f;
@@ -226,7 +227,7 @@ namespace SpiceEngine.Entities.Selection
         {
             var scale = Vector3.One;
 
-            switch (SelectionManager.SelectionType)
+            switch (SelectionType)
             {
                 case SelectionTypes.Red:
                     scale.X -= mouseDelta.Y * 0.002f;

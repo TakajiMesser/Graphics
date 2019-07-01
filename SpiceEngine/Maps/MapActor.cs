@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
@@ -49,7 +50,7 @@ namespace SpiceEngine.Maps
             }
         }
 
-        public Model ToModel() => new Model(ModelFilePath);
+        public IRenderable ToRenderable() => new Model(ModelFilePath);
 
         public override Actor ToEntity(/*TextureManager textureManager = null*/)
         {

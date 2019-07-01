@@ -10,9 +10,7 @@ namespace SpiceEngine.Entities.Cameras
 {
     public interface ICamera : IEntity
     {
-        int ID { get; set; }
         string Name { get; }
-        Vector3 Position { get; set; }
         IEntity AttachedEntity { get; }
         Vector3 AttachedTranslation { get; }
 
