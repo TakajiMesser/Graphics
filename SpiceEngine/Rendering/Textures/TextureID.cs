@@ -7,9 +7,11 @@ namespace SpiceEngine.Rendering.Textures
     {
         private float _alpha = 1.0f;
 
-        public TextureID(int id) => ID = id;
+        public TextureID(string filePath) => FilePath = filePath;
+        //public TextureID(int id) => ID = id;
 
-        public int ID { get; private set; }
+        public string FilePath { get; private set; }
+        public int ID { get; set; }
 
         public float Alpha
         {
@@ -32,8 +34,9 @@ namespace SpiceEngine.Rendering.Textures
 
         public TextureID Duplicate()
         {
-            return new TextureID(ID)
+            return new TextureID(FilePath)
             {
+                ID = ID,
                 Alpha = Alpha
             };
         }

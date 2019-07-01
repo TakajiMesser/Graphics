@@ -15,6 +15,11 @@ namespace SauceEditor.ViewModels.Tools
 
     public class ModelToolPanelViewModel : DockViewModel
     {
+        private const string SHAPE_LAYER_NAME = "Shape";
+        private const string FACE_LAYER_NAME = "Face";
+        private const string TRIANGLE_LAYER_NAME = "Triangle";
+        private const string VERTEX_LAYER_NAME = "Vertex";
+
         public ModelToolPanelViewModel() : base(DockTypes.Tool) { }
 
         public ISelectEntities EntitySelector { get; set; }
@@ -23,21 +28,37 @@ namespace SauceEditor.ViewModels.Tools
 
         public void OnModelToolTypeChanged()
         {
-            switch (ModelToolType)
+            EnableLayer(ModelToolType);
+            DisableLayers(ModelToolType);
+        }
+
+        private void EnableLayer(ModelToolTypes enableToolType)
+        {
+            switch (enableToolType)
             {
                 case ModelToolTypes.Shape:
-                    EntitySelector.SetSelectableEntities("Shape", ModelComponent.GetShapeEntities());
+                    EntitySelector.EnableLayer(SHAPE_LAYER_NAME, ModelComponent.GetShapeEntities());
                     break;
                 case ModelToolTypes.Face:
-                    EntitySelector.SetSelectableEntities("Face", ModelComponent.GetFaceEntities());
+                    EntitySelector.EnableLayer(FACE_LAYER_NAME, ModelComponent.GetFaceEntities());
                     break;
                 case ModelToolTypes.Triangle:
-                    EntitySelector.SetSelectableEntities("Triangle", ModelComponent.GetTriangleEntities());
+                    EntitySelector.EnableLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetTriangleEntities());
                     break;
                 case ModelToolTypes.Vertex:
-                    EntitySelector.SetSelectableEntities("Vertex", ModelComponent.GetVertexEntities());
+                    EntitySelector.EnableLayer(VERTEX_LAYER_NAME, ModelComponent.GetVertexEntities());
                     break;
             }
+        }
+
+        private void DisableLayers(ModelToolTypes excludeToolType)
+        {
+            EntitySelector.DisableLayer(LayerManager.ROOT_LAYER_NAME);
+
+            if (excludeToolType != ModelToolTypes.Shape) EntitySelector.DisableLayer(SHAPE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Face) EntitySelector.DisableLayer(FACE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Triangle) EntitySelector.DisableLayer(TRIANGLE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Vertex) EntitySelector.DisableLayer(VERTEX_LAYER_NAME);
         }
     }
 }

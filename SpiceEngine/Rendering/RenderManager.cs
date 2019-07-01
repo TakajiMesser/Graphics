@@ -104,6 +104,11 @@ namespace SpiceEngine.Rendering
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
+            if (renderable is TextureID textureID)
+            {
+                textureID.ID = TextureManager.AddTexture(textureID.FilePath);
+            }
+
             BatchManager.AddEntity(entityID, renderable);
         }
 

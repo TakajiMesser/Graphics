@@ -12,6 +12,8 @@ namespace SpiceEngine.Entities
             Disabled
         }
 
+        public const string ROOT_LAYER_NAME = "Root";
+
         private Dictionary<string, EntityLayer> _layersByName = new Dictionary<string, EntityLayer>();
 
         private Dictionary<string, LayerState> _renderLayerStatesByName = new Dictionary<string, LayerState>();
@@ -19,7 +21,7 @@ namespace SpiceEngine.Entities
         private Dictionary<string, LayerState> _physicsLayerStatesByName = new Dictionary<string, LayerState>();
         private Dictionary<string, LayerState> _selectLayerStatesByName = new Dictionary<string, LayerState>();
 
-        public EntityLayer RootLayer { get; } = new EntityLayer("Root");
+        public EntityLayer RootLayer { get; } = new EntityLayer(ROOT_LAYER_NAME);
 
         public List<string> RenderLayerNames { get; } = new List<string>();
         public List<string> ScriptLayerNames { get; } = new List<string>();
@@ -33,7 +35,7 @@ namespace SpiceEngine.Entities
 
         public LayerManager()
         {
-            RootLayer = new EntityLayer("Root");
+            RootLayer = new EntityLayer(ROOT_LAYER_NAME);
             AddEntityLayer(RootLayer);
         }
 

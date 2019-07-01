@@ -13,16 +13,25 @@ namespace SauceEditorCore.Models.Entities
     {
         public int ID { get; set; }
         public Vector3 Position { get; set; }
-        public MeshFace MeshFace { get; set; }
+        public MeshFace Face { get; }
 
-        public FaceEntity(MeshFace meshFace)
-        {
-
-        }
+        public FaceEntity(MeshFace meshFace) => Face = meshFace;
 
         public IRenderable ToRenderable()
         {
-            throw new NotImplementedException();
+            var meshBuild = new MeshBuild(Face);
+            var meshVertices = meshBuild.GetVertices();
+
+            if (meshVertices.Any(v => v.IsAnimated))
+            {
+                var vertices = meshBuild.GetVertices().Select(v => v.ToVertex3D());
+                return new Mesh<Vertex3D>(vertices, meshBuild.TriangleIndices);
+            }
+            else
+            {
+                var vertices = meshBuild.GetVertices().Select(v => v.ToJointVertex3D());
+                return new Mesh<JointVertex3D>(vertices, meshBuild.TriangleIndices);
+            }
         }
     }
 }
