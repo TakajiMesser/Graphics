@@ -4,22 +4,22 @@ using System.Linq;
 
 namespace SpiceEngine.Entities
 {
+    public enum LayerStates
+    {
+        Enabled,
+        Disabled
+    }
+
     public class LayerManager
     {
-        public enum LayerState
-        {
-            Enabled,
-            Disabled
-        }
-
         public const string ROOT_LAYER_NAME = "Root";
 
         private Dictionary<string, EntityLayer> _layersByName = new Dictionary<string, EntityLayer>();
 
-        private Dictionary<string, LayerState> _renderLayerStatesByName = new Dictionary<string, LayerState>();
-        private Dictionary<string, LayerState> _scriptLayerStatesByName = new Dictionary<string, LayerState>();
-        private Dictionary<string, LayerState> _physicsLayerStatesByName = new Dictionary<string, LayerState>();
-        private Dictionary<string, LayerState> _selectLayerStatesByName = new Dictionary<string, LayerState>();
+        private Dictionary<string, LayerStates> _renderLayerStatesByName = new Dictionary<string, LayerStates>();
+        private Dictionary<string, LayerStates> _scriptLayerStatesByName = new Dictionary<string, LayerStates>();
+        private Dictionary<string, LayerStates> _physicsLayerStatesByName = new Dictionary<string, LayerStates>();
+        private Dictionary<string, LayerStates> _selectLayerStatesByName = new Dictionary<string, LayerStates>();
 
         public EntityLayer RootLayer { get; } = new EntityLayer(ROOT_LAYER_NAME);
 
@@ -51,10 +51,10 @@ namespace SpiceEngine.Entities
         {
             _layersByName.Add(layer.Name, layer);
 
-            _renderLayerStatesByName.Add(layer.Name, LayerState.Enabled);
-            _scriptLayerStatesByName.Add(layer.Name, LayerState.Enabled);
-            _physicsLayerStatesByName.Add(layer.Name, LayerState.Enabled);
-            _selectLayerStatesByName.Add(layer.Name, LayerState.Enabled);
+            _renderLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
+            _scriptLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
+            _physicsLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
+            _selectLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
 
             RenderLayerNames.Add(layer.Name);
             ScriptLayerNames.Add(layer.Name);
@@ -81,19 +81,19 @@ namespace SpiceEngine.Entities
             ? _layersByName[layerName].EntityIDs
             : Enumerable.Empty<int>();
 
-        public LayerState GetRenderLayerState(string name) => _renderLayerStatesByName[name];
-        public LayerState GetScriptLayerState(string name) => _scriptLayerStatesByName[name];
-        public LayerState GetPhysicsLayerState(string name) => _physicsLayerStatesByName[name];
-        public LayerState GetSelectLayerState(string name) => _selectLayerStatesByName[name];
+        public LayerStates GetRenderLayerState(string name) => _renderLayerStatesByName[name];
+        public LayerStates GetScriptLayerState(string name) => _scriptLayerStatesByName[name];
+        public LayerStates GetPhysicsLayerState(string name) => _physicsLayerStatesByName[name];
+        public LayerStates GetSelectLayerState(string name) => _selectLayerStatesByName[name];
 
-        public void SetRenderLayerState(string name, LayerState state) => _renderLayerStatesByName[name] = state;
-        public void SetScriptLayerState(string name, LayerState state) => _scriptLayerStatesByName[name] = state;
-        public void SetPhysicsLayerState(string name, LayerState state) => _physicsLayerStatesByName[name] = state;
-        public void SetSelectLayerState(string name, LayerState state) => _selectLayerStatesByName[name] = state;
+        public void SetRenderLayerState(string name, LayerStates state) => _renderLayerStatesByName[name] = state;
+        public void SetScriptLayerState(string name, LayerStates state) => _scriptLayerStatesByName[name] = state;
+        public void SetPhysicsLayerState(string name, LayerStates state) => _physicsLayerStatesByName[name] = state;
+        public void SetSelectLayerState(string name, LayerStates state) => _selectLayerStatesByName[name] = state;
 
         public IEnumerable<EntityLayer> GetLayers(int entityID) => _layersByName.Values.Where(l => l.Contains(entityID));
 
-        private IEnumerable<int> GetEntityIDs(IEnumerable<string> layerNames, Dictionary<string, LayerState> layerStatesByName)
+        private IEnumerable<int> GetEntityIDs(IEnumerable<string> layerNames, Dictionary<string, LayerStates> layerStatesByName)
         {
             var entityIDs = new HashSet<int>();
             var excludeIDs = new HashSet<int>();
@@ -102,7 +102,7 @@ namespace SpiceEngine.Entities
             {
                 switch (layerStatesByName[layerName])
                 {
-                    case LayerState.Enabled:
+                    case LayerStates.Enabled:
                         foreach (var entityID in _layersByName[layerName].EntityIDs)
                         {
                             if (!entityIDs.Contains(entityID) && !excludeIDs.Contains(entityID))
@@ -112,11 +112,11 @@ namespace SpiceEngine.Entities
                             }
                         }
                         break;
-                    case LayerState.Disabled:
+                    case LayerStates.Disabled:
                         excludeIDs.UnionWith(_layersByName[layerName].EntityIDs);
                         break;
                     default:
-                        throw new NotImplementedException("Could not handle LayerState " + layerStatesByName[layerName]);
+                        throw new NotImplementedException("Could not handle LayerStates " + layerStatesByName[layerName]);
                 }
             }
         }

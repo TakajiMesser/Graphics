@@ -101,13 +101,17 @@ namespace SpiceEngine.Entities
 
         public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layerManager.GetLayerEntityIDs(layerName);
 
-        public void SetLayerState(string name, LayerManager.LayerState state)
+        public void SetLayerState(string name, LayerStates state)
         {
             _layerManager.SetPhysicsLayerState(name, state);
             _layerManager.SetRenderLayerState(name, state);
             _layerManager.SetScriptLayerState(name, state);
             _layerManager.SetSelectLayerState(name, state);
         }
+
+        public void SetRenderLayerState(string name, LayerStates state) => _layerManager.SetRenderLayerState(name, state);
+
+        public void SetSelectLayerState(string name, LayerStates state) => _layerManager.SetSelectLayerState(name, state);
 
         public int AddEntity(IEntity entity)
         {

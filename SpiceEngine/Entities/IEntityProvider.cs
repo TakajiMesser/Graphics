@@ -27,6 +27,8 @@ namespace SpiceEngine.Entities
         void AddLayer(string name);
         void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs);
         IEnumerable<int> GetLayerEntityIDs(string layerName);
-        void SetLayerState(string name, LayerManager.LayerState state);
+        void SetLayerState(string name, LayerStates state);
+        void SetRenderLayerState(string name, LayerStates state);
+        void SetSelectLayerState(string name, LayerStates state);
     }
 }

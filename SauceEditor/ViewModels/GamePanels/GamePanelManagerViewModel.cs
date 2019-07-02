@@ -66,7 +66,7 @@ namespace SauceEditor.ViewModels
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
         }
 
-        public void DisableLayer(string layerName) => GameManager.EntityManager.SetLayerState(layerName, LayerManager.LayerState.Disabled);
+        public void DisableLayer(string layerName) => GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
 
         public void EnableLayer(string layerName, IEnumerable<IModelEntity> entities)
         {
@@ -88,7 +88,8 @@ namespace SauceEditor.ViewModels
                 }
             }
 
-            GameManager.EntityManager.SetLayerState(layerName, LayerManager.LayerState.Enabled);
+            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
+            GameManager.EntityManager.SetRenderLayerState(layerName, LayerStates.Enabled);
 
             foreach (var entity in entities)
             {

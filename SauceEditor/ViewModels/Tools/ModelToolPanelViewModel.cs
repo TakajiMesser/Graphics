@@ -1,6 +1,7 @@
 using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
 using SauceEditorCore.Models.Components;
+using SpiceEngine.Entities;
 
 namespace SauceEditor.ViewModels.Tools
 {
