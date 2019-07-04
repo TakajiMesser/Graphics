@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Entities
+namespace SpiceEngine.Entities.Layers
 {
     public enum LayerStates
     {

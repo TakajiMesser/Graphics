@@ -1,5 +1,6 @@
 ﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using System;

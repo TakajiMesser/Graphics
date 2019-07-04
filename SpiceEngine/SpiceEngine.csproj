@@ -119,10 +119,11 @@
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\Archetype.cs" />
     <Compile Include="Entities\Cameras\ICamera.cs" />
-    <Compile Include="Entities\EntityLayer.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Layers\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
-    <Compile Include="Entities\LayerManager.cs" />
+    <Compile Include="Entities\Layers\LayerManager.cs" />
     <Compile Include="Entities\Lights\ILight.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
     <Compile Include="Entities\Selection\Duplication.cs" />
@@ -250,6 +251,7 @@
     <Compile Include="Rendering\IRenderable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Meshes\IModel.cs" />
     <Compile Include="Rendering\Meshes\MeshBone.cs" />
     <Compile Include="Rendering\Meshes\Model.cs" />
     <Compile Include="Rendering\Meshes\MeshBuild.cs" />
@@ -316,6 +318,7 @@
     <Compile Include="Rendering\Processing\DeferredRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Textures\ITextureBinder.cs" />
     <Compile Include="Rendering\Textures\TextureID.cs" />
     <Compile Include="Rendering\Textures\IMapTextures.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />

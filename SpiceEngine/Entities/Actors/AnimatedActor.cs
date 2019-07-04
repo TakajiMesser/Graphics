@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -36,13 +35,13 @@ namespace SpiceEngine.Entities.Actors
             return animatedActor;
         }
 
-        public override void SetUniforms(ShaderProgram program, ITextureProvider textureProvider, int meshIndex)
+        public override void SetUniforms(ShaderProgram program)
         {
-            base.SetUniforms(program, textureProvider, meshIndex);
+            base.SetUniforms(program);
 
-            if (_jointTransformsByMeshIndex.ContainsKey(meshIndex))
+            if (_jointTransformsByMeshIndex.ContainsKey(_meshIndex))
             {
-                program.SetUniform("jointTransforms", _jointTransformsByMeshIndex[meshIndex]);
+                program.SetUniform("jointTransforms", _jointTransformsByMeshIndex[_meshIndex]);
             }
             else
             {

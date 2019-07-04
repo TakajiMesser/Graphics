@@ -1,17 +1,16 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : IEntity, IRotate, IScale
+    public class Actor : Entity, IRotate, IScale, ITextureBinder, IModel
     {
-        private ModelMatrix _modelMatrix = new ModelMatrix();
+        protected int _meshIndex = 0;
 
-        public int ID { get; set; }
         public string Name { get; private set; }
 
         /// <summary>
@@ -20,12 +19,6 @@ namespace SpiceEngine.Entities.Actors
         /// If the model is already oriented correctly, this should be the quaternion identity.
         /// </summary>
         public Quaternion Orientation { get; set; } = Quaternion.Identity;
-
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set => _modelMatrix.Translation = value;
-        }
 
         public Quaternion Rotation
         {
@@ -45,10 +38,7 @@ namespace SpiceEngine.Entities.Actors
         public List<Material> Materials { get; set; } = new List<Material>();
         public List<TextureMapping?> TextureMappings { get; set; } = new List<TextureMapping?>();
 
-        public Actor(string name)
-        {
-            Name = name;
-        }
+        public Actor(string name) => Name = name;
 
         public virtual Actor Duplicate(string name)
         {
@@ -68,18 +58,24 @@ namespace SpiceEngine.Entities.Actors
             TextureMappings.AddRange(actor.TextureMappings);
         }
 
-        public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
+        public void SetMeshIndex(int meshIndex) => _meshIndex = meshIndex;
 
-        public virtual void SetUniforms(ShaderProgram program, ITextureProvider textureProvider, int meshIndex)
+        public override void SetUniforms(ShaderProgram program)
         {
-            Materials[meshIndex].SetUniforms(program);
-            if (textureProvider != null && TextureMappings[meshIndex].HasValue)
+            // TODO - Make this less janky. For now, we only want to set the model matrix once for all meshes, so bind it for the first mesh only
+            if (_meshIndex == 0)
             {
-                program.BindTextures(textureProvider, TextureMappings[meshIndex].Value);
+                base.SetUniforms(program);
             }
-            else
+            
+            Materials[_meshIndex].SetUniforms(program);
+        }
+
+        public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
+        {
+            if (TextureMappings[_meshIndex].HasValue)
             {
-                program.UnbindTextures();
+                program.BindTextures(textureProvider, TextureMappings[_meshIndex].Value);
             }
         }
 

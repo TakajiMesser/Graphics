@@ -131,13 +131,13 @@ namespace SpiceEngine.Rendering.Batches
                 _renderTypeByEntityID.Add(entityID, renderable.IsAnimated ? RenderTypes.OpaqueAnimated : RenderTypes.OpaqueStatic);
             }
 
-            var batch = CreateBatch(renderable);
+            var batch = CreateOrGetBatch(renderable);
             batch.AddEntity(entityID);
 
             AddBatch(entityID, batch);
         }
 
-        private Batch CreateBatch(IRenderable renderable)
+        private Batch CreateOrGetBatch(IRenderable renderable)
         {
             switch (renderable)
             {

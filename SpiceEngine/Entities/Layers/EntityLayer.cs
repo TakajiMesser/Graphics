@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace SpiceEngine.Entities
+namespace SpiceEngine.Entities.Layers
 {
     public class EntityLayer
     {

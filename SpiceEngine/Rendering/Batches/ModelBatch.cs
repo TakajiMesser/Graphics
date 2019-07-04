@@ -1,10 +1,7 @@
 ﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
@@ -21,16 +18,21 @@ namespace SpiceEngine.Rendering.Batches
 
         public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
-            var actor = (Actor)entityProvider.GetEntity(EntityIDs.First());
-            actor.SetUniforms(shaderProgram);
+            var entity = entityProvider.GetEntity(EntityIDs.First());
+            var textureBinder = textureProvider != null ? entity as ITextureBinder : null;
 
-            int meshIndex = 0;
-
-            foreach (var mesh in Model.Meshes)
+            for (var i = 0; i < Model.Meshes.Count; i++)
             {
-                actor.SetUniforms(shaderProgram, textureProvider, meshIndex);
-                mesh.Draw();
-                meshIndex++;
+                ((IModel)entity).SetMeshIndex(i);
+
+                if (textureBinder != null)
+                {
+                    // TODO - Determine when to unbind textures
+                    textureBinder.BindTextures(shaderProgram, textureProvider);
+                }
+
+                entity.SetUniforms(shaderProgram);
+                Model.Meshes[i].Draw();
             }
         }
     }

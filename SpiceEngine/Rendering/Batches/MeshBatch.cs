@@ -47,16 +47,15 @@ namespace SpiceEngine.Rendering.Batches
         public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
             var entity = entityProvider.GetEntity(EntityIDs.First());
-            
-            /*if (textureProvider != null && entity is Brush brush)
+
+            if (textureProvider != null && entity is ITextureBinder textureBinder)
             {
-                brush.SetUniforms(shaderProgram, textureProvider);
+                // TODO - Determine when to unbind textures
+                textureBinder.BindTextures(shaderProgram, textureProvider);
             }
-            else
-            {*/
-                entity.SetUniforms(shaderProgram);
-            //}
-            
+
+            entity.SetUniforms(shaderProgram);
+
             Mesh.Draw();
         }
     }

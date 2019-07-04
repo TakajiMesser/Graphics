@@ -9,9 +9,7 @@ namespace SpiceEngine.Rendering.Meshes
 {
     public class Model : IRenderable
     {
-        private List<IMesh> _meshes = new List<IMesh>();
-
-        public IEnumerable<IMesh> Meshes => _meshes;
+        public List<IMesh> Meshes { get; } = new List<IMesh>();
         public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
         public bool IsTransparent => Meshes.Any(m => m.Alpha < 1.0f);
 
@@ -88,12 +86,12 @@ namespace SpiceEngine.Rendering.Meshes
         public void Add(IMesh mesh)
         {
             mesh.AlphaChanged += (s, args) => AlphaChanged?.Invoke(s, args);
-            _meshes.Add(mesh);
+            Meshes.Add(mesh);
         }
 
         public void Load()
         {
-            foreach (var mesh in _meshes)
+            foreach (var mesh in Meshes)
             {
                 mesh.Load();
             }
@@ -103,7 +101,7 @@ namespace SpiceEngine.Rendering.Meshes
         {
             var model = new Model();
 
-            foreach (var mesh in _meshes)
+            foreach (var mesh in Meshes)
             {
                 model.Add(mesh.Duplicate());
             }

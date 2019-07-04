@@ -3,6 +3,7 @@ using SauceEditor.ViewModels.Properties;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Layers;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;

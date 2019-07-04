@@ -10,16 +10,8 @@ namespace SpiceEngine.Entities.Brushes
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : IEntity, IRotate, IScale
+    public class Brush : Entity, IRotate, IScale, ITextureBinder
     {
-        public int ID { get; set; }
-
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set => _modelMatrix.Translation = value;
-        }
-
         public Quaternion Rotation
         {
             get => _modelMatrix.Rotation;
@@ -37,8 +29,6 @@ namespace SpiceEngine.Entities.Brushes
 
         public Material Material { get; set; }
         public TextureMapping? TextureMapping { get; set; }
-
-        private ModelMatrix _modelMatrix = new ModelMatrix();
 
         public Brush(Material material)
         {
@@ -64,13 +54,9 @@ namespace SpiceEngine.Entities.Brushes
             return brush;
         }
 
-        public void SetUniforms(ShaderProgram program) => SetUniforms(program, null);
-        public void SetUniforms(ShaderProgram program, ITextureProvider textureProvider)
+        public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
         {
-            _modelMatrix.Set(program);
-            Material.SetUniforms(program);
-
-            if (textureProvider != null && TextureMapping.HasValue)
+            if (TextureMapping.HasValue)
             {
                 program.BindTextures(textureProvider, TextureMapping.Value);
             }
@@ -80,24 +66,10 @@ namespace SpiceEngine.Entities.Brushes
             }
         }
 
-        /*public static Brush Rectangle(Vector3 center, float width, float height)
+        public override void SetUniforms(ShaderProgram program)
         {
-            var vertices = new List<Vertex3D>
-            {
-                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero)
-            };
-
-            var material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
-
-            var triangleIndices = new List<int>()
-            {
-                0, 1, 2, 1, 2, 3
-            };
-
-            return new Brush(vertices, material, triangleIndices);
-        }*/
+            base.SetUniforms(program);
+            Material.SetUniforms(program);
+        }
     }
 }
