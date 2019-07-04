@@ -8,7 +8,13 @@ namespace SpiceEngine.Entities.Lights
 {
     public class PointLight : Light<PLight>
     {
-        public float Radius { get; set; }
+        private float _radius;
+
+        public float Radius
+        {
+            get => _radius;
+            set => _modelMatrix.Scale = Vector3.One * value;
+        }
 
         public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
 

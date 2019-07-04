@@ -117,6 +117,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
 
             camera.SetUniforms(_stencilProgram);
+            light.SetUniforms(_stencilProgram);
             light.DrawForStencilPass(_stencilProgram);
             mesh.Draw();
         }
@@ -139,6 +140,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(program);
             program.SetUniform("cameraPosition", camera.Position);
+            light.SetUniforms(program);
 
             light.DrawForLightPass(program);
             mesh.Draw();

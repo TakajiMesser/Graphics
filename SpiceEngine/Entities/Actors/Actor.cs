@@ -68,10 +68,7 @@ namespace SpiceEngine.Entities.Actors
             TextureMappings.AddRange(actor.TextureMappings);
         }
 
-        public virtual void SetUniforms(ShaderProgram program)
-        {
-            _modelMatrix.Set(program);
-        }
+        public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
 
         public virtual void SetUniforms(ShaderProgram program, ITextureProvider textureProvider, int meshIndex)
         {

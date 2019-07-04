@@ -64,6 +64,7 @@ namespace SpiceEngine.Entities.Brushes
             return brush;
         }
 
+        public void SetUniforms(ShaderProgram program) => SetUniforms(program, null);
         public void SetUniforms(ShaderProgram program, ITextureProvider textureProvider)
         {
             _modelMatrix.Set(program);

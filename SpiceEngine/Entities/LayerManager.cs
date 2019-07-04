@@ -6,6 +6,7 @@ namespace SpiceEngine.Entities
 {
     public enum LayerStates
     {
+        Neutral,
         Enabled,
         Disabled
     }
@@ -51,10 +52,10 @@ namespace SpiceEngine.Entities
         {
             _layersByName.Add(layer.Name, layer);
 
-            _renderLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
-            _scriptLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
-            _physicsLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
-            _selectLayerStatesByName.Add(layer.Name, LayerStates.Enabled);
+            _renderLayerStatesByName[layer.Name] = LayerStates.Neutral;
+            _scriptLayerStatesByName[layer.Name] = LayerStates.Neutral;
+            _physicsLayerStatesByName[layer.Name] = LayerStates.Neutral;
+            _selectLayerStatesByName[layer.Name] = LayerStates.Neutral;
 
             RenderLayerNames.Add(layer.Name);
             ScriptLayerNames.Add(layer.Name);
@@ -93,19 +94,67 @@ namespace SpiceEngine.Entities
 
         public IEnumerable<EntityLayer> GetLayers(int entityID) => _layersByName.Values.Where(l => l.Contains(entityID));
 
+        private IEnumerable<int> GetEntityIDs2(IEnumerable<string> layerNames, Dictionary<string, LayerStates> layerStatesByName)
+        {
+            var enabledIDs = GetIDSet(LayerStates.Enabled, layerNames, layerStatesByName);
+            var disabledIDs = GetIDSet(LayerStates.Disabled, layerNames, layerStatesByName);
+            var neutralIDs = GetIDSet(LayerStates.Neutral, layerNames, layerStatesByName);
+
+            // Return ALL enabled ID's
+            foreach (var id in enabledIDs)
+            {
+                yield return id;
+            }
+
+            foreach (var id in neutralIDs.Except(disabledIDs))
+            {
+                yield return id;
+            }
+        }
+
+        private HashSet<int> GetIDSet(LayerStates layerState, IEnumerable<string> layerNames, Dictionary<string, LayerStates> layerStatesByName)
+        {
+            var ids = new HashSet<int>();
+
+            foreach (var layerName in layerNames)
+            {
+                var state = layerStatesByName[layerName];
+                if (layerState == state)
+                {
+                    foreach (var id in _layersByName[layerName].EntityIDs)
+                    {
+                        ids.Add(id);
+                    }
+                }
+            }
+
+            return ids;
+        }
+
         private IEnumerable<int> GetEntityIDs(IEnumerable<string> layerNames, Dictionary<string, LayerStates> layerStatesByName)
         {
-            var entityIDs = new HashSet<int>();
+            return GetEntityIDs2(layerNames, layerStatesByName);
+            /*var entityIDs = new HashSet<int>();
             var excludeIDs = new HashSet<int>();
 
             foreach (var layerName in layerNames)
             {
                 switch (layerStatesByName[layerName])
                 {
-                    case LayerStates.Enabled:
+                    case LayerStates.Neutral:
                         foreach (var entityID in _layersByName[layerName].EntityIDs)
                         {
                             if (!entityIDs.Contains(entityID) && !excludeIDs.Contains(entityID))
+                            {
+                                entityIDs.Add(entityID);
+                                yield return entityID;
+                            }
+                        }
+                        break;
+                    case LayerStates.Enabled:
+                        foreach (var entityID in _layersByName[layerName].EntityIDs)
+                        {
+                            if (!entityIDs.Contains(entityID))
                             {
                                 entityIDs.Add(entityID);
                                 yield return entityID;
@@ -118,7 +167,7 @@ namespace SpiceEngine.Entities
                     default:
                         throw new NotImplementedException("Could not handle LayerStates " + layerStatesByName[layerName]);
                 }
-            }
+            }*/
         }
     }
 }

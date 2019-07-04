@@ -204,15 +204,7 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", SelectedLightLineThickness);
             _wireframeProgram.SetUniform("lineColor", SelectedLightLineColor);
 
-            switch (light)
-            {
-                case PointLight p:
-                    _wireframeProgram.SetUniform("modelMatrix", Matrix4.Identity * Matrix4.CreateScale(p.Radius) * Matrix4.CreateTranslation(p.Position));
-                    break;
-                case SpotLight s:
-                    _wireframeProgram.SetUniform("modelMatrix", s.Model);
-                    break;
-            }
+            light.SetUniforms(_wireframeProgram);
 
             mesh.Draw();
         }

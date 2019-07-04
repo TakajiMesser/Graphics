@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
 
@@ -18,8 +19,8 @@ namespace SpiceEngine.Rendering.Meshes
 
         public Vertex3D ToVertex3D() => new Vertex3D(Position, Normal, Tangent, UV, Color);
 
-        public JointVertex3D ToJointVertex3D() => new JointVertex3D(Position, Normal, Tangent, UV,
-            BoneIDs.HasValue ? BoneIDs.Value : Vector4.Zero, BoneWeights.HasValue ? BoneWeights.Value : Vector4.Zero)
+        public JointVertex3D ToJointVertex3D() => (JointVertex3D)new JointVertex3D(Position, Normal, Tangent, UV,
+            BoneIDs ?? Vector4.Zero, BoneWeights ?? Vector4.Zero)
             .Colored(Color);
     }
 }

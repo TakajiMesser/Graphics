@@ -2,9 +2,15 @@
 using OpenTK.Graphics;
 using SauceEditor.Models.Components;
 using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Entities;
+using SpiceEngine.Entities;
 using SpiceEngine.Maps;
+using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
+using System;
 using System.IO;
 
 namespace SauceEditor.Helpers.Builders

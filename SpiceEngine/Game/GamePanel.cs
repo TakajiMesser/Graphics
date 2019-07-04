@@ -258,7 +258,7 @@ namespace SpiceEngine.Game
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
-            _renderManager.AddEntity(entityID, renderable);
+            _renderManager?.AddEntity(entityID, renderable);
         }
 
         public void SelectEntity(IEntity entity)
@@ -291,22 +291,19 @@ namespace SpiceEngine.Game
                 {
                     selectedEntity.Position = entity.Position;
 
-                    switch (entity)
+                    if (entity is IRotate rotator && selectedEntity is IRotate selectedRotator)
                     {
-                        case Actor actor:
-                            var selectedActor = selectedEntity as Actor;
-                            selectedActor.Rotation = actor.Rotation;
-                            selectedActor.Scale = actor.Scale;
-                            break;
-                        case Brush brush:
-                            var selectedBrush = selectedEntity as Brush;
-                            selectedBrush.Rotation = brush.Rotation;
-                            selectedBrush.Scale = brush.Scale;
-                            break;
-                        case ILight light:
-                            var selectedLight = selectedEntity as ILight;
-                            selectedLight.Color = light.Color;
-                            break;
+                        selectedRotator.Rotation = rotator.Rotation;
+                    }
+
+                    if (entity is IScale scaler && selectedEntity is IScale selectedScaler)
+                    {
+                        selectedScaler.Scale = scaler.Scale;
+                    }
+
+                    if (entity is ILight light && selectedEntity is ILight selectedLight)
+                    {
+                        selectedLight.Color = light.Color;
                     }
                 }
             }

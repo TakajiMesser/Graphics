@@ -1,4 +1,4 @@
-using SauceEditor.Models.Components;
+using SauceEditor.Helpers.Builders;
 using SauceEditor.ViewModels.Docks;
 using SauceEditorCore.Models.Components;
 using SpiceEngine.Entities;
@@ -23,7 +23,7 @@ namespace SauceEditor.ViewModels.Tools
 
         public ModelToolPanelViewModel() : base(DockTypes.Tool) { }
 
-        public ISelectEntities EntitySelector { get; set; }
+        public ILayerSetter LayerSetter { get; set; }
         public ModelComponent ModelComponent { get; set; }
         public ModelToolTypes ModelToolType { get; set; }
 
@@ -38,28 +38,32 @@ namespace SauceEditor.ViewModels.Tools
             switch (enableToolType)
             {
                 case ModelToolTypes.Shape:
-                    EntitySelector.EnableLayer(SHAPE_LAYER_NAME, ModelComponent.GetShapeEntities());
+                    LayerSetter.AddToLayer(SHAPE_LAYER_NAME, ModelComponent.GetShapeEntities());
+                    LayerSetter.EnableLayer(SHAPE_LAYER_NAME);
                     break;
                 case ModelToolTypes.Face:
-                    EntitySelector.EnableLayer(FACE_LAYER_NAME, ModelComponent.GetFaceEntities());
+                    LayerSetter.AddToLayer(FACE_LAYER_NAME, ModelComponent.GetFaceEntities());
+                    LayerSetter.EnableLayer(FACE_LAYER_NAME);
                     break;
                 case ModelToolTypes.Triangle:
-                    EntitySelector.EnableLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetTriangleEntities());
+                    LayerSetter.AddToLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetTriangleEntities());
+                    LayerSetter.EnableLayer(TRIANGLE_LAYER_NAME);
                     break;
                 case ModelToolTypes.Vertex:
-                    EntitySelector.EnableLayer(VERTEX_LAYER_NAME, ModelComponent.GetVertexEntities());
+                    LayerSetter.AddToLayer(VERTEX_LAYER_NAME, ModelComponent.GetVertexEntities());
+                    LayerSetter.EnableLayer(VERTEX_LAYER_NAME);
                     break;
             }
         }
 
         private void DisableLayers(ModelToolTypes excludeToolType)
         {
-            EntitySelector.DisableLayer(LayerManager.ROOT_LAYER_NAME);
+            //LayerSetter.NeutralizeLayer(LayerManager.ROOT_LAYER_NAME);
 
-            if (excludeToolType != ModelToolTypes.Shape) EntitySelector.DisableLayer(SHAPE_LAYER_NAME);
-            if (excludeToolType != ModelToolTypes.Face) EntitySelector.DisableLayer(FACE_LAYER_NAME);
-            if (excludeToolType != ModelToolTypes.Triangle) EntitySelector.DisableLayer(TRIANGLE_LAYER_NAME);
-            if (excludeToolType != ModelToolTypes.Vertex) EntitySelector.DisableLayer(VERTEX_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Shape) LayerSetter.DisableLayer(SHAPE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Face) LayerSetter.DisableLayer(FACE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Triangle) LayerSetter.DisableLayer(TRIANGLE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Vertex) LayerSetter.DisableLayer(VERTEX_LAYER_NAME);
         }
     }
 }

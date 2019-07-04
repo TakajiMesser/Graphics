@@ -47,16 +47,15 @@ namespace SpiceEngine.Rendering.Batches
         public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
             var entity = entityProvider.GetEntity(EntityIDs.First());
-
-            switch (entity)
+            
+            /*if (textureProvider != null && entity is Brush brush)
             {
-                case Brush brush:
-                    brush.SetUniforms(shaderProgram, textureProvider);
-                    break;
-                case Volume volume:
-                    volume.SetUniforms(shaderProgram);
-                    break;
+                brush.SetUniforms(shaderProgram, textureProvider);
             }
+            else
+            {*/
+                entity.SetUniforms(shaderProgram);
+            //}
             
             Mesh.Draw();
         }

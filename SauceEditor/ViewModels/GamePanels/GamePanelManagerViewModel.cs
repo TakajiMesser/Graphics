@@ -6,6 +6,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
+using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using System;
@@ -16,7 +17,7 @@ using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
-    public class GamePanelManagerViewModel : DockViewModel, ISelectEntities
+    public class GamePanelManagerViewModel : DockViewModel, ILayerSetter
     {
         public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
@@ -66,32 +67,65 @@ namespace SauceEditor.ViewModels
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
         }
 
-        public void DisableLayer(string layerName) => GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
+        public void EnableLayer(string layerName)
+        {
+            // If the layer is enabled, it means that these IDs will get included regardless if they show up in other layers
+            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
+        }
 
-        public void EnableLayer(string layerName, IEnumerable<IModelEntity> entities)
+        public void DisableLayer(string layerName)
+        {
+            // If the layer is disabled, it means that these IDs will get excluded regardless if they show up in other layers
+            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
+        }
+
+        public void NeutralizeLayer(string layerName)
+        {
+            // If the layer is neutralized, it means that these IDs will be included UNLESS they are excluded in another layer
+            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Neutral);
+        }
+
+        // e.g.
+        // Root     - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+        // Face     - 2, 3, 4, 5
+        // Triangle - 6, 7, 8
+        // Vertex   - 9, 10
+        // 
+        // By default, Root is NEUTRAL
+        // Face ->
+        //      Leave Root NEUTRAL for Render
+        //      Set Face ENABLED
+        //      Set Triangle DISABLED
+        //      Set Vertex DISABLED
+        // Triangle ->
+        //      
+
+        public void AddToLayer(string layerName, IEnumerable<IModelEntity> entities)
         {
             // TODO - Correct and reorganize this method
             // First, we need to ensure that this layer exists in the LayerManager
             // We then need to add all of these entities to it, then enable the layer
             // In subsequent calls, we just need to disable the root layer, then enable the requested layers
             // An issue is that we want to ONLY render the Root layer for diffuse/lit. The new layer should just be for selection/wireframe
+            var modelEntities = entities.ToList();
 
             // Add these entities to a new layer, enable it, and disable all other layers
             if (!GameManager.EntityManager.ContainsLayer(layerName))
             {
-                GameManager.EntityManager.AddLayer(layerName);
-                GameManager.EntityManager.AddEntitiesToLayer(layerName, entities.Select(e => e.ID));
-
-                foreach (var entity in entities)
+                foreach (var entity in modelEntities)
                 {
-                    entity.ID = GameManager.EntityManager.AddEntity(entity);
+                    var id = GameManager.EntityManager.AddEntity(entity);
+                    entity.ID = id;
                 }
+
+                GameManager.EntityManager.AddLayer(layerName);
+                GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
             }
 
-            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
-            GameManager.EntityManager.SetRenderLayerState(layerName, LayerStates.Enabled);
+            //GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
+            //GameManager.EntityManager.SetRenderLayerState(layerName, LayerStates.Enabled);
 
-            foreach (var entity in entities)
+            foreach (var entity in modelEntities)
             {
                 var renderable = entity.ToRenderable();
 

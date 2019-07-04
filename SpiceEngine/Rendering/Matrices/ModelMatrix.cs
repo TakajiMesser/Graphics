@@ -46,7 +46,7 @@ namespace SpiceEngine.Rendering.Matrices
 
         private Matrix4 _previousMatrix;
 
-        public ModelMatrix() { }
+        public ModelMatrix() => CalculateMatrix();
         public ModelMatrix(Vector3 translation, Quaternion rotation, Vector3 scale) => Update(translation, rotation, scale);
 
         public void Update(Vector3 translation, Quaternion rotation, Vector3 scale)

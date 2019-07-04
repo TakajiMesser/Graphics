@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using System;
 
@@ -6,12 +7,15 @@ namespace SpiceEngine.Entities.Lights
 {
     public abstract class Light<T> : ILight where T : struct
     {
-        public int ID { get; set; }
-
-        public Vector3 Position { get; set; }
-
+        protected ModelMatrix _modelMatrix = new ModelMatrix();
         private float _intensity;
 
+        public int ID { get; set; }
+        public Vector3 Position
+        {
+            get => _modelMatrix.Translation;
+            set => _modelMatrix.Translation = value;
+        }
         public Vector4 Color { get; set; }
         public float Intensity
         {
@@ -24,6 +28,8 @@ namespace SpiceEngine.Entities.Lights
                 _intensity = value;
             }
         }
+
+        public void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
 
         public abstract void DrawForStencilPass(ShaderProgram program);
         public abstract void DrawForLightPass(ShaderProgram program);

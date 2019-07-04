@@ -1,8 +1,12 @@
 ﻿using OpenTK;
+using SauceEditorCore.Helpers;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Shaders;
+using SpiceEngine.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -17,9 +21,15 @@ namespace SauceEditorCore.Models.Entities
 
         public VertexEntity(MeshVertex meshVertex) => Vertex = meshVertex;
 
+        public virtual void SetUniforms(ShaderProgram program)
+        {
+
+        }
+
         public IRenderable ToRenderable()
         {
-            var meshBuild = new MeshBuild(Triangle);
+            return new TextureID(FilePathHelper.VERTEX_TEXTURE_PATH);
+            /*var meshBuild = new MeshBuild(Triangle);
             var meshVertices = meshBuild.GetVertices();
 
             if (meshVertices.Any(v => v.IsAnimated))
@@ -31,7 +41,7 @@ namespace SauceEditorCore.Models.Entities
             {
                 var vertices = meshBuild.GetVertices().Select(v => v.ToJointVertex3D());
                 return new Mesh<JointVertex3D>(vertices, meshBuild.TriangleIndices);
-            }
+            }*/
         }
     }
 }

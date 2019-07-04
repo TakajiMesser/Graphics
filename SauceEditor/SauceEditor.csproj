@@ -224,7 +224,7 @@
     <Compile Include="ViewModels\Docks\IHaveDockViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
-    <Compile Include="ViewModels\ISelectEntities.cs" />
+    <Compile Include="ViewModels\ILayerSetter.cs" />
     <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
     <Compile Include="ViewModels\Docks\DockViewModel.cs" />
     <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />

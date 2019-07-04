@@ -154,7 +154,7 @@ namespace SauceEditor.Views
                 {
                     case ModelComponent modelComponent:
                         _modelToolPanel.ViewModel.ModelComponent = modelComponent;
-                        _modelToolPanel.ViewModel.EntitySelector = gamePanelManager.ViewModel;
+                        _modelToolPanel.ViewModel.LayerSetter = gamePanelManager.ViewModel;
                         break;
                 }
             }
