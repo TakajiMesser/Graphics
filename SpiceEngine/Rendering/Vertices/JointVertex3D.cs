@@ -26,6 +26,17 @@ namespace SpiceEngine.Rendering.Vertices
             BoneWeights = boneWeights;
         }
 
+        public IVertex3D Transformed(Matrix4 modelMatrix) => new JointVertex3D()
+        {
+            Position = (modelMatrix * new Vector4(Position, 1.0f)).Xyz,
+            Color = Color,
+            Normal = Normal,
+            Tangent = Tangent,
+            TextureCoords = TextureCoords,
+            BoneIDs = BoneIDs,
+            BoneWeights = BoneWeights
+        };
+
         public IColorVertex Colored(Color4 color)
         {
             return new JointVertex3D()

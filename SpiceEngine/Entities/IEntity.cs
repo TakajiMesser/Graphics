@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Shaders;
+using System;
 
 namespace SpiceEngine.Entities
 {
@@ -10,5 +11,8 @@ namespace SpiceEngine.Entities
         //IEntity Duplicate();
 
         void SetUniforms(ShaderProgram shader);
+        bool CompareUniforms(IEntity entity);
+
+        event EventHandler<EntityTransformEventArgs> Transformed;
     }
 }

@@ -119,6 +119,9 @@
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\Archetype.cs" />
     <Compile Include="Entities\Cameras\ICamera.cs" />
+    <Compile Include="Entities\EntityTransformEventArgs.cs" />
+    <Compile Include="Entities\TexturedEntity.cs" />
+    <Compile Include="Entities\EntityEventArgs.cs" />
     <Compile Include="Entities\Entity.cs" />
     <Compile Include="Entities\Layers\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
@@ -336,6 +339,7 @@
     <Compile Include="Rendering\Vertices\TextureVertex2D.cs" />
     <Compile Include="Rendering\Vertices\JointVertex3D.cs" />
     <Compile Include="Rendering\Vertices\IVertex3D.cs" />
+    <Compile Include="Rendering\Vertices\SelectionVertex3D.cs" />
     <Compile Include="Rendering\Vertices\Vertex3D.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />

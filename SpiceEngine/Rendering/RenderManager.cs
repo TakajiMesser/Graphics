@@ -10,9 +10,11 @@ using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.IO;
@@ -38,6 +40,9 @@ namespace SpiceEngine.Rendering
 
         public BatchManager BatchManager { get; private set; }
         public TextureManager TextureManager { get; } = new TextureManager();
+
+        // TODO - Make this less janky
+        public bool IsSelectable { get; set; }
 
         private IEntityProvider _entityProvider;
         private ICamera _camera;
@@ -109,7 +114,26 @@ namespace SpiceEngine.Rendering
                 textureID.ID = TextureManager.AddTexture(textureID.FilePath);
             }
 
-            BatchManager.AddEntity(entityID, renderable);
+            if (IsSelectable)
+            {
+                switch (renderable)
+                {
+                    case Mesh<Vertex3D> mesh:
+                        BatchManager.AddEntity(entityID, new Mesh<SelectionVertex3D>(
+                            mesh.Vertices.Select(v => new SelectionVertex3D((Vertex3D)v, SelectionRenderer.GetColorFromID(entityID))).ToList(),
+                            mesh.TriangleIndices.ToList()));
+                        break;
+                    case Mesh<JointVertex3D> mesh:
+                        BatchManager.AddEntity(entityID, new Mesh<SelectionVertex3D>(
+                            mesh.Vertices.Select(v => new SelectionVertex3D((JointVertex3D)v, SelectionRenderer.GetColorFromID(entityID))).ToList(),
+                            mesh.TriangleIndices.ToList()));
+                        break;
+                }
+            }
+            else
+            {
+                BatchManager.AddEntity(entityID, renderable);
+            }
         }
 
         public void AddBrush(MapBrush mapBrush, int entityID)
@@ -118,7 +142,7 @@ namespace SpiceEngine.Rendering
 
             var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
             var brush = _entityProvider.GetEntity(entityID) as Brush;
-            brush.TextureMapping = textureMapping;
+            brush.AddTextureMapping(textureMapping);
 
             BatchManager.AddEntity(entityID, renderable);
         }
@@ -126,7 +150,8 @@ namespace SpiceEngine.Rendering
         public void AddActor(MapActor mapActor, int entityID)
         {
             var renderable = mapActor.ToRenderable();
-            var textureMappings = new List<TextureMapping?>();
+
+            var actor = _entityProvider.GetEntity(entityID) as Actor;
 
             if (mapActor.HasAnimations)
             {
@@ -140,17 +165,18 @@ namespace SpiceEngine.Rendering
                             ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
                             : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
 
-                        textureMappings.Add(textureMapping);
+                        actor.AddTextureMapping(textureMapping);
                     }
                 }
             }
             else
             {
-                textureMappings.AddRange(mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)));
+                foreach (var textureMapping in mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)))
+                {
+                    actor.AddTextureMapping(textureMapping);
+                }
             }
 
-            var actor = _entityProvider.GetEntity(entityID) as Actor;
-            actor.TextureMappings.AddRange(textureMappings);
             BatchManager.AddEntity(entityID, renderable);
         }
 

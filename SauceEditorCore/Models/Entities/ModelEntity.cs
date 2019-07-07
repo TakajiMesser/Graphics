@@ -1,11 +1,13 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities;
+using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using System;
 
-namespace SpiceEngine.Entities
+namespace SauceEditorCore.Models.Entities
 {
-    public abstract class Entity : IEntity
+    public abstract class ModelEntity : IModelEntity
     {
         protected ModelMatrix _modelMatrix = new ModelMatrix();
 
@@ -24,9 +26,14 @@ namespace SpiceEngine.Entities
         public event EventHandler<EntityEventArgs> UniformsChanged;
         public event EventHandler<EntityTransformEventArgs> Transformed;
 
-        //public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
-        public abstract void SetUniforms(ShaderProgram program);
+        public virtual void SetUniforms(ShaderProgram program)
+        {
+            program.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
+            program.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
+        }
 
-        public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
+        public virtual bool CompareUniforms(IEntity entity) => entity is ModelEntity modelEntity && _modelMatrix.Equals(modelEntity._modelMatrix);
+
+        public abstract IRenderable ToRenderable();
     }
 }

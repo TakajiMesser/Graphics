@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Vertices;
 using System;
@@ -65,12 +66,40 @@ namespace SpiceEngine.Rendering.Meshes
         public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
         public void ClearVertices() => _vertices.Clear();
 
+        public void Combine(IMesh mesh)
+        {
+            if (mesh is Mesh<T> castMesh)
+            {
+                var offset = _vertices.Count;
+                _vertices.AddRange(castMesh._vertices);
+                _triangleIndices.AddRange(castMesh._triangleIndices.Select(i => i + offset));
+            }
+        }
+
+        public void Transform(Matrix4 matrix) => Transform(matrix, 0, _vertices.Count);
+        public void Transform(Matrix4 matrix, int offset, int count)
+        {
+            for (var i = offset; i < count; i++)
+            {
+                // TODO - This is very redundant to keep two separate lists of vertex (struct) data
+                var transformedVertex = (T)_vertices[i].Transformed(matrix);
+                _vertices[i] = transformedVertex;
+
+                if (_vertexBuffer != null)
+                {
+                    _vertexBuffer.Clear();
+                    _vertexBuffer.AddVertices(_vertices);
+                }
+            }
+        }
+
         public void Load()
         {
             _vertexBuffer = new VertexBuffer<T>();
             _indexBuffer = new VertexIndexBuffer();
             _vertexArray = new VertexArray<T>();
 
+            _vertexBuffer.Clear();
             _vertexBuffer.AddVertices(_vertices);
             _indexBuffer.AddIndices(_triangleIndices.ConvertAll(i => (ushort)i));
 

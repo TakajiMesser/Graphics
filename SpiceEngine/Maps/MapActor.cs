@@ -228,7 +228,7 @@ namespace SpiceEngine.Maps
                     for (var i = 0; i < scene.Meshes.Count; i++)
                     {
                         var material = new Material(scene.Materials[scene.Meshes[i].MaterialIndex]);
-                        actor.Materials.Add(material);
+                        actor.AddMaterial(material);
                     }
                 }
             }

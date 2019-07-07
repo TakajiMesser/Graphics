@@ -1,7 +1,6 @@
-using SauceEditor.Helpers.Builders;
 using SauceEditor.ViewModels.Docks;
 using SauceEditorCore.Models.Components;
-using SpiceEngine.Entities;
+using SpiceEngine.Entities.Layers;
 
 namespace SauceEditor.ViewModels.Tools
 {
@@ -58,7 +57,7 @@ namespace SauceEditor.ViewModels.Tools
 
         private void DisableLayers(ModelToolTypes excludeToolType)
         {
-            //LayerSetter.NeutralizeLayer(LayerManager.ROOT_LAYER_NAME);
+            LayerSetter.DisableLayer(LayerManager.ROOT_LAYER_NAME);
 
             if (excludeToolType != ModelToolTypes.Shape) LayerSetter.DisableLayer(SHAPE_LAYER_NAME);
             if (excludeToolType != ModelToolTypes.Face) LayerSetter.DisableLayer(FACE_LAYER_NAME);

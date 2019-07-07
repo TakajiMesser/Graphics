@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Entities;
+﻿using OpenTK;
+using SpiceEngine.Entities;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
@@ -12,12 +13,14 @@ namespace SpiceEngine.Rendering.Batches
 
         public IEnumerable<int> EntityIDs => _entityIDs;
 
-        public void AddEntity(int id)
+        public virtual void AddEntity(int id, IRenderable renderable)
         {
             _entityIDs.Add(id);
         }
 
-        public void RemoveEntity(int id)
+        public virtual void Transform(int entityID, Matrix4 matrix) { }
+
+        public virtual void RemoveEntity(int id)
         {
             _entityIDs.Remove(id);
         }

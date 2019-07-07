@@ -1,44 +1,30 @@
-﻿using OpenTK;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Vertices;
 using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class FaceEntity : IModelEntity
+    public class FaceEntity : ModelEntity
     {
-        private ModelMatrix _modelMatrix = new ModelMatrix();
-
-        public int ID { get; set; }
         public MeshFace Face { get; }
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set => _modelMatrix.Translation = value;
-        }
 
         public FaceEntity(MeshFace meshFace) => Face = meshFace;
 
-        public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
+        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is FaceEntity;
 
-        public IRenderable ToRenderable()
+        public override IRenderable ToRenderable()
         {
             var meshBuild = new MeshBuild(Face);
             var meshVertices = meshBuild.GetVertices();
 
-            if (meshVertices.Any(v => v.IsAnimated))
-            {
-                var vertices = meshBuild.GetVertices().Select(v => v.ToJointVertex3D());
-                return new Mesh<JointVertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
-            }
-            else
-            {
-                var vertices = meshBuild.GetVertices().Select(v => v.ToVertex3D());
-                return new Mesh<Vertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
-            }
+            var mesh = meshVertices.Any(v => v.IsAnimated)
+                ? (IMesh)new Mesh<JointVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices)
+                : new Mesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices);
+
+            mesh.Transform(_modelMatrix.Matrix);
+            return mesh;
         }
     }
 }

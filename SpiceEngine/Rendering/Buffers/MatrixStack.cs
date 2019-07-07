@@ -41,10 +41,10 @@ namespace SpiceEngine.Rendering.Buffers
 
             foreach (var brush in brushes)
             {
-                _modelMatrixBuffer.AddMatrix(brush.ModelMatrix);
+                _modelMatrixBuffer.AddMatrix(brush.GetModelMatrix());
 
                 // TODO - Confirm whether or not this multiplication order should be reversed
-                _mvpMatrixBuffer.AddMatrix(brush.ModelMatrix * camera.ViewMatrix * camera.ProjectionMatrix);
+                _mvpMatrixBuffer.AddMatrix(brush.GetModelMatrix() * camera.ViewMatrix * camera.ProjectionMatrix);
             }
         }
 

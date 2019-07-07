@@ -224,7 +224,10 @@ namespace SpiceEngine.Game
 
         private void LoadFromGameManager()
         {
-            _renderManager = new RenderManager(Resolution, WindowSize);
+            _renderManager = new RenderManager(Resolution, WindowSize)
+            {
+                IsSelectable = true
+            };
             _renderManager.SetEntityProvider(_entityProvider);
             _renderManager.LoadFromMap(_map, _entityMapping);
 

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities;
 using SpiceEngine.Helpers;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Materials;
@@ -10,16 +11,8 @@ using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class ShapeEntity : IModelEntity
+    public class ShapeEntity : ModelEntity
     {
-        private ModelMatrix _modelMatrix = new ModelMatrix();
-
-        public int ID { get; set; }
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set => _modelMatrix.Translation = value;
-        }
         public MeshShape Shape { get; }
         public Material Material { get; set; }
 
@@ -29,13 +22,15 @@ namespace SauceEditorCore.Models.Entities
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
 
-        public virtual void SetUniforms(ShaderProgram program)
+        public override void SetUniforms(ShaderProgram program)
         {
             _modelMatrix.Set(program);
             Material.SetUniforms(program);
         }
 
-        public IRenderable ToRenderable()
+        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is ShapeEntity;
+
+        public override IRenderable ToRenderable()
         {
             var meshBuild = new MeshBuild(Shape);
             var meshVertices = meshBuild.GetVertices();

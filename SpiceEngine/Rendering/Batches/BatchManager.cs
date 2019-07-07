@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Rendering.Meshes;
@@ -131,25 +132,64 @@ namespace SpiceEngine.Rendering.Batches
                 _renderTypeByEntityID.Add(entityID, renderable.IsAnimated ? RenderTypes.OpaqueAnimated : RenderTypes.OpaqueStatic);
             }
 
-            var batch = CreateOrGetBatch(renderable);
-            batch.AddEntity(entityID);
+            var batch = CreateOrGetBatch(entityID, renderable);
+            batch.AddEntity(entityID, renderable);
+
+            if (_entityProvider.GetEntity(entityID) is Brush brush)
+            {
+                batch.Transform(brush.ID, brush.GetModelMatrix());
+            }
 
             AddBatch(entityID, batch);
         }
 
-        private Batch CreateOrGetBatch(IRenderable renderable)
+        private Batch CreateOrGetBatch(int entityID, IRenderable renderable)
         {
-            switch (renderable)
+            var match = FindAppropriateBatch(entityID, renderable);
+
+            if (match != null)
             {
-                case IMesh mesh:
-                    return new MeshBatch(mesh);
-                case Model model:
-                    return new ModelBatch(model);
-                case TextureID textureID:
-                    return new BillboardBatch(textureID);
+                return match;
+            }
+            else
+            {
+                switch (renderable)
+                {
+                    case IMesh mesh:
+                        return new MeshBatch(mesh);
+                    case Model model:
+                        return new ModelBatch(model);
+                    case TextureID textureID:
+                        return new BillboardBatch(textureID);
+                }
+
+                throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
+            }
+        }
+
+        private Batch FindAppropriateBatch(int entityID, IRenderable renderable)
+        {
+            if (renderable is IMesh)
+            {
+                var entityA = _entityProvider.GetEntity(entityID);
+
+                foreach (var meshBatch in _batches.OfType<MeshBatch>())
+                {
+                    var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
+
+                    if (entityA.CompareUniforms(entityB))
+                    {
+                        entityA.Transformed += (s, args) =>
+                        {
+                            meshBatch.Transform(args.ID, args.Transform);
+                        };
+
+                        return meshBatch;
+                    }
+                }
             }
 
-            throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
+            return null;
         }
 
         private void AddBatch(int entityID, IBatch batch)

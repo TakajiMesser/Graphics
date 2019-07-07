@@ -106,7 +106,7 @@ namespace SpiceEngine.Entities.Layers
                 yield return id;
             }
 
-            foreach (var id in neutralIDs.Except(disabledIDs))
+            foreach (var id in neutralIDs.Except(enabledIDs).Except(disabledIDs))
             {
                 yield return id;
             }

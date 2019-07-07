@@ -4,10 +4,11 @@ using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : Entity, IRotate, IScale, ITextureBinder, IModel
+    public class Actor : TexturedEntity, IRotate, IScale, ITextureBinder, IModel
     {
         protected int _meshIndex = 0;
 
@@ -35,10 +36,16 @@ namespace SpiceEngine.Entities.Actors
 
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;
 
-        public List<Material> Materials { get; set; } = new List<Material>();
-        public List<TextureMapping?> TextureMappings { get; set; } = new List<TextureMapping?>();
+        private List<Material> _materials = new List<Material>();
+        private List<TextureMapping?> _textureMappings = new List<TextureMapping?>();
+
+        public override Material Material => _materials[_meshIndex];
+        public override TextureMapping? TextureMapping => _textureMappings[_meshIndex];
 
         public Actor(string name) => Name = name;
+
+        public override void AddMaterial(Material material) => _materials.Add(material);
+        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);
 
         public virtual Actor Duplicate(string name)
         {
@@ -54,8 +61,8 @@ namespace SpiceEngine.Entities.Actors
             Rotation = actor.Rotation;
             Scale = actor.Scale;
 
-            Materials.AddRange(actor.Materials);
-            TextureMappings.AddRange(actor.TextureMappings);
+            _materials.AddRange(actor._materials);
+            _textureMappings.AddRange(actor._textureMappings);
         }
 
         public void SetMeshIndex(int meshIndex) => _meshIndex = meshIndex;
@@ -65,18 +72,10 @@ namespace SpiceEngine.Entities.Actors
             // TODO - Make this less janky. For now, we only want to set the model matrix once for all meshes, so bind it for the first mesh only
             if (_meshIndex == 0)
             {
-                base.SetUniforms(program);
+                _modelMatrix.Set(program);
             }
-            
-            Materials[_meshIndex].SetUniforms(program);
-        }
 
-        public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
-        {
-            if (TextureMappings[_meshIndex].HasValue)
-            {
-                program.BindTextures(textureProvider, TextureMappings[_meshIndex].Value);
-            }
+            base.SetUniforms(program);
         }
 
         /*On Model Position Change -> if (Bounds != null)

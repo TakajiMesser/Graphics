@@ -17,5 +17,7 @@ namespace SpiceEngine.Rendering.Vertices
         {
             Position = new Vector3(x, y, z);
         }
+
+        public IVertex3D Transformed(Matrix4 matrix) => new Simple3DVertex((matrix * new Vector4(Position, 1.0f)).Xyz);
     }
 }

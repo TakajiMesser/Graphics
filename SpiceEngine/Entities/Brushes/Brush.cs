@@ -10,66 +10,64 @@ namespace SpiceEngine.Entities.Brushes
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : Entity, IRotate, IScale, ITextureBinder
+    public class Brush : TexturedEntity, IRotate, IScale, ITextureBinder
     {
+        private Material _material;
+        private TextureMapping? _textureMapping;
+
         public Quaternion Rotation
         {
             get => _modelMatrix.Rotation;
-            set => _modelMatrix.Rotation = value;
+            set
+            {
+                _modelMatrix.Rotation = value;
+                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _modelMatrix.Matrix));
+            }
         }
 
         public Vector3 Scale
         {
             get => _modelMatrix.Scale;
-            set => _modelMatrix.Scale = value;
+            set
+            {
+                _modelMatrix.Scale = value;
+                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _modelMatrix.Matrix));
+            }
         }
 
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
-        public Matrix4 ModelMatrix => _modelMatrix.Matrix;
+        public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
 
-        public Material Material { get; set; }
-        public TextureMapping? TextureMapping { get; set; }
+        public override Material Material => _material;
+        public override TextureMapping? TextureMapping => _textureMapping;
 
-        public Brush(Material material)
+        public override void AddMaterial(Material material) => _material = material;
+        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMapping = textureMapping;
+
+        public override void SetUniforms(ShaderProgram program)
         {
-            Material = material;
-            //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
+            base.SetUniforms(program);
+            program.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
+            program.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
         }
 
         public Brush Duplicate()
         {
-            var brush = new Brush(Material)
+            var brush = new Brush()
             {
                 Position = Position,
                 Rotation = Rotation,
-                Scale = Scale
+                Scale = Scale,
+                _material = Material
             };
 
             if (TextureMapping.HasValue)
             {
                 var textureMapping = TextureMapping.Value;
-                brush.TextureMapping = new TextureMapping(textureMapping.DiffuseMapID, textureMapping.NormalMapID, textureMapping.ParallaxMapID, textureMapping.SpecularMapID);
+                brush.AddTextureMapping(new TextureMapping(textureMapping.DiffuseMapID, textureMapping.NormalMapID, textureMapping.ParallaxMapID, textureMapping.SpecularMapID));
             }
 
             return brush;
-        }
-
-        public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
-        {
-            if (TextureMapping.HasValue)
-            {
-                program.BindTextures(textureProvider, TextureMapping.Value);
-            }
-            else
-            {
-                program.UnbindTextures();
-            }
-        }
-
-        public override void SetUniforms(ShaderProgram program)
-        {
-            base.SetUniforms(program);
-            Material.SetUniforms(program);
         }
     }
 }

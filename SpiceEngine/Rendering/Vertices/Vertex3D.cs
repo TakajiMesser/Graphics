@@ -31,6 +31,22 @@ namespace SpiceEngine.Rendering.Vertices
             TextureCoords = textureCoords;
         }
 
+        public IVertex3D Transformed(Matrix4 modelMatrix)
+        {
+            var oldPosition = Position;
+            var newPosition = modelMatrix * new Vector4(Position, 1.0f);
+            var newPosition2 = new Vector4(Position, 1.0f) * modelMatrix;
+
+            return new Vertex3D()
+            {
+                Position = newPosition2.Xyz,
+                Normal = Normal,
+                Tangent = Tangent,
+                TextureCoords = TextureCoords,
+                Color = Color
+            };
+        }
+
         public IColorVertex Colored(Color4 color) => new Vertex3D()
         {
             Position = Position,

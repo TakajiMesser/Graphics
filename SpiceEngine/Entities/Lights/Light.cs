@@ -25,5 +25,8 @@ namespace SpiceEngine.Entities.Lights
         public abstract void DrawForStencilPass(ShaderProgram program);
         public abstract void DrawForLightPass(ShaderProgram program);
         public abstract T ToStruct();
+
+        public override void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
+        public bool CompareUniforms(Entity entity) => entity is ILight && base.CompareUniforms(entity);
     }
 }

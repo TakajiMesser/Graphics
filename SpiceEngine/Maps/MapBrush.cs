@@ -40,13 +40,19 @@ namespace SpiceEngine.Maps
             return new Mesh<Vertex3D>(Vertices, TriangleIndices);
         }
 
-        public override Brush ToEntity() => new Brush(Material)
+        public override Brush ToEntity()
         {
-            Position = Position,
-            Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
-            Scale = Scale,
-            //HasCollision = HasCollision
-        };
+            var brush = new Brush()
+            {
+                Position = Position,
+                Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
+                Scale = Scale,
+                //HasCollision = HasCollision
+            };
+
+            brush.AddMaterial(Material);
+            return brush;
+        }
 
         public Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
 

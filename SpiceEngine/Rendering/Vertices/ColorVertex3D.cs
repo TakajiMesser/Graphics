@@ -16,6 +16,12 @@ namespace SpiceEngine.Rendering.Vertices
             Color = color;
         }
 
+        public IVertex3D Transformed(Matrix4 modelMatrix) => new ColorVertex3D()
+        {
+            Position = (modelMatrix * new Vector4(Position, 1.0f)).Xyz,
+            Color = Color
+        };
+
         public IColorVertex Colored(Color4 color) => new ColorVertex3D()
         {
             Position = Position,

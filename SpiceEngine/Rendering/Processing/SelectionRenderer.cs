@@ -13,6 +13,7 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -164,12 +165,16 @@ namespace SpiceEngine.Rendering.Processing
                 .SetShader(_selectionProgram)
                 .SetCamera(camera)
                 .SetEntityIDs(ids)
-                .RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
-                .RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                .RenderOpaqueStatic()
+                .RenderTransparentStatic()
+                //.RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                //.RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
                 .SetShader(_jointSelectionProgram)
                 .SetCamera(camera)
-                .RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
-                .RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                .RenderOpaqueAnimated()
+                .RenderTransparentAnimated()
+                //.RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
                 .Execute();
         }
 

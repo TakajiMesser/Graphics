@@ -13,20 +13,15 @@ using System.Text;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class VertexEntity : IModelEntity
+    public class VertexEntity : ModelEntity
     {
-        public int ID { get; set; }
-        public Vector3 Position { get; set; }
         public MeshVertex Vertex { get; }
 
         public VertexEntity(MeshVertex meshVertex) => Vertex = meshVertex;
 
-        public virtual void SetUniforms(ShaderProgram program)
-        {
+        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is VertexEntity;
 
-        }
-
-        public IRenderable ToRenderable()
+        public override IRenderable ToRenderable()
         {
             return new TextureID(FilePathHelper.VERTEX_TEXTURE_PATH);
             /*var meshBuild = new MeshBuild(Triangle);
