@@ -7,6 +7,7 @@ namespace SpiceEngine.Rendering.Meshes
     public interface IMesh : IRenderable
     {
         IEnumerable<IVertex3D> Vertices { get; }
+        IEnumerable<int> TriangleIndices { get; }
         float Alpha { get; set; }
 
         void Load();

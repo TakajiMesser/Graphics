@@ -226,7 +226,7 @@ namespace SpiceEngine.Game
         {
             _renderManager = new RenderManager(Resolution, WindowSize)
             {
-                IsSelectable = true
+                IsEditorMode = true
             };
             _renderManager.SetEntityProvider(_entityProvider);
             _renderManager.LoadFromMap(_map, _entityMapping);
@@ -259,10 +259,7 @@ namespace SpiceEngine.Game
             PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
         }
 
-        public void AddEntity(int entityID, IRenderable renderable)
-        {
-            _renderManager?.AddEntity(entityID, renderable);
-        }
+        public void AddEntity(int entityID, IRenderable renderable) => _renderManager?.AddEntity(entityID, renderable);
 
         public void SelectEntity(IEntity entity)
         {

@@ -1,7 +1,9 @@
 ﻿using SauceEditorCore.Models.Entities;
 using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Textures;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace SauceEditorCore.Models.Components
@@ -35,11 +37,14 @@ namespace SauceEditorCore.Models.Components
 
         public IEnumerable<FaceEntity> GetFaceEntities()
         {
-            foreach (var meshShape in GetModelShape().Meshes)
+            var meshShapes = GetModelShape().Meshes;
+            var texturePaths = Model.GetTexturePaths(Path).ToList();
+
+            for (var i = 0; i < meshShapes.Count; i++)
             {
-                foreach (var meshFace in meshShape.Faces)
+                foreach (var meshFace in meshShapes[i].Faces)
                 {
-                    yield return new FaceEntity(meshFace);
+                    yield return new FaceEntity(meshFace, texturePaths[i]);
                 }
             }
         }

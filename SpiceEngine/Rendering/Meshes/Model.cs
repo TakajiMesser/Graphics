@@ -1,8 +1,10 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
@@ -31,7 +33,7 @@ namespace SpiceEngine.Rendering.Meshes
                 {
                     foreach (var mesh in scene.Meshes)
                     {
-                        var vertices = new List<JointVertex3D>();
+                        var vertices = new List<AnimatedVertex3D>();
 
                         for (var i = 0; i < mesh.VertexCount; i++)
                         {
@@ -55,10 +57,10 @@ namespace SpiceEngine.Rendering.Meshes
                                 }
                             }
 
-                            vertices.Add(new JointVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
+                            vertices.Add(new AnimatedVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                         }
 
-                        Add(new Mesh<JointVertex3D>(vertices, mesh.GetIndices().ToList()));
+                        Add(new Mesh<AnimatedVertex3D>(vertices, mesh.GetIndices().ToList()));
                     }
                 }
                 else
@@ -107,6 +109,19 @@ namespace SpiceEngine.Rendering.Meshes
             }
 
             return model;
+        }
+
+        public static IEnumerable<TexturePaths> GetTexturePaths(string filePath)
+        {
+            using (var importer = new Assimp.AssimpContext())
+            {
+                var scene = importer.ImportFile(filePath);
+
+                for (var i = 0; i < scene.Meshes.Count; i++)
+                {
+                    yield return new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(filePath));
+                }
+            }
         }
     }
 }

@@ -23,7 +23,7 @@ namespace SauceEditorCore.Models.Entities
             var meshVertices = meshBuild.GetVertices();
 
             var mesh = meshVertices.Any(v => v.IsAnimated)
-                ? (IMesh)new Mesh<JointVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices)
+                ? (IMesh)new Mesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices)
                 : new Mesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices);
 
             mesh.Transform(_modelMatrix.Matrix);

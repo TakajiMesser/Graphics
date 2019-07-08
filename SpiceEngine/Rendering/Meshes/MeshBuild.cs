@@ -95,19 +95,19 @@ namespace SpiceEngine.Rendering.Meshes
 
         private void AddTriangle(MeshTriangle triangle, float uvXOrigin, float uvYOrigin, Quaternion uvRotation, UVMap uvMap)
         {
-            var uvA = new Vector2()
+            var uvA = triangle.VertexA.UV != Vector2.Zero ? triangle.VertexA.UV : new Vector2()
             {
                 X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexA.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
                 Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexA.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
-            var uvB = new Vector2()
+            var uvB = triangle.VertexB.UV != Vector2.Zero ? triangle.VertexB.UV : new Vector2()
             {
                 X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexB.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
                 Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexB.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
             };
 
-            var uvC = new Vector2()
+            var uvC = triangle.VertexC.UV != Vector2.Zero ? triangle.VertexC.UV : new Vector2()
             {
                 X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexC.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
                 Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexC.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y

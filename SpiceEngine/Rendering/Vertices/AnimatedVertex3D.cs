@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct JointVertex3D : IVertex3D, IColorVertex
+    public struct AnimatedVertex3D : IVertex3D, ITextureVertex, IColorVertex, IAnimatedVertex
     {
         public Vector3 Position { get; private set; }
         public Vector3 Normal { get; private set; }
@@ -15,7 +15,7 @@ namespace SpiceEngine.Rendering.Vertices
         public Vector4 BoneIDs { get; private set; }
         public Vector4 BoneWeights { get; private set; }
 
-        public JointVertex3D(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, Vector4 boneIDs, Vector4 boneWeights)
+        public AnimatedVertex3D(Vector3 position, Vector3 normal, Vector3 tangent, Vector2 textureCoords, Vector4 boneIDs, Vector4 boneWeights)
         {
             Position = position;
             Color = new Color4();
@@ -26,7 +26,7 @@ namespace SpiceEngine.Rendering.Vertices
             BoneWeights = boneWeights;
         }
 
-        public IVertex3D Transformed(Matrix4 modelMatrix) => new JointVertex3D()
+        public IVertex3D Transformed(Matrix4 modelMatrix) => new AnimatedVertex3D()
         {
             Position = (modelMatrix * new Vector4(Position, 1.0f)).Xyz,
             Color = Color,
@@ -39,7 +39,7 @@ namespace SpiceEngine.Rendering.Vertices
 
         public IColorVertex Colored(Color4 color)
         {
-            return new JointVertex3D()
+            return new AnimatedVertex3D()
             {
                 Position = Position,
                 Color = color,

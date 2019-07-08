@@ -19,7 +19,7 @@ namespace SpiceEngine.Rendering.Meshes
 
         public Vertex3D ToVertex3D() => new Vertex3D(Position, Normal, Tangent, UV, Color);
 
-        public JointVertex3D ToJointVertex3D() => (JointVertex3D)new JointVertex3D(Position, Normal, Tangent, UV,
+        public AnimatedVertex3D ToJointVertex3D() => (AnimatedVertex3D)new AnimatedVertex3D(Position, Normal, Tangent, UV,
             BoneIDs ?? Vector4.Zero, BoneWeights ?? Vector4.Zero)
             .Colored(Color);
     }

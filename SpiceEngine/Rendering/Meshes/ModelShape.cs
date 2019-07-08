@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Rendering.Animations;
+﻿using OpenTK;
+using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -64,7 +65,13 @@ namespace SpiceEngine.Rendering.Meshes
 
                     foreach (var face in mesh.Faces)
                     {
-                        var meshFace = new MeshFace(face.Indices.Select(i => mesh.Vertices[i].ToVector3()));
+                        var meshFace = new MeshFace(face.Indices.Select(i => new MeshVertex()
+                        {
+                            Position = mesh.Vertices[i].ToVector3(),
+                            Normal = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3(),
+                            Tangent = mesh.HasTangentBasis ? mesh.Tangents[i].ToVector3() : new Vector3(),
+                            UV = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0][i].ToVector2() : new Vector2()
+                        }));
 
                         if (mesh.HasNormals)
                         {
@@ -75,8 +82,6 @@ namespace SpiceEngine.Rendering.Meshes
                         {
                             meshFace.Tangent = face.Indices.Select(i => mesh.Tangents[i].ToVector3()).Average();
                         }
-
-                        // TODO - Figure out how to handle texture coords
 
                         meshShape.Faces.Add(meshFace);
                     }
