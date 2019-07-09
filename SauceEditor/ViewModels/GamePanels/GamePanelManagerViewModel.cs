@@ -86,6 +86,12 @@ namespace SauceEditor.ViewModels
             GameManager.EntityManager.SetLayerState(layerName, LayerStates.Neutral);
         }
 
+        public void ClearLayer(string layerName)
+        {
+            // TODO - Remove entities from EntityManager tracking as well
+            GameManager.EntityManager.ClearLayer(layerName);
+        }
+
         // e.g.
         // Root     - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
         // Face     - 2, 3, 4, 5
@@ -110,18 +116,20 @@ namespace SauceEditor.ViewModels
             // An issue is that we want to ONLY render the Root layer for diffuse/lit. The new layer should just be for selection/wireframe
             var modelEntities = entities.ToList();
 
+            // Assign entity ID's
+            foreach (var entity in modelEntities)
+            {
+                var id = GameManager.EntityManager.AddEntity(entity);
+                entity.ID = id;
+            }
+
             // Add these entities to a new layer, enable it, and disable all other layers
             if (!GameManager.EntityManager.ContainsLayer(layerName))
             {
-                foreach (var entity in modelEntities)
-                {
-                    var id = GameManager.EntityManager.AddEntity(entity);
-                    entity.ID = id;
-                }
-
                 GameManager.EntityManager.AddLayer(layerName);
-                GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
             }
+
+            GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
 
             //GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
             //GameManager.EntityManager.SetRenderLayerState(layerName, LayerStates.Enabled);

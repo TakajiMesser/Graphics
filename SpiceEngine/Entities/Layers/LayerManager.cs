@@ -82,6 +82,14 @@ namespace SpiceEngine.Entities.Layers
             ? _layersByName[layerName].EntityIDs
             : Enumerable.Empty<int>();
 
+        public void ClearLayer(string layerName)
+        {
+            if (_layersByName.ContainsKey(layerName))
+            {
+                _layersByName[layerName].Clear();
+            }
+        }
+
         public LayerStates GetRenderLayerState(string name) => _renderLayerStatesByName[name];
         public LayerStates GetScriptLayerState(string name) => _scriptLayerStatesByName[name];
         public LayerStates GetPhysicsLayerState(string name) => _physicsLayerStatesByName[name];

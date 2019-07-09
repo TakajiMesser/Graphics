@@ -1,7 +1,4 @@
 ﻿using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using SpiceEngine.Rendering;
 using System.Collections.Generic;
 
 namespace SauceEditor.ViewModels
@@ -12,6 +9,7 @@ namespace SauceEditor.ViewModels
         void EnableLayer(string layerName);
         void DisableLayer(string layerName);
         void NeutralizeLayer(string layerName);
+        void ClearLayer(string layerName);
 
         //void SetSelectableEntities(string layerName, IEnumerable<IModelEntity> entities);
         //void SelectEntities(IEnumerable<IEntity> entities);

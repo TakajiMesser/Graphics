@@ -13,15 +13,14 @@ namespace SauceEditorCore.Models.Entities
     {
         public MeshFace Face { get; }
         public TexturePaths TexturePaths { get; }
+        public Material Material { get; private set; }
+        public TextureMapping? TextureMapping { get; private set; }
 
         public FaceEntity(MeshFace meshFace, TexturePaths texturePaths)
         {
             Face = meshFace;
             TexturePaths = texturePaths;
         }
-
-        public Material Material { get; private set; }
-        public TextureMapping? TextureMapping { get; private set; }
 
         public void AddMaterial(Material material) => Material = material;
 

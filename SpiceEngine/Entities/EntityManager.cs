@@ -110,6 +110,18 @@ namespace SpiceEngine.Entities
             _layerManager.SetSelectLayerState(name, state);
         }
 
+        public void ClearLayer(string layerName)
+        {
+            // TODO - We need to ensure that these entity ID's are marked for deletion but maybe not yet deleted,
+            //        because the RenderManager could be in the middle of drawing a batch
+            foreach (var id in _layerManager.GetLayerEntityIDs(layerName))
+            {
+                RemoveEntityByID(id);
+            }
+
+            _layerManager.ClearLayer(layerName);
+        }
+
         public void SetRenderLayerState(string name, LayerStates state) => _layerManager.SetRenderLayerState(name, state);
 
         public void SetSelectLayerState(string name, LayerStates state) => _layerManager.SetSelectLayerState(name, state);
@@ -184,6 +196,8 @@ namespace SpiceEngine.Entities
         public void RemoveEntityByID(int id)
         {
             var entity = GetEntity(id);
+            _entitiesByID.Remove(id);
+            _entityTypeByID.Remove(id);
 
             switch (entity)
             {

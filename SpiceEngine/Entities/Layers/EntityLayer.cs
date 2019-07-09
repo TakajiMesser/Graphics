@@ -11,13 +11,11 @@ namespace SpiceEngine.Entities.Layers
 
         public int Count => _entityIDs.Count;
 
-        public EntityLayer(string name)
-        {
-            Name = name;
-        }
+        public EntityLayer(string name) => Name = name;
 
         public void Add(int entityID) => _entityIDs.Add(entityID);
         public void Remove(int entityID) => _entityIDs.Remove(entityID);
         public bool Contains(int entityID) => _entityIDs.Contains(entityID);
+        public void Clear() => _entityIDs.Clear();
     }
 }

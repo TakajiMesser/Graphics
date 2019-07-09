@@ -37,18 +37,22 @@ namespace SauceEditor.ViewModels.Tools
             switch (enableToolType)
             {
                 case ModelToolTypes.Shape:
+                    LayerSetter.ClearLayer(SHAPE_LAYER_NAME);
                     LayerSetter.AddToLayer(SHAPE_LAYER_NAME, ModelComponent.GetShapeEntities());
                     LayerSetter.EnableLayer(SHAPE_LAYER_NAME);
                     break;
                 case ModelToolTypes.Face:
+                    LayerSetter.ClearLayer(FACE_LAYER_NAME);
                     LayerSetter.AddToLayer(FACE_LAYER_NAME, ModelComponent.GetFaceEntities());
                     LayerSetter.EnableLayer(FACE_LAYER_NAME);
                     break;
                 case ModelToolTypes.Triangle:
+                    LayerSetter.ClearLayer(TRIANGLE_LAYER_NAME);
                     LayerSetter.AddToLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetTriangleEntities());
                     LayerSetter.EnableLayer(TRIANGLE_LAYER_NAME);
                     break;
                 case ModelToolTypes.Vertex:
+                    LayerSetter.ClearLayer(VERTEX_LAYER_NAME);
                     LayerSetter.AddToLayer(VERTEX_LAYER_NAME, ModelComponent.GetVertexEntities());
                     LayerSetter.EnableLayer(VERTEX_LAYER_NAME);
                     break;
