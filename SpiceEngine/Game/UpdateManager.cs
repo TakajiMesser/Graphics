@@ -1,6 +1,6 @@
 ﻿namespace SpiceEngine.Game
 {
-    public abstract class UpdateManager : ITick
+    public abstract class UpdateManager : ITick, IUpdate
     {
         private int _currentTick = 0;
 
@@ -14,9 +14,15 @@
             {
                 _currentTick = 0;
                 Update();
+                Updated?.Invoke(this, new EventArgs());
             }
+
+            Ticked?.Invoke(this, new EventArgs());
         }
 
-        protected abstract void Update();
+        public abstract void Update();
+
+        public event EventHandler<EventArgs> Ticked;
+        public event EventHandler<EventArgs> Updated;
     }
 }

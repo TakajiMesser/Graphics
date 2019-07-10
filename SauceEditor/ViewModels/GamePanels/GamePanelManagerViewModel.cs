@@ -89,7 +89,9 @@ namespace SauceEditor.ViewModels
         public void ClearLayer(string layerName)
         {
             // TODO - Remove entities from EntityManager tracking as well
-            GameManager.EntityManager.ClearLayer(layerName);
+            // Disable the layer and delay removing the entities
+            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
+            PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
         }
 
         // e.g.

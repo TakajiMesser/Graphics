@@ -75,6 +75,15 @@ namespace SpiceEngine.Game
             set
             {
                 _renderMode = value;
+
+                lock (_loadLock)
+                {
+                    if (_renderManager != null)
+                    {
+                        _renderManager.RenderMode = value;
+                    }
+                }
+
                 Invalidate();
             }
         }
@@ -226,7 +235,8 @@ namespace SpiceEngine.Game
         {
             _renderManager = new RenderManager(Resolution, WindowSize)
             {
-                IsEditorMode = true
+                IsInEditorMode = true,
+                RenderMode = _renderMode
             };
             _renderManager.SetEntityProvider(_entityProvider);
             _renderManager.LoadFromMap(_map, _entityMapping);
@@ -279,6 +289,12 @@ namespace SpiceEngine.Game
             }
             
             Invalidate();
+        }
+
+        public void DelayAction(int nTicks, Action action)
+        {
+            // TODO - Handle this better -> We aren't even keeping a reference to this...
+            var delayedAction = new DelayedUpdate(_renderManager, nTicks, action);
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
@@ -349,25 +365,9 @@ namespace SpiceEngine.Game
         {
             MakeCurrent();
 
-            switch (RenderMode)
-            {
-                case RenderModes.Wireframe:
-                    _renderManager.RenderWireframe();
-                    _renderManager.RenderEntityIDs();
-                    break;
-                case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame();
-                    _renderManager.RenderEntityIDs();
-                    break;
-                case RenderModes.Lit:
-                    _renderManager.RenderLitFrame();
-                    _renderManager.RenderEntityIDs();
-                    break;
-                case RenderModes.Full:
-                    _renderManager.RenderFullFrame();
-                    break;
-            }
+            _renderManager.Update();
 
+            // TODO - Determine how to handle this
             if (SelectionManager.SelectionCount > 0)
             {
                 _renderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);

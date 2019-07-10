@@ -30,7 +30,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : IGridRenderer
+    public class RenderManager : UpdateManager, IGridRenderer
     {
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
@@ -38,11 +38,13 @@ namespace SpiceEngine.Rendering
         public bool IsLoaded { get; private set; }
         public bool RenderGrid { get; set; }
 
+        public RenderModes RenderMode { get; set; }
+
         public BatchManager BatchManager { get; private set; }
         public TextureManager TextureManager { get; } = new TextureManager();
 
         // TODO - Make this less janky
-        public bool IsEditorMode { get; set; }
+        public bool IsInEditorMode { get; set; }
 
         private IEntityProvider _entityProvider;
         private ICamera _camera;
@@ -241,7 +243,7 @@ namespace SpiceEngine.Rendering
             //_selectionRenderer.SelectionPass();
         }*/
 
-        public void RenderEntityIDs()
+        private void RenderEntityIDs()
         {
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -351,6 +353,38 @@ namespace SpiceEngine.Rendering
         public void SetGridAxisColor(Color4 color) => _wireframeRenderer.GridLineAxisColor = color.ToVector4();
         public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
         public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
+
+        public bool RenderWireframe { get; set; }
+        public bool LogToScreen { get; set; }
+
+        public override void Update()
+        {
+            switch (RenderMode)
+            {
+                case Wireframe:
+                    RenderWireframe();
+                    break;
+                case Diffuse:
+                    RenderDiffuseFrame();
+                    break;
+                case Lit:
+                    RenderLitFrame();
+                    break;
+                case Full:
+                    RenderFullFrame();
+            }
+
+            if (IsInEditorMode)
+            {
+                RenderEntityIDs();
+
+                // TODO - Determine how to handle this
+                /*if (SelectionManager.SelectionCount > 0)
+                {
+                    _renderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
+                }*/
+            }
+        }
 
         public void RenderWireframe()
         {

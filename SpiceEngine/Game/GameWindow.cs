@@ -83,7 +83,10 @@ namespace SpiceEngine.Game
             _gameManager = new GameManager(Resolution, this);
             _gameManager.InputManager.EscapePressed += (s, args) => Close();
 
-            _renderManager = new RenderManager(Resolution, WindowSize);
+            _renderManager = new RenderManager(Resolution, WindowSize)
+            {
+                RenderMode = RenderModes.Full
+            };
             _fpsTimer.Start();
 
             lock (_loadLock)
@@ -131,7 +134,7 @@ namespace SpiceEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.RenderFullFrame();
+            _renderManager.Update();
 
             GL.UseProgram(0);
             SwapBuffers();
