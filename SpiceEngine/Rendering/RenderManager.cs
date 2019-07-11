@@ -7,6 +7,7 @@ using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
@@ -109,6 +110,8 @@ namespace SpiceEngine.Rendering
             IsLoaded = true;
         }
 
+        public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);
+
         public void AddEntity(int entityID, IRenderable renderable)
         {
             if (renderable is TextureID textureID)
@@ -116,7 +119,7 @@ namespace SpiceEngine.Rendering
                 textureID.ID = TextureManager.AddTexture(textureID.FilePath);
             }
 
-            if (IsEditorMode && renderable is IMesh mesh)
+            if (IsInEditorMode && renderable is IMesh mesh)
             {
                 var entity = _entityProvider.GetEntity(entityID);
 
@@ -354,24 +357,25 @@ namespace SpiceEngine.Rendering
         public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
         public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
 
-        public bool RenderWireframe { get; set; }
+        //public bool RenderWireframe { get; set; }
         public bool LogToScreen { get; set; }
 
-        public override void Update()
+        protected override void Update()
         {
             switch (RenderMode)
             {
-                case Wireframe:
+                case RenderModes.Wireframe:
                     RenderWireframe();
                     break;
-                case Diffuse:
+                case RenderModes.Diffuse:
                     RenderDiffuseFrame();
                     break;
-                case Lit:
+                case RenderModes.Lit:
                     RenderLitFrame();
                     break;
-                case Full:
+                case RenderModes.Full:
                     RenderFullFrame();
+                    break;
             }
 
             if (IsInEditorMode)

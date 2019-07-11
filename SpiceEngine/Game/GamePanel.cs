@@ -3,7 +3,6 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
@@ -17,7 +16,6 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
-using Brush = SpiceEngine.Entities.Brushes.Brush;
 using Timer = System.Timers.Timer;
 
 namespace SpiceEngine.Game
@@ -270,6 +268,7 @@ namespace SpiceEngine.Game
         }
 
         public void AddEntity(int entityID, IRenderable renderable) => _renderManager?.AddEntity(entityID, renderable);
+        public void RemoveEntity(int entityID) => _renderManager?.RemoveEntity(entityID);
 
         public void SelectEntity(IEntity entity)
         {
@@ -294,7 +293,7 @@ namespace SpiceEngine.Game
         public void DelayAction(int nTicks, Action action)
         {
             // TODO - Handle this better -> We aren't even keeping a reference to this...
-            var delayedAction = new DelayedUpdate(_renderManager, nTicks, action);
+            var delayedAction = new DelayedUpdate((IUpdate)_renderManager, nTicks, action);
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
@@ -365,7 +364,7 @@ namespace SpiceEngine.Game
         {
             MakeCurrent();
 
-            _renderManager.Update();
+            _renderManager.Tick();
 
             // TODO - Determine how to handle this
             if (SelectionManager.SelectionCount > 0)

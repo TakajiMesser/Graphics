@@ -1,4 +1,6 @@
-﻿namespace SpiceEngine.Game
+﻿using System;
+
+namespace SpiceEngine.Game
 {
     public abstract class UpdateManager : ITick, IUpdate
     {
@@ -20,7 +22,7 @@
             Ticked?.Invoke(this, new EventArgs());
         }
 
-        public abstract void Update();
+        protected abstract void Update();
 
         public event EventHandler<EventArgs> Ticked;
         public event EventHandler<EventArgs> Updated;

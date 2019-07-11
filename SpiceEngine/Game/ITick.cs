@@ -1,4 +1,6 @@
-﻿namespace SpiceEngine.Game
+﻿using System;
+
+namespace SpiceEngine.Game
 {
     public interface ITick
     {

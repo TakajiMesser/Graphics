@@ -134,7 +134,7 @@ namespace SpiceEngine.Game
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             _frequencies.Add(RenderFrequency);
-            _renderManager.Update();
+            _renderManager.Tick();
 
             GL.UseProgram(0);
             SwapBuffers();

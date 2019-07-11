@@ -8,6 +8,7 @@ using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
+using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using System;
@@ -90,8 +91,19 @@ namespace SauceEditor.ViewModels
         {
             // TODO - Remove entities from EntityManager tracking as well
             // Disable the layer and delay removing the entities
+            var entityIDs = GameManager.EntityManager.GetLayerEntityIDs(layerName).ToList();
+
             GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
-            PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
+            GameManager.EntityManager.ClearLayer(layerName);
+            //PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
+
+            foreach (var entityID in entityIDs)
+            {
+                PerspectiveViewModel.Panel.RemoveEntity(entityID);
+                XViewModel.Panel.RemoveEntity(entityID);
+                YViewModel.Panel.RemoveEntity(entityID);
+                ZViewModel.Panel.RemoveEntity(entityID);
+            }
         }
 
         // e.g.

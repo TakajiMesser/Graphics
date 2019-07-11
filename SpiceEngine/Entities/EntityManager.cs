@@ -117,6 +117,7 @@ namespace SpiceEngine.Entities
             foreach (var id in _layerManager.GetLayerEntityIDs(layerName))
             {
                 RemoveEntityByID(id);
+                _layerManager.RootLayer.Remove(id);
             }
 
             _layerManager.ClearLayer(layerName);

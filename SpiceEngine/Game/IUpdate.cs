@@ -1,8 +1,10 @@
-﻿namespace SpiceEngine.Game
+﻿using System;
+
+namespace SpiceEngine.Game
 {
     public interface IUpdate
     {
-        void Update();
+        //void Update();
         event EventHandler<EventArgs> Updated;
     }
 }

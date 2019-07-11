@@ -16,6 +16,8 @@ namespace SpiceEngine.Scripting.Meters
         public float EndValue { get; private set; }
         public float Value { get; private set; }
 
+        public event EventHandler<EventArgs> Ticked;
+
         public Interpolator(int duration, float startValue, float endValue)
         {
             Duration = duration;

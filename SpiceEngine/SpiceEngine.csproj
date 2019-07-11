@@ -143,7 +143,9 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\DelayedUpdate.cs" />
     <Compile Include="Game\ITick.cs" />
+    <Compile Include="Game\IUpdate.cs" />
     <Compile Include="Game\UpdateManager.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
     <Compile Include="Game\GameSettings\ControlSettings.cs" />

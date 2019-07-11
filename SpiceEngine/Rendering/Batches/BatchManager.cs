@@ -96,7 +96,19 @@ namespace SpiceEngine.Rendering.Batches
 
             if (!batch.EntityIDs.Any())
             {
+                // TODO - This is horribly inefficient AND not thread-safe
+                // Since we are removing this batch from the list, the dictionary values need to be updated accordingly
                 _batches.RemoveAt(batchIndex);
+
+                foreach (var entityIDKey in _batchIndexByEntityID.Keys.ToList())
+                {
+                    var batchIndexValue = _batchIndexByEntityID[entityIDKey];
+
+                    if (batchIndexValue >= batchIndex)
+                    {
+                        _batchIndexByEntityID[entityIDKey] = batchIndexValue - 1;
+                    }
+                }
             }
         }
 
@@ -173,7 +185,25 @@ namespace SpiceEngine.Rendering.Batches
             {
                 var entityA = _entityProvider.GetEntity(entityID);
 
-                foreach (var meshBatch in _batches.OfType<MeshBatch>())
+                for (var i = 0; i < _batches.Count; i++)
+                {
+                    if (_batches[i] is MeshBatch meshBatch)
+                    {
+                        var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
+
+                        if (entityA.CompareUniforms(entityB))
+                        {
+                            entityA.Transformed += (s, args) =>
+                            {
+                                meshBatch.Transform(args.ID, args.Transform);
+                            };
+
+                            return meshBatch;
+                        }
+                    }
+                }
+
+                /*foreach (var meshBatch in _batches.OfType<MeshBatch>())
                 {
                     var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
 
@@ -186,7 +216,7 @@ namespace SpiceEngine.Rendering.Batches
 
                         return meshBatch;
                     }
-                }
+                }*/
             }
 
             return null;
