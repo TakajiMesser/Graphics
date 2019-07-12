@@ -147,6 +147,7 @@ namespace SpiceEngine.Rendering.Batches
             var batch = CreateOrGetBatch(entityID, renderable);
             batch.AddEntity(entityID, renderable);
 
+            // TODO - What is this part doing? Do I need to do this for Model-Mesh entities as well?
             if (_entityProvider.GetEntity(entityID) is Brush brush)
             {
                 batch.Transform(brush.ID, brush.GetModelMatrix());
@@ -193,11 +194,7 @@ namespace SpiceEngine.Rendering.Batches
 
                         if (entityA.CompareUniforms(entityB))
                         {
-                            entityA.Transformed += (s, args) =>
-                            {
-                                meshBatch.Transform(args.ID, args.Transform);
-                            };
-
+                            entityA.Transformed += (s, args) => meshBatch.Transform(args.ID, args.Transform);
                             return meshBatch;
                         }
                     }

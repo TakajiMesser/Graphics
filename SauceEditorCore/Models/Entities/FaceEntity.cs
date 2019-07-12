@@ -19,6 +19,9 @@ namespace SauceEditorCore.Models.Entities
         public FaceEntity(MeshFace meshFace, TexturePaths texturePaths)
         {
             Face = meshFace;
+            Position = Face.GetAveragePosition();
+            Face.CenterAround(Position);
+
             TexturePaths = texturePaths;
         }
 

@@ -19,6 +19,9 @@ namespace SauceEditorCore.Models.Entities
         public TriangleEntity(MeshTriangle meshTriangle, TexturePaths texturePaths)
         {
             Triangle = meshTriangle;
+            Position = Triangle.GetAveragePosition();
+            Triangle.CenterAround(Position);
+
             TexturePaths = texturePaths;
         }
 

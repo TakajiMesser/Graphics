@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class MeshTriangle
+    public class MeshTriangle : IMeshShape
     {
         public MeshVertex VertexA { get; set; }
         public MeshVertex VertexB { get; set; }
@@ -18,6 +18,20 @@ namespace SpiceEngine.Rendering.Meshes
             VertexA = vertexA;
             VertexB = vertexB;
             VertexC = vertexC;
+        }
+
+        public Vector3 GetAveragePosition() => new Vector3()
+        {
+            X = (VertexA.X + VertexB.X + VertexC.X) / 3.0f,
+            Y = (VertexA.Y + VertexB.Y + VertexC.Y) / 3.0f,
+            Z = (VertexA.Z + VertexB.Z + VertexC.Z) / 3.0f
+        };
+
+        public void CenterAround(Vector3 position)
+        {
+            VertexA = VertexA - position;
+            VertexB = VertexB - position;
+            VertexC = VertexC - position;
         }
     }
 }

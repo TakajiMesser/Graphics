@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class MeshShape
+    public class MeshShape : IMeshShape
     {
         public List<MeshFace> Faces { get; set; } = new List<MeshFace>();
         public UVMap UVMap
@@ -16,6 +16,40 @@ namespace SpiceEngine.Rendering.Meshes
                 {
                     face.UVMap = value;
                 }
+            }
+        }
+
+        public Vector3 GetAveragePosition()
+        {
+            var xSum = 0.0f;
+            var ySum = 0.0f;
+            var zSum = 0.0f;
+            var nVertices = 0;
+
+            foreach (var face in Faces)
+            {
+                foreach (var vertex in face.Vertices)
+                {
+                    xSum += vertex.X;
+                    ySum += vertex.Y;
+                    zSum += vertex.Z;
+                    nVertices++;
+                }
+            }
+
+            return new Vector3()
+            {
+                X = xSum / nVertices,
+                Y = ySum / nVertices,
+                Z = zSum / nVertices
+            };
+        }
+
+        public void CenterAround(Vector3 position)
+        {
+            foreach (var face in Faces)
+            {
+                face.CenterAround(position);
             }
         }
 

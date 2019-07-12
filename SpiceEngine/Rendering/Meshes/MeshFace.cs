@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class MeshFace
+    public class MeshFace : IMeshShape
     {
         /// <summary>
         /// The vertices should be in clockwise order.
@@ -56,6 +56,17 @@ namespace SpiceEngine.Rendering.Meshes
 
         public void AddVertex(MeshVertex vertex) => Vertices.Add(vertex);
         public void AddVertex(Vector3 vertex) => Vertices.Add(new MeshVertex() { Position = vertex });
+
+        public Vector3 GetAveragePosition() => Vertices.Average();
+
+        public void CenterAround(Vector3 position)
+        {
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                var vertex = Vertices[i];
+                Vertices[i] = vertex - position;
+            }
+        }
 
         public IEnumerable<MeshTriangle> GetMeshTriangles()
         {

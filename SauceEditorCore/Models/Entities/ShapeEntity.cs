@@ -20,6 +20,9 @@ namespace SauceEditorCore.Models.Entities
         public ShapeEntity(MeshShape meshShape, TexturePaths texturePaths)
         {
             Shape = meshShape;
+            Position = Shape.GetAveragePosition();
+            Shape.CenterAround(Position);
+
             TexturePaths = texturePaths;
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
