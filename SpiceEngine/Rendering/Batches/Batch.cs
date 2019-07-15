@@ -3,6 +3,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Batches
@@ -19,6 +20,8 @@ namespace SpiceEngine.Rendering.Batches
         }
 
         public virtual void Transform(int entityID, Matrix4 matrix) { }
+
+        public virtual void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate) { }
 
         public virtual void RemoveEntity(int id)
         {

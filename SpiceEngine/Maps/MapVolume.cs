@@ -71,9 +71,9 @@ namespace SpiceEngine.Maps
 
         public static MapVolume Rectangle(Vector3 center, float width, float height)
         {
-            var meshShape = new MeshShape();
-            meshShape.Faces.Add(MeshFace.Rectangle(width, height));
-            var meshBuild = new MeshBuild(meshShape);
+            var meshShape = new ModelMesh();
+            meshShape.Faces.Add(ModelFace.Rectangle(width, height));
+            var meshBuild = new ModelBuilder(meshShape);
 
             return new MapVolume()
             {
@@ -85,8 +85,8 @@ namespace SpiceEngine.Maps
 
         public static MapVolume Box(Vector3 center, float width, float height, float depth)
         {
-            var meshShape = MeshShape.Box(width, height, depth);
-            var meshBuild = new MeshBuild(meshShape);
+            var meshShape = ModelMesh.Box(width, height, depth);
+            var meshBuild = new ModelBuilder(meshShape);
 
             return new MapVolume()
             {

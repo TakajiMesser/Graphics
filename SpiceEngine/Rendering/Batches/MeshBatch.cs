@@ -54,6 +54,15 @@ namespace SpiceEngine.Rendering.Batches
             Mesh.Transform(matrix, offset, count);
         }
 
+        public override void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        {
+            // TODO - This is redundant with function overloads for Mesh.Transform()
+            var offset = _offsetByID.ContainsKey(entityID) ? _offsetByID[entityID] : 0;
+            var count = _countByID.ContainsKey(entityID) ? _countByID[entityID] : Mesh.Vertices.Count();
+
+            Mesh.Update(vertexUpdate, offset, count);
+        }
+
         public void AddTestColors()
         {
             /*var vertices = new List<Vertex3D>();

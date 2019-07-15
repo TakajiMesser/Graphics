@@ -15,9 +15,9 @@ namespace SauceEditorCore.Models.Entities
 {
     public class VertexEntity : ModelEntity
     {
-        public MeshVertex Vertex { get; }
+        public ModelVertex Vertex { get; }
 
-        public VertexEntity(MeshVertex meshVertex) => Vertex = meshVertex;
+        public VertexEntity(ModelVertex meshVertex) => Vertex = meshVertex;
 
         public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is VertexEntity;
 

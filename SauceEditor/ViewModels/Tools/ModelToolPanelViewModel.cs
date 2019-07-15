@@ -6,7 +6,7 @@ namespace SauceEditor.ViewModels.Tools
 {
     public enum ModelToolTypes
     {
-        Shape,
+        Mesh,
         Face,
         Triangle,
         Vertex,
@@ -15,7 +15,7 @@ namespace SauceEditor.ViewModels.Tools
 
     public class ModelToolPanelViewModel : DockViewModel
     {
-        private const string SHAPE_LAYER_NAME = "Shape";
+        private const string MESH_LAYER_NAME = "Mesh";
         private const string FACE_LAYER_NAME = "Face";
         private const string TRIANGLE_LAYER_NAME = "Triangle";
         private const string VERTEX_LAYER_NAME = "Vertex";
@@ -36,10 +36,10 @@ namespace SauceEditor.ViewModels.Tools
         {
             switch (enableToolType)
             {
-                case ModelToolTypes.Shape:
-                    LayerSetter.ClearLayer(SHAPE_LAYER_NAME);
-                    LayerSetter.AddToLayer(SHAPE_LAYER_NAME, ModelComponent.GetShapeEntities());
-                    LayerSetter.EnableLayer(SHAPE_LAYER_NAME);
+                case ModelToolTypes.Mesh:
+                    LayerSetter.ClearLayer(MESH_LAYER_NAME);
+                    LayerSetter.AddToLayer(MESH_LAYER_NAME, ModelComponent.GetMeshEntities());
+                    LayerSetter.EnableLayer(MESH_LAYER_NAME);
                     break;
                 case ModelToolTypes.Face:
                     LayerSetter.ClearLayer(FACE_LAYER_NAME);
@@ -63,7 +63,7 @@ namespace SauceEditor.ViewModels.Tools
         {
             LayerSetter.DisableLayer(LayerManager.ROOT_LAYER_NAME);
 
-            if (excludeToolType != ModelToolTypes.Shape) LayerSetter.DisableLayer(SHAPE_LAYER_NAME);
+            if (excludeToolType != ModelToolTypes.Mesh) LayerSetter.DisableLayer(MESH_LAYER_NAME);
             if (excludeToolType != ModelToolTypes.Face) LayerSetter.DisableLayer(FACE_LAYER_NAME);
             if (excludeToolType != ModelToolTypes.Triangle) LayerSetter.DisableLayer(TRIANGLE_LAYER_NAME);
             if (excludeToolType != ModelToolTypes.Vertex) LayerSetter.DisableLayer(VERTEX_LAYER_NAME);

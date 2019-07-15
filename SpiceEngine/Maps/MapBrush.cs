@@ -23,7 +23,7 @@ namespace SpiceEngine.Maps
         public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
 
         public MapBrush() { }
-        public MapBrush(MeshBuild meshBuild)
+        public MapBrush(ModelBuilder meshBuild)
         {
             Vertices.AddRange(meshBuild.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)));
             TriangleIndices.AddRange(meshBuild.TriangleIndices);
@@ -77,9 +77,9 @@ namespace SpiceEngine.Maps
 
         public static MapBrush Rectangle(Vector3 center, float width, float height)
         {
-            var meshShape = new MeshShape();
-            meshShape.Faces.Add(MeshFace.Rectangle(width, height));
-            var meshBuild = new MeshBuild(meshShape);
+            var meshShape = new ModelMesh();
+            meshShape.Faces.Add(ModelFace.Rectangle(width, height));
+            var meshBuild = new ModelBuilder(meshShape);
 
             return new MapBrush()
             {
@@ -110,8 +110,8 @@ namespace SpiceEngine.Maps
 
         public static MapBrush Box(Vector3 center, float width, float height, float depth)
         {
-            var meshShape = MeshShape.Box(width, height, depth);
-            var meshBuild = new MeshBuild(meshShape);
+            var meshShape = ModelMesh.Box(width, height, depth);
+            var meshBuild = new ModelBuilder(meshShape);
 
             return new MapBrush()
             {

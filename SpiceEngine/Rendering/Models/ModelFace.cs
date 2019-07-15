@@ -6,12 +6,12 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class MeshFace : IMeshShape
+    public class ModelFace : IMeshShape
     {
         /// <summary>
         /// The vertices should be in clockwise order.
         /// </summary>
-        public List<MeshVertex> Vertices { get; set; } = new List<MeshVertex>();
+        public List<ModelVertex> Vertices { get; set; } = new List<ModelVertex>();
         //public List<MeshTriangle> Triangles { get; set; } = new List<MeshTriangle>();
 
         private Vector3 _normal = Vector3.UnitZ;
@@ -49,26 +49,34 @@ namespace SpiceEngine.Rendering.Meshes
         public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v.Position));
         public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v.Position));
 
-        public MeshFace() { }
-        public MeshFace(params MeshVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
-        public MeshFace(IEnumerable<MeshVertex> vertices) => Vertices.AddRange(vertices);
-        public MeshFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new MeshVertex() { Position = v })) { }
+        public ModelFace() { }
+        public ModelFace(params ModelVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
+        public ModelFace(IEnumerable<ModelVertex> vertices) => Vertices.AddRange(vertices);
+        public ModelFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new ModelVertex() { Position = v })) { }
 
-        public void AddVertex(MeshVertex vertex) => Vertices.Add(vertex);
-        public void AddVertex(Vector3 vertex) => Vertices.Add(new MeshVertex() { Position = vertex });
+        public ModelFace Duplicated() => new ModelFace()
+        {
+            Vertices = Vertices.Select(v => v.Duplicated()).ToList(),
+            UVMap = UVMap,
+            _normal = _normal,
+            _tangent = _tangent
+        };
 
-        public Vector3 GetAveragePosition() => Vertices.Average();
+        public void AddVertex(ModelVertex vertex) => Vertices.Add(vertex);
+        public void AddVertex(Vector3 vertex) => Vertices.Add(new ModelVertex() { Position = vertex });
+
+        public Vector3 GetAveragePosition() => Vertices.Select(v => v.Position).Average();
 
         public void CenterAround(Vector3 position)
         {
             for (var i = 0; i < Vertices.Count; i++)
             {
                 var vertex = Vertices[i];
-                Vertices[i] = vertex - position;
+                vertex.Position -= position;
             }
         }
 
-        public IEnumerable<MeshTriangle> GetMeshTriangles()
+        public IEnumerable<ModelTriangle> GetMeshTriangles()
         {
             if (Vertices.Count < 3) throw new InvalidOperationException("MeshFace must consist of at least 3 vertices");
 
@@ -78,7 +86,7 @@ namespace SpiceEngine.Rendering.Meshes
                 var vertexB = Vertices[i];
                 var vertexC = Vertices[i + 1];
 
-                yield return new MeshTriangle(vertexA, vertexB, vertexC)
+                yield return new ModelTriangle(vertexA, vertexB, vertexC)
                 {
                     Normal = Normal,
                     Tangent = Tangent
@@ -96,9 +104,9 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public MeshFace Translated(float x, float y, float z)
+        public ModelFace Translated(float x, float y, float z)
         {
-            var translated = new MeshFace(Vertices)
+            var translated = new ModelFace(Vertices)
             {
                 Normal = Normal,
                 Tangent = Tangent
@@ -124,11 +132,11 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public MeshFace Rotated(Vector3 axis, float angle)
+        public ModelFace Rotated(Vector3 axis, float angle)
         {
             var rotation = Quaternion.FromAxisAngle(axis, angle);
 
-            var rotated = new MeshFace(Vertices)
+            var rotated = new ModelFace(Vertices)
             {
                 Normal = rotation * Normal,
                 Tangent = rotation * Tangent
@@ -152,9 +160,9 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public MeshFace Scaled(float amount)
+        public ModelFace Scaled(float amount)
         {
-            var scaled = new MeshFace(Vertices)
+            var scaled = new ModelFace(Vertices)
             {
                 Normal = Normal,
                 Tangent = Tangent
@@ -168,9 +176,9 @@ namespace SpiceEngine.Rendering.Meshes
             return scaled;
         }
 
-        public static MeshFace Rectangle(float width, float height)
+        public static ModelFace Rectangle(float width, float height)
         {
-            return new MeshFace(new List<Vector3>()
+            return new ModelFace(new List<Vector3>()
             {
                 new Vector3(-width / 2.0f, -height / 2.0f, 0.0f),
                 new Vector3(-width / 2.0f, height / 2.0f, 0.0f),
@@ -185,7 +193,7 @@ namespace SpiceEngine.Rendering.Meshes
         /// <param name="nSides">The number of sides for the polygon</param>
         /// <param name="apothem">The distance from the center to the midpoint of a side</param>
         /// <returns></returns>
-        public static MeshFace RegularPolygon(int nSides, float apothem)
+        public static ModelFace RegularPolygon(int nSides, float apothem)
         {
             var vertices = new List<Vector3>();
 
@@ -202,7 +210,7 @@ namespace SpiceEngine.Rendering.Meshes
                 direction = rotation * direction;
             }
 
-            return new MeshFace(vertices);
+            return new ModelFace(vertices);
         }
 
         /*public static MeshShape Rectangle(float width, float height) => new MeshShape()

@@ -5,7 +5,7 @@ using System.Linq;
 namespace SpiceEngine.Rendering.Meshes
 {
     // TODO - Pick a name that isn't shit
-    public class MeshBuild
+    public class ModelBuilder
     {
         public List<Vector3> Positions { get; set; } = new List<Vector3>();
         public List<Vector3> Normals { get; set; } = new List<Vector3>();
@@ -15,9 +15,9 @@ namespace SpiceEngine.Rendering.Meshes
         public List<Vector4> BoneWeights { get; set; } = new List<Vector4>();
         public List<int> TriangleIndices { get; set; } = new List<int>();
 
-        public MeshBuild(MeshShape meshShape)
+        public ModelBuilder(ModelMesh modelMesh)
         {
-            foreach (var face in meshShape.Faces)
+            foreach (var face in modelMesh.Faces)
             {
                 AddFace(face);
             }
@@ -25,23 +25,23 @@ namespace SpiceEngine.Rendering.Meshes
             Normalize();
         }
 
-        public MeshBuild(MeshFace meshFace)
+        public ModelBuilder(ModelFace modelFace)
         {
-            AddFace(meshFace);
+            AddFace(modelFace);
             Normalize();
         }
 
-        public MeshBuild(MeshTriangle meshTriangle)
+        public ModelBuilder(ModelTriangle modelTriangle)
         {
             var uvRotation = Quaternion.Identity;//Quaternion.FromAxisAngle(meshTriangle.Normal, meshTriangle.UVMap.Rotation);
             var uvXOrigin = 0.0f;//face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v.Position));
             var uvYOrigin = 0.0f;//face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v.Position));
             var uvMap = UVMap.Standard;
 
-            AddTriangle(meshTriangle, uvXOrigin, uvYOrigin, uvRotation, uvMap);
+            AddTriangle(modelTriangle, uvXOrigin, uvYOrigin, uvRotation, uvMap);
         }
 
-        public IEnumerable<MeshVertex> GetVertices()
+        public IEnumerable<ModelVertex> GetVertices()
         {
             for (var i = 0; i < Positions.Count; i++)
             {
@@ -49,9 +49,9 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public MeshVertex GetVertexAt(int index)
+        public ModelVertex GetVertexAt(int index)
         {
-            var meshVertex = new MeshVertex()
+            var modelVertex = new ModelVertex()
             {
                 Position = Positions[index],
                 Normal = Normals[index],
@@ -61,11 +61,11 @@ namespace SpiceEngine.Rendering.Meshes
 
             if (index < BoneIDs.Count && index < BoneWeights.Count)
             {
-                meshVertex.BoneIDs = BoneIDs[index];
-                meshVertex.BoneWeights = BoneWeights[index];
+                modelVertex.BoneIDs = BoneIDs[index];
+                modelVertex.BoneWeights = BoneWeights[index];
             }
 
-            return meshVertex;
+            return modelVertex;
         }
 
         public void Normalize()
@@ -81,7 +81,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        private void AddFace(MeshFace face)
+        private void AddFace(ModelFace face)
         {
             var uvRotation = Quaternion.FromAxisAngle(face.Normal, face.UVMap.Rotation);
             var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v.Position));
@@ -93,7 +93,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        private void AddTriangle(MeshTriangle triangle, float uvXOrigin, float uvYOrigin, Quaternion uvRotation, UVMap uvMap)
+        private void AddTriangle(ModelTriangle triangle, float uvXOrigin, float uvYOrigin, Quaternion uvRotation, UVMap uvMap)
         {
             var uvA = triangle.VertexA.UV != Vector2.Zero ? triangle.VertexA.UV : new Vector2()
             {

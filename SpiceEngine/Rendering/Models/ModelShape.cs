@@ -9,12 +9,12 @@ namespace SpiceEngine.Rendering.Meshes
     public class ModelShape
     {
         public ModelShape() { }
-        public ModelShape(MeshShape mesh)
+        public ModelShape(ModelMesh mesh)
         {
             Meshes.Add(mesh);
         }
 
-        public List<MeshShape> Meshes { get; set; } = new List<MeshShape>();
+        public List<ModelMesh> Meshes { get; set; } = new List<ModelMesh>();
         public Skeleton Skeleton { get; set; }
         public UVMap UVMap
         {
@@ -29,11 +29,11 @@ namespace SpiceEngine.Rendering.Meshes
 
         public bool HasAnimations => Skeleton != null;
 
-        public IEnumerable<MeshBuild> GetMeshBuilds()
+        public IEnumerable<ModelBuilder> GetMeshBuilds()
         {
             foreach (var mesh in Meshes)
             {
-                yield return new MeshBuild(mesh);
+                yield return new ModelBuilder(mesh);
             }
         }
 
@@ -61,11 +61,11 @@ namespace SpiceEngine.Rendering.Meshes
 
                 foreach (var mesh in scene.Meshes)
                 {
-                    var meshShape = new MeshShape();
+                    var meshShape = new ModelMesh();
 
                     foreach (var face in mesh.Faces)
                     {
-                        var meshFace = new MeshFace(face.Indices.Select(i => new MeshVertex()
+                        var meshFace = new ModelFace(face.Indices.Select(i => new ModelVertex()
                         {
                             Position = mesh.Vertices[i].ToVector3(),
                             Normal = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3(),

@@ -12,6 +12,9 @@ uniform mat4[MAX_JOINTS] jointTransforms;
 layout(location = 0) in vec3 vPosition;
 layout(location = 5) in vec4 vBoneIDs;
 layout(location = 6) in vec4 vBoneWeights;
+layout(location = 7) in vec4 vId;
+
+out vec4 gId;
 
 void main()
 {
@@ -28,4 +31,5 @@ void main()
     position = jointTransform * position;
 
     gl_Position = mvp * position;
+	gId = vId;
 }

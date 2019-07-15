@@ -152,12 +152,39 @@ namespace SpiceEngine.Rendering.Processing
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
                 .SetUniform("lineColor", LineColor)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
                 .RenderOpaqueStatic()
                 .RenderTransparentStatic()
                 .SetShader(_jointWireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
                 .SetUniform("lineColor", LineColor)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
+                .RenderOpaqueAnimated()
+                .RenderTransparentAnimated()
+                .Execute();
+        }
+
+        public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, BatchManager batchManager)
+        {
+            batchManager.CreateBatchAction()
+                .SetEntityIDs(entityIDs)
+                .SetShader(_wireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", 0.0f)
+                .SetUniform("lineColor", Vector4.Zero)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
+                .RenderOpaqueStatic()
+                .RenderTransparentStatic()
+                .SetShader(_jointWireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", 0.0f)
+                .SetUniform("lineColor", Vector4.Zero)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
                 .RenderOpaqueAnimated()
                 .RenderTransparentAnimated()
                 .Execute();
@@ -185,7 +212,7 @@ namespace SpiceEngine.Rendering.Processing
 
         public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, BatchManager batchManager)
         {
-            var program = (entity is AnimatedActor actor) ? _jointWireframeProgram : _wireframeProgram;
+            var program = entity is AnimatedActor ? _jointWireframeProgram : _wireframeProgram;
             program.Use();
 
             camera.SetUniforms(program);

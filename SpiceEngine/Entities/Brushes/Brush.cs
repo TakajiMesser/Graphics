@@ -36,7 +36,7 @@ namespace SpiceEngine.Entities.Brushes
         }
 
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
-        public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
+        //public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
 
         public override Material Material => _material;
         public override TextureMapping? TextureMapping => _textureMapping;

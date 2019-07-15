@@ -11,14 +11,14 @@ namespace SauceEditorCore.Models.Entities
 {
     public class FaceEntity : ModelEntity, ITextureBinder, ITexturePath
     {
-        public MeshFace Face { get; }
+        public ModelFace Face { get; }
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
 
-        public FaceEntity(MeshFace meshFace, TexturePaths texturePaths)
+        public FaceEntity(ModelFace modelFace, TexturePaths texturePaths)
         {
-            Face = meshFace;
+            Face = modelFace;
             Position = Face.GetAveragePosition();
             Face.CenterAround(Position);
 
@@ -47,13 +47,13 @@ namespace SauceEditorCore.Models.Entities
             Material.SetUniforms(program);
         }
 
-        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is FaceEntity faceEntity
+        public override bool CompareUniforms(IEntity entity) => entity is FaceEntity faceEntity
             && Material.Equals(faceEntity.Material)
             && TextureMapping.Equals(faceEntity.TextureMapping);
 
         public override IRenderable ToRenderable()
         {
-            var meshBuild = new MeshBuild(Face);
+            var meshBuild = new ModelBuilder(Face);
             var meshVertices = meshBuild.GetVertices();
 
             var mesh = meshVertices.Any(v => v.IsAnimated)

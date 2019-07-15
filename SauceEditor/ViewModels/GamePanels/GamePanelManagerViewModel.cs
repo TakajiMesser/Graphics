@@ -158,6 +158,11 @@ namespace SauceEditor.ViewModels
                 ZViewModel.Panel.AddEntity(entity.ID, renderable);
             }
 
+            PerspectiveViewModel.Panel.DoLoad();
+            XViewModel.Panel.DoLoad();
+            YViewModel.Panel.DoLoad();
+            ZViewModel.Panel.DoLoad();
+
             //SelectionManager.SetSelectableEntities(entities);
         }
 

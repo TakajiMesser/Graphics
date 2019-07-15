@@ -1,10 +1,13 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -148,12 +151,27 @@ namespace SpiceEngine.Rendering.Batches
             batch.AddEntity(entityID, renderable);
 
             // TODO - What is this part doing? Do I need to do this for Model-Mesh entities as well?
-            if (_entityProvider.GetEntity(entityID) is Brush brush)
+            /*if (_entityProvider.GetEntity(entityID) is Brush brush)
             {
                 batch.Transform(brush.ID, brush.GetModelMatrix());
-            }
+            }*/
 
-            AddBatch(entityID, batch);
+            //var entity = _entityProvider.GetEntity(entityID) as Entity;
+            //batch.Transform(entityID, entity.GetModelMatrix());
+
+            /*var entity = _entityProvider.GetEntity(entityID) as Entity;
+            if (entity != null && !(entity is Actor) && !(entity is ILight) && !(entity is Volume))
+            {
+                batch.Transform(entity.ID, entity.GetModelMatrix());
+            }*/
+
+            //AddBatch(entityID, batch);
+        }
+
+        public void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        {
+            var batch = GetBatch(entityID);
+            batch.UpdateVertices(entityID, vertexUpdate);
         }
 
         private Batch CreateOrGetBatch(int entityID, IRenderable renderable)
@@ -166,18 +184,37 @@ namespace SpiceEngine.Rendering.Batches
             }
             else
             {
-                switch (renderable)
+                var batch = CreateBatch(renderable);
+                _batches.Add(batch);
+
+                var batchIndex = _batches.Count - 1;
+                _batchIndexByEntityID.Add(entityID, batchIndex);
+
+                //var entity = _entityProvider.GetEntity(entityID) as Entity;
+                //batch.Transform(entityID, entity.GetModelMatrix());
+
+                if (IsLoaded)
                 {
-                    case IMesh mesh:
-                        return new MeshBatch(mesh);
-                    case Model model:
-                        return new ModelBatch(model);
-                    case TextureID textureID:
-                        return new BillboardBatch(textureID);
+                    batch.Load();
                 }
 
-                throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
+                return batch;
             }
+        }
+
+        private Batch CreateBatch(IRenderable renderable)
+        {
+            switch (renderable)
+            {
+                case IMesh mesh:
+                    return new MeshBatch(mesh);
+                case Model model:
+                    return new ModelBatch(model);
+                case TextureID textureID:
+                    return new BillboardBatch(textureID);
+            }
+
+            throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
         }
 
         private Batch FindAppropriateBatch(int entityID, IRenderable renderable)
@@ -194,7 +231,12 @@ namespace SpiceEngine.Rendering.Batches
 
                         if (entityA.CompareUniforms(entityB))
                         {
-                            entityA.Transformed += (s, args) => meshBatch.Transform(args.ID, args.Transform);
+                            entityA.Transformed += (s, args) =>
+                            {
+                                meshBatch.Transform(args.ID, args.Transform);
+                            };
+
+                            _batchIndexByEntityID.Add(entityID, i);
                             return meshBatch;
                         }
                     }
@@ -219,7 +261,7 @@ namespace SpiceEngine.Rendering.Batches
             return null;
         }
 
-        private void AddBatch(int entityID, IBatch batch)
+        /*private void AddBatch(int entityID, IBatch batch)
         {
             _batches.Add(batch);
 
@@ -230,7 +272,7 @@ namespace SpiceEngine.Rendering.Batches
             {
                 batch.Load();
             }
-        }
+        }*/
 
         public void Load(int entityID) => GetBatch(entityID).Load();
 
@@ -248,28 +290,43 @@ namespace SpiceEngine.Rendering.Batches
 
         private void DrawEntities(ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
+            var batchIndices = new HashSet<int>();
+
             foreach (var id in _entityProvider.EntityRenderIDs)
             {
+                // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
                 if ((ids == null || ids.Contains(id)))
                 {
                     action?.Invoke(id);
 
                     var batchIndex = _batchIndexByEntityID[id];
-                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+                    if (!batchIndices.Contains(batchIndex))
+                    {
+                        batchIndices.Add(batchIndex);
+                        _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+                    }
                 }
             }
         }
 
         private void DrawEntities(RenderTypes renderType, ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
+            var batchIndices = new HashSet<int>();
+
             foreach (var id in _entityProvider.EntityRenderIDs)
             {
+                // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
                 if ((ids == null || ids.Contains(id)) && GetEntityIDSet(renderType).Contains(id))
                 {
                     action?.Invoke(id);
 
                     var batchIndex = _batchIndexByEntityID[id];
-                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+
+                    if (!batchIndices.Contains(batchIndex))
+                    {
+                        batchIndices.Add(batchIndex);
+                        _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+                    }
                 }
             }
         }

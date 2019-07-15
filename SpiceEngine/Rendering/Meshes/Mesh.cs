@@ -81,15 +81,32 @@ namespace SpiceEngine.Rendering.Meshes
         {
             for (var i = offset; i < count; i++)
             {
-                // TODO - This is very redundant to keep two separate lists of vertex (struct) data
                 var transformedVertex = (T)_vertices[i].Transformed(matrix);
                 _vertices[i] = transformedVertex;
+            }
 
-                if (_vertexBuffer != null)
-                {
-                    _vertexBuffer.Clear();
-                    _vertexBuffer.AddVertices(_vertices);
-                }
+            // TODO - This is very redundant to keep two separate lists of vertex (struct) data
+            if (_vertexBuffer != null)
+            {
+                _vertexBuffer.Clear();
+                _vertexBuffer.AddVertices(_vertices);
+            }
+        }
+
+        public void Update(Func<IVertex3D, IVertex3D> vertexUpdate) => Update(vertexUpdate, 0, _vertices.Count);
+        public void Update(Func<IVertex3D, IVertex3D> vertexUpdate, int offset, int count)
+        {
+            for (var i = offset; i < count; i++)
+            {
+                var updatedVertex = vertexUpdate(_vertices[i]);
+                _vertices[i] = (T)updatedVertex;
+            }
+
+            // TODO - This is very redundant to keep two separate lists of vertex (struct) data
+            if (_vertexBuffer != null)
+            {
+                _vertexBuffer.Clear();
+                _vertexBuffer.AddVertices(_vertices);
             }
         }
 

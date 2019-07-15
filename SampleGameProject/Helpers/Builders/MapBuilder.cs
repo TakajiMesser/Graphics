@@ -54,9 +54,9 @@ namespace SampleGameProject.Helpers.Builders
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             yield return floor;
 
-            var wallShape = MeshShape.Box(5.0f, 10.0f, 5.0f);
+            var wallShape = ModelMesh.Box(5.0f, 10.0f, 5.0f);
             wallShape.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
-            var wall = new MapBrush(new MeshBuild(wallShape))
+            var wall = new MapBrush(new ModelBuilder(wallShape))
             {
                 Position = new Vector3(10.0f, 0.0f, 0.0f),
                 IsPhysical = true,
@@ -69,9 +69,9 @@ namespace SampleGameProject.Helpers.Builders
             yield return wall;
 
 
-            var wallShape2 = MeshShape.Box(5.0f, 10.0f, 5.0f);
+            var wallShape2 = ModelMesh.Box(5.0f, 10.0f, 5.0f);
             wallShape2.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
-            var wall2 = new MapBrush(new MeshBuild(wallShape2))
+            var wall2 = new MapBrush(new ModelBuilder(wallShape2))
             {
                 Position = new Vector3(-10.0f, 0.0f, 0.0f),
                 IsPhysical = true,

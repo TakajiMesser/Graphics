@@ -10,18 +10,18 @@ using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class ShapeEntity : ModelEntity, ITextureBinder, ITexturePath
+    public class MeshEntity : ModelEntity, ITextureBinder, ITexturePath
     {
-        public MeshShape Shape { get; }
+        public ModelMesh Mesh { get; }
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
 
-        public ShapeEntity(MeshShape meshShape, TexturePaths texturePaths)
+        public MeshEntity(ModelMesh modelMesh, TexturePaths texturePaths)
         {
-            Shape = meshShape;
-            Position = Shape.GetAveragePosition();
-            Shape.CenterAround(Position);
+            Mesh = modelMesh;
+            Position = Mesh.GetAveragePosition();
+            Mesh.CenterAround(Position);
 
             TexturePaths = texturePaths;
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
@@ -46,17 +46,18 @@ namespace SauceEditorCore.Models.Entities
         public override void SetUniforms(ShaderProgram program)
         {
             //base.SetUniforms(program);
-            _modelMatrix.Set(program);
+            base.SetUniforms(program);
+            //_modelMatrix.Set(program);
             Material.SetUniforms(program);
         }
 
-        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is ShapeEntity shapeEntity
+        public override bool CompareUniforms(IEntity entity) => entity is MeshEntity shapeEntity
             && Material.Equals(shapeEntity.Material)
             && TextureMapping.Equals(shapeEntity.TextureMapping);
 
         public override IRenderable ToRenderable()
         {
-            var meshBuild = new MeshBuild(Shape);
+            var meshBuild = new ModelBuilder(Mesh);
             var meshVertices = meshBuild.GetVertices();
 
             /*if (meshVertices.Any(v => v.IsAnimated))
@@ -70,11 +71,18 @@ namespace SauceEditorCore.Models.Entities
                 return new Mesh<Vertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
             }*/
 
-            var vertices = meshVertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();
+            var mesh = meshVertices.Any(v => v.IsAnimated)
+                ? (IMesh)new Mesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
+                : new Mesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+
+            mesh.Transform(_modelMatrix.Matrix);
+            return mesh;
+
+            /*var vertices = meshVertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();
             var triangleIndices = meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList();
-            return new Mesh<Vertex3D>(vertices, triangleIndices);
-            //Vertices.AddRange(meshBuild.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)));
-            //TriangleIndices.AddRange(meshBuild.TriangleIndices);
+
+            mesh.Transform(_modelMatrix.Matrix);
+            return new Mesh<Vertex3D>(vertices, triangleIndices);*/
         }
     }
 }

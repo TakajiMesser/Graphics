@@ -11,6 +11,7 @@ using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Processing;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -244,6 +245,7 @@ namespace SpiceEngine.Game
                 ViewType = ViewType
             };
             _panelCamera.Load();
+            _renderManager.SetSelectionProvider(SelectionManager);
             _renderManager.SetCamera(_panelCamera.Camera);
 
             // Clear pointers
@@ -270,8 +272,13 @@ namespace SpiceEngine.Game
         public void AddEntity(int entityID, IRenderable renderable) => _renderManager?.AddEntity(entityID, renderable);
         public void RemoveEntity(int entityID) => _renderManager?.RemoveEntity(entityID);
 
+        // TODO - Make this method less janky and terrible
+        public void DoLoad() => _renderManager?.BatchManager.Load();
+
         public void SelectEntity(IEntity entity)
         {
+            _renderManager?.SetSelected(entity.ID.Yield());
+
             SelectionManager.Select(entity.ID);
             Invalidate();
         }
@@ -280,10 +287,12 @@ namespace SpiceEngine.Game
         {
             if (entities.Any())
             {
+                _renderManager?.SetSelected(entities.Select(e => e.ID));
                 SelectionManager.Select(entities.Select(e => e.ID));
             }
             else
             {
+                _renderManager?.SetDeselected(SelectionManager.SelectedIDs);
                 SelectionManager.ClearSelection();
             }
             
@@ -369,6 +378,7 @@ namespace SpiceEngine.Game
             // TODO - Determine how to handle this
             if (SelectionManager.SelectionCount > 0)
             {
+                // This is still necessary right now for rendering lights and transform arrows...
                 _renderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
             }
 
@@ -481,6 +491,7 @@ namespace SpiceEngine.Game
                 {
                     if (isMultiSelect && SelectionManager.IsSelected(id))
                     {
+                        _renderManager.SetDeselected(id.Yield());
                         SelectionManager.Deselect(id);
                         EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
                         Invalidate();
@@ -489,16 +500,19 @@ namespace SpiceEngine.Game
                     {
                         if (!isMultiSelect)
                         {
+                            _renderManager.SetDeselected(SelectionManager.SelectedIDs);
                             SelectionManager.ClearSelection();
                         }
 
                         var entity = _entityProvider.GetEntity(id);
                         if (entity != null)
                         {
+                            _renderManager.SetSelected(id.Yield());
                             SelectionManager.Select(id);
                         }
                         else
                         {
+                            _renderManager.SetDeselected(SelectionManager.SelectedIDs);
                             SelectionManager.ClearSelection();
                         }
                         
@@ -508,6 +522,7 @@ namespace SpiceEngine.Game
                 }
                 else if (!isMultiSelect)
                 {
+                    _renderManager.SetDeselected(SelectionManager.SelectedIDs);
                     SelectionManager.ClearSelection();
 
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));

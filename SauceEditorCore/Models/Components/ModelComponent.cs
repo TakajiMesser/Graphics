@@ -25,34 +25,34 @@ namespace SauceEditorCore.Models.Components
             return _modelShape;
         }
 
-        public IEnumerable<ShapeEntity> GetShapeEntities()
+        public IEnumerable<MeshEntity> GetMeshEntities()
         {
-            var meshShapes = GetModelShape().Meshes;
+            var modelMeshes = GetModelShape().Meshes.Select(m => m.Duplicated()).ToList();
             var texturePaths = Model.GetTexturePaths(Path).ToList();
 
-            for (var i = 0; i < meshShapes.Count; i++)
+            for (var i = 0; i < modelMeshes.Count; i++)
             {
-                yield return new ShapeEntity(meshShapes[i], texturePaths[i]);
+                yield return new MeshEntity(modelMeshes[i], texturePaths[i]);
             }
         }
 
         public IEnumerable<FaceEntity> GetFaceEntities()
         {
-            var meshShapes = GetModelShape().Meshes;
+            var modelMeshes = GetModelShape().Meshes.Select(m => m.Duplicated()).ToList();
             var texturePaths = Model.GetTexturePaths(Path).ToList();
 
-            for (var i = 0; i < meshShapes.Count; i++)
+            for (var i = 0; i < modelMeshes.Count; i++)
             {
-                foreach (var meshFace in meshShapes[i].Faces)
+                foreach (var modelFace in modelMeshes[i].Faces)
                 {
-                    yield return new FaceEntity(meshFace, texturePaths[i]);
+                    yield return new FaceEntity(modelFace, texturePaths[i]);
                 }
             }
         }
 
         public IEnumerable<TriangleEntity> GetTriangleEntities()
         {
-            var meshShapes = GetModelShape().Meshes;
+            var meshShapes = GetModelShape().Meshes.Select(m => m.Duplicated()).ToList();
             var texturePaths = Model.GetTexturePaths(Path).ToList();
 
             for (var i = 0; i < meshShapes.Count; i++)
@@ -69,7 +69,7 @@ namespace SauceEditorCore.Models.Components
 
         public IEnumerable<VertexEntity> GetVertexEntities()
         {
-            foreach (var meshShape in GetModelShape().Meshes)
+            foreach (var meshShape in GetModelShape().Meshes.Select(m => m.Duplicated()))
             {
                 foreach (var meshFace in meshShape.Faces)
                 {

@@ -6,6 +6,7 @@ using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
@@ -48,6 +49,7 @@ namespace SpiceEngine.Rendering
         public bool IsInEditorMode { get; set; }
 
         private IEntityProvider _entityProvider;
+        private ISelectionProvider _selectionProvider;
         private ICamera _camera;
 
         private ForwardRenderer _forwardRenderer = new ForwardRenderer();
@@ -76,6 +78,7 @@ namespace SpiceEngine.Rendering
         }
 
         public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
         public void SetCamera(ICamera camera) => _camera = camera;
 
         public void LoadFromMap(Map map, EntityMapping entityMapping)
@@ -246,19 +249,19 @@ namespace SpiceEngine.Rendering
             //_selectionRenderer.SelectionPass();
         }*/
 
-        private void RenderEntityIDs()
+        public void SetSelected(IEnumerable<int> entityIDs)
         {
-            _selectionRenderer.BindForWriting();
-            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-
-            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.EntitySelectIDs);
-            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.EntitySelectIDs.Contains(l.ID)));
-
-            var vertexEntities = _entityProvider.GetLayerEntityIDs("Vertices");
-            if (vertexEntities.Any())
+            foreach (var entityID in entityIDs)
             {
-                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+                BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Selected());
+            }
+        }
+
+        public void SetDeselected(IEnumerable<int> entityIDs)
+        {
+            foreach (var entityID in entityIDs)
+            {
+                BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Deselected());
             }
         }
 
@@ -297,7 +300,7 @@ namespace SpiceEngine.Rendering
                 else
                 {
                     // TODO - Find out why selection appears to be updating ahead of entity
-                    _wireframeRenderer.SelectionPass(_entityProvider, _camera, entity, BatchManager);
+                    //_wireframeRenderer.SelectionPass(_entityProvider, _camera, entity, BatchManager);
                 }
             }
 
@@ -390,6 +393,22 @@ namespace SpiceEngine.Rendering
             }
         }
 
+        private void RenderEntityIDs()
+        {
+            _selectionRenderer.BindForWriting();
+            GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+
+            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.EntitySelectIDs);
+            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.EntitySelectIDs.Contains(l.ID)));
+
+            var vertexEntities = _entityProvider.GetLayerEntityIDs("Vertices");
+            if (vertexEntities.Any())
+            {
+                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+            }
+        }
+
         public void RenderWireframe()
         {
             _wireframeRenderer.BindForWriting();
@@ -451,6 +470,18 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(_deferredRenderer.ColorTexture);
             _logManager.RenderToScreen();
+
+            if (IsInEditorMode && _selectionProvider != null && _selectionProvider.SelectionCount > 0)
+            {
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+                GL.DepthFunc(DepthFunction.Always);
+
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+            }
         }
 
         public void RenderLitFrame()
@@ -488,6 +519,11 @@ namespace SpiceEngine.Rendering
 
             GL.Disable(EnableCap.DepthTest);
 
+            if (IsInEditorMode && _selectionProvider != null)
+            {
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+            }
+
             _renderToScreen.Render(_deferredRenderer.FinalTexture);
             _logManager.RenderToScreen();
         }
@@ -516,6 +552,11 @@ namespace SpiceEngine.Rendering
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
+
+            if (IsInEditorMode && _selectionProvider != null)
+            {
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+            }
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);

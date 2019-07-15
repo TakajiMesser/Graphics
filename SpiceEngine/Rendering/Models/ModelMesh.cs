@@ -2,12 +2,13 @@
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class MeshShape : IMeshShape
+    public class ModelMesh : IMeshShape
     {
-        public List<MeshFace> Faces { get; set; } = new List<MeshFace>();
+        public List<ModelFace> Faces { get; set; } = new List<ModelFace>();
         public UVMap UVMap
         {
             set
@@ -18,6 +19,11 @@ namespace SpiceEngine.Rendering.Meshes
                 }
             }
         }
+
+        public ModelMesh Duplicated() => new ModelMesh()
+        {
+            Faces = Faces.Select(f => f.Duplicated()).ToList()
+        };
 
         public Vector3 GetAveragePosition()
         {
@@ -30,9 +36,9 @@ namespace SpiceEngine.Rendering.Meshes
             {
                 foreach (var vertex in face.Vertices)
                 {
-                    xSum += vertex.X;
-                    ySum += vertex.Y;
-                    zSum += vertex.Z;
+                    xSum += vertex.Position.X;
+                    ySum += vertex.Position.Y;
+                    zSum += vertex.Position.Z;
                     nVertices++;
                 }
             }
@@ -53,39 +59,39 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public static MeshShape Box(float width, float height, float depth)
+        public static ModelMesh Box(float width, float height, float depth)
         {
-            var shape = new MeshShape();
+            var shape = new ModelMesh();
 
             // +X Face
-            shape.Faces.Add(MeshFace.Rectangle(height, depth)
+            shape.Faces.Add(ModelFace.Rectangle(height, depth)
                 .Rotated(Vector3.UnitZ, MathExtensions.HALF_PI)
                 .Translated(0.0f, 0.0f, width / 2.0f)
                 .Rotated(Vector3.UnitY, MathExtensions.HALF_PI));
 
             // -X Face
-            shape.Faces.Add(MeshFace.Rectangle(height, depth)
+            shape.Faces.Add(ModelFace.Rectangle(height, depth)
                 .Rotated(Vector3.UnitZ, -MathExtensions.HALF_PI)
                 .Translated(0.0f, 0.0f, width / 2.0f)
                 .Rotated(Vector3.UnitY, -MathExtensions.HALF_PI));
 
             // +Y Face
-            shape.Faces.Add(MeshFace.Rectangle(width, depth)
+            shape.Faces.Add(ModelFace.Rectangle(width, depth)
                 .Rotated(Vector3.UnitZ, MathExtensions.PI)
                 .Translated(0.0f, 0.0f, height / 2.0f)
                 .Rotated(Vector3.UnitX, -MathExtensions.HALF_PI));
 
             // -Y Face
-            shape.Faces.Add(MeshFace.Rectangle(width, depth)
+            shape.Faces.Add(ModelFace.Rectangle(width, depth)
                 .Translated(0.0f, 0.0f, height / 2.0f)
                 .Rotated(Vector3.UnitX, MathExtensions.HALF_PI));
 
             // +Z Face
-            shape.Faces.Add(MeshFace.Rectangle(width, height)
+            shape.Faces.Add(ModelFace.Rectangle(width, height)
                 .Translated(0.0f, 0.0f, depth / 2.0f));
 
             // -Z Face
-            shape.Faces.Add(MeshFace.Rectangle(width, height)
+            shape.Faces.Add(ModelFace.Rectangle(width, height)
                 .Translated(0.0f, 0.0f, depth / 2.0f)
                 .Rotated(Vector3.UnitY, MathExtensions.PI));
 
@@ -98,11 +104,11 @@ namespace SpiceEngine.Rendering.Meshes
         /// <param name="nSides">The number of sides for the polygon</param>
         /// <param name="apothem">The distance from the center to the midpoint of a side</param>
         /// <returns></returns>
-        public static MeshShape RegularPolyhedron(int nSides, float apothem)
+        public static ModelMesh RegularPolyhedron(int nSides, float apothem)
         {
-            var meshShape = new MeshShape();
+            var meshShape = new ModelMesh();
 
-            var meshFace = new MeshFace();
+            var meshFace = new ModelFace();
 
             var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
             var exteriorAngle = MathExtensions.TWO_PI / nSides;

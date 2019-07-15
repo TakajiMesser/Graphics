@@ -61,6 +61,30 @@ namespace SpiceEngine.Rendering.Vertices
             ID = ID
         };
 
+        public IVertex3D Selected() => new EditorVertex3D()
+        {
+            Position = Position,
+            Normal = Normal,
+            Tangent = Tangent,
+            TextureCoords = TextureCoords,
+            Color = Color,
+            BoneIDs = BoneIDs,
+            BoneWeights = BoneWeights,
+            ID = new Color4(ID.R, ID.G, ID.B, 0.5f)
+        };
+
+        public IVertex3D Deselected() => new EditorVertex3D()
+        {
+            Position = Position,
+            Normal = Normal,
+            Tangent = Tangent,
+            TextureCoords = TextureCoords,
+            Color = Color,
+            BoneIDs = BoneIDs,
+            BoneWeights = BoneWeights,
+            ID = new Color4(ID.R, ID.G, ID.B, 1.0f)
+        };
+
         public IColorVertex Colored(Color4 color) => new EditorVertex3D()
         {
             Position = Position,

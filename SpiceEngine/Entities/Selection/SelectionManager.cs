@@ -18,7 +18,7 @@ namespace SpiceEngine.Entities.Selection
         Yellow
     }
 
-    public class SelectionManager
+    public class SelectionManager : ISelectionProvider
     {
         private IEntityProvider _entityProvider;
         private ConcurrentDictionary<int, bool> _selectedByID = new ConcurrentDictionary<int, bool>();

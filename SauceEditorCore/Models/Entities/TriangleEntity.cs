@@ -11,14 +11,14 @@ namespace SauceEditorCore.Models.Entities
 {
     public class TriangleEntity : ModelEntity, ITextureBinder, ITexturePath
     {
-        public MeshTriangle Triangle { get; }
+        public ModelTriangle Triangle { get; }
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
 
-        public TriangleEntity(MeshTriangle meshTriangle, TexturePaths texturePaths)
+        public TriangleEntity(ModelTriangle modelTriangle, TexturePaths texturePaths)
         {
-            Triangle = meshTriangle;
+            Triangle = modelTriangle;
             Position = Triangle.GetAveragePosition();
             Triangle.CenterAround(Position);
 
@@ -47,13 +47,13 @@ namespace SauceEditorCore.Models.Entities
             Material.SetUniforms(program);
         }
 
-        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is TriangleEntity triangleEntity
+        public override bool CompareUniforms(IEntity entity) => entity is TriangleEntity triangleEntity
             && Material.Equals(triangleEntity.Material)
             && TextureMapping.Equals(triangleEntity.TextureMapping);
 
         public override IRenderable ToRenderable()
         {
-            var meshBuild = new MeshBuild(Triangle);
+            var meshBuild = new ModelBuilder(Triangle);
             var meshVertices = meshBuild.GetVertices();
 
             var mesh = meshVertices.Any(v => v.IsAnimated)
