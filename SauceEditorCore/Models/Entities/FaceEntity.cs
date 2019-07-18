@@ -1,29 +1,23 @@
-﻿using SpiceEngine.Entities;
+﻿using OpenTK;
+using SpiceEngine.Entities;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
 using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class FaceEntity : ModelEntity, ITextureBinder, ITexturePath
+    public class FaceEntity : ModelEntity<ModelFace>, ITextureBinder, ITexturePath
     {
-        public ModelFace Face { get; }
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
 
-        public FaceEntity(ModelFace modelFace, TexturePaths texturePaths)
-        {
-            Face = modelFace;
-            Position = Face.GetAveragePosition();
-            Face.CenterAround(Position);
-
-            TexturePaths = texturePaths;
-        }
+        public FaceEntity(ModelFace modelFace, TexturePaths texturePaths) : base(modelFace) => TexturePaths = texturePaths;
 
         public void AddMaterial(Material material) => Material = material;
 
@@ -53,7 +47,7 @@ namespace SauceEditorCore.Models.Entities
 
         public override IRenderable ToRenderable()
         {
-            var meshBuild = new ModelBuilder(Face);
+            var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();
 
             var mesh = meshVertices.Any(v => v.IsAnimated)

@@ -8,18 +8,18 @@ namespace SauceEditorCore.Models.Components
 {
     public class ModelComponent : Component
     {
-        private ModelShape _modelShape;
+        private EditorModel _modelShape;
 
         public ModelComponent(string filePath) : base(filePath) { }
 
         public Model Model { get; set; }
 
-        private ModelShape GetModelShape()
+        private EditorModel GetModelShape()
         {
             // Lazy load model shape
             if (_modelShape == null)
             {
-                _modelShape = ModelShape.LoadFromFile(Path);
+                _modelShape = EditorModel.LoadFromFile(Path);
             }
 
             return _modelShape;
@@ -27,7 +27,7 @@ namespace SauceEditorCore.Models.Components
 
         public IEnumerable<MeshEntity> GetMeshEntities()
         {
-            var modelMeshes = GetModelShape().Meshes.Select(m => m.Duplicated()).ToList();
+            var modelMeshes = GetModelShape().Meshes;//.Select(m => m.Duplicated()).ToList();
             var texturePaths = Model.GetTexturePaths(Path).ToList();
 
             for (var i = 0; i < modelMeshes.Count; i++)
@@ -38,7 +38,7 @@ namespace SauceEditorCore.Models.Components
 
         public IEnumerable<FaceEntity> GetFaceEntities()
         {
-            var modelMeshes = GetModelShape().Meshes.Select(m => m.Duplicated()).ToList();
+            var modelMeshes = GetModelShape().Meshes;//.Select(m => m.Duplicated()).ToList();
             var texturePaths = Model.GetTexturePaths(Path).ToList();
 
             for (var i = 0; i < modelMeshes.Count; i++)
@@ -52,16 +52,16 @@ namespace SauceEditorCore.Models.Components
 
         public IEnumerable<TriangleEntity> GetTriangleEntities()
         {
-            var meshShapes = GetModelShape().Meshes.Select(m => m.Duplicated()).ToList();
+            var modelMeshes = GetModelShape().Meshes;//.Select(m => m.Duplicated()).ToList();
             var texturePaths = Model.GetTexturePaths(Path).ToList();
 
-            for (var i = 0; i < meshShapes.Count; i++)
+            for (var i = 0; i < modelMeshes.Count; i++)
             {
-                foreach (var meshFace in meshShapes[i].Faces)
+                foreach (var modelFace in modelMeshes[i].Faces)
                 {
-                    foreach (var meshTriangle in meshFace.GetMeshTriangles())
+                    foreach (var modelTriangle in modelFace.GetTriangles())
                     {
-                        yield return new TriangleEntity(meshTriangle, texturePaths[i]);
+                        yield return new TriangleEntity(modelTriangle, texturePaths[i]);
                     }
                 }
             }
@@ -69,15 +69,15 @@ namespace SauceEditorCore.Models.Components
 
         public IEnumerable<VertexEntity> GetVertexEntities()
         {
-            foreach (var meshShape in GetModelShape().Meshes.Select(m => m.Duplicated()))
+            foreach (var modelMesh in GetModelShape().Meshes)//.Select(m => m.Duplicated()))
             {
-                foreach (var meshFace in meshShape.Faces)
+                foreach (var modelFace in modelMesh.Faces)
                 {
-                    foreach (var meshTriangle in meshFace.GetMeshTriangles())
+                    foreach (var modelTriangle in modelFace.GetTriangles())
                     {
-                        yield return new VertexEntity(meshTriangle.VertexA);
-                        yield return new VertexEntity(meshTriangle.VertexB);
-                        yield return new VertexEntity(meshTriangle.VertexC);
+                        yield return new VertexEntity(modelTriangle.VertexA);
+                        yield return new VertexEntity(modelTriangle.VertexB);
+                        yield return new VertexEntity(modelTriangle.VertexC);
                     }
                 }
             }

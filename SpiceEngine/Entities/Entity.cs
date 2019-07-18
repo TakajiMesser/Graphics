@@ -12,7 +12,7 @@ namespace SpiceEngine.Entities
 
         public int ID { get; set; }
 
-        public Vector3 Position
+        public virtual Vector3 Position
         {
             get => _modelMatrix.Translation;
             set

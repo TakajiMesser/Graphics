@@ -87,7 +87,7 @@ namespace SpiceEngine.Rendering.Meshes
             var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v.Position));
             var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v.Position));
 
-            foreach (var triangle in face.GetMeshTriangles())
+            foreach (var triangle in face.GetTriangles())
             {
                 AddTriangle(triangle, uvXOrigin, uvYOrigin, uvRotation, face.UVMap);
             }

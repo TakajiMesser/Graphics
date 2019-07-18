@@ -71,6 +71,8 @@ namespace SpiceEngine.Rendering.Batches
             return _batches[batchIndex];
         }
 
+        public IBatch GetBatchOrDefault(int entityID) => _batchIndexByEntityID.ContainsKey(entityID) ? _batches[_batchIndexByEntityID[entityID]] : null;
+
         public void RemoveByEntityID(int entityID)
         {
             switch (_renderTypeByEntityID[entityID])

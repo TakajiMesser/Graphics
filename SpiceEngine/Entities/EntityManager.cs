@@ -58,6 +58,8 @@ namespace SpiceEngine.Entities
             return _entitiesByID[id];
         }
 
+        public IEntity GetEntityOrDefault(int id) => _entitiesByID.ContainsKey(id) ? _entitiesByID[id] : null;
+
         public IEnumerable<IEntity> GetEntities(IEnumerable<int> ids)
         {
             foreach (var id in ids)

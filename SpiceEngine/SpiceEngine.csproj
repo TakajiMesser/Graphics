@@ -257,13 +257,13 @@
     <Compile Include="Rendering\IRenderable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
-    <Compile Include="Rendering\Models\IMeshShape.cs" />
+    <Compile Include="Rendering\Models\IModelShape.cs" />
     <Compile Include="Rendering\Models\IModel.cs" />
     <Compile Include="Rendering\Meshes\MeshBone.cs" />
     <Compile Include="Rendering\Models\Model.cs" />
     <Compile Include="Rendering\Models\ModelBuilder.cs" />
-    <Compile Include="Rendering\Models\ModelShape.cs" />
     <Compile Include="Rendering\Meshes\UVMap.cs" />
+    <Compile Include="Rendering\Models\EditorModel.cs" />
     <Compile Include="Rendering\Models\ModelVertex.cs" />
     <Compile Include="Rendering\Models\ModelMesh.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />

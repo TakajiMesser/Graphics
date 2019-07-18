@@ -6,10 +6,10 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelShape
+    public class EditorModel
     {
-        public ModelShape() { }
-        public ModelShape(ModelMesh mesh)
+        public EditorModel() { }
+        public EditorModel(ModelMesh mesh)
         {
             Meshes.Add(mesh);
         }
@@ -37,7 +37,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public static ModelShape LoadFromFile(string filePath)
+        public static EditorModel LoadFromFile(string filePath)
         {
             using (var importer = new Assimp.AssimpContext())
             {
@@ -48,7 +48,7 @@ namespace SpiceEngine.Rendering.Meshes
                     | Assimp.PostProcessSteps.GenerateSmoothNormals
                     | Assimp.PostProcessSteps.FlipUVs);
 
-                var modelShape = new ModelShape();
+                var modelShape = new EditorModel();
 
                 if (scene.HasAnimations)
                 {

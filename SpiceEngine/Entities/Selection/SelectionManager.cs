@@ -29,7 +29,9 @@ namespace SpiceEngine.Entities.Selection
         public IEnumerable<int> SelectedIDs => _selectedByID.Where(kvp => kvp.Value).Select(kvp => kvp.Key);
 
         public IEnumerable<IEntity> Entities => _selectedByID.Keys.Select(i => _entityProvider.GetEntity(i));
-        public IEnumerable<IEntity> SelectedEntities => _selectedByID.Where(kvp => kvp.Value).Select(kvp => _entityProvider.GetEntity(kvp.Key));
+        public IEnumerable<IEntity> SelectedEntities => _selectedByID.Where(kvp => kvp.Value)
+            .Select(kvp => _entityProvider.GetEntityOrDefault(kvp.Key))
+            .Where(e => e != null);
 
         public SelectionTypes SelectionType { get; set; }
 

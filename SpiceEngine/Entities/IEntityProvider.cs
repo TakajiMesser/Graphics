@@ -14,6 +14,7 @@ namespace SpiceEngine.Entities
 
         int AddEntity(IEntity entity);
         IEntity GetEntity(int id);
+        IEntity GetEntityOrDefault(int id);
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
         Actor GetActor(string name);
         EntityTypes GetEntityType(int id);

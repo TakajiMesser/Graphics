@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelTriangle : IMeshShape
+    public class ModelTriangle : IModelShape
     {
         public ModelVertex VertexA { get; set; }
         public ModelVertex VertexB { get; set; }
@@ -29,18 +29,25 @@ namespace SpiceEngine.Rendering.Meshes
             Tangent = Tangent
         };
 
+        public void Translate(float x, float y, float z)
+        {
+            VertexA.Translate(x, y, z);
+            VertexB.Translate(x, y, z);
+            VertexC.Translate(x, y, z);
+        }
+
         public Vector3 GetAveragePosition() => new Vector3()
         {
-            X = (VertexA.Position.X + VertexB.Position.X + VertexC.Position.X) / 3.0f,
-            Y = (VertexA.Position.Y + VertexB.Position.Y + VertexC.Position.Y) / 3.0f,
-            Z = (VertexA.Position.Z + VertexB.Position.Z + VertexC.Position.Z) / 3.0f
+            X = (VertexA.Position.X + VertexA.Origin.X + VertexB.Position.X + VertexB.Origin.X + VertexC.Position.X + VertexC.Origin.X) / 3.0f,
+            Y = (VertexA.Position.Y + VertexA.Origin.Y + VertexB.Position.Y + VertexB.Origin.Y + VertexC.Position.Y + VertexC.Origin.Y) / 3.0f,
+            Z = (VertexA.Position.Z + VertexA.Origin.Z + VertexB.Position.Z + VertexB.Origin.Z + VertexC.Position.Z + VertexC.Origin.Z) / 3.0f
         };
 
         public void CenterAround(Vector3 position)
         {
-            VertexA.Position -= position;
-            VertexB.Position -= position;
-            VertexC.Position -= position;
+            VertexA.CenterAround(position);
+            VertexB.CenterAround(position);
+            VertexC.CenterAround(position);
         }
     }
 }

@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelFace : IMeshShape
+    public class ModelFace : IModelShape
     {
         /// <summary>
         /// The vertices should be in clockwise order.
@@ -65,18 +65,17 @@ namespace SpiceEngine.Rendering.Meshes
         public void AddVertex(ModelVertex vertex) => Vertices.Add(vertex);
         public void AddVertex(Vector3 vertex) => Vertices.Add(new ModelVertex() { Position = vertex });
 
-        public Vector3 GetAveragePosition() => Vertices.Select(v => v.Position).Average();
+        public Vector3 GetAveragePosition() => Vertices.Select(v => v.Position + v.Origin).Average();
 
         public void CenterAround(Vector3 position)
         {
-            for (var i = 0; i < Vertices.Count; i++)
+            foreach (var vertex in Vertices)
             {
-                var vertex = Vertices[i];
-                vertex.Position -= position;
+                vertex.CenterAround(position);
             }
         }
 
-        public IEnumerable<ModelTriangle> GetMeshTriangles()
+        public IEnumerable<ModelTriangle> GetTriangles()
         {
             if (Vertices.Count < 3) throw new InvalidOperationException("MeshFace must consist of at least 3 vertices");
 
@@ -96,11 +95,9 @@ namespace SpiceEngine.Rendering.Meshes
 
         public void Translate(float x, float y, float z)
         {
-            var translation = new Vector3(x, y, z);
-
             for (var i = 0; i < Vertices.Count; i++)
             {
-                Vertices[i].Position += translation;
+                Vertices[i].Translate(x, y, z);
             }
         }
 

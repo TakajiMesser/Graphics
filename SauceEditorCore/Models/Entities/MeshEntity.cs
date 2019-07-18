@@ -10,19 +10,14 @@ using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class MeshEntity : ModelEntity, ITextureBinder, ITexturePath
+    public class MeshEntity : ModelEntity<ModelMesh>, ITextureBinder, ITexturePath
     {
-        public ModelMesh Mesh { get; }
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
 
-        public MeshEntity(ModelMesh modelMesh, TexturePaths texturePaths)
+        public MeshEntity(ModelMesh modelMesh, TexturePaths texturePaths) : base(modelMesh)
         {
-            Mesh = modelMesh;
-            Position = Mesh.GetAveragePosition();
-            Mesh.CenterAround(Position);
-
             TexturePaths = texturePaths;
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
@@ -57,7 +52,7 @@ namespace SauceEditorCore.Models.Entities
 
         public override IRenderable ToRenderable()
         {
-            var meshBuild = new ModelBuilder(Mesh);
+            var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();
 
             /*if (meshVertices.Any(v => v.IsAnimated))

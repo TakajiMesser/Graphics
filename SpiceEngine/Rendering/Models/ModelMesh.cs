@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelMesh : IMeshShape
+    public class ModelMesh : IModelShape
     {
         public List<ModelFace> Faces { get; set; } = new List<ModelFace>();
         public UVMap UVMap
@@ -25,6 +25,14 @@ namespace SpiceEngine.Rendering.Meshes
             Faces = Faces.Select(f => f.Duplicated()).ToList()
         };
 
+        public void Translate(float x, float y, float z)
+        {
+            foreach (var face in Faces)
+            {
+                face.Translate(x, y, z);
+            }
+        }
+
         public Vector3 GetAveragePosition()
         {
             var xSum = 0.0f;
@@ -36,9 +44,9 @@ namespace SpiceEngine.Rendering.Meshes
             {
                 foreach (var vertex in face.Vertices)
                 {
-                    xSum += vertex.Position.X;
-                    ySum += vertex.Position.Y;
-                    zSum += vertex.Position.Z;
+                    xSum += vertex.Position.X + vertex.Origin.X;
+                    ySum += vertex.Position.Y + vertex.Origin.Y;
+                    zSum += vertex.Position.Z + vertex.Origin.Z;
                     nVertices++;
                 }
             }

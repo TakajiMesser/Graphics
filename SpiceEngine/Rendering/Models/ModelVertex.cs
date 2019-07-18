@@ -5,8 +5,10 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelVertex
+    public class ModelVertex : IModelShape
     {
+        private Vector3 _origin = Vector3.Zero;
+
         public Vector3 Position { get; set; }
         public Vector3 Normal { get; set; }
         public Vector3 Tangent { get; set; }
@@ -14,6 +16,24 @@ namespace SpiceEngine.Rendering.Meshes
         public Color4 Color { get; set; }
         public Vector4? BoneIDs { get; set; }
         public Vector4? BoneWeights { get; set; }
+
+        public Vector3 Origin
+        {
+            get => _origin;
+            set
+            {
+                // P2 = O1 + P1 - O2
+                // P1 = P2 - O1 + O2
+                Position = _origin + Position - value;
+                _origin = value;
+            }
+        }
+
+        public void Translate(float x, float y, float z) => Position += new Vector3(x, y, z);
+
+        public Vector3 GetAveragePosition() => Position + Origin;
+
+        public void CenterAround(Vector3 position) => Origin = position;
 
         public bool IsAnimated => BoneIDs.HasValue && BoneWeights.HasValue;
 
