@@ -11,5 +11,7 @@ namespace SpiceEngine.Rendering.Textures
         void AddMaterial(Material material);
         void AddTextureMapping(TextureMapping? textureMapping);
         void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
+
+        event EventHandler<EntityTransformEventArgs> TextureTransformed;
     }
 }

@@ -93,6 +93,26 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
+        public void TransformTexture(Vector2 translation, float rotation, Vector2 scale) => TransformTexture(translation, rotation, scale, 0, _vertices.Count);
+        public void TransformTexture(Vector2 translation, float rotation, Vector2 scale, int offset, int count)
+        {
+            for (var i = offset; i < count; i++)
+            {
+                if (_vertices[i] is ITextureVertex textureVertex)
+                {
+                    var transformedVertex = (T)textureVertex.TextureTransformed(translation, rotation, scale);
+                    _vertices[i] = transformedVertex;
+                }
+            }
+
+            // TODO - This is very redundant to keep two separate lists of vertex (struct) data
+            if (_vertexBuffer != null)
+            {
+                _vertexBuffer.Clear();
+                _vertexBuffer.AddVertices(_vertices);
+            }
+        }
+
         public void Update(Func<IVertex3D, IVertex3D> vertexUpdate) => Update(vertexUpdate, 0, _vertices.Count);
         public void Update(Func<IVertex3D, IVertex3D> vertexUpdate, int offset, int count)
         {

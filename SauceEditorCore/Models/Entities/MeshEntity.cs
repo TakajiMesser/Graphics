@@ -10,11 +10,44 @@ using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class MeshEntity : ModelEntity<ModelMesh>, ITextureBinder, ITexturePath
+    public class MeshEntity : ModelEntity<ModelMesh>, IRotate, IScale, ITextureBinder, ITexturePath
     {
+        public Quaternion Rotation
+        {
+            // TODO - Determine if quaternion multiplication order matters here
+            get => _modelMatrix.Rotation;
+            set
+            {
+                var rotationChange = value / _modelMatrix.Rotation;
+                _modelMatrix.Rotation = value;
+
+                if (rotationChange.IsSignificant())
+                {
+                    Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateFromQuaternion(rotationChange)));
+                }
+            }
+        }
+
+        public Vector3 Scale
+        {
+            get => _modelMatrix.Scale;
+            set
+            {
+                var scaleChange = value / _modelMatrix.Scale;
+                _modelMatrix.Scale = value;
+
+                if (scaleChange.IsSignificantDifference(Vector3.One))
+                {
+                    Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
+                }
+            }
+        }
+
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
+
+        public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
         public MeshEntity(ModelMesh modelMesh, TexturePaths texturePaths) : base(modelMesh)
         {

@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct EditorVertex3D : IVertex3D, IColorVertex
+    public struct EditorVertex3D : IVertex3D, ITextureVertex, IColorVertex
     {
         public Vector3 Position { get; private set; }
         public Vector3 Normal { get; private set; }
@@ -55,6 +55,31 @@ namespace SpiceEngine.Rendering.Vertices
             Normal = Normal,
             Tangent = Tangent,
             TextureCoords = TextureCoords,
+            Color = Color,
+            BoneIDs = BoneIDs,
+            BoneWeights = BoneWeights,
+            ID = ID
+        };
+
+        public ITextureVertex TextureTransformed(Vector2 translation, float rotation, Vector2 scale)
+        {
+            var bitangent = -Vector3.Cross(Normal, Tangent);
+
+            // Handle translation
+            TextureCoords = new Vector2()
+            {
+                X = TextureCoords.X + translation.X * bitangent,
+                Y = TextureCoords.Y + translation.Y * Tangent
+            };
+        }
+
+        public ITextureVertex TextureTransformed(Vector2 translation, float rotation, Vector2 scale) => new EditorVertex3D()
+        {
+            // For translation, we need to translate the TextureCoords in the Tangent-Vector direction
+            Position = Position,
+            Normal = Normal,
+            Tangent = Tangent, // Tangent will need to get rotated potentially
+            TextureCoords = TextureCoords, // This will definitely need to get updated...
             Color = Color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,

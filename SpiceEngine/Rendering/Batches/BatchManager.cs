@@ -238,6 +238,14 @@ namespace SpiceEngine.Rendering.Batches
                                 meshBatch.Transform(args.ID, args.Transform);
                             };
 
+                            if (entityA is ITextureBinder textureBinder)
+                            {
+                                textureBinder.TextureTransformed += (s, args) =>
+                                {
+                                    meshBatch.Transform(args.ID, args.Translation, args.Rotation, args.Scale);
+                                };
+                            }
+
                             _batchIndexByEntityID.Add(entityID, i);
                             return meshBatch;
                         }

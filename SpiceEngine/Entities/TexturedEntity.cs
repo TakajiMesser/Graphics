@@ -9,6 +9,8 @@ namespace SpiceEngine.Entities
         public abstract Material Material { get; }
         public abstract TextureMapping? TextureMapping { get; }
 
+        public event EventHandler<TextureTransformEventArgs> TextureTransformed;
+
         public abstract void AddMaterial(Material material);
         public abstract void AddTextureMapping(TextureMapping? textureMapping);
 

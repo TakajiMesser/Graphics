@@ -16,9 +16,14 @@ namespace SpiceEngine.Utilities
             return angle;
         }
 
-        public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
+        public static bool IsSignificant(this Quaternion quaternion) => (quaternion.X - 1.0f).IsSignificant()
+            || (quaternion.Y - 1.0f).IsSignificant()
+            || (quaternion.Z - 1.0f).IsSignificant()
+            || (quaternion.W - 1.0f).IsSignificant();
+
+        /*public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
             || quaternion.W >= MathExtensions.EPSILON
-            || quaternion.W <= -MathExtensions.EPSILON;
+            || quaternion.W <= -MathExtensions.EPSILON;*/
 
         // Using Tait-Bryan rotation convention conversion from this post: https://math.stackexchange.com/questions/687964/getting-euler-tait-bryan-angles-from-quaternion-representation
         public static Vector3 ToEulerAngles(this Quaternion quaternion)

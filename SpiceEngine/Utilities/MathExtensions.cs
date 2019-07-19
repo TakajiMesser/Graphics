@@ -13,6 +13,9 @@ namespace SpiceEngine.Utilities
         public static bool IsSignificant(this int value) => value >= EPSILON || value <= -EPSILON;
         public static bool IsSignificant(this float value) => value >= EPSILON || value <= -EPSILON;
 
+        public static bool IsSignificantDifference(this int value, int comparisonValue) => (value - comparisonValue).IsSignificant();
+        public static bool IsSignificantDifference(this float value, float comparisonValue) => (value - comparisonValue).IsSignificant();
+
         public static bool IsBetween(this int value, int valueA, int valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
         public static bool IsBetween(this float value, float valueA, float valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
 
