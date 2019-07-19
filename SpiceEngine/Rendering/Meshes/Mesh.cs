@@ -93,14 +93,14 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public void TransformTexture(Vector2 translation, float rotation, Vector2 scale) => TransformTexture(translation, rotation, scale, 0, _vertices.Count);
-        public void TransformTexture(Vector2 translation, float rotation, Vector2 scale, int offset, int count)
+        public void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => TransformTexture(center, translation, rotation, scale, 0, _vertices.Count);
+        public void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale, int offset, int count)
         {
             for (var i = offset; i < count; i++)
             {
                 if (_vertices[i] is ITextureVertex textureVertex)
                 {
-                    var transformedVertex = (T)textureVertex.TextureTransformed(translation, rotation, scale);
+                    var transformedVertex = (T)textureVertex.TextureTransformed(center, translation, rotation, scale);
                     _vertices[i] = transformedVertex;
                 }
             }

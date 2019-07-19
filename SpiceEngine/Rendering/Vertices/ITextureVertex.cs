@@ -8,6 +8,6 @@ namespace SpiceEngine.Rendering.Vertices
         Vector3 Tangent { get; }
         Vector2 TextureCoords { get; }
 
-        ITextureVertex TextureTransformed(Vector2 translation, float rotation, Vector2 scale);
+        ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale);
     }
 }

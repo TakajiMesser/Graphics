@@ -311,36 +311,51 @@ namespace SpiceEngine.Rendering
                 GL.Clear(ClearBufferMask.DepthBufferBit);
                 GL.DepthFunc(DepthFunction.Less);
 
-                switch (transformMode)
-                {
-                    case TransformModes.Translate:
-                        _selectionRenderer.RenderTranslationArrows(_camera, lastEntity.Position);
-                        break;
-                    case TransformModes.Rotate:
-                        _selectionRenderer.RenderRotationRings(_camera, lastEntity.Position);
-                        break;
-                    case TransformModes.Scale:
-                        _selectionRenderer.RenderScaleLines(_camera, lastEntity.Position);
-                        break;
-                }
+                RenderTransform(lastEntity, transformMode);
 
                 // Render the RGB arrows into the selection buffer as well, which means that R, G, and B are "reserved" ID colors
                 _selectionRenderer.BindForWriting();
                 GL.Clear(ClearBufferMask.DepthBufferBit);
                 GL.DepthFunc(DepthFunction.Less);
 
-                switch (transformMode)
-                {
-                    case TransformModes.Translate:
-                        _selectionRenderer.RenderTranslationArrows(_camera, lastEntity.Position);
-                        break;
-                    case TransformModes.Rotate:
-                        _selectionRenderer.RenderRotationRings(_camera, lastEntity.Position);
-                        break;
-                    case TransformModes.Scale:
-                        _selectionRenderer.RenderScaleLines(_camera, lastEntity.Position);
-                        break;
-                }
+                RenderTransform(lastEntity, transformMode);
+            }
+        }
+
+        private void RenderTransform(IEntity entity, TransformModes transformMode)
+        {
+            switch (transformMode)
+            {
+                case TransformModes.Translate:
+                    if (entity is IDirectional directional)
+                    {
+                        _selectionRenderer.RenderTranslationArrows(_camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
+                    }
+                    else
+                    {
+                        _selectionRenderer.RenderTranslationArrows(_camera, entity.Position);
+                    }
+                    break;
+                case TransformModes.Rotate:
+                    if (entity is IDirectional directional)
+                    {
+                        _selectionRenderer.RenderRotationRings(_camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
+                    }
+                    else
+                    {
+                        _selectionRenderer.RenderRotationRings(_camera, entity.Position);
+                    }
+                    break;
+                case TransformModes.Scale:
+                    if (entity is IDirectional directional)
+                    {
+                        _selectionRenderer.RenderScaleLines(_camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
+                    }
+                    else
+                    {
+                        _selectionRenderer.RenderScaleLines(_camera, entity.Position);
+                    }
+                    break;
             }
         }
 

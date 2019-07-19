@@ -10,6 +10,9 @@ layout(triangle_strip, max_vertices = 45) out;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 uniform vec3 cameraPosition;
+uniform vec3 xDirection;
+uniform vec3 yDirection;
+uniform vec3 zDirection;
 
 out vec4 fColor;
 
@@ -101,30 +104,45 @@ void main()
 
     vec3 toCamera = normalize(cameraPosition - position);
 
-    vec3 xDirection = vec3(1.0, 0.0, 0.0);
-    vec3 perpendicular = cross(toCamera, xDirection);
-    vec4 color = vec4(1.0, 0.0, 0.0, 1.0);
-    drawArrow(viewProjectionMatrix, position, color, xDirection, normalize(perpendicular));
+    if (xDirection != vec3(0.0, 0.0, 0.0))
+    {
+        vec3 perpendicular = cross(toCamera, xDirection);
+        vec4 color = vec4(1.0, 0.0, 0.0, 1.0);
+        drawArrow(viewProjectionMatrix, position, color, xDirection, normalize(perpendicular));
+    }
+    
+    if (yDirection != vec3(0.0, 0.0, 0.0))
+    {
+        vec3 perpendicular = cross(toCamera, yDirection);
+        vec4 color = vec4(0.0, 1.0, 0.0, 1.0);
+        drawArrow(viewProjectionMatrix, position, color, yDirection, normalize(perpendicular));
+    }
+    
+    if (zDirection != vec3(0.0, 0.0, 0.0))
+    {
+        vec3 perpendicular = cross(toCamera, zDirection);
+        vec4 color = vec4(0.0, 0.0, 1.0, 1.0);
+        drawArrow(viewProjectionMatrix, position, color, zDirection, normalize(perpendicular));
+    }
 
-    vec3 yDirection = vec3(0.0, 1.0, 0.0);
-    perpendicular = cross(toCamera, yDirection);
-    color = vec4(0.0, 1.0, 0.0, 1.0);
-    drawArrow(viewProjectionMatrix, position, color, yDirection, normalize(perpendicular));
-
-    vec3 zDirection = vec3(0.0, 0.0, 1.0);
-    perpendicular = cross(toCamera, zDirection);
-    color = vec4(0.0, 0.0, 1.0, 1.0);
-    drawArrow(viewProjectionMatrix, position, color, zDirection, normalize(perpendicular));
-
-    color = vec4(1.0, 1.0, 0.0, 1.0);
-    drawBetween(viewProjectionMatrix, position, color, xDirection, yDirection);
-    drawBetween(viewProjectionMatrix, position, color, yDirection, xDirection);
-
-    color = vec4(0.0, 1.0, 1.0, 1.0);
-    drawBetween(viewProjectionMatrix, position, color, yDirection, zDirection);
-    drawBetween(viewProjectionMatrix, position, color, zDirection, yDirection);
-
-    color = vec4(1.0, 0.0, 1.0, 1.0);
-    drawBetween(viewProjectionMatrix, position, color, zDirection, xDirection);
-    drawBetween(viewProjectionMatrix, position, color, xDirection, zDirection);
+    if (xDirection != vec3(0) && yDirection != vec3(0))
+    {
+        vec4 color = vec4(1.0, 1.0, 0.0, 1.0);
+        drawBetween(viewProjectionMatrix, position, color, xDirection, yDirection);
+        drawBetween(viewProjectionMatrix, position, color, yDirection, xDirection);
+    }
+    
+    if (yDirection != vec3(0) && zDirection != vec3(0))
+    {
+        vec4 color = vec4(0.0, 1.0, 1.0, 1.0);
+        drawBetween(viewProjectionMatrix, position, color, yDirection, zDirection);
+        drawBetween(viewProjectionMatrix, position, color, zDirection, yDirection);
+    }
+    
+    if (xDirection != vec3(0) && zDirection != vec3(0))
+    {
+        vec4 color = vec4(1.0, 0.0, 1.0, 1.0);
+        drawBetween(viewProjectionMatrix, position, color, zDirection, xDirection);
+        drawBetween(viewProjectionMatrix, position, color, xDirection, zDirection);
+    }
 }

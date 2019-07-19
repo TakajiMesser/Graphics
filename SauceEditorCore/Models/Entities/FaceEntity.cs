@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Selection;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
@@ -11,7 +12,7 @@ using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class FaceEntity : ModelEntity<ModelFace>, IRotate, IScale, ITextureBinder, ITexturePath
+    public class FaceEntity : ModelEntity<ModelFace>, IRotate, IScale, ITextureBinder, ITexturePath, IDirectional
     {
         private Vector2 _texturePosition;
         private float _textureRotation;
@@ -53,6 +54,10 @@ namespace SauceEditorCore.Models.Entities
         public TexturePaths TexturePaths { get; }
         public Material Material { get; private set; }
         public TextureMapping? TextureMapping { get; private set; }
+
+        public Vector3 XDirection => -Vector3.Cross(ModelShape.Normal, ModelShape.Tangent);
+        public Vector3 YDirection => ModelShape.Tangent;
+        public Vector3 ZDirection => Vector3.Zero;
 
         public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 

@@ -242,7 +242,7 @@ namespace SpiceEngine.Rendering.Batches
                             {
                                 textureBinder.TextureTransformed += (s, args) =>
                                 {
-                                    meshBatch.Transform(args.ID, args.Translation, args.Rotation, args.Scale);
+                                    meshBatch.TransformTexture(args.ID, entityA.Position, args.Translation, args.Rotation, args.Scale);
                                 };
                             }
 

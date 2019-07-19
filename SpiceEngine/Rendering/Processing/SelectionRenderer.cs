@@ -177,13 +177,17 @@ namespace SpiceEngine.Rendering.Processing
                 //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
                 .Execute();
         }
-
-        public void RenderTranslationArrows(ICamera camera, Vector3 position)
+        
+        public void RenderTranslationArrows(ICamera camera, Vector3 position) { RenderTranslationArrows(camera, position, Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ); }
+        public void RenderTranslationArrows(ICamera camera, Vector3 position, Vector3 xDirection, Vector3 yDirection, Vector3 zDirection)
         {
             _translateProgram.Use();
 
             camera.SetUniforms(_translateProgram);
             _translateProgram.SetUniform("cameraPosition", camera.Position);
+            _translateProgram.SetUniform("xDirection", xDirection);
+            _translateProgram.SetUniform("yDirection", yDirection);
+            _translateProgram.SetUniform("zDirection", zDirection);
 
             _vertexBuffer.Clear();
             _vertexBuffer.AddVertex(new ColorVertex3D(position, new Color4()));

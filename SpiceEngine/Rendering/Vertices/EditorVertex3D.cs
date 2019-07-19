@@ -61,9 +61,13 @@ namespace SpiceEngine.Rendering.Vertices
             ID = ID
         };
 
-        public ITextureVertex TextureTransformed(Vector2 translation, float rotation, Vector2 scale)
+        public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale)
         {
             var bitangent = -Vector3.Cross(Normal, Tangent);
+
+            // Rotate in relation to center axis
+            // TODO - Determine if this Normal needs to be the Normal of the face, rather than of the vertex
+            var rotationQuaternion = Quaternion.FromAxisAngle(center + Normal, rotation);
 
             // Handle translation
             TextureCoords = new Vector2()
@@ -73,7 +77,7 @@ namespace SpiceEngine.Rendering.Vertices
             };
         }
 
-        public ITextureVertex TextureTransformed(Vector2 translation, float rotation, Vector2 scale) => new EditorVertex3D()
+        public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => new EditorVertex3D()
         {
             // For translation, we need to translate the TextureCoords in the Tangent-Vector direction
             Position = Position,

@@ -19,8 +19,8 @@ namespace SpiceEngine.Rendering.Meshes
         void Transform(Matrix4 matrix);
         void Transform(Matrix4 matrix, int offset, int count);
 
-        void TransformTexture(Vector2 translation, float rotation, Vector2 scale);
-        void TransformTexture(Vector2 translation, float rotation, Vector2 scale, int offset, int count);
+        void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale);
+        void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale, int offset, int count);
 
         void Update(Func<IVertex3D, IVertex3D> vertexUpdate, int offset, int count);
 
