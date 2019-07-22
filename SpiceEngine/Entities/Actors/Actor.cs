@@ -3,6 +3,7 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -41,6 +42,8 @@ namespace SpiceEngine.Entities.Actors
 
         public override Material Material => _materials[_meshIndex];
         public override TextureMapping? TextureMapping => _textureMappings[_meshIndex];
+
+        public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
         public Actor(string name) => Name = name;
 

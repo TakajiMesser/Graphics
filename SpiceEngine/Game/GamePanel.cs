@@ -188,7 +188,7 @@ namespace SpiceEngine.Game
 
         public void CenterView()
         {
-            if (_entityProvider != null && SelectionManager.Count > 0)
+            if (_entityProvider != null && SelectionManager.SelectionCount > 0)
             {
                 _panelCamera.CenterView(SelectionManager.Position);
                 Invalidate();
@@ -262,7 +262,7 @@ namespace SpiceEngine.Game
             }*/
 
             // Default to allowing all rendered entities to be selectable
-            SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
+            //SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
 
             Invalidate();
             IsLoaded = true;
@@ -492,7 +492,7 @@ namespace SpiceEngine.Game
                     if (isMultiSelect && SelectionManager.IsSelected(id))
                     {
                         _renderManager.SetDeselected(id.Yield());
-                        SelectionManager.Deselect(id);
+                        SelectionManager.Remove(id);//.Deselect(id);
                         EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
                         Invalidate();
                     }
@@ -504,7 +504,7 @@ namespace SpiceEngine.Game
                             SelectionManager.ClearSelection();
                         }
 
-                        var entity = _entityProvider.GetEntity(id);
+                        var entity = _entityProvider.GetEntityOrDefault(id);
                         if (entity != null)
                         {
                             _renderManager.SetSelected(id.Yield());
@@ -629,10 +629,10 @@ namespace SpiceEngine.Game
                     {
                         _isDuplicating = true;
 
-                        foreach (var duplication in SelectionManager.DuplicateSelection())
+                        /*foreach (var duplication in SelectionManager.DuplicateSelection())
                         {
                             EntityDuplicated?.Invoke(this, new DuplicationEventArgs(duplication));
-                        }
+                        }*/
                     }
 
                     SelectionManager.HandleEntityTransforms(TransformMode, _inputProvider.MouseDelta);
@@ -655,7 +655,7 @@ namespace SpiceEngine.Game
                 }
                 else if (_inputProvider.IsDown(new Input(MouseButton.Button1)))
                 {
-                    if (SelectionManager.Count > 0)
+                    if (SelectionManager.SelectionCount > 0)
                     {
                         _panelCamera.Pivot(_inputProvider.MouseDelta, _inputProvider.MouseWheelDelta, SelectionManager.Position);
                         _invalidated = true;

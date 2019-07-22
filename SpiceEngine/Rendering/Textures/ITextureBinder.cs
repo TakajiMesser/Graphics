@@ -1,5 +1,7 @@
-﻿using SpiceEngine.Rendering.Materials;
+﻿using SpiceEngine.Entities;
+using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Shaders;
+using System;
 
 namespace SpiceEngine.Rendering.Textures
 {
@@ -11,7 +13,5 @@ namespace SpiceEngine.Rendering.Textures
         void AddMaterial(Material material);
         void AddTextureMapping(TextureMapping? textureMapping);
         void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
-
-        event EventHandler<EntityTransformEventArgs> TextureTransformed;
     }
 }

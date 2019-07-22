@@ -21,6 +21,8 @@ namespace SpiceEngine.Rendering.Batches
 
         public virtual void Transform(int entityID, Matrix4 matrix) { }
 
+        public virtual void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale) { }
+
         public virtual void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate) { }
 
         public virtual void RemoveEntity(int id)

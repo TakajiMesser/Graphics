@@ -173,6 +173,30 @@ namespace SpiceEngine.Rendering.Meshes
             return scaled;
         }
 
+        public void TranslateTexture(float x, float y)
+        {
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                Vertices[i].TranslateTexture(x, y);
+            }
+        }
+
+        public void RotateTexture(float angle)
+        {
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                Vertices[i].RotateTexture(angle);
+            }
+        }
+
+        public void ScaleTexture(float x, float y)
+        {
+            for (var i = 0; i < Vertices.Count; i++)
+            {
+                Vertices[i].ScaleTexture(x, y);
+            }
+        }
+
         public static ModelFace Rectangle(float width, float height)
         {
             return new ModelFace(new List<Vector3>()

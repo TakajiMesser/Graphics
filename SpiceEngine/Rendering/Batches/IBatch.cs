@@ -14,6 +14,7 @@ namespace SpiceEngine.Rendering.Batches
 
         void AddEntity(int id, IRenderable renderable);
         void Transform(int entityID, Matrix4 matrix);
+        void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale);
         void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate);
         void RemoveEntity(int id);
 

@@ -26,6 +26,8 @@ namespace SpiceEngine.Rendering.Vertices
             BoneWeights = boneWeights;
         }
 
+        public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => null;
+
         public IVertex3D Transformed(Matrix4 modelMatrix) => new AnimatedVertex3D()
         {
             Position = (modelMatrix * new Vector4(Position, 1.0f)).Xyz,

@@ -17,6 +17,7 @@
         <Label FontSize="14">Select Tool</Label>
         <btns:ToggleEnumButton x:Name="ToolTypeButton" Orientation="Horizontal" Value="{Binding Path=ModelToolType, Mode=TwoWay}" />
         <Label FontSize="14">Tool Properties</Label>
+        <ToggleButton Name="TextureButton" Content="Texture" IsChecked="{Binding TextureMode}"/>
         <Grid Name="PropertyGrid">
             <Grid.Resources>
                 <Style x:Key="GridBorder" TargetType="{x:Type Border}">

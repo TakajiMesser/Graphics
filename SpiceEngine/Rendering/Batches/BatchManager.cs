@@ -238,9 +238,9 @@ namespace SpiceEngine.Rendering.Batches
                                 meshBatch.Transform(args.ID, args.Transform);
                             };
 
-                            if (entityA is ITextureBinder textureBinder)
+                            if (entityA is ITexturedEntity texturedEntity)
                             {
-                                textureBinder.TextureTransformed += (s, args) =>
+                                texturedEntity.TextureTransformed += (s, args) =>
                                 {
                                     meshBatch.TransformTexture(args.ID, entityA.Position, args.Translation, args.Rotation, args.Scale);
                                 };

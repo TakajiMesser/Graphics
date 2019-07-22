@@ -18,10 +18,8 @@ namespace SpiceEngine.Entities
             set
             {
                 var displacement = value - _modelMatrix.Translation;
-                //var translation = value;
                 _modelMatrix.Translation = value;
 
-                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _modelMatrix.Matrix));
                 if (displacement.IsSignificant())
                 {
                     Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateTranslation(displacement)));
@@ -38,5 +36,7 @@ namespace SpiceEngine.Entities
         public abstract void SetUniforms(ShaderProgram program);
 
         public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
+
+        protected virtual void OnTransformed(object sender, EntityTransformEventArgs e) => Transformed?.Invoke(sender, e);
     }
 }

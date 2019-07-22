@@ -337,24 +337,24 @@ namespace SpiceEngine.Rendering
                     }
                     break;
                 case TransformModes.Rotate:
-                    if (entity is IDirectional directional)
+                    /*if (entity is IDirectional directional)
                     {
                         _selectionRenderer.RenderRotationRings(_camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
                     }
                     else
-                    {
+                    {*/
                         _selectionRenderer.RenderRotationRings(_camera, entity.Position);
-                    }
+                    //}
                     break;
                 case TransformModes.Scale:
-                    if (entity is IDirectional directional)
+                    /*if (entity is IDirectional directional)
                     {
                         _selectionRenderer.RenderScaleLines(_camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
                     }
                     else
-                    {
+                    {*/
                         _selectionRenderer.RenderScaleLines(_camera, entity.Position);
-                    }
+                    //}
                     break;
             }
         }

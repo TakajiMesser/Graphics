@@ -25,17 +25,17 @@ namespace SpiceEngine.Entities.Selection
 
         public SelectionManager(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public IEnumerable<int> IDs => _selectedByID.Keys;
+        //public IEnumerable<int> IDs => _selectedByID.Keys;
         public IEnumerable<int> SelectedIDs => _selectedByID.Where(kvp => kvp.Value).Select(kvp => kvp.Key);
 
-        public IEnumerable<IEntity> Entities => _selectedByID.Keys.Select(i => _entityProvider.GetEntity(i));
+        //public IEnumerable<IEntity> Entities => _selectedByID.Keys.Select(i => _entityProvider.GetEntity(i));
         public IEnumerable<IEntity> SelectedEntities => _selectedByID.Where(kvp => kvp.Value)
             .Select(kvp => _entityProvider.GetEntityOrDefault(kvp.Key))
             .Where(e => e != null);
 
         public SelectionTypes SelectionType { get; set; }
 
-        public int Count => _selectedByID.Count;
+        //public int Count => _selectedByID.Count;
         public int SelectionCount => _selectedByID.Count(kvp => kvp.Value);
 
         public Vector3 Position
@@ -53,13 +53,13 @@ namespace SpiceEngine.Entities.Selection
             }
         }
 
-        public void SetSelectable(IEnumerable<int> ids)
+        /*public void SetSelectable(IEnumerable<int> ids)
         {
             foreach (var id in ids)
             {
                 _selectedByID.AddOrUpdate(id, false, (i, b) => b);
             }
-        }
+        }*/
 
         public void Select(int id) => _selectedByID.AddOrUpdate(id, true, (i, b) => true);
 
@@ -71,13 +71,13 @@ namespace SpiceEngine.Entities.Selection
             }
         }
 
-        public void Deselect(int id) => _selectedByID.TryUpdate(id, false, true);
+        //public void Deselect(int id) => _selectedByID.TryUpdate(id, false, true);
 
-        public bool IsSelectable(int id) => _selectedByID.ContainsKey(id);
+        //public bool IsSelectable(int id) => _selectedByID.ContainsKey(id);
 
         public bool IsSelected(int id) => _selectedByID.TryGetValue(id, out bool value) && value;
 
-        public IEnumerable<Duplication> DuplicateSelection()
+        /*public IEnumerable<Duplication> DuplicateSelection()
         {
             // Create duplicates and overwrite SelectedEntities with them
             var duplications = new List<Duplication>();
@@ -95,17 +95,17 @@ namespace SpiceEngine.Entities.Selection
             SetSelectable(duplications.Select(d => d.DuplicatedID));
 
             return duplications;
-        }
+        }*/
 
         public void Remove(int id) => _selectedByID.TryRemove(id, out bool value);
 
-        public void SelectAll()
+        /*public void SelectAll()
         {
             foreach (var id in _selectedByID.Keys)
             {
                 _selectedByID.TryUpdate(id, true, false);
             }
-        }
+        }*/
 
         public void Clear() => _selectedByID.Clear();
 
@@ -127,7 +127,14 @@ namespace SpiceEngine.Entities.Selection
 
                     foreach (var entity in SelectedEntities)
                     {
-                        entity.Position += translation;
+                        if (entity is ITexturedEntity texturedEntity && texturedEntity.IsInTextureMode)
+                        {
+                            texturedEntity.TranslateTexture(translation.X, translation.Y);
+                        }
+                        else
+                        {
+                            entity.Position += translation;
+                        }
                     }
                     break;
                 case TransformModes.Rotate:

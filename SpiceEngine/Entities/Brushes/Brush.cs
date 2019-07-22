@@ -3,6 +3,7 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using System;
 
 namespace SpiceEngine.Entities.Brushes
 {
@@ -40,6 +41,8 @@ namespace SpiceEngine.Entities.Brushes
 
         public override Material Material => _material;
         public override TextureMapping? TextureMapping => _textureMapping;
+
+        public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
         public override void AddMaterial(Material material) => _material = material;
         public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMapping = textureMapping;

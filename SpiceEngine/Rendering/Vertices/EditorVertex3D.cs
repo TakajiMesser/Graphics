@@ -63,32 +63,32 @@ namespace SpiceEngine.Rendering.Vertices
 
         public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale)
         {
-            var bitangent = -Vector3.Cross(Normal, Tangent);
+            var bitangent = Vector3.Cross(Normal, Tangent);
 
             // Rotate in relation to center axis
             // TODO - Determine if this Normal needs to be the Normal of the face, rather than of the vertex
             var rotationQuaternion = Quaternion.FromAxisAngle(center + Normal, rotation);
 
             // Handle translation
-            TextureCoords = new Vector2()
+            var textureCoords = new Vector2()
             {
-                X = TextureCoords.X + translation.X * bitangent,
-                Y = TextureCoords.Y + translation.Y * Tangent
+                X = TextureCoords.X + translation.X,// * 100.0f,/// * bitangent,
+                Y = TextureCoords.Y + translation.Y// * 100.0f// * Tangent
+            };
+
+            return new EditorVertex3D()
+            {
+                // For translation, we need to translate the TextureCoords in the Tangent-Vector direction
+                Position = Position,
+                Normal = Normal,
+                Tangent = Tangent, // Tangent will need to get rotated potentially
+                TextureCoords = textureCoords, // This will definitely need to get updated...
+                Color = Color,
+                BoneIDs = BoneIDs,
+                BoneWeights = BoneWeights,
+                ID = ID
             };
         }
-
-        public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => new EditorVertex3D()
-        {
-            // For translation, we need to translate the TextureCoords in the Tangent-Vector direction
-            Position = Position,
-            Normal = Normal,
-            Tangent = Tangent, // Tangent will need to get rotated potentially
-            TextureCoords = TextureCoords, // This will definitely need to get updated...
-            Color = Color,
-            BoneIDs = BoneIDs,
-            BoneWeights = BoneWeights,
-            ID = ID
-        };
 
         public IVertex3D Selected() => new EditorVertex3D()
         {

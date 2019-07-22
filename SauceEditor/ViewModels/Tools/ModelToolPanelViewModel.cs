@@ -1,6 +1,10 @@
 using SauceEditor.ViewModels.Docks;
 using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Entities;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Layers;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SauceEditor.ViewModels.Tools
 {
@@ -9,8 +13,7 @@ namespace SauceEditor.ViewModels.Tools
         Mesh,
         Face,
         Triangle,
-        Vertex,
-        Texture
+        Vertex
     }
 
     public class ModelToolPanelViewModel : DockViewModel
@@ -20,11 +23,15 @@ namespace SauceEditor.ViewModels.Tools
         private const string TRIANGLE_LAYER_NAME = "Triangle";
         private const string VERTEX_LAYER_NAME = "Vertex";
 
+        private List<ITexturedEntity> _texturedEntities = new List<ITexturedEntity>();
+        private object _entityLock = new object();
+
         public ModelToolPanelViewModel() : base(DockTypes.Tool) { }
 
         public ILayerSetter LayerSetter { get; set; }
         public ModelComponent ModelComponent { get; set; }
         public ModelToolTypes ModelToolType { get; set; }
+        public bool TextureMode { get; set; }
 
         public void OnModelToolTypeChanged()
         {
@@ -32,29 +39,54 @@ namespace SauceEditor.ViewModels.Tools
             DisableLayers(ModelToolType);
         }
 
+        public void OnTextureModeChanged()
+        {
+            lock (_entityLock)
+            {
+                foreach (var texturedEntity in _texturedEntities)
+                {
+                    texturedEntity.IsInTextureMode = TextureMode;
+                }
+            }
+        }
+
+        private void SetTexturedEntities(IEnumerable<ITexturedEntity> texturedEntities)
+        {
+            lock (_entityLock)
+            {
+                _texturedEntities.Clear();
+                _texturedEntities.AddRange(texturedEntities);
+            }
+        }
+
+        private void EnableLayer(string layerName, IEnumerable<IModelEntity> modelEntities)
+        {
+            LayerSetter.ClearLayer(layerName);
+            LayerSetter.AddToLayer(layerName, modelEntities);
+            LayerSetter.EnableLayer(layerName);
+        }
+
         private void EnableLayer(ModelToolTypes enableToolType)
         {
             switch (enableToolType)
             {
                 case ModelToolTypes.Mesh:
-                    LayerSetter.ClearLayer(MESH_LAYER_NAME);
-                    LayerSetter.AddToLayer(MESH_LAYER_NAME, ModelComponent.GetMeshEntities());
-                    LayerSetter.EnableLayer(MESH_LAYER_NAME);
+                    var meshEntities = ModelComponent.GetMeshEntities().ToList();
+                    EnableLayer(MESH_LAYER_NAME, meshEntities);
+                    SetTexturedEntities(meshEntities);
                     break;
                 case ModelToolTypes.Face:
-                    LayerSetter.ClearLayer(FACE_LAYER_NAME);
-                    LayerSetter.AddToLayer(FACE_LAYER_NAME, ModelComponent.GetFaceEntities());
-                    LayerSetter.EnableLayer(FACE_LAYER_NAME);
+                    var faceEntities = ModelComponent.GetFaceEntities().ToList();
+                    EnableLayer(FACE_LAYER_NAME, faceEntities);
+                    SetTexturedEntities(faceEntities);
                     break;
                 case ModelToolTypes.Triangle:
-                    LayerSetter.ClearLayer(TRIANGLE_LAYER_NAME);
-                    LayerSetter.AddToLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetTriangleEntities());
-                    LayerSetter.EnableLayer(TRIANGLE_LAYER_NAME);
+                    var triangleEntities = ModelComponent.GetTriangleEntities().ToList();
+                    EnableLayer(TRIANGLE_LAYER_NAME, triangleEntities);
+                    SetTexturedEntities(triangleEntities);
                     break;
                 case ModelToolTypes.Vertex:
-                    LayerSetter.ClearLayer(VERTEX_LAYER_NAME);
-                    LayerSetter.AddToLayer(VERTEX_LAYER_NAME, ModelComponent.GetVertexEntities());
-                    LayerSetter.EnableLayer(VERTEX_LAYER_NAME);
+                    EnableLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetVertexEntities().ToList());
                     break;
             }
         }

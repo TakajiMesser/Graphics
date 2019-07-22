@@ -33,6 +33,29 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
+        public void TranslateTexture(float x, float y)
+        {
+            foreach (var face in Faces)
+            {
+                face.TranslateTexture(x, y);
+            }
+        }
+
+        public void RotateTexture(float angle)
+        {
+            foreach (var face in Faces)
+            {
+                face.RotateTexture(angle);
+            }
+        }
+        public void ScaleTexture(float x, float y)
+        {
+            foreach (var face in Faces)
+            {
+                face.ScaleTexture(x, y);
+            }
+        }
+
         public Vector3 GetAveragePosition()
         {
             var xSum = 0.0f;

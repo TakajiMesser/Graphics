@@ -36,6 +36,27 @@ namespace SpiceEngine.Rendering.Meshes
             VertexC.Translate(x, y, z);
         }
 
+        public void TranslateTexture(float x, float y)
+        {
+            VertexA.TranslateTexture(x, y);
+            VertexB.TranslateTexture(x, y);
+            VertexC.TranslateTexture(x, y);
+        }
+
+        public void RotateTexture(float angle)
+        {
+            VertexA.RotateTexture(angle);
+            VertexB.RotateTexture(angle);
+            VertexC.RotateTexture(angle);
+        }
+
+        public void ScaleTexture(float x, float y)
+        {
+            VertexA.ScaleTexture(x, y);
+            VertexB.ScaleTexture(x, y);
+            VertexC.ScaleTexture(x, y);
+        }
+
         public Vector3 GetAveragePosition() => new Vector3()
         {
             X = (VertexA.Position.X + VertexA.Origin.X + VertexB.Position.X + VertexB.Origin.X + VertexC.Position.X + VertexC.Origin.X) / 3.0f,

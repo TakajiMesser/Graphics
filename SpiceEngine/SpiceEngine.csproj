@@ -120,7 +120,9 @@
     <Compile Include="Entities\Archetype.cs" />
     <Compile Include="Entities\Cameras\ICamera.cs" />
     <Compile Include="Entities\EntityTransformEventArgs.cs" />
+    <Compile Include="Entities\Selection\IDirectional.cs" />
     <Compile Include="Entities\Selection\ISelectionProvider.cs" />
+    <Compile Include="Entities\ITexturedEntity.cs" />
     <Compile Include="Entities\TexturedEntity.cs" />
     <Compile Include="Entities\EntityEventArgs.cs" />
     <Compile Include="Entities\Entity.cs" />
@@ -133,6 +135,7 @@
     <Compile Include="Entities\Selection\Duplication.cs" />
     <Compile Include="Entities\Selection\DuplicationEventArgs.cs" />
     <Compile Include="Entities\Selection\SelectionManager.cs" />
+    <Compile Include="Entities\TextureTransformEventArgs.cs" />
     <Compile Include="Entities\Volumes\PhysicsVolume.cs" />
     <Compile Include="Entities\Volumes\TriggerVolume.cs" />
     <Compile Include="Entities\Volumes\BlockingVolume.cs" />

@@ -40,6 +40,8 @@ namespace SpiceEngine.Rendering.Vertices
             Color = Color
         };
 
+        public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => null;
+
         public IColorVertex Colored(Color4 color) => new Vertex3D()
         {
             Position = Position,

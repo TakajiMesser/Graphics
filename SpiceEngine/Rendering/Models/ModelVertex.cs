@@ -29,7 +29,20 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public void Translate(float x, float y, float z) => Position += new Vector3(x, y, z);
+        public void Translate(float x, float y, float z) => Position += new Vector3(x, y, z);//new Vector3(x * 100.0f, y * 100.0f, z * 100.0f);
+
+        public void TranslateTexture(float x, float y)
+        {
+            UV = new Vector2()
+            {
+                X = UV.X + x,
+                Y = UV.Y + y
+            };
+        }
+
+        public void RotateTexture(float angle) { }
+
+        public void ScaleTexture(float x, float y) { }
 
         public Vector3 GetAveragePosition() => Position + Origin;
 
