@@ -9,10 +9,9 @@ namespace SpiceEngine.Rendering.Meshes
     {
         Vector3 GetAveragePosition();
         void CenterAround(Vector3 position);
-        void Translate(float x, float y, float z);
 
-        void TranslateTexture(float x, float y);
-        void RotateTexture(float angle);
-        void ScaleTexture(float x, float y);
+        void Translate(Vector3 translation);
+        void Rotate(Quaternion rotation);
+        void Scale(Vector3 scale);
     }
 }

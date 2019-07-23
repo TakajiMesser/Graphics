@@ -10,13 +10,28 @@ using System;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public abstract class TexturedModelEntity<T> : ModelEntity<T>, IRotate, IScale, ITextureBinder, ITexturePath, ITexturedEntity, IDirectional where T : IModelShape
+    public abstract class TexturedModelEntity<T> : ModelEntity<T>, IRotate, IScale, ITextureBinder, ITexturePath, ITexturedEntity, IDirectional where T : IModelShape, ITexturedShape
     {
         private Vector2 _texturePosition;
         private float _textureRotation;
         private Vector2 _textureScale;
 
         public bool IsInTextureMode { get; set; }
+
+        public override Vector3 Position
+        {
+            get => base.Position;
+            set
+            {
+                var translation = value - Position;
+                if (translation.IsSignificant())
+                {
+                    ModelShape.Translate(translation);
+                }
+
+                base.Position = value;
+            }
+        }
 
         public Quaternion Rotation
         {
@@ -29,6 +44,7 @@ namespace SauceEditorCore.Models.Entities
 
                 if (rotationChange.IsSignificant())
                 {
+                    ModelShape.Rotate();
                     OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateFromQuaternion(rotationChange)));
                     //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateFromQuaternion(rotationChange)));
                 }

@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngine.Rendering.Vertices;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Meshes
@@ -29,20 +30,39 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public void Translate(float x, float y, float z) => Position += new Vector3(x, y, z);//new Vector3(x * 100.0f, y * 100.0f, z * 100.0f);
+        public void Translate(Vector3 translation) => Position += translation;//new Vector3(x * 100.0f, y * 100.0f, z * 100.0f);
 
-        public void TranslateTexture(float x, float y)
+        public void TranslateTexture(Vector2 translation) => UV += translation;
+
+        public void RotateTexture(Vector3 center, float angle)
         {
-            UV = new Vector2()
-            {
-                X = UV.X + x,
-                Y = UV.Y + y
-            };
+            // Let's say our point is at (1, 0), then the angle is 0...
+            // For this vertex, get the physical distance from the center point
+            // This is now our radius... now we need to rotate by this amount around the unit circle
+            // For a point (x, y) on the unit circle, x = cos(angle) and y = sin(angle)
+            var radius = (Position - center).Length;
+
+            // We need to somehow determine the current angle that this point is at...
+            //var currentAngle = ;
+            // Position.X = radius * Math.Cos(currentAngle)
+            // Position.Y = radius * Math.Sin(currentAngle)
+            // Solve for currentAngle...........
+            // Math.Acos(x / radius) = angle
+            // Math.Asin(y / radius) = angle
+
+            var x = radius * (float)Math.Cos(angle);
+            var y = radius * (float)Math.Sin(angle);
         }
 
-        public void RotateTexture(float angle) { }
+        public void ScaleTexture(float x, float y)
+        {
 
-        public void ScaleTexture(float x, float y) { }
+        }
+
+        public void TransformTexture(Matrix4 matrix)
+        {
+
+        }
 
         public Vector3 GetAveragePosition() => Position + Origin;
 

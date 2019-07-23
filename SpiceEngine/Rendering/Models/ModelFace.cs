@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelFace : IModelShape
+    public class ModelFace : IModelShape, ITexturedShape
     {
         /// <summary>
         /// The vertices should be in clockwise order.
@@ -177,15 +177,17 @@ namespace SpiceEngine.Rendering.Meshes
         {
             for (var i = 0; i < Vertices.Count; i++)
             {
-                Vertices[i].TranslateTexture(x, y);
+                Vertices[i].TranslateTexture(new Vector2(x, y));
             }
         }
 
         public void RotateTexture(float angle)
         {
+            var center = GetAveragePosition();
+
             for (var i = 0; i < Vertices.Count; i++)
             {
-                Vertices[i].RotateTexture(angle);
+                Vertices[i].RotateTexture(center, angle);
             }
         }
 

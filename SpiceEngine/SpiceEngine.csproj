@@ -260,6 +260,7 @@
     <Compile Include="Rendering\IRenderable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
+    <Compile Include="Rendering\Models\ITexturedShape.cs" />
     <Compile Include="Rendering\Models\IModelShape.cs" />
     <Compile Include="Rendering\Models\IModel.cs" />
     <Compile Include="Rendering\Meshes\MeshBone.cs" />

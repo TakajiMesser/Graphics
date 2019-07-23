@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelMesh : IModelShape
+    public class ModelMesh : IModelShape, ITexturedShape
     {
         public List<ModelFace> Faces { get; set; } = new List<ModelFace>();
         public UVMap UVMap

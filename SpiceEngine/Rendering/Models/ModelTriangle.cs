@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Rendering.Meshes
 {
-    public class ModelTriangle : IModelShape
+    public class ModelTriangle : IModelShape, ITexturedShape
     {
         public ModelVertex VertexA { get; set; }
         public ModelVertex VertexB { get; set; }
@@ -38,16 +38,20 @@ namespace SpiceEngine.Rendering.Meshes
 
         public void TranslateTexture(float x, float y)
         {
-            VertexA.TranslateTexture(x, y);
-            VertexB.TranslateTexture(x, y);
-            VertexC.TranslateTexture(x, y);
+            var translation = new Vector2(x, y);
+
+            VertexA.TranslateTexture(translation);
+            VertexB.TranslateTexture(translation);
+            VertexC.TranslateTexture(translation);
         }
 
         public void RotateTexture(float angle)
         {
-            VertexA.RotateTexture(angle);
-            VertexB.RotateTexture(angle);
-            VertexC.RotateTexture(angle);
+            var center = GetAveragePosition();
+
+            VertexA.RotateTexture(center, angle);
+            VertexB.RotateTexture(center, angle);
+            VertexC.RotateTexture(center, angle);
         }
 
         public void ScaleTexture(float x, float y)

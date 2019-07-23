@@ -21,7 +21,7 @@ namespace SauceEditorCore.Models.Entities
                 var translation = value - Position;
                 if (translation.IsSignificant())
                 {
-                    ModelShape.Translate(translation.X, translation.Y, translation.Z);
+                    ModelShape.Translate(translation);
                 }
 
                 base.Position = value;
