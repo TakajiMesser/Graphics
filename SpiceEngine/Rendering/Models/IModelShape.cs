@@ -11,7 +11,7 @@ namespace SpiceEngine.Rendering.Meshes
         void CenterAround(Vector3 position);
 
         void Translate(Vector3 translation);
-        void Rotate(Quaternion rotation);
-        void Scale(Vector3 scale);
+        //void Rotate(Quaternion rotation);
+        //void Scale(Vector3 scale);
     }
 }

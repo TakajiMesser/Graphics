@@ -142,7 +142,12 @@ namespace SpiceEngine.Entities.Selection
 
                     foreach (var entity in SelectedEntities)
                     {
-                        if (entity is IRotate rotater)
+                        if (entity is ITexturedEntity texturedEntity && texturedEntity.IsInTextureMode)
+                        {
+                            var angle = -mouseDelta.Y * 0.002f;
+                            texturedEntity.RotateTexture(angle);
+                        }
+                        else if (entity is IRotate rotater)
                         {
                             rotater.Rotation = rotation * rotater.Rotation;
                         }
@@ -153,7 +158,11 @@ namespace SpiceEngine.Entities.Selection
 
                     foreach (var entity in SelectedEntities)
                     {
-                        if (entity is IScale scaler)
+                        if (entity is ITexturedEntity texturedEntity && texturedEntity.IsInTextureMode)
+                        {
+                            texturedEntity.ScaleTexture(scale.X, scale.Y);
+                        }
+                        else if (entity is IScale scaler)
                         {
                             scaler.Scale += scale;
                         }

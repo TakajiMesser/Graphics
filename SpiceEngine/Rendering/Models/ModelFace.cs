@@ -65,7 +65,7 @@ namespace SpiceEngine.Rendering.Meshes
         public void AddVertex(ModelVertex vertex) => Vertices.Add(vertex);
         public void AddVertex(Vector3 vertex) => Vertices.Add(new ModelVertex() { Position = vertex });
 
-        public Vector3 GetAveragePosition() => Vertices.Select(v => v.Position + v.Origin).Average();
+        public Vector3 GetAveragePosition() => Vertices.Select(v => v.GetAveragePosition()).Average();
 
         public void CenterAround(Vector3 position)
         {
@@ -93,11 +93,11 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public void Translate(float x, float y, float z)
+        public void Translate(Vector3 translation)
         {
-            for (var i = 0; i < Vertices.Count; i++)
+            foreach (var vertex in Vertices)
             {
-                Vertices[i].Translate(x, y, z);
+                vertex.Translate(translation);
             }
         }
 
@@ -119,13 +119,27 @@ namespace SpiceEngine.Rendering.Meshes
             return translated;
         }
 
-        public void Rotate(Vector3 axis, float angle)
+        public void Rotate(Quaternion rotation)
         {
-            var rotation = Quaternion.FromAxisAngle(axis, angle);
+            foreach (var vertex in Vertices)
+            {
+                vertex.Rotate(rotation);
+            }
+
+            // Center is the absolute position of the center of this entity
+            // Vertex.Origin is the absolute position that this vertex's position is based off of thinking is the origin (0, 0, 0)
+
+            //var center = GetAveragePosition();
 
             for (var i = 0; i < Vertices.Count; i++)
             {
-                Vertices[i].Position = rotation * Vertices[i].Position;
+                /*var initialPosition = Vertices[i].Position;
+                var centeredPosition = initialPosition - center;
+                var rotatedPosition = rotation * centeredPosition;
+                var movedPosition = rotatedPosition + center;
+                Vertices[i].Position = movedPosition;*/
+                //Vertices[i].Position = (rotation * (Vertices[i].Position - center)) + center;
+                //Vertices[i].Position = rotation * Vertices[i].Position;
             }
         }
 
@@ -147,13 +161,13 @@ namespace SpiceEngine.Rendering.Meshes
             return rotated;
         }
 
-        public void Scale(float amount)
+        public void Scale(Vector3 scale)
         {
-            if (amount <= 0.0f) throw new ArgumentOutOfRangeException("Scale amount cannot be less than or equal to zero");
+            var center = GetAveragePosition();
 
             for (var i = 0; i < Vertices.Count; i++)
             {
-                Vertices[i].Position *= amount;
+                Vertices[i].Position = (Vertices[i].Position - center) * scale;
             }
         }
 

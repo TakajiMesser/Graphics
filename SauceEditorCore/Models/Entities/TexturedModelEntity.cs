@@ -44,9 +44,9 @@ namespace SauceEditorCore.Models.Entities
 
                 if (rotationChange.IsSignificant())
                 {
-                    ModelShape.Rotate();
-                    OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateFromQuaternion(rotationChange)));
-                    //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateFromQuaternion(rotationChange)));
+                    ModelShape.Rotate(rotationChange);
+                    var transform = Matrix4.CreateTranslation(-Position) * Matrix4.CreateFromQuaternion(rotationChange) * Matrix4.CreateTranslation(Position);
+                    OnTransformed(this, new EntityTransformEventArgs(ID, transform));
                 }
             }
         }

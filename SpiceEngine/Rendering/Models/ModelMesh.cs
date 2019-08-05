@@ -25,11 +25,27 @@ namespace SpiceEngine.Rendering.Meshes
             Faces = Faces.Select(f => f.Duplicated()).ToList()
         };
 
-        public void Translate(float x, float y, float z)
+        public void Translate(Vector3 translation)
         {
             foreach (var face in Faces)
             {
-                face.Translate(x, y, z);
+                face.Translate(translation);
+            }
+        }
+
+        public void Rotate(Quaternion rotation)
+        {
+            foreach (var face in Faces)
+            {
+                face.Rotate(rotation);
+            }
+        }
+
+        public void Scale(Vector3 scale)
+        {
+            foreach (var face in Faces)
+            {
+                face.Scale(scale);
             }
         }
 

@@ -29,11 +29,21 @@ namespace SpiceEngine.Rendering.Meshes
             Tangent = Tangent
         };
 
-        public void Translate(float x, float y, float z)
+        public void Translate(Vector3 translation)
         {
-            VertexA.Translate(x, y, z);
-            VertexB.Translate(x, y, z);
-            VertexC.Translate(x, y, z);
+            VertexA.Translate(translation);
+            VertexB.Translate(translation);
+            VertexC.Translate(translation);
+        }
+
+        public void Rotate(Quaternion rotation)
+        {
+
+        }
+
+        public void Scale(Vector3 scale)
+        {
+
         }
 
         public void TranslateTexture(float x, float y)

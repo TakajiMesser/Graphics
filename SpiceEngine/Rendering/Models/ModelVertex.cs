@@ -30,7 +30,15 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public void Translate(Vector3 translation) => Position += translation;//new Vector3(x * 100.0f, y * 100.0f, z * 100.0f);
+        public void Translate(Vector3 translation)
+        {
+            _origin += translation;
+            //Position += translation;//new Vector3(x * 100.0f, y * 100.0f, z * 100.0f);
+            //Origin += translation;
+            //Position += translation;
+        }
+
+        public void Rotate(Quaternion rotation) => Position = (new Vector4(Position, 1.0f) * Matrix4.CreateFromQuaternion(rotation)).Xyz;
 
         public void TranslateTexture(Vector2 translation) => UV += translation;
 

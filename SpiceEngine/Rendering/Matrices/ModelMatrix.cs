@@ -67,6 +67,6 @@ namespace SpiceEngine.Rendering.Matrices
         }
 
         private void CalculateMatrix() =>
-            Matrix = Matrix4.Identity * Matrix4.CreateScale(_scale) * Matrix4.CreateFromQuaternion(_rotation) * Matrix4.CreateTranslation(_translation);
+            Matrix = /*Matrix4.Identity * */Matrix4.CreateScale(_scale) * Matrix4.CreateFromQuaternion(_rotation) * Matrix4.CreateTranslation(_translation);
     }
 }
