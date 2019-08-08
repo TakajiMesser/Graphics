@@ -33,6 +33,7 @@ namespace SpiceEngine.Rendering.Meshes
         public void Translate(Vector3 translation)
         {
             _origin += translation;
+            //Position -= translation;
             //Position += translation;//new Vector3(x * 100.0f, y * 100.0f, z * 100.0f);
             //Origin += translation;
             //Position += translation;

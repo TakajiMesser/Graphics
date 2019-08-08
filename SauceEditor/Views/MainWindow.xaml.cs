@@ -148,6 +148,8 @@ namespace SauceEditor.Views
 
             _dockTracker.AddToGameDock(gamePanelManager);
 
+            gamePanelManager.SetView(ViewModel.Settings.DefaultView);
+
             if (component != null)
             {
                 switch (component)
@@ -155,11 +157,20 @@ namespace SauceEditor.Views
                     case ModelComponent modelComponent:
                         _modelToolPanel.ViewModel.ModelComponent = modelComponent;
                         _modelToolPanel.ViewModel.LayerSetter = gamePanelManager.ViewModel;
+
+                        // We need to wait for the set view to load
+                        if (ViewModel.Settings.DefaultView == ViewTypes.Perspective)
+                        {
+                            // TODO - This is mad janky, we are waiting for this specific panel to load before we trigger adding the appropriate entities
+                            gamePanelManager.ViewModel.PerspectiveViewModel.Panel.PanelLoaded += (s, args) =>
+                            {
+                                _modelToolPanel.ViewModel.OnModelToolTypeChanged();
+                            };
+                        }
                         break;
                 }
             }
-
-            gamePanelManager.SetView(ViewModel.Settings.DefaultView);
+            
             return gamePanelManager.ViewModel;
         }
 

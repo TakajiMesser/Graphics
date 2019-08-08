@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Rendering.Meshes;
+﻿using OpenTK;
+using SpiceEngine.Rendering.Meshes;
 using System;
 
 namespace SpiceEngine.Rendering.Textures
@@ -12,6 +13,7 @@ namespace SpiceEngine.Rendering.Textures
 
         public string FilePath { get; private set; }
         public int ID { get; set; }
+        public Vector3 Position { get; set; }
 
         public float Alpha
         {

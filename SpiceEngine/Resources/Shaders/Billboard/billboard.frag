@@ -1,6 +1,7 @@
 ﻿#version 440
 
-uniform sampler2D mainTexture;
+uniform vec4 overrideColor;
+uniform sampler2D mainTexture; 
 
 in vec2 fUV;
 
@@ -14,4 +15,12 @@ void main()
     {
         discard;
     }
+	else if (overrideColor.a > 0.0)
+	{
+		color = overrideColor;
+	}
+	else
+	{
+		discard;
+	}
 }

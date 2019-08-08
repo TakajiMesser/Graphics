@@ -17,11 +17,14 @@ namespace SauceEditorCore.Models.Entities
     {
         public VertexEntity(ModelVertex meshVertex) : base(meshVertex) { }
 
-        public override bool CompareUniforms(IEntity entity) => base.CompareUniforms(entity) && entity is VertexEntity;
+        public override bool CompareUniforms(IEntity entity) => entity is VertexEntity;
 
         public override IRenderable ToRenderable()
         {
-            return new TextureID(FilePathHelper.VERTEX_TEXTURE_PATH);
+            return new TextureID(FilePathHelper.VERTEX_TEXTURE_PATH)
+            {
+                Position = Position
+            };
             /*var meshBuild = new MeshBuild(Triangle);
             var meshVertices = meshBuild.GetVertices();
 

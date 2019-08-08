@@ -3,6 +3,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
@@ -18,7 +19,7 @@ namespace SauceEditorCore.Models.Entities
 
         public bool IsInTextureMode { get; set; }
 
-        public override Vector3 Position
+        /*public override Vector3 Position
         {
             get => base.Position;
             set
@@ -31,7 +32,7 @@ namespace SauceEditorCore.Models.Entities
 
                 base.Position = value;
             }
-        }
+        }*/
 
         public Quaternion Rotation
         {

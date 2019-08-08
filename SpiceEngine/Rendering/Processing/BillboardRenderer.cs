@@ -98,6 +98,32 @@ namespace SpiceEngine.Rendering.Processing
             _selectedDirectionalLightTexture = Texture.Load(Resources.selected_directional_light, false, false);
         }
 
+        public void GeometryPass(ICamera camera, BatchManager batchManager)
+        {
+            batchManager.CreateBatchAction()
+                .SetShader(_billboardProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f))
+                .RenderOpaqueBillboard()
+                .Execute();
+
+            //GL.Enable(EnableCap.CullFace);
+        }
+
+        public void SelectionPass(ICamera camera, BatchManager batchManager)
+        {
+            batchManager.CreateBatchAction()
+                .SetShader(_billboardProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f))
+                .RenderOpaqueBillboard()
+                .Execute();
+
+            //GL.Enable(EnableCap.CullFace);
+        }
+
         public void RenderEntities(Camera camera, IEnumerable<IEntity> entities, Texture texture)
         {
             _billboardProgram.Use();

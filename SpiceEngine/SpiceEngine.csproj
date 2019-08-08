@@ -393,6 +393,7 @@
     <Compile Include="Sounds\Source.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\BehaviorExtensions.cs" />
+    <Compile Include="Utilities\RenderableExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Utilities\OpenTKExtensions.cs" />

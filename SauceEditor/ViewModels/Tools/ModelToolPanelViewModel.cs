@@ -86,7 +86,7 @@ namespace SauceEditor.ViewModels.Tools
                     SetTexturedEntities(triangleEntities);
                     break;
                 case ModelToolTypes.Vertex:
-                    EnableLayer(TRIANGLE_LAYER_NAME, ModelComponent.GetVertexEntities().ToList());
+                    EnableLayer(VERTEX_LAYER_NAME, ModelComponent.GetVertexEntities().ToList());
                     break;
             }
         }

@@ -1,10 +1,13 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
 using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
@@ -14,15 +17,53 @@ namespace SpiceEngine.Rendering.Batches
         private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
         private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
 
+        private List<ColorVertex3D> _vertices = new List<ColorVertex3D>();
+        private float _alpha = 1.0f;
+
+        private Dictionary<int, int> _indexByID = new Dictionary<int, int>();
+
+        public bool IsTransparent => _alpha < 1.0f;
+
         public BillboardBatch(TextureID textureID) => _textureID = textureID;
 
         public override IBatch Duplicate() => new BillboardBatch(_textureID);
+
+        public override void AddEntity(int id, IRenderable renderable)
+        {
+            if (renderable is TextureID textureID)
+            {
+                var index = EntityIDs.Count();
+                _indexByID.Add(id, index);
+
+                _vertices.Add(new ColorVertex3D(textureID.Position, SelectionRenderer.GetColorFromID(id)));
+                _vertexBuffer.AddVertex(_vertices[index]);
+            }
+
+            base.AddEntity(id, renderable);
+        }
+
+        public override void Transform(int entityID, Matrix4 matrix)
+        {
+            var index = _indexByID[entityID];
+
+            var transformedVertex = (ColorVertex3D)_vertices[index].Transformed(matrix);
+            _vertices[index] = transformedVertex;
+
+            // TODO - This is very redundant to keep two separate lists of vertex (struct) data
+            if (_vertexBuffer != null)
+            {
+                _vertexBuffer.Clear();
+                _vertexBuffer.AddVertices(_vertices);
+            }
+        }
 
         public override void Load()
         {
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
+
+            _vertexBuffer.AddVertices(_vertices);
 
             //_texture = Texture.Load(Resources.vertex, false, false);
         }
@@ -36,12 +77,12 @@ namespace SpiceEngine.Rendering.Batches
                 shaderProgram.BindTexture(texture, "mainTexture", 0);
             }
             
-            _vertexBuffer.Clear();
+            /*_vertexBuffer.Clear();
             foreach (var id in EntityIDs)
             {
                 var entity = entityProvider.GetEntity(id);
                 _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(id)));
-            }
+            }*/
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();

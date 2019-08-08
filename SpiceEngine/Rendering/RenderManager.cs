@@ -467,6 +467,7 @@ namespace SpiceEngine.Rendering
             }
 
             _skyboxRenderer.Render(_camera);
+            _billboardRenderer.GeometryPass(_camera, BatchManager);
             _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             _deferredRenderer.BindForLitTransparentWriting();
