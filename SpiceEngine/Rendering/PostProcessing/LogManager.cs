@@ -13,15 +13,16 @@ namespace SpiceEngine.Rendering.PostProcessing
         private TextRenderer _textRenderer;
         private LinkedList<LogLine> _screenLines = new LinkedList<LogLine>();
 
-        public LogManager(TextRenderer renderer)
-        {
-            _textRenderer = renderer;
-        }
+        public LogManager(TextRenderer renderer) => _textRenderer = renderer;
+
+        public bool LineWrap { get; set; } = false;
+        public float FontScale { get; set; } = 1.0f;
 
         public void RenderToScreen()
         {
             var nOpenSlots = MAX_LINES_ON_SCREEN - _screenLines.Count;
             var logLine = _screenLines.Last;
+            var y = 0;
 
             // Iterate through the list in reverse order, noting how many slots open up due to expiring items
             for (var i = 0; i < _screenLines.Count; i++)
@@ -31,7 +32,7 @@ namespace SpiceEngine.Rendering.PostProcessing
                     break;
                 }
 
-                _textRenderer.RenderText(logLine.Value.Text, 10, 10 + i * (5 + TextRenderer.GLYPH_HEIGHT));
+                y += _textRenderer.RenderText(logLine.Value.Text, 10, 10 + y, FontScale, LineWrap);
                 logLine.Value.Increment();
 
                 var previous = logLine.Previous;

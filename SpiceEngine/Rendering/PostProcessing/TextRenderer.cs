@@ -22,6 +22,7 @@ namespace SpiceEngine.Rendering.PostProcessing
         public const int GLYPH_WIDTH = 24;
         public const int GLYPH_HEIGHT = 32;
         public const int X_SPACING = 4;
+        public const int Y_SPACING = 5;
 
         public static string FONT_PATH = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\SampleGameProject\Resources\Fonts\Roboto-Regular.ttf";
 
@@ -95,7 +96,7 @@ namespace SpiceEngine.Rendering.PostProcessing
 
             using (var bitmap = new Bitmap(maxDimension, maxDimension, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
             {
-                using (var graphics = System.Drawing.Graphics.FromImage(bitmap))
+                using (var graphics = Graphics.FromImage(bitmap))
                 {
                     graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
                     graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
@@ -114,7 +115,15 @@ namespace SpiceEngine.Rendering.PostProcessing
             }
         }
 
-        public void RenderText(string text, int x, int y)
+        /// <summary>
+        /// Renders text to the screen.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
+        /// <param name="fontScale"></param>
+        /// <returns>Height of the rendered text.</returns>
+        public int RenderText(string text, int x, int y, float fontScale, bool wordWrap = false)
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -125,6 +134,11 @@ namespace SpiceEngine.Rendering.PostProcessing
             var uStep = (float)GLYPH_WIDTH / FontTexture.Width;
             var vStep = (float)GLYPH_HEIGHT / FontTexture.Height;
 
+            var width = (int)(GLYPH_WIDTH * fontScale);
+            var height = (int)(GLYPH_HEIGHT * fontScale);
+
+            var initialX = x;
+
             _vertexBuffer.Clear();
             for (var i = 0; i < text.Length; i++)
             {
@@ -133,10 +147,16 @@ namespace SpiceEngine.Rendering.PostProcessing
                 var u = (character % GLYPHS_PER_LINE) * uStep;
                 var v = (character / GLYPHS_PER_LINE) * vStep;
 
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + GLYPH_WIDTH, y + GLYPH_HEIGHT), new Vector2(u + uStep, v)));
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y + GLYPH_HEIGHT), new Vector2(u, v)));
+                if (wordWrap && x + width > FinalTexture.Width)
+                {
+                    x = initialX;
+                    y += height + Y_SPACING;
+                }
+
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y + height), new Vector2(u + uStep, v)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y + height), new Vector2(u, v)));
                 _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y), new Vector2(u, v + vStep)));
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + GLYPH_WIDTH, y), new Vector2(u + uStep, v + vStep)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y), new Vector2(u + uStep, v + vStep)));
 
                 x += X_SPACING + 20;
             }
@@ -155,6 +175,8 @@ namespace SpiceEngine.Rendering.PostProcessing
             _vertexBuffer.Unbind();
 
             GL.Disable(EnableCap.Blend);
+
+            return y;
         }
     }
 }

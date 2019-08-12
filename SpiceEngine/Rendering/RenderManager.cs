@@ -587,7 +587,7 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(texture);
 
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT));
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
             _logManager.RenderToScreen();
         }
 

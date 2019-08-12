@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Utilities;
 using System.Runtime.InteropServices;
 
 namespace SpiceEngine.Rendering.Vertices
@@ -49,17 +50,22 @@ namespace SpiceEngine.Rendering.Vertices
             ID = id;
         }
 
-        public IVertex3D Transformed(Matrix4 modelMatrix) => new EditorVertex3D()
+        public IVertex3D Transformed(Matrix4 modelMatrix)
         {
-            Position = (new Vector4(Position, 1.0f) * modelMatrix).Xyz,
-            Normal = Normal,
-            Tangent = Tangent,
-            TextureCoords = TextureCoords,
-            Color = Color,
-            BoneIDs = BoneIDs,
-            BoneWeights = BoneWeights,
-            ID = ID
-        };
+            var rotationMatrix = modelMatrix.GetRotationMatrix();
+
+            return new EditorVertex3D()
+            {
+                Position = (new Vector4(Position, 1.0f) * modelMatrix).Xyz,
+                Normal = Normal * rotationMatrix,
+                Tangent = Tangent * rotationMatrix,
+                TextureCoords = TextureCoords,
+                Color = Color,
+                BoneIDs = BoneIDs,
+                BoneWeights = BoneWeights,
+                ID = ID
+            };
+        }
 
         public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale)
         {
