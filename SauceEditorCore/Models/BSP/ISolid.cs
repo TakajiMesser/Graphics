@@ -15,6 +15,6 @@ namespace SauceEditorCore.Models.BSP
     {
         SolidTypes SolidType { get; }
 
-        Body3D ToBody();
+        Shape3D ToShape();
     }
 }

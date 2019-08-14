@@ -6,31 +6,47 @@ namespace SauceEditorCore.Models.BSP
 {
     public enum ConstructiveTypes
     {
-        None,
-        Intersection,
         Union,
+        Intersection,
         Negation
     }
 
+    /*
+    A CSG Tree is a binary tree, meaning each node can have either NodeA or NodeB
+    If this is a leaf, it should have a Body3D associated with it
+     */
 
-    public class BSPNode
+    public class BSPNode : INode
     {
         public ConstructiveTypes ConstructiveType { get; set; }
 
-        public BSPNode NodeA { get; set; }
-        public BSPNode NodeB { get; set; }
+        public INode NodeA { get; set; }
+        public INode NodeB { get; set; }
 
-        public ISolid SolidA { get; set; }
-        public ISolid SolidB { get; set; }
-
-        public void AddNode(BSPNode node)
+        public IEnumerable<int> GetIDs()
         {
-            
+            foreach (var id in NodeA.GetIDs())
+            {
+                yield return id;
+            }
+
+            foreach (var id in NodeB.GetIDs())
+            {
+                yield return id;
+            }
         }
 
-        public void AddSolid(ISolid solid)
+        public IEnumerable<Face> GetFaces()
         {
+            foreach (var face in NodeA.GetFaces())
+            {
+                yield return face;
+            }
 
+            foreach (var face in NodeB.GetFaces())
+            {
+                yield return face;
+            }
         }
     }
 }

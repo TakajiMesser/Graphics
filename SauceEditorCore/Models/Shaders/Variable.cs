@@ -6,6 +6,8 @@ namespace SauceEditorCore.Models.Shaders
 {
     public enum VariableTypes
     {
+        Default,
+        Constant,
         Uniform,
         Input,
         Output
@@ -18,7 +20,8 @@ namespace SauceEditorCore.Models.Shaders
         Vector2,
         Vector3,
         Vector4,
-        Matrix4
+        Matrix4,
+        Sampler2D
     }
 
     public class Variable
@@ -44,7 +47,12 @@ namespace SauceEditorCore.Models.Shaders
                 builder.Append("layout(location = " + Location.Value + ") ");
             }
 
-            builder.Append(GetTextForVariableType(VariableType) + " ");
+            var variableTypeText = GetTextForVariableType(VariableType);
+            if (!string.IsNullOrEmpty(variableTypeText))
+            {
+                builder.Append(variableTypeText + " ");
+            }
+            
             builder.Append(GetTextForDataType(DataType) + " ");
             builder.Append(Name + ";");
 
@@ -55,6 +63,10 @@ namespace SauceEditorCore.Models.Shaders
         {
             switch (variableType)
             {
+                case VariableTypes.Default:
+                    return "";
+                case VariableTypes.Constant:
+                    return "const";
                 case VariableTypes.Uniform:
                     return "uniform";
                 case VariableTypes.Input:
@@ -82,6 +94,8 @@ namespace SauceEditorCore.Models.Shaders
                     return "vec4";
                 case DataTypes.Matrix4:
                     return "mat4";
+                case DataTypes.Sampler2D:
+                    return "sampler2D";
             }
 
             throw new ArgumentOutOfRangeException("Could not handle data type " + dataType);

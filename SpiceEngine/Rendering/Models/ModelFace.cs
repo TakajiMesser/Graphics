@@ -51,13 +51,13 @@ namespace SpiceEngine.Rendering.Meshes
 
         public ModelFace() { }
         public ModelFace(params ModelVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
-        public ModelFace(IEnumerable<ModelVertex> vertices) => Vertices.AddRange(vertices);
         public ModelFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new ModelVertex() { Position = v })) { }
+        public ModelFace(IEnumerable<ModelVertex> vertices) => Vertices.AddRange(vertices);
 
         public ModelFace Duplicated() => new ModelFace()
         {
             Vertices = Vertices.Select(v => v.Duplicated()).ToList(),
-            UVMap = UVMap,
+            UVMap = UVMap.Duplicated(),
             _normal = _normal,
             _tangent = _tangent
         };

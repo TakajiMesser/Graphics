@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Rendering.Vertices
 {
-    public interface ITextureVertex : IVertex
+    public interface ITextureVertex : IVertex3D
     {
         Vector3 Normal { get; }
         Vector3 Tangent { get; }

@@ -20,18 +20,19 @@ namespace SauceEditorCore.Models.Shaders
         public Function(string name, FunctionTypes functionType)
         {
             Name = name;
-            FunctionType = functionType;
+            ReturnType = functionType;
         }
 
         public string Name { get; set; }
-        public FunctionTypes FunctionType { get; set; }
+        public List<Variable> Parameters { get; } = new List<Variable>();
+        public FunctionTypes ReturnType { get; set; }
         public List<Statement> Statements { get; } = new List<Statement>();
 
         public string GetText()
         {
             var builder = new StringBuilder();
 
-            builder.Append(GetTextForFunctionType(FunctionType) + " " + Name + "()");
+            builder.Append(GetTextForFunctionType(ReturnType) + " " + Name + "()");
             builder.Append("{" + Shader.NEW_LINE);
 
             foreach (var statement in Statements)
@@ -65,6 +66,18 @@ namespace SauceEditorCore.Models.Shaders
             }
 
             throw new ArgumentOutOfRangeException("Could not handle function type " + functionType);
+        }
+
+        public static Function FromText(string text)
+        {
+            var lines = text.Split('\n');
+
+            for (var i = 0; i < lines.Length; i++)
+            {
+
+            }
+
+            return null;
         }
     }
 }

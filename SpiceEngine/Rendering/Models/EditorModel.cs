@@ -61,11 +61,11 @@ namespace SpiceEngine.Rendering.Meshes
 
                 foreach (var mesh in scene.Meshes)
                 {
-                    var meshShape = new ModelMesh();
+                    var modelMesh = new ModelMesh();
 
                     foreach (var face in mesh.Faces)
                     {
-                        var meshFace = new ModelFace(face.Indices.Select(i => new ModelVertex()
+                        var modelFace = new ModelFace(face.Indices.Select(i => new ModelVertex()
                         {
                             Position = mesh.Vertices[i].ToVector3(),
                             Normal = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3(),
@@ -75,18 +75,18 @@ namespace SpiceEngine.Rendering.Meshes
 
                         if (mesh.HasNormals)
                         {
-                            meshFace.Normal = face.Indices.Select(i => mesh.Normals[i].ToVector3()).Average();
+                            modelFace.Normal = face.Indices.Select(i => mesh.Normals[i].ToVector3()).Average();
                         }
 
                         if (mesh.HasTangentBasis)
                         {
-                            meshFace.Tangent = face.Indices.Select(i => mesh.Tangents[i].ToVector3()).Average();
+                            modelFace.Tangent = face.Indices.Select(i => mesh.Tangents[i].ToVector3()).Average();
                         }
 
-                        meshShape.Faces.Add(meshFace);
+                        modelMesh.Faces.Add(modelFace);
                     }
 
-                    modelShape.Meshes.Add(meshShape);
+                    modelShape.Meshes.Add(modelMesh);
                 }
 
                 /*if (scene.HasAnimations)
