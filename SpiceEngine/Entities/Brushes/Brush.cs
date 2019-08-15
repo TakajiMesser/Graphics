@@ -3,7 +3,6 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using System;
 
 namespace SpiceEngine.Entities.Brushes
 {
@@ -26,18 +25,6 @@ namespace SpiceEngine.Entities.Brushes
         {
             get => _modelMatrix.Scale;
             set => _modelMatrix.Scale = value;
-        }
-
-        public void Rotate(Quaternion rotation)
-        {
-            _modelMatrix.Rotation *= rotation;
-            // Call Transformed
-        }
-
-        public void ScaleBy(Vector3 scale)
-        {
-            _modelMatrix.Scale *= scale;
-            // Call Transformed
         }
 
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();

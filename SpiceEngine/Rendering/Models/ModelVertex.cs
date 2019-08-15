@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
@@ -28,6 +29,11 @@ namespace SpiceEngine.Rendering.Meshes
                 Position = _origin + Position - value;
                 _origin = value;
             }
+        }
+
+        public void Transform(Transform transform)
+        {
+
         }
 
         public void Translate(Vector3 translation)

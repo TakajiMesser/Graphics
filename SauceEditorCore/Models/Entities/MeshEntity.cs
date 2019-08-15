@@ -53,7 +53,7 @@ namespace SauceEditorCore.Models.Entities
                 ? (IMesh)new Mesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
                 : new Mesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
 
-            mesh.Transform(_modelMatrix.Matrix);
+            mesh.Transform(_modelMatrix.CurrentMatrix);
             return mesh;
 
             /*var vertices = meshVertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();

@@ -29,9 +29,11 @@ namespace SpiceEngine.Entities.Lights
             }
         }
 
-        public Quaternion Rotation => _modelMatrix.Rotation;
-
-        public void SetRotation(Quaternion rotation) => _modelMatrix.SetRotation(rotation);
+        public Quaternion Rotation
+        {
+            get => _modelMatrix.Rotation;
+            set => _modelMatrix.Rotation = value;
+        }
 
         public Vector3 Direction => (new Vector4(0.0f, 0.0f, -Height, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;
 

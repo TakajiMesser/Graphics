@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
 
 namespace SpiceEngine.Rendering.Matrices
 {
@@ -27,7 +20,7 @@ namespace SpiceEngine.Rendering.Matrices
         {
             Translation += transform.Translation;
             Rotation = transform.Rotation * Rotation;
-            Scale *= transform.transform.Scale;
+            Scale *= transform.Scale;
         }
 
         public Matrix4 ToMatrix() => Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);

@@ -259,6 +259,8 @@
     <Compile Include="Rendering\IGridRenderer.cs" />
     <Compile Include="Rendering\IRenderable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
+    <Compile Include="Rendering\Matrices\Transform.cs" />
+    <Compile Include="Rendering\Matrices\TransformEventArgs.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
     <Compile Include="Rendering\Models\ITexturedShape.cs" />
     <Compile Include="Rendering\Models\IModelShape.cs" />

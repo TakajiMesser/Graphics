@@ -1,11 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Materials;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Entities.Actors
 {
@@ -22,24 +21,28 @@ namespace SpiceEngine.Entities.Actors
         /// </summary>
         public Quaternion Orientation { get; set; } = Quaternion.Identity;
 
-        public Quaternion Rotation => _modelMatrix.Rotation * Orientation.Inverted();
-        public Vector3 Scale => _modelMatrix.Scale;
-
         // TODO - Determine if quaternion multiplication order matters here
-        public void SetRotation(Quaternion rotation) => _modelMatrix.SetRotation(Orientation * rotation);
-        public void SetScale(Vector3 scale) => _modelMatrix.SetScale(scale);
+        public Quaternion Rotation
+        {
+            get => _modelMatrix.Rotation * Orientation.Inverted();
+            set => _modelMatrix.Rotation = Orientation * value;
+        }
+
+        public Vector3 Scale
+        {
+            get => _modelMatrix.Scale;
+            set => _modelMatrix.Scale = value;
+        }
 
         public override void Transform(Transform transform)
         {
             base.Transform(new Transform()
             {
-                Position = transform.Position,
+                Translation = transform.Translation,
                 Rotation = Orientation * transform.Rotation,
                 Scale = transform.Scale
             });
         }
-
-        public Matrix4 ModelMatrix => _modelMatrix.Matrix;
 
         private List<Material> _materials = new List<Material>();
         private List<TextureMapping?> _textureMappings = new List<TextureMapping?>();
@@ -48,18 +51,6 @@ namespace SpiceEngine.Entities.Actors
         public override TextureMapping? TextureMapping => _textureMappings[_meshIndex];
 
         public Actor(string name) => Name = name;
-
-        public void Rotate(Quaternion rotation)
-        {
-            _modelMatrix.Rotation *= rotation;
-            // Call Transformed
-        }
-
-        public void ScaleBy(Vector3 scale)
-        {
-            _modelMatrix.Scale *= scale;
-            // Call Transformed
-        }
 
         public override void AddMaterial(Material material) => _materials.Add(material);
         public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);

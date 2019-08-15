@@ -4,13 +4,6 @@ using System;
 
 namespace SpiceEngine.Rendering.Matrices
 {
-    public enum TransformTypes
-    {
-        Translation,
-        Rotation,
-        Scale
-    }
-
     public class ModelMatrix
     {
         public const string NAME = "modelMatrix";
@@ -32,19 +25,19 @@ namespace SpiceEngine.Rendering.Matrices
         public Vector3 Position
         {
             get => _transform.Translation;
-            set => Transform(Transform.FromTranslation(position - Position));
+            set => Transform(Matrices.Transform.FromTranslation(value - Position));
         }
 
         public Quaternion Rotation
         {
             get => _transform.Rotation;
-            set => Transform(Transform.FromRotation(rotation * Rotation.Invertex()));
+            set => Transform(Matrices.Transform.FromRotation(value * Rotation.Inverted()));
         }
 
         public Vector3 Scale
         {
             get => _transform.Scale;
-            set => Transform(Transform.FromScale(scale - Scale));
+            set => Transform(Matrices.Transform.FromScale(value - Scale));
         }
 
         public event EventHandler<TransformEventArgs> Transformed;

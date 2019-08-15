@@ -1,7 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngine.Utilities;
-using System;
-using System.Collections.Generic;
+using SpiceEngine.Rendering.Matrices;
 
 namespace SpiceEngine.Rendering.Meshes
 {
@@ -9,10 +7,6 @@ namespace SpiceEngine.Rendering.Meshes
     {
         Vector3 GetAveragePosition();
         void CenterAround(Vector3 position);
-
         void Transform(Transform transform);
-        //void Translate(Vector3 translation);
-        //void Rotate(Quaternion rotation);
-        //void Scale(Vector3 scale);
     }
 }

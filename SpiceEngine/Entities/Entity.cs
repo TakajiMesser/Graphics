@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Utilities;
 using System;
 
 namespace SpiceEngine.Entities
@@ -12,13 +11,11 @@ namespace SpiceEngine.Entities
 
         public int ID { get; set; }
 
-        public Vector3 Position
+        public virtual Vector3 Position
         {
             get => _modelMatrix.Position;
             set => _modelMatrix.Position = value;
         }
-
-        public virtual void Transform(Transform transform) => _modelMatrix.Transform(transform);
 
         private event EventHandler<EntityTransformEventArgs> _transformed;
 
@@ -45,11 +42,13 @@ namespace SpiceEngine.Entities
             }
         }
 
+        public virtual void Transform(Transform transform) => _modelMatrix.Transform(transform);
+
         //public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
         public abstract void SetUniforms(ShaderProgram program);
 
         public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
 
-        private virtual void OnTransformed(object sender, TransformEventArgs e) => Transformed?.Invoke(this, new EntityTransformEventArgs(ID, e.Transform));
+        private void OnTransformed(object sender, TransformEventArgs e) => _transformed?.Invoke(this, new EntityTransformEventArgs(ID, e.Transform));
     }
 }
