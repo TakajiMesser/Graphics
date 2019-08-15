@@ -1,4 +1,7 @@
-﻿using SpiceEngine.Physics.Bodies;
+﻿using OpenTK;
+using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering.Meshes;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -65,7 +68,7 @@ namespace SauceEditorCore.Models.BSP
 
         public IEnumerable<Face> GetFaces()
         {
-            
+            yield return null;
         }
 
         //Shape3D ToShape();

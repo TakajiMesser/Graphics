@@ -39,6 +39,12 @@ namespace SpiceEngine.Entities.Cameras
 
         public Camera(string name) => Name = name;
 
+        public void Translate(Vector3 translation)
+        {
+            _viewMatrix.Translation *= translation;
+            Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _viewMatrix.Matrix));
+        }
+
         public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {
             AttachedEntity = entity;

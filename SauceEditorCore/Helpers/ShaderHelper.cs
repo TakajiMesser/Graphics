@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SauceEditorCore.Models.Shaders;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -37,16 +38,16 @@ namespace SauceEditorCore.Helpers
             deferredShader.Outputs.Add(new Variable("fUV", VariableTypes.Output, DataTypes.Vector2));
 
             var mainFunction = new Function("main", FunctionTypes.Void);
-            mainFunction.Statements.Add("mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;");
-            mainFunction.Statements.Add("vec4 position = vec4(vPosition, 1.0);");
-            mainFunction.Statements.Add("fPosition = (modelMatrix * position).xyz;");
-            mainFunction.Statements.Add("fClipPosition = mvp * position;");
-            mainFunction.Statements.Add("fPreviousClipPosition = previousProjectionMatrix * previousViewMatrix * previousModelMatrix * position;");
-            mainFunction.Statements.Add("fNormal = (modelMatrix * vec4(vNormal, 0.0)).xyz;");
-            mainFunction.Statements.Add("fTangent = (modelMatrix * vec4(vTangent, 0.0)).xyz;");
-            mainFunction.Statements.Add("fColor = vColor;");
-            mainFunction.Statements.Add("fUV = vUV;");
-            mainFunction.Statements.Add("gl_Position = fClipPosition;");
+            mainFunction.Statements.Add(new Statement("mat4 mvp = projectionMatrix * viewMatrix * modelMatrix;"));
+            mainFunction.Statements.Add(new Statement("vec4 position = vec4(vPosition, 1.0);"));
+            mainFunction.Statements.Add(new Statement("fPosition = (modelMatrix * position).xyz;"));
+            mainFunction.Statements.Add(new Statement("fClipPosition = mvp * position;"));
+            mainFunction.Statements.Add(new Statement("fPreviousClipPosition = previousProjectionMatrix * previousViewMatrix * previousModelMatrix * position;"));
+            mainFunction.Statements.Add(new Statement("fNormal = (modelMatrix * vec4(vNormal, 0.0)).xyz;"));
+            mainFunction.Statements.Add(new Statement("fTangent = (modelMatrix * vec4(vTangent, 0.0)).xyz;"));
+            mainFunction.Statements.Add(new Statement("fColor = vColor;"));
+            mainFunction.Statements.Add(new Statement("fUV = vUV;"));
+            mainFunction.Statements.Add(new Statement("gl_Position = fClipPosition;"));
             deferredShader.Functions.Add(mainFunction);
 
             return deferredShader;

@@ -13,6 +13,11 @@ namespace SpiceEngine.Entities.Lights
 
         public Matrix4 GetProjection(Resolution resolution) => Matrix4.CreateOrthographic(resolution.Width, resolution.Height, 0.1f, 100.0f);
 
+        public void Rotate(Quaternion rotation)
+        {
+            Rotation = rotation * Rotation;
+        }
+
         public override void DrawForStencilPass(ShaderProgram program)
         {
             /*var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);

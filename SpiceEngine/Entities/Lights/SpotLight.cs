@@ -40,6 +40,8 @@ namespace SpiceEngine.Entities.Lights
         public Matrix4 View => Matrix4.LookAt(Position, Position + Direction.Normalized(), Vector3.UnitZ);
         public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView((float)Math.Atan2(_radius, Height) * 2.0f, 1.0f, 0.1f, Height);
 
+        public void Rotate(Quaternion rotation) => _modelMatrix.Rotation = rotation * _modelMatrix.Rotation;
+
         public override void DrawForStencilPass(ShaderProgram program)
         {
             program.SetUniform("lightPosition", Position);

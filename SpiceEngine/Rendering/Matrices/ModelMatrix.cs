@@ -3,6 +3,13 @@ using SpiceEngine.Rendering.Shaders;
 
 namespace SpiceEngine.Rendering.Matrices
 {
+    public enum TransformTypes
+    {
+        Translation,
+        Rotation,
+        Scale
+    }
+
     public class ModelMatrix
     {
         public const string NAME = "modelMatrix";

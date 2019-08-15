@@ -1,15 +1,15 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Vertices;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Meshes
 {
     public struct UVMap
     {
-        public Vector2? Translation { get; private set; }
-        public float? Rotation { get; private set; }
-        public Vector2? Scale { get; private set; }
+        public Vector2 Translation { get; private set; }
+        public float Rotation { get; private set; }
+        public Vector2 Scale { get; private set; }
 
-        private UVMap() { }
         public UVMap(Vector2 translation, float rotation, Vector2 scale)
         {
             Translation = translation;
@@ -17,7 +17,7 @@ namespace SpiceEngine.Rendering.Meshes
             Scale = scale;
         }
 
-        public UVMap(IList<ITextureVertex> vertices)
+        /*public UVMap(IList<ITextureVertex> vertices)
         {
             var globalPositionToUVRatio = 0.0f;
 
@@ -38,7 +38,7 @@ namespace SpiceEngine.Rendering.Meshes
                     break;
                 }
             }
-        }
+        }*/
 
         public UVMap Duplicated() => new UVMap(Translation, Rotation, Scale);
 
@@ -48,7 +48,7 @@ namespace SpiceEngine.Rendering.Meshes
 
         public UVMap Scaled(Vector2 scale) => new UVMap(Translation, Rotation, Scale + scale);
 
-        private bool IsTextureScaleUniform(IList<ITextureVertex> vertices)
+        /*private bool IsTextureScaleUniform(IList<ITextureVertex> vertices)
         {
             var scaleX = 0.0f;
             var scaleY = 0.0f;
@@ -175,7 +175,7 @@ namespace SpiceEngine.Rendering.Meshes
                         return true;
                     }
                 }
-        }
+        }*/
 
         public static UVMap Standard => new UVMap(Vector2.Zero, 0.0f, Vector2.One);
         public static UVMap Varying => new UVMap();

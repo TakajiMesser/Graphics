@@ -43,9 +43,19 @@ namespace SpiceEngine.Entities.Actors
         public override Material Material => _materials[_meshIndex];
         public override TextureMapping? TextureMapping => _textureMappings[_meshIndex];
 
-        public event EventHandler<TextureTransformEventArgs> TextureTransformed;
-
         public Actor(string name) => Name = name;
+
+        public void Rotate(Quaternion rotation)
+        {
+            _modelMatrix.Rotation *= rotation;
+            // Call Transformed
+        }
+
+        public void ScaleBy(Vector3 scale)
+        {
+            _modelMatrix.Scale *= scale;
+            // Call Transformed
+        }
 
         public override void AddMaterial(Material material) => _materials.Add(material);
         public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);

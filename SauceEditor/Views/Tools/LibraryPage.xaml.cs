@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SauceEditorCore.Models.Libraries;
+using System;
 using System.Windows;
 using System.Windows.Controls;
 using Xceed.Wpf.AvalonDock.Layout;

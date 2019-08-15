@@ -22,13 +22,19 @@ namespace SpiceEngine.Entities
 
                 if (displacement.IsSignificant())
                 {
-                    Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateTranslation(displacement)));
+                    OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateTranslation(displacement)));
                 }
             }
         }
 
         public event EventHandler<EntityEventArgs> UniformsChanged;
         public event EventHandler<EntityTransformEventArgs> Transformed;
+
+        public void Translate(Vector3 translation)
+        {
+            _modelMatrix.Translation += translation;
+            OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateTranslation(translation)));
+        }
 
         public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
 

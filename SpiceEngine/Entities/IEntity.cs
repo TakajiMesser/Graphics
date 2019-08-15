@@ -8,8 +8,8 @@ namespace SpiceEngine.Entities
     {
         int ID { get; set; }
         Vector3 Position { get; set; }
-        //IEntity Duplicate();
 
+        void Translate(Vector3 translation);
         void SetUniforms(ShaderProgram shader);
         bool CompareUniforms(IEntity entity);
 

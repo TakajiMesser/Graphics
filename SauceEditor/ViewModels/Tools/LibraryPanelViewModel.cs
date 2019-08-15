@@ -1,10 +1,13 @@
+using SauceEditor.Views.Tools;
+using SauceEditorCore.Models.Libraries;
+
 namespace SauceEditor.ViewModels.Tools
 {
     public class LibraryPanelViewModel : ViewModel
     {
         public LibraryManager LibraryManager { get; set; }
 
-        public LibraryPage Page { get; set; }
+        //public LibraryPage Page { get; set; }
 
         /*public Library MapLibrary { get; private set; }
         public Library ModelLibrary { get; private set; }
@@ -17,8 +20,7 @@ namespace SauceEditor.ViewModels.Tools
 
         public void OnLibraryManagerChanged()
         {
-            ;
-            Page = new LibraryPage(LibraryManager.MapLibrary);
+            //Page = new LibraryPage(LibraryManager.MapLibrary);
         }
     }
 }

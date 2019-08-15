@@ -36,13 +36,23 @@ namespace SpiceEngine.Entities.Brushes
             }
         }
 
+        public void Rotate(Quaternion rotation)
+        {
+            _modelMatrix.Rotation *= rotation;
+            // Call Transformed
+        }
+
+        public void ScaleBy(Vector3 scale)
+        {
+            _modelMatrix.Scale *= scale;
+            // Call Transformed
+        }
+
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
         //public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
 
         public override Material Material => _material;
         public override TextureMapping? TextureMapping => _textureMapping;
-
-        public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
         public override void AddMaterial(Material material) => _material = material;
         public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMapping = textureMapping;

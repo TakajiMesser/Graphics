@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Physics.Bodies;
+using SpiceEngine.Physics.Shapes;
 using System;
 using System.Collections.Generic;
 using System.Text;

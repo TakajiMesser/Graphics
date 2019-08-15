@@ -15,4 +15,4 @@
             <vm:LibraryPageViewModel x:Name="ViewModel"/>
         </Grid.DataContext>
     </Grid>
-</xcad:LayoutAnchorable>
+</Page>

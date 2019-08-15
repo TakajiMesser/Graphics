@@ -241,6 +241,8 @@
     <Compile Include="ViewModels\Properties\VectorProperty.cs" />
     <Compile Include="ViewModels\Properties\EntityPropertyViewModel.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
+    <Compile Include="ViewModels\Tools\LibraryPageViewModel.cs" />
+    <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ToolsPanelViewModel.cs" />
     <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />

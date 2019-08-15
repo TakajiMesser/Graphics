@@ -24,6 +24,10 @@ namespace SpiceEngine.Entities.Volumes
 
         public Volume() { }
 
+        public void Rotate(Quaternion rotation) => _modelMatrix.Rotation = rotation * _modelMatrix.Rotation;
+
+        public void ScaleBy(Vector3 scale) => _modelMatrix.Scale += scale;
+
         public Volume Duplicate() => new Volume()
         {
             Position = Position,

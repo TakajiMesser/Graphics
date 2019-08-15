@@ -32,5 +32,7 @@ namespace SpiceEngine.Entities
         public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
             && Material.Equals(textureBinder.Material)
             && TextureMapping.Equals(textureBinder.TextureMapping);
+
+        protected virtual void OnTextureTransformed(object sender, TextureTransformEventArgs e) => TextureTransformed?.Invoke(sender, e);
     }
 }

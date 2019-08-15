@@ -81,6 +81,31 @@ namespace SauceEditorCore.Models.Entities
 
         public TexturedModelEntity(T modelShape, TexturePaths texturePaths) : base(modelShape) => TexturePaths = texturePaths;
 
+        public void Rotate(Quaternion rotation)
+        {
+            var rotationChange = rotation * _modelMatrix.Rotation.Inverted();
+            _modelMatrix.Rotation = rotation;
+
+            if (rotationChange.IsSignificant())
+            {
+                ModelShape.Rotate(rotationChange);
+                var transform = Matrix4.CreateTranslation(-Position) * Matrix4.CreateFromQuaternion(rotationChange) * Matrix4.CreateTranslation(Position);
+                OnTransformed(this, new EntityTransformEventArgs(ID, transform));
+            }
+        }
+
+        public void ScaleBy(Vector3 scale)
+        {
+            var scaleChange = scale - _modelMatrix.Scale;
+            _modelMatrix.Scale = scale;
+
+            if (scaleChange.IsSignificant())
+            {
+                OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
+                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
+            }
+        }
+
         public void TranslateTexture(float x, float y)
         {
             ModelShape.TranslateTexture(x, y);
