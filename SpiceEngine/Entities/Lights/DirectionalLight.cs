@@ -6,7 +6,9 @@ namespace SpiceEngine.Entities.Lights
 {
     public class DirectionalLight : Light<DLight>, IRotate
     {
-        public Quaternion Rotation { get; set; }
+        public Quaternion Rotation { get; private set; }
+
+        public void SetRotation(Quaternion rotation) => Rotation = rotation;;
 
         public Vector3 Direction => (new Vector4(0.0f, 0.0f, -1.0f, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;
         public Matrix4 View => Matrix4.LookAt(Vector3.Zero, Vector3.Zero + Direction.Normalized(), Vector3.UnitZ);

@@ -19,21 +19,13 @@ namespace SpiceEngine.Entities.Brushes
         public Quaternion Rotation
         {
             get => _modelMatrix.Rotation;
-            set
-            {
-                _modelMatrix.Rotation = value;
-                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _modelMatrix.Matrix));
-            }
+            set => _modelMatrix.Rotation = value;
         }
 
         public Vector3 Scale
         {
             get => _modelMatrix.Scale;
-            set
-            {
-                _modelMatrix.Scale = value;
-                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _modelMatrix.Matrix));
-            }
+            set => _modelMatrix.Scale = value;
         }
 
         public void Rotate(Quaternion rotation)

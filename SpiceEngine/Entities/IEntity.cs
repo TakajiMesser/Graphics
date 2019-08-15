@@ -9,7 +9,7 @@ namespace SpiceEngine.Entities
         int ID { get; set; }
         Vector3 Position { get; set; }
 
-        void Translate(Vector3 translation);
+        void Transform(Transform transform);
         void SetUniforms(ShaderProgram shader);
         bool CompareUniforms(IEntity entity);
 

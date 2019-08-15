@@ -34,6 +34,12 @@ namespace SauceEditorCore.Models.Entities
             }
         }*/
 
+        public Quaternion Rotation => _modelMatrix.Rotation;
+        public Vector3 Scale => _modelMatrix.Scale;
+
+        public void SetRotation(Quaternion rotation) => _modelMatrix.SetRotation(rotation);
+        public void SetScale(Vector3 scale) => _modelMatrix.SetScale(scale);
+
         public Quaternion Rotation
         {
             // TODO - Determine if quaternion multiplication order matters here

@@ -10,7 +10,8 @@ namespace SpiceEngine.Rendering.Meshes
         Vector3 GetAveragePosition();
         void CenterAround(Vector3 position);
 
-        void Translate(Vector3 translation);
+        void Transform(Transform transform);
+        //void Translate(Vector3 translation);
         //void Rotate(Quaternion rotation);
         //void Scale(Vector3 scale);
     }
