@@ -10,26 +10,21 @@ namespace SpiceEngine.Entities.Volumes
     /// </summary>
     public class Volume : Entity, IRotate, IScale
     {
-        public Quaternion Rotation
+        public Quaternion Rotation => _modelMatrix.Rotation;
+        public Vector3 Scale => _modelMatrix.Scale;
+
+        public void SetRotation(Quaternion rotation) => _modelMatrix.SetRotation(rotation);
+        public void SetScale(Vector3 scale) => _modelMatrix.SetScale(scale);
+
+        public Volume Duplicate()
         {
-            get => _modelMatrix.Rotation;
-            set => _modelMatrix.Rotation = value;
+            var volume = new Volume();
+            volume.SetPosition(Position);
+            volume.SetRotation(Rotation);
+            volume.SetScale(Scale);
+
+            return volume;
         }
-
-        public Vector3 Scale
-        {
-            get => _modelMatrix.Scale;
-            set => _modelMatrix.Scale = value;
-        }
-
-        public Volume() { }
-
-        public Volume Duplicate() => new Volume()
-        {
-            Position = Position,
-            Rotation = Rotation,
-            Scale = Scale,
-        };
 
         //public void Load() => Mesh.Load();
         //public void Draw() => Mesh.Draw();

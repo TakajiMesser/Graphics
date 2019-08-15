@@ -22,17 +22,21 @@ namespace SpiceEngine.Entities.Actors
         /// </summary>
         public Quaternion Orientation { get; set; } = Quaternion.Identity;
 
-        public Quaternion Rotation
-        {
-            // TODO - Determine if quaternion multiplication order matters here
-            get => _modelMatrix.Rotation * Orientation.Inverted();
-            set => _modelMatrix.Rotation = Orientation * value;
-        }
+        public Quaternion Rotation => _modelMatrix.Rotation * Orientation.Inverted();
+        public Vector3 Scale => _modelMatrix.Scale;
 
-        public Vector3 Scale
+        // TODO - Determine if quaternion multiplication order matters here
+        public void SetRotation(Quaternion rotation) => _modelMatrix.SetRotation(Orientation * rotation);
+        public void SetScale(Vector3 scale) => _modelMatrix.SetScale(scale);
+
+        public override void Transform(Transform transform)
         {
-            get => _modelMatrix.Scale;
-            set => _modelMatrix.Scale = value;
+            base.Transform(new Transform()
+            {
+                Position = transform.Position,
+                Rotation = Orientation * transform.Rotation,
+                Scale = transform.Scale
+            });
         }
 
         public Matrix4 ModelMatrix => _modelMatrix.Matrix;

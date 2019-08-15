@@ -6,9 +6,9 @@ namespace SpiceEngine.Entities
     public class EntityTransformEventArgs : EventArgs
     {
         public int ID { get; }
-        public Matrix4 Transform { get; }
+        public Transform Transform { get; }
 
-        public EntityTransformEventArgs(int id, Matrix4 transform)
+        public EntityTransformEventArgs(int id, Transform transform)
         {
             ID = id;
             Transform = transform;

@@ -13,6 +13,10 @@ namespace SauceEditorCore.Models.Entities
     {
         public T ModelShape { get; set; }
 
+        public Vector3 Position => _modelMatrix.Position;
+        public void SetPosition(Vector3 position) => _modelMatrix.SetPosition(position);
+        public virtual void Transform(Transform transform) => _modelMatrix.Transform(transform);
+
         public override Vector3 Position
         {
             get => base.Position;
@@ -33,7 +37,10 @@ namespace SauceEditorCore.Models.Entities
             ModelShape = modelShape;
             base.Position = ModelShape.GetAveragePosition();
             ModelShape.CenterAround(Position);
+            Transformed += (s, args) => ModelShape.Transform(args.Transform);
         }
+
+        protected void TransformModelShape()
 
         public override void SetUniforms(ShaderProgram program)
         {

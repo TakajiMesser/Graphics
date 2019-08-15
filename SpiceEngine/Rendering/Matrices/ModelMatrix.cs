@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Shaders;
+using System;
 
 namespace SpiceEngine.Rendering.Matrices
 {
@@ -8,65 +9,52 @@ namespace SpiceEngine.Rendering.Matrices
         public const string NAME = "modelMatrix";
         public const string PREVIOUS_NAME = "previousModelMatrix";
 
-        public Matrix4 Matrix { get; private set; }
+        private Transform _transform;
 
-        public Vector3 Translation
+        public ModelMatrix() : this(new Transform()) { }
+        public ModelMatrix(Vector3 position, Quaternion rotation, Vector3 scale) : this(new Transform(position, rotation, scale)) { }
+        public ModelMatrix(Transform transform)
         {
-            get => _translation;
-            set
-            {
-                _translation = value;
-                CalculateMatrix();
-            }
+            _transform = transform;
+            CurrentMatrix = _transform.ToMatrix();
+        }
+
+        public Matrix4 CurrentMatrix { get; private set; }
+        public Matrix4 PreviousMatrix { get; private set; }
+
+        public Vector3 Position
+        {
+            get => _transform.Translation;
+            set => Transform(Transform.FromTranslation(position - Position));
         }
 
         public Quaternion Rotation
         {
-            get => _rotation;
-            set
-            {
-                _rotation = value;
-                CalculateMatrix();
-            }
+            get => _transform.Rotation;
+            set => Transform(Transform.FromRotation(rotation * Rotation.Invertex()));
         }
 
         public Vector3 Scale
         {
-            get => _scale;
-            set
-            {
-                _scale = value;
-                CalculateMatrix();
-            }
+            get => _transform.Scale;
+            set => Transform(Transform.FromScale(scale - Scale));
         }
 
-        private Vector3 _translation = Vector3.Zero;
-        private Quaternion _rotation = Quaternion.Identity;
-        private Vector3 _scale = Vector3.One;
+        public event EventHandler<TransformEventArgs> Transformed;
 
-        private Matrix4 _previousMatrix;
-
-        public ModelMatrix() => CalculateMatrix();
-        public ModelMatrix(Vector3 translation, Quaternion rotation, Vector3 scale) => Update(translation, rotation, scale);
-
-        public void Update(Vector3 translation, Quaternion rotation, Vector3 scale)
+        public void Transform(Transform transform)
         {
-            _translation = translation;
-            _rotation = rotation;
-            _scale = scale;
-
-            CalculateMatrix();
+            Transformed?.Invoke(this, new TransformEventArgs(transform));
+            _transform.Combine(transform);
+            CurrentMatrix = _transform.ToMatrix();
         }
 
         public void Set(ShaderProgram program)
         {
-            program.SetUniform(NAME, Matrix);
-            program.SetUniform(PREVIOUS_NAME, _previousMatrix);
+            program.SetUniform(NAME, CurrentMatrix);
+            program.SetUniform(PREVIOUS_NAME, PreviousMatrix);
 
-            _previousMatrix = Matrix;
+            PreviousMatrix = CurrentMatrix;
         }
-
-        private void CalculateMatrix() =>
-            Matrix = /*Matrix4.Identity * */Matrix4.CreateScale(_scale) * Matrix4.CreateFromQuaternion(_rotation) * Matrix4.CreateTranslation(_translation);
     }
 }

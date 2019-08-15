@@ -12,31 +12,44 @@ namespace SpiceEngine.Entities
 
         public int ID { get; set; }
 
-        public virtual Vector3 Position
+        public Vector3 Position
         {
-            get => _modelMatrix.Translation;
-            set
-            {
-                var displacement = value - _modelMatrix.Translation;
-                _modelMatrix.Translation = value;
+            get => _modelMatrix.Position;
+            set => _modelMatrix.Position = value;
+        }
 
-                if (displacement.IsSignificant())
+        public virtual void Transform(Transform transform) => _modelMatrix.Transform(transform);
+
+        private event EventHandler<EntityTransformEventArgs> _transformed;
+
+        public event EventHandler<EntityEventArgs> UniformsChanged;
+        public event EventHandler<EntityTransformEventArgs> Transformed
+        {
+            add
+            {
+                if (_transformed == null)
                 {
-                    Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateTranslation(displacement)));
+                    _modelMatrix.Transformed += OnTransformed;
+                }
+
+                _transformed += value;
+            }
+            remove
+            {
+                _transformed -= value;
+
+                if (_transformed == null)
+                {
+                    _modelMatrix.Transformed -= OnTransformed;
                 }
             }
         }
-
-        public event EventHandler<EntityEventArgs> UniformsChanged;
-        public event EventHandler<EntityTransformEventArgs> Transformed;
-
-        public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
 
         //public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
         public abstract void SetUniforms(ShaderProgram program);
 
         public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
 
-        protected virtual void OnTransformed(object sender, EntityTransformEventArgs e) => Transformed?.Invoke(sender, e);
+        private virtual void OnTransformed(object sender, TransformEventArgs e) => Transformed?.Invoke(this, new EntityTransformEventArgs(ID, e.Transform));
     }
 }
