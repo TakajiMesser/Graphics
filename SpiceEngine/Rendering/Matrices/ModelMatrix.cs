@@ -21,6 +21,7 @@ namespace SpiceEngine.Rendering.Matrices
 
         public Matrix4 CurrentMatrix { get; private set; }
         public Matrix4 PreviousMatrix { get; private set; }
+        public Transform WorldTransform => _transform;
 
         public Vector3 Position
         {

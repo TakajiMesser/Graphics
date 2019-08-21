@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngine.Utilities;
+using SpiceEngine.Rendering.Matrices;
 using System.Runtime.InteropServices;
 
 namespace SpiceEngine.Rendering.Vertices
@@ -50,15 +50,16 @@ namespace SpiceEngine.Rendering.Vertices
             ID = id;
         }
 
-        public IVertex3D Transformed(Matrix4 modelMatrix)
+        public IVertex3D Transformed(Transform transform)
         {
-            var rotationMatrix = modelMatrix.GetRotationMatrix();
+            var modelMatrix = transform.ToMatrix();
+            var rotationMatrix = Matrix4.CreateFromQuaternion(transform.Rotation);
 
             return new EditorVertex3D()
             {
                 Position = (new Vector4(Position, 1.0f) * modelMatrix).Xyz,
-                Normal = Normal * rotationMatrix,
-                Tangent = Tangent * rotationMatrix,
+                Normal = (new Vector4(Normal, 1.0f) * rotationMatrix).Xyz,
+                Tangent = (new Vector4(Tangent, 1.0f) * rotationMatrix).Xyz,
                 TextureCoords = TextureCoords,
                 Color = Color,
                 BoneIDs = BoneIDs,

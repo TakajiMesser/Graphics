@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngine.Rendering.Buffers;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
@@ -76,12 +77,13 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public void Transform(Matrix4 matrix) => Transform(matrix, 0, _vertices.Count);
-        public void Transform(Matrix4 matrix, int offset, int count)
+        public void Transform(Transform transform) => Transform(transform, 0, _vertices.Count);
+        public void Transform(Transform transform, int offset, int count)
         {
             for (var i = offset; i < count; i++)
             {
-                var transformedVertex = (T)_vertices[i].Transformed(matrix);
+                var originalVertex = _vertices[i];
+                var transformedVertex = (T)_vertices[i].Transformed(transform);
                 _vertices[i] = transformedVertex;
             }
 

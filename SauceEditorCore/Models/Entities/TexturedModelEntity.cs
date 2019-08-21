@@ -19,59 +19,19 @@ namespace SauceEditorCore.Models.Entities
 
         public bool IsInTextureMode { get; set; }
 
-        /*public override Vector3 Position
-        {
-            get => base.Position;
-            set
-            {
-                var translation = value - Position;
-                if (translation.IsSignificant())
-                {
-                    ModelShape.Translate(translation);
-                }
-
-                base.Position = value;
-            }
-        }*/
-
-        public Quaternion Rotation => _modelMatrix.Rotation;
-        public Vector3 Scale => _modelMatrix.Scale;
-
-        public void SetRotation(Quaternion rotation) => _modelMatrix.SetRotation(rotation);
-        public void SetScale(Vector3 scale) => _modelMatrix.SetScale(scale);
-
+        // TODO - Determine if quaternion multiplication order matters here
+        //var rotationChange = value * _modelMatrix.Rotation.Inverted();
+        //var transform = Matrix4.CreateTranslation(-Position) * Matrix4.CreateFromQuaternion(rotationChange) * Matrix4.CreateTranslation(Position);
         public Quaternion Rotation
         {
-            // TODO - Determine if quaternion multiplication order matters here
             get => _modelMatrix.Rotation;
-            set
-            {
-                var rotationChange = value * _modelMatrix.Rotation.Inverted();
-                _modelMatrix.Rotation = value;
-
-                if (rotationChange.IsSignificant())
-                {
-                    ModelShape.Rotate(rotationChange);
-                    var transform = Matrix4.CreateTranslation(-Position) * Matrix4.CreateFromQuaternion(rotationChange) * Matrix4.CreateTranslation(Position);
-                    OnTransformed(this, new EntityTransformEventArgs(ID, transform));
-                }
-            }
+            set => _modelMatrix.Rotation = value;
         }
 
         public Vector3 Scale
         {
             get => _modelMatrix.Scale;
-            set
-            {
-                var scaleChange = value - _modelMatrix.Scale;
-                _modelMatrix.Scale = value;
-
-                if (scaleChange.IsSignificant())
-                {
-                    OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
-                    //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
-                }
-            }
+            set => _modelMatrix.Scale = value;
         }
 
         public TexturePaths TexturePaths { get; }
@@ -86,31 +46,6 @@ namespace SauceEditorCore.Models.Entities
         public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
         public TexturedModelEntity(T modelShape, TexturePaths texturePaths) : base(modelShape) => TexturePaths = texturePaths;
-
-        public void Rotate(Quaternion rotation)
-        {
-            var rotationChange = rotation * _modelMatrix.Rotation.Inverted();
-            _modelMatrix.Rotation = rotation;
-
-            if (rotationChange.IsSignificant())
-            {
-                ModelShape.Rotate(rotationChange);
-                var transform = Matrix4.CreateTranslation(-Position) * Matrix4.CreateFromQuaternion(rotationChange) * Matrix4.CreateTranslation(Position);
-                OnTransformed(this, new EntityTransformEventArgs(ID, transform));
-            }
-        }
-
-        public void ScaleBy(Vector3 scale)
-        {
-            var scaleChange = scale - _modelMatrix.Scale;
-            _modelMatrix.Scale = scale;
-
-            if (scaleChange.IsSignificant())
-            {
-                OnTransformed(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
-                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, Matrix4.CreateScale(scaleChange)));
-            }
-        }
 
         public void TranslateTexture(float x, float y)
         {

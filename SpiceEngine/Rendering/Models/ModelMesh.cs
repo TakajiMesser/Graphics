@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
@@ -24,6 +25,14 @@ namespace SpiceEngine.Rendering.Meshes
         {
             Faces = Faces.Select(f => f.Duplicated()).ToList()
         };
+
+        public void Transform(Transform transform)
+        {
+            foreach (var face in Faces)
+            {
+                face.Transform(transform);
+            }
+        }
 
         public void Translate(Vector3 translation)
         {

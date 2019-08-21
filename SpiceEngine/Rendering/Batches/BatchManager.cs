@@ -224,7 +224,7 @@ namespace SpiceEngine.Rendering.Batches
                             entityA.Transformed += (s, args) =>
                             {
                                 // TODO - Don't recalculate matrix here (store in event args)
-                                meshBatch.Transform(args.ID, args.Transform.ToMatrix());
+                                meshBatch.Transform(args.ID, args.Transform);
                             };
 
                             if (entityA is ITexturedEntity texturedEntity)
@@ -247,7 +247,7 @@ namespace SpiceEngine.Rendering.Batches
                         {
                             entityA.Transformed += (s, args) =>
                             {
-                                billboardBatch.Transform(args.ID, args.Transform.ToMatrix());
+                                billboardBatch.Transform(args.ID, args.Transform);
                             };
 
                             _batchIndexByEntityID.Add(entityID, i);

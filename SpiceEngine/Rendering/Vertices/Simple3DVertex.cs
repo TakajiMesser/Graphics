@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Matrices;
 using System.Runtime.InteropServices;
 
 namespace SpiceEngine.Rendering.Vertices
@@ -12,6 +13,6 @@ namespace SpiceEngine.Rendering.Vertices
 
         public Simple3DVertex(float x, float y, float z) => Position = new Vector3(x, y, z);
 
-        public IVertex3D Transformed(Matrix4 matrix) => new Simple3DVertex((matrix * new Vector4(Position, 1.0f)).Xyz);
+        public IVertex3D Transformed(Transform transform) => new Simple3DVertex((transform.ToMatrix() * new Vector4(Position, 1.0f)).Xyz);
     }
 }

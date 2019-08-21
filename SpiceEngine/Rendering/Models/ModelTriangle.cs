@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Matrices;
 
 namespace SpiceEngine.Rendering.Meshes
 {
@@ -29,21 +30,11 @@ namespace SpiceEngine.Rendering.Meshes
             Tangent = Tangent
         };
 
-        public void Translate(Vector3 translation)
+        public void Transform(Transform transform)
         {
-            VertexA.Translate(translation);
-            VertexB.Translate(translation);
-            VertexC.Translate(translation);
-        }
-
-        public void Rotate(Quaternion rotation)
-        {
-
-        }
-
-        public void Scale(Vector3 scale)
-        {
-
+            VertexA.Transform(transform);
+            VertexB.Transform(transform);
+            VertexC.Transform(transform);
         }
 
         public void TranslateTexture(float x, float y)

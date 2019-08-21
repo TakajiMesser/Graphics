@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
@@ -19,7 +20,7 @@ namespace SpiceEngine.Rendering.Batches
             _entityIDs.Add(id);
         }
 
-        public virtual void Transform(int entityID, Matrix4 matrix) { }
+        public virtual void Transform(int entityID, Transform transform) { }
 
         public virtual void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale) { }
 

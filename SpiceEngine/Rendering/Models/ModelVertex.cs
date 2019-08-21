@@ -33,7 +33,8 @@ namespace SpiceEngine.Rendering.Meshes
 
         public void Transform(Transform transform)
         {
-
+            _origin += transform.Translation;
+            Position = (new Vector4(Position, 1.0f) * Matrix4.CreateFromQuaternion(transform.Rotation)).Xyz;
         }
 
         public void Translate(Vector3 translation)

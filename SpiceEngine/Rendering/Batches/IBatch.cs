@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
@@ -13,7 +14,7 @@ namespace SpiceEngine.Rendering.Batches
         IEnumerable<int> EntityIDs { get; }
 
         void AddEntity(int id, IRenderable renderable);
-        void Transform(int entityID, Matrix4 matrix);
+        void Transform(int entityID, Transform transform);
         void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale);
         void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate);
         void RemoveEntity(int id);

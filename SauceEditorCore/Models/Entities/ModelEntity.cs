@@ -16,7 +16,10 @@ namespace SauceEditorCore.Models.Entities
             ModelShape = modelShape;
             base.Position = ModelShape.GetAveragePosition();
             ModelShape.CenterAround(Position);
-            Transformed += (s, args) => ModelShape.Transform(args.Transform);
+            Transformed += (s, args) =>
+            {
+                ModelShape.Transform(args.Transform);
+            };
         }
 
         public override void SetUniforms(ShaderProgram program)

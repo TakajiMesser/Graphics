@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using SpiceEngine.Utilities;
 using System.Linq;
+using SpiceEngine.Rendering.Matrices;
 
 namespace SpiceEngine.Rendering.Meshes
 {
@@ -90,6 +91,14 @@ namespace SpiceEngine.Rendering.Meshes
                     Normal = Normal,
                     Tangent = Tangent
                 };
+            }
+        }
+
+        public void Transform(Transform transform)
+        {
+            foreach (var vertex in Vertices)
+            {
+                vertex.Transform(transform);
             }
         }
 

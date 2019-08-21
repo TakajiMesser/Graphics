@@ -2,6 +2,7 @@
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities;
 using SpiceEngine.Rendering.Buffers;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
@@ -42,11 +43,11 @@ namespace SpiceEngine.Rendering.Batches
             base.AddEntity(id, renderable);
         }
 
-        public override void Transform(int entityID, Matrix4 matrix)
+        public override void Transform(int entityID, Transform transform)
         {
             var index = _indexByID[entityID];
 
-            var transformedVertex = (ColorVertex3D)_vertices[index].Transformed(matrix);
+            var transformedVertex = (ColorVertex3D)_vertices[index].Transformed(transform);
             _vertices[index] = transformedVertex;
 
             // TODO - This is very redundant to keep two separate lists of vertex (struct) data

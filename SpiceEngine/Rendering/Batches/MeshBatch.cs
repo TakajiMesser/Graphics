@@ -2,6 +2,7 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
@@ -45,13 +46,13 @@ namespace SpiceEngine.Rendering.Batches
             base.AddEntity(id, renderable);
         }
 
-        public override void Transform(int entityID, Matrix4 matrix)
+        public override void Transform(int entityID, Transform transform)
         {
             // TODO - This is redundant with function overloads for Mesh.Transform()
             var offset = _offsetByID.ContainsKey(entityID) ? _offsetByID[entityID] : 0;
             var count = _countByID.ContainsKey(entityID) ? _countByID[entityID] : Mesh.Vertices.Count();
 
-            Mesh.Transform(matrix, offset, count);
+            Mesh.Transform(transform, offset, count);
         }
 
         public override void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale)
