@@ -38,7 +38,8 @@ namespace SpiceEngine.Entities
         public IEnumerable<int> EntityPhysicsIDs => _layerManager.EntityPhysicsIDs;
         public IEnumerable<int> EntitySelectIDs => _layerManager.EntitySelectIDs;
 
-        public EntityManager() { }
+        public event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
+        public event EventHandler<IDEventArgs> EntitiesRemoved;
 
         public void ClearEntities()
         {
@@ -82,12 +83,27 @@ namespace SpiceEngine.Entities
             return actor;
         }
 
+        public void AddEntities(IEnumerable<IEntityBuilder> entityBuilders)
+        {
+            var ids = new List<int>();
+
+            foreach (var entityBuilder in entityBuilders)
+            {
+                var id = AddEntity(entityBuilder.ToEntity());
+                ids.Add(id);
+            }
+
+            EntitiesAdded?.Invoke(this, new EntityBuilderEventArgs(ids, entityBuilders));
+        }
+
         public void AddEntities(IEnumerable<IEntity> entities)
         {
             foreach (var entity in entities)
             {
                 AddEntity(entity);
             }
+
+            EntitiesAdded?.Invoke(this, new IDEventArgs(entities.Select(e => e.ID)));
         }
 
         public void AddLayer(string layerName) => _layerManager.AddLayer(layerName);
@@ -129,7 +145,7 @@ namespace SpiceEngine.Entities
 
         public void SetSelectLayerState(string name, LayerStates state) => _layerManager.SetSelectLayerState(name, state);
 
-        public int AddEntity(IEntity entity)
+        private int AddEntity(IEntity entity)
         {
             // Assign a unique ID
             if (entity.ID == 0)

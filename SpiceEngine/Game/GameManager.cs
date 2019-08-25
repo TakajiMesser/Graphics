@@ -38,14 +38,12 @@ namespace SpiceEngine.Game
         public GameManager(Resolution resolution)
         {
             _resolution = resolution;
-
             InputManager = new InputManager();
         }
 
         public GameManager(Resolution resolution, IMouseTracker mouseTracker)
         {
             _resolution = resolution;
-
             InputManager = new InputManager(mouseTracker);
         }
 
@@ -71,6 +69,11 @@ namespace SpiceEngine.Game
             BehaviorManager.SetInputProvider(InputManager);
 
             EntityManager.ClearEntities();
+
+            foreach (var light in map.Lights)
+            {
+                
+            }
 
             var lightIDs = LoadLights(map.Lights);
             var brushIDs = LoadBrushes(map.Brushes);

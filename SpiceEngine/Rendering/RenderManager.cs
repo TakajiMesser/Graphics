@@ -92,6 +92,22 @@ namespace SpiceEngine.Rendering
 
             BatchManager.Load();
 
+            _entityProvider.EntitiesAdded += (s, args) => AddEntities(args.IDs);
+            _entityProvider.EntitiesAdded += (s, args) =>
+            {
+                var ids = args.IDs.ToList();
+                var builders = args.Builders.ToList();
+
+                for (var i = 0; i < ids.Count; i++)
+                {
+                    var renderable = builders[i].ToRenderable();
+                    if (renderable != null)
+                    {
+                        AddEntity(ids[i], renderable);
+                    }
+                }
+            };
+
             _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 
             _forwardRenderer.Load(Resolution);
@@ -111,6 +127,22 @@ namespace SpiceEngine.Rendering
             GL.ClearColor(Color4.Black);
 
             IsLoaded = true;
+        }
+
+        private void AddEntities(IEnumerable<int> ids)
+        {
+            foreach (var id in ids)
+            {
+                var entity = _entityProvider.GetEntityOrDefault(id);
+
+                if (entity != null)
+                {
+                    // The issue here is that we have no clue what MapEntity (which can call ToRenderable()) this IEntity is connected to
+                    // All _entityProvider.AddEntity(IEntity) does is assign an ID to the entity, track it, and fire the event
+                    // EVEN IF we pass and store all Renderables in the RenderManager,
+                    //      we STILL won't be able to link this incoming entity to the Renderable that we want
+                }
+            }
         }
 
         public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);

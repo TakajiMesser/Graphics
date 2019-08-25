@@ -12,15 +12,19 @@ namespace SpiceEngine.Entities
         IEnumerable<int> EntityPhysicsIDs { get; }
         IEnumerable<int> EntitySelectIDs { get; }
 
-        int AddEntity(IEntity entity);
+        List<ILight> Lights { get; }
+        List<Actor> Actors { get; }
+
+        event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
+        event EventHandler<IDEventArgs> EntitiesRemoved;
+
+        void AddEntities(IEnumerable<IEntity> entities);
+
         IEntity GetEntity(int id);
         IEntity GetEntityOrDefault(int id);
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
         Actor GetActor(string name);
         EntityTypes GetEntityType(int id);
-
-        List<ILight> Lights { get; }
-        List<Actor> Actors { get; }
 
         void RemoveEntityByID(int id);
         IEntity DuplicateEntity(IEntity entity);

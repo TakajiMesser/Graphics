@@ -131,11 +131,12 @@ namespace SauceEditor.ViewModels
             var modelEntities = entities.ToList();
 
             // Assign entity ID's
-            foreach (var entity in modelEntities)
+            /*foreach (var entity in modelEntities)
             {
                 var id = GameManager.EntityManager.AddEntity(entity);
                 entity.ID = id;
-            }
+            }*/
+            GameManager.EntityManager.AddEntities(modelEntities);
 
             // Add these entities to a new layer, enable it, and disable all other layers
             if (!GameManager.EntityManager.ContainsLayer(layerName))

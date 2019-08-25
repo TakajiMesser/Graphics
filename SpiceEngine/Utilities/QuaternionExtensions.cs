@@ -21,6 +21,8 @@ namespace SpiceEngine.Utilities
             || (quaternion.Z - 1.0f).IsSignificant()
             || (quaternion.W - 1.0f).IsSignificant();
 
+        public static Vector3 ApplyTo(this Quaternion quaternion, Vector3 vector) => (new Vector4(vector, 1.0f) * Matrix4.CreateFromQuaternion(quaternion)).Xyz;
+
         /*public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
             || quaternion.W >= MathExtensions.EPSILON
             || quaternion.W <= -MathExtensions.EPSILON;*/
