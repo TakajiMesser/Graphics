@@ -1,5 +1,7 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Animations;
@@ -7,7 +9,9 @@ using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Utilities;
 using System.Collections.Generic;
@@ -15,7 +19,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapActor : MapEntity3D<Actor>
+    public class MapActor : MapEntity3D<Actor>, IRenderableBuilder, IShapeBuilder, IBehaviorBuilder
     {
         public string Name { get; set; }
 
@@ -50,9 +54,7 @@ namespace SpiceEngine.Maps
             }
         }
 
-        public IRenderable ToRenderable() => new Model(ModelFilePath);
-
-        public override Actor ToEntity(/*TextureManager textureManager = null*/)
+        public override IEntity ToEntity(/*TextureManager textureManager = null*/)
         {
             var actor = new Actor(Name);
 
@@ -241,6 +243,8 @@ namespace SpiceEngine.Maps
             return actor;
         }
 
+        public IRenderable ToRenderable() => new Model(ModelFilePath);
+
         public Shape3D ToShape()
         {
             using (var importer = new Assimp.AssimpContext())
@@ -283,6 +287,8 @@ namespace SpiceEngine.Maps
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
         }
+
+        public Behavior ToBehavior(IScriptCompiler scriptCompiler) => Behavior?.ToBehavior(scriptCompiler);
 
         /*public Script ToScript()
         {

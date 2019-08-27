@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities
 {
@@ -6,6 +7,6 @@ namespace SpiceEngine.Entities
     {
         public IEnumerable<int> IDs { get; }
 
-        public EntityEventArgs(IEnumerable<int> ids) => IDs = ids;
+        public IDEventArgs(IEnumerable<int> ids) => IDs = ids;
     }
 }

@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
@@ -7,9 +8,12 @@ using SpiceEngine.Rendering.Shaders;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public abstract class ModelEntity<T> : Entity, IModelEntity where T : IModelShape
+    public abstract class ModelEntity<T> : Entity, IEntityBuilder, IRenderableBuilder where T : IModelShape
     {
         public T ModelShape { get; set; }
+
+        //public abstract Vector3 Rotation { get; set; }
+        //public abstract Vector3 Scale { get; set; }
 
         public ModelEntity(T modelShape)
         {
@@ -29,7 +33,7 @@ namespace SauceEditorCore.Models.Entities
         }
 
         //public override bool CompareUniforms(IEntity entity) => entity is ModelEntity;// modelEntity && _modelMatrix.Equals(modelEntity._modelMatrix);
-
+        public virtual IEntity ToEntity() => this;
         public abstract IRenderable ToRenderable();
     }
 }

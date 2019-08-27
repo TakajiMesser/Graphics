@@ -1,16 +1,13 @@
-﻿using OpenTK;
+﻿using SpiceEngine.Maps.Builders;
+using System;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Maps
 {
     public class EntityBuilderEventArgs : EventArgs
     {
-        public IEnumerable<int> IDs { get; private set; }
-        public IEnumerable<IEntityBuilder> Builders { get; private set; }
+        public IEnumerable<Tuple<int, IEntityBuilder>> Builders { get; private set; }
 
-        public EntityBuilderEventArgs(IEnumerable<int> ids, IEnumerable<IEntityBuilder> builders)
-        {
-            IDs = ids;
-            Builders = builders;
-        }
+        public EntityBuilderEventArgs(IEnumerable<Tuple<int, IEntityBuilder>> builders) => Builders = builders;
     }
 }

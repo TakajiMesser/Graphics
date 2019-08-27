@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Utilities;
@@ -9,7 +11,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapVolume : MapEntity3D<Volume>
+    public class MapVolume : MapEntity3D<Volume>, IShapeBuilder
     {
         public enum VolumeTypes
         {
@@ -25,13 +27,15 @@ namespace SpiceEngine.Maps
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public Color4 Color { get; set; }
 
+        public bool IsPhysical => VolumeType == VolumeTypes.Blocking;
+
         /*public Mesh3D<Vertex3D> ToMesh()
         {
             var vertices = Vertices.Select(v => new Vertex3D(v, v, v, Vector2.Zero, Color4.Blue)).ToList();
             return new Mesh3D<Vertex3D>(vertices, TriangleIndices);
         }*/
 
-        public override Volume ToEntity()
+        public override IEntity ToEntity()
         {
             switch (VolumeType)
             {

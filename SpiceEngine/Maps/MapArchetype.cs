@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Vertices;
@@ -15,7 +16,7 @@ namespace SpiceEngine.Maps
     {
         public string Name { get; set; }
 
-        public List<IMapEntity3D> Entities { get; set; } = new List<IMapEntity3D>();
+        public List<IEntityBuilder> Entities { get; set; } = new List<IEntityBuilder>();
 
         public IEnumerable<Mesh<Vertex3D>> ToMeshes()
         {

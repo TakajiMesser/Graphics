@@ -1,7 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Helpers;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Materials;
@@ -14,7 +16,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapBrush : MapEntity3D<Brush>
+    public class MapBrush : MapEntity3D<Brush>, IRenderableBuilder, IShapeBuilder
     {
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
@@ -30,17 +32,7 @@ namespace SpiceEngine.Maps
             Material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }
 
-        public IRenderable ToRenderable()
-        {
-            if (TexturesPaths.IsEmpty)
-            {
-                AddTestColors();
-            }
-            
-            return new Mesh<Vertex3D>(Vertices, TriangleIndices);
-        }
-
-        public override Brush ToEntity()
+        public override IEntity ToEntity()
         {
             var brush = new Brush()
             {
@@ -52,6 +44,16 @@ namespace SpiceEngine.Maps
 
             brush.AddMaterial(Material);
             return brush;
+        }
+
+        public IRenderable ToRenderable()
+        {
+            if (TexturesPaths.IsEmpty)
+            {
+                AddTestColors();
+            }
+            
+            return new Mesh<Vertex3D>(Vertices, TriangleIndices);
         }
 
         public Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
