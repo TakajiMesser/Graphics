@@ -92,7 +92,7 @@ namespace SpiceEngine.Rendering
 
             BatchManager.Load();
 
-            _entityProvider.EntitiesAdded += (s, args) => AddEntities(args.IDs);
+            /*_entityProvider.EntitiesAdded += (s, args) => AddEntities(args.IDs);
             _entityProvider.EntitiesAdded += (s, args) =>
             {
                 var ids = args.IDs.ToList();
@@ -106,7 +106,7 @@ namespace SpiceEngine.Rendering
                         AddEntity(ids[i], renderable);
                     }
                 }
-            };
+            };*/
 
             _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 

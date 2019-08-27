@@ -122,7 +122,7 @@ namespace SpiceEngine.Game
                         //var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
                         //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
                         //_toolVolume = mapVolume.ToEntity();
-                        int entityID = _entityProvider.AddEntity(_toolVolume);
+                        /*int entityID = _entityProvider.AddEntity(_toolVolume);
 
                         lock (_loadLock)
                         {
@@ -133,7 +133,7 @@ namespace SpiceEngine.Game
                                 //_renderManager.BatchManager.AddVolume(entityID, mesh);
                                 _renderManager.BatchManager.Load(entityID);
                             }
-                        }
+                        }*/
                         break;
                     default:
                         if (_toolVolume != null)

@@ -1,6 +1,8 @@
 ﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Maps;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities

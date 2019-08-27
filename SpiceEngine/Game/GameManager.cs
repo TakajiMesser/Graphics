@@ -2,6 +2,7 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Helpers;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
@@ -70,11 +71,6 @@ namespace SpiceEngine.Game
 
             EntityManager.ClearEntities();
 
-            foreach (var light in map.Lights)
-            {
-                
-            }
-
             var lightIDs = LoadLights(map.Lights);
             var brushIDs = LoadBrushes(map.Brushes);
             var volumeIDs = LoadVolumes(map.Volumes);
@@ -109,7 +105,7 @@ namespace SpiceEngine.Game
             if (mapBrush.IsPhysical)
             {
                 var shape = mapBrush.ToShape();
-                PhysicsManager.AddBrush(brush, shape, mapBrush.IsPhysical);
+                PhysicsManager.AddBrush((Entities.Brushes.Brush)brush, shape, mapBrush.IsPhysical);
             }
 
             return entityID;
@@ -123,7 +119,7 @@ namespace SpiceEngine.Game
             //var meshes = mapActor.ToMeshes();
 
             var shape = mapActor.ToShape();
-            PhysicsManager.AddActor(actor, shape, mapActor.IsPhysical);
+            PhysicsManager.AddActor((Actor)actor, shape, mapActor.IsPhysical);
 
             /*actor.HasCollision = mapActor.HasCollision;
             actor.Bounds = actor.Name == "Player"
@@ -148,7 +144,7 @@ namespace SpiceEngine.Game
             int entityID = EntityManager.AddEntity(volume);
 
             var shape = mapVolume.ToShape();
-            PhysicsManager.AddVolume(volume, shape);
+            PhysicsManager.AddVolume((Volume)volume, shape);
 
             return entityID;
         }

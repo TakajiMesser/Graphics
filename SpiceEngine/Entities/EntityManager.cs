@@ -3,6 +3,8 @@ using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Maps;
+using SpiceEngine.Maps.Builders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -93,7 +95,7 @@ namespace SpiceEngine.Entities
                 ids.Add(id);
             }
 
-            EntitiesAdded?.Invoke(this, new EntityBuilderEventArgs(ids, entityBuilders));
+            //EntitiesAdded?.Invoke(this, new EntityBuilderEventArgs(ids, entityBuilders));
         }
 
         public void AddEntities(IEnumerable<IEntity> entities)
@@ -103,7 +105,7 @@ namespace SpiceEngine.Entities
                 AddEntity(entity);
             }
 
-            EntitiesAdded?.Invoke(this, new IDEventArgs(entities.Select(e => e.ID)));
+            //EntitiesAdded?.Invoke(this, new IDEventArgs(entities.Select(e => e.ID)));
         }
 
         public void AddLayer(string layerName) => _layerManager.AddLayer(layerName);
@@ -145,7 +147,7 @@ namespace SpiceEngine.Entities
 
         public void SetSelectLayerState(string name, LayerStates state) => _layerManager.SetSelectLayerState(name, state);
 
-        private int AddEntity(IEntity entity)
+        public int AddEntity(IEntity entity)
         {
             // Assign a unique ID
             if (entity.ID == 0)
