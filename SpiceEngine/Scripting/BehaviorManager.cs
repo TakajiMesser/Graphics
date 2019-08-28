@@ -15,6 +15,8 @@ namespace SpiceEngine.Scripting
     {
         private bool _isLoaded = false;
 
+        private ScriptManager _scriptManager = new ScriptManager();
+
         private Camera _camera;
         private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
@@ -64,14 +66,21 @@ namespace SpiceEngine.Scripting
             }
         }
 
+        public void AddBehavior(int entityID, BehaviorBuilder behaviorBuilder)
+        {
+            var behavior = behaviorBuilder.ToBehavior(_scriptManager);
+            if (behavior != null)
+            {
+                _behaviorsByEntityID.Add(entityID, behavior);
+            }
+
+            AddStimuli(entityID, behaviorBuilder.Stimuli);
+            AddProperties(entityID, behaviorBuilder.Properties);
+        }
+
         public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
             ? _stimuliByEntityID[entityID].Stimuli
             : Enumerable.Empty<Stimulus>();
-
-        public void AddBehavior(int entityID, Behavior behavior)
-        {
-            _behaviorsByEntityID.Add(entityID, behavior);
-        }
 
         public void AddProperties(int entityID, IEnumerable<Property> properties)
         {

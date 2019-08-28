@@ -3,7 +3,7 @@ using SpiceEngine.Entities;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering;
 
-namespace SpiceEngine.Maps.Builders
+namespace SpiceEngine.Entities.Builders
 {
     public interface IShapeBuilder
     {

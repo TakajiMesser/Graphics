@@ -29,7 +29,6 @@ namespace SpiceEngine.Game
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; private set; }
         public BehaviorManager BehaviorManager { get; private set; }
-        public ScriptManager ScriptManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
@@ -64,7 +63,6 @@ namespace SpiceEngine.Game
 
             Camera = map.Camera.ToCamera(_resolution);
 
-            ScriptManager = new ScriptManager();
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
             BehaviorManager.SetCamera(Camera);
             BehaviorManager.SetInputProvider(InputManager);

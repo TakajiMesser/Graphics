@@ -19,6 +19,7 @@ namespace SpiceEngine.Game
     {
         private GameManager _gameManager;
         private RenderManager _renderManager;
+        private EntityLoader _entityLoader;
 
         private MouseState? _mouseState = null;
 
@@ -89,7 +90,12 @@ namespace SpiceEngine.Game
             };
             _fpsTimer.Start();
 
-            lock (_loadLock)
+            _entityLoader = new EntityLoader(_gameManager.EntityManager);
+            _entityLoader.SetPhysicsManager(_gameManager.PhysicsManager);
+            _entityLoader.SetBehaviorManager(_gameManager.BehaviorManager);
+            _entityLoader.AddRenderManager(_renderManager);
+
+            /*lock (_loadLock)
             {
                 IsLoaded = true;
 
@@ -100,7 +106,7 @@ namespace SpiceEngine.Game
                     _renderManager.SetCamera(_gameManager.Camera);
                     _renderManager.LoadFromMap(_map, entityMapping);
                 }
-            }
+            }*/
         }
 
         /*public void LoadMap(Map map)

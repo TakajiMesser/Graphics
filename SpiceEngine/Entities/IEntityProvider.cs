@@ -20,6 +20,7 @@ namespace SpiceEngine.Entities
         event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         event EventHandler<IDEventArgs> EntitiesRemoved;
 
+        int AddEntity(IEntity entity);
         void AddEntities(IEnumerable<IEntity> entities);
 
         IEntity GetEntity(int id);

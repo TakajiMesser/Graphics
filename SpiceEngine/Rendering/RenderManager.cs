@@ -85,10 +85,10 @@ namespace SpiceEngine.Rendering
         {
             BatchManager = new BatchManager(_entityProvider, TextureManager);
 
-            AddBrushes(map.Brushes, entityMapping.BrushIDs);
+            //AddBrushes(map.Brushes, entityMapping.BrushIDs);
             //AddVolumes(map.Volumes, entityMapping.VolumeIDs);
             //AddLights(map.Lights, entityMapping.LightIDs);
-            AddActors(map.Actors, entityMapping.ActorIDs);
+            //AddActors(map.Actors, entityMapping.ActorIDs);
 
             BatchManager.Load();
 
@@ -129,25 +129,49 @@ namespace SpiceEngine.Rendering
             IsLoaded = true;
         }
 
-        private void AddEntities(IEnumerable<int> ids)
+        public void AddEntity(int entityID, IRenderableBuilder renderableBuilder)
         {
-            foreach (var id in ids)
-            {
-                var entity = _entityProvider.GetEntityOrDefault(id);
+            var renderable = renderableBuilder.ToRenderable();
 
-                if (entity != null)
+            if (renderableBuilder is MapBrush mapBrush)
+            {
+                var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
+                var brush = _entityProvider.GetEntity(entityID) as Brush;
+                brush.AddTextureMapping(textureMapping);
+            }
+            else if (renderableBuilder is MapActor mapActor)
+            {
+                var actor = _entityProvider.GetEntity(entityID) as Actor;
+
+                if (mapActor.HasAnimations)
                 {
-                    // The issue here is that we have no clue what MapEntity (which can call ToRenderable()) this IEntity is connected to
-                    // All _entityProvider.AddEntity(IEntity) does is assign an ID to the entity, track it, and fire the event
-                    // EVEN IF we pass and store all Renderables in the RenderManager,
-                    //      we STILL won't be able to link this incoming entity to the Renderable that we want
+                    using (var importer = new Assimp.AssimpContext())
+                    {
+                        var scene = importer.ImportFile(mapActor.ModelFilePath);
+
+                        for (var i = 0; i < scene.Meshes.Count; i++)
+                        {
+                            var textureMapping = i < mapActor.TexturesPaths.Count
+                                ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+
+                            actor.AddTextureMapping(textureMapping);
+                        }
+                    }
+                }
+                else
+                {
+                    foreach (var textureMapping in mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)))
+                    {
+                        actor.AddTextureMapping(textureMapping);
+                    }
                 }
             }
+
+            AddEntity(entityID, renderable);
         }
 
-        public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);
-
-        public void AddEntity(int entityID, IRenderable renderable)
+        private void AddEntity(int entityID, IRenderable renderable)
         {
             if (renderable is TextureID textureID)
             {
@@ -175,51 +199,9 @@ namespace SpiceEngine.Rendering
             }
         }
 
-        public void AddBrush(MapBrush mapBrush, int entityID)
-        {
-            var renderable = mapBrush.ToRenderable();
+        public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);
 
-            var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-            var brush = _entityProvider.GetEntity(entityID) as Brush;
-            brush.AddTextureMapping(textureMapping);
-
-            AddEntity(entityID, renderable);
-        }
-
-        public void AddActor(MapActor mapActor, int entityID)
-        {
-            var renderable = mapActor.ToRenderable();
-
-            var actor = _entityProvider.GetEntity(entityID) as Actor;
-
-            if (mapActor.HasAnimations)
-            {
-                using (var importer = new Assimp.AssimpContext())
-                {
-                    var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                    for (var i = 0; i < scene.Meshes.Count; i++)
-                    {
-                        var textureMapping = i < mapActor.TexturesPaths.Count
-                            ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                            : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-
-                        actor.AddTextureMapping(textureMapping);
-                    }
-                }
-            }
-            else
-            {
-                foreach (var textureMapping in mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)))
-                {
-                    actor.AddTextureMapping(textureMapping);
-                }
-            }
-
-            AddEntity(entityID, renderable);
-        }
-
-        private void AddBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
+        /*private void AddBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
         {
             for (var i = 0; i < mapBrushes.Count; i++)
             {
@@ -235,7 +217,7 @@ namespace SpiceEngine.Rendering
             }
         }
 
-        /*private void AddVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
+        private void AddVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
         {
             for (var i = 0; i < mapVolumes.Count; i++)
             {

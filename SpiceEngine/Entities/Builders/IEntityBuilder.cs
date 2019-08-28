@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
 
-namespace SpiceEngine.Maps.Builders
+namespace SpiceEngine.Entities.Builders
 {
     public interface IEntityBuilder
     {

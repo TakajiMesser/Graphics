@@ -7,6 +7,7 @@ using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Constraints;
 using SpiceEngine.Physics.Shapes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -57,6 +58,65 @@ namespace SpiceEngine.Physics
 
         public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
 
+        public void AddEntity(int entityID, IShapeBuilder shapeBuilder)
+        {
+            var shape = shapeBuilder.ToShape();
+            var partition = shape.ToPartition(shapeBuilder.Position);
+            var bounds = new Bounds(entityID, partition);
+
+            var partitionTree = GetPartitionTree(entityID);
+            partitionTree.Insert(bounds);
+
+            var body = GetBody(entityID, shape);
+            body.IsPhysical = shapeBuilder.IsPhysical;
+            _bodyByEntityID.Add(entityID, body);
+        }
+
+        private IPartitionTree GetPartitionTree(int entityID)
+        {
+            var entity = _entityProvider.GetEntity(entityID);
+
+            switch (entity)
+            {
+                case Actor actor:
+                    return _actorTree;
+                case Brush brush:
+                    return _brushTree;
+                case Volume volume:
+                    return _volumeTree;
+                case Light light:
+                    return _lightTree;
+            }
+
+            throw new ArgumentOutOfRangeException("Could not handle entity type " + entity.GetType());
+        }
+
+        private IBody GetBody(int entityID, Shape3D shape)
+        {
+            var entity = _entityProvider.GetEntity(entityID);
+
+            switch (entity)
+            {
+                case Actor actor:
+                    var body = new RigidBody3D(actor, shape);
+                    body.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
+                    body.Updated += (s, args) => actor.Position = args.Body.Position;
+
+                    if (body.State == BodyStates.Awake)
+                    {
+                        _awakeBodyByEntityID.Add(entityID, body);
+                    }
+
+                    return body;
+                case Brush brush:
+                    return new StaticBody3D(brush, shape);
+                case Volume volume:
+                    return new StaticBody3D(volume, shape);
+            }
+
+            throw new ArgumentOutOfRangeException("Could not handle entity type " + entity.GetType());
+        } 
+
         public void DuplicateBody(int entityID, int newID)
         {
             var body = (Body3D)_bodyByEntityID[entityID];
@@ -77,7 +137,7 @@ namespace SpiceEngine.Physics
             }
         }
 
-        public void AddActor(Actor actor, Shape3D shape, bool isPhysical)
+        /*public void AddActor(Actor actor, Shape3D shape, bool isPhysical)
         {
             var partition = shape.ToPartition(actor.Position);
             _actorTree.Insert(new Bounds(actor.ID, partition));
@@ -119,7 +179,7 @@ namespace SpiceEngine.Physics
             };
 
             _bodyByEntityID.Add(volume.ID, body);
-        }
+        }*/
 
         public IBody GetBody(int entityID)
         {

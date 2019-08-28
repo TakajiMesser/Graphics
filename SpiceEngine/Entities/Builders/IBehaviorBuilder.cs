@@ -8,7 +8,7 @@ using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 
-namespace SpiceEngine.Maps.Builders
+namespace SpiceEngine.Entities.Builders
 {
     public interface IBehaviorBuilder
     {
