@@ -109,6 +109,12 @@ namespace SpiceEngine.Rendering.Batches
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
+            var datName = "";
+            if (_entityProvider.GetEntity(entityID) is Actor actor)
+            {
+                datName = actor.Name;
+            }
+
             var renderType = GetRenderTypeForRenderable(renderable);
             _renderTypeByEntityID.Add(entityID, renderType);
 
@@ -139,6 +145,40 @@ namespace SpiceEngine.Rendering.Batches
 
             var batch = CreateOrGetBatch(entityID, renderable);
             batch.AddEntity(entityID, renderable);
+
+            // TODO - Make this better. Currently I am arbitrarily centering brushes and model entities around the origin, but NOT actors...
+            // Because of this, for the FIRST item in a batch with those entities, we must transform the mesh to fit around this...
+            var entity = _entityProvider.GetEntity(entityID);
+
+            if (batch.EntityCount == 1)
+            {
+                if (entity is Brush)
+                {
+                    // Unfortunately, we have to wait for batch.AddEntity() here, since that is what sets up the offset and count in the batch...
+                    entity.Transformed += (s, args) =>
+                    {
+                        // TODO - Don't recalculate matrix here (store in event args)
+                        batch.Transform(args.ID, args.Transform);
+                    };
+                }
+            }
+            else
+            {
+                // Any additional entities in the batch is responsible for transforming their vertices if their model matrix changes...
+                entity.Transformed += (s, args) =>
+                {
+                    // TODO - Don't recalculate matrix here (store in event args)
+                    batch.Transform(args.ID, args.Transform);
+                };
+
+                if (entity is ITexturedEntity texturedEntity)
+                {
+                    texturedEntity.TextureTransformed += (s, args) =>
+                    {
+                        batch.TransformTexture(args.ID, entity.Position, args.Translation, args.Rotation, args.Scale);
+                    };
+                }
+            }
 
             // TODO - What is this part doing? Do I need to do this for Model-Mesh entities as well?
             /*if (_entityProvider.GetEntity(entityID) is Brush brush)
@@ -221,6 +261,7 @@ namespace SpiceEngine.Rendering.Batches
 
                         if (entityA.CompareUniforms(entityB))
                         {
+                            /*// Any additional entities in the batch is responsible for transforming their vertices if their model matrix changes...
                             entityA.Transformed += (s, args) =>
                             {
                                 // TODO - Don't recalculate matrix here (store in event args)
@@ -233,7 +274,7 @@ namespace SpiceEngine.Rendering.Batches
                                 {
                                     meshBatch.TransformTexture(args.ID, entityA.Position, args.Translation, args.Rotation, args.Scale);
                                 };
-                            }
+                            }*/
 
                             _batchIndexByEntityID.Add(entityID, i);
                             return meshBatch;

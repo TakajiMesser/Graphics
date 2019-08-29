@@ -30,6 +30,7 @@ namespace SpiceEngine.Entities
                 }
 
                 _transformed += value;
+                OnTransformed(this, new TransformEventArgs(_modelMatrix.WorldTransform));
             }
             remove
             {
@@ -49,6 +50,7 @@ namespace SpiceEngine.Entities
 
         public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
 
+        // TODO - By the time we've hooked up the transform event, it could be too late, so we need to fire it as soon as we hook up
         private void OnTransformed(object sender, TransformEventArgs e) => _transformed?.Invoke(this, new EntityTransformEventArgs(ID, Position, e.Transform));
     }
 }

@@ -52,7 +52,10 @@ namespace SauceEditor.ViewModels.Properties
                 if (_editorEntity != null && _editorEntity.Entity is IRotate rotator)
                 {
                     rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
-                    _editorEntity.MapEntity.Rotation = Rotation.ToVector3();
+                    if (_editorEntity.MapEntity is IMapEntity3D mapEntity)
+                    {
+                        mapEntity.Rotation = Rotation.ToVector3();
+                    }
                     InvokePropertyChanged(nameof(Rotation));
                 }
             });
@@ -65,7 +68,10 @@ namespace SauceEditor.ViewModels.Properties
                 if (_editorEntity != null && _editorEntity.Entity is IScale scaler)
                 {
                     scaler.Scale = Scale.ToVector3();
-                    _editorEntity.MapEntity.Scale = Scale.ToVector3();
+                    if (_editorEntity.MapEntity is IMapEntity3D mapEntity)
+                    {
+                        mapEntity.Scale = Scale.ToVector3();
+                    }
                     InvokePropertyChanged(nameof(Scale));
                 }
             });
@@ -77,7 +83,7 @@ namespace SauceEditor.ViewModels.Properties
             if (editorEntity == null) return; // Yikes
 
             ID = editorEntity.Entity.ID.ToString();
-            
+
             if (editorEntity.MapEntity is MapActor mapActor)
             {
                 Name = mapActor.Name;
@@ -89,14 +95,17 @@ namespace SauceEditor.ViewModels.Properties
 
             Position = new VectorProperty(editorEntity.MapEntity.Position);
 
-            if (editorEntity.Entity is IRotate)
+            if (editorEntity.MapEntity is IMapEntity3D mapEntity)
             {
-                Rotation = new VectorProperty(editorEntity.MapEntity.Rotation);
-            }
+                if (editorEntity.Entity is IRotate)
+                {
+                    Rotation = new VectorProperty(mapEntity.Rotation);
+                }
 
-            if (editorEntity.Entity is IScale)
-            {
-                Scale = new VectorProperty(editorEntity.MapEntity.Scale);
+                if (editorEntity.Entity is IScale)
+                {
+                    Scale = new VectorProperty(mapEntity.Scale);
+                }
             }
 
             if (editorEntity.MapEntity is MapLight mapLight)

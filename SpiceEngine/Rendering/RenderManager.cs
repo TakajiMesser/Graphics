@@ -10,6 +10,7 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.Meshes;
@@ -77,13 +78,18 @@ namespace SpiceEngine.Rendering
             _logManager = new LogManager(_textRenderer);
         }
 
-        public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public void SetEntityProvider(IEntityProvider entityProvider)
+        {
+            _entityProvider = entityProvider;
+            BatchManager = new BatchManager(_entityProvider, TextureManager);
+        }
+
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
         public void SetCamera(ICamera camera) => _camera = camera;
 
-        public void LoadFromMap(Map map, EntityMapping entityMapping)
+        public void LoadFromMap(Map map/*, EntityMapping entityMapping*/)
         {
-            BatchManager = new BatchManager(_entityProvider, TextureManager);
+            //BatchManager = new BatchManager(_entityProvider, TextureManager);
 
             //AddBrushes(map.Brushes, entityMapping.BrushIDs);
             //AddVolumes(map.Volumes, entityMapping.VolumeIDs);
@@ -171,7 +177,7 @@ namespace SpiceEngine.Rendering
             AddEntity(entityID, renderable);
         }
 
-        private void AddEntity(int entityID, IRenderable renderable)
+        public void AddEntity(int entityID, IRenderable renderable)
         {
             if (renderable is TextureID textureID)
             {

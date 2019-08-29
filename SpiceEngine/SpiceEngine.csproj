@@ -118,6 +118,11 @@
   <ItemGroup>
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\Archetype.cs" />
+    <Compile Include="Entities\Builders\EntityLoader.cs" />
+    <Compile Include="Entities\Builders\IBehaviorBuilder.cs" />
+    <Compile Include="Entities\Builders\IEntityBuilder.cs" />
+    <Compile Include="Entities\Builders\IRenderableBuilder.cs" />
+    <Compile Include="Entities\Builders\IShapeBuilder.cs" />
     <Compile Include="Entities\Cameras\ICamera.cs" />
     <Compile Include="Entities\EntityMappingEventArgs.cs" />
     <Compile Include="Entities\EntityTransformEventArgs.cs" />
@@ -194,12 +199,8 @@
     <Compile Include="Entities\Lights\SpotLight.cs" />
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
-    <Compile Include="Maps\Builders\IBehaviorBuilder.cs" />
-    <Compile Include="Maps\Builders\IShapeBuilder.cs" />
-    <Compile Include="Maps\Builders\IRenderableBuilder.cs" />
     <Compile Include="Maps\EntityBuilderEventArgs.cs" />
     <Compile Include="Maps\EntityMapping.cs" />
-    <Compile Include="Maps\Builders\IEntityBuilder.cs" />
     <Compile Include="Maps\IMapEntity3D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />

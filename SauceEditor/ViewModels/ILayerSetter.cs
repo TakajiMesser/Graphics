@@ -1,11 +1,12 @@
-﻿using SauceEditorCore.Models.Entities;
+﻿using SpiceEngine.Entities.Builders;
+using SpiceEngine.Maps.Builders;
 using System.Collections.Generic;
 
 namespace SauceEditor.ViewModels
 {
     public interface ILayerSetter
     {
-        void AddToLayer(string layerName, IEnumerable<IModelEntity> entities);
+        void AddToLayer(string layerName, IEnumerable<IEntityBuilder> entityBuilders);
         void EnableLayer(string layerName);
         void DisableLayer(string layerName);
         void NeutralizeLayer(string layerName);

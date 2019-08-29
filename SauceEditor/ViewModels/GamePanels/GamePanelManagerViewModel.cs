@@ -3,9 +3,11 @@ using SauceEditor.ViewModels.Properties;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
+using SpiceEngine.Maps.Builders;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Batches;
@@ -121,14 +123,14 @@ namespace SauceEditor.ViewModels
         // Triangle ->
         //      
 
-        public void AddToLayer(string layerName, IEnumerable<IModelEntity> entities)
+        public void AddToLayer(string layerName, IEnumerable<IEntityBuilder> entityBuilders)
         {
             // TODO - Correct and reorganize this method
             // First, we need to ensure that this layer exists in the LayerManager
             // We then need to add all of these entities to it, then enable the layer
             // In subsequent calls, we just need to disable the root layer, then enable the requested layers
             // An issue is that we want to ONLY render the Root layer for diffuse/lit. The new layer should just be for selection/wireframe
-            var modelEntities = entities.ToList();
+            //var modelEntities = entities.ToList();
 
             // Assign entity ID's
             /*foreach (var entity in modelEntities)
@@ -136,20 +138,43 @@ namespace SauceEditor.ViewModels
                 var id = GameManager.EntityManager.AddEntity(entity);
                 entity.ID = id;
             }*/
-            GameManager.EntityManager.AddEntities(modelEntities);
+            //GameManager.EntityManager.AddEntities(modelEntities);
+            GameManager.EntityManager.EntitiesAdded += (s, args) =>
+            {
+                GameManager.EntityManager.AddEntitiesToLayer(layerName, args.Builders.Select(b => b.Item1));
+
+                foreach (var builder in args.Builders)
+                {
+                    if (builder.Item2 is IRenderableBuilder renderableBuilder)
+                    {
+                        var renderable = renderableBuilder.ToRenderable();
+
+                        PerspectiveViewModel.Panel.AddEntity(builder.Item1, renderable);
+                        XViewModel.Panel.AddEntity(builder.Item1, renderable);
+                        YViewModel.Panel.AddEntity(builder.Item1, renderable);
+                        ZViewModel.Panel.AddEntity(builder.Item1, renderable);
+                    }
+                }
+
+                PerspectiveViewModel.Panel.DoLoad();
+                XViewModel.Panel.DoLoad();
+                YViewModel.Panel.DoLoad();
+                ZViewModel.Panel.DoLoad();
+            };
 
             // Add these entities to a new layer, enable it, and disable all other layers
             if (!GameManager.EntityManager.ContainsLayer(layerName))
             {
                 GameManager.EntityManager.AddLayer(layerName);
             }
+            GameManager.EntityManager.AddEntities(entityBuilders);
 
-            GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
+            //GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
 
             //GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
             //GameManager.EntityManager.SetRenderLayerState(layerName, LayerStates.Enabled);
 
-            foreach (var entity in modelEntities)
+            /*foreach (var entity in modelEntities)
             {
                 var renderable = entity.ToRenderable();
 
@@ -157,12 +182,12 @@ namespace SauceEditor.ViewModels
                 XViewModel.Panel.AddEntity(entity.ID, renderable);
                 YViewModel.Panel.AddEntity(entity.ID, renderable);
                 ZViewModel.Panel.AddEntity(entity.ID, renderable);
-            }
+            }*/
 
-            PerspectiveViewModel.Panel.DoLoad();
+            /*PerspectiveViewModel.Panel.DoLoad();
             XViewModel.Panel.DoLoad();
             YViewModel.Panel.DoLoad();
-            ZViewModel.Panel.DoLoad();
+            ZViewModel.Panel.DoLoad();*/
 
             //SelectionManager.SetSelectableEntities(entities);
         }

@@ -1,6 +1,8 @@
 ﻿using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Entities.Builders;
+using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Game;
 using SpiceEngine.Physics.Bodies;
@@ -68,8 +70,11 @@ namespace SpiceEngine.Physics
             partitionTree.Insert(bounds);
 
             var body = GetBody(entityID, shape);
-            body.IsPhysical = shapeBuilder.IsPhysical;
-            _bodyByEntityID.Add(entityID, body);
+            if (body != null)
+            {
+                body.IsPhysical = shapeBuilder.IsPhysical;
+                _bodyByEntityID.Add(entityID, body);
+            }
         }
 
         private IPartitionTree GetPartitionTree(int entityID)
@@ -84,7 +89,7 @@ namespace SpiceEngine.Physics
                     return _brushTree;
                 case Volume volume:
                     return _volumeTree;
-                case Light light:
+                case ILight light:
                     return _lightTree;
             }
 
@@ -112,6 +117,8 @@ namespace SpiceEngine.Physics
                     return new StaticBody3D(brush, shape);
                 case Volume volume:
                     return new StaticBody3D(volume, shape);
+                case ILight light:
+                    return null;
             }
 
             throw new ArgumentOutOfRangeException("Could not handle entity type " + entity.GetType());
@@ -123,7 +130,7 @@ namespace SpiceEngine.Physics
             var shape = body.Shape;
             var entity = _entityProvider.GetEntity(entityID);
 
-            switch (entity)
+            /*switch (entity)
             {
                 case Actor actor:
                     AddActor(actor, shape, body.IsPhysical);
@@ -134,7 +141,7 @@ namespace SpiceEngine.Physics
                 case Volume volume:
                     AddVolume(volume, shape);
                     break;
-            }
+            }*/
         }
 
         /*public void AddActor(Actor actor, Shape3D shape, bool isPhysical)

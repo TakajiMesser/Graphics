@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Maps.Builders;
+﻿using SpiceEngine.Entities.Builders;
 using System;
 using System.Collections.Generic;
 

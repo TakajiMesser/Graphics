@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
@@ -75,7 +76,7 @@ namespace SpiceEngine.Game
             //_gameState?.Resize();
         }
 
-        protected override void OnLoad(EventArgs e)
+        protected override /*async*/ void OnLoad(EventArgs e)
         {
             Location = new Point(0, 0);
             //WindowState = WindowState.Maximized;
@@ -90,10 +91,27 @@ namespace SpiceEngine.Game
             };
             _fpsTimer.Start();
 
+            _gameManager.LoadFromMap(_map);
+
             _entityLoader = new EntityLoader(_gameManager.EntityManager);
             _entityLoader.SetPhysicsManager(_gameManager.PhysicsManager);
             _entityLoader.SetBehaviorManager(_gameManager.BehaviorManager);
             _entityLoader.AddRenderManager(_renderManager);
+
+            _entityLoader.AddFromMap(_map);
+
+            _renderManager.SetEntityProvider(_gameManager.EntityManager);
+            _renderManager.SetCamera(_gameManager.Camera);
+
+            /*await */_entityLoader.Load();
+            _renderManager.LoadFromMap(_map);
+            _gameManager.BehaviorManager.Load();
+
+            if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
+            {
+                var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
+                _gameManager.Camera.AttachToEntity(actor, true, false);
+            }
 
             /*lock (_loadLock)
             {

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Maps.Builders;
 
 namespace SpiceEngine.Maps

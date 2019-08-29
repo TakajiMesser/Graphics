@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Helpers;
 using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;

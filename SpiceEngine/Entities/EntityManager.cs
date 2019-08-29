@@ -1,5 +1,6 @@
 ﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
@@ -30,6 +31,8 @@ namespace SpiceEngine.Entities
         private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
         private int _nextAvailableID = 1;
 
+        private object _availableIDLock = new object();
+
         public List<Actor> Actors { get; } = new List<Actor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
         public List<Volume> Volumes { get; } = new List<Volume>();
@@ -47,7 +50,11 @@ namespace SpiceEngine.Entities
         {
             _entitiesByID.Clear();
             _entityTypeByID.Clear();
-            _nextAvailableID = 1;
+
+            lock (_availableIDLock)
+            {
+                _nextAvailableID = 1;
+            }
 
             Actors.Clear();
             Brushes.Clear();
@@ -87,15 +94,15 @@ namespace SpiceEngine.Entities
 
         public void AddEntities(IEnumerable<IEntityBuilder> entityBuilders)
         {
-            var ids = new List<int>();
+            var entities = new List<Tuple<int, IEntityBuilder>>();
 
             foreach (var entityBuilder in entityBuilders)
             {
                 var id = AddEntity(entityBuilder.ToEntity());
-                ids.Add(id);
+                entities.Add(Tuple.Create(id, entityBuilder));
             }
 
-            //EntitiesAdded?.Invoke(this, new EntityBuilderEventArgs(ids, entityBuilders));
+            EntitiesAdded?.Invoke(this, new EntityBuilderEventArgs(entities));
         }
 
         public void AddEntities(IEnumerable<IEntity> entities)
@@ -146,6 +153,8 @@ namespace SpiceEngine.Entities
         public void SetRenderLayerState(string name, LayerStates state) => _layerManager.SetRenderLayerState(name, state);
 
         public void SetSelectLayerState(string name, LayerStates state) => _layerManager.SetSelectLayerState(name, state);
+
+        public int AddEntity(IEntityBuilder entityBuilder) => AddEntity(entityBuilder.ToEntity());
 
         public int AddEntity(IEntity entity)
         {
@@ -257,10 +266,12 @@ namespace SpiceEngine.Entities
 
         private int GetUniqueID()
         {
-            int id = _nextAvailableID;
-            _nextAvailableID++;
-
-            return id;
+            lock (_availableIDLock)
+            {
+                var id = _nextAvailableID;
+                _nextAvailableID++;
+                return id;
+            }
         }
 
         private string GetUniqueName(string name)

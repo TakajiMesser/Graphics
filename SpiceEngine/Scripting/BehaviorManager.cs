@@ -1,10 +1,12 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Game;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
 using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
@@ -66,7 +68,7 @@ namespace SpiceEngine.Scripting
             }
         }
 
-        public void AddBehavior(int entityID, BehaviorBuilder behaviorBuilder)
+        public void AddEntity(int entityID, IBehaviorBuilder behaviorBuilder)
         {
             var behavior = behaviorBuilder.ToBehavior(_scriptManager);
             if (behavior != null)

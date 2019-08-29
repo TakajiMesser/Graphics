@@ -238,7 +238,7 @@ namespace SpiceEngine.Game
                 RenderMode = _renderMode
             };
             _renderManager.SetEntityProvider(_entityProvider);
-            _renderManager.LoadFromMap(_map, _entityMapping);
+            _renderManager.LoadFromMap(_map/*, _entityMapping*/);
 
             _panelCamera = new PanelCamera(Resolution, _renderManager)
             {

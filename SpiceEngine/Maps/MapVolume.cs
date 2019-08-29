@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;

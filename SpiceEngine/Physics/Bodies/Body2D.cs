@@ -16,7 +16,7 @@ namespace SpiceEngine.Physics.Bodies
         public float Restitution { get; set; }
 
         public bool IsMovable => false;
-        public bool IsPhysical => false;
+        public bool IsPhysical { get; set; } = false;
 
         public Body2D(IEntity entity, Shape2D shape)
         {

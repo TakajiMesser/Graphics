@@ -14,6 +14,7 @@ namespace SpiceEngine.Rendering.Batches
         private List<int> _entityIDs = new List<int>();
 
         public IEnumerable<int> EntityIDs => _entityIDs;
+        public int EntityCount => _entityIDs.Count;
 
         public virtual void AddEntity(int id, IRenderable renderable)
         {

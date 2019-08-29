@@ -69,27 +69,28 @@ namespace SpiceEngine.Game
 
             EntityManager.ClearEntities();
 
-            var lightIDs = LoadLights(map.Lights);
+            /*var lightIDs = LoadLights(map.Lights);
             var brushIDs = LoadBrushes(map.Brushes);
             var volumeIDs = LoadVolumes(map.Volumes);
             var actorIDs = LoadActors(map.Actors);
 
-            var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
+            var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);*/
 
-            if (!string.IsNullOrEmpty(map.Camera.AttachedActorName))
+            /*if (!string.IsNullOrEmpty(map.Camera.AttachedActorName))
             {
                 var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
                 Camera.AttachToEntity(actor, true, false);
-            }
+            }*/
             
-            BehaviorManager.Load();
+            //BehaviorManager.Load();
 
             IsLoaded = true;
 
-            return entityMapping;
+            return null;
+            //return entityMapping;
         }
 
-        public int AddLight(MapLight mapLight)
+        /*public int AddLight(MapLight mapLight)
         {
             var light = mapLight.ToEntity();
             return EntityManager.AddEntity(light);
@@ -111,7 +112,7 @@ namespace SpiceEngine.Game
 
         public int AddActor(MapActor mapActor)
         {
-            var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
+            var actor = mapActor.ToEntity(/*_gameManager.TextureManager*);
             int entityID = EntityManager.AddEntity(actor);
 
             //var meshes = mapActor.ToMeshes();
@@ -122,7 +123,7 @@ namespace SpiceEngine.Game
             /*actor.HasCollision = mapActor.HasCollision;
             actor.Bounds = actor.Name == "Player"
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*
             
             if (mapActor.Behavior != null)
             {
@@ -177,7 +178,7 @@ namespace SpiceEngine.Game
             {
                 yield return AddActor(mapActor);
             }
-        }
+        }*/
 
         public void Update()
         {

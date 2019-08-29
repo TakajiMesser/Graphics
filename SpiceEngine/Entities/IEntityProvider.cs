@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Maps;
@@ -20,6 +21,7 @@ namespace SpiceEngine.Entities
         event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         event EventHandler<IDEventArgs> EntitiesRemoved;
 
+        int AddEntity(IEntityBuilder entityBuilder);
         int AddEntity(IEntity entity);
         void AddEntities(IEnumerable<IEntity> entities);
 

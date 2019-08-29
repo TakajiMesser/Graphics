@@ -32,13 +32,36 @@ namespace SpiceEngine.Rendering.Matrices
         public Quaternion Rotation
         {
             get => _transform.Rotation;
-            set => Transform(Matrices.Transform.FromRotation(value * Rotation.Inverted()));
+            //set => Transform(Matrices.Transform.FromRotation(value * Rotation.Inverted()));
+            set
+            {
+                /*var quaternionA = Quaternion.FromEulerAngles(3.14f, 1.58f, 1.00f);
+                var quaternionB = Quaternion.FromEulerAngles(-3.14f, -1.58f, -1.00f);
+
+                var matrixA = Matrix4.CreateFromQuaternion(quaternionA);
+                var matrixB = Matrix4.CreateFromQuaternion(quaternionB);*/
+                
+                var invertedRotation = Rotation.Inverted();
+                var rotationDifference = value * invertedRotation;
+                Transform(Matrices.Transform.FromRotation(rotationDifference));
+            }
         }
 
         public Vector3 Scale
         {
             get => _transform.Scale;
-            set => Transform(Matrices.Transform.FromScale(value - Scale));
+            //set => Transform(Matrices.Transform.FromScale(value - Scale));
+            set
+            {
+                var scaleDifference = new Vector3()
+                {
+                    X = value.X != 0 ? value.X / Scale.X : 0,
+                    Y = value.Y != 0 ? value.Y / Scale.Y : 0,
+                    Z = value.Z != 0 ? value.Z / Scale.Z : 0
+                };
+                //var scaleDifference = Vector3.Divide(value, Scale);
+                Transform(Matrices.Transform.FromScale(scaleDifference));
+            }
         }
 
         public event EventHandler<TransformEventArgs> Transformed;

@@ -3,6 +3,7 @@ using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Layers;
+using SpiceEngine.Maps.Builders;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -59,10 +60,10 @@ namespace SauceEditor.ViewModels.Tools
             }
         }
 
-        private void EnableLayer(string layerName, IEnumerable<IModelEntity> modelEntities)
+        private void EnableLayer(string layerName, IEnumerable<IEntityBuilder> entityBuilders)
         {
             LayerSetter.ClearLayer(layerName);
-            LayerSetter.AddToLayer(layerName, modelEntities);
+            LayerSetter.AddToLayer(layerName, entityBuilders);
             LayerSetter.EnableLayer(layerName);
         }
 
