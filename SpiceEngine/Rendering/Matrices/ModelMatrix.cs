@@ -35,14 +35,7 @@ namespace SpiceEngine.Rendering.Matrices
             //set => Transform(Matrices.Transform.FromRotation(value * Rotation.Inverted()));
             set
             {
-                /*var quaternionA = Quaternion.FromEulerAngles(3.14f, 1.58f, 1.00f);
-                var quaternionB = Quaternion.FromEulerAngles(-3.14f, -1.58f, -1.00f);
-
-                var matrixA = Matrix4.CreateFromQuaternion(quaternionA);
-                var matrixB = Matrix4.CreateFromQuaternion(quaternionB);*/
-                
-                var invertedRotation = Rotation.Inverted();
-                var rotationDifference = value * invertedRotation;
+                var rotationDifference = (value * Rotation.Inverted()).Normalized();
                 Transform(Matrices.Transform.FromRotation(rotationDifference));
             }
         }

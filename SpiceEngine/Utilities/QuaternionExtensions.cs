@@ -28,7 +28,7 @@ namespace SpiceEngine.Utilities
             || quaternion.W <= -MathExtensions.EPSILON;*/
 
         // From http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
-        public static Quaternion RotationBetween(Vector vectorA, Vector vectorB)
+        public static Quaternion RotationBetween(Vector3 vectorA, Vector3 vectorB)
         {
             var normalizedVectorA = vectorA.Normalized();
             var normalizedVectorB = vectorB.Normalized();
@@ -38,7 +38,7 @@ namespace SpiceEngine.Utilities
             if (cosAngle < -0.999f)
             {
                 var rotationAxis = Vector3.Cross(Vector3.UnitZ, normalizedVectorA);
-                if (rotationAxis.Length() < 0.01f)
+                if (rotationAxis.LengthFast < 0.01f)
                 {
                     rotationAxis = Vector3.Cross(Vector3.UnitX, normalizedVectorA);
                 }
@@ -61,7 +61,7 @@ namespace SpiceEngine.Utilities
             }
         }
 
-        public static Quaternion RotationBetween(Vector vectorA, Vector vectorB, Vector3 up)
+        public static Quaternion RotationBetween(Vector3 vectorA, Vector3 vectorB, Vector3 up)
         {
             var directionRotation = RotationBetween(vectorA, vectorB);
             
