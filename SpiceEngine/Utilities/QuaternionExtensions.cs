@@ -27,6 +27,55 @@ namespace SpiceEngine.Utilities
             || quaternion.W >= MathExtensions.EPSILON
             || quaternion.W <= -MathExtensions.EPSILON;*/
 
+        // From http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-17-quaternions/
+        public static Quaternion RotationBetween(Vector vectorA, Vector vectorB)
+        {
+            var normalizedVectorA = vectorA.Normalized();
+            var normalizedVectorB = vectorB.Normalized();
+
+            var cosAngle = Vector3.Dot(normalizedVectorA, normalizedVectorB);
+
+            if (cosAngle < -0.999f)
+            {
+                var rotationAxis = Vector3.Cross(Vector3.UnitZ, normalizedVectorA);
+                if (rotationAxis.Length() < 0.01f)
+                {
+                    rotationAxis = Vector3.Cross(Vector3.UnitX, normalizedVectorA);
+                }
+
+                return Quaternion.FromAxisAngle(rotationAxis.Normalized(), MathExtensions.PI);
+            }
+            else
+            {
+                var rotationAxis = Vector3.Cross(normalizedVectorA, normalizedVectorB);
+                var s = (float)Math.Sqrt((1.0f + cosAngle) * 2.0f);
+                var inverseS = 1.0f / s;
+
+                return new Quaternion()
+                {
+                    X = rotationAxis.X * inverseS,
+                    Y = rotationAxis.Y * inverseS,
+                    Z = rotationAxis.Z * inverseS,
+                    W = s * 0.5f
+                };
+            }
+        }
+
+        public static Quaternion RotationBetween(Vector vectorA, Vector vectorB, Vector3 up)
+        {
+            var directionRotation = RotationBetween(vectorA, vectorB);
+            
+            // Recompute up-vector to be perpendicular to vectorB
+            var right = Vector3.Cross(vectorB, up);
+            up = Vector3.Cross(right, vectorB);
+
+            // If we want to orient the object in a different "up" than the world up, the below "up" should be the world up
+            var correctedUp = directionRotation * up;
+            var upRotation = RotationBetween(correctedUp, up);
+
+            return upRotation * directionRotation;
+        }
+
         // Using Tait-Bryan rotation convention conversion from this post: https://math.stackexchange.com/questions/687964/getting-euler-tait-bryan-angles-from-quaternion-representation
         public static Vector3 ToEulerAngles(this Quaternion quaternion)
         {
