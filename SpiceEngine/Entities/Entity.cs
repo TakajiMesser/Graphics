@@ -5,6 +5,15 @@ using System;
 
 namespace SpiceEngine.Entities
 {
+    public enum EntityTypes
+    {
+        Actor,
+        Brush,
+        Volume,
+        Joint,
+        Light
+    }
+
     public abstract class Entity : IEntity
     {
         protected ModelMatrix _modelMatrix = new ModelMatrix();

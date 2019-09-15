@@ -181,7 +181,7 @@ namespace SpiceEngine.Rendering
         {
             if (renderable is TextureID textureID)
             {
-                textureID.ID = TextureManager.AddTexture(textureID.FilePath);
+                textureID.Index = TextureManager.AddTexture(textureID.FilePath);
             }
 
             if (IsInEditorMode && renderable is IMesh mesh)

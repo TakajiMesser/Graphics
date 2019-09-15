@@ -6,6 +6,7 @@ using SpiceEngine.Physics;
 using SpiceEngine.Rendering;
 using SpiceEngine.Scripting;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace SpiceEngine.Entities.Builders
@@ -117,7 +118,69 @@ namespace SpiceEngine.Entities.Builders
 
             var loadTasks = new List<Task>();
 
-            for (var i = 0; i < entityCount; i++)
+            // Assign all entity IDs first
+            /*public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int size)
+            {
+                if (source == null) throw new ArgumentNullException(nameof(source));
+
+                return source
+                    .Select((t, i) => new { Value = t, Index = i })
+                    .GroupBy(item => item.Index / size, item => item.Value);
+            }*/
+
+            var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Take(entityCount));
+            var index = 0;
+
+            using (var idIterator = ids.GetEnumerator())
+            {
+                while (idIterator.MoveNext())
+                {
+                    var id = idIterator.Current;
+                    var currentIndex = index;
+
+                    loadTasks.Add(Task.Run(() =>
+                    {
+                        _entityProvider.LoadEntity(id);
+
+                        if (physicsManager != null)
+                        {
+                            var shapeBuilder = _shapeBuilders[currentIndex];
+
+                            if (shapeBuilder != null)
+                            {
+                                physicsManager.AddEntity(id, shapeBuilder);
+                            }
+                        }
+
+                        if (behaviorManager != null)
+                        {
+                            var behaviorBuilder = _behaviorBuilders[currentIndex];
+
+                            if (behaviorBuilder != null)
+                            {
+                                behaviorManager.AddEntity(id, behaviorBuilder);
+                            }
+                        }
+
+                        if (renderManagers.Count > 0)
+                        {
+                            var renderableBuilder = _renderableBuilders[currentIndex];
+
+                            if (renderableBuilder != null)
+                            {
+                                foreach (var renderManager in renderManagers)
+                                {
+                                    renderManager.AddEntity(id, renderableBuilder);
+                                }
+                            }
+                        }
+                    }));
+
+                    index++;
+                }
+            }
+
+            /*for (var i = 0; i < entityCount; i++)
             {
                 var index = i;
 
@@ -159,7 +222,7 @@ namespace SpiceEngine.Entities.Builders
                         }
                     }
                 }));
-            }
+            }*/
 
             await Task.WhenAll(loadTasks);
         }

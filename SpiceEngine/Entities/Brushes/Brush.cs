@@ -56,7 +56,7 @@ namespace SpiceEngine.Entities.Brushes
             if (TextureMapping.HasValue)
             {
                 var textureMapping = TextureMapping.Value;
-                brush.AddTextureMapping(new TextureMapping(textureMapping.DiffuseMapID, textureMapping.NormalMapID, textureMapping.ParallaxMapID, textureMapping.SpecularMapID));
+                brush.AddTextureMapping(new TextureMapping(textureMapping.DiffuseIndex, textureMapping.NormalIndex, textureMapping.ParallaxIndex, textureMapping.SpecularIndex));
             }
 
             return brush;

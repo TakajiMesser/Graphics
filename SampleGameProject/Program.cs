@@ -17,7 +17,8 @@ namespace SampleGameProject
             using (var gameWindow = new GameWindow(map))
             {
                 gameWindow.VSync = VSyncMode.Adaptive;
-                gameWindow.Run(60.0, 0.0);
+                gameWindow.LoadAndRun();
+                //gameWindow.Run(60.0, 0.0);
             }
         }
     }

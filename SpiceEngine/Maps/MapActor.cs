@@ -31,6 +31,8 @@ namespace SpiceEngine.Maps
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
         public MapBehavior Behavior { get; set; }
+
+        public IEnumerable<Script> Scripts => Behavior?.GetScripts();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<Property> Properties { get; set; } = new List<Property>();
 
@@ -289,7 +291,7 @@ namespace SpiceEngine.Maps
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
         }
 
-        public Behavior ToBehavior(IScriptCompiler scriptCompiler) => Behavior?.ToBehavior(scriptCompiler);
+        public Behavior ToBehavior() => Behavior?.ToBehavior();
 
         /*public Script ToScript()
         {

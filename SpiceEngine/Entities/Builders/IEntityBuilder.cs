@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using System;
 
 namespace SpiceEngine.Entities.Builders
 {
@@ -8,5 +9,6 @@ namespace SpiceEngine.Entities.Builders
         Vector3 Position { get; set; }
 
         IEntity ToEntity();
+        Type GetEntityType();
     }
 }

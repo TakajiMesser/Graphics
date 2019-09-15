@@ -1,8 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Builders;
 using SpiceEngine.Maps.Builders;
 using SpiceEngine.Utilities;
+using System;
 
 namespace SpiceEngine.Maps
 {
@@ -13,6 +15,8 @@ namespace SpiceEngine.Maps
         public Vector3 Scale { get; set; } = Vector3.One;
 
         public abstract IEntity ToEntity();
+
+        public Type GetEntityType() => typeof(T);
 
         public virtual void UpdateFrom(T entity)
         {

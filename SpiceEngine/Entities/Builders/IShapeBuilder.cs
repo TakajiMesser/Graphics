@@ -2,6 +2,7 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering;
+using System;
 
 namespace SpiceEngine.Entities.Builders
 {
@@ -14,5 +15,6 @@ namespace SpiceEngine.Entities.Builders
         bool IsPhysical { get; }
 
         Shape3D ToShape();
+        Type GetEntityType();
     }
 }

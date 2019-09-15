@@ -10,6 +10,7 @@ using SpiceEngine.Physics.Collisions;
 using SpiceEngine.Physics.Constraints;
 using SpiceEngine.Physics.Shapes;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -27,8 +28,9 @@ namespace SpiceEngine.Physics
         private CollisionManager _collisionManager = new CollisionManager();
 
         private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
-        private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
         private Dictionary<int, IBody> _awakeBodyByEntityID = new Dictionary<int, IBody>();
+        //private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
+        private ConcurrentDictionary<int, IBody> _bodyByEntityID = new ConcurrentDictionary<int, IBody>();
 
         private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
 
@@ -73,12 +75,18 @@ namespace SpiceEngine.Physics
             if (body != null)
             {
                 body.IsPhysical = shapeBuilder.IsPhysical;
-                _bodyByEntityID.Add(entityID, body);
+                _bodyByEntityID.TryAdd(entityID, body);
             }
         }
 
         private IPartitionTree GetPartitionTree(int entityID)
         {
+            var a = 3;
+            if (entityID == 13)
+            {
+                a = 4;
+            }
+
             var entity = _entityProvider.GetEntity(entityID);
 
             switch (entity)
@@ -190,13 +198,14 @@ namespace SpiceEngine.Physics
 
         public IBody GetBody(int entityID)
         {
-            if (_bodyByEntityID.ContainsKey(entityID))
+            if (_bodyByEntityID.TryGetValue(entityID, out IBody body))
             {
-                return _bodyByEntityID[entityID];
+                return body;
             }
-
-            // TODO - Will this ever be NULL? Should we throw an error instead?
-            return null;
+            else
+            {
+                return null;
+            }
         }
 
         protected override void Update()
@@ -219,11 +228,14 @@ namespace SpiceEngine.Physics
             // Update the actor colliders every frame, since they could have moved
             foreach (var actor in _entityProvider.Actors)
             {
-                var partition = ((Body3D)_bodyByEntityID[actor.ID]).Shape.ToPartition(actor.Position);
-                var bounds = new Bounds(actor.ID, partition);
+                if (_bodyByEntityID.TryGetValue(actor.ID, out IBody body))
+                {
+                    var partition = ((Body3D)body).Shape.ToPartition(actor.Position);
+                    var bounds = new Bounds(actor.ID, partition);
 
-                boundsByEntityID.Add(actor.ID, bounds);
-                _actorTree.Insert(bounds);
+                    boundsByEntityID.Add(actor.ID, bounds);
+                    _actorTree.Insert(bounds);
+                }
             }
 
             // Now, for each actor, check for broad collisions against other actors, brushes, and volumes
@@ -247,16 +259,17 @@ namespace SpiceEngine.Physics
             // For each broad phase collision detection, check more narrowly to see if a collision actually did occur or not
             foreach (var collisionPair in _collisionManager.BroadCollisionPairs)
             {
-                var firstBody = (Body3D)_bodyByEntityID[collisionPair.FirstEntityID];
-                var secondBody = (Body3D)_bodyByEntityID[collisionPair.SecondEntityID];
-
-                var firstEntity = _entityProvider.GetEntity(collisionPair.FirstEntityID);
-                var secondEntity = _entityProvider.GetEntity(collisionPair.SecondEntityID);
-
-                var collision = firstBody.GetCollision(secondBody);
-                if (collision.HasCollision)
+                if (_bodyByEntityID.TryGetValue(collisionPair.FirstEntityID, out IBody firstBody) && firstBody is Body3D bodyA
+                    && _bodyByEntityID.TryGetValue(collisionPair.SecondEntityID, out IBody secondBody) && secondBody is Body3D bodyB)
                 {
-                    _collisionManager.AddNarrowCollision(collision);
+                    var entityA = _entityProvider.GetEntity(collisionPair.FirstEntityID);
+                    var entityB = _entityProvider.GetEntity(collisionPair.SecondEntityID);
+
+                    var collision = bodyA.GetCollision(bodyB);
+                    if (collision.HasCollision)
+                    {
+                        _collisionManager.AddNarrowCollision(collision);
+                    }
                 }
             }
         }

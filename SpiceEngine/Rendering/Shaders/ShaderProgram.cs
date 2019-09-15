@@ -194,28 +194,28 @@ namespace SpiceEngine.Rendering.Shaders
         {
             // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
             // Check brush's texture mapping to see which textures we need to bind
-            var diffuseMap = textureProvider.RetrieveTexture(textureMapping.DiffuseMapID);
+            var diffuseMap = textureProvider.RetrieveTexture(textureMapping.DiffuseIndex);
             GL.Uniform1(GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
             if (diffuseMap != null)
             {
                 BindTexture(diffuseMap, "diffuseMap", 0);
             }
 
-            var normalMap = textureProvider.RetrieveTexture(textureMapping.NormalMapID);
+            var normalMap = textureProvider.RetrieveTexture(textureMapping.NormalIndex);
             GL.Uniform1(GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
             if (normalMap != null)
             {
                 BindTexture(normalMap, "normalMap", 1);
             }
 
-            var specularMap = textureProvider.RetrieveTexture(textureMapping.SpecularMapID);
+            var specularMap = textureProvider.RetrieveTexture(textureMapping.SpecularIndex);
             GL.Uniform1(GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
             if (specularMap != null)
             {
                 BindTexture(specularMap, "specularMap", 2);
             }
 
-            var parallaxMap = textureProvider.RetrieveTexture(textureMapping.ParallaxMapID);
+            var parallaxMap = textureProvider.RetrieveTexture(textureMapping.ParallaxIndex);
             GL.Uniform1(GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
             if (parallaxMap != null)
             {

@@ -6,29 +6,28 @@ using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngine.Maps.Builders;
+using SpiceEngine.Utilities;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 
 namespace SpiceEngine.Entities
 {
-    public enum EntityTypes
-    {
-        Actor,
-        Brush,
-        Volume,
-        Joint,
-        Light
-    }
-
     public class EntityManager : IEntityProvider
     {
         private LayerManager _layerManager = new LayerManager();
-        
-        private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
-        private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
+
+        private List<IEntity> _entities = new List<IEntity>();
+        private List<EntityTypes?> _entityTypes = new List<EntityTypes?>();
+        //private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
+        //private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
         private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
+
+        private ConcurrentDictionary<int, IEntityBuilder> _buildersByID = new ConcurrentDictionary<int, IEntityBuilder>();
+        private ConcurrentQueue<Tuple<int, IEntityBuilder>> _builderIDQueue = new ConcurrentQueue<Tuple<int, IEntityBuilder>>();
+        private ConcurrentQueue<int> _removedIDs = new ConcurrentQueue<int>();
         private int _nextAvailableID = 1;
 
         private object _availableIDLock = new object();
@@ -48,8 +47,9 @@ namespace SpiceEngine.Entities
 
         public void ClearEntities()
         {
-            _entitiesByID.Clear();
-            _entityTypeByID.Clear();
+            _entities.Clear();
+            _entityTypes.Clear();
+            _removedIDs.Clear();
 
             lock (_availableIDLock)
             {
@@ -64,11 +64,19 @@ namespace SpiceEngine.Entities
 
         public IEntity GetEntity(int id)
         {
-            if (!_entitiesByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-            return _entitiesByID[id];
+            if (id <= _entities.Count)
+            {
+                var entity = _entities[id - 1];
+                if (entity != null)
+                {
+                    return entity;
+                }
+            }
+
+            throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
         }
 
-        public IEntity GetEntityOrDefault(int id) => _entitiesByID.ContainsKey(id) ? _entitiesByID[id] : null;
+        public IEntity GetEntityOrDefault(int id) => id <= _entities.Count ? _entities[id - 1] : null;
 
         public IEnumerable<IEntity> GetEntities(IEnumerable<int> ids)
         {
@@ -80,8 +88,16 @@ namespace SpiceEngine.Entities
 
         public EntityTypes GetEntityType(int id)
         {
-            if (!_entityTypeByID.ContainsKey(id)) throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-            return _entityTypeByID[id];
+            if (id <= _entityTypes.Count)
+            {
+                var entityType = _entityTypes[id - 1];
+                if (entityType.HasValue)
+                {
+                    return entityType.Value;
+                }
+            }
+
+            throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
         }
 
         public Actor GetActor(string name)
@@ -156,13 +172,130 @@ namespace SpiceEngine.Entities
 
         public int AddEntity(IEntityBuilder entityBuilder) => AddEntity(entityBuilder.ToEntity());
 
+        public IEnumerable<int> AssignEntityIDs(IEnumerable<IEntityBuilder> entityBuilders)
+        {
+            var availableID = 0;
+            var index = 0;
+
+            foreach (var entityBuilder in entityBuilders)
+            {
+                var id = 0;
+
+                if (availableID == 0)
+                {
+                    if (_removedIDs.TryDequeue(out int result))
+                    {
+                        id = result;
+                        index++;
+                    }
+                    else
+                    {
+                        // The moment we fail to dequeue, we should increment nextAvailableID PAST where we need it for the remainder of this loop
+                        lock (_availableIDLock)
+                        {
+                            var nReservedEntities = entityBuilders.Count() - index;
+                            availableID = _nextAvailableID;
+                            _nextAvailableID += nReservedEntities;
+
+                            _entities.PadTo(null, nReservedEntities);
+                            _entityTypes.PadTo(null, nReservedEntities);
+                        }
+                    }
+                }
+
+                // Recheck if we set a valid available ID
+                if (availableID > 0)
+                {
+                    id = availableID;
+                    availableID++;
+                }
+
+                _buildersByID.TryAdd(id, entityBuilder);
+                //_builderIDQueue.Enqueue(Tuple.Create(id, entityBuilder));
+                yield return id;
+            }
+        }
+
+        public void LoadEntity(int id)
+        {
+            var a = 3;
+            if (id == 13)
+            {
+                a = 4;
+            }
+
+            if (_buildersByID.TryGetValue(id, out IEntityBuilder builder))
+            {
+                var entity = builder.ToEntity();
+                entity.ID = id;
+
+                _layerManager.RootLayer.Add(id);
+                _entities[id - 1] = entity;
+
+                switch (entity)
+                {
+                    case Actor actor:
+                        if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
+                        if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
+                        Actors.Add(actor);
+                        _entityTypes[entity.ID - 1] = actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor;
+                        break;
+                    case Brush brush:
+                        Brushes.Add(brush);
+                        _entityTypes[entity.ID - 1] = EntityTypes.Brush;
+                        break;
+                    case Volume volume:
+                        Volumes.Add(volume);
+                        _entityTypes[entity.ID - 1] = EntityTypes.Volume;
+                        break;
+                    case ILight light:
+                        Lights.Add(light);
+                        _entityTypes[entity.ID - 1] = EntityTypes.Light;
+                        break;
+                }
+            }
+        }
+
+        public void Load()
+        {
+            while (_builderIDQueue.TryDequeue(out Tuple<int, IEntityBuilder> builderID))
+            {
+                var id = builderID.Item1;
+                var entity = builderID.Item2.ToEntity();
+
+                _layerManager.RootLayer.Add(id);
+
+                switch (entity)
+                {
+                    case Actor actor:
+                        if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
+                        if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
+                        Actors.Add(actor);
+                        _entityTypes[entity.ID - 1] = actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor;
+                        break;
+                    case Brush brush:
+                        Brushes.Add(brush);
+                        _entityTypes[entity.ID - 1] = EntityTypes.Brush;
+                        break;
+                    case Volume volume:
+                        Volumes.Add(volume);
+                        _entityTypes[entity.ID - 1] = EntityTypes.Volume;
+                        break;
+                    case ILight light:
+                        Lights.Add(light);
+                        _entityTypes[entity.ID - 1] = EntityTypes.Light;
+                        break;
+                }
+            }
+        }
+
         public int AddEntity(IEntity entity)
         {
             // Assign a unique ID
             if (entity.ID == 0)
             {
                 int id = GetUniqueID();
-                _entitiesByID.Add(id, entity);
+                _entities[id - 1] = entity;
                 entity.ID = id;
             }
 
@@ -174,19 +307,19 @@ namespace SpiceEngine.Entities
                     if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
                     if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
                     Actors.Add(actor);
-                    _entityTypeByID.Add(entity.ID, actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor);
+                    _entityTypes[entity.ID - 1] = actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor;
                     break;
                 case Brush brush:
                     Brushes.Add(brush);
-                    _entityTypeByID.Add(entity.ID, EntityTypes.Brush);
+                    _entityTypes[entity.ID - 1] = EntityTypes.Brush;
                     break;
                 case Volume volume:
                     Volumes.Add(volume);
-                    _entityTypeByID.Add(entity.ID, EntityTypes.Volume);
+                    _entityTypes[entity.ID - 1] = EntityTypes.Volume;
                     break;
                 case ILight light:
                     Lights.Add(light);
-                    _entityTypeByID.Add(entity.ID, EntityTypes.Light);
+                    _entityTypes[entity.ID - 1] = EntityTypes.Light;
                     break;
             }
 
@@ -226,8 +359,15 @@ namespace SpiceEngine.Entities
         public void RemoveEntityByID(int id)
         {
             var entity = GetEntity(id);
-            _entitiesByID.Remove(id);
-            _entityTypeByID.Remove(id);
+            _entities[id - 1] = null;
+            _entityTypes[id - 1] = null;
+            //_entitiesByID.Remove(id);
+            //_entityTypeByID.Remove(id);
+
+            lock (_availableIDLock)
+            {
+                _removedIDs.Enqueue(id);
+            }
 
             switch (entity)
             {
@@ -266,11 +406,18 @@ namespace SpiceEngine.Entities
 
         private int GetUniqueID()
         {
-            lock (_availableIDLock)
+            if (_removedIDs.TryDequeue(out int result))
             {
-                var id = _nextAvailableID;
-                _nextAvailableID++;
-                return id;
+                return result;
+            }
+            else
+            {
+                lock (_availableIDLock)
+                {
+                    var id = _nextAvailableID;
+                    _nextAvailableID++;
+                    return id;
+                }
             }
         }
 

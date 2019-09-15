@@ -2,17 +2,17 @@
 {
     public struct TextureMapping
     {
-        public int DiffuseMapID { get; }
-        public int NormalMapID { get; }
-        public int SpecularMapID { get; }
-        public int ParallaxMapID { get; }
+        public int DiffuseIndex { get; }
+        public int NormalIndex { get; }
+        public int SpecularIndex { get; }
+        public int ParallaxIndex { get; }
 
-        public TextureMapping(int diffuseMapID, int normalMapID, int specularMapID, int parallaxMapID)
+        public TextureMapping(int diffuseIndex, int normalIndex, int specularIndex, int parallaxIndex)
         {
-            DiffuseMapID = diffuseMapID;
-            NormalMapID = normalMapID;
-            SpecularMapID = specularMapID;
-            ParallaxMapID = parallaxMapID;
+            DiffuseIndex = diffuseIndex;
+            NormalIndex = normalIndex;
+            SpecularIndex = specularIndex;
+            ParallaxIndex = parallaxIndex;
         }
     }
 }

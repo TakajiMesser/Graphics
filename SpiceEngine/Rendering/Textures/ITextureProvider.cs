@@ -8,6 +8,6 @@
         int AddTexture(Texture texture);
         int AddTexture(string texturePath);
 
-        Texture RetrieveTexture(int id);
+        Texture RetrieveTexture(int index);
     }
 }

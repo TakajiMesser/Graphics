@@ -35,12 +35,12 @@ namespace SpiceEngine.Rendering.Textures
 
         public TextureMapping ToTextureMapping(ITextureProvider textureProvider)
         {
-            var diffuseMapID = !string.IsNullOrEmpty(DiffuseMapFilePath) ? textureProvider.AddTexture(DiffuseMapFilePath) : 0;
-            var normalMapID = !string.IsNullOrEmpty(NormalMapFilePath) ? textureProvider.AddTexture(NormalMapFilePath) : 0;
-            var specularMapID = !string.IsNullOrEmpty(SpecularMapFilePath) ? textureProvider.AddTexture(SpecularMapFilePath) : 0;
-            var parallaxMapID = !string.IsNullOrEmpty(ParallaxMapFilePath) ? textureProvider.AddTexture(ParallaxMapFilePath) : 0;
+            var diffuseIndex = !string.IsNullOrEmpty(DiffuseMapFilePath) ? textureProvider.AddTexture(DiffuseMapFilePath) : -1;
+            var normalIndex = !string.IsNullOrEmpty(NormalMapFilePath) ? textureProvider.AddTexture(NormalMapFilePath) : -1;
+            var specularIndex = !string.IsNullOrEmpty(SpecularMapFilePath) ? textureProvider.AddTexture(SpecularMapFilePath) : -1;
+            var parallaxIndex = !string.IsNullOrEmpty(ParallaxMapFilePath) ? textureProvider.AddTexture(ParallaxMapFilePath) : -1;
 
-            return new TextureMapping(diffuseMapID, normalMapID, specularMapID, parallaxMapID);
+            return new TextureMapping(diffuseIndex, normalIndex, specularIndex, parallaxIndex);
         }
     }
 }

@@ -7,14 +7,16 @@ using System.Runtime.Serialization;
 
 namespace SpiceEngine.Scripting.Scripts
 {
-    /// <summary>
-    /// A script is a set of sequential commands
-    /// Each command can be something this object needs to communicate to another object, or performed by itself
-    /// Each command either needs to be associated with 
-    /// </summary>
-    public class Script
+    public class ScriptEventArgs : EventArgs
     {
-        public string Name { get; set; }
+        public Script Script { get; private set; }
+
+        public ScriptEventArgs(Script script)
+        {
+            Script = script;
+        }
+
+        /*public string Name { get; set; }
         public string SourcePath { get; set; }
 
         [JsonIgnore]
@@ -29,10 +31,6 @@ namespace SpiceEngine.Scripting.Scripts
         [JsonIgnore]
         public bool IsCompiled => ExportedType != null || HasErrors;
 
-        public event EventHandler<ScriptEventArgs> Compiled;
-
-        public string GetContent() => File.ReadAllText(SourcePath);
-
-        public void OnCompiled(object sender, ScriptEventArgs args) => Compiled?.Invoke(sender, args);
+        public string GetContent() => File.ReadAllText(SourcePath);*/
     }
 }

@@ -70,19 +70,17 @@ namespace SpiceEngine.Scripting
 
         public void AddEntity(int entityID, IBehaviorBuilder behaviorBuilder)
         {
-            var behavior = behaviorBuilder.ToBehavior(_scriptManager);
+            var behavior = behaviorBuilder.ToBehavior();
             if (behavior != null)
             {
                 _behaviorsByEntityID.Add(entityID, behavior);
             }
 
+            _scriptManager.AddScripts(behaviorBuilder.Scripts);
+
             AddStimuli(entityID, behaviorBuilder.Stimuli);
             AddProperties(entityID, behaviorBuilder.Properties);
         }
-
-        public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
-            ? _stimuliByEntityID[entityID].Stimuli
-            : Enumerable.Empty<Stimulus>();
 
         public void AddProperties(int entityID, IEnumerable<Property> properties)
         {
@@ -100,8 +98,14 @@ namespace SpiceEngine.Scripting
             _stimuliByEntityID.Add(entityID, stimulusCollection);
         }
 
+        public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
+            ? _stimuliByEntityID[entityID].Stimuli
+            : Enumerable.Empty<Stimulus>();
+
         public void Load()
         {
+            _scriptManager.CompileScripts();
+
             foreach (var actor in _entityProvider.Actors)
             {
                 if (_behaviorsByEntityID.ContainsKey(actor.ID))

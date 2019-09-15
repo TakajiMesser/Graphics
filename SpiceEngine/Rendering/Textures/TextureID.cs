@@ -9,10 +9,9 @@ namespace SpiceEngine.Rendering.Textures
         private float _alpha = 1.0f;
 
         public TextureID(string filePath) => FilePath = filePath;
-        //public TextureID(int id) => ID = id;
 
         public string FilePath { get; private set; }
-        public int ID { get; set; }
+        public int Index { get; set; }
         public Vector3 Position { get; set; }
 
         public float Alpha
@@ -34,13 +33,10 @@ namespace SpiceEngine.Rendering.Textures
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
-        public TextureID Duplicate()
+        public TextureID Duplicate() => new TextureID(FilePath)
         {
-            return new TextureID(FilePath)
-            {
-                ID = ID,
-                Alpha = Alpha
-            };
-        }
+            Index = Index,
+            Alpha = Alpha
+        };
     }
 }

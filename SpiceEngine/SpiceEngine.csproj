@@ -382,6 +382,8 @@
     <Compile Include="Scripting\Nodes\Decorators\InlineConditionNode.cs" />
     <Compile Include="Scripting\Nodes\Decorators\RepeaterNode.cs" />
     <Compile Include="Scripting\Nodes\Leaves\InlineLeafNode.cs" />
+    <Compile Include="Scripting\Nodes\NodeEventArgs.cs" />
+    <Compile Include="Scripting\Nodes\ScriptNode.cs" />
     <Compile Include="Scripting\Nodes\Node.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
     <Compile Include="Scripting\Properties\PropertyCollection.cs" />
@@ -389,6 +391,7 @@
     <Compile Include="Scripting\IStimulusProvider.cs" />
     <Compile Include="Scripting\Director.cs" />
     <Compile Include="Scripting\Scripts\IScriptCompiler.cs" />
+    <Compile Include="Scripting\Scripts\ScriptEventArgs.cs" />
     <Compile Include="Scripting\Scripts\Script.cs" />
     <Compile Include="Scripting\Scripts\ScriptManager.cs" />
     <Compile Include="Scripting\States\State.cs" />
@@ -403,6 +406,8 @@
     <Compile Include="Sounds\Source.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\BehaviorExtensions.cs" />
+    <Compile Include="Utilities\ListExtensions.cs" />
+    <Compile Include="Utilities\QueueExtensions.cs" />
     <Compile Include="Utilities\MatrixExtensions.cs" />
     <Compile Include="Utilities\RenderableExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />

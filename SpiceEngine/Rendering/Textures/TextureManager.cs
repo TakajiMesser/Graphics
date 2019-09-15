@@ -1,4 +1,5 @@
 ﻿using OpenTK.Graphics;
+using SpiceEngine.Game;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ namespace SpiceEngine.Rendering.Textures
 {
     public class TextureManager : ITextureProvider, IDisposable
     {
-        private ConcurrentDictionary<string, int> _idByPath = new ConcurrentDictionary<string, int>(); 
+        private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
         private List<Texture> _textures = new List<Texture>();
 
         private object _textureLock = new object();
@@ -21,27 +22,36 @@ namespace SpiceEngine.Rendering.Textures
         /// 
         /// </summary>
         /// <param name="texture"></param>
-        /// <returns>Returns a lookup ID for this texture</returns>
+        /// <returns>Returns a lookup index for this texture</returns>
         public int AddTexture(Texture texture)
         {
             lock (_textureLock)
             {
+                var index = _textures.Count;
                 _textures.Add(texture);
-                return _textures.Count;
+                return index;
             }
         }
 
         public int AddTexture(string texturePath)
         {
-            return _idByPath.GetOrAdd(texturePath, p =>
+            return _indexByPath.GetOrAdd(texturePath, p =>
             {
-                var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
-                if (texture != null)
+                var index = 0;
+
+                lock (_textureLock)
                 {
-                    return AddTexture(texture);
+                    index = _textures.Count;
+                    _textures.Add(null);
                 }
 
-                return 0;
+                GameWindow.ProcessOnMainThread(() =>
+                {
+                    var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
+                    _textures[index] = texture;
+                });
+
+                return index;
             });
 
             /*if (_idByPath.ContainsKey(texturePath))
@@ -68,11 +78,11 @@ namespace SpiceEngine.Rendering.Textures
         public void Clear()
         {
             // TODO - Probably need to unbind/unload textures here...
-            _idByPath.Clear();
+            _indexByPath.Clear();
             _textures.Clear();
         }
 
-        public Texture RetrieveTexture(int id) => (id > 0 && id <= _textures.Count) ? _textures[id - 1] : null;
+        public Texture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
 
         #region IDisposable Support
         private bool disposedValue = false;

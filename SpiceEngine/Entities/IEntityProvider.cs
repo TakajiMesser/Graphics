@@ -25,6 +25,10 @@ namespace SpiceEngine.Entities
         int AddEntity(IEntity entity);
         void AddEntities(IEnumerable<IEntity> entities);
 
+        IEnumerable<int> AssignEntityIDs(IEnumerable<IEntityBuilder> entityBuilders);
+        void LoadEntity(int id);
+        void Load();
+
         IEntity GetEntity(int id);
         IEntity GetEntityOrDefault(int id);
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);

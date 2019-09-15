@@ -74,7 +74,7 @@ namespace SpiceEngine.Rendering.Batches
             if (textureProvider != null)
             {
                 // TODO - Also set texture Alpha value here
-                var texture = textureProvider.RetrieveTexture(_textureID.ID);
+                var texture = textureProvider.RetrieveTexture(_textureID.Index);
                 shaderProgram.BindTexture(texture, "mainTexture", 0);
             }
             

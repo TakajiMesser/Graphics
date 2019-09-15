@@ -55,31 +55,49 @@ namespace SpiceEngine.Maps
         // For more complex custom nodes, we must parse and analyze the node's C# code
         public Script Script { get; set; }
 
-        public Node ToNode(IScriptCompiler scriptCompiler)
+        public IEnumerable<Script> GetScripts()
+        {
+            if (NodeType == NodeTypes.Node)
+            {
+                yield return Script;
+            }
+
+            foreach (var child in Children)
+            {
+                foreach (var script in child.GetScripts())
+                {
+                    yield return script;
+                }
+            }
+        }
+
+        public Node ToNode()
         {
             switch (NodeType)
             {
                 case NodeTypes.Parallel:
-                    return new ParallelNode(Children.Select(c => c.ToNode(scriptCompiler)));
+                    return new ParallelNode(Children.Select(c => c.ToNode()));
                 case NodeTypes.Selector:
-                    return new SelectorNode(Children.Select(c => c.ToNode(scriptCompiler)));
+                    return new SelectorNode(Children.Select(c => c.ToNode()));
                 case NodeTypes.Sequence:
-                    return new SequenceNode(Children.Select(c => c.ToNode(scriptCompiler)));
+                    return new SequenceNode(Children.Select(c => c.ToNode()));
                 case NodeTypes.InlineCondition:
-                    return new InlineConditionNode(InlineCondition, Children.First().ToNode(scriptCompiler));
+                    return new InlineConditionNode(InlineCondition, Children.First().ToNode());
                 case NodeTypes.Repeater:
-                    return new RepeaterNode(Children.First().ToNode(scriptCompiler));
+                    return new RepeaterNode(Children.First().ToNode());
                 case NodeTypes.InlineLeaf:
                     return new InlineLeafNode(InlineAction);
                 case NodeTypes.Node:
-                    return ParseContent(scriptCompiler);
+                    // We now need to DELAY this...
+                    return new ScriptNode(Script, Arguments, Children.Select(c => c.ToNode()));
+                    //return ParseContent(scriptCompiler);
             }
 
             // TODO - Perform a better default case
             return null;
         }
 
-        private Node ParseContent(IScriptCompiler scriptCompiler)
+        /*private Node ParseContent(IScriptCompiler scriptCompiler)
         {
             // TODO - Perform script compilation in an earlier step
             scriptCompiler.AddScript(Script);
@@ -98,22 +116,22 @@ namespace SpiceEngine.Maps
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode(scriptCompiler)), GetConvertedArguments().ToArray());
+                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode()), GetConvertedArguments().ToArray());
                     }
                     else
                     {
-                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode(scriptCompiler)));
+                        return (Node)Activator.CreateInstance(type, Children.Select(c => c.ToNode()));
                     }
                 }
                 else if (type.IsSubclassOf(typeof(DecoratorNode)))
                 {
                     if (Arguments.Count > 0)
                     {
-                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(scriptCompiler), GetConvertedArguments().ToArray());
+                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(), GetConvertedArguments().ToArray());
                     }
                     else
                     {
-                        return (Node)Activator.CreateInstance(type, Children.First().ToNode(scriptCompiler));
+                        return (Node)Activator.CreateInstance(type, Children.First().ToNode());
                     }
                 }
                 else if (type.IsSubclassOf(typeof(Node)))
@@ -134,27 +152,6 @@ namespace SpiceEngine.Maps
             }
 
             return null;
-        }
-
-        private IEnumerable<object> GetConvertedArguments()
-        {
-            foreach (var arg in Arguments)
-            {
-                yield return arg.Cast();
-
-                /*if (arg is double)
-                {
-                    yield return Convert.ChangeType(arg, typeof(float));
-                }
-                else if (arg is short || arg is long)
-                {
-                    yield return Convert.ChangeType(arg, typeof(int));
-                }
-                else
-                {
-                    yield return arg;
-                }*/
-            }
-        }
+        }*/
     }
 }
