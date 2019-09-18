@@ -5,7 +5,6 @@ using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
-using SpiceEngine.Maps.Builders;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Concurrent;

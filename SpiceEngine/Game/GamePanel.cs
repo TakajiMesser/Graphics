@@ -39,7 +39,6 @@ namespace SpiceEngine.Game
 
         private Map _map;
         private EntityMapping _entityMapping;
-        private RenderManager _renderManager;
 
         private bool _invalidated = false;
         private bool _isDuplicating = false;
@@ -57,6 +56,8 @@ namespace SpiceEngine.Game
         private TransformModes _transformMode;
         private RenderModes _renderMode;
         private ViewTypes _viewType;
+
+        public RenderManager RenderManager { get; private set; }
 
         public TransformModes TransformMode
         {
@@ -77,9 +78,9 @@ namespace SpiceEngine.Game
 
                 lock (_loadLock)
                 {
-                    if (_renderManager != null)
+                    if (RenderManager != null)
                     {
-                        _renderManager.RenderMode = value;
+                        RenderManager.RenderMode = value;
                     }
                 }
 
@@ -126,12 +127,12 @@ namespace SpiceEngine.Game
 
                         lock (_loadLock)
                         {
-                            if (_renderManager != null)
+                            if (RenderManager != null)
                             {
                                 //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
                                 //var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                                //_renderManager.BatchManager.AddVolume(entityID, mesh);
-                                _renderManager.BatchManager.Load(entityID);
+                                //RenderManager.BatchManager.AddVolume(entityID, mesh);
+                                RenderManager.BatchManager.Load(entityID);
                             }
                         }*/
                         break;
@@ -142,9 +143,9 @@ namespace SpiceEngine.Game
 
                             lock (_loadLock)
                             {
-                                if (_renderManager != null)
+                                if (RenderManager != null)
                                 {
-                                    _renderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
+                                    RenderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
                                     _toolVolume = null;
                                 }
                             }
@@ -163,10 +164,10 @@ namespace SpiceEngine.Game
         public bool IsDragging { get; private set; }
         public bool RenderGrid
         {
-            get => _renderManager.RenderGrid;
+            get => RenderManager.RenderGrid;
             set
             {
-                _renderManager.RenderGrid = value;
+                RenderManager.RenderGrid = value;
                 Invalidate();
             }
         }
@@ -212,14 +213,14 @@ namespace SpiceEngine.Game
             base.OnLoad(e);
         }
 
-        public void LoadGameManager(GameManager gameManager, Map map, EntityMapping entityMapping)
+        public void LoadGameManager(GameManager gameManager, Map map/*, EntityMapping entityMapping*/)
         {
             _entityProvider = gameManager.EntityManager;
             _inputProvider = gameManager.InputManager;
             SelectionManager = new SelectionManager(_entityProvider);
 
             _map = map;
-            _entityMapping = entityMapping;
+            //_entityMapping = entityMapping;
 
             lock (_loadLock)
             {
@@ -232,52 +233,58 @@ namespace SpiceEngine.Game
 
         private void LoadFromGameManager()
         {
-            _renderManager = new RenderManager(Resolution, WindowSize)
+            // TODO - Should we run this all on the UI thread?
+            Invoke(new Action(() =>
             {
-                IsInEditorMode = true,
-                RenderMode = _renderMode
-            };
-            _renderManager.SetEntityProvider(_entityProvider);
-            _renderManager.LoadFromMap(_map/*, _entityMapping*/);
+                RenderManager = new RenderManager(Resolution, WindowSize)
+                {
+                    IsInEditorMode = true,
+                    RenderMode = _renderMode
+                };
+                RenderManager.SetEntityProvider(_entityProvider);
+                RenderManager.LoadFromMap(_map/*, _entityMapping*/);
 
-            _panelCamera = new PanelCamera(Resolution, _renderManager)
-            {
-                ViewType = ViewType
-            };
-            _panelCamera.Load();
-            _renderManager.SetSelectionProvider(SelectionManager);
-            _renderManager.SetCamera(_panelCamera.Camera);
+                _panelCamera = new PanelCamera(Resolution, RenderManager)
+                {
+                    ViewType = ViewType
+                };
+                _panelCamera.Load();
+                RenderManager.SetSelectionProvider(SelectionManager);
+                RenderManager.SetCamera(_panelCamera.Camera);
 
-            // Clear pointers
-            //_map = null;
-            //_entityMapping = null;
+                // Clear pointers
+                //_map = null;
+                //_entityMapping = null;
 
-            /*if (_selectedTool == Tools.Volume && _toolVolume != null)
-            {
-                // TODO - Correct this, shouldn't be creating another MapVolume here
-                var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
-                _renderManager.BatchManager.Load(_toolVolume.ID);
-            }*/
+                /*if (_selectedTool == Tools.Volume && _toolVolume != null)
+                {
+                    // TODO - Correct this, shouldn't be creating another MapVolume here
+                    var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                    var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                    RenderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
+                    RenderManager.BatchManager.Load(_toolVolume.ID);
+                }*/
 
-            // Default to allowing all rendered entities to be selectable
-            //SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
+                // Default to allowing all rendered entities to be selectable
+                //SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
 
-            Invalidate();
-            IsLoaded = true;
-            PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+                Invalidate();
+                IsLoaded = true;
+                PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+            }));
+
+            
         }
 
-        public void AddEntity(int entityID, IRenderable renderable) => _renderManager?.AddEntity(entityID, renderable);
-        public void RemoveEntity(int entityID) => _renderManager?.RemoveEntity(entityID);
+        public void AddEntity(int entityID, IRenderable renderable) => RenderManager?.AddEntity(entityID, renderable);
+        public void RemoveEntity(int entityID) => RenderManager?.RemoveEntity(entityID);
 
         // TODO - Make this method less janky and terrible
-        public void DoLoad() => _renderManager?.BatchManager.Load();
+        public void DoLoad() => RenderManager?.BatchManager.Load();
 
         public void SelectEntity(IEntity entity)
         {
-            _renderManager?.SetSelected(entity.ID.Yield());
+            RenderManager?.SetSelected(entity.ID.Yield());
 
             SelectionManager.Select(entity.ID);
             Invalidate();
@@ -287,12 +294,12 @@ namespace SpiceEngine.Game
         {
             if (entities.Any())
             {
-                _renderManager?.SetSelected(entities.Select(e => e.ID));
+                RenderManager?.SetSelected(entities.Select(e => e.ID));
                 SelectionManager.Select(entities.Select(e => e.ID));
             }
             else
             {
-                _renderManager?.SetDeselected(SelectionManager.SelectedIDs);
+                RenderManager?.SetDeselected(SelectionManager.SelectedIDs);
                 SelectionManager.ClearSelection();
             }
             
@@ -302,7 +309,7 @@ namespace SpiceEngine.Game
         public void DelayAction(int nTicks, Action action)
         {
             // TODO - Handle this better -> We aren't even keeping a reference to this...
-            var delayedAction = new DelayedUpdate((IUpdate)_renderManager, nTicks, action);
+            var delayedAction = new DelayedUpdate((IUpdate)RenderManager, nTicks, action);
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
@@ -337,7 +344,7 @@ namespace SpiceEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _entityProvider != null)
+            if (Enabled && IsLoaded && RenderManager != null && RenderManager.IsLoaded && _entityProvider != null)
             {
                 base.OnPaint(e);
                 RenderFrame();
@@ -351,9 +358,9 @@ namespace SpiceEngine.Game
                 Resolution.Width = Width;
                 Resolution.Height = Height;
 
-                if (_renderManager != null && _renderManager.IsLoaded)
+                if (RenderManager != null && RenderManager.IsLoaded)
                 {
-                    _renderManager.ResizeResolution();
+                    RenderManager.ResizeResolution();
                 }
             }
 
@@ -362,9 +369,9 @@ namespace SpiceEngine.Game
                 WindowSize.Width = Width;
                 WindowSize.Height = Height;
 
-                if (_renderManager != null && _renderManager.IsLoaded)
+                if (RenderManager != null && RenderManager.IsLoaded)
                 {
-                    _renderManager.ResizeWindow();
+                    RenderManager.ResizeWindow();
                 }
             }
         }
@@ -373,13 +380,13 @@ namespace SpiceEngine.Game
         {
             MakeCurrent();
 
-            _renderManager.Tick();
+            RenderManager.Tick();
 
             // TODO - Determine how to handle this
             if (SelectionManager.SelectionCount > 0)
             {
                 // This is still necessary right now for rendering lights and transform arrows...
-                _renderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
+                RenderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -408,73 +415,73 @@ namespace SpiceEngine.Game
 
         public void SetWireframeThickness(float thickness)
         {
-            _renderManager.SetWireframeThickness(thickness);
+            RenderManager.SetWireframeThickness(thickness);
             Invalidate();
         }
 
         public void SetWireframeColor(Color4 color)
         {
-            _renderManager.SetWireframeColor(color);
+            RenderManager.SetWireframeColor(color);
             Invalidate();
         }
 
         public void SetSelectedWireframeThickness(float thickness)
         {
-            _renderManager.SetSelectedWireframeThickness(thickness);
+            RenderManager.SetSelectedWireframeThickness(thickness);
             Invalidate();
         }
 
         public void SetSelectedWireframeColor(Color4 color)
         {
-            _renderManager.SetSelectedWireframeColor(color);
+            RenderManager.SetSelectedWireframeColor(color);
             Invalidate();
         }
 
         public void SetSelectedLightWireframeThickness(float thickness)
         {
-            _renderManager.SetSelectedLightWireframeThickness(thickness);
+            RenderManager.SetSelectedLightWireframeThickness(thickness);
             Invalidate();
         }
 
         public void SetSelectedLightWireframeColor(Color4 color)
         {
-            _renderManager.SetSelectedLightWireframeColor(color);
+            RenderManager.SetSelectedLightWireframeColor(color);
             Invalidate();
         }
 
         public void SetGridLineThickness(float thickness)
         {
-            _renderManager.SetGridLineThickness(thickness);
+            RenderManager.SetGridLineThickness(thickness);
             Invalidate();
         }
 
         public void SetGridUnitColor(Color4 color)
         {
-            _renderManager.SetGridUnitColor(color);
+            RenderManager.SetGridUnitColor(color);
             Invalidate();
         }
 
         public void SetGridAxisColor(Color4 color)
         {
-            _renderManager.SetGridAxisColor(color);
+            RenderManager.SetGridAxisColor(color);
             Invalidate();
         }
 
         public void SetGrid5Color(Color4 color)
         {
-            _renderManager.SetGrid5Color(color);
+            RenderManager.SetGrid5Color(color);
             Invalidate();
         }
 
         public void SetGrid10Color(Color4 color)
         {
-            _renderManager.SetGrid10Color(color);
+            RenderManager.SetGrid10Color(color);
             Invalidate();
         }
 
         public void SetGridUnit(float unit)
         {
-            _renderManager.SetGridUnit(unit);
+            RenderManager.SetGridUnit(unit);
             Invalidate();
         }
 
@@ -483,7 +490,7 @@ namespace SpiceEngine.Game
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
 
             RenderFrame();
-            var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
+            var id = RenderManager.GetEntityIDFromPoint(mouseCoordinates);
 
             if (!SelectionRenderer.IsReservedID(id))
             {
@@ -491,7 +498,7 @@ namespace SpiceEngine.Game
                 {
                     if (isMultiSelect && SelectionManager.IsSelected(id))
                     {
-                        _renderManager.SetDeselected(id.Yield());
+                        RenderManager.SetDeselected(id.Yield());
                         SelectionManager.Remove(id);//.Deselect(id);
                         EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
                         Invalidate();
@@ -500,19 +507,19 @@ namespace SpiceEngine.Game
                     {
                         if (!isMultiSelect)
                         {
-                            _renderManager.SetDeselected(SelectionManager.SelectedIDs);
+                            RenderManager.SetDeselected(SelectionManager.SelectedIDs);
                             SelectionManager.ClearSelection();
                         }
 
                         var entity = _entityProvider.GetEntityOrDefault(id);
                         if (entity != null)
                         {
-                            _renderManager.SetSelected(id.Yield());
+                            RenderManager.SetSelected(id.Yield());
                             SelectionManager.Select(id);
                         }
                         else
                         {
-                            _renderManager.SetDeselected(SelectionManager.SelectedIDs);
+                            RenderManager.SetDeselected(SelectionManager.SelectedIDs);
                             SelectionManager.ClearSelection();
                         }
                         
@@ -522,7 +529,7 @@ namespace SpiceEngine.Game
                 }
                 else if (!isMultiSelect)
                 {
-                    _renderManager.SetDeselected(SelectionManager.SelectedIDs);
+                    RenderManager.SetDeselected(SelectionManager.SelectedIDs);
                     SelectionManager.ClearSelection();
 
                     EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
@@ -537,7 +544,7 @@ namespace SpiceEngine.Game
         {
             Invoke(new Action(() =>
             {
-                var id = _renderManager.GetEntityIDFromPoint(new Vector2(_currentMouseLocation.X, Height - _currentMouseLocation.Y));
+                var id = RenderManager.GetEntityIDFromPoint(new Vector2(_currentMouseLocation.X, Height - _currentMouseLocation.Y));
                 SelectionManager.SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
             }));
         }
@@ -584,7 +591,7 @@ namespace SpiceEngine.Game
         }
 
         public void Duplicate(int entityID, int duplicateEntityID) =>
-            Invoke(new Action(() => _renderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+            Invoke(new Action(() => RenderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
 
         public void SetLayerOrSomeShit(string layerName)
         {

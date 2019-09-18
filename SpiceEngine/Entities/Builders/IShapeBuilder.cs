@@ -15,6 +15,5 @@ namespace SpiceEngine.Entities.Builders
         bool IsPhysical { get; }
 
         Shape3D ToShape();
-        Type GetEntityType();
     }
 }

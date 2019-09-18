@@ -14,9 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Windows.Threading;
 using Timer = System.Timers.Timer;
 
 namespace SpiceEngine.Game
@@ -59,7 +57,6 @@ namespace SpiceEngine.Game
             };
         }
 
-        private Timer _loadTimer = new Timer();
         private Stopwatch _loadWatch = new Stopwatch();
         private int _loadTimeout = 300000;
 
@@ -79,17 +76,6 @@ namespace SpiceEngine.Game
             {
                 ProcessLoadEvents();
             }
-            /*while (true)
-            {
-                if (IsLoaded)
-                {
-                    Run(60.0f, 0.0f);
-                }
-                else if (_loadWatch.ElapsedMilliseconds > _loadTimeout)
-                {
-                    throw new TimeoutException();
-                }
-            }*/
         }
 
         private void ProcessLoadEvents()

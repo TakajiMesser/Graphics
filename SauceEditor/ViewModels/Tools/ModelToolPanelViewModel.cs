@@ -1,9 +1,8 @@
 using SauceEditor.ViewModels.Docks;
 using SauceEditorCore.Models.Components;
-using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
-using SpiceEngine.Maps.Builders;
 using System.Collections.Generic;
 using System.Linq;
 

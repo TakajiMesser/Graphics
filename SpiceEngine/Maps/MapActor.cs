@@ -2,14 +2,12 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Builders;
-using SpiceEngine.Maps.Builders;
 using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Properties;
 using SpiceEngine.Scripting.Scripts;
@@ -32,7 +30,7 @@ namespace SpiceEngine.Maps
 
         public MapBehavior Behavior { get; set; }
 
-        public IEnumerable<Script> Scripts => Behavior?.GetScripts();
+        public IEnumerable<Script> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<Script>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<Property> Properties { get; set; } = new List<Property>();
 

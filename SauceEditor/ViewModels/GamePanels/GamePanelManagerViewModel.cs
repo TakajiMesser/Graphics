@@ -7,14 +7,12 @@ using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Game;
 using SpiceEngine.Maps;
-using SpiceEngine.Maps.Builders;
 using SpiceEngine.Outputs;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Windows.Input;
 using ViewTypes = SauceEditor.Models.ViewTypes;
@@ -23,12 +21,13 @@ namespace SauceEditor.ViewModels
 {
     public class GamePanelManagerViewModel : DockViewModel, ILayerSetter
     {
+        private EntityLoader _entityLoader;
+
         public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
         public IDisplayProperties PropertyDisplayer { get; set; }
 
         public GameManager GameManager { get; set; }
-        public EntityMapping EntityMapping { get; set; }
         public MapComponent MapComponent { get; set; }
 
         public TransformModes TransformMode { get; set; }
@@ -67,8 +66,16 @@ namespace SauceEditor.ViewModels
             //SelectionManager = panelViewModel.Panel.SelectionManager;
 
             panelViewModel.Panel.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
-            panelViewModel.Panel.Load += (s, args) => LoadPanels();
+            panelViewModel.Panel.Load += (s, args) =>
+            {
+                //_entityLoader.AddRenderManager(panelViewModel.Panel.RenderManager);
+                LoadPanels();
+            };
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
+            panelViewModel.Panel.PanelLoaded += (s, args) =>
+            {
+                _entityLoader.AddRenderManager(panelViewModel.Panel.RenderManager);
+            };
         }
 
         public void EnableLayer(string layerName)
@@ -271,27 +278,82 @@ namespace SauceEditor.ViewModels
         private bool _isGLContextLoaded = false;
         private bool _isMapLoadedInPanels = false;
 
+        private Stopwatch _loadWatch = new Stopwatch();
+        private int _loadTimeout = 300000;
+
+        /*public void LoadAndRun()
+        {
+            _loadWatch.Start();
+
+            // Begin the background Task for loading the game world
+            LoadAsync();
+
+            // Begin a loop that blocks until the game world is loaded (to prevent the window from being disposed)
+            while (true)
+            {
+                ProcessLoadEvents();
+            }
+        }*/
+
+        private async void LoadAsync()
+        {
+            GameManager = new GameManager(Resolution);
+            GameManager.LoadFromMap(MapComponent.Map);
+
+            _entityLoader = new EntityLoader(GameManager.EntityManager)
+            {
+                RendererWaitCount = 4
+            };
+            _entityLoader.SetPhysicsManager(GameManager.PhysicsManager);
+            _entityLoader.SetBehaviorManager(GameManager.BehaviorManager);
+            //_entityLoader.AddRenderManager(_renderManager);
+
+            _entityLoader.AddFromMap(MapComponent.Map);
+
+            //_renderManager.SetEntityProvider(_gameManager.EntityManager);
+            //_renderManager.SetCamera(_gameManager.Camera);
+
+            //_entityLoader.Load();
+            await _entityLoader.LoadAsync();
+
+            //_renderManager.LoadFromMap(_map);
+
+            GameManager.BehaviorManager.Load();
+
+            // TODO - This is most definitely wrong, but we need to tease apart what requirements we need before we can call these methods...
+            //PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+            //XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+            //YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+            //ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+
+            /*ProcessOnMainThread(() =>
+            {
+                MakeCurrent();
+                _renderManager.LoadFromMap(_map);
+                IsLoaded = true;
+            });*/
+
+            //GameLoaded?.Invoke(this, new EventArgs());
+        }
+
         public void UpdateFromModel(MapComponent mapComponent)
         {
             MapComponent = mapComponent;
-            GameManager = new GameManager(Resolution);
+            LoadAsync();
 
-            EntityMapping = GameManager.LoadFromMap(MapComponent.Map);
-            MapComponent.SetEntityMapping(EntityMapping);
-
-            lock (_panelLock)
+            /*lock (_panelLock)
             {
                 // Lock and check to ensure that this only happens once
                 if (_isGLContextLoaded && !_isMapLoadedInPanels)
                 {
-                    PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
-                    XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
-                    YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
-                    ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                    PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
+                    XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
+                    YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
+                    ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
 
                     _isMapLoadedInPanels = true;
                 }
-            }
+            }*/
         }
 
         public void LoadPanels()
@@ -307,10 +369,10 @@ namespace SauceEditor.ViewModels
                     if (!_isMapLoadedInPanels && MapComponent != null)
                     {
                         // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                        PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
-                        XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
-                        YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
-                        ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map, EntityMapping);
+                        PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+                        XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+                        YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+                        ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
 
                         _isMapLoadedInPanels = true;
                     }

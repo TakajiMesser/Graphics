@@ -47,7 +47,7 @@ namespace SpiceEngine.Game
             InputManager = new InputManager(mouseTracker);
         }
 
-        public EntityMapping LoadFromMap(Map map)
+        public void LoadFromMap(Map map)
         {
             IsLoaded = false;
 
@@ -69,25 +69,7 @@ namespace SpiceEngine.Game
 
             EntityManager.ClearEntities();
 
-            /*var lightIDs = LoadLights(map.Lights);
-            var brushIDs = LoadBrushes(map.Brushes);
-            var volumeIDs = LoadVolumes(map.Volumes);
-            var actorIDs = LoadActors(map.Actors);
-
-            var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);*/
-
-            /*if (!string.IsNullOrEmpty(map.Camera.AttachedActorName))
-            {
-                var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
-                Camera.AttachToEntity(actor, true, false);
-            }*/
-            
-            //BehaviorManager.Load();
-
             IsLoaded = true;
-
-            return null;
-            //return entityMapping;
         }
 
         /*public int AddLight(MapLight mapLight)

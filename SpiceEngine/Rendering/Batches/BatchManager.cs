@@ -109,14 +109,24 @@ namespace SpiceEngine.Rendering.Batches
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
-            var datName = "";
+            /*var datName = "";
             if (_entityProvider.GetEntity(entityID) is Actor actor)
             {
                 datName = actor.Name;
-            }
+            }*/
 
             var renderType = GetRenderTypeForRenderable(renderable);
-            _renderTypeByEntityID.Add(entityID, renderType);
+
+            var a = 3;
+            try
+            {
+                _renderTypeByEntityID.Add(entityID, renderType);
+            }
+            catch (Exception ex)
+            {
+                a = 4;
+            }
+            
 
             var idSet = GetEntityIDSet(renderType);
             idSet.Add(entityID);

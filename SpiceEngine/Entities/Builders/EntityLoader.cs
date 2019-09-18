@@ -1,13 +1,16 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
 using SpiceEngine.Maps;
-using SpiceEngine.Maps.Builders;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Physics;
 using SpiceEngine.Rendering;
 using SpiceEngine.Scripting;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Threading;
+using System;
+using SpiceEngine.Utilities;
 
 namespace SpiceEngine.Entities.Builders
 {
@@ -16,16 +19,32 @@ namespace SpiceEngine.Entities.Builders
         private IEntityProvider _entityProvider;
         private PhysicsManager _physicsManager;
         private BehaviorManager _behaviorManager;
-        private List<RenderManager> _renderManager = new List<RenderManager>();
+        private List<RenderManager> _renderManagers = new List<RenderManager>();
 
         private List<IEntityBuilder> _entityBuilders = new List<IEntityBuilder>();
         private List<IShapeBuilder> _shapeBuilders = new List<IShapeBuilder>();
         private List<IBehaviorBuilder> _behaviorBuilders = new List<IBehaviorBuilder>();
         private List<IRenderableBuilder> _renderableBuilders = new List<IRenderableBuilder>();
 
+        private int _rendererWaitCount;
+        private TaskCompletionSource<bool>[] _rendererAddedTasks;
+
         private object _lock = new object();
 
         public EntityLoader(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+
+        public int RendererWaitCount
+        {
+            get => _rendererWaitCount;
+            set
+            {
+                lock (_lock)
+                {
+                    _rendererWaitCount = value;
+                    _rendererAddedTasks = ArrayExtensions.Initialize(value, new TaskCompletionSource<bool>());
+                }
+            }
+        }
 
         public void SetPhysicsManager(PhysicsManager physicsManager)
         {
@@ -47,7 +66,12 @@ namespace SpiceEngine.Entities.Builders
         {
             lock (_lock)
             {
-                _renderManager.Add(renderManager);
+                _renderManagers.Add(renderManager);
+
+                if (_renderManagers.Count <= _rendererAddedTasks.Length)
+                {
+                    _rendererAddedTasks[_renderManagers.Count - 1].TrySetResult(true);
+                }
             }
         }
 
@@ -113,20 +137,10 @@ namespace SpiceEngine.Entities.Builders
                 entityCount = _entityBuilders.Count;
                 physicsManager = _physicsManager;
                 behaviorManager = _behaviorManager;
-                renderManagers.AddRange(_renderManager);
+                renderManagers.AddRange(_renderManagers);
             }
 
             var loadTasks = new List<Task>();
-
-            // Assign all entity IDs first
-            /*public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int size)
-            {
-                if (source == null) throw new ArgumentNullException(nameof(source));
-
-                return source
-                    .Select((t, i) => new { Value = t, Index = i })
-                    .GroupBy(item => item.Index / size, item => item.Value);
-            }*/
 
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Take(entityCount));
             var index = 0;
@@ -135,96 +149,96 @@ namespace SpiceEngine.Entities.Builders
             {
                 while (idIterator.MoveNext())
                 {
-                    var id = idIterator.Current;
-                    var currentIndex = index;
-
-                    loadTasks.Add(Task.Run(() =>
-                    {
-                        _entityProvider.LoadEntity(id);
-
-                        if (physicsManager != null)
-                        {
-                            var shapeBuilder = _shapeBuilders[currentIndex];
-
-                            if (shapeBuilder != null)
-                            {
-                                physicsManager.AddEntity(id, shapeBuilder);
-                            }
-                        }
-
-                        if (behaviorManager != null)
-                        {
-                            var behaviorBuilder = _behaviorBuilders[currentIndex];
-
-                            if (behaviorBuilder != null)
-                            {
-                                behaviorManager.AddEntity(id, behaviorBuilder);
-                            }
-                        }
-
-                        if (renderManagers.Count > 0)
-                        {
-                            var renderableBuilder = _renderableBuilders[currentIndex];
-
-                            if (renderableBuilder != null)
-                            {
-                                foreach (var renderManager in renderManagers)
-                                {
-                                    renderManager.AddEntity(id, renderableBuilder);
-                                }
-                            }
-                        }
-                    }));
-
+                    loadTasks.Add(LoadBuilderAsync(idIterator.Current, index, physicsManager, behaviorManager, renderManagers));
                     index++;
                 }
             }
 
-            /*for (var i = 0; i < entityCount; i++)
+            await Task.WhenAll(loadTasks);
+        }
+
+        private async Task LoadBuilderAsync(int id, int builderIndex, PhysicsManager physicsManager, BehaviorManager behaviorManager, List<RenderManager> renderManagers)
+        {
+            _entityProvider.LoadEntity(id);
+
+            var loadBuilderTasks = new List<Task>
             {
-                var index = i;
+                Task.Run(() => LoadShapeBuilder(id, builderIndex, physicsManager)),
+                Task.Run(() => LoadBehaviorBuilder(id, builderIndex, behaviorManager)),
+                LoadRenderableBuilder(id, builderIndex, renderManagers)
+            };
 
-                loadTasks.Add(Task.Run(() =>
+            await Task.WhenAll(loadBuilderTasks);
+        }
+
+        private void LoadShapeBuilder(int id, int builderIndex, PhysicsManager physicsManager)
+        {
+            if (physicsManager != null)
+            {
+                var shapeBuilder = _shapeBuilders[builderIndex];
+
+                if (shapeBuilder != null)
                 {
-                    var entityBuilder = _entityBuilders[index];
-                    var id = _entityProvider.AddEntity(entityBuilder);
+                    physicsManager.AddEntity(id, shapeBuilder);
+                }
+            }
+        }
 
-                    if (physicsManager != null)
+        private void LoadBehaviorBuilder(int id, int builderIndex, BehaviorManager behaviorManager)
+        {
+            if (behaviorManager != null)
+            {
+                var behaviorBuilder = _behaviorBuilders[builderIndex];
+
+                if (behaviorBuilder != null)
+                {
+                    behaviorManager.AddEntity(id, behaviorBuilder);
+                }
+            }
+        }
+
+        private async Task LoadRenderableBuilder(int id, int builderIndex, List<RenderManager> renderManagers)
+        {
+            var renderableBuilder = _renderableBuilders[builderIndex];
+
+            if (renderableBuilder != null)
+            {
+                var addBuilderTasks = new List<Task>();
+
+                for (var i = 0; i < _rendererWaitCount; i++)
+                {
+                    if (i < renderManagers.Count)
                     {
-                        var shapeBuilder = _shapeBuilders[index];
-
-                        if (shapeBuilder != null)
-                        {
-                            physicsManager.AddEntity(id, shapeBuilder);
-                        }
+                        renderManagers[i].AddEntity(id, renderableBuilder);
                     }
-
-                    if (behaviorManager != null)
+                    else
                     {
-                        var behaviorBuilder = _behaviorBuilders[index];
+                        var rendererIndex = i;
 
-                        if (behaviorBuilder != null)
+                        addBuilderTasks.Add(Task.Run(async () =>
                         {
-                            behaviorManager.AddEntity(id, behaviorBuilder);
-                        }
-                    }
+                            var result = await _rendererAddedTasks[rendererIndex].Task;
 
-                    if (renderManagers.Count > 0)
-                    {
-                        var renderableBuilder = _renderableBuilders[index];
-
-                        if (renderableBuilder != null)
-                        {
-                            foreach (var renderManager in renderManagers)
+                            if (result)
                             {
+                                RenderManager renderManager;
+
+                                lock (_lock)
+                                {
+                                    renderManager = _renderManagers[rendererIndex];
+                                }
+
                                 renderManager.AddEntity(id, renderableBuilder);
                             }
-                        }
+                        }));
                     }
-                }));
-            }*/
+                }
 
-            await Task.WhenAll(loadTasks);
+                if (addBuilderTasks.Count > 0)
+                {
+                    await Task.WhenAll(addBuilderTasks);
+                }
+            }
         }
 
         public void Load()
@@ -240,7 +254,7 @@ namespace SpiceEngine.Entities.Builders
                 entityCount = _entityBuilders.Count;
                 physicsManager = _physicsManager;
                 behaviorManager = _behaviorManager;
-                renderManagers.AddRange(_renderManager);
+                renderManagers.AddRange(_renderManagers);
             }
 
             for (var i = 0; i < entityCount; i++)

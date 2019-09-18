@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
-using SpiceEngine.Maps.Builders;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;

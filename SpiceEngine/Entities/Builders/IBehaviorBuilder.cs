@@ -18,6 +18,5 @@ namespace SpiceEngine.Entities.Builders
         List<Property> Properties { get; }
 
         Behavior ToBehavior();
-        Type GetEntityType();
     }
 }

@@ -1,5 +1,5 @@
 ﻿using SpiceEngine.Entities;
-using SpiceEngine.Maps.Builders;
+using SpiceEngine.Entities.Builders;
 
 namespace SauceEditorCore.Models.Entities
 {
