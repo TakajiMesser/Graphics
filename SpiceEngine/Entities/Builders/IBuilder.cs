@@ -6,10 +6,8 @@ using System;
 
 namespace SpiceEngine.Entities.Builders
 {
-    public interface IRenderableBuilder : IBuilder
+    public interface IBuilder
     {
-        Vector3 Position { get; set; }
-
-        IRenderable ToRenderable();
+        
     }
 }

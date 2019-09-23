@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Builders
 {
-    public interface IBehaviorBuilder
+    public interface IBehaviorBuilder : IBuilder
     {
         IEnumerable<Script> Scripts { get; }
         List<Stimulus> Stimuli { get; }

@@ -23,7 +23,8 @@ namespace SpiceEngine.Game
     {
         private GameManager _gameManager;
         private RenderManager _renderManager;
-        private EntityLoader _entityLoader;
+
+        private GameLoader _gameLoader;
 
         //private Dispatcher _mainDispatcher;
         private static ConcurrentQueue<Action> _mainActionQueue = new System.Collections.Concurrent.ConcurrentQueue<Action>();
@@ -114,20 +115,20 @@ namespace SpiceEngine.Game
 
             _gameManager.LoadFromMap(_map);
 
-            _entityLoader = new EntityLoader();
-            _entityLoader.SetEntityProvider(_gameManager.EntityManager);
-            _entityLoader.SetPhysicsManager(_gameManager.PhysicsManager);
-            _entityLoader.SetBehaviorManager(_gameManager.BehaviorManager);
-            _entityLoader.SetRenderManagerNames("Main");
-            _entityLoader.AddRenderManager("Main", _renderManager);
+            _gameLoader = new GameLoader();
+            _gameLoader.SetEntityProvider(_gameManager.EntityManager);
+            _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
+            _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
+            _gameLoader.SetRenderManagerNames("Main");
+            _gameLoader.AddRenderableLoader("Main", _renderManager);
 
-            _entityLoader.AddFromMap(_map);
+            _gameLoader.AddFromMap(_map);
 
             _renderManager.SetEntityProvider(_gameManager.EntityManager);
             _renderManager.SetCamera(_gameManager.Camera);
 
-            //_entityLoader.Load();
-            await _entityLoader.LoadAsync();
+            //_gameLoader.Load();
+            await _gameLoader.LoadAsync();
 
             //_renderManager.LoadFromMap(_map);
 
@@ -193,18 +194,18 @@ namespace SpiceEngine.Game
 
             _gameManager.LoadFromMap(_map);
 
-            _entityLoader = new EntityLoader(_gameManager.EntityManager);
-            _entityLoader.SetPhysicsManager(_gameManager.PhysicsManager);
-            _entityLoader.SetBehaviorManager(_gameManager.BehaviorManager);
-            _entityLoader.AddRenderManager(_renderManager);
+            _gameLoader = new GameLoader(_gameManager.EntityManager);
+            _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
+            _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
+            _gameLoader.AddRenderableLoader(_renderManager);
 
-            _entityLoader.AddFromMap(_map);
+            _gameLoader.AddFromMap(_map);
 
             _renderManager.SetEntityProvider(_gameManager.EntityManager);
             _renderManager.SetCamera(_gameManager.Camera);
 
-            //_entityLoader.Load();
-            await _entityLoader.LoadAsync();
+            //_gameLoader.Load();
+            await _gameLoader.LoadAsync();
             _renderManager.LoadFromMap(_map);
             _gameManager.BehaviorManager.Load();
 

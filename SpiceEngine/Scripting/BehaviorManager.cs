@@ -13,7 +13,7 @@ using System.Linq;
 
 namespace SpiceEngine.Scripting
 {
-    public class BehaviorManager : UpdateManager, IStimulusProvider
+    public class BehaviorManager : UpdateManager, IStimulusProvider, IEntityLoader<IBehaviorBuilder>
     {
         private bool _isLoaded = false;
 
@@ -68,18 +68,18 @@ namespace SpiceEngine.Scripting
             }
         }
 
-        public void AddEntity(int entityID, IBehaviorBuilder behaviorBuilder)
+        public void AddEntity(int entityID, IBehaviorBuilder builder)
         {
-            var behavior = behaviorBuilder.ToBehavior();
+            var behavior = builder.ToBehavior();
             if (behavior != null)
             {
                 _behaviorsByEntityID.Add(entityID, behavior);
             }
 
-            _scriptManager.AddScripts(behaviorBuilder.Scripts);
+            _scriptManager.AddScripts(builder.Scripts);
 
-            AddStimuli(entityID, behaviorBuilder.Stimuli);
-            AddProperties(entityID, behaviorBuilder.Properties);
+            AddStimuli(entityID, builder.Stimuli);
+            AddProperties(entityID, builder.Properties);
         }
 
         public void AddProperties(int entityID, IEnumerable<Property> properties)

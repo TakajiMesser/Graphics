@@ -21,13 +21,16 @@ namespace SauceEditor.ViewModels
 {
     public class GamePanelManagerViewModel : DockViewModel, ILayerSetter
     {
-        private EntityLoader _entityLoader = new EntityLoader();
+        private GameLoader _gameLoader = new GameLoader();
 
-        public GamePanelManagerViewModel() : base(DockTypes.Game)
-        {
-            IsPlayable = true;
-            _entityLoader.SetRenderManagerNames("Perspective", "X", "Y", "Z");
-        }
+        private readonly object _panelLock = new object();
+        private bool _isGLContextLoaded = false;
+        private bool _isMapLoadedInPanels = false;
+
+        private Stopwatch _loadWatch = new Stopwatch();
+        private int _loadTimeout = 300000;
+
+        public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
         public IDisplayProperties PropertyDisplayer { get; set; }
 
@@ -60,39 +63,27 @@ namespace SauceEditor.ViewModels
             CommandManager.InvalidateRequerySuggested();
         }
 
-        public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange("Perspective", PerspectiveViewModel);
-        public void OnXViewModelChanged() => OnPanelViewModelChange("X", XViewModel);
-        public void OnYViewModelChanged() => OnPanelViewModelChange("Y", YViewModel);
-        public void OnZViewModelChanged() => OnPanelViewModelChange("Z", ZViewModel);
+        public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange(PerspectiveViewModel);
+        public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
+        public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
+        public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);
 
-        private void OnPanelViewModelChange(string panelName, GamePanelViewModel panelViewModel)
+        private void OnPanelViewModelChange(GamePanelViewModel panelViewModel)
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
-            // TODO - When the EntityLoader finishes adding ALL RenderBuilders for the RenderManager tied to this Panel,
-            //        We need to notify the Panel so that it can finish loading the GameManager (which will kick off actual batch loading on the UI thread)
-            _entityLoader.RendererLoaded += (s, args) =>
-            {
-                if (panelName == args.Name)
-                {
-                    //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-                    panelViewModel.Panel.PostLoad();
-                }
-            };
-
             panelViewModel.Panel.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
             panelViewModel.Panel.Load += (s, args) =>
             {
-                // Because this panel has finished loading in, we can now safely notify the EntityLoader that we are ready to load in some RenderBuilders
-                // TODO - We can't necessarily rely on the EntityLoader having been initialized quite yet...
-                panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
-                _entityLoader.AddRenderManager(panelName, panelViewModel.Panel.RenderManager);
-                //LoadPanels();
+                // Because this panel has finished loading in, we can now safely notify the GameLoader that we are ready to load in some RenderBuilders
+                //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
+                LoadPanels();
+                _gameLoader.AddRenderableLoader(panelViewModel.Panel.RenderManager);
             };
             panelViewModel.Panel.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
-            panelViewModel.Panel.PanelLoaded += (s, args) =>
+            /*panelViewModel.Panel.PanelLoaded += (s, args) =>
             {
-                //_entityLoader.AddRenderManager(panelViewModel.Panel.RenderManager);
-            };
+                //_gameLoader.AddRenderManager(panelViewModel.Panel.RenderManager);
+            };*/
         }
 
         public void EnableLayer(string layerName)
@@ -291,13 +282,6 @@ namespace SauceEditor.ViewModels
             ZViewModel?.Panel.CenterView();
         }
 
-        private readonly object _panelLock = new object();
-        private bool _isGLContextLoaded = false;
-        private bool _isMapLoadedInPanels = false;
-
-        private Stopwatch _loadWatch = new Stopwatch();
-        private int _loadTimeout = 300000;
-
         /*public void LoadAndRun()
         {
             _loadWatch.Start();
@@ -312,66 +296,38 @@ namespace SauceEditor.ViewModels
             }
         }*/
 
+        public void UpdateFromModel(MapComponent mapComponent)
+        {
+            MapComponent = mapComponent;
+            LoadAsync();
+        }
+
         private async void LoadAsync()
         {
             GameManager = new GameManager(Resolution);
             GameManager.LoadFromMap(MapComponent.Map);
 
-            _entityLoader.RendererWaitCount = 4;
-            _entityLoader.SetEntityProvider(GameManager.EntityManager);
-            _entityLoader.SetPhysicsManager(GameManager.PhysicsManager);
-            _entityLoader.SetBehaviorManager(GameManager.BehaviorManager);
-            //_entityLoader.AddRenderManager(_renderManager);
+            _gameLoader.RendererWaitCount = 4;
+            _gameLoader.SetEntityProvider(GameManager.EntityManager);
+            _gameLoader.SetPhysicsLoader(GameManager.PhysicsManager);
+            _gameLoader.SetBehaviorLoader(GameManager.BehaviorManager);
+            //_gameLoader.AddRenderManager(_renderManager);
 
-            _entityLoader.AddFromMap(MapComponent.Map);
+            _gameLoader.AddFromMap(MapComponent.Map);
 
             //_renderManager.SetEntityProvider(_gameManager.EntityManager);
             //_renderManager.SetCamera(_gameManager.Camera);
 
-            //_entityLoader.Load();
-            await _entityLoader.LoadAsync();
+            //_gameLoader.Load();
+            await _gameLoader.LoadAsync();
+
+            MapComponent.SetEntityMapping(_gameLoader.EntityMapping);
 
             //_renderManager.LoadFromMap(_map);
-
-            GameManager.BehaviorManager.Load();
-
-            // TODO - This is most definitely wrong, but we need to tease apart what requirements we need before we can call these methods...
-            //PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-            //XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-            //YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-            //ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-
-            /*ProcessOnMainThread(() =>
-            {
-                MakeCurrent();
-                _renderManager.LoadFromMap(_map);
-                IsLoaded = true;
-            });*/
-
-            //GameLoaded?.Invoke(this, new EventArgs());
+            //GameManager.BehaviorManager.Load();
         }
 
-        public void UpdateFromModel(MapComponent mapComponent)
-        {
-            MapComponent = mapComponent;
-            LoadAsync();
-
-            /*lock (_panelLock)
-            {
-                // Lock and check to ensure that this only happens once
-                if (_isGLContextLoaded && !_isMapLoadedInPanels)
-                {
-                    PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
-                    XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
-                    YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
-                    ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*);
-
-                    _isMapLoadedInPanels = true;
-                }
-            }*/
-        }
-
-        public void LoadPanels()
+        private void LoadPanels()
         {
             // Wait for at least one panel to finish loading so that we can be sure the GLContext is properly loaded
             if (!_isGLContextLoaded)
@@ -382,16 +338,13 @@ namespace SauceEditor.ViewModels
                     _isGLContextLoaded = true;
 
                     // TODO - I'm not entirely sure why I needed to have this only happen once when the FIRST panel gets loaded...
-                    //  but each should have its own GLContext (?)
-                    //  What we DO need to do, is NOT call Panel.LoadGameManager (because this triggers loading the BatchManager)
-                    //  Instead, we need to have this 
                     if (!_isMapLoadedInPanels && MapComponent != null)
                     {
                         // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                        PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-                        XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-                        YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
-                        ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map/*, EntityMapping*/);
+                        PerspectiveViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
+                        XViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
+                        YViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
+                        ZViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
 
                         _isMapLoadedInPanels = true;
                     }

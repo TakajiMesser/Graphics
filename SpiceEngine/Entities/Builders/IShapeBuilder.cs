@@ -6,7 +6,7 @@ using System;
 
 namespace SpiceEngine.Entities.Builders
 {
-    public interface IShapeBuilder
+    public interface IShapeBuilder : IBuilder
     {
         Vector3 Position { get; set; }
         //Vector3 Rotation { get; set; }

@@ -33,7 +33,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : UpdateManager, IGridRenderer
+    public class RenderManager : UpdateManager, IGridRenderer, IEntityLoader<IRenderableBuilder>
     {
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
@@ -87,34 +87,9 @@ namespace SpiceEngine.Rendering
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
         public void SetCamera(ICamera camera) => _camera = camera;
 
-        public void LoadFromMap(Map map/*, EntityMapping entityMapping*/)
+        public void Load()
         {
-            //BatchManager = new BatchManager(_entityProvider, TextureManager);
-
-            //AddBrushes(map.Brushes, entityMapping.BrushIDs);
-            //AddVolumes(map.Volumes, entityMapping.VolumeIDs);
-            //AddLights(map.Lights, entityMapping.LightIDs);
-            //AddActors(map.Actors, entityMapping.ActorIDs);
-
             BatchManager.Load();
-
-            /*_entityProvider.EntitiesAdded += (s, args) => AddEntities(args.IDs);
-            _entityProvider.EntitiesAdded += (s, args) =>
-            {
-                var ids = args.IDs.ToList();
-                var builders = args.Builders.ToList();
-
-                for (var i = 0; i < ids.Count; i++)
-                {
-                    var renderable = builders[i].ToRenderable();
-                    if (renderable != null)
-                    {
-                        AddEntity(ids[i], renderable);
-                    }
-                }
-            };*/
-
-            _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 
             _forwardRenderer.Load(Resolution);
             _deferredRenderer.Load(Resolution);
@@ -135,17 +110,22 @@ namespace SpiceEngine.Rendering
             IsLoaded = true;
         }
 
-        public void AddEntity(int entityID, IRenderableBuilder renderableBuilder)
+        public void LoadFromMap(Map map)
         {
-            var renderable = renderableBuilder.ToRenderable();
+            _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
+        }
 
-            if (renderableBuilder is MapBrush mapBrush)
+        public void AddEntity(int entityID, IRenderableBuilder builder)
+        {
+            var renderable = builder.ToRenderable();
+
+            if (builder is MapBrush mapBrush)
             {
                 var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
                 var brush = _entityProvider.GetEntity(entityID) as Brush;
                 brush.AddTextureMapping(textureMapping);
             }
-            else if (renderableBuilder is MapActor mapActor)
+            else if (builder is MapActor mapActor)
             {
                 var actor = _entityProvider.GetEntity(entityID) as Actor;
 

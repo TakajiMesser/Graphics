@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace SpiceEngine.Physics
 {
-    public class PhysicsManager : UpdateManager, ICollisionProvider
+    public class PhysicsManager : UpdateManager, ICollisionProvider, IEntityLoader<IShapeBuilder>
     {
         private IEntityProvider _entityProvider;
 
@@ -62,10 +62,10 @@ namespace SpiceEngine.Physics
 
         public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
 
-        public void AddEntity(int entityID, IShapeBuilder shapeBuilder)
+        public void AddEntity(int entityID, IShapeBuilder builder)
         {
-            var shape = shapeBuilder.ToShape();
-            var partition = shape.ToPartition(shapeBuilder.Position);
+            var shape = builder.ToShape();
+            var partition = shape.ToPartition(builder.Position);
             var bounds = new Bounds(entityID, partition);
 
             var partitionTree = GetPartitionTree(entityID);
@@ -74,7 +74,7 @@ namespace SpiceEngine.Physics
             var body = GetBody(entityID, shape);
             if (body != null)
             {
-                body.IsPhysical = shapeBuilder.IsPhysical;
+                body.IsPhysical = builder.IsPhysical;
                 _bodyByEntityID.TryAdd(entityID, body);
             }
         }

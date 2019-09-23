@@ -231,14 +231,6 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void PostLoad()
-        {
-            Invoke(new Action(() =>
-            {
-                RenderManager.LoadFromMap(_map);
-            }));
-        }
-
         private void LoadFromGameManager()
         {
             // TODO - Should we run this all on the UI thread?
@@ -260,6 +252,9 @@ namespace SpiceEngine.Game
                 RenderManager.SetSelectionProvider(SelectionManager);
                 RenderManager.SetCamera(_panelCamera.Camera);
 
+                // TODO - Can we load the map here?
+                RenderManager.LoadFromMap(_map);
+
                 // Clear pointers
                 //_map = null;
                 //_entityMapping = null;
@@ -280,8 +275,6 @@ namespace SpiceEngine.Game
                 IsLoaded = true;
                 PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
             }));
-
-            
         }
 
         public void AddEntity(int entityID, IRenderable renderable) => RenderManager?.AddEntity(entityID, renderable);
