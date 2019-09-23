@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System;
 using SpiceEngine.Utilities;
+using SpiceEngine.Rendering.PostProcessing;
 
 namespace SpiceEngine.Entities.Builders
 {
@@ -28,10 +29,14 @@ namespace SpiceEngine.Entities.Builders
 
         private int _rendererWaitCount;
         private TaskCompletionSource<bool>[] _rendererAddedTasks;
+        private List<string> _rendererNames = new List<string>();
+
+        // TODO - This is atrocious...
+        private Dictionary<int, int> _nameIndexByRendererIndex = new Dictionary<int, int>();
 
         private object _lock = new object();
 
-        public EntityLoader(IEntityProvider entityProvider) => _entityProvider = entityProvider;
+        public event EventHandler<RendererLoadEventArgs> RendererLoaded;
 
         public int RendererWaitCount
         {
@@ -41,8 +46,23 @@ namespace SpiceEngine.Entities.Builders
                 lock (_lock)
                 {
                     _rendererWaitCount = value;
-                    _rendererAddedTasks = ArrayExtensions.Initialize(value, new TaskCompletionSource<bool>());
+
+                    //_rendererAddedTasks = ArrayExtensions.Initialize(value, new TaskCompletionSource<bool>());
+                    _rendererAddedTasks = new TaskCompletionSource<bool>[value];
+
+                    for (var i = 0; i < value; i++)
+                    {
+                        _rendererAddedTasks[i] = new TaskCompletionSource<bool>();
+                    }
                 }
+            }
+        }
+
+        public void SetEntityProvider(IEntityProvider entityProvider)
+        {
+            lock (_lock)
+            {
+                _entityProvider = entityProvider;
             }
         }
 
@@ -62,16 +82,34 @@ namespace SpiceEngine.Entities.Builders
             }
         }
 
-        public void AddRenderManager(RenderManager renderManager)
+        public void AddRenderManager(string name, RenderManager renderManager)
         {
             lock (_lock)
             {
                 _renderManagers.Add(renderManager);
+                
+                // TODO - This is atrocious...
+                for (var i = 0; i < _rendererNames.Count; i++)
+                {
+                    if (_rendererNames[i] == name)
+                    {
+                        _nameIndexByRendererIndex.Add(_renderManagers.Count - 1, i);
+                    }
+                }
 
                 if (_renderManagers.Count <= _rendererAddedTasks.Length)
                 {
                     _rendererAddedTasks[_renderManagers.Count - 1].TrySetResult(true);
                 }
+            }
+        }
+
+        public void SetRenderManagerNames(params string[] names)
+        {
+            lock (_lock)
+            {
+                _rendererNames.Clear();
+                _rendererNames.AddRange(names);
             }
         }
 
@@ -131,6 +169,8 @@ namespace SpiceEngine.Entities.Builders
             PhysicsManager physicsManager = null;
             BehaviorManager behaviorManager = null;
             var renderManagers = new List<RenderManager>();
+            var rendererNames = new List<string>();
+            var rendererWaitCount = 0;
 
             lock (_lock)
             {
@@ -138,9 +178,18 @@ namespace SpiceEngine.Entities.Builders
                 physicsManager = _physicsManager;
                 behaviorManager = _behaviorManager;
                 renderManagers.AddRange(_renderManagers);
+                rendererNames.AddRange(_rendererNames);
+                rendererWaitCount = _rendererWaitCount;
             }
 
             var loadTasks = new List<Task>();
+            var loadGameTasks = new List<Task>();
+            var loadRenderTasks = new List<Task>[rendererWaitCount];
+
+            for (var i = 0; i < rendererWaitCount; i++)
+            {
+                loadRenderTasks[i] = new List<Task>();
+            }
 
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Take(entityCount));
             var index = 0;
@@ -149,12 +198,96 @@ namespace SpiceEngine.Entities.Builders
             {
                 while (idIterator.MoveNext())
                 {
-                    loadTasks.Add(LoadBuilderAsync(idIterator.Current, index, physicsManager, behaviorManager, renderManagers));
+                    var id = idIterator.Current;
+                    var currentIndex = index;
+
+                    loadTasks.Add(Task.Run(async () =>
+                    {
+                        // We need to ensure that the entity builder has been loaded before loading ANYTHING else
+                        _entityProvider.LoadEntity(id);
+
+                        // Load the renderable data (which we do NOT need to wait for completion on, but which we do need to track)
+                        var renderableBuilder = _renderableBuilders[currentIndex];
+
+                        if (renderableBuilder != null)
+                        {
+                            for (var i = 0; i < rendererWaitCount; i++)
+                            {
+                                loadRenderTasks[i].Add(LoadRenderableBuilder(id, renderableBuilder, i, renderManagers));
+                            }
+                        }
+
+                        // Load the game data (which we NEED to wait for completion on)
+                        await LoadGameBuilderAsync(id, currentIndex, physicsManager, behaviorManager);
+                    }));
+
                     index++;
+
+                    //loadTasks.Add(LoadBuilderAsync(idIterator.Current, index, physicsManager, behaviorManager, renderManagers));
+                    //index++;
                 }
             }
 
             await Task.WhenAll(loadTasks);
+
+            // Hook up renderable loaders to fire events when all renderable builders have been added for each available render manager
+            for (var i = 0; i < rendererWaitCount; i++)
+            {
+                var rendererIndex = i;
+                var a = 3;
+
+                try
+                {
+                    _ = Task.WhenAll(loadRenderTasks[rendererIndex]).ContinueWith(t =>
+                    {
+                        string name;
+
+                        lock (_lock)
+                        {
+                            var nameIndex = _nameIndexByRendererIndex[rendererIndex];
+                            name = _rendererNames[nameIndex];
+                        }
+
+                        RendererLoaded?.Invoke(this, new RendererLoadEventArgs(name));
+                    });
+                }
+                catch (Exception ex)
+                {
+                    a = 4;
+                }
+            }
+        }
+
+        private async Task LoadRenderableBuilder(int id, IRenderableBuilder renderableBuilder, int rendererIndex, List<RenderManager> renderManagers)
+        {
+            if (rendererIndex < renderManagers.Count)
+            {
+                renderManagers[rendererIndex].AddEntity(id, renderableBuilder);
+            }
+            else
+            {
+                var result = await _rendererAddedTasks[rendererIndex].Task;
+
+                if (result)
+                {
+                    RenderManager renderManager;
+
+                    lock (_lock)
+                    {
+                        renderManager = _renderManagers[rendererIndex];
+                    }
+
+                    renderManager.AddEntity(id, renderableBuilder);
+                }
+            }
+        }
+
+        private async Task LoadGameBuilderAsync(int id, int builderIndex, PhysicsManager physicsManager, BehaviorManager behaviorManager)
+        {
+            var loadShapeTask = Task.Run(() => LoadShapeBuilder(id, builderIndex, physicsManager));
+            var loadBehaviorTask = Task.Run(() => LoadBehaviorBuilder(id, builderIndex, behaviorManager));
+
+            await Task.WhenAll(loadShapeTask, loadBehaviorTask);
         }
 
         private async Task LoadBuilderAsync(int id, int builderIndex, PhysicsManager physicsManager, BehaviorManager behaviorManager, List<RenderManager> renderManagers)
@@ -197,6 +330,13 @@ namespace SpiceEngine.Entities.Builders
             }
         }
 
+        // TODO - This isn't gonna work at all :(
+        /*
+            We are adding RenderableBuilders in a loop, so by the time we get to this method, we are looking at a single builder
+            Unfortunately, we want to know when ALL RenderableBuilders have been added successfully to a single RenderManager
+            (So we can report to that RenderManager that it can now safely invoke all batch loading and shit on the UI thread)
+            So... we need to restructure the way these tasks are being split up and managed
+        */
         private async Task LoadRenderableBuilder(int id, int builderIndex, List<RenderManager> renderManagers)
         {
             var renderableBuilder = _renderableBuilders[builderIndex];

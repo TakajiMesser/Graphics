@@ -114,10 +114,12 @@ namespace SpiceEngine.Game
 
             _gameManager.LoadFromMap(_map);
 
-            _entityLoader = new EntityLoader(_gameManager.EntityManager);
+            _entityLoader = new EntityLoader();
+            _entityLoader.SetEntityProvider(_gameManager.EntityManager);
             _entityLoader.SetPhysicsManager(_gameManager.PhysicsManager);
             _entityLoader.SetBehaviorManager(_gameManager.BehaviorManager);
-            _entityLoader.AddRenderManager(_renderManager);
+            _entityLoader.SetRenderManagerNames("Main");
+            _entityLoader.AddRenderManager("Main", _renderManager);
 
             _entityLoader.AddFromMap(_map);
 

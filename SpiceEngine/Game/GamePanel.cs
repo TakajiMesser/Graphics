@@ -231,6 +231,14 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void PostLoad()
+        {
+            Invoke(new Action(() =>
+            {
+                RenderManager.LoadFromMap(_map);
+            }));
+        }
+
         private void LoadFromGameManager()
         {
             // TODO - Should we run this all on the UI thread?
@@ -242,7 +250,7 @@ namespace SpiceEngine.Game
                     RenderMode = _renderMode
                 };
                 RenderManager.SetEntityProvider(_entityProvider);
-                RenderManager.LoadFromMap(_map/*, _entityMapping*/);
+                //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
 
                 _panelCamera = new PanelCamera(Resolution, RenderManager)
                 {

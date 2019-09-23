@@ -233,10 +233,11 @@ namespace SpiceEngine.Rendering.Batches
                 //var entity = _entityProvider.GetEntity(entityID) as Entity;
                 //batch.Transform(entityID, entity.GetModelMatrix());
 
-                if (IsLoaded)
+                // TODO - For now, let's avoid this to tease out why the BatchManager getting loaded too soon
+                /*if (IsLoaded)
                 {
                     batch.Load();
-                }
+                }*/
 
                 return batch;
             }
@@ -343,6 +344,12 @@ namespace SpiceEngine.Rendering.Batches
 
         public void Load()
         {
+            var a = 3;
+            if (a == 3)
+            {
+                a = 4;
+            }
+
             foreach (var batch in _batches)
             {
                 batch.Load();

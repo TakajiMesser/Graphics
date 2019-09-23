@@ -121,6 +121,7 @@
     <Compile Include="Entities\Builders\EntityLoader.cs" />
     <Compile Include="Entities\Builders\IBehaviorBuilder.cs" />
     <Compile Include="Entities\Builders\IEntityBuilder.cs" />
+    <Compile Include="Entities\Builders\RendererLoadEventArgs.cs" />
     <Compile Include="Entities\Builders\IRenderableBuilder.cs" />
     <Compile Include="Entities\Builders\IShapeBuilder.cs" />
     <Compile Include="Entities\Cameras\ICamera.cs" />
