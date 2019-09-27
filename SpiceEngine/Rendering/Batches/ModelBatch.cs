@@ -2,6 +2,8 @@
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
+using System;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
@@ -13,6 +15,14 @@ namespace SpiceEngine.Rendering.Batches
         public ModelBatch(Model model) => Model = model;
 
         public override IBatch Duplicate() => new ModelBatch(Model.Duplicate());
+
+        public override void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        {
+            foreach (var mesh in Model.Meshes)
+            {
+                mesh.Update(vertexUpdate);
+            }
+        }
 
         public override void Load() => Model.Load();
 

@@ -203,6 +203,7 @@
     <Compile Include="Entities\Lights\SpotLight.cs" />
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
+    <Compile Include="Maps\EntityIDEventArgs.cs" />
     <Compile Include="Maps\EntityBuilderEventArgs.cs" />
     <Compile Include="Maps\EntityMapping.cs" />
     <Compile Include="Maps\IMapEntity3D.cs" />

@@ -35,26 +35,26 @@ namespace SauceEditorCore.Models.Components
 
         public Map Map { get; set; }
 
-        public void SetEntityMapping(EntityMapping entityMapping)
+        public void SetEntityMapping(IList<int> actorIDs, IList<int> brushIDs, IList<int> volumeIDs, IList<int> lightIDs)
         {
-            for (var i = 0; i < entityMapping.ActorIDs.Count; i++)
+            for (var i = 0; i < actorIDs.Count; i++)
             {
-                _mapActorIndexByEntityID.Add(entityMapping.ActorIDs[i], i);
+                _mapActorIndexByEntityID.Add(actorIDs[i], i);
             }
 
-            for (var i = 0; i < entityMapping.BrushIDs.Count; i++)
+            for (var i = 0; i < brushIDs.Count; i++)
             {
-                _mapBrushIndexByEntityID.Add(entityMapping.BrushIDs[i], i);
+                _mapBrushIndexByEntityID.Add(brushIDs[i], i);
             }
 
-            for (var i = 0; i < entityMapping.VolumeIDs.Count; i++)
+            for (var i = 0; i < volumeIDs.Count; i++)
             {
-                _mapVolumeIndexByEntityID.Add(entityMapping.VolumeIDs[i], i);
+                _mapVolumeIndexByEntityID.Add(volumeIDs[i], i);
             }
 
-            for (var i = 0; i < entityMapping.LightIDs.Count; i++)
+            for (var i = 0; i < lightIDs.Count; i++)
             {
-                _mapLightIndexByEntityID.Add(entityMapping.LightIDs[i], i);
+                _mapLightIndexByEntityID.Add(lightIDs[i], i);
             }
         }
 

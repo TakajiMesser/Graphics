@@ -194,6 +194,26 @@ namespace SpiceEngine.Rendering
 
                 BatchManager.AddEntity(entityID, new Mesh<EditorVertex3D>(vertices, mesh.TriangleIndices.ToList()));
             }
+            else if (IsInEditorMode && renderable is Model model)
+            {
+                var entity = _entityProvider.GetEntity(entityID);
+
+                // TODO - Do I not need to do this for IModels?
+                /*if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
+                {
+                    var textureMapping = texturePath.TexturePaths.ToTextureMapping(TextureManager);
+                    textureBinder.AddTextureMapping(textureMapping);
+                }*/
+
+                var colorID = SelectionRenderer.GetColorFromID(entityID);
+                for (var i = 0; i < model.Meshes.Count; i++)
+                {
+                    var vertices = model.Meshes[i].Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
+                    model.Meshes[i] = new Mesh<EditorVertex3D>(vertices, model.Meshes[i].TriangleIndices.ToList());
+                }
+
+                BatchManager.AddEntity(entityID, renderable);
+            }
             else
             {
                 BatchManager.AddEntity(entityID, renderable);

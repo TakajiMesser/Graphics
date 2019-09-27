@@ -1,6 +1,7 @@
 ﻿using SpiceEngine.Entities;
 using SpiceEngine.Entities.Builders;
 using SpiceEngine.Maps;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -28,8 +29,7 @@ namespace SpiceEngine.Game
         private int _actorStartIndex;
         private int _volumeStartIndex;
 
-        public bool TrackEntityMapping { get; set; }
-        public EntityMapping EntityMapping { get; private set; }
+        public event EventHandler<EntityIDEventArgs> EntitiesMapped;
 
         public int RendererWaitCount
         {
@@ -135,11 +135,11 @@ namespace SpiceEngine.Game
                     _renderableBuilders.Add(null);
                 }
 
-                if (TrackEntityMapping)
+                if (EntitiesMapped != null)
                 {
                     _brushStartIndex = map.Lights.Count;
-                    _actorStartIndex = map.Brushes.Count;
-                    _volumeStartIndex = map.Actors.Count;
+                    _actorStartIndex = _brushStartIndex + map.Brushes.Count;
+                    _volumeStartIndex = _actorStartIndex + map.Actors.Count;
                 }
             }
         }
@@ -180,7 +180,7 @@ namespace SpiceEngine.Game
             List<int> actorIDs = null;
             List<int> volumeIDs = null;
 
-            if (TrackEntityMapping)
+            if (EntitiesMapped != null)
             {
                 lightIDs = new List<int>();
                 brushIDs = new List<int>();
@@ -222,7 +222,7 @@ namespace SpiceEngine.Game
                         loadBehaviorTasks[currentIndex] = Task.Run(() => LoadBehaviorBuilder(id, currentIndex, behaviorLoader));
                     });
 
-                    if (TrackEntityMapping)
+                    if (EntitiesMapped != null)
                     {
                         if (currentIndex >= _volumeStartIndex)
                         {
@@ -246,10 +246,7 @@ namespace SpiceEngine.Game
                 }
             }
 
-            if (TrackEntityMapping)
-            {
-                EntityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
-            }
+            EntitiesMapped?.Invoke(this, new EntityIDEventArgs(actorIDs, brushIDs, volumeIDs, lightIDs));
 
             await Task.WhenAll(loadEntityTasks);
 

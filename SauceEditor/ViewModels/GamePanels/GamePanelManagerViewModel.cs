@@ -309,12 +309,17 @@ namespace SauceEditor.ViewModels
 
             // TODO - Make these less janky...
             _gameLoader.RendererWaitCount = 4;
-            _gameLoader.TrackEntityMapping = true;
 
             _gameLoader.SetEntityProvider(GameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(GameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(GameManager.BehaviorManager);
             //_gameLoader.AddRenderManager(_renderManager);
+
+            // TODO - This is janky as all hell, this event has to be declared BEFORE we call AddFromMap() or LoadAsync()...
+            _gameLoader.EntitiesMapped += (s, args) =>
+            {
+                MapComponent.SetEntityMapping(args.ActorIDs, args.BrushIDs, args.VolumeIDs, args.LightIDs);
+            };
 
             _gameLoader.AddFromMap(MapComponent.Map);
 
@@ -323,8 +328,6 @@ namespace SauceEditor.ViewModels
 
             //_gameLoader.Load();
             await _gameLoader.LoadAsync();
-
-            MapComponent.SetEntityMapping(_gameLoader.EntityMapping);
 
             //_renderManager.LoadFromMap(_map);
             //GameManager.BehaviorManager.Load();
