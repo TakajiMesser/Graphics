@@ -1,17 +1,9 @@
-﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Entities;
 using SpiceEngine.Entities.Builders;
-using SpiceEngine.Physics;
-using SpiceEngine.Rendering;
-using SpiceEngine.Scripting;
+using SpiceEngine.Maps;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Threading;
-using System;
-using SpiceEngine.Utilities;
-using SpiceEngine.Rendering.PostProcessing;
 
 namespace SpiceEngine.Game
 {
@@ -30,7 +22,14 @@ namespace SpiceEngine.Game
         private int _rendererWaitCount;
         private TaskCompletionSource<bool>[] _rendererAddedTasks;
 
-        private object _lock = new object();
+        private readonly object _lock = new object();
+
+        private int _brushStartIndex;
+        private int _actorStartIndex;
+        private int _volumeStartIndex;
+
+        public bool TrackEntityMapping { get; set; }
+        public EntityMapping EntityMapping { get; private set; }
 
         public int RendererWaitCount
         {
@@ -80,11 +79,11 @@ namespace SpiceEngine.Game
         {
             lock (_lock)
             {
-                _renderableLoader.Add(renderableLoader);
+                _renderableLoaders.Add(renderableLoader);
 
-                if (_renderableLoader.Count <= _rendererAddedTasks.Length)
+                if (_renderableLoaders.Count <= _rendererAddedTasks.Length)
                 {
-                    _rendererAddedTasks[_renderableLoader.Count - 1].TrySetResult(true);
+                    _rendererAddedTasks[_renderableLoaders.Count - 1].TrySetResult(true);
                 }
             }
         }
@@ -135,6 +134,13 @@ namespace SpiceEngine.Game
                     _behaviorBuilders.Add(null);
                     _renderableBuilders.Add(null);
                 }
+
+                if (TrackEntityMapping)
+                {
+                    _brushStartIndex = map.Lights.Count;
+                    _actorStartIndex = map.Brushes.Count;
+                    _volumeStartIndex = map.Actors.Count;
+                }
             }
         }
 
@@ -159,10 +165,28 @@ namespace SpiceEngine.Game
             var loadEntityTasks = new Task[entityCount];
             var loadShapeTasks = new Task[entityCount];
             var loadBehaviorTasks = new Task[entityCount];
-            var loadRenderTasks = new Task[rendererWaitCount, entityCount];
+            var loadRenderTasks = new Task[rendererWaitCount][];
+
+            for (var i = 0; i < rendererWaitCount; i++)
+            {
+                loadRenderTasks[i] = new Task[entityCount];
+            }
 
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Take(entityCount));
             var index = 0;
+
+            List<int> lightIDs = null;
+            List<int> brushIDs = null;
+            List<int> actorIDs = null;
+            List<int> volumeIDs = null;
+
+            if (TrackEntityMapping)
+            {
+                lightIDs = new List<int>();
+                brushIDs = new List<int>();
+                actorIDs = new List<int>();
+                volumeIDs = new List<int>();
+            }
 
             using (var idIterator = ids.GetEnumerator())
             {
@@ -171,13 +195,13 @@ namespace SpiceEngine.Game
                     var id = idIterator.Current;
                     var currentIndex = index;
 
-                    loadEntityTasks.Add(Task.Run(() =>
+                    loadEntityTasks[currentIndex] = Task.Run(() =>
                     {
                         // We need to ensure that the entity builder has been loaded before loading ANYTHING else
                         _entityProvider.LoadEntity(id);
 
                         // Load the renderable data (which we do NOT need to wait for completion on, but which we do need to track)
-                        var renderableBuilder = _renderableBuilders[currentIndex];
+                        /*var renderableBuilder = _renderableBuilders[currentIndex];
 
                         if (renderableBuilder != null)
                         {
@@ -185,29 +209,86 @@ namespace SpiceEngine.Game
                             {
                                 loadRenderTasks[i][currentIndex] = LoadRenderableBuilder(id, renderableBuilder, i, renderableLoaders);
                             }
+                        }*/
+
+                        // TODO - Pretty gross to perform the same null check repeatedly in this loop...
+                        for (var i = 0; i < rendererWaitCount; i++)
+                        {
+                            loadRenderTasks[i][currentIndex] = LoadRenderableBuilder(id, currentIndex, i, renderableLoaders);
                         }
 
                         // Load the game data (which we NEED to wait for completion on)
-                        loadShapeTasks.Add(Task.Run(() => LoadShapeBuilder(id, builderIndex, physicsLoader)));
-                        loadBehaviorTasks.Add(Task.Run(() => LoadBehaviorBuilder(id, builderIndex, behaviorLoader)));
-                    }));
+                        loadShapeTasks[currentIndex] = Task.Run(() => LoadShapeBuilder(id, currentIndex, physicsLoader));
+                        loadBehaviorTasks[currentIndex] = Task.Run(() => LoadBehaviorBuilder(id, currentIndex, behaviorLoader));
+                    });
+
+                    if (TrackEntityMapping)
+                    {
+                        if (currentIndex >= _volumeStartIndex)
+                        {
+                            volumeIDs.Add(id);
+                        }
+                        else if (currentIndex >= _actorStartIndex)
+                        {
+                            actorIDs.Add(id);
+                        }
+                        else if (currentIndex >= _brushStartIndex)
+                        {
+                            brushIDs.Add(id);
+                        }
+                        else
+                        {
+                            lightIDs.Add(id);
+                        }
+                    }
 
                     index++;
                 }
             }
 
+            if (TrackEntityMapping)
+            {
+                EntityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
+            }
+
             await Task.WhenAll(loadEntityTasks);
 
-            var loadTasks = new List<Task>();
-            loadTasks.Add(Task.WhenAll(loadShapeTasks).ContinueWith(t => physicsLoader.Load()));
-            loadTasks.Add(Task.WhenAll(loadBehaviorTasks).ContinueWith(t => behaviorLoader.Load()));
+            var loadTasks = new List<Task>
+            {
+                Task.Run(async () =>
+                {
+                    await Task.WhenAll(loadShapeTasks);
+                    await physicsLoader.Load();
+                }),
+                Task.Run(async () =>
+                {
+                    await Task.WhenAll(loadBehaviorTasks);
+                    await behaviorLoader.Load();
+                }),
+                //Task.WhenAll(loadShapeTasks).ContinueWith(async t => await physicsLoader.Load()),
+                //Task.WhenAll(loadBehaviorTasks).ContinueWith(async t => await behaviorLoader.Load())
+            };
 
             // Hook up renderable loaders to fire events when all renderable builders have been added for each available render loader
             for (var i = 0; i < rendererWaitCount; i++)
             {
                 var rendererIndex = i;
 
-                loadTasks.Add(Task.WhenAll(loadRenderTasks[rendererIndex]).ContinueWith(t =>
+                loadTasks.Add(Task.Run(async () =>
+                {
+                    await Task.WhenAll(loadRenderTasks[rendererIndex]);
+
+                    IEntityLoader<IRenderableBuilder> renderableLoader;
+
+                    lock (_lock)
+                    {
+                        renderableLoader = _renderableLoaders[rendererIndex];
+                    }
+
+                    await renderableLoader.Load();
+                }));
+
+                /*loadTasks.Add(Task.WhenAll(loadRenderTasks[rendererIndex]).ContinueWith(async t =>
                 {
                     IEntityLoader<IRenderableBuilder> renderableLoader;
 
@@ -216,8 +297,8 @@ namespace SpiceEngine.Game
                         renderableLoader = _renderableLoaders[rendererIndex];
                     }
 
-                    renderableLoader.Load();
-                }));
+                    await renderableLoader.Load();
+                }));*/
             }
 
             await Task.WhenAll(loadTasks);
@@ -233,26 +314,31 @@ namespace SpiceEngine.Game
             }
         }
 
-        private async Task LoadRenderableBuilder(int id, IRenderableBuilder renderableBuilder, int rendererIndex, IEntityLoader<IRenderableBuilder>[] renderableLoaders)
+        private async Task LoadRenderableBuilder(int id, int builderIndex, int rendererIndex, IEntityLoader<IRenderableBuilder>[] renderableLoaders)
         {
-            if (rendererIndex < renderableLoaders.Length)
-            {
-                renderableLoaders[rendererIndex].AddEntity(id, renderableBuilder);
-            }
-            else
-            {
-                var result = await _rendererAddedTasks[rendererIndex].Task;
+            IRenderableBuilder renderableBuilder = _renderableBuilders[builderIndex];
 
-                if (result)
+            if (renderableBuilder != null)
+            {
+                if (rendererIndex < renderableLoaders.Length)
                 {
-                    IEntityLoader<IRenderableBuilder> renderableLoader;
+                    renderableLoaders[rendererIndex].AddEntity(id, renderableBuilder);
+                }
+                else
+                {
+                    var result = await _rendererAddedTasks[rendererIndex].Task;
 
-                    lock (_lock)
+                    if (result)
                     {
-                        renderableLoader = _renderableLoaders[rendererIndex];
-                    }
+                        IEntityLoader<IRenderableBuilder> renderableLoader;
 
-                    renderableLoader.AddEntity(id, renderableBuilder);
+                        lock (_lock)
+                        {
+                            renderableLoader = _renderableLoaders[rendererIndex];
+                        }
+
+                        renderableLoader.AddEntity(id, renderableBuilder);
+                    }
                 }
             }
         }

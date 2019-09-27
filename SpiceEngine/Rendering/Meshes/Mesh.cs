@@ -42,8 +42,8 @@ namespace SpiceEngine.Rendering.Meshes
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
-        private List<T> _vertices;
-        private List<int> _triangleIndices;
+        private List<T> _vertices = new List<T>();
+        private List<int> _triangleIndices = new List<int>();
 
         private VertexBuffer<T> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
@@ -58,8 +58,8 @@ namespace SpiceEngine.Rendering.Meshes
                 throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
             }
 
-            _vertices = vertices;
-            _triangleIndices = triangleIndices;
+            _vertices.AddRange(vertices);
+            _triangleIndices.AddRange(triangleIndices);
         }
 
         public IMesh Duplicate() => new Mesh<T>(_vertices.ToList(), _triangleIndices.ToList());
@@ -82,7 +82,7 @@ namespace SpiceEngine.Rendering.Meshes
         {
             for (var i = offset; i < count; i++)
             {
-                var originalVertex = _vertices[i];
+                //var originalVertex = _vertices[i];
                 var transformedVertex = (T)_vertices[i].Transformed(transform);
                 _vertices[i] = transformedVertex;
             }

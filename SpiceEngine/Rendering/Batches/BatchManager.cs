@@ -109,24 +109,8 @@ namespace SpiceEngine.Rendering.Batches
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
-            /*var datName = "";
-            if (_entityProvider.GetEntity(entityID) is Actor actor)
-            {
-                datName = actor.Name;
-            }*/
-
             var renderType = GetRenderTypeForRenderable(renderable);
-
-            var a = 3;
-            try
-            {
-                _renderTypeByEntityID.Add(entityID, renderType);
-            }
-            catch (Exception ex)
-            {
-                a = 4;
-            }
-            
+            _renderTypeByEntityID.Add(entityID, renderType);
 
             var idSet = GetEntityIDSet(renderType);
             idSet.Add(entityID);
@@ -233,7 +217,7 @@ namespace SpiceEngine.Rendering.Batches
                 //var entity = _entityProvider.GetEntity(entityID) as Entity;
                 //batch.Transform(entityID, entity.GetModelMatrix());
 
-                // TODO - For now, let's avoid this to tease out why the BatchManager getting loaded too soon
+                // TODO - For now, let's avoid this to tease out why the BatchManager is getting loaded too soon
                 /*if (IsLoaded)
                 {
                     batch.Load();
@@ -344,12 +328,6 @@ namespace SpiceEngine.Rendering.Batches
 
         public void Load()
         {
-            var a = 3;
-            if (a == 3)
-            {
-                a = 4;
-            }
-
             foreach (var batch in _batches)
             {
                 batch.Load();

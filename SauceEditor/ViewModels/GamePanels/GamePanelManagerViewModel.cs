@@ -307,7 +307,10 @@ namespace SauceEditor.ViewModels
             GameManager = new GameManager(Resolution);
             GameManager.LoadFromMap(MapComponent.Map);
 
+            // TODO - Make these less janky...
             _gameLoader.RendererWaitCount = 4;
+            _gameLoader.TrackEntityMapping = true;
+
             _gameLoader.SetEntityProvider(GameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(GameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(GameManager.BehaviorManager);

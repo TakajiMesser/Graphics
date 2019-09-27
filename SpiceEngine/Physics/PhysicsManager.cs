@@ -13,6 +13,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics
 {
@@ -79,14 +80,14 @@ namespace SpiceEngine.Physics
             }
         }
 
+        public Task Load()
+        {
+            //TODO - Do something here...
+            return Task.Run(() => { });
+        }
+
         private IPartitionTree GetPartitionTree(int entityID)
         {
-            var a = 3;
-            if (entityID == 13)
-            {
-                a = 4;
-            }
-
             var entity = _entityProvider.GetEntity(entityID);
 
             switch (entity)

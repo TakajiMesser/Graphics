@@ -16,6 +16,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using Timer = System.Timers.Timer;
 
@@ -30,7 +31,7 @@ namespace SpiceEngine.Game
         Texture
     }
 
-    public class GamePanel : GLControl, IMouseTracker
+    public class GamePanel : GLControl, IMouseTracker, IInvoker
     {
         private PanelCamera _panelCamera;
 
@@ -231,6 +232,15 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void Run(Action action) => Invoke(action);
+
+        public Task RunAsync(Action action)
+        {
+            return Task.Run(() => Invoke(action));
+            /*var result = BeginInvoke(action);
+            result.AsyncWaitHandle.WaitOne();*/
+        }
+
         private void LoadFromGameManager()
         {
             // TODO - Should we run this all on the UI thread?
@@ -239,7 +249,8 @@ namespace SpiceEngine.Game
                 RenderManager = new RenderManager(Resolution, WindowSize)
                 {
                     IsInEditorMode = true,
-                    RenderMode = _renderMode
+                    RenderMode = _renderMode,
+                    Invoker = this
                 };
                 RenderManager.SetEntityProvider(_entityProvider);
                 //RenderManager.LoadFromMap(_map/*, _entityMapping*/);

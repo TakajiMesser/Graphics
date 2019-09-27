@@ -16,6 +16,8 @@ namespace SpiceEngine.Rendering.Textures
         public bool EnableMipMapping { get; set; } = true;
         public bool EnableAnisotropy { get; set; } = true;
 
+        public IInvoker Invoker { get; set; }
+
         public TextureManager() { }
 
         /// <summary>
@@ -45,7 +47,8 @@ namespace SpiceEngine.Rendering.Textures
                     _textures.Add(null);
                 }
 
-                GameWindow.ProcessOnMainThread(() =>
+                // TODO - If Invoker is null, queue this action up
+                Invoker?.Run(() =>
                 {
                     var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
                     _textures[index] = texture;

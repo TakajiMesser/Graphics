@@ -9,7 +9,6 @@ using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Game;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
@@ -22,6 +21,7 @@ using SpiceEngine.Utilities;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpiceEngine.Rendering
 {
@@ -33,15 +33,13 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : UpdateManager, IGridRenderer, IEntityLoader<IRenderableBuilder>
+    public class RenderManager : EntityLoader<IRenderableBuilder>, IGridRenderer
     {
+        public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
         public double Frequency { get; internal set; }
-        public bool IsLoaded { get; private set; }
         public bool RenderGrid { get; set; }
-
-        public RenderModes RenderMode { get; set; }
 
         public BatchManager BatchManager { get; private set; }
         public TextureManager TextureManager { get; } = new TextureManager();
@@ -70,6 +68,17 @@ namespace SpiceEngine.Rendering
 
         private LogManager _logManager;
 
+        private IInvoker _invoker;
+        public IInvoker Invoker
+        {
+            get => _invoker;
+            set
+            {
+                _invoker = value;
+                TextureManager.Invoker = value;
+            }
+        }
+
         public RenderManager(Resolution resolution, Resolution windowSize)
         {
             Resolution = resolution;
@@ -87,35 +96,9 @@ namespace SpiceEngine.Rendering
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
         public void SetCamera(ICamera camera) => _camera = camera;
 
-        public void Load()
-        {
-            BatchManager.Load();
+        public void LoadFromMap(Map map) => _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 
-            _forwardRenderer.Load(Resolution);
-            _deferredRenderer.Load(Resolution);
-            _wireframeRenderer.Load(Resolution);
-            _shadowRenderer.Load(Resolution);
-            _lightRenderer.Load(Resolution);
-            _skyboxRenderer.Load(Resolution);
-            _selectionRenderer.Load(Resolution);
-            _billboardRenderer.Load(Resolution);
-            _fxaaRenderer.Load(Resolution);
-            _blurRenderer.Load(Resolution);
-            _invertRenderer.Load(Resolution);
-            _textRenderer.Load(Resolution);
-            _renderToScreen.Load(WindowSize);
-
-            GL.ClearColor(Color4.Black);
-
-            IsLoaded = true;
-        }
-
-        public void LoadFromMap(Map map)
-        {
-            _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
-        }
-
-        public void AddEntity(int entityID, IRenderableBuilder builder)
+        public override void AddEntity(int entityID, IRenderableBuilder builder)
         {
             var renderable = builder.ToRenderable();
 
@@ -157,6 +140,38 @@ namespace SpiceEngine.Rendering
             AddEntity(entityID, renderable);
         }
 
+        protected override Task LoadInternal()
+        {
+            // TODO - If Invoker is null, queue up this action
+            return Invoker.RunAsync(() =>
+            {
+                _forwardRenderer.Load(Resolution);
+                _deferredRenderer.Load(Resolution);
+                _wireframeRenderer.Load(Resolution);
+                _shadowRenderer.Load(Resolution);
+                _lightRenderer.Load(Resolution);
+                _skyboxRenderer.Load(Resolution);
+                _selectionRenderer.Load(Resolution);
+                _billboardRenderer.Load(Resolution);
+                _fxaaRenderer.Load(Resolution);
+                _blurRenderer.Load(Resolution);
+                _invertRenderer.Load(Resolution);
+                _textRenderer.Load(Resolution);
+                _renderToScreen.Load(WindowSize);
+
+                GL.ClearColor(Color4.Black);
+            });
+        }
+
+        protected override void LoadEntities()
+        {
+            // TODO - If Invoker is null, queue up this action
+            Invoker.RunAsync(() =>
+            {
+                BatchManager.Load();
+            });
+        }
+
         public void AddEntity(int entityID, IRenderable renderable)
         {
             if (renderable is TextureID textureID)
@@ -187,58 +202,32 @@ namespace SpiceEngine.Rendering
 
         public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);
 
-        /*private void AddBrushes(IList<MapBrush> mapBrushes, IList<int> brushIDs)
-        {
-            for (var i = 0; i < mapBrushes.Count; i++)
-            {
-                AddBrush(mapBrushes[i], brushIDs[i]);
-            }
-        }
-
-        private void AddActors(IList<MapActor> mapActors, IList<int> actorIDs)
-        {
-            for (var i = 0; i < mapActors.Count; i++)
-            {
-                AddActor(mapActors[i], actorIDs[i]);
-            }
-        }
-
-        private void AddVolumes(IList<MapVolume> mapVolumes, IList<int> volumeIDs)
-        {
-            for (var i = 0; i < mapVolumes.Count; i++)
-            {
-                var entityID = volumeIDs[i];
-                var mesh = mapVolumes[i].ToMesh();
-
-                BatchManager.AddVolume(entityID, mesh);
-            }
-        }*/
-
-        /*private void AddLights(IList<Light> lights, IList<int> lightIDs)
-        {
-            foreach (var light in lights)
-            {
-                //BatchManager.light.ID;
-            }
-        }*/
-
         public void ResizeResolution()
         {
-            _forwardRenderer.ResizeTextures(Resolution);
-            _deferredRenderer.ResizeTextures(Resolution);
-            _wireframeRenderer.ResizeTextures(Resolution);
-            _shadowRenderer.ResizeTextures(Resolution);
-            _skyboxRenderer.ResizeTextures(Resolution);
-            _lightRenderer.ResizeTextures(Resolution);
-            _selectionRenderer.ResizeTextures(Resolution);
-            _billboardRenderer.ResizeTextures(Resolution);
-            _fxaaRenderer.ResizeTextures(Resolution);
-            _blurRenderer.ResizeTextures(Resolution);
-            _invertRenderer.ResizeTextures(Resolution);
-            _textRenderer.ResizeTextures(Resolution);
+            if (IsLoaded)
+            {
+                _forwardRenderer.ResizeTextures(Resolution);
+                _deferredRenderer.ResizeTextures(Resolution);
+                _wireframeRenderer.ResizeTextures(Resolution);
+                _shadowRenderer.ResizeTextures(Resolution);
+                _skyboxRenderer.ResizeTextures(Resolution);
+                _lightRenderer.ResizeTextures(Resolution);
+                _selectionRenderer.ResizeTextures(Resolution);
+                _billboardRenderer.ResizeTextures(Resolution);
+                _fxaaRenderer.ResizeTextures(Resolution);
+                _blurRenderer.ResizeTextures(Resolution);
+                _invertRenderer.ResizeTextures(Resolution);
+                _textRenderer.ResizeTextures(Resolution);
+            }
         }
 
-        public void ResizeWindow() => _renderToScreen.ResizeTextures(WindowSize);
+        public void ResizeWindow()
+        {
+            if (IsLoaded)
+            {
+                _renderToScreen.ResizeTextures(WindowSize);
+            }
+        }
 
         /*public void RenderEntityIDs(Volume volume)
         {
@@ -380,6 +369,7 @@ namespace SpiceEngine.Rendering
 
         protected override void Update()
         {
+            // TODO - It would be better to have separate objects run different Update() implementations than to branch every loop iteration here
             switch (RenderMode)
             {
                 case RenderModes.Wireframe:

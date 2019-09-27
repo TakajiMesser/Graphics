@@ -14,12 +14,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 
 namespace SpiceEngine.Game
 {
-    public class GameWindow : OpenTK.GameWindow, IMouseTracker
+    public class GameWindow : OpenTK.GameWindow, IMouseTracker, IInvoker
     {
         private GameManager _gameManager;
         private RenderManager _renderManager;
@@ -27,12 +28,14 @@ namespace SpiceEngine.Game
         private GameLoader _gameLoader;
 
         //private Dispatcher _mainDispatcher;
-        private static ConcurrentQueue<Action> _mainActionQueue = new System.Collections.Concurrent.ConcurrentQueue<Action>();
+        private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
 
         private MouseState? _mouseState = null;
 
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
+
+        private bool _isClosing = false;
 
         private Map _map;
         private object _loadLock = new object();
@@ -76,6 +79,11 @@ namespace SpiceEngine.Game
             while (true)
             {
                 ProcessLoadEvents();
+
+                if (_isClosing)
+                {
+                    break;
+                }
             }
         }
 
@@ -84,6 +92,7 @@ namespace SpiceEngine.Game
             if (IsLoaded)
             {
                 Run(60.0f, 0.0f);
+                _isClosing = true;
             }
             else if (_loadWatch.ElapsedMilliseconds > _loadTimeout)
             {
@@ -100,7 +109,20 @@ namespace SpiceEngine.Game
             }
         }
 
-        public static void ProcessOnMainThread(Action action) => _mainActionQueue.Enqueue(action);
+        public void Run(Action action) => _mainActionQueue.Enqueue(action);
+
+        public async Task RunAsync(Action action)
+        {
+            var taskCompletionSource = new TaskCompletionSource<bool>();
+
+            _mainActionQueue.Enqueue(() =>
+            {
+                action();
+                taskCompletionSource.TrySetResult(true);
+            });
+
+            await taskCompletionSource.Task;
+        }
 
         private async void LoadAsync()
         {
@@ -109,30 +131,42 @@ namespace SpiceEngine.Game
 
             _renderManager = new RenderManager(Resolution, WindowSize)
             {
-                RenderMode = RenderModes.Full
+                RenderMode = RenderModes.Full,
+                Invoker = this
             };
             _fpsTimer.Start();
 
             _gameManager.LoadFromMap(_map);
 
-            _gameLoader = new GameLoader();
+            _gameLoader = new GameLoader()
+            {
+                RendererWaitCount = 1
+            };
             _gameLoader.SetEntityProvider(_gameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
-            _gameLoader.SetRenderManagerNames("Main");
-            _gameLoader.AddRenderableLoader("Main", _renderManager);
+            _gameLoader.AddRenderableLoader(_renderManager);
 
             _gameLoader.AddFromMap(_map);
 
             _renderManager.SetEntityProvider(_gameManager.EntityManager);
             _renderManager.SetCamera(_gameManager.Camera);
+            _renderManager.LoadFromMap(_map);
 
             //_gameLoader.Load();
             await _gameLoader.LoadAsync();
 
+            if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
+            {
+                var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
+                _gameManager.Camera.AttachToEntity(actor, true, false);
+            }
+
+            IsLoaded = true;
+
             //_renderManager.LoadFromMap(_map);
 
-            _gameManager.BehaviorManager.Load();
+            /*_gameManager.BehaviorManager.Load();
 
             if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
             {
@@ -145,7 +179,7 @@ namespace SpiceEngine.Game
                 MakeCurrent();
                 _renderManager.LoadFromMap(_map);
                 IsLoaded = true;
-            });
+            });*/
 
             GameLoaded?.Invoke(this, new EventArgs());
         }
