@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Helpers;
 using SpiceEngine.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Shaders
@@ -69,6 +70,37 @@ namespace SpiceEngine.Rendering.Shaders
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.BindImageTexture(index);
             GL.Uniform1(location, index);
+        }
+
+        public void SetUniform<T>(string name, T value) where T : struct
+        {
+            switch (value)
+            {
+                case Matrix4 matrix4:
+                    SetUniform(name, matrix4);
+                    break;
+                case Matrix4[] matrices:
+                    SetUniform(name, matrices);
+                    break;
+                case Vector2 vector2:
+                    SetUniform(name, vector2);
+                    break;
+                case Vector3 vector3:
+                    SetUniform(name, vector3);
+                    break;
+                case Vector4 vector4:
+                    SetUniform(name, vector4);
+                    break;
+                case Color4 color4:
+                    SetUniform(name, color4);
+                    break;
+                case float floatValue:
+                    SetUniform(name, floatValue);
+                    break;
+                case int intValue:
+                    SetUniform(name, intValue);
+                    break;
+            }
         }
 
         public void SetUniform(string name, Matrix4 matrix)
@@ -158,32 +190,32 @@ namespace SpiceEngine.Rendering.Shaders
             return index;
         }
 
-        public void BindTextures(TextureManager textureManager, TextureMapping textureMapping)
+        public void BindTextures(ITextureProvider textureProvider, TextureMapping textureMapping)
         {
             // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
             // Check brush's texture mapping to see which textures we need to bind
-            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
+            var diffuseMap = textureProvider.RetrieveTexture(textureMapping.DiffuseIndex);
             GL.Uniform1(GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
             if (diffuseMap != null)
             {
                 BindTexture(diffuseMap, "diffuseMap", 0);
             }
 
-            var normalMap = textureManager.RetrieveTexture(textureMapping.NormalMapID);
+            var normalMap = textureProvider.RetrieveTexture(textureMapping.NormalIndex);
             GL.Uniform1(GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
             if (normalMap != null)
             {
                 BindTexture(normalMap, "normalMap", 1);
             }
 
-            var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularMapID);
+            var specularMap = textureProvider.RetrieveTexture(textureMapping.SpecularIndex);
             GL.Uniform1(GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
             if (specularMap != null)
             {
                 BindTexture(specularMap, "specularMap", 2);
             }
 
-            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxMapID);
+            var parallaxMap = textureProvider.RetrieveTexture(textureMapping.ParallaxIndex);
             GL.Uniform1(GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
             if (parallaxMap != null)
             {

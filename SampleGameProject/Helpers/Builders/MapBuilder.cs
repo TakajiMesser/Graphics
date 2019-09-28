@@ -2,8 +2,12 @@
 using OpenTK.Graphics;
 using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Materials;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
+using System.Linq;
 using static SpiceEngine.Maps.MapLight;
 
 namespace SampleGameProject.Helpers.Builders
@@ -50,21 +54,32 @@ namespace SampleGameProject.Helpers.Builders
             //floor.NormalMapFilePath = FilePathHelper.GRASS_N_TEXTURE_PATH;
             yield return floor;
 
-            var wall = MapBrush.Box(new Vector3(10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
-            wall.IsPhysical = true;
-            wall.TexturesPaths = new TexturePaths()
+            var wallShape = ModelMesh.Box(5.0f, 10.0f, 5.0f);
+            wallShape.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
+            var wall = new MapBrush(new ModelBuilder(wallShape))
             {
-                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                Position = new Vector3(10.0f, 0.0f, 0.0f),
+                IsPhysical = true,
+                TexturesPaths = new TexturePaths()
+                {
+                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                }
             };
             yield return wall;
 
-            var wall2 = MapBrush.Box(new Vector3(-10.0f, 0.0f, 0.0f), 5.0f, 10.0f, 5.0f);
-            wall2.IsPhysical = true;
-            wall2.TexturesPaths = new TexturePaths()
+
+            var wallShape2 = ModelMesh.Box(5.0f, 10.0f, 5.0f);
+            wallShape2.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
+            var wall2 = new MapBrush(new ModelBuilder(wallShape2))
             {
-                DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                Position = new Vector3(-10.0f, 0.0f, 0.0f),
+                IsPhysical = true,
+                TexturesPaths = new TexturePaths()
+                {
+                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                }
             };
             yield return wall2;
         }
@@ -96,7 +111,7 @@ namespace SampleGameProject.Helpers.Builders
                 Radius = 10.0f,
                 Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f),
                 Intensity = 0.5f,
-                Rotation = new Vector3(0.0f, -45.0f, -45.0f),//Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
+                Rotation = new Vector3(-45.0f, -45.0f, 0.0f),//Quaternion.FromAxisAngle(Vector3.UnitZ, UnitConversions.ToRadians(-45.0f)) * Quaternion.FromAxisAngle(Vector3.UnitY, UnitConversions.ToRadians(-45.0f)),
                 Height = 20.0f
             };
         }

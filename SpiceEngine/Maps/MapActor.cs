@@ -1,12 +1,16 @@
 ﻿using OpenTK;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Utilities;
 using System.Collections.Generic;
@@ -14,7 +18,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapActor : MapEntity3D<Actor>
+    public class MapActor : MapEntity3D<Actor>, IRenderableBuilder, IShapeBuilder, IBehaviorBuilder
     {
         public string Name { get; set; }
 
@@ -25,6 +29,8 @@ namespace SpiceEngine.Maps
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
         public MapBehavior Behavior { get; set; }
+
+        public IEnumerable<Script> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<Script>();
         public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
         public List<Property> Properties { get; set; } = new List<Property>();
 
@@ -49,74 +55,7 @@ namespace SpiceEngine.Maps
             }
         }
 
-        public IEnumerable<IMesh3D> ToMeshes()
-        {
-            using (var importer = new Assimp.AssimpContext())
-            {
-                var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
-                    | Assimp.PostProcessSteps.CalculateTangentSpace
-                    | Assimp.PostProcessSteps.LimitBoneWeights
-                    | Assimp.PostProcessSteps.Triangulate
-                    | Assimp.PostProcessSteps.GenerateSmoothNormals
-                    | Assimp.PostProcessSteps.FlipUVs);
-
-                if (scene.HasAnimations)
-                {
-                    foreach (var mesh in scene.Meshes)
-                    {
-                        var vertices = new List<JointVertex3D>();
-
-                        for (var i = 0; i < mesh.VertexCount; i++)
-                        {
-                            var position = mesh.Vertices[i].ToVector3();
-                            var normals = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3();
-                            var tangents = mesh.HasTangentBasis ? mesh.Tangents[i].ToVector3() : new Vector3();
-                            var textureCoords = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0][i].ToVector2() : new Vector2();
-                            var boneIDs = new Vector4();
-                            var boneWeights = new Vector4();
-
-                            if (mesh.HasBones)
-                            {
-                                var matches = mesh.Bones.Select((bone, boneIndex) => new { bone, boneIndex })
-                                    .Where(b => b.bone.VertexWeights.Any(v => v.VertexID == i))
-                                    .ToList();
-
-                                for (var j = 0; j < 4 && j < matches.Count; j++)
-                                {
-                                    boneIDs[j] = matches[j].boneIndex;
-                                    boneWeights[j] = matches[j].bone.VertexWeights.First(v => v.VertexID == i).Weight;
-                                }
-                            }
-
-                            vertices.Add(new JointVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
-                        }
-
-                        yield return new Mesh3D<JointVertex3D>(vertices, mesh.GetIndices().ToList());
-                    }
-                }
-                else
-                {
-                    foreach (var mesh in scene.Meshes)
-                    {
-                        var vertices = new List<Vertex3D>();
-
-                        for (var i = 0; i < mesh.VertexCount; i++)
-                        {
-                            var position = mesh.Vertices[i].ToVector3();
-                            var normals = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3();
-                            var tangents = mesh.HasTangentBasis ? mesh.Tangents[i].ToVector3() : new Vector3();
-                            var textureCoords = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0][i].ToVector2() : new Vector2();
-
-                            vertices.Add(new Vertex3D(position, normals, tangents, textureCoords));
-                        }
-
-                        yield return new Mesh3D<Vertex3D>(vertices, mesh.GetIndices().ToList());
-                    }
-                }
-            }
-        }
-
-        public override Actor ToEntity(/*TextureManager textureManager = null*/)
+        public override IEntity ToEntity(/*TextureManager textureManager = null*/)
         {
             var actor = new Actor(Name);
 
@@ -292,18 +231,20 @@ namespace SpiceEngine.Maps
                     for (var i = 0; i < scene.Meshes.Count; i++)
                     {
                         var material = new Material(scene.Materials[scene.Meshes[i].MaterialIndex]);
-                        actor.AddMaterial(i, material);
+                        actor.AddMaterial(material);
                     }
                 }
             }
 
             actor.Position = Position;
-            actor.Rotation = Quaternion.FromEulerAngles(Rotation);
+            actor.Orientation = Quaternion.FromEulerAngles(Orientation.ToRadians());
+            actor.Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians());
             actor.Scale = Scale;
-            actor.Orientation = Quaternion.FromEulerAngles(Orientation);
 
             return actor;
         }
+
+        public IRenderable ToRenderable() => new Model(ModelFilePath);
 
         public Shape3D ToShape()
         {
@@ -328,8 +269,8 @@ namespace SpiceEngine.Maps
                     .SelectMany(m => m.Vertices
                         .Select(v => v.ToVector3()))
                     .Select(v => (Matrix4.CreateScale(Scale)
-                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation)
-                        * Quaternion.FromEulerAngles(Rotation))
+                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
+                        * Quaternion.FromEulerAngles(Rotation.ToRadians()))
                         * new Vector4(v, 1.0f)).Xyz);
 
                 if (Name == "Player")
@@ -347,6 +288,8 @@ namespace SpiceEngine.Maps
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
         }
+
+        public Behavior ToBehavior() => Behavior?.ToBehavior();
 
         /*public Script ToScript()
         {

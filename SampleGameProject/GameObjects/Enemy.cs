@@ -15,7 +15,7 @@ namespace SampleGameProject.GameObjects
             Offset = new Vector3();
             Scale = 0.04f * Vector3.One;
             Rotation = Vector3.Zero;
-            Orientation = new Vector3(90.0f, 0.0f, 0.0f);
+            Orientation = new Vector3(0.0f, 0.0f, 90.0f);
             ModelFilePath = FilePathHelper.BOB_LAMP_MESH_PATH;
 
             /*TexturesPaths.Add(new TexturePaths()

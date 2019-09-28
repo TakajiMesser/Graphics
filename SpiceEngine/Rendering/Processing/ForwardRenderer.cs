@@ -106,8 +106,9 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(Resolution resolution, Camera camera, BatchManager batchManager, TextureManager textureManager)
+        public void Render(Resolution resolution, Camera camera, BatchManager batchManager)
         {
+            // TODO - Where does frame buffer binding and GL value setting fit into BatchAction?
             _program.Use();
             _frameBuffer.BindAndDraw();
 
@@ -115,38 +116,38 @@ namespace SpiceEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
-            camera.SetUniforms(_program);
-
-            batchManager.DrawBrushes(_program, textureManager);
-            batchManager.DrawActors(_program, textureManager);
+            batchManager.CreateBatchAction()
+                .SetShader(_program)
+                .SetCamera(camera)
+                .RenderOpaqueStatic();
         }
 
         private void BindTextures(TextureManager textureManager, TextureMapping textureMapping)
         {
             // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
             // Check brush's texture mapping to see which textures we need to bind
-            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseMapID);
+            var diffuseMap = textureManager.RetrieveTexture(textureMapping.DiffuseIndex);
             GL.Uniform1(_program.GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
             if (diffuseMap != null)
             {
                 _program.BindTexture(diffuseMap, "diffuseMap", 0);
             }
 
-            var normalMap = textureManager.RetrieveTexture(textureMapping.NormalMapID);
+            var normalMap = textureManager.RetrieveTexture(textureMapping.NormalIndex);
             GL.Uniform1(_program.GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
             if (normalMap != null)
             {
                 _program.BindTexture(normalMap, "normalMap", 1);
             }
 
-            var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularMapID);
+            var specularMap = textureManager.RetrieveTexture(textureMapping.SpecularIndex);
             GL.Uniform1(_program.GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
             if (specularMap != null)
             {
                 _program.BindTexture(specularMap, "specularMap", 2);
             }
 
-            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxMapID);
+            var parallaxMap = textureManager.RetrieveTexture(textureMapping.ParallaxIndex);
             GL.Uniform1(_program.GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
             if (parallaxMap != null)
             {

@@ -7,7 +7,10 @@ uniform mat4 modelMatrix;
 uniform mat4 viewMatrix;
 uniform mat4 projectionMatrix;
 
+in vec4 gId[];
+
 smooth out vec3 gEdgeDistance;
+out vec4 fId;
 
 void main()
 {
@@ -24,14 +27,17 @@ void main()
 
     gEdgeDistance = vec3(ha, 0, 0);
     gl_Position = gl_in[0].gl_Position;
+	fId = gId[0];
     EmitVertex();
 
     gEdgeDistance = vec3(0, hb, 0);
     gl_Position = gl_in[1].gl_Position;
+	fId = gId[1];
     EmitVertex();
 
     gEdgeDistance = vec3(0, 0, hc);
     gl_Position = gl_in[2].gl_Position;
+	fId = gId[2];
     EmitVertex();
 
     EndPrimitive();

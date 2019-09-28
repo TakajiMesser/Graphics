@@ -1,4 +1,7 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Rendering.Shaders;
+using System;
 
 namespace SpiceEngine.Entities
 {
@@ -6,6 +9,11 @@ namespace SpiceEngine.Entities
     {
         int ID { get; set; }
         Vector3 Position { get; set; }
-        //IEntity Duplicate();
+
+        void Transform(Transform transform);
+        void SetUniforms(ShaderProgram shader);
+        bool CompareUniforms(IEntity entity);
+
+        event EventHandler<EntityTransformEventArgs> Transformed;
     }
 }

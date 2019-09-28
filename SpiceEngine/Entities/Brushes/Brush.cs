@@ -10,15 +10,10 @@ namespace SpiceEngine.Entities.Brushes
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : IEntity, IRotate, IScale
+    public class Brush : TexturedEntity, IRotate, IScale, ITextureBinder
     {
-        public int ID { get; set; }
-
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set => _modelMatrix.Translation = value;
-        }
+        private Material _material;
+        private TextureMapping? _textureMapping;
 
         public Quaternion Rotation
         {
@@ -33,71 +28,38 @@ namespace SpiceEngine.Entities.Brushes
         }
 
         //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
-        public Matrix4 ModelMatrix => _modelMatrix.Matrix;
+        //public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
 
-        public Material Material { get; set; }
-        public TextureMapping TextureMapping { get; set; }
+        public override Material Material => _material;
+        public override TextureMapping? TextureMapping => _textureMapping;
 
-        private ModelMatrix _modelMatrix = new ModelMatrix();
+        public override void AddMaterial(Material material) => _material = material;
+        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMapping = textureMapping;
 
-        public Brush(Material material)
+        public override void SetUniforms(ShaderProgram program)
         {
-            Material = material;
-            //SimpleMesh = new SimpleMesh(vertices.Select(v => v.Position).ToList(), triangleIndices, program);
+            base.SetUniforms(program);
+            program.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
+            program.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
         }
 
         public Brush Duplicate()
         {
-            var brush = new Brush(Material)
+            var brush = new Brush()
             {
                 Position = Position,
                 Rotation = Rotation,
                 Scale = Scale,
-                TextureMapping = new TextureMapping()
-                {
-                    DiffuseMapID = TextureMapping.DiffuseMapID,
-                    NormalMapID = TextureMapping.NormalMapID,
-                    ParallaxMapID = TextureMapping.ParallaxMapID,
-                    SpecularMapID = TextureMapping.SpecularMapID
-                }
+                _material = Material
             };
+
+            if (TextureMapping.HasValue)
+            {
+                var textureMapping = TextureMapping.Value;
+                brush.AddTextureMapping(new TextureMapping(textureMapping.DiffuseIndex, textureMapping.NormalIndex, textureMapping.ParallaxIndex, textureMapping.SpecularIndex));
+            }
 
             return brush;
         }
-
-        public void SetUniforms(ShaderProgram program, TextureManager textureManager = null)
-        {
-            _modelMatrix.Set(program);
-            Material.SetUniforms(program);
-
-            if (textureManager != null && TextureMapping != null)
-            {
-                program.BindTextures(textureManager, TextureMapping);
-            }
-            else
-            {
-                program.UnbindTextures();
-            }
-        }
-
-        /*public static Brush Rectangle(Vector3 center, float width, float height)
-        {
-            var vertices = new List<Vertex3D>
-            {
-                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X - width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y - height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero),
-                new Vertex3D(new Vector3(center.X + width / 2.0f, center.Y + height / 2.0f, center.Z), Vector3.UnitZ, Vector3.UnitY, Vector2.Zero)
-            };
-
-            var material = Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
-
-            var triangleIndices = new List<int>()
-            {
-                0, 1, 2, 1, 2, 3
-            };
-
-            return new Brush(vertices, material, triangleIndices);
-        }*/
     }
 }

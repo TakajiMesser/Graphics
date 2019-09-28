@@ -1,16 +1,20 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Utilities;
+using System;
 
 namespace SpiceEngine.Maps
 {
-    public abstract class MapEntity3D<T> : IMapEntity3D where T : IEntity
+    public abstract class MapEntity3D<T> : IEntityBuilder, IMapEntity3D where T : IEntity
     {
         public Vector3 Position { get; set; } = Vector3.Zero;
         public Vector3 Rotation { get; set; } = Vector3.Zero;
         public Vector3 Scale { get; set; } = Vector3.One;
 
-        public abstract T ToEntity();
+        public abstract IEntity ToEntity();
+
+        public Type GetEntityType() => typeof(T);
 
         public virtual void UpdateFrom(T entity)
         {
@@ -18,7 +22,7 @@ namespace SpiceEngine.Maps
 
             if (entity is IRotate rotator)
             {
-                Rotation = rotator.Rotation.ToEulerAngles();
+                Rotation = rotator.Rotation.ToEulerAngles().ToDegrees();
             }
 
             if (entity is IScale scaler)

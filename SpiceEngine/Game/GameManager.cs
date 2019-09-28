@@ -2,6 +2,7 @@
 using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Helpers;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
@@ -25,11 +26,9 @@ namespace SpiceEngine.Game
         public Camera Camera { get; set; }
 
         public EntityManager EntityManager { get; } = new EntityManager();
-        public TextureManager TextureManager { get; } = new TextureManager();
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; private set; }
         public BehaviorManager BehaviorManager { get; private set; }
-        public ScriptManager ScriptManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
@@ -39,24 +38,16 @@ namespace SpiceEngine.Game
         public GameManager(Resolution resolution)
         {
             _resolution = resolution;
-
             InputManager = new InputManager();
-
-            TextureManager.EnableMipMapping = true;
-            TextureManager.EnableAnisotropy = true;
         }
 
-        public GameManager(Resolution resolution, IMouseDelta mouseDelta)
+        public GameManager(Resolution resolution, IMouseTracker mouseTracker)
         {
             _resolution = resolution;
-
-            InputManager = new InputManager(mouseDelta);
-
-            TextureManager.EnableMipMapping = true;
-            TextureManager.EnableAnisotropy = true;
+            InputManager = new InputManager(mouseTracker);
         }
 
-        public EntityMapping LoadFromMap(Map map)
+        public void LoadFromMap(Map map)
         {
             IsLoaded = false;
 
@@ -72,30 +63,16 @@ namespace SpiceEngine.Game
 
             Camera = map.Camera.ToCamera(_resolution);
 
-            ScriptManager = new ScriptManager();
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
             BehaviorManager.SetCamera(Camera);
             BehaviorManager.SetInputProvider(InputManager);
 
             EntityManager.ClearEntities();
 
-            var lightIDs = LoadLights(map.Lights);
-            var brushIDs = LoadBrushes(map.Brushes);
-            var volumeIDs = LoadVolumes(map.Volumes);
-            var actorIDs = LoadActors(map.Actors);
-
-            var entityMapping = new EntityMapping(actorIDs, brushIDs, volumeIDs, lightIDs);
-
-            var actor = EntityManager.GetActor(map.Camera.AttachedActorName);
-            Camera.AttachToEntity(actor, true, false);
-            BehaviorManager.Load();
-
             IsLoaded = true;
-
-            return entityMapping;
         }
 
-        public int AddLight(MapLight mapLight)
+        /*public int AddLight(MapLight mapLight)
         {
             var light = mapLight.ToEntity();
             return EntityManager.AddEntity(light);
@@ -104,14 +81,12 @@ namespace SpiceEngine.Game
         public int AddBrush(MapBrush mapBrush)
         {
             var brush = mapBrush.ToEntity();
-            brush.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-
             int entityID = EntityManager.AddEntity(brush);
 
             if (mapBrush.IsPhysical)
             {
                 var shape = mapBrush.ToShape();
-                PhysicsManager.AddBrush(brush, shape, mapBrush.IsPhysical);
+                PhysicsManager.AddBrush((Entities.Brushes.Brush)brush, shape, mapBrush.IsPhysical);
             }
 
             return entityID;
@@ -119,18 +94,18 @@ namespace SpiceEngine.Game
 
         public int AddActor(MapActor mapActor)
         {
-            var actor = mapActor.ToEntity(/*_gameManager.TextureManager*/);
+            var actor = mapActor.ToEntity(/*_gameManager.TextureManager*);
             int entityID = EntityManager.AddEntity(actor);
 
-            var meshes = mapActor.ToMeshes();
+            //var meshes = mapActor.ToMeshes();
 
             var shape = mapActor.ToShape();
-            PhysicsManager.AddActor(actor, shape, mapActor.IsPhysical);
+            PhysicsManager.AddActor((Actor)actor, shape, mapActor.IsPhysical);
 
             /*actor.HasCollision = mapActor.HasCollision;
             actor.Bounds = actor.Name == "Player"
                 ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*
             
             if (mapActor.Behavior != null)
             {
@@ -141,30 +116,6 @@ namespace SpiceEngine.Game
             BehaviorManager.AddProperties(entityID, mapActor.Properties);
             BehaviorManager.AddStimuli(entityID, mapActor.Stimuli);
 
-            if (actor is AnimatedActor)
-            {
-                using (var importer = new Assimp.AssimpContext())
-                {
-                    var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                    for (var i = 0; i < scene.Meshes.Count; i++)
-                    {
-                        var textureMapping = i < mapActor.TexturesPaths.Count
-                            ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                            : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-
-                        actor.AddTextureMapping(i, textureMapping);
-                    }
-                }
-            }
-            else
-            {
-                for (var i = 0; i < mapActor.TexturesPaths.Count; i++)
-                {
-                    actor.AddTextureMapping(i, mapActor.TexturesPaths[i].ToTextureMapping(TextureManager));
-                }
-            }
-
             return entityID;
         }
 
@@ -174,7 +125,7 @@ namespace SpiceEngine.Game
             int entityID = EntityManager.AddEntity(volume);
 
             var shape = mapVolume.ToShape();
-            PhysicsManager.AddVolume(volume, shape);
+            PhysicsManager.AddVolume((Volume)volume, shape);
 
             return entityID;
         }
@@ -209,7 +160,7 @@ namespace SpiceEngine.Game
             {
                 yield return AddActor(mapActor);
             }
-        }
+        }*/
 
         public void Update()
         {

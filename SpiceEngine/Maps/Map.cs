@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using SpiceEngineCore.Serialization.Converters;
+using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml;
 
@@ -19,25 +20,14 @@ namespace SpiceEngine.Maps
 
         protected abstract void CalculateBounds();
 
-        public void Save(string path)
-        {
-            using (var writer = XmlWriter.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                serializer.WriteObject(writer, this);
-            }
-        }
+        public void Save(string filePath) => Serializer.Save(filePath, this as Map3D);
 
-        public static Map Load(string path)
+        public static Map Load(string filePath)
         {
-            using (var reader = XmlReader.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                var map = serializer.ReadObject(reader, true) as Map;
+            var map = Serializer.Load<Map3D>(filePath);
+            map.CalculateBounds();
 
-                map.CalculateBounds();
-                return map;
-            }
+            return map;
         }
     }
 }

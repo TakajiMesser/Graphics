@@ -1,15 +1,17 @@
 ﻿using OpenTK;
 using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : IEntity, IRotate, IScale
+    public class Actor : TexturedEntity, IRotate, IScale, ITextureBinder, IModel
     {
-        public int ID { get; set; }
+        protected int _meshIndex = 0;
+
         public string Name { get; private set; }
 
         /// <summary>
@@ -19,15 +21,10 @@ namespace SpiceEngine.Entities.Actors
         /// </summary>
         public Quaternion Orientation { get; set; } = Quaternion.Identity;
 
-        public Vector3 Position
-        {
-            get => _modelMatrix.Translation;
-            set => _modelMatrix.Translation = value;
-        }
-
+        // TODO - Determine if quaternion multiplication order matters here
         public Quaternion Rotation
         {
-            get => Orientation * _modelMatrix.Rotation;
+            get => _modelMatrix.Rotation * Orientation.Inverted();
             set => _modelMatrix.Rotation = Orientation * value;
         }
 
@@ -37,17 +34,26 @@ namespace SpiceEngine.Entities.Actors
             set => _modelMatrix.Scale = value;
         }
 
-        public Matrix4 ModelMatrix => _modelMatrix.Matrix;
-
-        private ModelMatrix _modelMatrix = new ModelMatrix();
-
-        private Dictionary<int, Material> _materialByMeshIndex = new Dictionary<int, Material>();
-        private Dictionary<int, TextureMapping> _textureMappingByMeshIndex = new Dictionary<int, TextureMapping>();
-
-        public Actor(string name)
+        public override void Transform(Transform transform)
         {
-            Name = name;
+            base.Transform(new Transform()
+            {
+                Translation = transform.Translation,
+                Rotation = Orientation * transform.Rotation,
+                Scale = transform.Scale
+            });
         }
+
+        private List<Material> _materials = new List<Material>();
+        private List<TextureMapping?> _textureMappings = new List<TextureMapping?>();
+
+        public override Material Material => _materials[_meshIndex];
+        public override TextureMapping? TextureMapping => _textureMappings[_meshIndex];
+
+        public Actor(string name) => Name = name;
+
+        public override void AddMaterial(Material material) => _materials.Add(material);
+        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);
 
         public virtual Actor Duplicate(string name)
         {
@@ -59,49 +65,25 @@ namespace SpiceEngine.Entities.Actors
         protected void FromActor(Actor actor)
         {
             Position = actor.Position;
+            Orientation = actor.Orientation;
             Rotation = actor.Rotation;
             Scale = actor.Scale;
-            Orientation = actor.Orientation;
 
-            foreach (var kvp in actor._materialByMeshIndex)
-            {
-                _materialByMeshIndex.Add(kvp.Key, kvp.Value);
-            }
-
-            foreach (var kvp in actor._textureMappingByMeshIndex)
-            {
-                var textureMapping = new TextureMapping()
-                {
-                    DiffuseMapID = kvp.Value.DiffuseMapID,
-                    NormalMapID = kvp.Value.NormalMapID,
-                    ParallaxMapID = kvp.Value.ParallaxMapID,
-                    SpecularMapID = kvp.Value.SpecularMapID
-                };
-
-                _textureMappingByMeshIndex.Add(kvp.Key, textureMapping);
-            }
+            _materials.AddRange(actor._materials);
+            _textureMappings.AddRange(actor._textureMappings);
         }
 
-        public void AddMaterial(int meshIndex, Material material) => _materialByMeshIndex.Add(meshIndex, material);
+        public void SetMeshIndex(int meshIndex) => _meshIndex = meshIndex;
 
-        public void AddTextureMapping(int meshIndex, TextureMapping textureMapping) => _textureMappingByMeshIndex.Add(meshIndex, textureMapping);
-
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager)
+        public override void SetUniforms(ShaderProgram program)
         {
-            _modelMatrix.Set(program);
-        }
+            // TODO - Make this less janky. For now, we only want to set the model matrix once for all meshes, so bind it for the first mesh only
+            if (_meshIndex == 0)
+            {
+                _modelMatrix.Set(program);
+            }
 
-        public virtual void SetUniforms(ShaderProgram program, TextureManager textureManager, int meshIndex)
-        {
-            _materialByMeshIndex[meshIndex].SetUniforms(program);
-            if (textureManager != null && _textureMappingByMeshIndex.ContainsKey(meshIndex))
-            {
-                program.BindTextures(textureManager, _textureMappingByMeshIndex[meshIndex]);
-            }
-            else
-            {
-                program.UnbindTextures();
-            }
+            base.SetUniforms(program);
         }
 
         /*On Model Position Change -> if (Bounds != null)

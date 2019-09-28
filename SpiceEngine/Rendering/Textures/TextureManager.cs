@@ -1,16 +1,22 @@
 ﻿using OpenTK.Graphics;
+using SpiceEngine.Game;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Textures
 {
-    public class TextureManager : IDisposable
+    public class TextureManager : ITextureProvider, IDisposable
     {
-        private Dictionary<string, int> _pathsByID = new Dictionary<string, int>(); 
+        private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
         private List<Texture> _textures = new List<Texture>();
 
-        public bool EnableMipMapping { get; set; }
-        public bool EnableAnisotropy { get; set; }
+        private object _textureLock = new object();
+
+        public bool EnableMipMapping { get; set; } = true;
+        public bool EnableAnisotropy { get; set; } = true;
+
+        public IInvoker Invoker { get; set; }
 
         public TextureManager() { }
 
@@ -18,18 +24,42 @@ namespace SpiceEngine.Rendering.Textures
         /// 
         /// </summary>
         /// <param name="texture"></param>
-        /// <returns>Returns a lookup ID for this texture</returns>
+        /// <returns>Returns a lookup index for this texture</returns>
         public int AddTexture(Texture texture)
         {
-            _textures.Add(texture);
-            return _textures.Count;
+            lock (_textureLock)
+            {
+                var index = _textures.Count;
+                _textures.Add(texture);
+                return index;
+            }
         }
 
         public int AddTexture(string texturePath)
         {
-            if (_pathsByID.ContainsKey(texturePath))
+            return _indexByPath.GetOrAdd(texturePath, p =>
             {
-                return _pathsByID[texturePath];
+                var index = 0;
+
+                lock (_textureLock)
+                {
+                    index = _textures.Count;
+                    _textures.Add(null);
+                }
+
+                // TODO - If Invoker is null, queue this action up
+                Invoker?.Run(() =>
+                {
+                    var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
+                    _textures[index] = texture;
+                });
+
+                return index;
+            });
+
+            /*if (_idByPath.ContainsKey(texturePath))
+            {
+                return _idByPath[texturePath];
             }
             else
             {
@@ -38,24 +68,24 @@ namespace SpiceEngine.Rendering.Textures
                 {
                     int id = AddTexture(texture);
 
-                    _pathsByID.Add(texturePath, id);
+                    _idByPath.Add(texturePath, id);
                     return id;
                 }
                 else
                 {
                     return 0;
                 }
-            }
+            }*/
         }
 
         public void Clear()
         {
             // TODO - Probably need to unbind/unload textures here...
-            _pathsByID.Clear();
+            _indexByPath.Clear();
             _textures.Clear();
         }
 
-        public Texture RetrieveTexture(int id) => (id > 0 && id <= _textures.Count) ? _textures[id - 1] : null;
+        public Texture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
 
         #region IDisposable Support
         private bool disposedValue = false;

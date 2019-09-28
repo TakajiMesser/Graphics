@@ -1,10 +1,18 @@
 ﻿namespace SpiceEngine.Rendering.Textures
 {
-    public class TextureMapping
+    public struct TextureMapping
     {
-        public int DiffuseMapID { get; set; }
-        public int NormalMapID { get; set; }
-        public int SpecularMapID { get; set; }
-        public int ParallaxMapID { get; set; }
+        public int DiffuseIndex { get; }
+        public int NormalIndex { get; }
+        public int SpecularIndex { get; }
+        public int ParallaxIndex { get; }
+
+        public TextureMapping(int diffuseIndex, int normalIndex, int specularIndex, int parallaxIndex)
+        {
+            DiffuseIndex = diffuseIndex;
+            NormalIndex = normalIndex;
+            SpecularIndex = specularIndex;
+            ParallaxIndex = parallaxIndex;
+        }
     }
 }

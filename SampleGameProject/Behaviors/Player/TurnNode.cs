@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
+using SpiceEngine.Utilities;
 using System;
 
 namespace SampleGameProject.Behaviors.Player
@@ -27,10 +28,10 @@ namespace SampleGameProject.Behaviors.Player
                     float turnAngle = -(float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
 
                     // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
-                    turnAngle += (float)Math.Atan2(context.Camera._viewMatrix.Up.Y, context.Camera._viewMatrix.Up.X) - (float)Math.PI / 2.0f;
+                    turnAngle += (float)Math.Atan2(context.Camera._viewMatrix.Up.Y, context.Camera._viewMatrix.Up.X) - MathExtensions.HALF_PI;
 
-                    context.Actor.Rotation = new Quaternion(turnAngle, 0.0f, 0.0f);
-                    context.EulerRotation = new Vector3(turnAngle, context.EulerRotation.Y, context.EulerRotation.Z);
+                    context.Actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                    context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
                 }
             }
 

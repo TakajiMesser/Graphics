@@ -16,13 +16,15 @@ namespace SpiceEngine.Maps
         public MapNode RootNode { get; set; }
         public List<Response> Responses { get; set; } = new List<Response>();
 
-        public Behavior ToBehavior(IScriptCompiler scriptCompiler)
+        public IEnumerable<Script> GetScripts() => RootNode?.GetScripts();
+
+        public Behavior ToBehavior()
         {
             var behavior = new Behavior();
 
             if (RootNode != null)
             {
-                var rootNode = RootNode.ToNode(scriptCompiler);
+                var rootNode = RootNode.ToNode();
                 behavior.PushRootNode(rootNode);
             }
 

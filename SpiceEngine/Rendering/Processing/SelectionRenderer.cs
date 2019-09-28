@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Entities.Selection;
 using SpiceEngine.Game;
 using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
@@ -12,6 +13,7 @@ using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -157,32 +159,35 @@ namespace SpiceEngine.Rendering.Processing
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
-        public void SelectionPass(Camera camera, BatchManager batchManager)
+        public void SelectionPass(ICamera camera, BatchManager batchManager, IEnumerable<int> ids)
         {
-            _selectionProgram.Use();
-
-            camera.SetUniforms(_selectionProgram);
-
-            batchManager.DrawBrushes(_selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
-            batchManager.DrawVolumes(_selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
-            batchManager.DrawActors(_selectionProgram, id => _selectionProgram.SetUniform("id", GetColorFromID(id)));
+            batchManager.CreateBatchAction()
+                .SetShader(_selectionProgram)
+                .SetCamera(camera)
+                .SetEntityIDs(ids)
+                .RenderOpaqueStatic()
+                .RenderTransparentStatic()
+                //.RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                //.RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                .SetShader(_jointSelectionProgram)
+                .SetCamera(camera)
+                .RenderOpaqueAnimated()
+                .RenderTransparentAnimated()
+                //.RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                .Execute();
         }
-
-        public void JointSelectionPass(Camera camera, BatchManager batchManager)
-        {
-            _jointSelectionProgram.Use();
-
-            camera.SetUniforms(_jointSelectionProgram);
-
-            batchManager.DrawJoints(_jointSelectionProgram, id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)));
-        }
-
-        public void RenderTranslationArrows(Camera camera, Vector3 position)
+        
+        public void RenderTranslationArrows(ICamera camera, Vector3 position) { RenderTranslationArrows(camera, position, Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ); }
+        public void RenderTranslationArrows(ICamera camera, Vector3 position, Vector3 xDirection, Vector3 yDirection, Vector3 zDirection)
         {
             _translateProgram.Use();
 
             camera.SetUniforms(_translateProgram);
             _translateProgram.SetUniform("cameraPosition", camera.Position);
+            _translateProgram.SetUniform("xDirection", xDirection);
+            _translateProgram.SetUniform("yDirection", yDirection);
+            _translateProgram.SetUniform("zDirection", zDirection);
 
             _vertexBuffer.Clear();
             _vertexBuffer.AddVertex(new ColorVertex3D(position, new Color4()));
@@ -197,7 +202,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderRotationRings(Camera camera, Vector3 position)
+        public void RenderRotationRings(ICamera camera, Vector3 position)
         {
             _rotateProgram.Use();
 
@@ -217,7 +222,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Unbind();
         }
 
-        public void RenderScaleLines(Camera camera, Vector3 position)
+        public void RenderScaleLines(ICamera camera, Vector3 position)
         {
             _scaleProgram.Use();
 

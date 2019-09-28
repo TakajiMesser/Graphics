@@ -1,5 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props" Condition="Exists('..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props')" />
   <Import Project="..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props" Condition="Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" />
   <Import Project="..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
@@ -28,6 +29,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -37,6 +39,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +68,9 @@
     <Reference Include="DevILSharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\DevILSharp.0.1.2\lib\net45\DevILSharp.dll</HintPath>
     </Reference>
+    <Reference Include="DynamicData, Version=6.4.0.2419, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\DynamicData.6.4.0.2419\lib\net46\DynamicData.dll</HintPath>
+    </Reference>
     <Reference Include="FSharp.Core, Version=4.4.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\FSharp.Core.4.0.0.1\lib\net40\FSharp.Core.dll</HintPath>
       <Private>True</Private>
@@ -75,21 +81,91 @@
     <Reference Include="ICSharpCode.AvalonEdit, Version=5.0.3.0, Culture=neutral, PublicKeyToken=9cc39be672370310, processorArchitecture=MSIL">
       <HintPath>..\packages\AvalonEdit.5.0.4\lib\Net40\ICSharpCode.AvalonEdit.dll</HintPath>
     </Reference>
+    <Reference Include="log4net, Version=2.0.8.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <HintPath>..\packages\log4net.2.0.8\lib\net45-full\log4net.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NodeNetwork, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodeNetwork.3.1.0\lib\net47\NodeNetwork.dll</HintPath>
+    </Reference>
+    <Reference Include="NodeNetworkToolkit, Version=3.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\NodeNetworkToolkit.3.1.0\lib\net47\NodeNetworkToolkit.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationFramework.Aero" />
+    <Reference Include="PropertyChanged, Version=2.6.1.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
+      <HintPath>..\packages\PropertyChanged.Fody.2.6.1\lib\net452\PropertyChanged.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI, Version=9.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.9.1.4\lib\net461\ReactiveUI.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.Events.WPF, Version=9.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.Events.WPF.9.1.4\lib\net461\ReactiveUI.Events.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="ReactiveUI.WPF, Version=9.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\ReactiveUI.WPF.9.1.4\lib\net461\ReactiveUI.WPF.dll</HintPath>
+    </Reference>
+    <Reference Include="Splat, Version=4.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Splat.4.0.2\lib\net461\Splat.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.2.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.1.5.0\lib\netstandard2.0\System.Collections.Immutable.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Primitives, Version=4.0.1.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Drawing.Primitives.4.3.0\lib\net45\System.Drawing.Primitives.dll</HintPath>
+      <Private>True</Private>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Reactive, Version=4.0.0.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.4.0.0\lib\net46\System.Reactive.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Core, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Core.4.0.0\lib\net46\System.Reactive.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Experimental, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Experimental.4.0.0\lib\net46\System.Reactive.Experimental.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Interfaces, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Interfaces.4.0.0\lib\net46\System.Reactive.Interfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Linq, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Linq.4.0.0\lib\net46\System.Reactive.Linq.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.PlatformServices, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.PlatformServices.4.0.0\lib\net46\System.Reactive.PlatformServices.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Providers, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Providers.4.0.0\lib\net46\System.Reactive.Providers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Runtime.Remoting, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Runtime.Remoting.4.0.0\lib\net46\System.Reactive.Runtime.Remoting.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Forms, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Windows.Forms.4.0.0\lib\net46\System.Reactive.Windows.Forms.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reactive.Windows.Threading, Version=3.0.3000.0, Culture=neutral, PublicKeyToken=94bc3704cddfc263, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Reactive.Windows.Threading.4.0.0\lib\net46\System.Reactive.Windows.Threading.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
@@ -128,104 +204,189 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\Script.cs" />
-    <Compile Include="Models\EditorEntity.cs" />
+    <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\DockHelper.cs" />
+    <Compile Include="Models\Components\IGameViewable.cs" />
+    <Compile Include="Models\Components\Library.cs" />
+    <Compile Include="Models\Components\LibraryManager.cs" />
+    <Compile Include="Models\Components\Project.cs" />
+    <Compile Include="Models\EditorModel.cs" />
+    <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseDoubleClick.cs" />
+    <Compile Include="ViewModels\Behaviors\BehaviorNetworkViewModel.cs" />
+    <Compile Include="ViewModels\Behaviors\BehaviorNodeViewModel.cs" />
     <Compile Include="ViewModels\Commands\ICommand.cs" />
     <Compile Include="ViewModels\Commands\CommandEventArgs.cs" />
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
-    <Compile Include="Views\Controls\GamePanels\GamePanelManager.xaml.cs">
+    <Compile Include="ViewModels\Docks\IHaveDockViewModel.cs" />
+    <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
+    <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
+    <Compile Include="ViewModels\ILayerSetter.cs" />
+    <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
+    <Compile Include="ViewModels\Docks\DockViewModel.cs" />
+    <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />
+    <Compile Include="ViewModels\MainMenuViewModel.cs" />
+    <Compile Include="ViewModels\MainWindowViewModel.cs" />
+    <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
+    <Compile Include="ViewModels\Properties\IDisplayProperties.cs" />
+    <Compile Include="ViewModels\Properties\PropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\IPropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\TexturePropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\MaterialPropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\NullVisibilityConverter.cs" />
+    <Compile Include="ViewModels\Properties\VectorProperty.cs" />
+    <Compile Include="ViewModels\Properties\EntityPropertyViewModel.cs" />
+    <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
+    <Compile Include="ViewModels\Tools\LibraryPageViewModel.cs" />
+    <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\ToolsPanelViewModel.cs" />
+    <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />
+    <Compile Include="ViewModels\Trees\ComponentListViewModel.cs" />
+    <Compile Include="ViewModels\Trees\ComponentViewModel.cs" />
+    <Compile Include="ViewModels\Trees\ProjectViewModel.cs" />
+    <Compile Include="ViewModels\Trees\ProjectTreePanelViewModel.cs" />
+    <Compile Include="ViewModels\ScriptViewModel.cs" />
+    <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
+    <Compile Include="ViewModels\RelayCommand.cs" />
+    <Compile Include="ViewModels\TransformPanelViewModel.cs" />
+    <Compile Include="ViewModels\ViewModel.cs" />
+    <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
+      <DependentUpon>BehaviorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Buttons\InverseBooleanConverter.cs" />
+    <Compile Include="Views\Buttons\EnumToStringConverter.cs" />
+    <Compile Include="Views\Buttons\EnumSourceExtension.cs" />
+    <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
+      <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Docks\ITrackDocks.cs" />
+    <Compile Include="Views\Docks\DockTracker.cs" />
+    <Compile Include="Views\Factories\IMainView.cs" />
+    <Compile Include="Views\Factories\IComponentFactory.cs" />
+    <Compile Include="Views\Factories\IHaveViewModel.cs" />
+    <Compile Include="Views\Factories\IGameDockFactory.cs" />
+    <Compile Include="Views\Factories\IMainViewFactory.cs" />
+    <Compile Include="Views\Factories\IFile.cs" />
+    <Compile Include="Views\Factories\IWindow.cs" />
+    <Compile Include="Views\Factories\IWindowFactory.cs" />
+    <Compile Include="Views\GamePanels\GamePanelManager.xaml.cs">
       <DependentUpon>GamePanelManager.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\GamePanels\GamePanelView.xaml.cs">
+    <Compile Include="Views\GamePanels\GamePanelView.xaml.cs">
       <DependentUpon>GamePanelView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\GamePanels\EntitiesEventArgs.cs" />
-    <Compile Include="Views\Controls\MainMenu.xaml.cs">
+    <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
+    <Compile Include="Views\MainDockManager.cs" />
+    <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\ProjectTree\FileNameDialog.xaml.cs">
+    <Compile Include="Views\ProjectTree\FileNameDialog.xaml.cs">
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\ProjectTree\ItemSelectedEventArgs.cs" />
-    <Compile Include="Views\Controls\Scripts\ScriptEventArgs.cs" />
-    <Compile Include="Views\Controls\Scripts\ScriptView.xaml.cs">
+    <Compile Include="Views\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Views\Scripts\ScriptEventArgs.cs" />
+    <Compile Include="Views\Scripts\ScriptView.xaml.cs">
       <DependentUpon>ScriptView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Settings\SettingsWindow.xaml.cs">
+    <Compile Include="Views\Settings\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Tools\ToolSelectedEventArgs.cs" />
-    <Compile Include="Views\Controls\Tools\ToolsPanel.xaml.cs">
+    <Compile Include="Views\Tools\ToolSelectedEventArgs.cs" />
+    <Compile Include="Views\Tools\ModelToolPanel.xaml.cs">
+      <DependentUpon>ModelToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\ToolsPanel.xaml.cs">
       <DependentUpon>ToolsPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\UpDowns\NumericUpDown.xaml.cs">
+    <Compile Include="Views\UpDowns\NumericUpDown.xaml.cs">
       <DependentUpon>NumericUpDown.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Properties\PropertyPanel.xaml.cs">
+    <Compile Include="Views\Properties\PropertyPanel.xaml.cs">
       <DependentUpon>PropertyPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\ProjectTree\ProjectTreePanel.xaml.cs">
+    <Compile Include="Views\ProjectTree\ProjectTreePanel.xaml.cs">
       <DependentUpon>ProjectTreePanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Transform\TransformPanel.xaml.cs">
+    <Compile Include="Views\Transform\TransformPanel.xaml.cs">
       <DependentUpon>TransformPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Controls\Transform\TransformChangedEventArgs.cs" />
-    <Compile Include="Views\Controls\Properties\EntityEventArgs.cs" />
-    <Compile Include="Views\Controls\UpDowns\ValueChangedEventArgs.cs" />
+    <Compile Include="Views\Transform\TransformChangedEventArgs.cs" />
+    <Compile Include="Views\Properties\EntityEventArgs.cs" />
+    <Compile Include="Views\UpDowns\ValueChangedEventArgs.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Models\SettingsEventArgs.cs" />
     <Compile Include="Models\EditorSettings.cs" />
-    <Compile Include="Models\GameProject.cs" />
     <Compile Include="Utilities\UnitConversions.cs" />
-    <Page Include="Views\Controls\GamePanels\GamePanelManager.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\GamePanels\GamePanelView.xaml">
+    <Page Include="Themes\Light.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\MainMenu.xaml">
+    <Page Include="Themes\Dark.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\ProjectTree\FileNameDialog.xaml">
+    <Page Include="Views\Behaviors\BehaviorView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Scripts\ScriptView.xaml">
+    <Page Include="Views\Buttons\ToggleEnumButton.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Settings\SettingsWindow.xaml">
+    <Page Include="Views\GamePanels\GamePanelManager.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Tools\ToolsPanel.xaml">
+    <Page Include="Views\GamePanels\GamePanelView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\UpDowns\NumericUpDown.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Controls\Properties\PropertyPanel.xaml">
+    <Page Include="Views\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Controls\ProjectTree\ProjectTreePanel.xaml">
+    <Page Include="Views\ProjectTree\FileNameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\Transform\TransformPanel.xaml">
+    <Page Include="Views\Scripts\ScriptView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Controls\MainWindow.xaml">
+    <Page Include="Views\Settings\SettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Tools\ModelToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\ToolsPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\UpDowns\NumericUpDown.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Properties\PropertyPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\ProjectTree\ProjectTreePanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Transform\TransformPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -233,7 +394,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\Controls\MainWindow.xaml.cs">
+    <Compile Include="Views\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
@@ -268,6 +429,7 @@
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
+    <None Include="RelayCommand.snippet" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
@@ -276,6 +438,14 @@
     <ProjectReference Include="..\SampleGameProject\SampleGameProject.csproj">
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
       <Name>SampleGameProject</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SauceEditorCore\SauceEditorCore.csproj">
+      <Project>{277CCF06-76D9-45D3-BC92-25DCCA43E426}</Project>
+      <Name>SauceEditorCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
+      <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
+      <Name>SpiceEngineCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
@@ -296,5 +466,8 @@
     <Error Condition="!Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.3.3.2\build\AssimpNet.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props'))" />
+    <Error Condition="!Exists('..\packages\Fody.4.2.1\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.4.2.1\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PropertyChanged.Fody.2.6.1\build\PropertyChanged.Fody.props'))" />
   </Target>
+  <Import Project="..\packages\Fody.4.2.1\build\Fody.targets" Condition="Exists('..\packages\Fody.4.2.1\build\Fody.targets')" />
 </Project>

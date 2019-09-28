@@ -2,10 +2,12 @@
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
+using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace SpiceEngine.Game
 {
@@ -20,11 +22,16 @@ namespace SpiceEngine.Game
     public class PanelCamera
     {
         public const float MIN_DISTANCE = 1.0f;
-        public const float MAX_ANGLE_Y = (float)Math.PI / 2.0f + 0.1f;
-        public const float MIN_ANGLE_Y = -(float)Math.PI / 2.0f + 0.1f;
+
+        public const float MIN_PITCH = -MathExtensions.HALF_PI + 0.01f;
+        public const float MAX_PITCH = MathExtensions.HALF_PI + 0.01f;
+
+        // Math.Atan2(), which is used to calculate YAW, has a range of -pi to +pi
+        // When we calculate YAW, we then add pi, resulting in a range of 0 to 2pi
+        public const float MAX_YAW = MathExtensions.TWO_PI;
 
         private Resolution _resolution;
-        private RenderManager _renderManager;
+        private IGridRenderer _gridRenderer;
 
         // Yaw of zero should point in the direction of the X-Axis
         private float _yaw;
@@ -35,13 +42,13 @@ namespace SpiceEngine.Game
         public Camera Camera { get; private set; }
         public ViewTypes ViewType { get; set; }
 
-        public PanelCamera(Resolution resolution, RenderManager renderManager)
+        public PanelCamera(Resolution resolution, IGridRenderer gridRenderer)
         {
             _resolution = resolution;
-            _renderManager = renderManager;
+            _gridRenderer = gridRenderer;
         }
 
-        public void CenterView(IEnumerable<Vector3> positions)
+        public void CenterView(Vector3 position)
         {
             switch (ViewType)
             {
@@ -51,8 +58,8 @@ namespace SpiceEngine.Game
                     var translationX = new Vector3()
                     {
                         X = 0.0f,
-                        Y = positions.Average(p => p.Y) - Camera.Position.Y,
-                        Z = positions.Average(p => p.Z) - Camera.Position.Z
+                        Y = position.Y - Camera.Position.Y,
+                        Z = position.Z - Camera.Position.Z
                     };
 
                     Camera.Position += translationX;
@@ -61,9 +68,9 @@ namespace SpiceEngine.Game
                 case ViewTypes.Y:
                     var translationY = new Vector3()
                     {
-                        X = positions.Average(p => p.X) - Camera.Position.X,
+                        X = position.X - Camera.Position.X,
                         Y = 0.0f,
-                        Z = positions.Average(p => p.Z) - Camera.Position.Z
+                        Z = position.Z - Camera.Position.Z
                     };
 
                     Camera.Position += translationY;
@@ -72,8 +79,8 @@ namespace SpiceEngine.Game
                 case ViewTypes.Z:
                     var translationZ = new Vector3()
                     {
-                        X = positions.Average(p => p.X) - Camera.Position.X,
-                        Y = positions.Average(p => p.Y) - Camera.Position.Y,
+                        X = position.X - Camera.Position.X,
+                        Y = position.Y - Camera.Position.Y,
                         Z = 0.0f
                     };
 
@@ -106,9 +113,10 @@ namespace SpiceEngine.Game
                 case ViewTypes.Perspective:
                     Camera = new PerspectiveCamera("", _resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
                     Camera.DetachFromEntity();
+                    Camera.Position = new Vector3(0.0f, -10.0f, 10.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
-                    _yaw = (float)Math.PI / 2.0f;
+                    _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;
                 case ViewTypes.X:
@@ -118,7 +126,7 @@ namespace SpiceEngine.Game
                     };
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitX;
-                    _renderManager.RotateGrid(0.0f, (float)Math.PI / 2.0f, 0.0f);
+                    _gridRenderer.RotateGrid(0.0f, MathExtensions.HALF_PI, 0.0f);
                     _yaw = 0.0f;
                     _pitch = 0.0f;
                     break;
@@ -129,8 +137,8 @@ namespace SpiceEngine.Game
                     };
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
-                    _renderManager.RotateGrid(0.0f, 0.0f, (float)Math.PI / 2.0f);
-                    _yaw = (float)Math.PI / 2.0f;
+                    _gridRenderer.RotateGrid(0.0f, 0.0f, MathExtensions.HALF_PI);
+                    _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;
                 case ViewTypes.Z:
@@ -141,7 +149,7 @@ namespace SpiceEngine.Game
                     Camera._viewMatrix.Up = Vector3.UnitY;
                     Camera._viewMatrix.LookAt = Camera.Position - Vector3.UnitZ;
                     _yaw = 0.0f;
-                    _pitch = -(float)Math.PI / 2.0f;
+                    _pitch = -MathExtensions.HALF_PI;
                     break;
             }
         }
@@ -153,8 +161,8 @@ namespace SpiceEngine.Game
             {
                 var translation = (Camera._viewMatrix.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
                 Camera.Position -= translation;
-
-                _yaw -= mouseDelta.X * 0.001f;
+                
+                _yaw = (_yaw - mouseDelta.X * 0.001f) % MAX_YAW;
                 CalculateLookAt();
                 CalculateUp();
             }
@@ -165,9 +173,9 @@ namespace SpiceEngine.Game
             // Right mouse button allows "turning"
             if (mouseDelta != Vector2.Zero)
             {
-                _yaw -= mouseDelta.X * 0.001f;
-                _pitch += mouseDelta.Y * 0.001f;
-                _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
+                _yaw = (_yaw - mouseDelta.X * 0.001f) % MAX_YAW;
+                _pitch -= mouseDelta.Y * 0.001f;
+                _pitch = _pitch.Clamp(MIN_PITCH, MAX_PITCH);
 
                 CalculateLookAt();
                 CalculateUp();
@@ -179,10 +187,13 @@ namespace SpiceEngine.Game
             // Both mouse buttons allow "strafing"
             if (mouseDelta != Vector2.Zero)
             {
-                var right = Vector3.Cross(Camera._viewMatrix.Up, Camera._viewMatrix.LookAt - Camera.Position).Normalized();
+                var upDirection = Camera._viewMatrix.Up;
+                var lookDirection = Camera._viewMatrix.LookAt - Camera.Position;
 
-                var verticalTranslation = Camera._viewMatrix.Up * mouseDelta.Y * 0.02f;
-                var horizontalTranslation = right * mouseDelta.X * 0.02f;
+                var rightDirection = Vector3.Cross(upDirection, lookDirection).Normalized();
+
+                var verticalTranslation = upDirection * mouseDelta.Y * 0.02f;
+                var horizontalTranslation = rightDirection * mouseDelta.X * 0.02f;
 
                 Camera.Position -= verticalTranslation + horizontalTranslation;
                 Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
@@ -194,26 +205,26 @@ namespace SpiceEngine.Game
             if (ViewType == ViewTypes.Perspective && (mouseDelta != Vector2.Zero || mouseWheelDelta != 0))
             {
                 // Determine new yaw and pitch
-                var direction = (position - Camera.Position).Normalized();
-                _pitch = (float)Math.Asin(direction.Z);
-                _yaw = (float)(Math.Atan2(direction.Y, direction.X) + Math.PI);
+                var lookDirection = (position - Camera.Position).Normalized();
+                _pitch = (float)Math.Asin(lookDirection.Z);
+                _yaw = ((float)Math.Atan2(lookDirection.Y, lookDirection.X) + MAX_YAW) % MAX_YAW;
+
 
                 if (mouseWheelDelta != 0.0f)
                 {
-                    var translation = direction * mouseWheelDelta * 1.0f;
+                    var translation = lookDirection * mouseWheelDelta * 1.0f;
                     Camera.Position -= translation;
                 }
 
                 if (mouseDelta != Vector2.Zero)
                 {
                     // Now, we can adjust our position accordingly
-                    _yaw += mouseDelta.X * 0.001f;
+                    _yaw = (_yaw + mouseDelta.X * 0.001f) % MAX_YAW;//_yaw += mouseDelta.X * 0.001f;
                     _pitch += mouseDelta.Y * 0.001f;
-                    _pitch = _pitch.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
-
-                    CalculateTranslation(position);
+                    _pitch = _pitch.Clamp(MIN_PITCH, MAX_PITCH);
                 }
 
+                CalculateTranslation(position);
                 CalculateUp();
             }
         }
@@ -224,37 +235,41 @@ namespace SpiceEngine.Game
 
             var translation = new Vector3()
             {
-                X = -distance * (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
-                Y = -distance * (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
+                X = distance * (float)(Math.Cos(_pitch) * Math.Cos(_yaw)),
+                Y = distance * (float)(Math.Cos(_pitch) * Math.Sin(_yaw)),
                 Z = distance * (float)Math.Sin(_pitch)
             };
 
             Camera.Position = position - translation;
-            Camera._viewMatrix.LookAt = position;
+            Camera._viewMatrix.LookAt = Camera.Position + translation / distance;
         }
 
         private void CalculateLookAt()
         {
-            var translation = new Vector3()
+            var lookDirection = new Vector3()
             {
                 X = (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
                 Y = (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
-                Z = -(float)Math.Sin(_pitch)
+                Z = (float)Math.Sin(_pitch)
             };
 
-            Camera._viewMatrix.LookAt = Camera.Position + translation;
+
+            Camera._viewMatrix.LookAt = Camera.Position + lookDirection.Normalized();
         }
 
         private void CalculateUp()
         {
-            var yAngle = _pitch - (float)Math.PI / 2.0f;
+            var yAngle = _pitch + MathExtensions.HALF_PI;
+            //var yAngle = ((_pitch - (float)Math.PI / 2.0f) + 2.0f * (float)Math.PI) % (2.0f * (float)Math.PI);
 
-            Camera._viewMatrix.Up  = new Vector3()
+            var upDirection = new Vector3()
             {
                 X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
                 Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
-                Z = -(float)Math.Sin(yAngle)
+                Z = (float)Math.Sin(yAngle)
             };
+
+            Camera._viewMatrix.Up = upDirection.Normalized();
         }
     }
 }

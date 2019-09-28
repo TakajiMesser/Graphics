@@ -33,31 +33,14 @@ namespace SpiceEngine.Rendering.Textures
             }
         }
 
-        public TextureMapping ToTextureMapping(TextureManager textureManager)
+        public TextureMapping ToTextureMapping(ITextureProvider textureProvider)
         {
-            var textureMapping = new TextureMapping();
+            var diffuseIndex = !string.IsNullOrEmpty(DiffuseMapFilePath) ? textureProvider.AddTexture(DiffuseMapFilePath) : -1;
+            var normalIndex = !string.IsNullOrEmpty(NormalMapFilePath) ? textureProvider.AddTexture(NormalMapFilePath) : -1;
+            var specularIndex = !string.IsNullOrEmpty(SpecularMapFilePath) ? textureProvider.AddTexture(SpecularMapFilePath) : -1;
+            var parallaxIndex = !string.IsNullOrEmpty(ParallaxMapFilePath) ? textureProvider.AddTexture(ParallaxMapFilePath) : -1;
 
-            if (!string.IsNullOrEmpty(DiffuseMapFilePath))
-            {
-                textureMapping.DiffuseMapID = textureManager.AddTexture(DiffuseMapFilePath);
-            }
-
-            if (!string.IsNullOrEmpty(NormalMapFilePath))
-            {
-                textureMapping.NormalMapID = textureManager.AddTexture(NormalMapFilePath);
-            }
-
-            if (!string.IsNullOrEmpty(SpecularMapFilePath))
-            {
-                textureMapping.SpecularMapID = textureManager.AddTexture(SpecularMapFilePath);
-            }
-
-            if (!string.IsNullOrEmpty(ParallaxMapFilePath))
-            {
-                textureMapping.ParallaxMapID = textureManager.AddTexture(ParallaxMapFilePath);
-            }
-
-            return textureMapping;
+            return new TextureMapping(diffuseIndex, normalIndex, specularIndex, parallaxIndex);
         }
     }
 }

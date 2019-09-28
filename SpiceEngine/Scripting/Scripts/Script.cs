@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
@@ -16,18 +17,22 @@ namespace SpiceEngine.Scripting.Scripts
         public string Name { get; set; }
         public string SourcePath { get; set; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public Type ExportedType { get; set; }
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public List<CompilerError> Errors { get; private set; } = new List<CompilerError>();
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public bool HasErrors => Errors.Count > 0;
 
-        [IgnoreDataMember]
+        [JsonIgnore]
         public bool IsCompiled => ExportedType != null || HasErrors;
 
+        public event EventHandler<ScriptEventArgs> Compiled;
+
         public string GetContent() => File.ReadAllText(SourcePath);
+
+        public void OnCompiled(object sender, ScriptEventArgs args) => Compiled?.Invoke(sender, args);
     }
 }

@@ -101,7 +101,7 @@ namespace SpiceEngine.Rendering.Processing
             _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
-        public void StencilPass(ILight light, Camera camera, SimpleMesh mesh)
+        public void StencilPass(ILight light, ICamera camera, SimpleMesh mesh)
         {
             _stencilProgram.Use();
             GL.DrawBuffer(DrawBufferMode.None);
@@ -117,11 +117,12 @@ namespace SpiceEngine.Rendering.Processing
             GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
 
             camera.SetUniforms(_stencilProgram);
+            light.SetUniforms(_stencilProgram);
             light.DrawForStencilPass(_stencilProgram);
             mesh.Draw();
         }
 
-        public void LightPass(Resolution resolution, DeferredRenderer deferredRenderer, ILight light, Camera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
+        public void LightPass(DeferredRenderer deferredRenderer, ILight light, ICamera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
             program.Use();
 
@@ -139,6 +140,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(program);
             program.SetUniform("cameraPosition", camera.Position);
+            light.SetUniforms(program);
 
             light.DrawForLightPass(program);
             mesh.Draw();

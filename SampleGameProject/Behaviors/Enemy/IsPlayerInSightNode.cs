@@ -4,6 +4,7 @@ using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Nodes.Decorators;
+using SpiceEngine.Utilities;
 using System;
 using System.Runtime.Serialization;
 
@@ -36,10 +37,10 @@ namespace SampleGameProject.Behaviors.Enemy
                 var playerDirection = playerPosition - context.Position;
                 float playerAngle = (float)Math.Atan2(playerDirection.Y, playerDirection.X);
 
-                var angleDifference = (playerAngle - context.EulerRotation.X + Math.PI) % (2 * Math.PI) - Math.PI;
-                if (angleDifference < -Math.PI)
+                var angleDifference = (playerAngle - context.EulerRotation.X + MathExtensions.PI) % MathExtensions.TWO_PI - MathExtensions.PI;
+                if (angleDifference < -MathExtensions.PI)
                 {
-                    angleDifference += (float)(2 * Math.PI);
+                    angleDifference += MathExtensions.TWO_PI;
                 }
 
                 if (Math.Abs(angleDifference) <= ViewAngle / 2.0f)

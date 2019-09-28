@@ -220,7 +220,10 @@ namespace SampleGameProject.Helpers.Builders
 
         private static IEnumerable<Response> GenerateEnemyResponses()
         {
-            _alertMeter.ResetOnTrigger = false;
+            _alertMeter.AddTrigger(new Trigger("Alert", 120)
+            {
+                ResetOnTrigger = false
+            });
             _alertMeter.Triggered += AlertMeter_Triggered;
 
             var playerResponse = new Response(Stimulus.Player)
@@ -235,19 +238,19 @@ namespace SampleGameProject.Helpers.Builders
             yield return playerResponse;
         }
 
-        private static void AlertMeter_Triggered(object sender, MeterTriggeredEventArgs e)
+        private static void AlertMeter_Triggered(object sender, TriggeredEventArgs e)
         {
             //RootStack.Push(new ChaseNode(CHASE_SPEED, VIEW_ANGLE, VIEW_DISTANCE, "Player"));
         }
 
         private static void PlayerResponse_Triggered(object sender, StimulusTriggeredEventArgs e)
         {
-            if (_alertMeter.Value < _alertMeter.TriggerValue)
+            if (_alertMeter.Value < 120)
             {
                 _alertMeter.Increment();
             }
         }
 
-        private static Meter _alertMeter = new Meter(120);
+        private static Meter _alertMeter = new Meter();
     }
 }

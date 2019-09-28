@@ -1,15 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using Graphics.Geometry.TwoDimensional;
-using Graphics.Rendering.Shaders;
+﻿using OpenTK;
 
-namespace Graphics
+namespace SpiceEngine.Rendering.Matrices
 {
     public class Transform
     {
@@ -25,37 +16,28 @@ namespace Graphics
             Scale = scale;
         }
 
-        public Matrix4 ToModelMatrix()
+        public void Combine(Transform transform)
         {
-            var translationMatrix = Matrix4.CreateTranslation(Translation);
-            var scaleMatrix = Matrix4.CreateScale(Scale);
-            var rotationMatrix = Matrix4.CreateFromQuaternion(Rotation);
-
-            return translationMatrix * rotationMatrix * scaleMatrix;
+            Translation += transform.Translation;
+            Rotation = transform.Rotation * Rotation;
+            Scale *= transform.Scale;
         }
 
-        public static Transform FromTranslation(Vector3 translation)
-        {
-            return new Transform()
-            {
-                Translation = translation
-            };
-        }
+        public Matrix4 ToMatrix() => Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
 
-        public static Transform FromRotation(Quaternion rotation)
+        public static Transform FromTranslation(Vector3 translation) => new Transform()
         {
-            return new Transform()
-            {
-                Rotation = rotation
-            };
-        }
+            Translation = translation
+        };
 
-        public static Transform FromScale(Vector3 scale)
+        public static Transform FromRotation(Quaternion rotation) => new Transform()
         {
-            return new Transform()
-            {
-                Scale = scale
-            };
-        }
+            Rotation = rotation
+        };
+
+        public static Transform FromScale(Vector3 scale) => new Transform()
+        {
+            Scale = scale
+        };
     }
 }

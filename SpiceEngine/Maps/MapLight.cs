@@ -1,6 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Physics.Shapes;
+using SpiceEngine.Rendering;
 using SpiceEngine.Utilities;
 using System;
 
@@ -29,7 +32,7 @@ namespace SpiceEngine.Maps
             return new Mesh3D<Vertex3D>(vertices, TriangleIndices);
         }*/
 
-        public override ILight ToEntity()
+        public override IEntity ToEntity()
         {
             switch (LightType)
             {
@@ -45,7 +48,7 @@ namespace SpiceEngine.Maps
                     return new SpotLight()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Color = Color.ToVector4(),
                         Intensity = Intensity,
                         Radius = Radius,
@@ -55,7 +58,7 @@ namespace SpiceEngine.Maps
                     return new DirectionalLight()//Vertices, TriangleIndices, Color)
                     {
                         Position = Position,
-                        Rotation = Quaternion.FromEulerAngles(Rotation),
+                        Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians()),
                         Color = Color.ToVector4(),
                         Intensity = Intensity,
                     };

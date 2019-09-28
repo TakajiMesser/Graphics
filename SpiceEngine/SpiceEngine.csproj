@@ -25,6 +25,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,6 +34,7 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>7.1</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -87,8 +89,11 @@
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.3.0.0-pre\lib\net20\OpenTK.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.2\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
@@ -111,14 +116,36 @@
     <Reference Include="WindowsFormsIntegration" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\Actors\ActorArchetype.cs" />
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
-    <Compile Include="Entities\EntityLayer.cs" />
+    <Compile Include="Entities\Archetype.cs" />
+    <Compile Include="Entities\Builders\IBehaviorBuilder.cs" />
+    <Compile Include="Entities\Builders\IBuilder.cs" />
+    <Compile Include="Entities\Builders\IEntityBuilder.cs" />
+    <Compile Include="Entities\Builders\EntityLoader.cs" />
+    <Compile Include="Entities\Builders\IEntityLoader.cs" />
+    <Compile Include="Entities\Builders\RendererLoadEventArgs.cs" />
+    <Compile Include="Entities\Builders\IRenderableBuilder.cs" />
+    <Compile Include="Entities\Builders\IShapeBuilder.cs" />
+    <Compile Include="Entities\Cameras\ICamera.cs" />
+    <Compile Include="Entities\EntityMappingEventArgs.cs" />
+    <Compile Include="Entities\EntityTransformEventArgs.cs" />
+    <Compile Include="Entities\IDEventArgs.cs" />
+    <Compile Include="Entities\Selection\IDirectional.cs" />
+    <Compile Include="Entities\Selection\ISelectionProvider.cs" />
+    <Compile Include="Entities\ITexturedEntity.cs" />
+    <Compile Include="Entities\TexturedEntity.cs" />
+    <Compile Include="Entities\EntityEventArgs.cs" />
+    <Compile Include="Entities\Entity.cs" />
+    <Compile Include="Entities\Layers\EntityLayer.cs" />
     <Compile Include="Entities\EntityManager.cs" />
     <Compile Include="Entities\IEntityProvider.cs" />
-    <Compile Include="Entities\LayerManager.cs" />
+    <Compile Include="Entities\Layers\LayerManager.cs" />
     <Compile Include="Entities\Lights\ILight.cs" />
     <Compile Include="Entities\Models\IModel3D.cs" />
+    <Compile Include="Entities\Selection\Duplication.cs" />
+    <Compile Include="Entities\Selection\DuplicationEventArgs.cs" />
+    <Compile Include="Entities\Selection\SelectionManager.cs" />
+    <Compile Include="Entities\TextureTransformEventArgs.cs" />
     <Compile Include="Entities\Volumes\PhysicsVolume.cs" />
     <Compile Include="Entities\Volumes\TriggerVolume.cs" />
     <Compile Include="Entities\Volumes\BlockingVolume.cs" />
@@ -130,8 +157,11 @@
     <Compile Include="Entities\Lights\SLight.cs" />
     <Compile Include="Entities\Lights\DLight.cs" />
     <Compile Include="Entities\Lights\PLight.cs" />
+    <Compile Include="Game\DelayedUpdate.cs" />
+    <Compile Include="Game\GameLoader.cs" />
+    <Compile Include="Game\ITick.cs" />
+    <Compile Include="Game\IUpdate.cs" />
     <Compile Include="Game\UpdateManager.cs" />
-    <Compile Include="Game\DuplicatedEntityEventArgs.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
     <Compile Include="Game\GameSettings\ControlSettings.cs" />
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
@@ -160,9 +190,11 @@
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Helpers\MinkowskiHelper.cs" />
     <Compile Include="Helpers\SoundHelper.cs" />
+    <Compile Include="Helpers\PatternMatcher.cs" />
+    <Compile Include="Helpers\TypeSwitch.cs" />
     <Compile Include="Helpers\VertexHelper.cs" />
-    <Compile Include="Inputs\IMouseDelta.cs" />
     <Compile Include="Inputs\IInputProvider.cs" />
+    <Compile Include="Inputs\IMouseTracker.cs" />
     <Compile Include="Inputs\InputManager.cs" />
     <Compile Include="Inputs\InputState.cs" />
     <Compile Include="Inputs\Input.cs" />
@@ -171,10 +203,13 @@
     <Compile Include="Entities\Lights\SpotLight.cs" />
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
+    <Compile Include="Maps\EntityIDEventArgs.cs" />
+    <Compile Include="Maps\EntityBuilderEventArgs.cs" />
     <Compile Include="Maps\EntityMapping.cs" />
     <Compile Include="Maps\IMapEntity3D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />
+    <Compile Include="Maps\MapArchetype.cs" />
     <Compile Include="Maps\MapNode.cs" />
     <Compile Include="Maps\MapBehavior.cs" />
     <Compile Include="Maps\MapEntity2D.cs" />
@@ -224,17 +259,36 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Animations\Bone.cs" />
+    <Compile Include="Rendering\Animations\Skeleton.cs" />
+    <Compile Include="Rendering\Batches\Batch.cs" />
     <Compile Include="Rendering\Batches\IBatch.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Batches\ModelBatch.cs" />
     <Compile Include="Rendering\Batches\MeshBatch.cs" />
+    <Compile Include="Rendering\Batches\BillboardBatch.cs" />
     <Compile Include="Rendering\Buffers\MatrixBuffer.cs" />
     <Compile Include="Rendering\Buffers\MatrixStack.cs" />
+    <Compile Include="Rendering\IGridRenderer.cs" />
+    <Compile Include="Rendering\IInvoker.cs" />
+    <Compile Include="Rendering\IRenderable.cs" />
     <Compile Include="Rendering\Materials\Material.cs" />
+    <Compile Include="Rendering\Matrices\Transform.cs" />
+    <Compile Include="Rendering\Matrices\TransformEventArgs.cs" />
     <Compile Include="Rendering\Meshes\AlphaEventArgs.cs" />
-    <Compile Include="Rendering\Meshes\MeshShape.cs" />
+    <Compile Include="Rendering\Models\ITexturedShape.cs" />
+    <Compile Include="Rendering\Models\IModelShape.cs" />
+    <Compile Include="Rendering\Models\IModel.cs" />
+    <Compile Include="Rendering\Meshes\MeshBone.cs" />
+    <Compile Include="Rendering\Models\Model.cs" />
+    <Compile Include="Rendering\Models\ModelBuilder.cs" />
+    <Compile Include="Rendering\Meshes\UVMap.cs" />
+    <Compile Include="Rendering\Models\EditorModel.cs" />
+    <Compile Include="Rendering\Models\ModelVertex.cs" />
+    <Compile Include="Rendering\Models\ModelMesh.cs" />
     <Compile Include="Rendering\Meshes\JointMesh3D.cs" />
-    <Compile Include="Rendering\Meshes\IMesh3D.cs" />
+    <Compile Include="Rendering\Meshes\IMesh.cs" />
+    <Compile Include="Rendering\Models\ModelFace.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
     <Compile Include="Outputs\Audio.cs" />
     <Compile Include="Outputs\Display.cs" />
@@ -259,8 +313,8 @@
     <Compile Include="Rendering\Matrices\ViewMatrix.cs" />
     <Compile Include="Rendering\Matrices\ModelMatrix.cs" />
     <Compile Include="Rendering\Meshes\MeshManager.cs" />
-    <Compile Include="Rendering\Meshes\MeshTriangle.cs" />
-    <Compile Include="Rendering\Meshes\Mesh3D.cs" />
+    <Compile Include="Rendering\Models\ModelTriangle.cs" />
+    <Compile Include="Rendering\Meshes\Mesh.cs" />
     <Compile Include="Physics\Collisions\QuadTree.cs" />
     <Compile Include="Physics\Collisions\Bounds.cs" />
     <Compile Include="Rendering\Animations\KeyFrame.cs" />
@@ -291,20 +345,28 @@
     <Compile Include="Rendering\Processing\DeferredRenderer.cs" />
     <Compile Include="Rendering\Shaders\Shader.cs" />
     <Compile Include="Rendering\Shaders\ShaderProgram.cs" />
+    <Compile Include="Rendering\Textures\ITexturePath.cs" />
+    <Compile Include="Rendering\Textures\ITextureBinder.cs" />
+    <Compile Include="Rendering\Textures\TextureID.cs" />
+    <Compile Include="Rendering\Textures\IMapTextures.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
+    <Compile Include="Rendering\Textures\ITextureProvider.cs" />
     <Compile Include="Rendering\Textures\TexturePaths.cs" />
     <Compile Include="Rendering\Textures\TextureMapping.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Rendering\Textures\Texture.cs" />
+    <Compile Include="Rendering\Vertices\ITextureVertex.cs" />
     <Compile Include="Rendering\Vertices\IColorVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex.cs" />
     <Compile Include="Rendering\Vertices\IVertex2D.cs" />
+    <Compile Include="Rendering\Vertices\IAnimatedVertex.cs" />
     <Compile Include="Rendering\Vertices\Simple3DVertex.cs" />
     <Compile Include="Rendering\Vertices\ColorVertex3D.cs" />
     <Compile Include="Rendering\Vertices\Simple2DVertex.cs" />
     <Compile Include="Rendering\Vertices\TextureVertex2D.cs" />
-    <Compile Include="Rendering\Vertices\JointVertex3D.cs" />
+    <Compile Include="Rendering\Vertices\AnimatedVertex3D.cs" />
     <Compile Include="Rendering\Vertices\IVertex3D.cs" />
+    <Compile Include="Rendering\Vertices\EditorVertex3D.cs" />
     <Compile Include="Rendering\Vertices\Vertex3D.cs" />
     <Compile Include="Rendering\Vertices\VertexArray.cs" />
     <Compile Include="Rendering\Vertices\VertexAttribute.cs" />
@@ -313,7 +375,9 @@
     <Compile Include="Scripting\BehaviorContext.cs" />
     <Compile Include="Scripting\BehaviorInterruptedEventArgs.cs" />
     <Compile Include="Scripting\BehaviorManager.cs" />
-    <Compile Include="Scripting\Meters\MeterTriggeredEventArgs.cs" />
+    <Compile Include="Scripting\Meters\Interpolator.cs" />
+    <Compile Include="Scripting\Meters\Trigger.cs" />
+    <Compile Include="Scripting\Meters\TriggeredEventArgs.cs" />
     <Compile Include="Scripting\Meters\Meter.cs" />
     <Compile Include="Scripting\Nodes\Composites\CompositeNode.cs" />
     <Compile Include="Scripting\Nodes\Composites\ParallelNode.cs" />
@@ -324,6 +388,8 @@
     <Compile Include="Scripting\Nodes\Decorators\InlineConditionNode.cs" />
     <Compile Include="Scripting\Nodes\Decorators\RepeaterNode.cs" />
     <Compile Include="Scripting\Nodes\Leaves\InlineLeafNode.cs" />
+    <Compile Include="Scripting\Nodes\NodeEventArgs.cs" />
+    <Compile Include="Scripting\Nodes\ScriptNode.cs" />
     <Compile Include="Scripting\Nodes\Node.cs" />
     <Compile Include="Scripting\Properties\IAlertProperty.cs" />
     <Compile Include="Scripting\Properties\PropertyCollection.cs" />
@@ -331,6 +397,7 @@
     <Compile Include="Scripting\IStimulusProvider.cs" />
     <Compile Include="Scripting\Director.cs" />
     <Compile Include="Scripting\Scripts\IScriptCompiler.cs" />
+    <Compile Include="Scripting\Scripts\ScriptEventArgs.cs" />
     <Compile Include="Scripting\Scripts\Script.cs" />
     <Compile Include="Scripting\Scripts\ScriptManager.cs" />
     <Compile Include="Scripting\States\State.cs" />
@@ -345,6 +412,10 @@
     <Compile Include="Sounds\Source.cs" />
     <Compile Include="Utilities\ArrayExtensions.cs" />
     <Compile Include="Utilities\BehaviorExtensions.cs" />
+    <Compile Include="Utilities\ListExtensions.cs" />
+    <Compile Include="Utilities\QueueExtensions.cs" />
+    <Compile Include="Utilities\MatrixExtensions.cs" />
+    <Compile Include="Utilities\RenderableExtensions.cs" />
     <Compile Include="Utilities\LINQExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Utilities\OpenTKExtensions.cs" />
@@ -356,6 +427,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
     <None Include="Resources\Meshes\Cone.obj" />
@@ -438,8 +510,9 @@
     <Folder Include="Resources\Shaders\Lens\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\Textures\volume-vertex.png" />
+    <None Include="Resources\Textures\vertex.png" />
     <None Include="Resources\Textures\light.png" />
+    <Content Include="Resources\Textures\circle.png" />
     <Content Include="Resources\Textures\point-light.png" />
     <Content Include="Resources\Textures\selected-directional-light.png" />
     <Content Include="Resources\Textures\selected-point-light.png" />
@@ -451,7 +524,14 @@
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
+      <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
+      <Name>SpiceEngineCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\AssimpNet.3.3.2\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" />

@@ -1,11 +1,20 @@
-﻿namespace SpiceEngine.Utilities
+﻿using System;
+
+namespace SpiceEngine.Utilities
 {
     public static class MathExtensions
     {
         public const float EPSILON = 1E-5f;
+        public const float PI = (float)Math.PI;
+        public const float HALF_PI = (float)Math.PI / 2.0f;
+        public const float TWO_PI = 2.0f * (float)Math.PI;
+        public const float THREE_HALVES_PI = (float)Math.PI * 3.0f / 2.0f;
 
         public static bool IsSignificant(this int value) => value >= EPSILON || value <= -EPSILON;
         public static bool IsSignificant(this float value) => value >= EPSILON || value <= -EPSILON;
+
+        public static bool IsSignificantDifference(this int value, int comparisonValue) => (value - comparisonValue).IsSignificant();
+        public static bool IsSignificantDifference(this float value, float comparisonValue) => (value - comparisonValue).IsSignificant();
 
         public static bool IsBetween(this int value, int valueA, int valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);
         public static bool IsBetween(this float value, float valueA, float valueB) => (value > valueA && value < valueB) || (value < valueA && value > valueB);

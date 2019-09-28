@@ -3,6 +3,7 @@ using OpenTK.Input;
 using SpiceEngine.Inputs;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Matrices;
+using SpiceEngine.Utilities;
 using System;
 
 namespace SpiceEngine.Entities.Cameras
@@ -11,11 +12,11 @@ namespace SpiceEngine.Entities.Cameras
     {
         public const float ZNEAR = 0.1f;
         public const float ZFAR = 1000.0f;
-        public const float MAX_ANGLE_Y = -(float)Math.PI / 2 + 0.1f;
-        public const float MIN_ANGLE_Y = -(float)Math.PI + 0.1f;
+        public const float MAX_ANGLE_Y = -MathExtensions.HALF_PI + 0.1f;
+        public const float MIN_ANGLE_Y = -MathExtensions.PI + 0.1f;
         public const float MIN_DISTANCE = 1.0f;
 
-        private Vector3 CurrentAngles { get; set; } = new Vector3(0, -(float)Math.PI / 2.0f, 0);
+        private Vector3 CurrentAngles { get; set; } = new Vector3(0, -MathExtensions.HALF_PI, 0);
 
         public PerspectiveCamera(string name, Resolution resolution, float zNear, float zFar, float fieldOfViewY) : base(name)
         {
@@ -38,7 +39,7 @@ namespace SpiceEngine.Entities.Cameras
 
         private void CalculateUp()
         {
-            var yAngle = CurrentAngles.Y - (float)Math.PI / 2.0f;
+            var yAngle = CurrentAngles.Y - MathExtensions.HALF_PI;
 
             var horizontal = _distance * Math.Cos(yAngle);
             var vertical = _distance * Math.Sin(yAngle);

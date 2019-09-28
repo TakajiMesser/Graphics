@@ -1,0 +1,10 @@
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:SauceEditor">
+
+    <SolidColorBrush x:Key="ForegroundBrush" Color="White"/>
+    <SolidColorBrush x:Key="DisabledBrush" Color="Gray"/>
+    <SolidColorBrush x:Key="BackgroundBrush" Color="#2d2d30"/>
+
+</ResourceDictionary>

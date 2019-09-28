@@ -1,45 +1,48 @@
 ﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
-using System.Collections.Generic;
+using System;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public class ModelBatch : IBatch
+    public class ModelBatch : Batch
     {
-        public int EntityID { get; private set; }
-        public List<IMesh3D> Meshes { get; } = new List<IMesh3D>();
-        public IEnumerable<IVertex3D> Vertices => Meshes.SelectMany(m => m.Vertices);
+        public Model Model { get; }
 
-        public ModelBatch(int entityID, IEnumerable<IMesh3D> meshes)
+        public ModelBatch(Model model) => Model = model;
+
+        public override IBatch Duplicate() => new ModelBatch(Model.Duplicate());
+
+        public override void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
         {
-            EntityID = entityID;
-            Meshes.AddRange(meshes);
-        }
-
-        public IBatch Duplicate(int entityID) => new ModelBatch(entityID, Meshes.Select(m => m.Duplicate()));
-
-        public void Load()
-        {
-            foreach (var mesh in Meshes)
+            foreach (var mesh in Model.Meshes)
             {
-                mesh.Load();
+                mesh.Update(vertexUpdate);
             }
         }
 
-        public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
-        {
-            var actor = (Actor)entityProvider.GetEntity(EntityID);
-            actor.SetUniforms(shaderProgram, textureManager);
+        public override void Load() => Model.Load();
 
-            for (var i = 0; i < Meshes.Count; i++)
+        public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
+        {
+            var entity = entityProvider.GetEntity(EntityIDs.First());
+            var textureBinder = textureProvider != null ? entity as ITextureBinder : null;
+
+            for (var i = 0; i < Model.Meshes.Count; i++)
             {
-                actor.SetUniforms(shaderProgram, textureManager, i);
-                Meshes[i].Draw();
+                ((IModel)entity).SetMeshIndex(i);
+
+                if (textureBinder != null)
+                {
+                    // TODO - Determine when to unbind textures
+                    textureBinder.BindTextures(shaderProgram, textureProvider);
+                }
+
+                entity.SetUniforms(shaderProgram);
+                Model.Meshes[i].Draw();
             }
         }
     }

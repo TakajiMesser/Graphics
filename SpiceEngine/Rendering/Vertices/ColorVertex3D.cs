@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Rendering.Matrices;
 using System.Runtime.InteropServices;
 
 namespace SpiceEngine.Rendering.Vertices
@@ -15,6 +16,12 @@ namespace SpiceEngine.Rendering.Vertices
             Position = position;
             Color = color;
         }
+
+        public IVertex3D Transformed(Transform transform) => new ColorVertex3D()
+        {
+            Position = (transform.ToMatrix() * new Vector4(Position, 1.0f)).Xyz,
+            Color = Color
+        };
 
         public IColorVertex Colored(Color4 color) => new ColorVertex3D()
         {

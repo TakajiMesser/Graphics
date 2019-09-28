@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using Newtonsoft.Json;
+using OpenTK;
 using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
@@ -10,8 +11,13 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
         public Vector3 Destination { get; private set; }
         public float Speed { get; private set; }
 
+        [JsonIgnore]
         public float XTolerance { get; set; } = 0.1f;
+
+        [JsonIgnore]
         public float YTolerance { get; set; } = 0.1f;
+
+        [JsonIgnore]
         public float ZTolerance { get; set; } = 0.5f;
 
         public MoveToNode(Vector3 destination, float speed)

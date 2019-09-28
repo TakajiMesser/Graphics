@@ -1,19 +1,20 @@
 ﻿using SpiceEngine.Entities;
+using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Game;
 using SpiceEngine.Inputs;
 using SpiceEngine.Physics;
-using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Properties;
+using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SpiceEngine.Scripting
 {
-    public class BehaviorManager : UpdateManager, IStimulusProvider
+    public class BehaviorManager : EntityLoader<IBehaviorBuilder>, IStimulusProvider
     {
-        private bool _isLoaded = false;
+        private ScriptManager _scriptManager = new ScriptManager();
 
         private Camera _camera;
         private IEntityProvider _entityProvider;
@@ -34,7 +35,7 @@ namespace SpiceEngine.Scripting
         {
             _camera = camera;
 
-            if (_isLoaded)
+            if (IsLoaded)
             {
                 foreach (var actor in _entityProvider.Actors)
                 {
@@ -51,7 +52,7 @@ namespace SpiceEngine.Scripting
         {
             _inputProvider = inputProvider;
 
-            if (_isLoaded)
+            if (IsLoaded)
             {
                 foreach (var actor in _entityProvider.Actors)
                 {
@@ -62,15 +63,6 @@ namespace SpiceEngine.Scripting
                     }
                 }
             }
-        }
-
-        public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
-            ? _stimuliByEntityID[entityID].Stimuli
-            : Enumerable.Empty<Stimulus>();
-
-        public void AddBehavior(int entityID, Behavior behavior)
-        {
-            _behaviorsByEntityID.Add(entityID, behavior);
         }
 
         public void AddProperties(int entityID, IEnumerable<Property> properties)
@@ -89,32 +81,53 @@ namespace SpiceEngine.Scripting
             _stimuliByEntityID.Add(entityID, stimulusCollection);
         }
 
-        public void Load()
+        public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
+            ? _stimuliByEntityID[entityID].Stimuli
+            : Enumerable.Empty<Stimulus>();
+
+        public override void AddEntity(int entityID, IBehaviorBuilder builder)
         {
-            foreach (var actor in _entityProvider.Actors)
+            var behavior = builder.ToBehavior();
+            if (behavior != null)
             {
-                if (_behaviorsByEntityID.ContainsKey(actor.ID))
-                {
-                    var behavior = _behaviorsByEntityID[actor.ID];
-
-                    behavior.Context.Actor = actor;
-                    behavior.Context.Camera = _camera;
-                    behavior.Context.SetEntityProvider(_entityProvider);
-                    behavior.Context.SetCollisionProvider(_collisionProvider);
-                    behavior.Context.SetInputProvider(_inputProvider);
-                    behavior.Context.SetStimulusProvider(this);
-
-                    /*foreach (var property in Properties)
-                    {
-                        if (property.Value.IsConstant)
-                        {
-                            Behaviors.Context.AddProperty(property.Key, property.Value.Value);
-                        }
-                    }*/
-                }
+                _behaviorsByEntityID.Add(entityID, behavior);
             }
 
-            _isLoaded = true;
+            _scriptManager.AddScripts(builder.Scripts);
+
+            AddStimuli(entityID, builder.Stimuli);
+            AddProperties(entityID, builder.Properties);
+        }
+
+        protected override void LoadEntities() => _scriptManager.CompileScripts();
+
+        protected override Task LoadInternal()
+        {
+            return Task.Run(() =>
+            {
+                foreach (var actor in _entityProvider.Actors)
+                {
+                    if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                    {
+                        var behavior = _behaviorsByEntityID[actor.ID];
+
+                        behavior.Context.Actor = actor;
+                        behavior.Context.Camera = _camera;
+                        behavior.Context.SetEntityProvider(_entityProvider);
+                        behavior.Context.SetCollisionProvider(_collisionProvider);
+                        behavior.Context.SetInputProvider(_inputProvider);
+                        behavior.Context.SetStimulusProvider(this);
+
+                        /*foreach (var property in Properties)
+                        {
+                            if (property.Value.IsConstant)
+                            {
+                                Behaviors.Context.AddProperty(property.Key, property.Value.Value);
+                            }
+                        }*/
+                    }
+                }
+            });
         }
 
         protected override void Update()

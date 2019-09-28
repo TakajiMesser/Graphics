@@ -1,15 +1,12 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
 using System;
 
 namespace SpiceEngine.Entities.Lights
 {
-    public abstract class Light<T> : ILight where T : struct
+    public abstract class Light<T> : Entity, ILight where T : struct
     {
-        public int ID { get; set; }
-
-        public Vector3 Position { get; set; }
-
         private float _intensity;
 
         public Vector4 Color { get; set; }
@@ -28,5 +25,8 @@ namespace SpiceEngine.Entities.Lights
         public abstract void DrawForStencilPass(ShaderProgram program);
         public abstract void DrawForLightPass(ShaderProgram program);
         public abstract T ToStruct();
+
+        public override void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
+        public bool CompareUniforms(Entity entity) => entity is ILight && base.CompareUniforms(entity);
     }
 }

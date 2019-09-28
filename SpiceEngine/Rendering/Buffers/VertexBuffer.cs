@@ -23,7 +23,6 @@ namespace SpiceEngine.Rendering.Buffers
         }
 
         public void AddVertex(T vertex) => _vertices.Add(vertex);
-
         public void AddVertices(params T[] vertices) => _vertices.AddRange(vertices);
         public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
 

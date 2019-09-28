@@ -8,7 +8,17 @@ namespace SpiceEngine.Entities.Lights
 {
     public class PointLight : Light<PLight>
     {
-        public float Radius { get; set; }
+        private float _radius;
+
+        public float Radius
+        {
+            get => _radius;
+            set
+            {
+                _radius = value;
+                _modelMatrix.Scale = Vector3.One * _radius;
+            }
+        }
 
         public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
 
@@ -35,8 +45,8 @@ namespace SpiceEngine.Entities.Lights
 
         public override void DrawForStencilPass(ShaderProgram program)
         {
-            var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
-            program.SetUniform("modelMatrix", model);
+            //var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
+            //program.SetUniform("modelMatrix", model);
 
             program.SetUniform("lightPosition", Position);
             program.SetUniform("lightRadius", Radius);
@@ -46,8 +56,8 @@ namespace SpiceEngine.Entities.Lights
 
         public override void DrawForLightPass(ShaderProgram program)
         {
-            var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
-            program.SetUniform("modelMatrix", model);
+            //var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
+            //program.SetUniform("modelMatrix", model);
 
             program.SetUniform("lightPosition", Position);
             program.SetUniform("lightRadius", Radius);

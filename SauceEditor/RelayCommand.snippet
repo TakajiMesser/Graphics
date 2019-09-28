@@ -1,0 +1,40 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<CodeSnippets xmlns="http://schemas.microsoft.com/VisualStudio/2005/CodeSnippet">
+    <CodeSnippet Format="1.0.0">
+        <Header>
+            <Title>RelayCommand Snippet</Title>
+            <Author>Takaji Messer</Author>
+            <Description>Code Snippet to make generating property and backing field for RelayCommand easier.</Description>
+            <Shortcut>command</Shortcut>
+        </Header>
+        <Snippet>
+          <Declarations>
+            <Literal>
+              <ID>command</ID>
+              <Default>command</Default>
+            </Literal>
+            <Literal>
+              <ID>Command</ID>
+              <Default>Command</Default>
+            </Literal>
+          </Declarations>
+            <Code Language="CSharp">
+                <![CDATA[private RelayCommand $command$;
+                public RelayCommand $Command$
+                {
+                    get
+                    {
+                        return $command$ ?? ($command$ = new RelayCommand(
+                            p =>
+                            {
+                                
+                            },
+                            p => true
+                        ));
+                    }
+                }
+                ]]>
+            </Code>
+        </Snippet>
+    </CodeSnippet>
+</CodeSnippets>

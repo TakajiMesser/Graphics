@@ -3,22 +3,21 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Lights;
+using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
 using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngine.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using Brush = SpiceEngine.Entities.Brushes.Brush;
 using Timer = System.Timers.Timer;
 
 namespace SpiceEngine.Game
@@ -32,62 +31,86 @@ namespace SpiceEngine.Game
         Texture
     }
 
-    public class GamePanel : GLControl, IMouseDelta
+    public class GamePanel : GLControl, IMouseTracker, IInvoker
     {
         private PanelCamera _panelCamera;
-        private GameManager _gameManager;
+
+        private IEntityProvider _entityProvider;
+        private IInputProvider _inputProvider;
+
         private Map _map;
         private EntityMapping _entityMapping;
-        private RenderManager _renderManager;
 
         private bool _invalidated = false;
         private bool _isDuplicating = false;
 
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
-        private Timer _pollTimer = new Timer();
+        private Timer _pollTimer = new Timer(); 
 
         private Tools _selectedTool = Tools.Brush;
         private Volume _toolVolume;
 
-        private ViewTypes _viewType;
-
         private bool _isLoaded = false;
         private object _loadLock = new object();
 
-        /*private bool _isCursorVisible = true;
-        private object _cursorLock = new object();
-        
-        /*public bool IsCursorVisible
+        private TransformModes _transformMode;
+        private RenderModes _renderMode;
+        private ViewTypes _viewType;
+
+        public RenderManager RenderManager { get; private set; }
+
+        public TransformModes TransformMode
         {
-            get
-            {
-                lock (_cursorLock)
-                {
-                    return _isCursorVisible;
-                }
-            }
+            get => _transformMode;
             set
             {
-                lock (_cursorLock)
+                _transformMode = value;
+                Invalidate();
+            }
+        }
+
+        public RenderModes RenderMode
+        {
+            get => _renderMode;
+            set
+            {
+                _renderMode = value;
+
+                lock (_loadLock)
                 {
-                    if (value != _isCursorVisible)
+                    if (RenderManager != null)
                     {
-                        ChangeCursorVisibility?.Invoke(this, new CursorEventArgs(value));
-                        _isCursorVisible = value;
+                        RenderManager.RenderMode = value;
+                    }
+                }
+
+                Invalidate();
+            }
+        }
+
+        public ViewTypes ViewType
+        {
+            get => _viewType;
+            set
+            {
+                lock (_loadLock)
+                {
+                    _viewType = value;
+
+                    if (_isLoaded)
+                    {
+                        _panelCamera.ViewType = value;
                     }
                 }
             }
-        }*/
+        }
 
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
 
         public double Frequency { get; private set; }
-        public RenderModes RenderMode { get; set; }
-        public TransformModes TransformMode { get; set; }
-        public List<IEntity> SelectedEntities { get; private set; } = new List<IEntity>();
-        public SelectionTypes SelectionType { get; private set; }
+        public SelectionManager SelectionManager { get; private set; }
         public Tools SelectedTool
         {
             get => _selectedTool;
@@ -98,32 +121,32 @@ namespace SpiceEngine.Game
                 switch (_selectedTool)
                 {
                     case Tools.Volume:
-                        var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                        //var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
                         //_toolVolume = Volume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f, new Vector4(0.0f, 0.0f, 0.5f, 0.2f));
-                        _toolVolume = mapVolume.ToEntity();
-                        int entityID = _gameManager.EntityManager.AddEntity(_toolVolume);
+                        //_toolVolume = mapVolume.ToEntity();
+                        /*int entityID = _entityProvider.AddEntity(_toolVolume);
 
                         lock (_loadLock)
                         {
-                            if (_renderManager != null)
+                            if (RenderManager != null)
                             {
                                 //var mesh = new Mesh3D<Simple3DVertex>(mapVolume.Vertices.Select(v => new Simple3DVertex(v)).ToList(), mapVolume.TriangleIndices);
-                                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                                _renderManager.BatchManager.AddVolume(entityID, mesh);
-                                _renderManager.BatchManager.Load(entityID);
+                                //var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                                //RenderManager.BatchManager.AddVolume(entityID, mesh);
+                                RenderManager.BatchManager.Load(entityID);
                             }
-                        }
+                        }*/
                         break;
                     default:
                         if (_toolVolume != null)
                         {
-                            _gameManager.EntityManager.RemoveEntityByID(_toolVolume.ID);
+                            _entityProvider.RemoveEntityByID(_toolVolume.ID);
 
                             lock (_loadLock)
                             {
-                                if (_renderManager != null)
+                                if (RenderManager != null)
                                 {
-                                    _renderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
+                                    RenderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
                                     _toolVolume = null;
                                 }
                             }
@@ -142,18 +165,17 @@ namespace SpiceEngine.Game
         public bool IsDragging { get; private set; }
         public bool RenderGrid
         {
-            get => _renderManager.RenderGrid;
+            get => RenderManager.RenderGrid;
             set
             {
-                _renderManager.RenderGrid = value;
+                RenderManager.RenderGrid = value;
                 Invalidate();
             }
         }
 
         public event EventHandler<PanelLoadedEventArgs> PanelLoaded;
-        public event EventHandler<CursorEventArgs> ChangeCursorVisibility;
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
-        public event EventHandler<DuplicatedEntityEventArgs> EntityDuplicated;
+        public event EventHandler<DuplicationEventArgs> EntityDuplicated;
 
         public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
@@ -166,47 +188,13 @@ namespace SpiceEngine.Game
             _pollTimer.Elapsed += PollTimer_Elapsed;
         }
 
-        public void SetViewType(ViewTypes viewType) => _viewType = viewType;
-
         public void CenterView()
         {
-            if (_gameManager.EntityManager != null && SelectedEntities.Count > 0)
+            if (_entityProvider != null && SelectionManager.SelectionCount > 0)
             {
-                _panelCamera.CenterView(SelectedEntities.Select(e => e.Position));
-                RenderFrame();
+                _panelCamera.CenterView(SelectionManager.Position);
+                Invalidate();
             }
-        }
-
-        public void LoadFromModel(string modelPath)
-        {
-            /*_map = new Map();
-
-            var mainActor = new MapActor()
-            {
-                Name = Path.GetFileNameWithoutExtension(modelPath),
-                ModelFilePath = modelPath,
-                Position = new Vector3(0.0f, 0.0f, 0.0f),
-                Scale = Vector3.One,
-                Rotation = Vector3.Zero,
-                Orientation = Vector3.Zero,
-                HasCollision = true
-            };
-            _map.Actors.Add(mainActor);
-
-            _map.Camera = new MapCamera()
-            {
-                AttachedActorName = mainActor.Name,
-                Position = new Vector3(5.0f, 5.0f, 5.0f),
-                Type = Rendering.Matrices.ProjectionTypes.Perspective,
-                FieldOfViewY = UnitConversions.ToRadians(45.0f)
-            };
-
-            if (_gameState != null)
-            {
-                _gameState.LoadMap(_map);
-                _gameState.Initialize();
-                _pollTimer.Start();
-            }*/
         }
 
         protected override void OnLoad(EventArgs e)
@@ -217,7 +205,7 @@ namespace SpiceEngine.Game
             {
                 _isLoaded = true;
 
-                if (_gameManager != null && _entityMapping != null)
+                if (_entityProvider != null && _inputProvider != null && _entityMapping != null)
                 {
                     LoadFromGameManager();
                 }
@@ -226,11 +214,14 @@ namespace SpiceEngine.Game
             base.OnLoad(e);
         }
 
-        public void LoadGameManager(GameManager gameManager, Map map, EntityMapping entityMapping)
+        public void LoadGameManager(GameManager gameManager, Map map/*, EntityMapping entityMapping*/)
         {
-            _gameManager = gameManager;
+            _entityProvider = gameManager.EntityManager;
+            _inputProvider = gameManager.InputManager;
+            SelectionManager = new SelectionManager(_entityProvider);
+
             _map = map;
-            _entityMapping = entityMapping;
+            //_entityMapping = entityMapping;
 
             lock (_loadLock)
             {
@@ -241,82 +232,121 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void Run(Action action) => Invoke(action);
+
+        public Task RunAsync(Action action)
+        {
+            return Task.Run(() => Invoke(action));
+            /*var result = BeginInvoke(action);
+            result.AsyncWaitHandle.WaitOne();*/
+        }
+
         private void LoadFromGameManager()
         {
-            _renderManager = new RenderManager(Resolution, WindowSize);
-            _renderManager.LoadFromMap(_map, _gameManager.EntityManager, _entityMapping);
-
-            _panelCamera = new PanelCamera(Resolution, _renderManager)
+            // TODO - Should we run this all on the UI thread?
+            Invoke(new Action(() =>
             {
-                ViewType = _viewType
-            };
-            _panelCamera.Load();
+                RenderManager = new RenderManager(Resolution, WindowSize)
+                {
+                    IsInEditorMode = true,
+                    RenderMode = _renderMode,
+                    Invoker = this
+                };
+                RenderManager.SetEntityProvider(_entityProvider);
+                //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
 
-            // Clear pointers
-            //_map = null;
-            //_entityMapping = null;
+                _panelCamera = new PanelCamera(Resolution, RenderManager)
+                {
+                    ViewType = ViewType
+                };
+                _panelCamera.Load();
+                RenderManager.SetSelectionProvider(SelectionManager);
+                RenderManager.SetCamera(_panelCamera.Camera);
 
-            /*if (_selectedTool == Tools.Volume && _toolVolume != null)
-            {
-                // TODO - Correct this, shouldn't be creating another MapVolume here
-                var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-                var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
-                _renderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
-                _renderManager.BatchManager.Load(_toolVolume.ID);
-            }*/
+                // TODO - Can we load the map here?
+                RenderManager.LoadFromMap(_map);
 
-            Invalidate();
-            IsLoaded = true;
-            PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+                // Clear pointers
+                //_map = null;
+                //_entityMapping = null;
+
+                /*if (_selectedTool == Tools.Volume && _toolVolume != null)
+                {
+                    // TODO - Correct this, shouldn't be creating another MapVolume here
+                    var mapVolume = MapVolume.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
+                    var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
+                    RenderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
+                    RenderManager.BatchManager.Load(_toolVolume.ID);
+                }*/
+
+                // Default to allowing all rendered entities to be selectable
+                //SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
+
+                Invalidate();
+                IsLoaded = true;
+                PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+            }));
         }
+
+        public void AddEntity(int entityID, IRenderable renderable) => RenderManager?.AddEntity(entityID, renderable);
+        public void RemoveEntity(int entityID) => RenderManager?.RemoveEntity(entityID);
+
+        // TODO - Make this method less janky and terrible
+        public void DoLoad() => RenderManager?.BatchManager.Load();
 
         public void SelectEntity(IEntity entity)
         {
-            if (entity != null)
-            {
-                SelectedEntities.Add(entity);
-            }
-            else
-            {
-                SelectedEntities.Clear();
-            }
+            RenderManager?.SetSelected(entity.ID.Yield());
 
-            RenderFrame();
+            SelectionManager.Select(entity.ID);
+            Invalidate();
         }
 
         public void SelectEntities(IEnumerable<IEntity> entities)
         {
-            SelectedEntities.Clear();
-            SelectedEntities.AddRange(entities);
-            RenderFrame();
+            if (entities.Any())
+            {
+                RenderManager?.SetSelected(entities.Select(e => e.ID));
+                SelectionManager.Select(entities.Select(e => e.ID));
+            }
+            else
+            {
+                RenderManager?.SetDeselected(SelectionManager.SelectedIDs);
+                SelectionManager.ClearSelection();
+            }
+            
+            Invalidate();
+        }
+
+        public void DelayAction(int nTicks, Action action)
+        {
+            // TODO - Handle this better -> We aren't even keeping a reference to this...
+            var delayedAction = new DelayedUpdate((IUpdate)RenderManager, nTicks, action);
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
         {
             foreach (var entity in entities)
             {
-                var selectedEntity = _gameManager.EntityManager.GetEntity(entity.ID);
+                var selectedEntity = _entityProvider.GetEntity(entity.ID);
 
                 if (selectedEntity != null)
                 {
                     selectedEntity.Position = entity.Position;
 
-                    switch (entity)
+                    if (entity is IRotate rotator && selectedEntity is IRotate selectedRotator)
                     {
-                        case Actor actor:
-                            var selectedActor = selectedEntity as Actor;
-                            selectedActor.Rotation = actor.Rotation;
-                            selectedActor.Scale = actor.Scale;
-                            break;
-                        case Brush brush:
-                            var selectedBrush = selectedEntity as Brush;
-                            selectedBrush.Rotation = brush.Rotation;
-                            selectedBrush.Scale = brush.Scale;
-                            break;
-                        case ILight light:
-                            var selectedLight = selectedEntity as ILight;
-                            selectedLight.Color = light.Color;
-                            break;
+                        selectedRotator.Rotation = rotator.Rotation;
+                    }
+
+                    if (entity is IScale scaler && selectedEntity is IScale selectedScaler)
+                    {
+                        selectedScaler.Scale = scaler.Scale;
+                    }
+
+                    if (entity is ILight light && selectedEntity is ILight selectedLight)
+                    {
+                        selectedLight.Color = light.Color;
                     }
                 }
             }
@@ -326,7 +356,7 @@ namespace SpiceEngine.Game
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            if (Enabled && IsLoaded && _renderManager != null && _renderManager.IsLoaded && _gameManager != null)
+            if (Enabled && IsLoaded && RenderManager != null && RenderManager.IsLoaded && _entityProvider != null)
             {
                 base.OnPaint(e);
                 RenderFrame();
@@ -340,9 +370,9 @@ namespace SpiceEngine.Game
                 Resolution.Width = Width;
                 Resolution.Height = Height;
 
-                if (_renderManager != null && _renderManager.IsLoaded)
+                if (RenderManager != null && RenderManager.IsLoaded)
                 {
-                    _renderManager.ResizeResolution();
+                    RenderManager.ResizeResolution();
                 }
             }
 
@@ -351,9 +381,9 @@ namespace SpiceEngine.Game
                 WindowSize.Width = Width;
                 WindowSize.Height = Height;
 
-                if (_renderManager != null && _renderManager.IsLoaded)
+                if (RenderManager != null && RenderManager.IsLoaded)
                 {
-                    _renderManager.ResizeWindow();
+                    RenderManager.ResizeWindow();
                 }
             }
         }
@@ -362,28 +392,13 @@ namespace SpiceEngine.Game
         {
             MakeCurrent();
 
-            switch (RenderMode)
-            {
-                case RenderModes.Wireframe:
-                    _renderManager.RenderWireframe(_gameManager.EntityManager, _panelCamera.Camera);
-                    _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
-                    break;
-                case RenderModes.Diffuse:
-                    _renderManager.RenderDiffuseFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
-                    _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
-                    break;
-                case RenderModes.Lit:
-                    _renderManager.RenderLitFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
-                    _renderManager.RenderEntityIDs(_gameManager.EntityManager, _panelCamera.Camera);
-                    break;
-                case RenderModes.Full:
-                    _renderManager.RenderFullFrame(_gameManager.EntityManager, _panelCamera.Camera, _gameManager.TextureManager);
-                    break;
-            }
+            RenderManager.Tick();
 
-            if (SelectedEntities.Count > 0)
+            // TODO - Determine how to handle this
+            if (SelectionManager.SelectionCount > 0)
             {
-                _renderManager.RenderSelection(_gameManager.EntityManager, _panelCamera.Camera, SelectedEntities, TransformMode);
+                // This is still necessary right now for rendering lights and transform arrows...
+                RenderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
             }
 
             GL.UseProgram(0);
@@ -406,79 +421,79 @@ namespace SpiceEngine.Game
         {
             if (_panelCamera.Zoom(wheelDelta))
             {
-                RenderFrame();
+                Invalidate();
             }
         }
 
         public void SetWireframeThickness(float thickness)
         {
-            _renderManager.SetWireframeThickness(thickness);
+            RenderManager.SetWireframeThickness(thickness);
             Invalidate();
         }
 
         public void SetWireframeColor(Color4 color)
         {
-            _renderManager.SetWireframeColor(color);
+            RenderManager.SetWireframeColor(color);
             Invalidate();
         }
 
         public void SetSelectedWireframeThickness(float thickness)
         {
-            _renderManager.SetSelectedWireframeThickness(thickness);
+            RenderManager.SetSelectedWireframeThickness(thickness);
             Invalidate();
         }
 
         public void SetSelectedWireframeColor(Color4 color)
         {
-            _renderManager.SetSelectedWireframeColor(color);
+            RenderManager.SetSelectedWireframeColor(color);
             Invalidate();
         }
 
         public void SetSelectedLightWireframeThickness(float thickness)
         {
-            _renderManager.SetSelectedLightWireframeThickness(thickness);
+            RenderManager.SetSelectedLightWireframeThickness(thickness);
             Invalidate();
         }
 
         public void SetSelectedLightWireframeColor(Color4 color)
         {
-            _renderManager.SetSelectedLightWireframeColor(color);
+            RenderManager.SetSelectedLightWireframeColor(color);
             Invalidate();
         }
 
         public void SetGridLineThickness(float thickness)
         {
-            _renderManager.SetGridLineThickness(thickness);
+            RenderManager.SetGridLineThickness(thickness);
             Invalidate();
         }
 
         public void SetGridUnitColor(Color4 color)
         {
-            _renderManager.SetGridUnitColor(color);
+            RenderManager.SetGridUnitColor(color);
             Invalidate();
         }
 
         public void SetGridAxisColor(Color4 color)
         {
-            _renderManager.SetGridAxisColor(color);
+            RenderManager.SetGridAxisColor(color);
             Invalidate();
         }
 
         public void SetGrid5Color(Color4 color)
         {
-            _renderManager.SetGrid5Color(color);
+            RenderManager.SetGrid5Color(color);
             Invalidate();
         }
 
         public void SetGrid10Color(Color4 color)
         {
-            _renderManager.SetGrid10Color(color);
+            RenderManager.SetGrid10Color(color);
             Invalidate();
         }
 
         public void SetGridUnit(float unit)
         {
-            _renderManager.SetGridUnit(unit);
+            RenderManager.SetGridUnit(unit);
             Invalidate();
         }
 
@@ -487,53 +502,62 @@ namespace SpiceEngine.Game
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
 
             RenderFrame();
-            var id = _renderManager.GetEntityIDFromPoint(mouseCoordinates);
+            var id = RenderManager.GetEntityIDFromPoint(mouseCoordinates);
 
             if (!SelectionRenderer.IsReservedID(id))
             {
                 if (id > 0)
                 {
-                    var entity = _gameManager.EntityManager.GetEntity(id);
-
-                    if (isMultiSelect && SelectedEntities.Select(e => e.ID).Contains(id))
+                    if (isMultiSelect && SelectionManager.IsSelected(id))
                     {
-                        SelectedEntities.Remove(entity);
-                        EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                        RenderFrame();
+                        RenderManager.SetDeselected(id.Yield());
+                        SelectionManager.Remove(id);//.Deselect(id);
+                        EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
+                        Invalidate();
                     }
-                    else if (!SelectedEntities.Select(e => e.ID).Contains(id))
+                    else if (!SelectionManager.IsSelected(id))
                     {
                         if (!isMultiSelect)
                         {
-                            SelectedEntities.Clear();
+                            RenderManager.SetDeselected(SelectionManager.SelectedIDs);
+                            SelectionManager.ClearSelection();
                         }
 
-                        SelectedEntities.Add(entity);
-                        EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                        RenderFrame();
+                        var entity = _entityProvider.GetEntityOrDefault(id);
+                        if (entity != null)
+                        {
+                            RenderManager.SetSelected(id.Yield());
+                            SelectionManager.Select(id);
+                        }
+                        else
+                        {
+                            RenderManager.SetDeselected(SelectionManager.SelectedIDs);
+                            SelectionManager.ClearSelection();
+                        }
+                        
+                        EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
+                        Invalidate();
                     }
                 }
                 else if (!isMultiSelect)
                 {
-                    SelectedEntities.Clear();
+                    RenderManager.SetDeselected(SelectionManager.SelectedIDs);
+                    SelectionManager.ClearSelection();
 
-                    EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities));
-                    RenderFrame();
+                    EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities));
+                    Invalidate();
                 }
             }
         }
 
-        public void ClearSelectedEntities()
-        {
-            SelectedEntities.Clear();
-        }
+        public void ClearSelectedEntities() => SelectionManager.Clear();
 
         public void SetSelectionType()
         {
             Invoke(new Action(() =>
             {
-                var id = _renderManager.GetEntityIDFromPoint(new Vector2(_currentMouseLocation.X, Height - _currentMouseLocation.Y));
-                SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
+                var id = RenderManager.GetEntityIDFromPoint(new Vector2(_currentMouseLocation.X, Height - _currentMouseLocation.Y));
+                SelectionManager.SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
             }));
         }
 
@@ -550,7 +574,7 @@ namespace SpiceEngine.Game
 
             // Handle user input, then poll their input for handling on the following frame
             HandleInput();
-            _gameManager.InputManager.Tick();
+            _inputProvider.Tick();
 
             if (_invalidated)
             {
@@ -566,234 +590,96 @@ namespace SpiceEngine.Game
 
         public bool IsHeld()
         {
-            _gameManager.InputManager.Tick();
-            return _gameManager.InputManager.IsDown(new Input(MouseButton.Left)) || _gameManager.InputManager.IsDown(new Input(MouseButton.Right));
+            _inputProvider.Tick();
+            return _inputProvider.IsDown(new Input(MouseButton.Left)) || _inputProvider.IsDown(new Input(MouseButton.Right));
         }
 
         public void EndDrag()
         {
             IsDragging = false;
-            _gameManager.InputManager.Clear();
-            SelectionType = SelectionTypes.None;
+            _inputProvider.Clear();
+            SelectionManager.SelectionType = SelectionTypes.None;
             _pollTimer.Stop();
         }
 
-        private void DuplicateSelectedItems()
+        public void Duplicate(int entityID, int duplicateEntityID) =>
+            Invoke(new Action(() => RenderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+
+        public void SetLayerOrSomeShit(string layerName)
         {
-            // Create duplicates and overwrite SelectedEntities with them
-            var duplicateEntities = new List<IEntity>();
+            //_entityProvider.EntityRenderIDs;
 
-            foreach (var entity in SelectedEntities)
-            {
-                var duplicateEntity = _gameManager.EntityManager.DuplicateEntity(entity);
-                // Need to duplicate colliders
-                // Need to duplicate scripts
+            // We have four new entity types to deal with for model rendering...
+            // ShapeEntity -> Maps to a single mesh
+            // FaceEntity -> Maps to a face in MeshBuild
+            // TriangleEntity -> Maps to a triangle in MeshBuild
+            // VertexEntity -> Maps to a vertex billboard texture
 
-                EntityDuplicated?.Invoke(this, new DuplicatedEntityEventArgs(entity.ID, duplicateEntity.ID));
-                duplicateEntities.Add(duplicateEntity);
-            }
-
-            SelectedEntities = duplicateEntities;
-        }
-
-        public void Duplicate(int entityID, int duplicateEntityID)
-        {
-            Invoke(new Action(() => _renderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+            // We have a few options...
+            // When we first open a ModelComponent, we should create ALL necessary entities and split them into the four layers
+            // We then need to give access to 
         }
 
         private void HandleInput()
         {
-            if (_isDuplicating && !_gameManager.InputManager.IsDown(new Input(Key.ShiftLeft)))
+            if (_isDuplicating && !_inputProvider.IsDown(new Input(Key.ShiftLeft)))
             {
                 _isDuplicating = false;
             }
 
-            if (_gameManager.InputManager.IsReleased(new Input(MouseButton.Left)))
+            if (_inputProvider.IsReleased(new Input(MouseButton.Left)))
             {
-                SelectionType = SelectionTypes.None;
+                SelectionManager.SelectionType = SelectionTypes.None;
             }
 
-            if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)) && _gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
+            if (_inputProvider.IsDown(new Input(MouseButton.Left)) && _inputProvider.IsDown(new Input(MouseButton.Right)))
             {
-                _panelCamera.Strafe(_gameManager.InputManager.MouseDelta);
+                _panelCamera.Strafe(_inputProvider.MouseDelta);
 
                 //IsCursorVisible = false;
-                SelectionType = SelectionTypes.None;
+                SelectionManager.SelectionType = SelectionTypes.None;
                 _invalidated = true;
             }
-            else if (SelectionType != SelectionTypes.None)
+            else if (SelectionManager.SelectionType != SelectionTypes.None)
             {
-                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
+                if (_inputProvider.IsDown(new Input(MouseButton.Left)))
                 {
-                    if (!_isDuplicating && _gameManager.InputManager.IsDown(new Input(Key.ShiftLeft)))
+                    if (!_isDuplicating && _inputProvider.IsDown(new Input(Key.ShiftLeft)))
                     {
                         _isDuplicating = true;
-                        DuplicateSelectedItems();
-                    }
 
-                    // TODO - Can use entity's current rotation to determine position adjustment by that angle, rather than by MouseDelta.Y
-                    foreach (var entity in SelectedEntities)
-                    {
-                        switch (TransformMode)
+                        /*foreach (var duplication in SelectionManager.DuplicateSelection())
                         {
-                            case TransformModes.Translate:
-                                HandleEntityTranslation(entity);
-                                break;
-                            case TransformModes.Rotate:
-                                HandleEntityRotation(entity);
-                                break;
-                            case TransformModes.Scale:
-                                HandleEntityScale(entity);
-                                break;
-                        }
+                            EntityDuplicated?.Invoke(this, new DuplicationEventArgs(duplication));
+                        }*/
                     }
 
-                    //IsCursorVisible = false;
-                    Invoke(new Action(() => RenderFrame()));
-                    Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectedEntities))));
+                    SelectionManager.HandleEntityTransforms(TransformMode, _inputProvider.MouseDelta);
+
+                    Invalidate();
+                    Invoke(new Action(() => EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(SelectionManager.SelectedEntities))));
                 }
             }
             else if (_panelCamera.ViewType == ViewTypes.Perspective)
             {
-                if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
+                if (_inputProvider.IsDown(new Input(MouseButton.Left)))
                 {
-                    _panelCamera.Travel(_gameManager.InputManager.MouseDelta);
-
-                    //IsCursorVisible = false;
+                    _panelCamera.Travel(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Right)))
+                else if (_inputProvider.IsDown(new Input(MouseButton.Right)))
                 {
-                    _panelCamera.Turn(_gameManager.InputManager.MouseDelta);
-
-                    //IsCursorVisible = false;
+                    _panelCamera.Turn(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_gameManager.InputManager.IsDown(new Input(MouseButton.Button1)))
+                else if (_inputProvider.IsDown(new Input(MouseButton.Button1)))
                 {
-                    if (SelectedEntities.Count > 0)
+                    if (SelectionManager.SelectionCount > 0)
                     {
-                        var pivotPosition = new Vector3()
-                        {
-                            X = SelectedEntities.Average(e => e.Position.X),
-                            Y = SelectedEntities.Average(e => e.Position.Y),
-                            Z = SelectedEntities.Average(e => e.Position.Z)
-                        };
-
-                        _panelCamera.Pivot(_gameManager.InputManager.MouseDelta, _gameManager.InputManager.MouseWheelDelta, pivotPosition);
-
-                        //IsCursorVisible = false;
+                        _panelCamera.Pivot(_inputProvider.MouseDelta, _inputProvider.MouseWheelDelta, SelectionManager.Position);
                         _invalidated = true;
                     }
                 }
-            }
-        }
-
-        private void HandleEntityTranslation(IEntity entity)
-        {
-            var position = entity.Position;
-
-            switch (SelectionType)
-            {
-                case SelectionTypes.Red:
-                    position.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Green:
-                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Blue:
-                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Cyan:
-                    position.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-                case SelectionTypes.Magenta:
-                    position.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                    break;
-                case SelectionTypes.Yellow:
-                    position.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                    position.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                    break;
-            }
-
-            entity.Position = position;
-        }
-
-        private void HandleEntityRotation(IEntity entity)
-        {
-            if (entity is IRotate rotater)
-            {
-                var rotation = rotater.Rotation;
-
-                switch (SelectionType)
-                {
-                    case SelectionTypes.Red:
-                        //rotation.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitZ, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
-                        rotation = Quaternion.FromEulerAngles(-_gameManager.InputManager.MouseDelta.Y * 0.002f, 0.0f, 0.0f) * rotation;
-                        break;
-                    case SelectionTypes.Green:
-                        //rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitX, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
-                        rotation = Quaternion.FromEulerAngles(0.0f, -_gameManager.InputManager.MouseDelta.Y * 0.002f, 0.0f) * rotation;
-                        break;
-                    case SelectionTypes.Blue:
-                        //rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        //rotation *= Quaternion.FromAxisAngle(Vector3.UnitY, -_gameManager.InputManager.MouseDelta.Y * 0.002f);
-                        rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, -_gameManager.InputManager.MouseDelta.Y * 0.002f) * rotation;
-                        break;
-                    case SelectionTypes.Cyan:
-                        rotation.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Magenta:
-                        rotation.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        break;
-                    case SelectionTypes.Yellow:
-                        rotation.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        rotation.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                }
-
-                rotater.Rotation = rotation;
-            }
-        }
-
-        private void HandleEntityScale(IEntity entity)
-        {
-            if (entity is IScale scaler)
-            {
-                var scale = scaler.Scale;
-
-                switch (SelectionType)
-                {
-                    case SelectionTypes.Red:
-                        scale.X -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Green:
-                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Blue:
-                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Cyan:
-                        scale.Y += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                    case SelectionTypes.Magenta:
-                        scale.Z -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        break;
-                    case SelectionTypes.Yellow:
-                        scale.X += _gameManager.InputManager.MouseDelta.X * 0.002f;
-                        scale.Y -= _gameManager.InputManager.MouseDelta.Y * 0.002f;
-                        break;
-                }
-
-                scaler.Scale = scale;
             }
         }
 

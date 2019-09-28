@@ -1,11 +1,12 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SpiceEngine.Rendering.Matrices;
 using System.Runtime.InteropServices;
 
 namespace SpiceEngine.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct Vertex3D : IVertex3D, IColorVertex
+    public struct Vertex3D : IVertex3D, ITextureVertex, IColorVertex
     {
         public Vector3 Position { get; set; }
         public Vector3 Normal { get; set; }
@@ -30,6 +31,22 @@ namespace SpiceEngine.Rendering.Vertices
             Tangent = tangent;
             TextureCoords = textureCoords;
         }
+
+        public IVertex3D Transformed(Transform transform)
+        {
+            var matrix = transform.ToMatrix();
+
+            return new Vertex3D()
+            {
+                Position = (new Vector4(Position, 1.0f) * matrix).Xyz,
+                Normal = Normal,
+                Tangent = Tangent,
+                TextureCoords = TextureCoords,
+                Color = Color
+            };
+        }
+
+        public ITextureVertex TextureTransformed(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => null;
 
         public IColorVertex Colored(Color4 color) => new Vertex3D()
         {

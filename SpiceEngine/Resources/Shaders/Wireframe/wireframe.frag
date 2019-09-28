@@ -2,8 +2,11 @@
 
 uniform float lineThickness;
 uniform vec4 lineColor;
+uniform float selectedLineThickness;
+uniform vec4 selectedLineColor;
 
 smooth in vec3 gEdgeDistance;
+in vec4 fId;
 
 layout(location = 0) out vec4 color;
 
@@ -13,7 +16,15 @@ void main()
     float distance = min(gEdgeDistance[0], min(gEdgeDistance[1], gEdgeDistance[2]));
 
     // Discard any fragments that are not close to the edge
-    if (distance > lineThickness)
+	float thickness = fId.w < 1.0
+		? selectedLineThickness
+		: lineThickness;
+	
+	vec4 lColor = fId.w < 1.0
+		? selectedLineColor
+		: lineColor;
+
+    if (distance > thickness)
     {
         discard;
     }
@@ -24,7 +35,7 @@ void main()
 
 		float alpha = innerEdgeIntensity + (1.0 - outerEdgeIntensity);
 
-        color = vec4(lineColor.xyz, alpha);
-		//color = lineColor;
+        color = vec4(lColor.xyz, alpha);
+		//color = lColor;
     }
 }

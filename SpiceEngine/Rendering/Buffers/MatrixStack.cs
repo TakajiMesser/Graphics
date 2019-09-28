@@ -31,7 +31,7 @@ namespace SpiceEngine.Rendering.Buffers
             _viewMatrixBuffer.AddMatrix(camera.ViewMatrix);
             _projectionMatrixBuffer.AddMatrix(camera.ProjectionMatrix);
 
-            foreach (var actor in actors)
+            /*foreach (var actor in actors)
             {
                 _modelMatrixBuffer.AddMatrix(actor.ModelMatrix);
 
@@ -41,11 +41,11 @@ namespace SpiceEngine.Rendering.Buffers
 
             foreach (var brush in brushes)
             {
-                _modelMatrixBuffer.AddMatrix(brush.ModelMatrix);
+                _modelMatrixBuffer.AddMatrix(brush.GetModelMatrix());
 
                 // TODO - Confirm whether or not this multiplication order should be reversed
-                _mvpMatrixBuffer.AddMatrix(brush.ModelMatrix * camera.ViewMatrix * camera.ProjectionMatrix);
-            }
+                _mvpMatrixBuffer.AddMatrix(brush.GetModelMatrix() * camera.ViewMatrix * camera.ProjectionMatrix);
+            }*/
         }
 
         public void Bind()

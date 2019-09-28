@@ -13,6 +13,6 @@
         //IShape Shape { get; }
 
         bool IsMovable { get; }
-        bool IsPhysical { get; }
+        bool IsPhysical { get; set; }
     }
 }

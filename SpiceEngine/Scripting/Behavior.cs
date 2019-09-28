@@ -13,13 +13,17 @@ namespace SpiceEngine.Scripting
 
         public void PushRootNode(Node node)
         {
-            _rootStack.Push(node);
+            if (node is ScriptNode scriptNode)
+            {
+                scriptNode.Compiled += (s, args) => _rootStack.Push(args.Node);
+            }
+            else
+            {
+                _rootStack.Push(node);
+            }
         }
 
-        public void AddResponse(Response response)
-        {
-            _responses.Add(response);
-        }
+        public void AddResponse(Response response) => _responses.Add(response);
 
         public BehaviorStatus Tick()
         {

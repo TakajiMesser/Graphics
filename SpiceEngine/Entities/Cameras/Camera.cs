@@ -4,11 +4,12 @@ using SpiceEngine.Entities.Lights;
 using SpiceEngine.Inputs;
 using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Shaders;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Cameras
 {
-    public abstract class Camera : IEntity
+    public abstract class Camera : ICamera
     {
         public int ID { get; set; }
         public string Name { get; }
@@ -16,7 +17,11 @@ namespace SpiceEngine.Entities.Cameras
         public Vector3 Position
         {
             get => _viewMatrix.Translation;
-            set => _viewMatrix.Translation = value;
+            set
+            {
+                _viewMatrix.Translation = value;
+                //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _viewMatrix.Matrix));
+            }
         }
 
         public IEntity AttachedEntity { get; private set; }
@@ -30,7 +35,17 @@ namespace SpiceEngine.Entities.Cameras
         public Matrix4 ProjectionMatrix => _projectionMatrix.Matrix;
         public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
 
+        public event EventHandler<EntityTransformEventArgs> Transformed;
+
         public Camera(string name) => Name = name;
+
+        public void Transform(Transform transform) => throw new NotImplementedException();
+
+        public void Translate(Vector3 translation)
+        {
+            _viewMatrix.Translation *= translation;
+            //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _viewMatrix.Matrix));
+        }
 
         public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {
@@ -80,5 +95,7 @@ namespace SpiceEngine.Entities.Cameras
             program.SetUniform(Rendering.Matrices.ProjectionMatrix.NAME, light.Projection);
             program.SetUniform(Rendering.Matrices.ViewMatrix.NAME, light.View);
         }
+
+        public bool CompareUniforms(IEntity entity) => false;
     }
 }

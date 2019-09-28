@@ -6,8 +6,26 @@ namespace SpiceEngine.Scripting.Nodes.Composites
     {
         public List<Node> Children { get; private set; } = new List<Node>();
 
-        public CompositeNode(params Node[] children) => Children.AddRange(children);
-        public CompositeNode(IEnumerable<Node> children) => Children.AddRange(children);
+        public CompositeNode(params Node[] children) => AddChildren(children);
+        public CompositeNode(IEnumerable<Node> children) => AddChildren(children);
+
+        private void AddChildren(IEnumerable<Node> children)
+        {
+            foreach (var child in children)
+            {
+                if (child is ScriptNode scriptNode)
+                {
+                    // Insert the script-node as a placeholder, to be overwritten upon compilation
+                    var childIndex = Children.Count;
+                    Children.Add(child);
+                    scriptNode.Compiled += (s, args) => Children[childIndex] = args.Node;
+                }
+                else
+                {
+                    Children.Add(child);
+                }
+            }
+        }
 
         public override void Reset()
         {

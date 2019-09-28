@@ -1,27 +1,77 @@
-﻿using SpiceEngine.Entities;
+﻿using OpenTK;
+using SpiceEngine.Entities;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Rendering.Vertices;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public class MeshBatch : IBatch
+    public class MeshBatch : Batch
     {
-        public int EntityID { get; private set; }
-        public IMesh3D Mesh { get; }
-        public IEnumerable<IVertex3D> Vertices => Mesh.Vertices;
+        private Dictionary<int, int> _offsetByID = new Dictionary<int, int>();
+        private Dictionary<int, int> _countByID = new Dictionary<int, int>();
 
-        public MeshBatch(int entityID, IMesh3D mesh)
+        public IMesh Mesh { get; }
+
+        public MeshBatch(IMesh mesh) => Mesh = mesh;
+
+        public override IBatch Duplicate() => new MeshBatch(Mesh.Duplicate());
+
+        public override void AddEntity(int id, IRenderable renderable)
         {
-            EntityID = entityID;
-            Mesh = mesh;
+            if (renderable is IMesh mesh)
+            {
+                if (EntityIDs.Any())
+                {
+                    var offset = Mesh.Vertices.Count();
+                    _offsetByID.Add(id, offset);
+                    _countByID.Add(id, offset + mesh.Vertices.Count());
+
+                    Mesh.Combine(mesh);
+                }
+                else
+                {
+                    _offsetByID.Add(id, 0);
+                    _countByID.Add(id, mesh.Vertices.Count());
+                }
+            }
+
+            base.AddEntity(id, renderable);
         }
 
-        public IBatch Duplicate(int entityID) => new MeshBatch(entityID, Mesh.Duplicate());
+        public override void Transform(int entityID, Transform transform)
+        {
+            // TODO - This is redundant with function overloads for Mesh.Transform()
+            var offset = _offsetByID.ContainsKey(entityID) ? _offsetByID[entityID] : 0;
+            var count = _countByID.ContainsKey(entityID) ? _countByID[entityID] : Mesh.Vertices.Count();
+
+            Mesh.Transform(transform, offset, count);
+        }
+
+        public override void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale)
+        {
+            // TODO - This is redundant with function overloads for Mesh.Transform()
+            var offset = _offsetByID.ContainsKey(entityID) ? _offsetByID[entityID] : 0;
+            var count = _countByID.ContainsKey(entityID) ? _countByID[entityID] : Mesh.Vertices.Count();
+
+            Mesh.TransformTexture(center, translation, rotation, scale, offset, count);
+        }
+
+        public override void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        {
+            // TODO - This is redundant with function overloads for Mesh.Transform()
+            var offset = _offsetByID.ContainsKey(entityID) ? _offsetByID[entityID] : 0;
+            var count = _countByID.ContainsKey(entityID) ? _countByID[entityID] : Mesh.Vertices.Count();
+
+            Mesh.Update(vertexUpdate, offset, count);
+        }
 
         public void AddTestColors()
         {
@@ -47,22 +97,20 @@ namespace SpiceEngine.Rendering.Batches
             Mesh.AddVertices(vertices);*/
         }
 
-        public void Load() => Mesh.Load();
+        public override void Load() => Mesh.Load();
 
-        public void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, TextureManager textureManager = null)
+        public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
-            var entity = entityProvider.GetEntity(EntityID);
+            var entity = entityProvider.GetEntity(EntityIDs.First());
 
-            switch (entity)
+            if (textureProvider != null && entity is ITextureBinder textureBinder)
             {
-                case Brush brush:
-                    brush.SetUniforms(shaderProgram, textureManager);
-                    break;
-                case Volume volume:
-                    volume.SetUniforms(shaderProgram);
-                    break;
+                // TODO - Determine when to unbind textures
+                textureBinder.BindTextures(shaderProgram, textureProvider);
             }
-            
+
+            entity.SetUniforms(shaderProgram);
+
             Mesh.Draw();
         }
     }
