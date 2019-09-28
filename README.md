@@ -1,10 +1,10 @@
 # Spice-Engine
 
 The Spice Engine is a work-in-progress game engine, written in C# and GLSL through the OpenTK library.
-The intent is to produce a library that can act as a base game library for both 2D and 3D games, with the ability to parse the associated common file formats for game assets (obj's for meshes, dae's for animations, etc.).
+The intent is to produce a library that can act as a base game library for both 2D and 3D games, with the ability to parse the associated common file formats for game assets (OBJ for meshes, DAE for animations, etc.).
 It will, however, contain its own file formats for Maps that act as a way to store the "game world" that the engine will then load up.
 
-This project is mostly meant to be a fun learning tool for myself, with pipe dream aspirations of eventually having a functional, competant, and open-source game engine.
+This project is mostly meant to be a fun learning tool for myself, with pipe dream aspirations of eventually having a functional, competent, and open-source game engine.
 
 ## SpiceEngine
 
@@ -69,4 +69,4 @@ Similar to the *SpiceEngineCore* project, the *SauceEditorCore* project is also 
 
 *SampleGameProject* is a simple sample project for launching a window and loading a test map in the *SpiceEngine*.
 All test resources are also stored here, such as textures, meshes, behaviors, etc.
-Due to the volatile state of the *Map* file format for the (hopefully) near future, upon launching this sample project, the *Map* file is programatically created, written to disk, then loaded up in the engine.
+Due to the volatile state of the *Map* file format for the (hopefully) near future, upon launching this sample project, the *Map* file is programmatically created, written to disk, then loaded up in the engine.
