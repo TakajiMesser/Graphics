@@ -6,6 +6,5 @@ namespace SauceEditor.Views.Factories
     public interface IMainView
     {
         void SaveAll();
-        void LoadSettings();
     }
 }

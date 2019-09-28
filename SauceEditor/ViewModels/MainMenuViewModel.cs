@@ -1,15 +1,14 @@
 using Microsoft.Win32;
-using SauceEditor.Helpers;
+using SauceEditor.Models;
 using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
+using System;
 using System.IO;
 
 namespace SauceEditor.ViewModels
 {
     public class MainMenuViewModel : ViewModel
     {
-        private static readonly string DEFAULT_INITIAL_DIRECTORY = FilePathHelper.INITIAL_FILE_DIRECTORY;
-
         public IMainView MainView { get; set; }
         //public IMainViewFactory MainViewFactory { get; set; }
         public IWindowFactory WindowFactory { get; set; }
@@ -131,7 +130,7 @@ namespace SauceEditor.ViewModels
                 return _openProjectCommand ?? (_openProjectCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog(Project.FILE_EXTENSION, "Project Files|*.pro", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog(Project.FILE_EXTENSION, "Project Files|*.pro", EditorSettings.Instance.InitialProjectDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenProject(fileName);
@@ -150,7 +149,7 @@ namespace SauceEditor.ViewModels
                 return _openMapCommand ?? (_openMapCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialMapDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -169,7 +168,7 @@ namespace SauceEditor.ViewModels
                 return _openModelCommand ?? (_openModelCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("obj", "Model Files|*.obj", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("obj", "Model Files|*.obj", EditorSettings.Instance.InitialModelDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -188,7 +187,7 @@ namespace SauceEditor.ViewModels
                 return _openBehaviorCommand ?? (_openBehaviorCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialBehaviorDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -207,7 +206,7 @@ namespace SauceEditor.ViewModels
                 return _openTextureCommand ?? (_openTextureCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialTextureDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -226,7 +225,7 @@ namespace SauceEditor.ViewModels
                 return _openSoundCommand ?? (_openSoundCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialSoundDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -245,7 +244,7 @@ namespace SauceEditor.ViewModels
                 return _openMaterialCommand ?? (_openMaterialCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialMaterialDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -264,7 +263,7 @@ namespace SauceEditor.ViewModels
                 return _openArchetypeCommand ?? (_openArchetypeCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialArchetypeDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -283,7 +282,7 @@ namespace SauceEditor.ViewModels
                 return _openScriptCommand ?? (_openScriptCommand = new RelayCommand(
                     p =>
                     {
-                        var fileName = OpenDialog("map", "Map Files|*.map", DEFAULT_INITIAL_DIRECTORY);
+                        var fileName = OpenDialog("map", "Map Files|*.map", EditorSettings.Instance.InitialScriptDirectory);
                         if (fileName != null)
                         {
                             ComponentFactory.OpenMap(fileName);
@@ -326,12 +325,16 @@ namespace SauceEditor.ViewModels
                 CheckPathExists = true,
                 DefaultExt = defaultExt,
                 Filter = filter,
-                InitialDirectory = Path.GetFullPath(initialDirectory)
+                InitialDirectory = NormalizedPath(initialDirectory)
             };
 
             return dialog.ShowDialog() == true
                 ? dialog.FileName
                 : null;
         }
+
+        private string NormalizedPath(string path) => Path.GetFullPath(new Uri(path).LocalPath)
+            .TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)
+            .ToUpperInvariant();
     }
 }

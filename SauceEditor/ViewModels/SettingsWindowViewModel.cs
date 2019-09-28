@@ -38,20 +38,14 @@ namespace SauceEditor.ViewModels
             }
         }
 
-        public SettingsWindowViewModel()
-        {
-            LoadSettings();
-        }
+        public SettingsWindowViewModel() => LoadSettings();
 
-        private void LoadSettings()
-        {
-            _settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-        }
+        private void LoadSettings() => _settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
 
         private void SaveSettings()
         {
             _settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            MainView.LoadSettings();
+            EditorSettings.Reload();
         }
     }
 }

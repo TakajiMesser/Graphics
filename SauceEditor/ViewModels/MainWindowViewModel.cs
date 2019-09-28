@@ -47,8 +47,6 @@ namespace SauceEditor.ViewModels
 
         public SettingsWindowViewModel SettingsWindowViewModel { get; set; }
 
-        public EditorSettings Settings { get; set; }
-
         private RelayCommand _undoCommand;
         public RelayCommand UndoCommand
         {
@@ -94,8 +92,6 @@ namespace SauceEditor.ViewModels
         public MainWindowViewModel()
         {
             Title = "Sauce Editor";
-
-            LoadOrCreateSettings();
             MapBuilder.CreateTestProject();
         }
 
@@ -120,19 +116,6 @@ namespace SauceEditor.ViewModels
             p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath)),
             p => _behaviorFilePath != null
         );*/
-
-        private void LoadOrCreateSettings()
-        {
-            if (File.Exists(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH))
-            {
-                Settings = EditorSettings.Load(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            }
-            else
-            {
-                Settings = new EditorSettings();
-                Settings.Save(SauceEditor.Helpers.FilePathHelper.SETTINGS_PATH);
-            }
-        }
 
         private void CommandExecuted(ICommand command)
         {

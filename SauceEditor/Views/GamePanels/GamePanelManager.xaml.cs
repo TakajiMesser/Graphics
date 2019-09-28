@@ -1,4 +1,5 @@
 ﻿using SauceEditor.Helpers;
+using SauceEditor.Models;
 using SauceEditor.ViewModels;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.ViewModels.Docks;
@@ -38,6 +39,8 @@ namespace SauceEditor.Views.GamePanels
             ViewModel.XViewModel = _xView.ViewModel;
             ViewModel.YViewModel = _yView.ViewModel;
             ViewModel.ZViewModel = _zView.ViewModel;
+
+            SetView(EditorSettings.Instance.DefaultView);
         }
 
         public DockViewModel GetViewModel() => ViewModel;
