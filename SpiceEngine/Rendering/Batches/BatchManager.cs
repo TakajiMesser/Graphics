@@ -1,14 +1,15 @@
 ﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -493,7 +494,7 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
-            public BatchAction SetTexture(Texture texture, string name, int index)
+            public BatchAction SetTexture(ITexture texture, string name, int index)
             {
                 _commandQueue.Enqueue(() => Shader.BindTexture(texture, name, index));
                 return this;

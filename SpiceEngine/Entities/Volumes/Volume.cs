@@ -1,5 +1,6 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Shaders;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering.Shaders;
 
 namespace SpiceEngine.Entities.Volumes
 {

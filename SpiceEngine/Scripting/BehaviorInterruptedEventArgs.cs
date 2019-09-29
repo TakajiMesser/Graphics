@@ -7,9 +7,6 @@ namespace SpiceEngine.Scripting
     {
         public Node NewRootNode { get; private set; }
 
-        public BehaviorInterruptedEventArgs(Node newRoot)
-        {
-            NewRootNode = newRoot;
-        }
+        public BehaviorInterruptedEventArgs(Node newRoot) => NewRootNode = newRoot;
     }
 }

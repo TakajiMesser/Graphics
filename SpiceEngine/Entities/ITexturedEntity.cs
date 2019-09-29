@@ -1,7 +1,4 @@
-﻿using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using System;
+﻿using System;
 
 namespace SpiceEngine.Entities
 {

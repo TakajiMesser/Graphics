@@ -2,9 +2,9 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,10 +20,7 @@ namespace SpiceEngine.Rendering.Meshes
 
         public SimpleMesh(List<Vector3> vertices, List<int> triangleIndices, ShaderProgram program)
         {
-            if (triangleIndices.Count % 3 != 0)
-            {
-                throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
-            }
+            if (triangleIndices.Count % 3 != 0) throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
 
             _vertexArrayHandle = GL.GenVertexArray();
             GL.BindVertexArray(_vertexArrayHandle);

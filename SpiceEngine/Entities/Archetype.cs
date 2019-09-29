@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceEngineCore.Entities;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities
@@ -13,14 +14,8 @@ namespace SpiceEngine.Entities
 
         public List<int> SpawnedEntityIDs { get; private set; } = new List<int>();
 
-        public Archetype(string name)
-        {
-            Name = name;
-        }
+        public Archetype(string name) => Name = name;
 
-        public IEnumerable<IEntity> SpawnEntities()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IEntity> SpawnEntities() => throw new NotImplementedException();
     }
 }

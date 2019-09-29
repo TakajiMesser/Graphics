@@ -2,7 +2,8 @@
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Rendering.Buffers;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -13,7 +14,7 @@ using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
 
 namespace SpiceEngine.Rendering.Textures
 {
-    public class Texture : IDisposable, IBindable
+    public class Texture : ITexture, IDisposable, IBindable
     {
         public int Handle => _handle;
         private readonly int _handle;

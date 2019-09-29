@@ -1,7 +1,8 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -36,25 +37,13 @@ namespace SpiceEngine.Rendering.Buffers
             handle.Free();
         }
 
-        public void Bind()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, _handle);
-        }
+        public void Bind() => GL.BindBuffer(BufferTarget.ArrayBuffer, _handle);
 
-        public void Unbind()
-        {
-            GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
-        }
+        public void Unbind() => GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
 
-        public void DrawTriangles()
-        {
-            GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Count);
-        }
+        public void DrawTriangles() => GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Count);
 
-        public void DrawQuads()
-        {
-            GL.DrawArrays(PrimitiveType.Quads, 0, _vertices.Count);
-        }
+        public void DrawQuads() => GL.DrawArrays(PrimitiveType.Quads, 0, _vertices.Count);
 
         #region IDisposable Support
         private bool disposedValue = false;

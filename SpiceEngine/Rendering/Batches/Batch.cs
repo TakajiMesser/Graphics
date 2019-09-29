@@ -1,9 +1,10 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 
@@ -16,10 +17,7 @@ namespace SpiceEngine.Rendering.Batches
         public IEnumerable<int> EntityIDs => _entityIDs;
         public int EntityCount => _entityIDs.Count;
 
-        public virtual void AddEntity(int id, IRenderable renderable)
-        {
-            _entityIDs.Add(id);
-        }
+        public virtual void AddEntity(int id, IRenderable renderable) => _entityIDs.Add(id);
 
         public virtual void Transform(int entityID, Transform transform) { }
 
@@ -27,10 +25,7 @@ namespace SpiceEngine.Rendering.Batches
 
         public virtual void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate) { }
 
-        public virtual void RemoveEntity(int id)
-        {
-            _entityIDs.Remove(id);
-        }
+        public virtual void RemoveEntity(int id) => _entityIDs.Remove(id);
 
         public abstract void Load();
         public abstract void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null);

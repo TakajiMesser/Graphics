@@ -1,4 +1,6 @@
-﻿namespace SpiceEngine.Entities.Volumes
+﻿using SpiceEngineCore.Entities;
+
+namespace SpiceEngine.Entities.Volumes
 {
     public class TriggerVolume : Volume
     {

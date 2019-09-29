@@ -1,16 +1,16 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Materials;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 

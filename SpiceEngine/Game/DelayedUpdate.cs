@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceEngineCore.Game;
+using System;
 
 namespace SpiceEngine.Game
 {

@@ -1,6 +1,7 @@
 ﻿using SpiceEngine.Scripting.Nodes.Composites;
 using SpiceEngine.Scripting.Nodes.Decorators;
-using SpiceEngine.Scripting.Scripts;
+using SpiceEngineCore.Scripting.Scripts;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

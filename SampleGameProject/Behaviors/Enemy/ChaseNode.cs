@@ -1,8 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Physics.Bodies;
+using SpiceEngineCore.Utilities;
 using System;
 
 namespace SampleGameProject.Behaviors.Enemy

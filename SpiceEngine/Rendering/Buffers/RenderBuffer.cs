@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Rendering;
 using System;
 
 namespace SpiceEngine.Rendering.Buffers
@@ -24,20 +25,11 @@ namespace SpiceEngine.Rendering.Buffers
             Height = height;
         }
 
-        public void Bind()
-        {
-            GL.BindRenderbuffer(Target, _handle);
-        }
+        public void Bind() => GL.BindRenderbuffer(Target, _handle);
 
-        public void Unbind()
-        {
-            GL.BindRenderbuffer(Target, 0);
-        }
+        public void Unbind() => GL.BindRenderbuffer(Target, 0);
 
-        public void ReserveMemory()
-        {
-            GL.RenderbufferStorage(Target, Storage, Width, Height);
-        }
+        public void ReserveMemory() => GL.RenderbufferStorage(Target, Storage, Width, Height);
 
         public void Load(IntPtr pixels)
         {

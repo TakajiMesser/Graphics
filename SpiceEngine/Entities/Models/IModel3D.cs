@@ -1,6 +1,6 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Rendering.Shaders;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Models

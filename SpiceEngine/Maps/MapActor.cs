@@ -1,18 +1,18 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Properties;
-using SpiceEngine.Scripting.Scripts;
-using SpiceEngine.Scripting.StimResponse;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Animations;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Properties;
+using SpiceEngineCore.Scripting.Scripts;
+using SpiceEngineCore.Scripting.StimResponse;
+using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -112,7 +112,7 @@ namespace SpiceEngine.Maps
                         }*/
 
                         // Every bone has an offset matrix, which converts it from model-space to bone-space (animation transforms are done in bone-space)
-                        animatedActor.RootJoint = Joint.CreateJoint(scene.RootNode, scene.Meshes);
+                        animatedActor.RootJoint = scene.RootNode.ToJoint(scene.Meshes);
 
                         for (var i = 0; i < scene.Meshes.Count; i++)
                         {
@@ -230,7 +230,7 @@ namespace SpiceEngine.Maps
 
                     for (var i = 0; i < scene.Meshes.Count; i++)
                     {
-                        var material = new Material(scene.Materials[scene.Meshes[i].MaterialIndex]);
+                        var material = scene.Materials[scene.Meshes[i].MaterialIndex].ToMaterial();
                         actor.AddMaterial(material);
                     }
                 }
@@ -289,7 +289,7 @@ namespace SpiceEngine.Maps
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
         }
 
-        public Behavior ToBehavior() => Behavior?.ToBehavior();
+        public IBehavior ToBehavior() => Behavior?.ToBehavior();
 
         /*public Script ToScript()
         {

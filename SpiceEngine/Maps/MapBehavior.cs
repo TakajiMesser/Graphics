@@ -1,7 +1,6 @@
 ﻿using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
+using SpiceEngineCore.Scripting.Scripts;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
 using System.Xml;

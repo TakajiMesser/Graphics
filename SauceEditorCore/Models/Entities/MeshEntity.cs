@@ -1,14 +1,11 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Helpers;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using System;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
 using System.Linq;
 
 namespace SauceEditorCore.Models.Entities

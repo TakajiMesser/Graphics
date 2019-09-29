@@ -1,13 +1,9 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.PostProcessing;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SpiceEngine.Game
 {

@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities

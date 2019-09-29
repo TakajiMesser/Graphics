@@ -1,7 +1,7 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering.Animations;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 

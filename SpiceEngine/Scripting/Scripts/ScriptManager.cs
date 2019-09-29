@@ -1,11 +1,4 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Game;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Properties;
-using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngineCore.Scripting.Scripts;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -41,6 +34,8 @@ namespace SpiceEngine.Scripting.Scripts
 
             //var assemblyNames = executingAssembly.GetReferencedAssemblies();
             //var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
+            _compilerParameters.ReferencedAssemblies.Add("netstandard.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
         }
@@ -49,6 +44,7 @@ namespace SpiceEngine.Scripting.Scripts
         {
             lock (_compilerLock)
             {
+                throw new NotImplementedException();
                 //_scriptsByName.Add(script.Name, script);
             }
         }
@@ -86,7 +82,7 @@ namespace SpiceEngine.Scripting.Scripts
                         var script = _scriptsByName.Values.FirstOrDefault(v => Path.GetFileName(v.First().SourcePath) == error.FileName);
                         if (script != null)
                         {
-                            script.First().Errors.Add(error);
+                            script.First().Errors.Add(error.ToString());
                         }
                     }
                 }

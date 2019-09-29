@@ -1,7 +1,6 @@
-﻿using SpiceEngine.Scripting.Nodes;
+﻿using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Scripting;
+using SpiceEngineCore.Scripting.StimResponse;
 
 namespace SampleGameProject.Behaviors.Enemy
 {

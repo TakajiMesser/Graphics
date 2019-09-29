@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Rendering.Shaders;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Shaders;
 using System;
 using System.Runtime.InteropServices;
 
@@ -22,22 +23,13 @@ namespace SpiceEngine.Rendering.Buffers
             _binding = binding;
         }
 
-        public void Load(ShaderProgram program)
-        {
-            program.BindUniformBlock(Name, _binding);
-        }
+        public void Load(ShaderProgram program) => program.BindUniformBlock(Name, _binding);
 
-        public void Buffer()
-        {
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
-        }
+        public void Buffer() => GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
 
         public abstract void Bind();
 
-        public void Unbind()
-        {
-            GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-        }
+        public void Unbind() => GL.BindBuffer(BufferTarget.UniformBuffer, 0);
 
         #region IDisposable Support
         private bool disposedValue = false;

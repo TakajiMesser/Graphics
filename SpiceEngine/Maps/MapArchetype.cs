@@ -1,8 +1,8 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Vertices;
+﻿using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 
@@ -18,19 +18,10 @@ namespace SpiceEngine.Maps
 
         public List<IEntityBuilder> Entities { get; set; } = new List<IEntityBuilder>();
 
-        public IEnumerable<Mesh<Vertex3D>> ToMeshes()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<Mesh<Vertex3D>> ToMeshes() => throw new NotImplementedException();
 
-        public IEnumerable<IEntity> ToEntities()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<IEntity> ToEntities() => throw new NotImplementedException();
 
-        public IEnumerable<Shape3D> ToShapes()
-        {
-            throw new NotImplementedException();
-        }
+        public IEnumerable<Shape3D> ToShapes() => throw new NotImplementedException();
     }
 }

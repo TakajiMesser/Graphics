@@ -1,15 +1,5 @@
-using OpenTK;
-using SauceEditor.Models;
-using SauceEditor.Utilities;
-using SpiceEngine.Entities;
-using SpiceEngine.Maps;
-using SpiceEngine.Utilities;
-using System.ComponentModel;
-using System.Windows.Media;
-using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
-using SpiceEngine.Rendering.Materials;
-using SauceEditor.Models.Components;
 using SauceEditorCore.Models.Components;
+using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace SauceEditor.ViewModels.Properties
 {

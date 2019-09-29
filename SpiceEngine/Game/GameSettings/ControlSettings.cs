@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Inputs;
+﻿using SpiceEngineCore.Inputs;
 
 namespace SpiceEngine.Game.GameSettings
 {

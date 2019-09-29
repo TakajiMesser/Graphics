@@ -1,12 +1,8 @@
 ﻿using SauceEditor.Helpers;
 using SauceEditor.Models;
-using SauceEditor.ViewModels;
-using SauceEditor.ViewModels.Commands;
 using SauceEditor.ViewModels.Docks;
-using SauceEditor.Views.Factories;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
+using SpiceEngineCore.Outputs;
 using System;
 using System.Windows.Controls;
 using System.Windows.Input;

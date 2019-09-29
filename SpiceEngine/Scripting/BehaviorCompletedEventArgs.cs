@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Scripting.Nodes;
+﻿using SpiceEngineCore.Utilities;
 using System;
 
 namespace SpiceEngine.Scripting
@@ -7,9 +7,6 @@ namespace SpiceEngine.Scripting
     {
         public BehaviorStatus Status { get; private set; }
 
-        public BehaviorCompletedEventArgs(BehaviorStatus status)
-        {
-            Status = status;
-        }
+        public BehaviorCompletedEventArgs(BehaviorStatus status) => Status = status;
     }
 }

@@ -1,5 +1,11 @@
 ﻿using Assimp;
 using OpenTK;
+using SpiceEngineCore.Rendering.Animations;
+using SpiceEngineCore.Rendering.Textures;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SpiceEngine.Utilities
 {
@@ -27,5 +33,69 @@ namespace SpiceEngine.Utilities
         }
 
         public static OpenTK.Quaternion ToQuaternion(this Assimp.Quaternion quaternion) => new OpenTK.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+
+        public static SpiceEngineCore.Rendering.Materials.Material ToMaterial(this Material material) => new SpiceEngineCore.Rendering.Materials.Material()
+        {
+            Ambient = new Vector3(material.ColorAmbient.R, material.ColorAmbient.G, material.ColorAmbient.B),
+            Diffuse = new Vector3(material.ColorDiffuse.R, material.ColorDiffuse.G, material.ColorDiffuse.B),
+            Specular = new Vector3(material.ColorSpecular.R, material.ColorSpecular.G, material.ColorSpecular.B),
+            SpecularExponent = 1.0f - material.Shininess
+        };
+
+        public static TexturePaths ToTexturePaths(this Material material, string directoryPath) => new TexturePaths()
+        {
+            DiffuseMapFilePath = !string.IsNullOrEmpty(material.TextureDiffuse.FilePath) ? Path.Combine(directoryPath, material.TextureDiffuse.FilePath) : null,
+            NormalMapFilePath = !string.IsNullOrEmpty(material.TextureNormal.FilePath) ? Path.Combine(directoryPath, material.TextureNormal.FilePath) : null,
+            SpecularMapFilePath = !string.IsNullOrEmpty(material.TextureSpecular.FilePath) ? Path.Combine(directoryPath, material.TextureSpecular.FilePath) : null,
+        };
+
+        public static SpiceEngineCore.Rendering.Animations.Bone ToBone(this Node node)
+        {
+            var bone = new SpiceEngineCore.Rendering.Animations.Bone
+            {
+                Name = node.Name
+            };
+
+            foreach (var childNode in node.Children)
+            {
+                bone.Children.Add(childNode.ToBone());
+            }
+
+            return bone;
+        }
+
+        public static Joint ToJoint(this Node node, List<Mesh> meshes)
+        {
+            var joint = new Joint(node.Name)
+            {
+                Transform = node.Transform.ToMatrix4()
+            };
+
+            for (var i = 0; i < meshes.Count; i++)
+            {
+                var offsets = meshes[i].Bones.Where(b => b.Name == node.Name).Select(b => b.OffsetMatrix);
+
+                if (offsets.Count() > 1)
+                {
+                    throw new InvalidOperationException("What the fuck do I do here?");
+                }
+                else if (offsets.Count() == 1)
+                {
+                    joint.OffsetsByMeshIndex.Add(i, offsets.First().ToMatrix4());
+                }
+            }
+
+            foreach (var child in node.Children)
+            {
+                var childJoint = child.ToJoint(meshes);
+
+                if (childJoint != null)
+                {
+                    joint.Children.Add(childJoint);
+                }
+            }
+
+            return joint;
+        }
     }
 }

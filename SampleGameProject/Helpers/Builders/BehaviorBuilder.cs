@@ -1,11 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngine.Maps;
 using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Scripting.Scripts;
 using SpiceEngine.Scripting.StimResponse;
+using SpiceEngineCore.Scripting.Scripts;
+using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 
 namespace SampleGameProject.Helpers.Builders
 {

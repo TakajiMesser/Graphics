@@ -1,23 +1,25 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -122,7 +124,7 @@ namespace SpiceEngine.Rendering
                         {
                             var textureMapping = i < mapActor.TexturesPaths.Count
                                 ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+                                : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
 
                             actor.AddTextureMapping(textureMapping);
                         }

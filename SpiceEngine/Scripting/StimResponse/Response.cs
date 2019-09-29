@@ -1,19 +1,17 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Physics.Raycasting;
-using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Physics.Bodies;
+using SpiceEngineCore.Physics.Raycasting;
+using SpiceEngineCore.Scripting.StimResponse;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
 
 namespace SpiceEngine.Scripting.StimResponse
 {
-    public class Response
+    public class Response : IResponse
     {
         public Stimulus Stimulus { get; set; }
 
@@ -86,7 +84,7 @@ namespace SpiceEngine.Scripting.StimResponse
             }
         }
 
-        private bool HasContactStimulus(Actor actor, IBody body, IEnumerable<IBody> stimuliColliders, IEntityProvider entityProvider)
+        private bool HasContactStimulus(IActor actor, IBody body, IEnumerable<IBody> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
@@ -96,11 +94,11 @@ namespace SpiceEngine.Scripting.StimResponse
                     return true;
                 }
             }
-            
+
             return false;
         }
 
-        private bool HasProximityStimulus(Actor actor, IEnumerable<IBody> stimuliColliders, IEntityProvider entityProvider)
+        private bool HasProximityStimulus(IActor actor, IEnumerable<IBody> stimuliColliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
@@ -114,7 +112,7 @@ namespace SpiceEngine.Scripting.StimResponse
             return false;
         }
 
-        private bool HasSightStimulus(Actor actor, Vector3 eulerRotation, IEnumerable<IBody> stimuliColliders, IEnumerable<IBody> colliders, IEntityProvider entityProvider)
+        private bool HasSightStimulus(IActor actor, Vector3 eulerRotation, IEnumerable<IBody> stimuliColliders, IEnumerable<IBody> colliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {

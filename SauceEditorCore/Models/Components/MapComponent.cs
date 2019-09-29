@@ -1,13 +1,11 @@
 ﻿using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
-using System;
+using SpiceEngineCore.Entities;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SauceEditorCore.Models.Components
 {

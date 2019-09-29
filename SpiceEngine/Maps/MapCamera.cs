@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Matrices;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngine.Maps
 {

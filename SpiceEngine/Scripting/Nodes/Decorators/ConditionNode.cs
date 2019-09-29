@@ -1,4 +1,6 @@
-﻿namespace SpiceEngine.Scripting.Nodes.Decorators
+﻿using SpiceEngineCore.Utilities;
+
+namespace SpiceEngine.Scripting.Nodes.Decorators
 {
     public abstract class ConditionNode : DecoratorNode
     {

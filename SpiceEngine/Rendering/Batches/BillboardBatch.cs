@@ -1,12 +1,13 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 

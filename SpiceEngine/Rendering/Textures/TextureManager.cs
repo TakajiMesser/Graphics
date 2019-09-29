@@ -1,5 +1,5 @@
 ﻿using OpenTK.Graphics;
-using SpiceEngine.Game;
+using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +9,7 @@ namespace SpiceEngine.Rendering.Textures
     public class TextureManager : ITextureProvider, IDisposable
     {
         private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
-        private List<Texture> _textures = new List<Texture>();
+        private List<ITexture> _textures = new List<ITexture>();
 
         private object _textureLock = new object();
 
@@ -25,7 +25,7 @@ namespace SpiceEngine.Rendering.Textures
         /// </summary>
         /// <param name="texture"></param>
         /// <returns>Returns a lookup index for this texture</returns>
-        public int AddTexture(Texture texture)
+        public int AddTexture(ITexture texture)
         {
             lock (_textureLock)
             {
@@ -85,7 +85,7 @@ namespace SpiceEngine.Rendering.Textures
             _textures.Clear();
         }
 
-        public Texture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
+        public ITexture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
 
         #region IDisposable Support
         private bool disposedValue = false;

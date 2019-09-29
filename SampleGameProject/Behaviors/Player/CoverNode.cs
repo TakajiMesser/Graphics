@@ -1,10 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Bodies;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Physics.Bodies;
+using SpiceEngineCore.Utilities;
 using System.Linq;
 
 namespace SampleGameProject.Behaviors.Player

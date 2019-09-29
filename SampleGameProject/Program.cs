@@ -10,7 +10,7 @@ namespace SampleGameProject
     {
         static void Main(string[] args)
         {
-            ProjectBuilder.CreateMeshOutputFile(SpiceEngine.Helpers.FilePathHelper.SPHERE_MESH_PATH, SpiceEngine.Helpers.FilePathHelper.SPHERE_OUTPUT_PATH);
+            ProjectBuilder.CreateMeshOutputFile(SpiceEngineCore.Helpers.FilePathHelper.SPHERE_MESH_PATH, SpiceEngineCore.Helpers.FilePathHelper.SPHERE_OUTPUT_PATH);
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
 

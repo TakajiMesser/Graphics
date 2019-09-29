@@ -1,6 +1,7 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 

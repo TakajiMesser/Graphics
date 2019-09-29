@@ -1,6 +1,6 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;

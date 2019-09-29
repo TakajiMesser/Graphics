@@ -1,12 +1,12 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
 using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Processing;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Drawing;
 using System.Drawing.Text;

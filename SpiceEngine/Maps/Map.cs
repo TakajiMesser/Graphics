@@ -1,7 +1,5 @@
 ﻿using SpiceEngineCore.Serialization.Converters;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Xml;
 
 namespace SpiceEngine.Maps
 {

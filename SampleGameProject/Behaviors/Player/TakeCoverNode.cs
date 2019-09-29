@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Physics.Raycasting;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Linq;
 

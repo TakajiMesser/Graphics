@@ -1,6 +1,6 @@
-﻿using SpiceEngine.Inputs;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Matrices;
+﻿using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngine.Entities.Cameras
 {

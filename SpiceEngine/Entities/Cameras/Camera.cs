@@ -1,9 +1,10 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Lights;
-using SpiceEngine.Inputs;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Shaders;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using System;
 using System.Collections.Generic;
 
@@ -80,20 +81,28 @@ namespace SpiceEngine.Entities.Cameras
             _projectionMatrix.Set(program);
         }
 
-        public void SetUniforms(ShaderProgram program, PointLight light)
+        public void SetUniforms(ShaderProgram program, ILight light)
         {
-            var shadowViews = new List<Matrix4>();
-            for (var i = 0; i < 6; i++)
+            if (light is PointLight pointLight)
             {
-                shadowViews.Add(light.GetView(TextureTarget.TextureCubeMapPositiveX + i) * light.Projection);
-            }
-            program.SetUniform(Rendering.Matrices.ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
-        }
+                var shadowViews = new List<Matrix4>();
 
-        public void SetUniforms(ShaderProgram program, SpotLight light)
-        {
-            program.SetUniform(Rendering.Matrices.ProjectionMatrix.NAME, light.Projection);
-            program.SetUniform(Rendering.Matrices.ViewMatrix.NAME, light.View);
+                for (var i = 0; i < 6; i++)
+                {
+                    shadowViews.Add(pointLight.GetView(TextureTarget.TextureCubeMapPositiveX + i) * pointLight.Projection);
+                }
+
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
+            }
+            else if (light is SpotLight spotLight)
+            {
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ProjectionMatrix.NAME, spotLight.Projection);
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.NAME, spotLight.View);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public bool CompareUniforms(IEntity entity) => false;

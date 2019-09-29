@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Rendering;
 using System;
 
 namespace SpiceEngine.Rendering.Textures

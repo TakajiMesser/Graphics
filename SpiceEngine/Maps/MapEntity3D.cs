@@ -1,7 +1,7 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Utilities;
 using System;
 
 namespace SpiceEngine.Maps

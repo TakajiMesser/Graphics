@@ -1,11 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Physics.Shapes;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 

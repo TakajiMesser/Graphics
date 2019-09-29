@@ -1,8 +1,9 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering.Materials;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 
 namespace SpiceEngine.Entities.Brushes
 {

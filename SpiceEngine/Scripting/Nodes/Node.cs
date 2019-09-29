@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceEngineCore.Utilities;
+using System;
 
 namespace SpiceEngine.Scripting.Nodes
 {

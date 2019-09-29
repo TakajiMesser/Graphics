@@ -1,11 +1,12 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics;
-using SpiceEngine.Scripting.Properties;
+﻿using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Scripting.Scripts;
-using SpiceEngine.Scripting.StimResponse;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Physics.Collisions;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Properties;
+using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -21,7 +22,7 @@ namespace SpiceEngine.Scripting
         private ICollisionProvider _collisionProvider;
         private IInputProvider _inputProvider;
 
-        private Dictionary<int, Behavior> _behaviorsByEntityID = new Dictionary<int, Behavior>();
+        private Dictionary<int, IBehavior> _behaviorsByEntityID = new Dictionary<int, IBehavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
 
@@ -42,7 +43,7 @@ namespace SpiceEngine.Scripting
                     if (_behaviorsByEntityID.ContainsKey(actor.ID))
                     {
                         var behavior = _behaviorsByEntityID[actor.ID];
-                        behavior.Context.Camera = _camera;
+                        behavior.SetCamera(_camera);
                     }
                 }
             }
@@ -59,7 +60,7 @@ namespace SpiceEngine.Scripting
                     if (_behaviorsByEntityID.ContainsKey(actor.ID))
                     {
                         var behavior = _behaviorsByEntityID[actor.ID];
-                        behavior.Context.SetInputProvider(inputProvider);
+                        behavior.SetInputProvider(inputProvider);
                     }
                 }
             }
@@ -111,12 +112,12 @@ namespace SpiceEngine.Scripting
                     {
                         var behavior = _behaviorsByEntityID[actor.ID];
 
-                        behavior.Context.Actor = actor;
-                        behavior.Context.Camera = _camera;
-                        behavior.Context.SetEntityProvider(_entityProvider);
-                        behavior.Context.SetCollisionProvider(_collisionProvider);
-                        behavior.Context.SetInputProvider(_inputProvider);
-                        behavior.Context.SetStimulusProvider(this);
+                        behavior.SetActor(actor);
+                        behavior.SetCamera(_camera);
+                        behavior.SetEntityProvider(_entityProvider);
+                        behavior.SetCollisionProvider(_collisionProvider);
+                        behavior.SetInputProvider(_inputProvider);
+                        behavior.SetStimulusProvider(this);
 
                         /*foreach (var property in Properties)
                         {
@@ -140,7 +141,7 @@ namespace SpiceEngine.Scripting
 
                     foreach (var property in _propertiesByEntityID[actor.ID].VariableProperties)
                     {
-                        behavior.Context.SetProperty(property.Name, property);
+                        behavior.SetProperty(property.Name, property);
                     }
 
                     behavior.Tick();

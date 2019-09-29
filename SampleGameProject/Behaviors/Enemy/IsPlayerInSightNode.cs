@@ -1,10 +1,10 @@
 ﻿using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Physics.Raycasting;
 using SpiceEngine.Scripting;
 using SpiceEngine.Scripting.Nodes;
 using SpiceEngine.Scripting.Nodes.Decorators;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Physics.Bodies;
+using SpiceEngineCore.Physics.Raycasting;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Runtime.Serialization;
 

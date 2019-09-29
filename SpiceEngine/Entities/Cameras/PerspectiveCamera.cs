@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Input;
-using SpiceEngine.Inputs;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Utilities;
 using System;
 
 namespace SpiceEngine.Entities.Cameras

@@ -2,19 +2,17 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Inputs;
 using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 

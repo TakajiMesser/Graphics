@@ -1,11 +1,10 @@
 ﻿using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Maps;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -31,7 +30,7 @@ namespace SpiceEngine.Entities
 
         private object _availableIDLock = new object();
 
-        public List<Actor> Actors { get; } = new List<Actor>();
+        public List<IActor> Actors { get; } = new List<IActor>();
         public List<Brush> Brushes { get; } = new List<Brush>();
         public List<Volume> Volumes { get; } = new List<Volume>();
         public List<ILight> Lights { get; } = new List<ILight>();
@@ -99,7 +98,7 @@ namespace SpiceEngine.Entities
             throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
         }
 
-        public Actor GetActor(string name)
+        public IActor GetActor(string name)
         {
             var actor = Actors.FirstOrDefault(a => a.Name == name);
             if (actor == null) throw new KeyNotFoundException("No actor found for name " + name);

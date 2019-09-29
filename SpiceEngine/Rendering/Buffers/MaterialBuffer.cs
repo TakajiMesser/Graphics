@@ -1,5 +1,5 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Rendering.Materials;
+using SpiceEngineCore.Rendering.Materials;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Buffers

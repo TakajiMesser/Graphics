@@ -227,13 +227,19 @@ namespace SauceEditor.Views
         public void CreateGameWindow(Map map)
         {
             //_gamePanelManager.IsEnabled = false;
+            using (var gameWindow = new GameWindow(map))
+            {
+                gameWindow.VSync = VSyncMode.Adaptive;
+                gameWindow.LoadAndRun();
+                //gameWindow.Run(60.0, 0.0);
+            }
 
-            var gameWindow = new GameWindow(map)
+            /*var gameWindow = new GameWindow(map)
             {
                 VSync = VSyncMode.Adaptive
             };
             //_gameWindow.Closed += (s, args) => _gamePanelManager.IsEnabled = true;
-            gameWindow.Run(60.0, 0.0);
+            gameWindow.Run(60.0, 0.0);*/
         }
 
         public void CreateSettingsWindow()

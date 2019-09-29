@@ -1,8 +1,8 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+﻿using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Linq;
 

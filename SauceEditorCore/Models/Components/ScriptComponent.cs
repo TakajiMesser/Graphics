@@ -1,7 +1,5 @@
-﻿using SpiceEngine.Scripting.Scripts;
+﻿using SpiceEngineCore.Scripting.Scripts;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace SauceEditorCore.Models.Components
 {

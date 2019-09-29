@@ -1,6 +1,7 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Rendering.Shaders;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Shaders;
 using System;
 using System.Runtime.InteropServices;
 
@@ -21,10 +22,7 @@ namespace SpiceEngine.Rendering.Buffers
             program.BindShaderStorageBlock(name, binding);
         }
 
-        public void Buffer()
-        {
-            GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
-        }
+        public void Buffer() => GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
 
         public abstract void Bind();
         // GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _handle);
@@ -32,10 +30,7 @@ namespace SpiceEngine.Rendering.Buffers
         // GL.BufferData(BufferTarget.ShaderStorageBuffer, (int)EngineHelper.size.vec2, ref default_luminosity, BufferUsageHint.DynamicCopy);
         // GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, (IntPtr)0, exp_size, ref lumRead);
 
-        public void Unbind()
-        {
-            GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
-        }
+        public void Unbind() => GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
 
         #region IDisposable Support
         private bool disposedValue = false;

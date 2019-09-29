@@ -1,6 +1,6 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Maps;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
 using System;
 using System.Collections.Generic;
 using System.Linq;

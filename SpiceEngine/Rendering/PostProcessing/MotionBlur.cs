@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Shaders;
 using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Shaders;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {

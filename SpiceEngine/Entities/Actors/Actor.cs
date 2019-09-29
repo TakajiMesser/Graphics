@@ -1,14 +1,15 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering.Materials;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : TexturedEntity, IRotate, IScale, ITextureBinder, IModel
+    public class Actor : TexturedEntity, IActor, IRotate, IScale, ITextureBinder, IModel
     {
         protected int _meshIndex = 0;
 

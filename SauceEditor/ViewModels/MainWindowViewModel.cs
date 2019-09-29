@@ -214,7 +214,7 @@ namespace SauceEditor.ViewModels
         {
             var textureComponent = new TextureComponent(filePath)
             {
-                TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
+                TexturePaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                     NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,

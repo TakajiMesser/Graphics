@@ -1,11 +1,9 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting.StimResponse;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Physics.Bodies;
+using SpiceEngineCore.Physics.Collisions;
+using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,7 +15,7 @@ namespace SpiceEngine.Scripting
         private ICollisionProvider _collisionProvider;
         private IStimulusProvider _stimulusProvider;
 
-        public Actor Actor { get; internal set; }
+        public IActor Actor { get; internal set; }
 
         public Vector3 Position
         {
@@ -29,7 +27,7 @@ namespace SpiceEngine.Scripting
 
         public IEntityProvider GetEntityProvider() => _entityProvider;
         public IEntity GetEntity(int id) => _entityProvider.GetEntity(id);
-        public Actor GetActor(string name) => _entityProvider.GetActor(name);
+        public IActor GetActor(string name) => _entityProvider.GetActor(name);
 
         public bool HasStimuli(int entityID, Stimulus stimulus) => _stimulusProvider.GetStimuli(entityID).Contains(stimulus);
 
@@ -37,7 +35,7 @@ namespace SpiceEngine.Scripting
         public IEnumerable<IBody> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
         public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
 
-        public Camera Camera { get; internal set; }
+        public ICamera Camera { get; internal set; }
         public IInputProvider InputProvider { get; internal set; }
 
         public Vector3 EulerRotation { get; set; }

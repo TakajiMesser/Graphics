@@ -2,14 +2,13 @@ using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Properties;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Game;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -182,6 +181,7 @@ namespace SauceEditor.ViewModels
             {
                 GameManager.EntityManager.AddLayer(layerName);
             }
+
             GameManager.EntityManager.AddEntities(entityBuilders);
 
             //GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));

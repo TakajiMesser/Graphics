@@ -2,16 +2,9 @@
 using OpenTK.Graphics;
 using SauceEditor.Models.Components;
 using SauceEditorCore.Models.Components;
-using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Utilities;
-using System;
-using System.IO;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Utilities;
 
 namespace SauceEditor.Helpers.Builders
 {
@@ -31,7 +24,7 @@ namespace SauceEditor.Helpers.Builders
             project.ScriptComponents.Add(new ScriptComponent(SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH));
             project.TextureComponents.Add(new TextureComponent(SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH)
             {
-                TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
+                TexturePaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                     //NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,
@@ -99,7 +92,7 @@ namespace SauceEditor.Helpers.Builders
             };
 
             var mapBrush = MapBrush.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-            mapBrush.TexturesPaths = new SpiceEngine.Rendering.Textures.TexturePaths()
+            mapBrush.TexturesPaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
             {
                 DiffuseMapFilePath = texture.TexturePaths.DiffuseMapFilePath,
                 NormalMapFilePath = texture.TexturePaths.NormalMapFilePath,

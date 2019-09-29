@@ -1,5 +1,6 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -11,10 +12,7 @@ namespace SpiceEngine.Rendering.Buffers
         private int _handle;
         private List<ushort> _indices = new List<ushort>();
 
-        public VertexIndexBuffer()
-        {
-            _handle = GL.GenBuffer();
-        }
+        public VertexIndexBuffer() => _handle = GL.GenBuffer();
 
         public void AddIndex(ushort index) => _indices.Add(index);
 
@@ -22,25 +20,13 @@ namespace SpiceEngine.Rendering.Buffers
 
         public void Clear() => _indices.Clear();
 
-        public void Buffer()
-        {
-            GL.BufferData(BufferTarget.ElementArrayBuffer, Marshal.SizeOf<ushort>() * _indices.Count, _indices.ToArray(), BufferUsageHint.StreamDraw);
-        }
+        public void Buffer() => GL.BufferData(BufferTarget.ElementArrayBuffer, Marshal.SizeOf<ushort>() * _indices.Count, _indices.ToArray(), BufferUsageHint.StreamDraw);
 
-        public void Bind()
-        {
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
-        }
+        public void Bind() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
 
-        public void Unbind()
-        {
-            GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
-        }
+        public void Unbind() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
 
-        public void Draw()
-        {
-            GL.DrawElements(PrimitiveType.Triangles, _indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
-        }
+        public void Draw() => GL.DrawElements(PrimitiveType.Triangles, _indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
 
         #region IDisposable Support
         private bool disposedValue = false;

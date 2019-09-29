@@ -6,9 +6,6 @@ namespace SpiceEngine.Scripting.Meters
     {
         public string Name { get; }
 
-        public TriggeredEventArgs(Trigger trigger)
-        {
-            Name = trigger.Name;
-        }
+        public TriggeredEventArgs(Trigger trigger) => Name = trigger.Name;
     }
 }

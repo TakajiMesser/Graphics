@@ -1,5 +1,5 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
 
 namespace SauceEditorCore.Models.Entities
 {

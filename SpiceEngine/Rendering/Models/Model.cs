@@ -1,7 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -119,7 +120,7 @@ namespace SpiceEngine.Rendering.Meshes
 
                 for (var i = 0; i < scene.Meshes.Count; i++)
                 {
-                    yield return new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(filePath));
+                    yield return scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(filePath));
                 }
             }
         }

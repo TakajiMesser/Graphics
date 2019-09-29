@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Utilities;
 
 namespace SampleGameProject.GameObjects
 {

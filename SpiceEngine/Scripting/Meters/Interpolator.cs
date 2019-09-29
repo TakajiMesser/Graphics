@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Game;
+﻿using SpiceEngineCore.Game;
 using System;
 
 namespace SpiceEngine.Scripting.Meters

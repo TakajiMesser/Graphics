@@ -1,9 +1,9 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
-using SpiceEngine.Utilities;
 using System.Linq;
-using SpiceEngine.Rendering.Matrices;
 
 namespace SpiceEngine.Rendering.Meshes
 {

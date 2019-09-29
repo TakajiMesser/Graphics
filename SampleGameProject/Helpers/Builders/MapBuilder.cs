@@ -2,12 +2,9 @@
 using OpenTK.Graphics;
 using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Materials;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Rendering.Textures;
 using System.Collections.Generic;
-using System.Linq;
 using static SpiceEngine.Maps.MapLight;
 
 namespace SampleGameProject.Helpers.Builders

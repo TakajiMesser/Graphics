@@ -1,10 +1,11 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Matrices;
 using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 
 namespace SauceEditorCore.Models.Entities
 {
