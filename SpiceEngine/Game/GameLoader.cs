@@ -1,6 +1,7 @@
 ﻿using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,6 +31,7 @@ namespace SpiceEngine.Game
         private int _volumeStartIndex;
 
         public event EventHandler<EntityIDEventArgs> EntitiesMapped;
+        public event EventHandler<EventArgs> TimedOut;
 
         public int RendererWaitCount
         {
@@ -146,6 +148,10 @@ namespace SpiceEngine.Game
 
         public async Task LoadAsync()
         {
+            //LogWatch logWatch = LogWatch.CreateWithTimeout("GameLoader", 300000, 1000);
+            //logWatch.TimedOut += (s, args) => TimedOut?.Invoke(this, args);
+            LogWatch logWatch = LogWatch.CreateAndStart("GameLoader");
+
             // Only process for builders added by the time we begin loading
             var entityCount = 0;
             IEntityLoader<IShapeBuilder> physicsLoader = null;
@@ -187,6 +193,8 @@ namespace SpiceEngine.Game
                 actorIDs = new List<int>();
                 volumeIDs = new List<int>();
             }
+
+            //logWatch.Log("Loop Start");
 
             using (var idIterator = ids.GetEnumerator())
             {
@@ -246,6 +254,8 @@ namespace SpiceEngine.Game
                 }
             }
 
+            //logWatch.Log("Loop End");
+
             EntitiesMapped?.Invoke(this, new EntityIDEventArgs(actorIDs, brushIDs, volumeIDs, lightIDs));
 
             await Task.WhenAll(loadEntityTasks);
@@ -275,6 +285,8 @@ namespace SpiceEngine.Game
                 {
                     await Task.WhenAll(loadRenderTasks[rendererIndex]);
 
+                    //logWatch.Log("LoadRenderTasks Done");
+
                     IEntityLoader<IRenderableBuilder> renderableLoader;
 
                     lock (_lock)
@@ -282,7 +294,9 @@ namespace SpiceEngine.Game
                         renderableLoader = _renderableLoaders[rendererIndex];
                     }
 
+                    //logWatch.Log("Begin Renderer Load");
                     await renderableLoader.Load();
+                    //logWatch.Log("End Renderer Load");
                 }));
 
                 /*loadTasks.Add(Task.WhenAll(loadRenderTasks[rendererIndex]).ContinueWith(async t =>
@@ -297,8 +311,10 @@ namespace SpiceEngine.Game
                     await renderableLoader.Load();
                 }));*/
             }
-
+        
             await Task.WhenAll(loadTasks);
+
+            //logWatch.Log("Load Tasks End");
 
             // TODO - For now, just clear out builders when we're done with them. 
             // Later, we might want to allow some additional loading even while this task is running...
@@ -309,6 +325,8 @@ namespace SpiceEngine.Game
                 _behaviorBuilders.Clear();
                 _renderableBuilders.Clear();
             }
+
+            logWatch.Stop();
         }
 
         private async Task LoadRenderableBuilder(int id, int builderIndex, int rendererIndex, IEntityLoader<IRenderableBuilder>[] renderableLoaders)

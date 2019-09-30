@@ -10,7 +10,6 @@ using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -59,13 +58,8 @@ namespace SpiceEngine.Game
             };
         }
 
-        private Stopwatch _loadWatch = new Stopwatch();
-        private int _loadTimeout = 300000;
-
         public void LoadAndRun()
         {
-            _loadWatch.Start();
-
             // "Register" the calling thread as the graphics context thread before we start async loading
             MakeCurrent();
             //_mainDispatcher = Dispatcher.CurrentDispatcher;
@@ -92,18 +86,21 @@ namespace SpiceEngine.Game
                 Run(60.0f, 0.0f);
                 _isClosing = true;
             }
-            else if (_loadWatch.ElapsedMilliseconds > _loadTimeout)
-            {
-                throw new TimeoutException();
-            }
             else
             {
-                if (_mainActionQueue.TryDequeue(out Action action))
-                {
-                    action();
-                }
-
+                // Check the queue every second. Once we find items in the queue, handle all of them before waiting again
+                CheckAndHandleQueue();
                 Task.Delay(1000).Wait();
+            }
+        }
+
+        private void CheckAndHandleQueue()
+        {
+            while (_mainActionQueue.TryDequeue(out Action action))
+            {
+                //LogWatch("Popped item off queue");
+                action();
+                //LogWatch("Completed queue item");
             }
         }
 
@@ -152,6 +149,7 @@ namespace SpiceEngine.Game
             _renderManager.LoadFromMap(_map);
 
             //_gameLoader.Load();
+            _gameLoader.TimedOut += (s, args) => Run(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
             if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
@@ -159,6 +157,9 @@ namespace SpiceEngine.Game
                 var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
                 _gameManager.Camera.AttachToEntity(actor, true, false);
             }
+
+            //_stopWatch.Stop();
+            //LogWatch("Total");
 
             IsLoaded = true;
 
