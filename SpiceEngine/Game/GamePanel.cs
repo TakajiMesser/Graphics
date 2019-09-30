@@ -564,6 +564,9 @@ namespace SpiceEngine.Game
 
         public void StartDrag(Point location)
         {
+            // Clear out any previous inputs, since they could have been from a while ago when the control last captured input
+            _inputProvider.Clear();
+
             _startMouseLocation = location;
             IsDragging = true;
             _pollTimer.Start();

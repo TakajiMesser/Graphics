@@ -195,8 +195,8 @@ namespace SpiceEngine.Rendering.Batches
 
         public void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
         {
-            var batch = GetBatch(entityID);
-            batch.UpdateVertices(entityID, vertexUpdate);
+            var batch = GetBatchOrDefault(entityID);
+            batch?.UpdateVertices(entityID, vertexUpdate);
         }
 
         private Batch CreateOrGetBatch(int entityID, IRenderable renderable)

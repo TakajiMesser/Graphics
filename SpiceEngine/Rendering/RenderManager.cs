@@ -264,6 +264,7 @@ namespace SpiceEngine.Rendering
         {
             foreach (var entityID in entityIDs)
             {
+                // TODO - Handle light selection differently, since lights are not stored in the BatchManager
                 BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Selected());
             }
         }
