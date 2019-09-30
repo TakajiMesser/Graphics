@@ -75,19 +75,22 @@ namespace SpiceEngineCore.Helpers
             var boxA = (Box)bodyA.Shape;
             var boxB = (Box)bodyB.Shape;
 
-            var contactPoint = new Vector3()
+            var contactPointB = new Vector3()
             {
                 X = MathHelper.Clamp(bodyA.Position.X, bodyB.Position.X - boxB.Width / 2.0f, bodyB.Position.X + boxB.Width / 2.0f),
                 Y = MathHelper.Clamp(bodyA.Position.Y, bodyB.Position.Y - boxB.Height / 2.0f, bodyB.Position.Y + boxB.Height / 2.0f),
                 Z = MathHelper.Clamp(bodyA.Position.Z, bodyB.Position.Z - boxB.Depth / 2.0f, bodyB.Position.Z + boxB.Depth / 2.0f)
             };
 
-            var offset = bodyA.Position - contactPoint;
+            var offset = bodyA.Position - contactPointB;
 
+            // TODO - This should probably be checking for being positive AND significant, not just for significance
             if (offset.IsSignificant())
             {
                 var offsetLengthSquared = offset.LengthSquared;
-                var offsetLengthASquared = boxA.GetFurthestPointInDirection(-offset.Normalized()).LengthSquared;
+
+                var contactPointA = boxA.GetFurthestPointInDirection(-offset.Normalized());
+                var offsetLengthASquared = contactPointA.LengthSquared;
 
                 if (offsetLengthSquared < offsetLengthASquared)
                 {
@@ -96,7 +99,7 @@ namespace SpiceEngineCore.Helpers
 
                     collision.HasCollision = true;
                     collision.ContactNormal = offset / offsetLength;
-                    collision.ContactPoint = contactPoint;
+                    collision.ContactPoint = contactPointB;
                     collision.PenetrationDepth = (float)Math.Sqrt(offsetLengthASquared) + Vector3.Dot(-offset, collision.ContactNormal);
                     // TODO - Fix this
                     //collision.PenetrationDepth = sphere.Radius + Vector3.Dot(-offset, collision.ContactNormal);//offsetLength;

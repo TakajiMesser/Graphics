@@ -76,11 +76,15 @@ namespace SpiceEngineCore.Physics.Shapes
                 Z = z
             };
 
-            if (xPenetration.LengthSquared < yPenetration.LengthSquared && xPenetration.LengthSquared < zPenetration.LengthSquared)
+            // Ensure that we take NaN values into consideration
+            if (direction.X != 0.0f
+                && (direction.Y == 0.0f || xPenetration.LengthSquared < yPenetration.LengthSquared)
+                && (direction.Z == 0.0f || xPenetration.LengthSquared < zPenetration.LengthSquared))
             {
                 return xPenetration;
             }
-            else if (yPenetration.LengthSquared < zPenetration.LengthSquared)
+            else if (direction.Y != 0.0f
+                && (direction.Z == 0.0f || yPenetration.LengthSquared < zPenetration.LengthSquared))
             {
                 return yPenetration;
             }

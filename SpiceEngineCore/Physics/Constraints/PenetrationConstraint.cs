@@ -61,6 +61,8 @@ namespace SpiceEngineCore.Physics.Constraints
                 impulseScalar /= combinedInverseMass;
             }
 
+            // TODO - Because penetrations will be resolved in an unknown order, we can't be sure that the correct impulse will take precedence
+            // We should be determining the impulse based on the penetration depth. The further the penetration, the stronger the impulse
             var impulse = impulseScalar * collision.ContactNormal;
             ApplyImpulse(bodyA, impulse);
             ApplyImpulse(bodyB, -impulse);
