@@ -9,7 +9,7 @@ namespace SauceEditorCore.Models.Components
         string Path { get; set; }
         string Name { get; }
 
-        //void Load();
-        //void Save();
+        void Load();
+        void Save();
     }
 }

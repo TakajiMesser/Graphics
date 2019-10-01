@@ -1,38 +1,52 @@
-using SauceEditorCore.Models.Components;
 using System.Collections.Generic;
 using System.IO;
+using SauceEditorCore.Helpers;
+using SauceEditorCore.Models.Components;
 
 namespace SauceEditorCore.Models.Libraries
 {
-    public class Library : Component
+    public class Library<T> where T : IComponent
     {
+        private LibraryNode _node = new LibraryNode();
+
+        public Library(string path) => Path = path;
+
+        public string Path { get; set; }
         public List<IComponent> Components { get; } = new List<IComponent>();
 
-        public Library(string path) : base(path) { }
+        public void Load() => SearchForComponents(Path, _node);
 
-        public override void Load()
+        private void SearchForComponents(string path, LibraryNode node)
         {
-            foreach (var filePath in Directory.GetFiles(Path))
+            foreach (var filePath in Directory.GetFiles(path))
             {
                 var extension = System.IO.Path.GetExtension(filePath);
 
-                switch (extension)
+                if (ComponentFactory.IsValidExtension<T>(extension))
                 {
-                    case "map":
-                        Components.Add(new MapComponent(filePath));
-                        break;
+                    var component = ComponentFactory.Create<T>(filePath);
+
+                    Components.Add(component);
+                    node.Components.Add(component);
                 }
             }
 
-            foreach (var directoryPath in Directory.GetDirectories(Path))
+            foreach (var directoryPath in Directory.GetDirectories(path))
             {
-                Components.Add(new Library(directoryPath));
+                var childNode = new LibraryNode(directoryPath);
+                node.Nodes.Add(childNode);
+
+                SearchForComponents(directoryPath, childNode);
             }
         }
 
-        public override void Save()
+        private class LibraryNode
         {
-            
+            public string Name { get; }
+            public List<IComponent> Components { get; } = new List<IComponent>();
+            public List<LibraryNode> Nodes { get; } = new List<LibraryNode>();
+
+            public LibraryNode(string path) => Name = System.IO.Path.GetDirectoryName(path);
         }
     }
 }
