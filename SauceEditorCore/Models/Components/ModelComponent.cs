@@ -86,6 +86,6 @@ namespace SauceEditorCore.Models.Components
         public override void Save() => throw new NotImplementedException();
         public override void Load() => Model = new Model(Path);
 
-        public static bool IsValidExtension(string extension) => extension == "obj";
+        public static bool IsValidExtension(string extension) => extension == ".obj";
     }
 }

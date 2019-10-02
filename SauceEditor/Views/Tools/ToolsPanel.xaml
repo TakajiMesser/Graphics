@@ -15,7 +15,7 @@
             <vm:ToolsPanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
         <Label FontSize="14">Select Tool</Label>
-        <WrapPanel Name="ButtonPanel">
+        <WrapPanel Name="ButtonPanel" Orientation="Horizontal">
             <Button Name="SelectButton" Click="SelectButton_Click">Select</Button>
             <Button Name="VolumeButton" Click="VolumeButton_Click">Volume</Button>
             <Button Name="BrushButton" Click="BrushButton_Click">Brush</Button>

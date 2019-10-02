@@ -10,6 +10,8 @@ namespace SauceEditor.Helpers
         public static string SETTINGS_PATH = SOLUTION_DIRECTORY + @"\SauceEditor\EditorSettings" + EditorSettings.FILE_EXTENSION;
         public static string INITIAL_FILE_DIRECTORY = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Maps";
 
+        public static string RESOURCES_DIRECTORY = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources";
+
         public static string INITIAL_PROJECT_DIRECTORY = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Projects";
         public static string INITIAL_MAP_DIRECTORY = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Maps";
         public static string INITIAL_MODEL_DIRECTORY = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Models";

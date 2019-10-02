@@ -11,6 +11,6 @@ namespace SauceEditorCore.Models.Components
         public override void Save() => throw new NotImplementedException();
         public override void Load() => throw new NotImplementedException();
 
-        public static bool IsValidExtension(string extension) => extension == "arc";
+        public static bool IsValidExtension(string extension) => extension == ".arc";
     }
 }

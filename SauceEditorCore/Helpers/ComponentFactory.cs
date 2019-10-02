@@ -21,9 +21,9 @@ namespace SauceEditorCore.Helpers
                 .Match<T>();
         }
 
-        public static IComponent Create<T>(string filePath) where T : IComponent
+        public static T Create<T>(string filePath) where T : IComponent
         {
-            return new TypeSwitch<IComponent>()
+            return (T)new TypeSwitch<IComponent>()
                 .Case<MapComponent>(() => new MapComponent(filePath))
                 .Case<ModelComponent>(() => new ModelComponent(filePath))
                 .Case<BehaviorComponent>(() => new BehaviorComponent(filePath))

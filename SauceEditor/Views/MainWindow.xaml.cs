@@ -6,6 +6,7 @@ using SauceEditor.ViewModels;
 using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
+using SauceEditor.Views.Libraries;
 using SauceEditor.Views.ProjectTree;
 using SauceEditor.Views.Properties;
 using SauceEditor.Views.Scripts;
@@ -31,6 +32,7 @@ namespace SauceEditor.Views
 
         // Side panels
         private ProjectTreePanel _projectTree = new ProjectTreePanel();
+        private LibraryPanel _libraryPanel = new LibraryPanel();
         private ToolsPanel _toolPanel = new ToolsPanel();
         private ModelToolPanel _modelToolPanel = new ModelToolPanel();
         private PropertyPanel _propertyPanel = new PropertyPanel();
@@ -92,6 +94,8 @@ namespace SauceEditor.Views
 
             _dockTracker.AddToPropertyDock(_projectTree);
             _dockTracker.AddToPropertyDock(_propertyPanel);
+            _dockTracker.AddToPropertyDock(_libraryPanel);
+
             _dockTracker.AddToToolDock(_modelToolPanel);
 
             _projectTree.IsActive = true;

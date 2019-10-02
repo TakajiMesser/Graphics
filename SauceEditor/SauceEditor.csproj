@@ -229,6 +229,7 @@
     <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
     <Compile Include="ViewModels\Docks\DockViewModel.cs" />
     <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
@@ -281,6 +282,9 @@
       <DependentUpon>GamePanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
+    <Compile Include="Views\Libraries\LibraryPanel.xaml.cs">
+      <DependentUpon>LibraryPanel.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\MainDockManager.cs" />
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
@@ -345,6 +349,10 @@
     <Page Include="Views\GamePanels\GamePanelView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Libraries\LibraryPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>

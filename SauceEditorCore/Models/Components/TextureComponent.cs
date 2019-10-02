@@ -12,6 +12,6 @@ namespace SauceEditorCore.Models.Components
         public override void Save() => throw new NotImplementedException();
         public override void Load() => throw new NotImplementedException();
 
-        public static bool IsValidExtension(string extension) => extension == "png";
+        public static bool IsValidExtension(string extension) => extension == ".png" || extension == ".jpg";
     }
 }

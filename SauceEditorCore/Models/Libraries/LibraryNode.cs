@@ -1,7 +1,5 @@
-using System.Collections.Generic;
-using System.IO;
-using SauceEditorCore.Helpers;
 using SauceEditorCore.Models.Components;
+using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Libraries
 {

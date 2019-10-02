@@ -1,11 +1,10 @@
-﻿using System.Collections.Generic;
-using SauceEditorCore.Models.Entities;
+﻿using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
+using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Components
 {
@@ -197,6 +196,6 @@ namespace SauceEditorCore.Models.Components
         public override void Save() => Map.Save(Path);
         public override void Load() => Map = Map.Load(Path);
 
-        public static bool IsValidExtension(string extension) => extension == "map";
+        public static bool IsValidExtension(string extension) => extension == ".map";
     }
 }
