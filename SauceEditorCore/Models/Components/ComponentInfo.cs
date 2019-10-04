@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
+using SauceEditorCore.Models.Libraries;
 
 namespace SauceEditorCore.Models.Components
 {
-    public class ComponentInfo
+    public class ComponentInfo : IPathInfo
     {
-        public string Name { get; }
-        public string Path { get; }
+        public string Name { get; private set; }
+        public string Path { get; private set; }
 
         public bool Exists { get; private set; }
         public long FileSize { get; private set; }
@@ -15,11 +16,12 @@ namespace SauceEditorCore.Models.Components
         public DateTime? LastWriteTime { get; private set; }
         public DateTime? LastAccessTime { get; private set; }
 
-        public ComponentInfo(IComponent component)
-        {
-            Name = component.Name;
-            Path = component.Path;
-        }
+        // TODO - Initialize as default preview icon based on component type
+        // Should load same default icon statically and share across all components to save memory
+        // TODO - Is BitmapImage available in core?
+        public BitmapImage PreviewIcon { get; private set; }
+
+        private ComponentInfo() { }
 
         public void Refresh()
         {
@@ -41,6 +43,33 @@ namespace SauceEditorCore.Models.Components
                 LastWriteTime = null;
                 LastAccessTime = null;
             }
+        }
+
+        // TODO - Should this be kicked off asynchronously from Refresh()?
+        public void LoadPreviewIcon()
+        {
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.DecodePixelWidth = 100;
+            bitmapImage.UriSource = new Uri(Path);
+            bitmapImage.EndInit();
+
+            var croppedImage = new CroppedBitmap(bitmapImage, new Int32Rect(0, 0, 100, 100));
+
+            var scaleWidth = 100;
+            var scaleHeight = 100;
+            var scaledImage = new TransformedBitmap(croppedImage, new ScaleTransform(scaleWidth, scaleHeight));
+
+            PreviewIcon = scaledImage;
+        }
+
+        public static ComponentInfo Create(IComponent component)
+        {
+            return new ComponentInfo()
+            {
+                Name = component.Name,
+                Path = component.Path
+            };
         }
     }
 }

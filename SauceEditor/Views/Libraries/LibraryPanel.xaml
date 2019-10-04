@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views"
         xmlns:vm="clr-namespace:SauceEditor.ViewModels.Libraries"
+        xmlns:mc="clr-namespace:SauceEditorCore.Models.Components"
         xmlns:cb="clr-namespace:SauceEditor.ViewModels.AttachedBehaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
@@ -14,7 +15,24 @@
         <StackPanel.DataContext>
             <vm:LibraryPanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
+
+        <StackPanel.Resources>
+            <DataTemplate DataType="{x:Type mc:ComponentInfo}">
+                <Image Source="{Binding Path=PreviewIcon}"/>
+                <TextBlock Text="{Binding Path=Name}"/>
+            </DataTemplate>
+        </StackPanel.Resources>
+
         <Label Name="ProjectType" FontSize="14"/>
-        <DataGrid Name="Grid" ItemsSource="{Binding Components}"/>
+
+        <ListBox ItemsSource="{Binding Components}">
+            <ListBox.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel IsItemsHost="True"/>
+                </ItemsPanelTemplate>
+            </ListBox.ItemsPanel>
+        </ListBox>
+
+        <!--<DataGrid Name="Grid" ItemsSource="{Binding Components}"/>-->
     </StackPanel>
 </xcad:LayoutAnchorable>

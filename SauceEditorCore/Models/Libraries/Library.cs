@@ -21,7 +21,7 @@ namespace SauceEditorCore.Models.Libraries
         public T GetComponentAt(int index) => _components[index];
         public ComponentInfo GetComponentInfoAt(int index) => Info.GetInfoAt(index);
 
-        public void Load() => Info.RefreshAll();
+        public void Load() => Info.Refresh();
 
         public void Clear()
         {
