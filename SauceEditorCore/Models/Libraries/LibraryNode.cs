@@ -1,5 +1,6 @@
 using SauceEditorCore.Models.Components;
 using System.Collections.Generic;
+using System.IO;
 
 namespace SauceEditorCore.Models.Libraries
 {
@@ -16,7 +17,7 @@ namespace SauceEditorCore.Models.Libraries
 
         public LibraryNode(string path)
         {
-            Name = System.IO.Path.GetDirectoryName(path);
+            Name = new DirectoryInfo(path).Name;
             Path = path;
         }
 
@@ -30,7 +31,7 @@ namespace SauceEditorCore.Models.Libraries
 
         public void ClearChildren() => _childrenByName.Clear();
 
-        public static BitmapImage GetPreviewIcon()
+        public static byte[] GetPreviewBitmap()
         {
             return null;
         }

@@ -1,7 +1,4 @@
-using SauceEditorCore.Models.Components;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SauceEditorCore.Models.Libraries
 {
@@ -9,9 +6,15 @@ namespace SauceEditorCore.Models.Libraries
     {
         string Name { get; }
         string Path { get; }
+
         bool Exists { get; }
         long FileSize { get; }
-        BitmapImage PreviewIcon { get; }
+
+        DateTime? CreationTime { get; }
+        DateTime? LastWriteTime { get; }
+        DateTime? LastAccessTime { get; }
+
+        byte[] PreviewBitmap { get; }
 
         void Refresh();
     }

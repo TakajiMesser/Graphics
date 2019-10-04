@@ -205,6 +205,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\LibraryHelper.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
     <Compile Include="Models\Components\IGameViewable.cs" />
     <Compile Include="Models\Components\Library.cs" />

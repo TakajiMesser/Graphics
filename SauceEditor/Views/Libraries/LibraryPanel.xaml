@@ -5,7 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:SauceEditor.Views"
         xmlns:vm="clr-namespace:SauceEditor.ViewModels.Libraries"
-        xmlns:mc="clr-namespace:SauceEditorCore.Models.Components"
+        xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
+        xmlns:ml="clr-namespace:SauceEditorCore.Models.Libraries"
         xmlns:cb="clr-namespace:SauceEditor.ViewModels.AttachedBehaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
@@ -16,16 +17,36 @@
             <vm:LibraryPanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
 
-        <StackPanel.Resources>
-            <DataTemplate DataType="{x:Type mc:ComponentInfo}">
-                <Image Source="{Binding Path=PreviewIcon}"/>
-                <TextBlock Text="{Binding Path=Name}"/>
+        <!--<StackPanel.Resources>
+            <DataTemplate>
+                <StackPanel Orientation="Vertical">
+                    <Image Source="{Binding Path=PreviewIcon}"/>
+                    <TextBlock Text="{Binding Path=Name}"/>
+                </StackPanel>
             </DataTemplate>
-        </StackPanel.Resources>
+        </StackPanel.Resources>-->
 
         <Label Name="ProjectType" FontSize="14"/>
 
-        <ListBox ItemsSource="{Binding Components}">
+        <WrapPanel Orientation="Horizontal">
+            <Button Command="{Binding OpenProjectCommand}">Alphabetical</Button>
+        </WrapPanel>
+
+        <Label FontSize="14">View Type</Label>
+        <btns:ToggleEnumButton x:Name="ViewTypeButton" Orientation="Horizontal" Value="{Binding Path=ViewType, Mode=TwoWay}" />
+
+        <Label FontSize="14">Sort Style</Label>
+        <btns:ToggleEnumButton x:Name="SortStyleButton" Orientation="Horizontal" Value="{Binding Path=SortStyle, Mode=TwoWay}" />
+
+        <ListBox ItemsSource="{Binding PathInfos}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+            <ListBox.ItemTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Vertical">
+                        <Image Width="100" Height="100" Source="{Binding Path=PreviewBitmap}"/>
+                        <TextBlock Text="{Binding Path=Name}"/>
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>
                 <ItemsPanelTemplate>
                     <WrapPanel IsItemsHost="True"/>

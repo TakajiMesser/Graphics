@@ -1,6 +1,6 @@
-﻿using System;
+﻿using SauceEditorCore.Models.Libraries;
+using System;
 using System.IO;
-using SauceEditorCore.Models.Libraries;
 
 namespace SauceEditorCore.Models.Components
 {
@@ -16,10 +16,8 @@ namespace SauceEditorCore.Models.Components
         public DateTime? LastWriteTime { get; private set; }
         public DateTime? LastAccessTime { get; private set; }
 
-        // TODO - Initialize as default preview icon based on component type
-        // Should load same default icon statically and share across all components to save memory
-        // TODO - Is BitmapImage available in core?
-        public BitmapImage PreviewIcon { get; private set; }
+        // TODO - Initialize as default preview icon based on component type. Should load same default icon statically and share across all components to save memory
+        public byte[] PreviewBitmap { get; private set; }
 
         private ComponentInfo() { }
 
@@ -48,7 +46,7 @@ namespace SauceEditorCore.Models.Components
         // TODO - Should this be kicked off asynchronously from Refresh()?
         public void LoadPreviewIcon()
         {
-            var bitmapImage = new BitmapImage();
+            /*var bitmapImage = new BitmapImage();
             bitmapImage.BeginInit();
             bitmapImage.DecodePixelWidth = 100;
             bitmapImage.UriSource = new Uri(Path);
@@ -60,7 +58,7 @@ namespace SauceEditorCore.Models.Components
             var scaleHeight = 100;
             var scaledImage = new TransformedBitmap(croppedImage, new ScaleTransform(scaleWidth, scaleHeight));
 
-            PreviewIcon = scaledImage;
+            PreviewIcon = scaledImage;*/
         }
 
         public static ComponentInfo Create(IComponent component)

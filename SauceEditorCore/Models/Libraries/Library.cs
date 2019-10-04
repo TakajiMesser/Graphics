@@ -10,23 +10,19 @@ namespace SauceEditorCore.Models.Libraries
         public Library(string path) => Path = path;
 
         public string Path { get; set; }
-        public LibraryInfo Info { get; private set; } = new LibraryInfo();
 
-        public void AddComponent(T component)
+        public void Load()
         {
-            _components.Add(component);
-            Info.AddComponent(component);
+            foreach (var component in _components)
+            {
+                component.Load();
+            }
         }
+
+        public void AddComponent(T component) => _components.Add(component);
 
         public T GetComponentAt(int index) => _components[index];
-        public ComponentInfo GetComponentInfoAt(int index) => Info.GetInfoAt(index);
 
-        public void Load() => Info.Refresh();
-
-        public void Clear()
-        {
-            _components.Clear();
-            Info.Clear();
-        }
+        public void Clear() => _components.Clear();
     }
 }

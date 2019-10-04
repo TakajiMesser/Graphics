@@ -1,46 +1,59 @@
 using SauceEditorCore.Models.Components;
-using System;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
 using SpiceEngineCore.Helpers;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
 
 namespace SauceEditorCore.Models.Libraries
 {
     public class LibraryInfo : IPathInfo 
     {
-        private List<ComponentInfo> _componentInfos = new List<ComponentInfo>();
+        private List<IPathInfo> _pathInfos = new List<IPathInfo>();
 
         private LibraryInfo() { }
 
         public string Name { get; private set; }
         public string Path { get; private set; }
+
         public bool Exists { get; private set; }
         public long FileSize { get; private set; }
-        public BitmapImage PreviewIcon { get; private set; }
 
-        public void AddComponentInfo(ComponentInfo componentInfo) => _componentInfos.Add(componentInfo);
+        public DateTime? CreationTime { get; private set; }
+        public DateTime? LastWriteTime { get; private set; }
+        public DateTime? LastAccessTime { get; private set; }
 
-        public int Count => _componentInfos.Count;
+        public byte[] PreviewBitmap { get; private set; }
 
-        public ComponentInfo GetInfoAt(int index) => _componentInfos[index];
+        public void AddPathInfo(IPathInfo pathInfo) => _pathInfos.Add(pathInfo);
+
+        public int Count => _pathInfos.Count;
+
+        public IPathInfo GetInfoAt(int index) => _pathInfos[index];
 
         public void Refresh()
         {
-            FileSize = 0;
+            var directoryInfo = new DirectoryInfo(Path);
 
-            if (Directory.Exists(Path))
+            if (directoryInfo.Exists)
             {
                 Exists = true;
-                FileSize = _componentInfos.Sum(c => c.FileSize);
+                FileSize = _pathInfos.Sum(c => c.FileSize);
+                CreationTime = directoryInfo.CreationTime;
+                LastWriteTime = directoryInfo.LastWriteTime;
+                LastAccessTime = directoryInfo.LastAccessTime;
             }
             else
             {
                 Exists = false;
+                FileSize = 0;
+                CreationTime = null;
+                LastWriteTime = null;
+                LastAccessTime = null;
             }
         }
 
-        public void Clear() => _componentInfos.Clear();
+        public void Clear() => _pathInfos.Clear();
 
         public static LibraryInfo Create<T>(Library<T> library) where T : IComponent
         {
@@ -48,7 +61,7 @@ namespace SauceEditorCore.Models.Libraries
             {
                 Name = GetName<T>(),
                 Path = library.Path,
-                PreviewIcon = GetPreviewIcon<T>()
+                PreviewBitmap = GetPreviewIcon<T>()
             };
         }
 
@@ -58,7 +71,7 @@ namespace SauceEditorCore.Models.Libraries
             {
                 Name = node.Name,
                 Path = node.Path,
-                PreviewIcon = LibraryNode.GetPreviewIcon()
+                PreviewBitmap = LibraryNode.GetPreviewBitmap()
             };
         }
 
@@ -77,18 +90,18 @@ namespace SauceEditorCore.Models.Libraries
                 .Match<T>();
         }
 
-        private static BitmapSource GetPreviewIcon<T>() where T : IComponent
+        private static byte[] GetPreviewIcon<T>() where T : IComponent
         {
-            return new TypeSwitch<BitmapSource>()
-                .Case<MapComponent>(() => "Maps")
+            return new TypeSwitch<byte[]>()
+                /*.Case<MapComponent>(() => "Maps")
                 .Case<ModelComponent>(() => "Models")
                 .Case<BehaviorComponent>(() => "Behaviors")
                 .Case<TextureComponent>(() => "Textures")
                 .Case<SoundComponent>(() => "Sounds")
                 .Case<MaterialComponent>(() => "Materials")
                 .Case<ArchetypeComponent>(() => "Archetypes")
-                .Case<ScriptComponent>(() => "Scripts")
-                .Default(() => throw new NotImplementedException())
+                .Case<ScriptComponent>(() => "Scripts")*/
+                .Default(() => new byte[0])//throw new NotImplementedException())
                 .Match<T>();
         }
     }

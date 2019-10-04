@@ -1,9 +1,10 @@
 using SauceEditor.ViewModels.Docks;
+using SauceEditorCore.Helpers;
 using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Libraries;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using LibraryManager = SauceEditorCore.Models.Libraries.LibraryManager;
-using SauceEditorCore.Models.Libraries;
+using System.Linq;
 
 namespace SauceEditor.ViewModels.Libraries
 {
@@ -17,14 +18,18 @@ namespace SauceEditor.ViewModels.Libraries
     {
         private LibraryManager _libraryManager = new LibraryManager();
         private List<IPathInfo> _pathInfos = new List<IPathInfo>();
-
         private LibraryNode _currentNode;
 
         public ReadOnlyCollection<IPathInfo> PathInfos { get; set; }
-        public LibraryInfo.SortStyles SortStyle { get; set; }
+        public PathSortStyles SortStyle { get; set; }
         public LibraryViewTypes ViewType { get; set; }
 
-        public LibraryPanelViewModel() : base(DockTypes.Property) => PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
+        public LibraryPanelViewModel() : base(DockTypes.Property)
+        {
+            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
+            //var observableCollection = new ObservableCollection<IPathInfo>(_pathInfos);
+            //PathInfos = new ReadOnlyObservableCollection<IPathInfo>(observableCollection);
+        }
 
         public void UpdateFromModel(LibraryManager libraryManager)
         {
@@ -32,28 +37,69 @@ namespace SauceEditor.ViewModels.Libraries
 
             // For now, just load and add arbritrary components for testing purposes
             _libraryManager.Load();
-            _components.Add(libraryManager.MapLibrary.GetInfoAt(0));
+
+            _currentNode = _libraryManager.RootNode;
+            _pathInfos.Clear();
+            _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
+            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
         }
 
         public void NavigateNodeForward(string name)
         {
             _currentNode = _currentNode.GetChild(name);
+            _pathInfos.Clear();
+            _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
+            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
         }
 
         public void NavigateNodeBackward()
         {
             _currentNode = _currentNode.Parent;
-        }
-
-        private void AddComponentsFromNode(LibraryNode node)
-        {
             _pathInfos.Clear();
-            _pathInfos.AddRange(node.);
+            _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
+            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
         }
 
         public void OnSortStyleChanged()
         {
+            // TODO - Determine, based on sort style, if we need to update info from disk
+            if (SortStyle.NeedsRecursiveRefresh())
+            {
+                foreach (var pathInfo in _pathInfos)
+                {
+                    RecursiveRefresh(pathInfo);
+                }
+            }
+            else if (SortStyle.NeedsRefresh())
+            {
+                foreach (var pathInfo in _pathInfos)
+                {
+                    pathInfo.Refresh();
+                }
+            }
 
+            var sortedPathInfos = _pathInfos.OrderBy(SortStyle).ToList();
+            _pathInfos.Clear();
+            _pathInfos.AddRange(sortedPathInfos);
+            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
+        }
+
+        private void RecursiveRefresh(IPathInfo pathInfo)
+        {
+            if (pathInfo is LibraryInfo libraryInfo)
+            {
+                for (var i = 0; i < libraryInfo.Count; i++)
+                {
+                    var childPathInfo = libraryInfo.GetInfoAt(i);
+                    RecursiveRefresh(childPathInfo);
+                }
+
+                libraryInfo.Refresh();
+            }
+            else if (pathInfo is ComponentInfo componentInfo)
+            {
+                componentInfo.Refresh();
+            }
         }
 
         public void OnViewTypeChanged()
@@ -61,6 +107,9 @@ namespace SauceEditor.ViewModels.Libraries
             switch (ViewType)
             {
                 case LibraryViewTypes.Path:
+                    _currentNode = _libraryManager.RootNode;
+                    _pathInfos.Clear();
+                    _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
                     break;
                 case LibraryViewTypes.Type:
                     break;
