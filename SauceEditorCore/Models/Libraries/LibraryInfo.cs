@@ -11,7 +11,21 @@ namespace SauceEditorCore.Models.Libraries
     {
         private List<IPathInfo> _pathInfos = new List<IPathInfo>();
 
-        private LibraryInfo() { }
+        public LibraryInfo(ILibrary library)
+        {
+            Name = library.Name;
+            Path = library.Path;
+            //PreviewBitmap = GetPreviewIcon<T>()
+        }
+
+        public LibraryInfo(LibraryNode node)
+        {
+            Name = node.Name;
+            Path = node.Path;
+            PreviewBitmap = LibraryNode.GetPreviewBitmap();
+        }
+
+        public IEnumerable<IPathInfo> Items => _pathInfos;
 
         public string Name { get; private set; }
         public string Path { get; private set; }
@@ -54,55 +68,5 @@ namespace SauceEditorCore.Models.Libraries
         }
 
         public void Clear() => _pathInfos.Clear();
-
-        public static LibraryInfo Create<T>(Library<T> library) where T : IComponent
-        {
-            return new LibraryInfo()
-            {
-                Name = GetName<T>(),
-                Path = library.Path,
-                PreviewBitmap = GetPreviewIcon<T>()
-            };
-        }
-
-        public static LibraryInfo Create(LibraryNode node)
-        {
-            return new LibraryInfo()
-            {
-                Name = node.Name,
-                Path = node.Path,
-                PreviewBitmap = LibraryNode.GetPreviewBitmap()
-            };
-        }
-
-        private static string GetName<T>() where T : IComponent
-        {
-            return new TypeSwitch<string>()
-                .Case<MapComponent>(() => "Maps")
-                .Case<ModelComponent>(() => "Models")
-                .Case<BehaviorComponent>(() => "Behaviors")
-                .Case<TextureComponent>(() => "Textures")
-                .Case<SoundComponent>(() => "Sounds")
-                .Case<MaterialComponent>(() => "Materials")
-                .Case<ArchetypeComponent>(() => "Archetypes")
-                .Case<ScriptComponent>(() => "Scripts")
-                .Default(() => throw new NotImplementedException())
-                .Match<T>();
-        }
-
-        private static byte[] GetPreviewIcon<T>() where T : IComponent
-        {
-            return new TypeSwitch<byte[]>()
-                /*.Case<MapComponent>(() => "Maps")
-                .Case<ModelComponent>(() => "Models")
-                .Case<BehaviorComponent>(() => "Behaviors")
-                .Case<TextureComponent>(() => "Textures")
-                .Case<SoundComponent>(() => "Sounds")
-                .Case<MaterialComponent>(() => "Materials")
-                .Case<ArchetypeComponent>(() => "Archetypes")
-                .Case<ScriptComponent>(() => "Scripts")*/
-                .Default(() => new byte[0])//throw new NotImplementedException())
-                .Match<T>();
-        }
     }
 }

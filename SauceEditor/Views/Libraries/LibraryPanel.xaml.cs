@@ -26,10 +26,10 @@ namespace SauceEditor.Views.Libraries
         public LibraryPanel()
         {
             InitializeComponent();
-            ViewModel.UpdateFromModel(new SauceEditorCore.Models.Libraries.LibraryManager()
+            /*ViewModel.UpdateFromModel(new SauceEditorCore.Models.Libraries.LibraryManager()
             {
                 Path = FilePathHelper.RESOURCES_DIRECTORY
-            });
+            });*/
         }
 
         public DockViewModel GetViewModel() => ViewModel;

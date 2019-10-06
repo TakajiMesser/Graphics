@@ -27,10 +27,7 @@
         </StackPanel.Resources>-->
 
         <Label Name="ProjectType" FontSize="14"/>
-
-        <WrapPanel Orientation="Horizontal">
-            <Button Command="{Binding OpenProjectCommand}">Alphabetical</Button>
-        </WrapPanel>
+        <Button Command="{Binding BackCommand}">BACK</Button>
 
         <Label FontSize="14">View Type</Label>
         <btns:ToggleEnumButton x:Name="ViewTypeButton" Orientation="Horizontal" Value="{Binding Path=ViewType, Mode=TwoWay}" />
@@ -38,13 +35,15 @@
         <Label FontSize="14">Sort Style</Label>
         <btns:ToggleEnumButton x:Name="SortStyleButton" Orientation="Horizontal" Value="{Binding Path=SortStyle, Mode=TwoWay}" />
 
-        <ListBox ItemsSource="{Binding PathInfos}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+        <ListBox ItemsSource="{Binding Children}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
             <ListBox.ItemTemplate>
                 <DataTemplate>
-                    <StackPanel Orientation="Vertical">
-                        <Image Width="100" Height="100" Source="{Binding Path=PreviewBitmap}"/>
-                        <TextBlock Text="{Binding Path=Name}"/>
-                    </StackPanel>
+                    <Button cb:MouseDoubleClick.Command="{Binding OpenCommand}">
+                        <StackPanel Orientation="Vertical">
+                            <Image Width="100" Height="100" Source="{Binding Path=PreviewIcon}"/>
+                            <TextBlock Text="{Binding Path=PathInfo.Name}"/>
+                        </StackPanel>
+                    </Button>
                 </DataTemplate>
             </ListBox.ItemTemplate>
             <ListBox.ItemsPanel>

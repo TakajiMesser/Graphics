@@ -1,7 +1,9 @@
 using SauceEditor.ViewModels.Docks;
+using SauceEditor.Views.Factories;
 using SauceEditorCore.Helpers;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Libraries;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -14,92 +16,134 @@ namespace SauceEditor.ViewModels.Libraries
         Type
     }
 
-    public class LibraryPanelViewModel : DockViewModel
+    public class LibraryPanelViewModel : DockViewModel, ILibraryTracker
     {
-        private LibraryManager _libraryManager = new LibraryManager();
-        private List<IPathInfo> _pathInfos = new List<IPathInfo>();
-        private LibraryNode _currentNode;
+        private ILibraryFactory _libraryFactory;
+        private IComponentFactory _componentFactory;
 
-        public ReadOnlyCollection<IPathInfo> PathInfos { get; set; }
+        private List<PathInfoViewModel> _children = new List<PathInfoViewModel>();
+        private LibraryNode _currentNode;
+        private bool _isBase = false;
+
+        public LibraryPanelViewModel() : base(DockTypes.Property) { }
+
+        public ReadOnlyCollection<PathInfoViewModel> Children { get; set; }
         public PathSortStyles SortStyle { get; set; }
         public LibraryViewTypes ViewType { get; set; }
 
-        public LibraryPanelViewModel() : base(DockTypes.Property)
+        private RelayCommand _backCommand;
+        public RelayCommand BackCommand
         {
-            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
-            //var observableCollection = new ObservableCollection<IPathInfo>(_pathInfos);
-            //PathInfos = new ReadOnlyObservableCollection<IPathInfo>(observableCollection);
+            get
+            {
+                return _backCommand ?? (_backCommand = new RelayCommand(
+                    p =>
+                    {
+                        switch (ViewType)
+                        {
+                            case LibraryViewTypes.Path:
+                                _currentNode = _currentNode.Parent;
+                                var nodeInfo = _libraryFactory.GetNodeInfo(_currentNode.Path);
+                                SwapChildren(LibraryInfoViewModel.CreateChildren(nodeInfo, this));
+                                break;
+                            case LibraryViewTypes.Type:
+                                LoadBaseLibrary();
+                                break;
+                        }
+                    },
+                    p =>
+                    {
+                        switch (ViewType)
+                        {
+                            case LibraryViewTypes.Path:
+                                return _currentNode != null && _currentNode.Parent != null;
+                            case LibraryViewTypes.Type:
+                                return !_isBase;
+                        }
+
+                        return false;
+                    }
+                ));
+            }
         }
 
-        public void UpdateFromModel(LibraryManager libraryManager)
+        public void UpdateFromModel(ILibraryFactory libraryFactory, IComponentFactory componentFactory)
         {
-            _libraryManager = libraryManager;
+            _libraryFactory = libraryFactory;
+            _componentFactory = componentFactory;
 
             // For now, just load and add arbritrary components for testing purposes
-            _libraryManager.Load();
-
-            _currentNode = _libraryManager.RootNode;
-            _pathInfos.Clear();
-            _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
-            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
+            _libraryFactory.Load();
+            LoadRootNode();
         }
 
-        public void NavigateNodeForward(string name)
+        public void OpenLibrary(string name, IEnumerable<PathInfoViewModel> items)
         {
-            _currentNode = _currentNode.GetChild(name);
-            _pathInfos.Clear();
-            _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
-            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
+            // Also track current library path -> either update current node or we know that we're no longer at base library
+            switch (ViewType)
+            {
+                case LibraryViewTypes.Path:
+                    _currentNode = _currentNode.GetChild(name);
+                    break;
+                case LibraryViewTypes.Type:
+                    _isBase = false;
+                    break;
+            }
+
+            // TODO - Update "path" button trail, rather than having a single back button
+            SwapChildren(items);
         }
 
-        public void NavigateNodeBackward()
+        public void OpenComponent(ComponentInfo componentInfo)
         {
-            _currentNode = _currentNode.Parent;
-            _pathInfos.Clear();
-            _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
-            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
+            var component = _libraryFactory.GetComponent(componentInfo.Path);
+
+            if (component is MapComponent)
+            {
+                _componentFactory.OpenMap(component.Path);
+            }
+            else if (component is ModelComponent)
+            {
+                _componentFactory.OpenModel(component.Path);
+            }
+            else if (component is BehaviorComponent)
+            {
+                _componentFactory.OpenBehavior(component.Path);
+            }
+            else if (component is TextureComponent)
+            {
+                _componentFactory.OpenTexture(component.Path);
+            }
+            else if (component is SoundComponent)
+            {
+                _componentFactory.OpenSound(component.Path);
+            }
+            else if (component is MaterialComponent)
+            {
+                _componentFactory.OpenMaterial(component.Path);
+            }
+            else if (component is ArchetypeComponent)
+            {
+                _componentFactory.OpenArchetype(component.Path);
+            }
+            else if (component is ScriptComponent)
+            {
+                _componentFactory.OpenScript(component.Path);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public void OnSortStyleChanged()
         {
-            // TODO - Determine, based on sort style, if we need to update info from disk
-            if (SortStyle.NeedsRecursiveRefresh())
-            {
-                foreach (var pathInfo in _pathInfos)
-                {
-                    RecursiveRefresh(pathInfo);
-                }
-            }
-            else if (SortStyle.NeedsRefresh())
-            {
-                foreach (var pathInfo in _pathInfos)
-                {
-                    pathInfo.Refresh();
-                }
-            }
+            _children.Select(c => c.PathInfo).Refresh(SortStyle);
+            var keySelector = PathInfoHelper.GetKeySelector(SortStyle);
+            var sortedChildren = _children.OrderBy(c => keySelector(c.PathInfo)).ToList();
+            //var sortedChildren = _children.OrderBy(c => c.PathInfo.GetKeySelector(SortStyle)).ToList();
 
-            var sortedPathInfos = _pathInfos.OrderBy(SortStyle).ToList();
-            _pathInfos.Clear();
-            _pathInfos.AddRange(sortedPathInfos);
-            PathInfos = new ReadOnlyCollection<IPathInfo>(_pathInfos);
-        }
-
-        private void RecursiveRefresh(IPathInfo pathInfo)
-        {
-            if (pathInfo is LibraryInfo libraryInfo)
-            {
-                for (var i = 0; i < libraryInfo.Count; i++)
-                {
-                    var childPathInfo = libraryInfo.GetInfoAt(i);
-                    RecursiveRefresh(childPathInfo);
-                }
-
-                libraryInfo.Refresh();
-            }
-            else if (pathInfo is ComponentInfo componentInfo)
-            {
-                componentInfo.Refresh();
-            }
+            SwapChildren(sortedChildren);
         }
 
         public void OnViewTypeChanged()
@@ -107,52 +151,37 @@ namespace SauceEditor.ViewModels.Libraries
             switch (ViewType)
             {
                 case LibraryViewTypes.Path:
-                    _currentNode = _libraryManager.RootNode;
-                    _pathInfos.Clear();
-                    _pathInfos.AddRange(_libraryManager.GetNodePathInfos(_currentNode.Path));
+                    LoadRootNode();
                     break;
                 case LibraryViewTypes.Type:
+                    LoadBaseLibrary();
                     break;
             }
         }
 
-        private void GetComponentsForPath(string path)
+        private void LoadRootNode()
         {
-            _currentNode = _currentNode ?? _libraryManager.RootNode;
-
-            var startIndex = path.IndexOf(_currentNode.Path);
-            var currentPath = 
-            _currentNode.Path;
+            _currentNode = _libraryFactory.RootNode;
+            var nodeInfo = _libraryFactory.GetNodeInfo(_currentNode.Path);
+            SwapChildren(LibraryInfoViewModel.CreateChildren(nodeInfo, this));
         }
 
-        private void DoShit()
+        private void LoadBaseLibrary()
         {
-            /*
-            LibraryManager
-                
-                LibraryNode
-                    Name
-                    Components (generic type)
-                    Child Nodes
-                
-                Library<MapComponent>
-                    Path
-                    Components (of specific type)
-                    LibraryInfo
-                        ComponentInfos
-                            Name
-                            Path
-                            Exists
-                            FileSize
-                            CreationTime
-                            LastWriteTime
-                            LastAccessTime
-                            PreviewIcon
+            _isBase = true;
+            SwapChildren(_libraryFactory.GetBaseLibraryPaths().Select(l => new LibraryInfoViewModel(l, this)));
+        }
 
-            -We want a button that can switch between DirectoryView and LibraryView
-            -We want a button that can switch SortStyle
+        private void SwapChildren(IEnumerable<PathInfoViewModel> items)
+        {
+            // TODO - Is this still necessary?
+            items = items.ToList();
 
-            */
+            _children.Clear();
+            _children.AddRange(items);
+
+            Children = new ReadOnlyCollection<PathInfoViewModel>(_children);
+            BackCommand.InvokeCanExecuteChanged();
         }
     }
 }

@@ -18,11 +18,11 @@ namespace SauceEditorCore.Models.Libraries
         Type
     }
 
-    public class LibraryManager
+    public class LibraryManager : ILibraryFactory
     {
         public const string FILE_EXTENSION = "LM";
 
-        private Dictionary<string, ComponentInfo> _componentInfoByPath = new Dictionary<string, ComponentInfo>();
+        private Dictionary<string, IComponent> _componentByPath = new Dictionary<string, IComponent>();
         private Dictionary<string, LibraryInfo> _nodeInfoByPath = new Dictionary<string, LibraryInfo>();
 
         private LibraryInfo _mapLibraryInfo;
@@ -47,17 +47,31 @@ namespace SauceEditorCore.Models.Libraries
         public Library<ArchetypeComponent> ArchetypeLibrary { get; private set; }
         public Library<ScriptComponent> ScriptLibrary { get; private set; }
 
-        public IEnumerable<IPathInfo> GetNodePathInfos(string path)
-        {
-            var nodeInfo = _nodeInfoByPath[path];
+        public IEnumerable<IPathInfo> GetMapLibraryPaths() => GetLibraryPaths(_mapLibraryInfo);
+        public IEnumerable<IPathInfo> GetModelLibraryPaths() => GetLibraryPaths(_modelLibraryInfo);
+        public IEnumerable<IPathInfo> GetBehaviorLibraryPaths() => GetLibraryPaths(_behaviorLibraryInfo);
+        public IEnumerable<IPathInfo> GetTextureLibraryPaths() => GetLibraryPaths(_textureLibraryInfo);
+        public IEnumerable<IPathInfo> GetSoundLibraryPaths() => GetLibraryPaths(_soundLibraryInfo);
+        public IEnumerable<IPathInfo> GetMaterialLibraryPaths() => GetLibraryPaths(_materialLibraryInfo);
+        public IEnumerable<IPathInfo> GetArchetypeLibraryPaths() => GetLibraryPaths(_archetypeLibraryInfo);
+        public IEnumerable<IPathInfo> GetScriptLibraryPaths() => GetLibraryPaths(_scriptLibraryInfo);
 
-            for (var i = 0; i < nodeInfo.Count; i++)
-            {
-                yield return nodeInfo.GetInfoAt(i);
-            }
+        public IComponent GetComponent(string path) => _componentByPath[path];
+        public LibraryInfo GetNodeInfo(string path) => _nodeInfoByPath[path];
+
+        public IEnumerable<ILibrary> GetLibraries()
+        {
+            yield return MapLibrary;
+            yield return ModelLibrary;
+            yield return BehaviorLibrary;
+            yield return TextureLibrary;
+            yield return SoundLibrary;
+            yield return MaterialLibrary;
+            yield return ArchetypeLibrary;
+            yield return ScriptLibrary;
         }
 
-        public IEnumerable<IPathInfo> GetLibraryPaths()
+        public IEnumerable<LibraryInfo> GetBaseLibraryPaths()
         {
             yield return _mapLibraryInfo;
             yield return _modelLibraryInfo;
@@ -68,15 +82,6 @@ namespace SauceEditorCore.Models.Libraries
             yield return _archetypeLibraryInfo;
             yield return _scriptLibraryInfo;
         }
-
-        public IEnumerable<IPathInfo> GetMapLibraryPaths() => GetLibraryPaths(_mapLibraryInfo);
-        public IEnumerable<IPathInfo> GetModelLibraryPaths() => GetLibraryPaths(_modelLibraryInfo);
-        public IEnumerable<IPathInfo> GetBehaviorLibraryPaths() => GetLibraryPaths(_behaviorLibraryInfo);
-        public IEnumerable<IPathInfo> GetTextureLibraryPaths() => GetLibraryPaths(_textureLibraryInfo);
-        public IEnumerable<IPathInfo> GetSoundLibraryPaths() => GetLibraryPaths(_soundLibraryInfo);
-        public IEnumerable<IPathInfo> GetMaterialLibraryPaths() => GetLibraryPaths(_materialLibraryInfo);
-        public IEnumerable<IPathInfo> GetArchetypeLibraryPaths() => GetLibraryPaths(_archetypeLibraryInfo);
-        public IEnumerable<IPathInfo> GetScriptLibraryPaths() => GetLibraryPaths(_scriptLibraryInfo);
 
         private IEnumerable<IPathInfo> GetLibraryPaths(LibraryInfo libraryInfo)
         {
@@ -124,19 +129,19 @@ namespace SauceEditorCore.Models.Libraries
             ArchetypeLibrary = new Library<ArchetypeComponent>(Path);
             ScriptLibrary = new Library<ScriptComponent>(Path);
 
-            _mapLibraryInfo = LibraryInfo.Create(MapLibrary);
-            _modelLibraryInfo = LibraryInfo.Create(ModelLibrary);
-            _behaviorLibraryInfo = LibraryInfo.Create(BehaviorLibrary);
-            _textureLibraryInfo = LibraryInfo.Create(TextureLibrary);
-            _soundLibraryInfo = LibraryInfo.Create(SoundLibrary);
-            _materialLibraryInfo = LibraryInfo.Create(MaterialLibrary);
-            _archetypeLibraryInfo = LibraryInfo.Create(ArchetypeLibrary);
-            _scriptLibraryInfo = LibraryInfo.Create(ScriptLibrary);
+            _mapLibraryInfo = new LibraryInfo(MapLibrary);
+            _modelLibraryInfo = new LibraryInfo(ModelLibrary);
+            _behaviorLibraryInfo = new LibraryInfo(BehaviorLibrary);
+            _textureLibraryInfo = new LibraryInfo(TextureLibrary);
+            _soundLibraryInfo = new LibraryInfo(SoundLibrary);
+            _materialLibraryInfo = new LibraryInfo(MaterialLibrary);
+            _archetypeLibraryInfo = new LibraryInfo(ArchetypeLibrary);
+            _scriptLibraryInfo = new LibraryInfo(ScriptLibrary);
 
-            RootNode = new LibraryNode(Path); 
+            RootNode = new LibraryNode(Path);
 
-            var rootNodeInfo = LibraryInfo.Create(RootNode);
-            _nodeInfoByPath.Add(rootNodeInfo.Path, rootNodeInfo);
+            var rootNodeInfo = new LibraryInfo(RootNode);
+            _nodeInfoByPath.Add(Path, rootNodeInfo);
 
             SearchForComponents(Path, RootNode, rootNodeInfo);
         }
@@ -162,9 +167,10 @@ namespace SauceEditorCore.Models.Libraries
                 var childNode = new LibraryNode(directoryPath);
                 node.AddChild(childNode);
 
-                var childNodeInfo = LibraryInfo.Create(childNode);
+                var childNodeInfo = new LibraryInfo(childNode);
                 nodeInfo.AddPathInfo(childNodeInfo);
-                _nodeInfoByPath.Add(childNodeInfo.Path, childNodeInfo);
+
+                _nodeInfoByPath.Add(directoryPath, childNodeInfo);
 
                 SearchForComponents(directoryPath, childNode, childNodeInfo);
             }
@@ -175,12 +181,13 @@ namespace SauceEditorCore.Models.Libraries
             if (ComponentFactory.IsValidExtension<T>(extension))
             {
                 var component = ComponentFactory.Create<T>(filePath);
+                _componentByPath.Add(filePath, component);
+
                 var library = GetLibrary<T>();
                 var libraryInfo = GetLibraryInfo<T>();
 
-                var componentInfo = ComponentInfo.Create(component);
+                var componentInfo = new ComponentInfo(component);
                 nodeInfo.AddPathInfo(componentInfo);
-                _componentInfoByPath.Add(filePath, componentInfo);
 
                 library.AddComponent(component);
                 libraryInfo.AddPathInfo(componentInfo);

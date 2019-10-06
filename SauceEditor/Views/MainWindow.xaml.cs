@@ -65,6 +65,7 @@ namespace SauceEditor.Views
             Menu.ViewModel.ComponentFactory = ViewModel;
 
             ViewModel.ProjectTreePanelViewModel = _projectTree.ViewModel;
+            ViewModel.LibraryPanelViewModel = _libraryPanel.ViewModel;
             ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
             ViewModel.PropertyViewModel = _propertyPanel.ViewModel;
 

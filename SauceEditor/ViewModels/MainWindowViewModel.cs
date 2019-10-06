@@ -13,6 +13,7 @@ using System.IO;
 using System.Windows;
 using System.Windows.Input;
 using ICommand = SauceEditor.ViewModels.Commands.ICommand;
+using LibraryPanelViewModel = SauceEditor.ViewModels.Libraries.LibraryPanelViewModel;
 
 namespace SauceEditor.ViewModels
 {
@@ -37,6 +38,7 @@ namespace SauceEditor.ViewModels
         public Visibility PlayVisibility { get; set; }
 
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
+        public LibraryPanelViewModel LibraryPanelViewModel { get; set; }
         public PropertyViewModel PropertyViewModel { get; set; }
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
         public ModelToolPanelViewModel ModelToolPanelViewModel { get; set; }
@@ -150,6 +152,17 @@ namespace SauceEditor.ViewModels
         public void CreateMaterial() => throw new System.NotImplementedException();
         public void CreateArchetype() => throw new System.NotImplementedException();
         public void CreateScript() => throw new System.NotImplementedException();
+
+        public void OnLibraryPanelViewModelChanged() => OpenLibraries();
+
+        public void OpenLibraries()
+        {
+            var libraryManager = new SauceEditorCore.Models.Libraries.LibraryManager()
+            {
+                Path = SauceEditor.Helpers.FilePathHelper.RESOURCES_DIRECTORY
+            };
+            LibraryPanelViewModel.UpdateFromModel(libraryManager, this);
+        }
 
         public void OpenProject(string filePath)
         {

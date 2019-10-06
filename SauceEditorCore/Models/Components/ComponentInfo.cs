@@ -6,6 +6,12 @@ namespace SauceEditorCore.Models.Components
 {
     public class ComponentInfo : IPathInfo
     {
+        public ComponentInfo(IComponent component)
+        {
+            Name = component.Name;
+            Path = component.Path;
+        }
+
         public string Name { get; private set; }
         public string Path { get; private set; }
 
@@ -18,8 +24,6 @@ namespace SauceEditorCore.Models.Components
 
         // TODO - Initialize as default preview icon based on component type. Should load same default icon statically and share across all components to save memory
         public byte[] PreviewBitmap { get; private set; }
-
-        private ComponentInfo() { }
 
         public void Refresh()
         {
@@ -59,15 +63,6 @@ namespace SauceEditorCore.Models.Components
             var scaledImage = new TransformedBitmap(croppedImage, new ScaleTransform(scaleWidth, scaleHeight));
 
             PreviewIcon = scaledImage;*/
-        }
-
-        public static ComponentInfo Create(IComponent component)
-        {
-            return new ComponentInfo()
-            {
-                Name = component.Name,
-                Path = component.Path
-            };
         }
     }
 }

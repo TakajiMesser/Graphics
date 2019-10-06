@@ -7,6 +7,58 @@ namespace SauceEditorCore.Helpers
 {
     public static class PathInfoHelper
     {
+        public static void Refresh(this IEnumerable<IPathInfo> values, PathSortStyles pathSortStyle)
+        {
+            if (pathSortStyle.NeedsRecursiveRefresh())
+            {
+                foreach (var value in values)
+                {
+                    RecursiveRefresh(value);
+                }
+            }
+            else if (pathSortStyle.NeedsRefresh())
+            {
+                foreach (var value in values)
+                {
+                    value.Refresh();
+                }
+            }
+        }
+
+        private static void RecursiveRefresh(IPathInfo pathInfo)
+        {
+            if (pathInfo is LibraryInfo libraryInfo)
+            {
+                for (var i = 0; i < libraryInfo.Count; i++)
+                {
+                    RecursiveRefresh(libraryInfo.GetInfoAt(i));
+                }
+            }
+
+            pathInfo.Refresh();
+        }
+
+        public static Func<IPathInfo, object> GetKeySelector(PathSortStyles pathSortStyle)
+        {
+            switch (pathSortStyle)
+            {
+                case PathSortStyles.Added:
+                    return new Func<IPathInfo, object>(p => 1);
+                case PathSortStyles.Alphabetical:
+                    return new Func<IPathInfo, object>(p => p.Name);
+                case PathSortStyles.Size:
+                    return new Func<IPathInfo, object>(p => p.FileSize);
+                case PathSortStyles.CreationTimes:
+                    return new Func<IPathInfo, object>(p => p.CreationTime);
+                case PathSortStyles.WriteTimes:
+                    return new Func<IPathInfo, object>(p => p.LastWriteTime);
+                case PathSortStyles.AccessTimes:
+                    return new Func<IPathInfo, object>(p => p.LastAccessTime);
+            }
+
+            throw new NotImplementedException("Could not handle PathSortStyle " + pathSortStyle);
+        }
+
         public static IEnumerable<IPathInfo> OrderBy(this IEnumerable<IPathInfo> values, PathSortStyles pathSortStyle, bool isDescending = false)
         {
             switch (pathSortStyle)

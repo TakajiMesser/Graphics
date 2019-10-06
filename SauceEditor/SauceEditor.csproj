@@ -230,6 +230,11 @@
     <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
     <Compile Include="ViewModels\Docks\DockViewModel.cs" />
     <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\ILibraryTracker.cs" />
+    <Compile Include="ViewModels\Libraries\PathInfoEventArgs.cs" />
+    <Compile Include="ViewModels\Libraries\PathInfoViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\ComponentInfoViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\LibraryInfoViewModel.cs" />
     <Compile Include="ViewModels\Libraries\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
