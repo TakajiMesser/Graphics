@@ -4,7 +4,7 @@ using SauceEditorCore.Models.Components;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SauceEditor.ViewModels.Trees
+namespace SauceEditor.ViewModels.Trees.Projects
 {
     public class ProjectViewModel : ViewModel
     {

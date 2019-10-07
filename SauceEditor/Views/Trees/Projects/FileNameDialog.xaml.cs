@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows;
 
-namespace SauceEditor.Views.ProjectTree
+namespace SauceEditor.Views.Trees.Projects
 {
     /// <summary>
     /// Interaction logic for FileNameDialog.xaml

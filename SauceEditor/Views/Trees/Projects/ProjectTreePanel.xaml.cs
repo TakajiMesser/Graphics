@@ -1,7 +1,7 @@
 ﻿using SauceEditor.ViewModels.Docks;
 using Xceed.Wpf.AvalonDock.Layout;
 
-namespace SauceEditor.Views.ProjectTree
+namespace SauceEditor.Views.Trees.Projects
 {
     /// <summary>
     /// Interaction logic for ProjectTreePanel.xaml

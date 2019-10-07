@@ -4,7 +4,7 @@ using SauceEditor.Views.Factories;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
-namespace SauceEditor.ViewModels.Trees
+namespace SauceEditor.ViewModels.Trees.Projects
 {
     public class ProjectTreePanelViewModel : DockViewModel
     {

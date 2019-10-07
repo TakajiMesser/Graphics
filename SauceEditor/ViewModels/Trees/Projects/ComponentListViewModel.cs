@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows.Controls;
 
-namespace SauceEditor.ViewModels.Trees
+namespace SauceEditor.ViewModels.Trees.Projects
 {
     public class ComponentListViewModel<T> : ViewModel, IComponentListViewModel where T : Component
     {

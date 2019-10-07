@@ -1,17 +1,16 @@
 ﻿using OpenTK;
-using SauceEditor.Helpers;
 using SauceEditor.Models;
-using SauceEditor.Models.Components;
 using SauceEditor.ViewModels;
 using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
 using SauceEditor.Views.Libraries;
-using SauceEditor.Views.ProjectTree;
 using SauceEditor.Views.Properties;
 using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
+using SauceEditor.Views.Trees.Entities;
+using SauceEditor.Views.Trees.Projects;
 using SauceEditorCore.Models.Components;
 using System;
 using System.ComponentModel;
@@ -33,9 +32,11 @@ namespace SauceEditor.Views
         // Side panels
         private ProjectTreePanel _projectTree = new ProjectTreePanel();
         private LibraryPanel _libraryPanel = new LibraryPanel();
+        private PropertyPanel _propertyPanel = new PropertyPanel();
+        private EntityTreePanel _entityTree = new EntityTreePanel();
+
         private ToolsPanel _toolPanel = new ToolsPanel();
         private ModelToolPanel _modelToolPanel = new ModelToolPanel();
-        private PropertyPanel _propertyPanel = new PropertyPanel();
 
         // Separate windows
         private GameWindow _gameWindow;
@@ -66,8 +67,10 @@ namespace SauceEditor.Views
 
             ViewModel.ProjectTreePanelViewModel = _projectTree.ViewModel;
             ViewModel.LibraryPanelViewModel = _libraryPanel.ViewModel;
-            ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
             ViewModel.PropertyViewModel = _propertyPanel.ViewModel;
+            ViewModel.EntityTreePanelViewModel = _entityTree.ViewModel;
+
+            ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
 
             MainDockingManager.ActiveContentChanged += (s, args) =>
             {
@@ -96,6 +99,7 @@ namespace SauceEditor.Views
             _dockTracker.AddToPropertyDock(_projectTree);
             _dockTracker.AddToPropertyDock(_propertyPanel);
             _dockTracker.AddToPropertyDock(_libraryPanel);
+            _dockTracker.AddToPropertyDock(_entityTree);
 
             _dockTracker.AddToToolDock(_modelToolPanel);
 

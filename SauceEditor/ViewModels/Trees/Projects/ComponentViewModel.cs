@@ -4,7 +4,7 @@ using SpiceEngineCore.Helpers;
 using System;
 using System.Windows.Controls;
 
-namespace SauceEditor.ViewModels.Trees
+namespace SauceEditor.ViewModels.Trees.Projects
 {
     public class ComponentViewModel<T> : ViewModel where T : Component
     {

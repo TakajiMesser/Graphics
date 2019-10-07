@@ -5,7 +5,8 @@ using SauceEditor.ViewModels.Behaviors;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.ViewModels.Properties;
 using SauceEditor.ViewModels.Tools;
-using SauceEditor.ViewModels.Trees;
+using SauceEditor.ViewModels.Trees.Entities;
+using SauceEditor.ViewModels.Trees.Projects;
 using SauceEditor.Views;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
@@ -17,7 +18,7 @@ using LibraryPanelViewModel = SauceEditor.ViewModels.Libraries.LibraryPanelViewM
 
 namespace SauceEditor.ViewModels
 {
-    public class MainWindowViewModel : ViewModel, IComponentFactory
+    public class MainWindowViewModel : ViewModel, IComponentFactory, IEntityFactory
     {
         public IWindowFactory WindowFactory { get; set; }
         //public IMainViewFactory MainViewFactory { get; set; }
@@ -40,6 +41,8 @@ namespace SauceEditor.ViewModels
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
         public LibraryPanelViewModel LibraryPanelViewModel { get; set; }
         public PropertyViewModel PropertyViewModel { get; set; }
+        public EntityTreePanelViewModel EntityTreePanelViewModel { get; set; }
+
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
         public ModelToolPanelViewModel ModelToolPanelViewModel { get; set; }
 
@@ -183,6 +186,9 @@ namespace SauceEditor.ViewModels
             Title = mapComponent.Name + " - SauceEditor";
 
             GamePanelManagerViewModel = (GamePanelManagerViewModel)GameDockFactory.CreateGamePanelManager(mapComponent);
+
+            // TODO - Is this okay to happen here? We probably need to wait for the GamePanel and its GameLoader process to complete...
+            EntityTreePanelViewModel.UpdateFromModel(mapComponent, this);
             //_propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
             /*_propertyPanel.ScriptOpened += (s, args) =>
             {
@@ -273,6 +279,41 @@ namespace SauceEditor.ViewModels
 
             Title = scriptComponent.Name + " - SauceEditor";
             ScriptViewModel = (ScriptViewModel)GameDockFactory.CreateScriptView(scriptComponent);
+        }
+
+        public void CreateLight()
+        {
+
+        }
+
+        public void CreateBrush()
+        {
+
+        }
+
+        public void CreateActor()
+        {
+
+        }
+
+        public void CreateVolume()
+        {
+
+        }
+
+        public void SelectEntity(int id)
+        {
+
+        }
+
+        public void DuplicateEntity(int id)
+        {
+
+        }
+
+        public void DeleteEntity(int id)
+        {
+
         }
     }
 }

@@ -212,6 +212,7 @@
     <Compile Include="Models\Components\LibraryManager.cs" />
     <Compile Include="Models\Components\Project.cs" />
     <Compile Include="Models\EditorModel.cs" />
+    <Compile Include="Models\Entities\MapEntityID.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
@@ -252,11 +253,15 @@
     <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ToolsPanelViewModel.cs" />
-    <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ComponentListViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ComponentViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ProjectViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ProjectTreePanelViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityTypeViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityTreePanelViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityRootViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\IComponentListViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ComponentListViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ComponentViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ProjectViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ProjectTreePanelViewModel.cs" />
     <Compile Include="ViewModels\ScriptViewModel.cs" />
     <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
@@ -273,6 +278,7 @@
     </Compile>
     <Compile Include="Views\Docks\ITrackDocks.cs" />
     <Compile Include="Views\Docks\DockTracker.cs" />
+    <Compile Include="Views\Factories\IEntityFactory.cs" />
     <Compile Include="Views\Factories\IMainView.cs" />
     <Compile Include="Views\Factories\IComponentFactory.cs" />
     <Compile Include="Views\Factories\IHaveViewModel.cs" />
@@ -295,10 +301,13 @@
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectTree\FileNameDialog.xaml.cs">
+    <Compile Include="Views\Trees\Entities\EntityTreePanel.xaml.cs">
+      <DependentUpon>EntityTreePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Trees\Projects\FileNameDialog.xaml.cs">
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Views\Trees\Projects\ItemSelectedEventArgs.cs" />
     <Compile Include="Views\Scripts\ScriptEventArgs.cs" />
     <Compile Include="Views\Scripts\ScriptView.xaml.cs">
       <DependentUpon>ScriptView.xaml</DependentUpon>
@@ -319,7 +328,7 @@
     <Compile Include="Views\Properties\PropertyPanel.xaml.cs">
       <DependentUpon>PropertyPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectTree\ProjectTreePanel.xaml.cs">
+    <Compile Include="Views\Trees\Projects\ProjectTreePanel.xaml.cs">
       <DependentUpon>ProjectTreePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Transform\TransformPanel.xaml.cs">
@@ -364,7 +373,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ProjectTree\FileNameDialog.xaml">
+    <Page Include="Views\Trees\Entities\EntityTreePanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Trees\Projects\FileNameDialog.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -392,7 +405,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ProjectTree\ProjectTreePanel.xaml">
+    <Page Include="Views\Trees\Projects\ProjectTreePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
