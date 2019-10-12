@@ -1,5 +1,5 @@
-using SauceEditor.Models.Entities;
 using SauceEditor.Views.Factories;
+using SauceEditorCore.Models.Entities;
 using System.Windows.Controls;
 
 namespace SauceEditor.ViewModels.Trees.Entities

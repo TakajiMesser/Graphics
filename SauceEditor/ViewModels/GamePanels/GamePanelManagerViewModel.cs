@@ -1,5 +1,7 @@
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Properties;
+using SauceEditor.ViewModels.Trees.Entities;
+using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities.Layers;
@@ -32,6 +34,8 @@ namespace SauceEditor.ViewModels
         public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
         public IDisplayProperties PropertyDisplayer { get; set; }
+        public IDisplayEntities EntityDisplayer { get; set; }
+        public IEntityFactory EntityFactory { get; set; }
 
         public GameManager GameManager { get; set; }
         public MapComponent MapComponent { get; set; }
@@ -309,19 +313,18 @@ namespace SauceEditor.ViewModels
 
             // TODO - Make these less janky...
             _gameLoader.RendererWaitCount = 4;
-
+            _gameLoader.TrackEntityMapping = true;
             _gameLoader.SetEntityProvider(GameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(GameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(GameManager.BehaviorManager);
             //_gameLoader.AddRenderManager(_renderManager);
 
-            // TODO - This is janky as all hell, this event has to be declared BEFORE we call AddFromMap() or LoadAsync()...
+            _gameLoader.AddFromMap(MapComponent.Map);
             _gameLoader.EntitiesMapped += (s, args) =>
             {
-                MapComponent.SetEntityMapping(args.ActorIDs, args.BrushIDs, args.VolumeIDs, args.LightIDs);
+                MapComponent.SetEntityMap(_gameLoader.EntityMap);
+                EntityDisplayer.UpdateFromModel(MapComponent, EntityFactory);
             };
-
-            _gameLoader.AddFromMap(MapComponent.Map);
 
             //_renderManager.SetEntityProvider(_gameManager.EntityManager);
             //_renderManager.SetCamera(_gameManager.Camera);

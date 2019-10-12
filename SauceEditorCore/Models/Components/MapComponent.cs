@@ -4,6 +4,7 @@ using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Helpers;
 using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Components
@@ -13,7 +14,7 @@ namespace SauceEditorCore.Models.Components
         public MapComponent() {}
         public MapComponent(string filePath) : base(filePath) {}
 
-        private enum MapEntityType
+        /*private enum MapEntityType
         {
             Actor,
             Brush,
@@ -21,37 +22,44 @@ namespace SauceEditorCore.Models.Components
             Light
         }
 
-        private Dictionary<int, MapEntityType> _entityTypeByEntityID = new Dictionary<int, MapEntityType>();
+        private Dictionary<int, MapEntityType> _entityTypeByEntityID = new Dictionary<int, MapEntityType>();*/
 
-        private Dictionary<int, int> _mapActorIndexByEntityID = new Dictionary<int, int>();
-        private Dictionary<int, int> _mapBrushIndexByEntityID = new Dictionary<int, int>();
-        private Dictionary<int, int> _mapVolumeIndexByEntityID = new Dictionary<int, int>();
-        private Dictionary<int, int> _mapLightIndexByEntityID = new Dictionary<int, int>();
+        private int _mapActorIndexCount;
+        private int _mapBrushIndexCount;
+        private int _mapVolumeIndexCount;
+        private int _mapLightIndexCount;
 
-        //private Dictionary<int, IMapEntity3D> _entityIDByMapEntity = new Dictionary<int, IMapEntity3D>();
+        private BidirectionalDictionary<int, int> _mapActorIndexByEntityID = new BidirectionalDictionary<int, int>();
+        private BidirectionalDictionary<int, int> _mapBrushIndexByEntityID = new BidirectionalDictionary<int, int>();
+        private BidirectionalDictionary<int, int> _mapVolumeIndexByEntityID = new BidirectionalDictionary<int, int>();
+        private BidirectionalDictionary<int, int> _mapLightIndexByEntityID = new BidirectionalDictionary<int, int>();
 
         public Map Map { get; set; }
 
-        public void SetEntityMapping(IList<int> actorIDs, IList<int> brushIDs, IList<int> volumeIDs, IList<int> lightIDs)
+        public void SetEntityMap(EntityMap entityMap)
         {
-            for (var i = 0; i < actorIDs.Count; i++)
+            foreach (var id in entityMap.ActorIDs)
             {
-                _mapActorIndexByEntityID.Add(actorIDs[i], i);
+                _mapActorIndexByEntityID.Add(id, _mapActorIndexCount);
+                _mapActorIndexCount++;
             }
 
-            for (var i = 0; i < brushIDs.Count; i++)
+            foreach (var id in entityMap.BrushIDs)
             {
-                _mapBrushIndexByEntityID.Add(brushIDs[i], i);
+                _mapBrushIndexByEntityID.Add(id, _mapBrushIndexCount);
+                _mapBrushIndexCount++;
             }
 
-            for (var i = 0; i < volumeIDs.Count; i++)
+            foreach (var id in entityMap.VolumeIDs)
             {
-                _mapVolumeIndexByEntityID.Add(volumeIDs[i], i);
+                _mapVolumeIndexByEntityID.Add(id, _mapVolumeIndexCount);
+                _mapVolumeIndexCount++;
             }
 
-            for (var i = 0; i < lightIDs.Count; i++)
+            foreach (var id in entityMap.LightIDs)
             {
-                _mapLightIndexByEntityID.Add(lightIDs[i], i);
+                _mapLightIndexByEntityID.Add(id, _mapLightIndexCount);
+                _mapLightIndexCount++;
             }
         }
 
@@ -111,7 +119,7 @@ namespace SauceEditorCore.Models.Components
 
         private void UpdateMapActor(Actor actor)
         {
-            var index = _mapActorIndexByEntityID[actor.ID];
+            var index = _mapActorIndexByEntityID.GetValue(actor.ID);
             var mapActor = Map.Actors[index];
 
             mapActor.UpdateFrom(actor);
@@ -119,7 +127,7 @@ namespace SauceEditorCore.Models.Components
 
         private void UpdateMapBrush(Brush brush)
         {
-            var index = _mapBrushIndexByEntityID[brush.ID];
+            var index = _mapBrushIndexByEntityID.GetValue(brush.ID);
             var mapBrush = Map.Brushes[index];
 
             mapBrush.UpdateFrom(brush);
@@ -127,7 +135,7 @@ namespace SauceEditorCore.Models.Components
 
         private void UpdateMapVolume(Volume volume)
         {
-            var index = _mapVolumeIndexByEntityID[volume.ID];
+            var index = _mapVolumeIndexByEntityID.GetValue(volume.ID);
             var mapVolume = Map.Volumes[index];
 
             mapVolume.UpdateFrom(volume);
@@ -135,10 +143,62 @@ namespace SauceEditorCore.Models.Components
 
         private void UpdateMapLight(ILight light)
         {
-            var index = _mapLightIndexByEntityID[light.ID];
+            var index = _mapLightIndexByEntityID.GetValue(light.ID);
             var mapLight = Map.Lights[index];
 
             mapLight.UpdateFrom(light);
+        }
+
+        public IEnumerable<MapEntityID> GetMapActorEntityIDs()
+        {
+            for (var i = 0; i < Map.Actors.Count; i++)
+            {
+                var entityID = _mapActorIndexByEntityID.GetKey(i);
+
+                yield return new MapEntityID(Map.Actors[i])
+                {
+                    ID = entityID
+                };
+            }
+        }
+
+        public IEnumerable<MapEntityID> GetMapBrushEntityIDs()
+        {
+            for (var i = 0; i < Map.Brushes.Count; i++)
+            {
+                var entityID = _mapBrushIndexByEntityID.GetKey(i);
+
+                yield return new MapEntityID(Map.Brushes[i])
+                {
+                    ID = entityID
+                };
+            }
+        }
+
+        public IEnumerable<MapEntityID> GetMapVolumeEntityIDs()
+        {
+            for (var i = 0; i < Map.Volumes.Count; i++)
+            {
+                var entityID = _mapVolumeIndexByEntityID.GetKey(i);
+
+                yield return new MapEntityID(Map.Volumes[i])
+                {
+                    ID = entityID
+                };
+            }
+        }
+
+        public IEnumerable<MapEntityID> GetMapLightEntityIDs()
+        {
+            for (var i = 0; i < Map.Lights.Count; i++)
+            {
+                var entityID = _mapLightIndexByEntityID.GetKey(i);
+
+                yield return new MapEntityID(Map.Lights[i])
+                {
+                    ID = entityID
+                };
+            }
         }
 
         public IEnumerable<EditorEntity> GetEditorEntities(IEnumerable<IEntity> entities)
@@ -171,25 +231,25 @@ namespace SauceEditorCore.Models.Components
 
         public MapActor GetMapActor(int entityID)
         {
-            var index = _mapActorIndexByEntityID[entityID];
+            var index = _mapActorIndexByEntityID.GetValue(entityID);
             return Map.Actors[index];
         }
 
         public MapBrush GetMapBrush(int entityID)
         {
-            var index = _mapBrushIndexByEntityID[entityID];
+            var index = _mapBrushIndexByEntityID.GetValue(entityID);
             return Map.Brushes[index];
         }
 
         public MapVolume GetMapVolume(int entityID)
         {
-            var index = _mapVolumeIndexByEntityID[entityID];
+            var index = _mapVolumeIndexByEntityID.GetValue(entityID);
             return Map.Volumes[index];
         }
 
         public MapLight GetMapLight(int entityID)
         {
-            var index = _mapLightIndexByEntityID[entityID];
+            var index = _mapLightIndexByEntityID.GetValue(entityID);
             return Map.Lights[index];
         }
 

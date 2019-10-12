@@ -40,7 +40,6 @@ namespace SpiceEngine.Game
         private IInputProvider _inputProvider;
 
         private Map _map;
-        private EntityMapping _entityMapping;
 
         private bool _invalidated = false;
         private bool _isDuplicating = false;
@@ -206,7 +205,7 @@ namespace SpiceEngine.Game
             {
                 _isLoaded = true;
 
-                if (_entityProvider != null && _inputProvider != null && _entityMapping != null)
+                if (_entityProvider != null && _inputProvider != null)
                 {
                     LoadFromGameManager();
                 }
@@ -222,7 +221,6 @@ namespace SpiceEngine.Game
             SelectionManager = new SelectionManager(_entityProvider);
 
             _map = map;
-            //_entityMapping = entityMapping;
 
             lock (_loadLock)
             {

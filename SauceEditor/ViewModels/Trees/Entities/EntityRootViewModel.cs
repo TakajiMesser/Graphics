@@ -1,10 +1,5 @@
-using SauceEditor.Models.Components;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Maps;
-using SpiceEngineCore.Entities;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -23,11 +18,10 @@ namespace SauceEditor.ViewModels.Trees.Entities
 
             Children = new ReadOnlyCollection<EntityTypeViewModel>(new List<EntityTypeViewModel>()
             {
-                new EntityTypeViewModel("", mapComponent.GetMapEntityIDs(), entityFactory)
-                /*new EntityTypeViewModel<ILight>(mapComponent.GetLights(), entityFactory),
-                new EntityTypeViewModel<Brush>(mapComponent.GetBrushes(), entityFactory),
-                new EntityTypeViewModel<IActor>(mapComponent.GetActors(), entityFactory),
-                new EntityTypeViewModel<Volume>(mapComponent.GetVolumes(), entityFactory)*/
+                new EntityTypeViewModel("Actors", mapComponent.GetMapActorEntityIDs(), entityFactory),
+                new EntityTypeViewModel("Brushes", mapComponent.GetMapBrushEntityIDs(), entityFactory),
+                new EntityTypeViewModel("Volumes", mapComponent.GetMapVolumeEntityIDs(), entityFactory),
+                new EntityTypeViewModel("Lights", mapComponent.GetMapLightEntityIDs(), entityFactory)
             });
         }
     }

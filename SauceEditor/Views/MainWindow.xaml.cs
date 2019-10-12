@@ -152,6 +152,8 @@ namespace SauceEditor.Views
             };
 
             //gamePanelManager.ViewModel.Factory = this;
+            gamePanelManager.ViewModel.EntityDisplayer = ViewModel.EntityTreePanelViewModel;
+            gamePanelManager.ViewModel.EntityFactory = ViewModel;
             gamePanelManager.ViewModel.UpdateFromModel(mapComponent);
             gamePanelManager.IsActiveChanged += (s, args) => ViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
 

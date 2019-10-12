@@ -6,7 +6,7 @@ using System.Collections.ObjectModel;
 
 namespace SauceEditor.ViewModels.Trees.Entities
 {
-    public class EntityTreePanelViewModel : DockViewModel
+    public class EntityTreePanelViewModel : DockViewModel, IDisplayEntities
     {
         private List<EntityRootViewModel> _roots = new List<EntityRootViewModel>();
 

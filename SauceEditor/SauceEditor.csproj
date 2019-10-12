@@ -212,7 +212,6 @@
     <Compile Include="Models\Components\LibraryManager.cs" />
     <Compile Include="Models\Components\Project.cs" />
     <Compile Include="Models\EditorModel.cs" />
-    <Compile Include="Models\Entities\MapEntityID.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
@@ -257,6 +256,7 @@
     <Compile Include="ViewModels\Trees\Entities\EntityTypeViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityTreePanelViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityRootViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\IDisplayEntities.cs" />
     <Compile Include="ViewModels\Trees\Projects\IComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\ComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\ComponentViewModel.cs" />

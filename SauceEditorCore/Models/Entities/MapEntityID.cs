@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.Maps;
 using System;
 
-namespace SauceEditor.Models.Entities
+namespace SauceEditorCore.Models.Entities
 {
     public class MapEntityID
     {

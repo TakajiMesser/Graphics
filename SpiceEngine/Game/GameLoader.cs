@@ -26,12 +26,13 @@ namespace SpiceEngine.Game
 
         private readonly object _lock = new object();
 
-        private int _brushStartIndex;
-        private int _actorStartIndex;
-        private int _volumeStartIndex;
+        public EntityMap EntityMap { get; private set; } = null;
 
-        public event EventHandler<EntityIDEventArgs> EntitiesMapped;
-        public event EventHandler<EventArgs> TimedOut;
+        public bool TrackEntityMapping
+        {
+            get => EntityMap != null;
+            set => EntityMap = value ? new EntityMap() : null;
+        }
 
         public int RendererWaitCount
         {
@@ -52,6 +53,9 @@ namespace SpiceEngine.Game
                 }
             }
         }
+
+        public event EventHandler<EventArgs> TimedOut;
+        public event EventHandler<EntityMapEventArgs> EntitiesMapped;
 
         public void SetEntityProvider(IEntityProvider entityProvider)
         {
@@ -137,11 +141,12 @@ namespace SpiceEngine.Game
                     _renderableBuilders.Add(null);
                 }
 
-                if (EntitiesMapped != null)
+                if (EntityMap != null)
                 {
-                    _brushStartIndex = map.Lights.Count;
-                    _actorStartIndex = _brushStartIndex + map.Brushes.Count;
-                    _volumeStartIndex = _actorStartIndex + map.Actors.Count;
+                    EntityMap.SetLightCount(map.Lights.Count);
+                    EntityMap.SetBrushCount(map.Brushes.Count);
+                    EntityMap.SetActorCount(map.Actors.Count);
+                    EntityMap.SetVolumeCount(map.Volumes.Count);
                 }
             }
         }
@@ -181,19 +186,6 @@ namespace SpiceEngine.Game
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Take(entityCount));
             var index = 0;
 
-            List<int> lightIDs = null;
-            List<int> brushIDs = null;
-            List<int> actorIDs = null;
-            List<int> volumeIDs = null;
-
-            if (EntitiesMapped != null)
-            {
-                lightIDs = new List<int>();
-                brushIDs = new List<int>();
-                actorIDs = new List<int>();
-                volumeIDs = new List<int>();
-            }
-
             //logWatch.Log("Loop Start");
 
             using (var idIterator = ids.GetEnumerator())
@@ -230,33 +222,13 @@ namespace SpiceEngine.Game
                         loadBehaviorTasks[currentIndex] = Task.Run(() => LoadBehaviorBuilder(id, currentIndex, behaviorLoader));
                     });
 
-                    if (EntitiesMapped != null)
-                    {
-                        if (currentIndex >= _volumeStartIndex)
-                        {
-                            volumeIDs.Add(id);
-                        }
-                        else if (currentIndex >= _actorStartIndex)
-                        {
-                            actorIDs.Add(id);
-                        }
-                        else if (currentIndex >= _brushStartIndex)
-                        {
-                            brushIDs.Add(id);
-                        }
-                        else
-                        {
-                            lightIDs.Add(id);
-                        }
-                    }
-
+                    EntityMap?.AddID(id);
                     index++;
                 }
             }
 
+            EntitiesMapped?.Invoke(this, new EntityMapEventArgs(EntityMap));
             //logWatch.Log("Loop End");
-
-            EntitiesMapped?.Invoke(this, new EntityIDEventArgs(actorIDs, brushIDs, volumeIDs, lightIDs));
 
             await Task.WhenAll(loadEntityTasks);
 

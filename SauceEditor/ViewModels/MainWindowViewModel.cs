@@ -115,7 +115,19 @@ namespace SauceEditor.ViewModels
 
         public void OnPropertyViewModelChanged() => AddChild(PropertyViewModel, (s, args) => GamePanelManagerViewModel?.RequestUpdate());
 
-        public void OnGamePanelManagerViewModelChanged() => GamePanelManagerViewModel.PropertyDisplayer = PropertyViewModel;
+        public void OnGamePanelManagerViewModelChanged()
+        {
+            GamePanelManagerViewModel.PropertyDisplayer = PropertyViewModel;
+            //GamePanelManagerViewModel.EntityDisplayer = EntityTreePanelViewModel;
+            //GamePanelManagerViewModel.EntityFactory = this;
+
+            /*EntityTreePanelViewModel.UpdateFromModel(mapComponent, this);
+            public void UpdateFromModel(MapComponent mapComponent, IEntityFactory entityFactory)
+            {
+                _roots.Add(new EntityRootViewModel(mapComponent, entityFactory));
+                Roots = new ReadOnlyCollection<EntityRootViewModel>(_roots);
+            }*/
+        }
 
         /*public ICommand EntityPropertiesUpdatedCommand => _entityPropertiesUpdatedCommand ?? new RelayCommand(
             p => ScriptOpened?.Invoke(this, new FileEventArgs(_behaviorFilePath)),
@@ -186,9 +198,11 @@ namespace SauceEditor.ViewModels
             Title = mapComponent.Name + " - SauceEditor";
 
             GamePanelManagerViewModel = (GamePanelManagerViewModel)GameDockFactory.CreateGamePanelManager(mapComponent);
+            //GamePanelManagerViewModel.EntityDisplayer = EntityTreePanelViewModel;
+            //GamePanelManagerViewModel.EntityFactory = this;
 
             // TODO - Is this okay to happen here? We probably need to wait for the GamePanel and its GameLoader process to complete...
-            EntityTreePanelViewModel.UpdateFromModel(mapComponent, this);
+            //EntityTreePanelViewModel.UpdateFromModel(mapComponent, this);
             //_propertyPanel.EntityUpdated += (s, args) => _gamePanelManager.ViewModel.UpdateEntity(args.Entity);
             /*_propertyPanel.ScriptOpened += (s, args) =>
             {

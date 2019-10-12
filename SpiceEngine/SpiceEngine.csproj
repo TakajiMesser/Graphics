@@ -172,7 +172,8 @@
     <Compile Include="Entities\Lights\PointLight.cs" />
     <Compile Include="Entities\Lights\Light.cs" />
     <Compile Include="Maps\EntityIDEventArgs.cs" />
-    <Compile Include="Maps\EntityMapping.cs" />
+    <Compile Include="Maps\EntityMapEventArgs.cs" />
+    <Compile Include="Maps\EntityMap.cs" />
     <Compile Include="Maps\IMapEntity3D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\Map2D.cs" />

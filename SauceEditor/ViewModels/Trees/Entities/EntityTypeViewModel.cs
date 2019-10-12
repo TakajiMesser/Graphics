@@ -1,6 +1,5 @@
-using SauceEditor.Models.Entities;
 using SauceEditor.Views.Factories;
-using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Entities;
 using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngineCore.Entities;
@@ -28,7 +27,7 @@ namespace SauceEditor.ViewModels.Trees.Entities
         public EntityTypeViewModel(string name, IEnumerable<MapEntityID> mapEntityIDs, IEntityFactory entityFactory)
         {
             Name = name;
-            CreateCommand = GetCreateCommand(entityFactory);
+            //CreateCommand = GetCreateCommand(entityFactory);
 
             ContextMenu = new ContextMenu();
             ContextMenu.Items.Add(new MenuItem()
@@ -40,13 +39,13 @@ namespace SauceEditor.ViewModels.Trees.Entities
             Children = new ReadOnlyCollection<EntityViewModel>(mapEntityIDs.Select(e => new EntityViewModel(e, entityFactory)).ToList());
         }
 
-        private RelayCommand GetCreateCommand(IEntityFactory entityFactory) => new TypeSwitch<RelayCommand>()
+        /*private RelayCommand GetCreateCommand(IEntityFactory entityFactory) => new TypeSwitch<RelayCommand>()
             .Case<ILight>(() => new RelayCommand(p => entityFactory.CreateLight()))
             .Case<Brush>(() => new RelayCommand(p => entityFactory.CreateBrush()))
             .Case<IActor>(() => new RelayCommand(p => entityFactory.CreateActor()))
             .Case<Volume>(() => new RelayCommand(p => entityFactory.CreateVolume()))
             .Default(() => throw new NotImplementedException())
-            .Match<T>();
+            .Match<T>();*/
 
         /*<ContextMenu x:Key="MapsMenu">
             <MenuItem Header="Add Map" Command="{StaticResource AddMapCommand}"/>
