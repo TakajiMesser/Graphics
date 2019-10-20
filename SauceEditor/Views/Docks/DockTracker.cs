@@ -89,5 +89,14 @@ namespace SauceEditor.Views
             _rightDockViewByVM.Add(viewModel, view);
             DockHelper.AddToDockAsDocument(_rightDockingManager, view);
         }
+
+        public bool ContainsLeftDock(DockableViewModel viewModel) => viewModel != null
+            && _leftDockViewByVM.ContainsKey(viewModel);
+
+        public bool ContainsCenterDock(DockableViewModel viewModel) => viewModel != null
+            && _centerDockViewByVM.ContainsKey(viewModel);
+
+        public bool ContainsRightDock(DockableViewModel viewModel) => viewModel != null
+            && _rightDockViewByVM.ContainsKey(viewModel);
     }
 }

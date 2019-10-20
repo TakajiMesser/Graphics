@@ -78,7 +78,13 @@
         <MenuItem Header="Settings..." Command="{Binding SettingsCommand}"/>
     </MenuItem>
     <MenuItem Header="_View">
-
+        <MenuItem Header="Model Tools" Command="{Binding OpenModelToolPanelCommand}"/>
+        <MenuItem Header="Brush Tools" Command="{Binding OpenBrushToolPanelCommand}"/>
+        <Separator/>
+        <MenuItem Header="Project Tree" Command="{Binding OpenProjectTreePanelCommand}"/>
+        <MenuItem Header="Library Navigator" Command="{Binding OpenLibraryPanelCommand}"/>
+        <MenuItem Header="Property List" Command="{Binding OpenPropertyPanelCommand}"/>
+        <MenuItem Header="Entity Tree" Command="{Binding OpenEntityTreePanelCommand}"/>
     </MenuItem>
     <MenuItem Header="_Project">
 

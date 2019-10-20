@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace SauceEditor.Views
 {
-    public class PanelManager
+    public class PanelManager : IPanelFactory
     {
         private MainWindowViewModel _mainWindowViewModel;
         private DockTracker _dockTracker;
@@ -22,7 +22,7 @@ namespace SauceEditor.Views
         private BrushToolPanel _brushToolPanel;
 
         // Center Panels
-        private List<GamePanelManager> _gamePanelManagers = new List<GamePanelManager>();
+        private List<GamePanel> _gamePanels = new List<GamePanel>();
         private List<ScriptView> _scriptViews = new List<ScriptView>();
         private List<BehaviorView> _behaviorViews = new List<BehaviorView>();
 
@@ -42,22 +42,22 @@ namespace SauceEditor.Views
 
         public void InitializePanels()
         {
+            _modelToolPanel = new ModelToolPanel();
+            _brushToolPanel = new BrushToolPanel();
+
             _projectTreePanel = new ProjectTreePanel();
             _libraryPanel = new LibraryPanel();
             _propertyPanel = new PropertyPanel();
             _entityTreePanel = new EntityTreePanel();
 
-            _modelToolPanel = new ModelToolPanel();
-            _brushToolPanel = new BrushToolPanel();
+            //_mainWindowViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
+            _mainWindowViewModel.ModelToolPanelViewModel = _modelToolPanel.ViewModel;
+            _mainWindowViewModel.BrushToolPanelViewModel = _brushToolPanel.ViewModel;
 
             _mainWindowViewModel.ProjectTreePanelViewModel = _projectTreePanel.ViewModel;
             _mainWindowViewModel.LibraryPanelViewModel = _libraryPanel.ViewModel;
             _mainWindowViewModel.PropertyViewModel = _propertyPanel.ViewModel;
             _mainWindowViewModel.EntityTreePanelViewModel = _entityTreePanel.ViewModel;
-
-            //_mainWindowViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
-            _mainWindowViewModel.ModelToolPanelViewModel = _modelToolPanel.ViewModel;
-            _mainWindowViewModel.BrushToolPanelViewModel = _brushToolPanel.ViewModel;
         }
 
         public void AddDefaultPanels()
@@ -67,10 +67,10 @@ namespace SauceEditor.Views
             AddDefaultRightPanels();
         }
 
-        public void AddGamePanel(GamePanelManager gamePanelManager)
+        public void AddGamePanel(GamePanel gamePanel)
         {
-            _gamePanelManagers.Add(gamePanelManager);
-            _dockTracker.AddToCenterDock(gamePanelManager, gamePanelManager.ViewModel);
+            _gamePanels.Add(gamePanel);
+            _dockTracker.AddToCenterDock(gamePanel, gamePanel.ViewModel);
         }
 
         public void AddScriptView(ScriptView scriptView)
@@ -83,6 +83,78 @@ namespace SauceEditor.Views
         {
             _behaviorViews.Add(behaviorView);
             _dockTracker.AddToCenterDock(behaviorView, behaviorView.ViewModel);
+        }
+
+        public void OpenModelToolPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_modelToolPanel?.ViewModel))
+            {
+                _modelToolPanel = new ModelToolPanel();
+                _mainWindowViewModel.ModelToolPanelViewModel = _modelToolPanel.ViewModel;
+                _dockTracker.AddToLeftDock(_modelToolPanel, _modelToolPanel.ViewModel);
+            }
+
+            _modelToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenBrushToolPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_brushToolPanel?.ViewModel))
+            {
+                _brushToolPanel = new BrushToolPanel();
+                _mainWindowViewModel.BrushToolPanelViewModel = _brushToolPanel.ViewModel;
+                _dockTracker.AddToLeftDock(_brushToolPanel, _brushToolPanel.ViewModel);
+            }
+
+            _brushToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenProjectTreePanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_projectTreePanel?.ViewModel))
+            {
+                _projectTreePanel = new ProjectTreePanel();
+                _mainWindowViewModel.ProjectTreePanelViewModel = _projectTreePanel.ViewModel;
+                _dockTracker.AddToRightDock(_projectTreePanel, _projectTreePanel.ViewModel);
+            }
+
+            _modelToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenLibraryPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_libraryPanel?.ViewModel))
+            {
+                _libraryPanel = new LibraryPanel();
+                _mainWindowViewModel.LibraryPanelViewModel = _libraryPanel.ViewModel;
+                _dockTracker.AddToRightDock(_libraryPanel, _libraryPanel.ViewModel);
+            }
+
+            _libraryPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenPropertyPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_propertyPanel?.ViewModel))
+            {
+                _propertyPanel = new PropertyPanel();
+                _mainWindowViewModel.PropertyViewModel = _propertyPanel.ViewModel;
+                _dockTracker.AddToRightDock(_propertyPanel, _propertyPanel.ViewModel);
+            }
+
+            _propertyPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenEntityTreePanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_entityTreePanel?.ViewModel))
+            {
+                _entityTreePanel = new EntityTreePanel();
+                _mainWindowViewModel.EntityTreePanelViewModel = _entityTreePanel.ViewModel;
+                _dockTracker.AddToRightDock(_entityTreePanel, _entityTreePanel.ViewModel);
+            }
+
+            _entityTreePanel.ViewModel.IsActive = true;
         }
 
         private void AddDefaultLeftPanels()

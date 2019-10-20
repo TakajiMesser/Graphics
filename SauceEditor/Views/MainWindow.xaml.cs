@@ -44,6 +44,7 @@ namespace SauceEditor.Views
             Menu.ViewModel.MainView = this;
             //Menu.ViewModel.MainViewFactory = _dockTracker;
             Menu.ViewModel.WindowFactory = this;
+            Menu.ViewModel.PanelFactory = _panelManager;
 
             // TODO - Should this binding happen in the ViewModel itself?
             Menu.ViewModel.ComponentFactory = ViewModel;
@@ -111,27 +112,27 @@ namespace SauceEditor.Views
             }*/
         }
 
-        public ViewModel CreateGamePanelManager(MapComponent mapComponent, SauceEditorCore.Models.Components.Component component = null)
+        public ViewModel CreateGamePanel(MapComponent mapComponent, SauceEditorCore.Models.Components.Component component = null)
         {
-            var gamePanelManager = new GamePanelManager()
+            var gamePanel = new GamePanel()
             {
                 Title = mapComponent.Name,
                 CanClose = true
             };
 
             //gamePanelManager.ViewModel.Factory = this;
-            gamePanelManager.ViewModel.EntityFactory = ViewModel;
+            gamePanel.ViewModel.EntityFactory = ViewModel;
 
             if (ViewModel.EntityTreePanelViewModel != null)
             {
-                ViewModel.EntityTreePanelViewModel.LayerProvider = gamePanelManager.ViewModel.GameManager.EntityManager.LayerProvider;
-                gamePanelManager.ViewModel.EntityDisplayer = ViewModel.EntityTreePanelViewModel;
+                ViewModel.EntityTreePanelViewModel.LayerProvider = gamePanel.ViewModel.GameManager.EntityManager.LayerProvider;
+                gamePanel.ViewModel.EntityDisplayer = ViewModel.EntityTreePanelViewModel;
             }
 
-            gamePanelManager.ViewModel.UpdateFromModel(mapComponent);
-            gamePanelManager.IsActiveChanged += (s, args) => ViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
+            gamePanel.ViewModel.UpdateFromModel(mapComponent);
+            gamePanel.IsActiveChanged += (s, args) => ViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
 
-            _panelManager.AddGamePanel(gamePanelManager);
+            _panelManager.AddGamePanel(gamePanel);
 
             if (component != null)
             {
@@ -139,13 +140,13 @@ namespace SauceEditor.Views
                 {
                     case ModelComponent modelComponent:
                         ViewModel.ModelToolPanelViewModel.ModelComponent = modelComponent;
-                        ViewModel.ModelToolPanelViewModel.LayerSetter = gamePanelManager.ViewModel;
+                        ViewModel.ModelToolPanelViewModel.LayerSetter = gamePanel.ViewModel;
 
                         // We need to wait for the set view to load
                         if (EditorSettings.Instance.DefaultView == ViewTypes.Perspective)
                         {
                             // TODO - This is mad janky, we are waiting for this specific panel to load before we trigger adding the appropriate entities
-                            gamePanelManager.ViewModel.PerspectiveViewModel.Panel.PanelLoaded += (s, args) =>
+                            gamePanel.ViewModel.PerspectiveViewModel.Control.PanelLoaded += (s, args) =>
                             {
                                 ViewModel.ModelToolPanelViewModel.OnModelToolTypeChanged();
                             };
@@ -154,7 +155,7 @@ namespace SauceEditor.Views
                 }
             }
             
-            return gamePanelManager.ViewModel;
+            return gamePanel.ViewModel;
         }
 
         public ViewModel CreateScriptView(ScriptComponent scriptComponent)

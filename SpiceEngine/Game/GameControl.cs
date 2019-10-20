@@ -32,7 +32,7 @@ namespace SpiceEngine.Game
         Texture
     }
 
-    public class GamePanel : GLControl, IMouseTracker, IInvoker
+    public class GameControl : GLControl, IMouseTracker, IInvoker
     {
         private PanelCamera _panelCamera;
 
@@ -177,7 +177,7 @@ namespace SpiceEngine.Game
         public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         public event EventHandler<DuplicationEventArgs> EntityDuplicated;
 
-        public GamePanel() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameControl() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             Resolution = new Resolution(Width, Height);
             WindowSize = new Resolution(Width, Height);

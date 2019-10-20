@@ -1,6 +1,7 @@
 using Microsoft.Win32;
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
+using SauceEditor.Views;
 using SauceEditor.Views.Factories;
 using System;
 using System.IO;
@@ -13,6 +14,7 @@ namespace SauceEditor.ViewModels
         //public IMainViewFactory MainViewFactory { get; set; }
         public IWindowFactory WindowFactory { get; set; }
         public IComponentFactory ComponentFactory { get; set; }
+        public IPanelFactory PanelFactory { get; set; }
 
         private RelayCommand _newProjectCommand;
         public RelayCommand NewProjectCommand
@@ -312,6 +314,78 @@ namespace SauceEditor.ViewModels
             {
                 return _settingsCommand ?? (_settingsCommand = new RelayCommand(
                     p => WindowFactory.CreateSettingsWindow(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openModelToolPanelCommand;
+        public RelayCommand OpenModelToolPanelCommand
+        {
+            get
+            {
+                return _openModelToolPanelCommand ?? (_openModelToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenModelToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openBrushToolPanelCommand;
+        public RelayCommand OpenBrushToolPanelCommand
+        {
+            get
+            {
+                return _openBrushToolPanelCommand ?? (_openBrushToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenBrushToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openprojectTreePanelCommand;
+        public RelayCommand OpenProjectTreePanelCommand
+        {
+            get
+            {
+                return _openprojectTreePanelCommand ?? (_openprojectTreePanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenProjectTreePanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openLibraryPanelCommand;
+        public RelayCommand OpenLibraryPanelCommand
+        {
+            get
+            {
+                return _openLibraryPanelCommand ?? (_openLibraryPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenLibraryPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openPropertyPanelCommand;
+        public RelayCommand OpenPropertyPanelCommand
+        {
+            get
+            {
+                return _openPropertyPanelCommand ?? (_openPropertyPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenPropertyPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openEntityTreePanelCommand;
+        public RelayCommand OpenEntityTreePanelCommand
+        {
+            get
+            {
+                return _openEntityTreePanelCommand ?? (_openEntityTreePanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenEntityTreePanel(),
                     p => true
                 ));
             }

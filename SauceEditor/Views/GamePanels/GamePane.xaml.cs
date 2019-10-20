@@ -10,9 +10,9 @@ using Xceed.Wpf.AvalonDock.Layout;
 namespace SauceEditor.Views.GamePanels
 {
     /// <summary>
-    /// Interaction logic for GamePanelView.xaml
+    /// Interaction logic for GamePane.xaml
     /// </summary>
-    public partial class GamePanelView : LayoutAnchorablePane, IAnchor
+    public partial class GamePane : LayoutAnchorablePane, IAnchor
     {
         public readonly static DependencyProperty WireframeThicknessProperty = DependencyProperty.Register("WireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty SelectedWireframeThicknessProperty = DependencyProperty.Register("SelectedWireframeThickness", typeof(float), typeof(NumericUpDown));
@@ -32,7 +32,7 @@ namespace SauceEditor.Views.GamePanels
             set
             {
                 SetValue(WireframeThicknessProperty, value);
-                Panel.SetWireframeThickness(value);
+                GameControl.SetWireframeThickness(value);
             }
         }
 
@@ -42,7 +42,7 @@ namespace SauceEditor.Views.GamePanels
             set
             {
                 SetValue(SelectedWireframeThicknessProperty, value);
-                Panel.SetSelectedWireframeThickness(value);
+                GameControl.SetSelectedWireframeThickness(value);
             }
         }
 
@@ -52,7 +52,7 @@ namespace SauceEditor.Views.GamePanels
             set
             {
                 SetValue(SelectedLightWireframeThicknessProperty, value);
-                Panel.SetSelectedLightWireframeThickness(value);
+                GameControl.SetSelectedLightWireframeThickness(value);
             }
         }
 
@@ -62,7 +62,7 @@ namespace SauceEditor.Views.GamePanels
             set
             {
                 SetValue(GridThicknessProperty, value);
-                Panel.SetGridLineThickness(value);
+                GameControl.SetGridLineThickness(value);
             }
         }
 
@@ -72,11 +72,11 @@ namespace SauceEditor.Views.GamePanels
             set
             {
                 SetValue(GridUnitProperty, value);
-                Panel.SetGridUnit(value);
+                GameControl.SetGridUnit(value);
             }
         }
 
-        public GamePanelView()
+        public GamePane()
         {
             InitializeComponent();
 
@@ -86,7 +86,7 @@ namespace SauceEditor.Views.GamePanels
             SettingsExpander.Collapsed += (s, args) => SettingsPopup.IsOpen = false;
 
             DockPanel.Focusable = true;
-            ViewModel.Panel = Panel;
+            ViewModel.Control = GameControl;
 
             //ViewModeButton.Value = ViewModel.ViewType;
             //ViewModel.OnViewTypeChanged;
@@ -97,20 +97,20 @@ namespace SauceEditor.Views.GamePanels
             // Default to wireframe rendering
             //WireframeButton.IsEnabled = false;
 
-            WireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetWireframeThickness(args.NewValue);
-            WireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
+            WireframeThicknessUpDown.ValueHoldChanged += (s, args) => GameControl.SetWireframeThickness(args.NewValue);
+            WireframeColorPick.SelectedColorChanged += (s, args) => GameControl.SetWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
 
-            SelectedWireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetSelectedWireframeThickness(args.NewValue);
-            SelectedWireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetSelectedWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
+            SelectedWireframeThicknessUpDown.ValueHoldChanged += (s, args) => GameControl.SetSelectedWireframeThickness(args.NewValue);
+            SelectedWireframeColorPick.SelectedColorChanged += (s, args) => GameControl.SetSelectedWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
 
-            SelectedLightWireframeThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetSelectedLightWireframeThickness(args.NewValue);
-            SelectedLightWireframeColorPick.SelectedColorChanged += (s, args) => Panel.SetSelectedLightWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
+            SelectedLightWireframeThicknessUpDown.ValueHoldChanged += (s, args) => GameControl.SetSelectedLightWireframeThickness(args.NewValue);
+            SelectedLightWireframeColorPick.SelectedColorChanged += (s, args) => GameControl.SetSelectedLightWireframeColor(args.NewValue.Value.ToVector4().ToColor4());
 
-            GridThicknessUpDown.ValueHoldChanged += (s, args) => Panel.SetGridLineThickness(args.NewValue);
-            GridUnitColorPick.SelectedColorChanged += (s, args) => Panel.SetGridUnitColor(args.NewValue.Value.ToVector4().ToColor4());
-            GridAxisColorPick.SelectedColorChanged += (s, args) => Panel.SetGridAxisColor(args.NewValue.Value.ToVector4().ToColor4());
-            Grid5ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid5Color(args.NewValue.Value.ToVector4().ToColor4());
-            Grid10ColorPick.SelectedColorChanged += (s, args) => Panel.SetGrid10Color(args.NewValue.Value.ToVector4().ToColor4());
+            GridThicknessUpDown.ValueHoldChanged += (s, args) => GameControl.SetGridLineThickness(args.NewValue);
+            GridUnitColorPick.SelectedColorChanged += (s, args) => GameControl.SetGridUnitColor(args.NewValue.Value.ToVector4().ToColor4());
+            GridAxisColorPick.SelectedColorChanged += (s, args) => GameControl.SetGridAxisColor(args.NewValue.Value.ToVector4().ToColor4());
+            Grid5ColorPick.SelectedColorChanged += (s, args) => GameControl.SetGrid5Color(args.NewValue.Value.ToVector4().ToColor4());
+            Grid10ColorPick.SelectedColorChanged += (s, args) => GameControl.SetGrid10Color(args.NewValue.Value.ToVector4().ToColor4());
         }
 
         /*private void GamePanel_TransformModeChanged(object sender, TransformModeEventArgs e)

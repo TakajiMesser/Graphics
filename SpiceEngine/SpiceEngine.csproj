@@ -156,7 +156,7 @@
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
     <Compile Include="Game\EntitiesEventArgs.cs" />
     <Compile Include="Game\CursorEventArgs.cs" />
-    <Compile Include="Game\GamePanel.cs">
+    <Compile Include="Game\GameControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Entities\Models\Model3D.cs" />

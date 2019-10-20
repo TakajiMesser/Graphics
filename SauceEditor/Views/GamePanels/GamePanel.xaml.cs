@@ -11,29 +11,29 @@ using ViewTypes = SpiceEngine.Game.ViewTypes;
 namespace SauceEditor.Views.GamePanels
 {
     /// <summary>
-    /// Interaction logic for GamePanelManager.xaml
+    /// Interaction logic for GamePanel.xaml
     /// </summary>
-    public partial class GamePanelManager : LayoutAnchorable
+    public partial class GamePanel : LayoutAnchorable
     {
-        private GamePanelView _perspectiveView;
-        private GamePanelView _xView;
-        private GamePanelView _yView;
-        private GamePanelView _zView;
+        private GamePane _perspectivePane;
+        private GamePane _xPane;
+        private GamePane _yPane;
+        private GamePane _zPane;
 
         //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         //public event EventHandler<CommandEventArgs> CommandExecuted;
 
-        public GamePanelManager()
+        public GamePanel()
         {
             InitializeComponent();
             ViewModel.Resolution = new Resolution((int)Panel.Width, (int)Panel.Height);
 
-            CreateAndShowPanels();
+            CreateAndShowPanes();
 
-            ViewModel.PerspectiveViewModel = _perspectiveView.ViewModel;
-            ViewModel.XViewModel = _xView.ViewModel;
-            ViewModel.YViewModel = _yView.ViewModel;
-            ViewModel.ZViewModel = _zView.ViewModel;
+            ViewModel.PerspectiveViewModel = _perspectivePane.ViewModel;
+            ViewModel.XViewModel = _xPane.ViewModel;
+            ViewModel.YViewModel = _yPane.ViewModel;
+            ViewModel.ZViewModel = _zPane.ViewModel;
 
             SetView(EditorSettings.Instance.DefaultView);
         }
@@ -53,42 +53,42 @@ namespace SauceEditor.Views.GamePanels
             e.Handled = true;
         }
 
-        private void CreateAndShowPanels()
+        private void CreateAndShowPanes()
         {
-            _perspectiveView = CreatePanel(ViewTypes.Perspective, AnchorableShowStrategy.Most);
-            _xView = CreatePanel(ViewTypes.X, AnchorableShowStrategy.Right);
-            _yView = CreatePanel(ViewTypes.Y, AnchorableShowStrategy.Bottom);
-            _zView = CreatePanel(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
+            _perspectivePane = CreatePane(ViewTypes.Perspective, AnchorableShowStrategy.Most);
+            _xPane = CreatePane(ViewTypes.X, AnchorableShowStrategy.Right);
+            _yPane = CreatePane(ViewTypes.Y, AnchorableShowStrategy.Bottom);
+            _zPane = CreatePane(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
 
-            DockHelper.AddPanesToDockAsGrid(MainDockingManager, 2, _perspectiveView, _xView, _yView, _zView);
+            DockHelper.AddPanesToDockAsGrid(MainDockingManager, 2, _perspectivePane, _xPane, _yPane, _zPane);
         }
 
-        private GamePanelView CreatePanel(ViewTypes viewType, AnchorableShowStrategy showStrategy)
+        private GamePane CreatePane(ViewTypes viewType, AnchorableShowStrategy showStrategy)
         {
-            var gamePanel = new GamePanelView();
-            gamePanel.ViewModel.ViewType = viewType;
+            var gamePane = new GamePane();
+            gamePane.ViewModel.ViewType = viewType;
 
             // TODO - This isn't MVVM
             switch (viewType)
             {
                 case ViewTypes.Perspective:
-                    gamePanel.Anchorable.Title = "Perspective";
+                    gamePane.Anchor.Title = "Perspective";
                     break;
                 case ViewTypes.X:
-                    gamePanel.Anchorable.Title = "X";
+                    gamePane.Anchor.Title = "X";
                     break;
                 case ViewTypes.Y:
-                    gamePanel.Anchorable.Title = "Y";
+                    gamePane.Anchor.Title = "Y";
                     break;
                 case ViewTypes.Z:
-                    gamePanel.Anchorable.Title = "Z";
+                    gamePane.Anchor.Title = "Z";
                     break;
                 default:
                     throw new ArgumentException("Could not handle ViewType " + viewType);
             }
 
-            gamePanel.Anchorable.Show();
-            return gamePanel;
+            gamePane.Anchor.Show();
+            return gamePane;
         }
 
         /*private void OnEntitySelectionChanged(ViewTypes viewType, SpiceEngine.Game.EntitiesEventArgs args)
@@ -145,16 +145,16 @@ namespace SauceEditor.Views.GamePanels
                     DockHelper.ShowAllPanesInDockAsGrid(MainDockingManager);
                     break;
                 case "Perspective":
-                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _perspectiveView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _perspectivePane);
                     break;
                 case "X":
-                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _xView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _xPane);
                     break;
                 case "Y":
-                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _yView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _yPane);
                     break;
                 case "Z":
-                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _zView);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _zPane);
                     break;
             }
         }
