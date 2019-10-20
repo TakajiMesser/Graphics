@@ -1,12 +1,11 @@
-﻿using SauceEditor.ViewModels.Docks;
-using Xceed.Wpf.AvalonDock.Layout;
+﻿using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Trees.Projects
 {
     /// <summary>
     /// Interaction logic for ProjectTreePanel.xaml
     /// </summary>
-    public partial class ProjectTreePanel : LayoutAnchorable, IHaveDockViewModel
+    public partial class ProjectTreePanel : LayoutAnchorable
     {
         /*public event EventHandler<ItemSelectedEventArgs> MapSelected;
         public event EventHandler<ItemSelectedEventArgs> ModelSelected;
@@ -21,8 +20,6 @@ namespace SauceEditor.Views.Trees.Projects
             InitializeComponent();
             //ClearProject();
         }
-
-        public DockViewModel GetViewModel() => ViewModel;
 
         /*public void ClearProject()
         {

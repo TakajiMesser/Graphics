@@ -1,16 +1,11 @@
-﻿using SauceEditor.Models;
-using SauceEditor.Views.Factories;
-using SpiceEngine.Maps;
+﻿using System;
 
 namespace SauceEditor.ViewModels.Docks
 {
-    /*public abstract class MainDockViewModel : ViewModel
+    public abstract class DockableViewModel : ViewModel
     {
         private bool _isActive = false;
 
-        public IMainViewFactory MainViewFactory { get; set; }
-
-        public bool IsPlayable { get; protected set; }
         public bool IsActive
         {
             get => _isActive;
@@ -22,10 +17,12 @@ namespace SauceEditor.ViewModels.Docks
 
                     if (_isActive)
                     {
-                        MainViewFactory?.SetActiveInMainDock(this);
+                        BecameActive?.Invoke(this, new EventArgs());
                     }
                 }
             }
         }
-    }*/
+
+        public event EventHandler<EventArgs> BecameActive;
+    }
 }

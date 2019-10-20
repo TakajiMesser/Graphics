@@ -205,6 +205,8 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\ViewHelper.cs" />
+    <Compile Include="Helpers\DragHelper.cs" />
     <Compile Include="Helpers\LibraryHelper.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
     <Compile Include="Models\Components\IGameViewable.cs" />
@@ -214,6 +216,8 @@
     <Compile Include="Models\EditorModel.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseDrop.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseDrag.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDoubleClick.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorNetworkViewModel.cs" />
@@ -223,13 +227,10 @@
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
-    <Compile Include="ViewModels\Docks\IHaveDockViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
     <Compile Include="ViewModels\ILayerSetter.cs" />
-    <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
-    <Compile Include="ViewModels\Docks\DockViewModel.cs" />
-    <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />
+    <Compile Include="ViewModels\Docks\DockableViewModel.cs" />
     <Compile Include="ViewModels\Libraries\ILibraryTracker.cs" />
     <Compile Include="ViewModels\Libraries\PathInfoEventArgs.cs" />
     <Compile Include="ViewModels\Libraries\PathInfoViewModel.cs" />
@@ -250,13 +251,19 @@
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
     <Compile Include="ViewModels\Tools\LibraryPageViewModel.cs" />
     <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\BrushToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Primitives\BoxPrimitive.cs" />
+    <Compile Include="ViewModels\Tools\Primitives\PrimitiveManager.cs" />
+    <Compile Include="ViewModels\Tools\Primitives\Primitive.cs" />
     <Compile Include="ViewModels\Tools\ToolsPanelViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityTypeViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityTreePanelViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityRootViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\IDisplayEntities.cs" />
+    <Compile Include="ViewModels\Trees\Entities\Layers\LayerRootViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\Layers\LayerViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\IComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\ComponentListViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\ComponentViewModel.cs" />
@@ -276,7 +283,7 @@
     <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
       <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Docks\ITrackDocks.cs" />
+    <Compile Include="Views\Docks\IDockTracker.cs" />
     <Compile Include="Views\Docks\DockTracker.cs" />
     <Compile Include="Views\Factories\IEntityFactory.cs" />
     <Compile Include="Views\Factories\IMainView.cs" />
@@ -294,16 +301,21 @@
       <DependentUpon>GamePanelView.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
+    <Compile Include="Views\ImageButtonList.cs" />
     <Compile Include="Views\Libraries\LibraryPanel.xaml.cs">
       <DependentUpon>LibraryPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\MainDockManager.cs" />
+    <Compile Include="Views\PanelManager.cs" />
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\BrushToolPanel.xaml.cs">
+      <DependentUpon>BrushToolPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Trees\Entities\EntityTreePanel.xaml.cs">
       <DependentUpon>EntityTreePanel.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Trees\Entities\IRearrange.cs" />
     <Compile Include="Views\Trees\Projects\FileNameDialog.xaml.cs">
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
@@ -372,6 +384,10 @@
     <Page Include="Views\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\BrushToolPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\Trees\Entities\EntityTreePanel.xaml">
       <Generator>MSBuild:Compile</Generator>

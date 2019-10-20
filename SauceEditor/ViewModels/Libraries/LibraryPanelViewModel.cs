@@ -16,7 +16,7 @@ namespace SauceEditor.ViewModels.Libraries
         Type
     }
 
-    public class LibraryPanelViewModel : DockViewModel, ILibraryTracker
+    public class LibraryPanelViewModel : DockableViewModel, ILibraryTracker
     {
         private ILibraryFactory _libraryFactory;
         private IComponentFactory _componentFactory;
@@ -25,9 +25,7 @@ namespace SauceEditor.ViewModels.Libraries
         private LibraryNode _currentNode;
         private bool _isBase = false;
 
-        public LibraryPanelViewModel() : base(DockTypes.Property) { }
-
-        public ReadOnlyCollection<PathInfoViewModel> Children { get; set; }
+        public ObservableCollection<PathInfoViewModel> Children { get; set; }
         public PathSortStyles SortStyle { get; set; }
         public LibraryViewTypes ViewType { get; set; }
 
@@ -180,7 +178,7 @@ namespace SauceEditor.ViewModels.Libraries
             _children.Clear();
             _children.AddRange(items);
 
-            Children = new ReadOnlyCollection<PathInfoViewModel>(_children);
+            Children = new ObservableCollection<PathInfoViewModel>(_children);
             BackCommand.InvokeCanExecuteChanged();
         }
     }

@@ -118,6 +118,7 @@
   <ItemGroup>
     <Compile Include="Entities\Actors\AnimatedActor.cs" />
     <Compile Include="Entities\Archetype.cs" />
+    <Compile Include="Entities\EntityFactory.cs" />
     <Compile Include="Entities\EntityMappingEventArgs.cs" />
     <Compile Include="Entities\Selection\IDirectional.cs" />
     <Compile Include="Entities\Selection\ISelectionProvider.cs" />
@@ -218,8 +219,6 @@
     <Compile Include="Rendering\Meshes\IMesh.cs" />
     <Compile Include="Rendering\Models\ModelFace.cs" />
     <Compile Include="Rendering\Meshes\SimpleMesh.cs" />
-    <Compile Include="Rendering\Buffers\RenderBuffer.cs" />
-    <Compile Include="Rendering\Buffers\FrameBuffer.cs" />
     <Compile Include="Rendering\Buffers\UniformBuffer.cs" />
     <Compile Include="Rendering\Buffers\ShaderStorageBuffer.cs" />
     <Compile Include="Rendering\Meshes\MeshManager.cs" />
@@ -227,10 +226,9 @@
     <Compile Include="Rendering\Meshes\Mesh.cs" />
     <Compile Include="Rendering\Buffers\LightBuffer.cs" />
     <Compile Include="Rendering\Buffers\MaterialBuffer.cs" />
-    <Compile Include="Rendering\Buffers\VertexBuffer.cs" />
-    <Compile Include="Rendering\Buffers\VertexIndexBuffer.cs" />
     <Compile Include="Rendering\PostProcessing\LogLine.cs" />
     <Compile Include="Rendering\PostProcessing\LogManager.cs" />
+    <Compile Include="Rendering\PostProcessing\UIRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\InvertColors.cs" />
     <Compile Include="Rendering\PostProcessing\Blur.cs" />
@@ -353,6 +351,8 @@
     <None Include="Resources\Shaders\Skybox\skybox2D.vert" />
     <None Include="Resources\Shaders\Text\text.frag" />
     <None Include="Resources\Shaders\Text\text.vert" />
+    <None Include="Resources\Shaders\UserInterfaces\ui.frag" />
+    <None Include="Resources\Shaders\UserInterfaces\ui.vert" />
     <None Include="Resources\Shaders\Wireframe\grid.frag" />
     <None Include="Resources\Shaders\Wireframe\grid.vert" />
     <None Include="Resources\Shaders\Wireframe\wireframe-skinning.vert" />

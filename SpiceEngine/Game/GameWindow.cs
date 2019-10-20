@@ -154,8 +154,8 @@ namespace SpiceEngine.Game
 
             if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
             {
-                var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
-                _gameManager.Camera.AttachToEntity(actor, true, false);
+                var attachedEntity = _gameManager.EntityManager.GetEntity(_map.Camera.AttachedActorName);
+                _gameManager.Camera.AttachToEntity(attachedEntity, true, false);
             }
 
             //_stopWatch.Stop();

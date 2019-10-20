@@ -3,13 +3,17 @@ using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using System;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities
 {
     public abstract class TexturedEntity : Entity, ITextureBinder
     {
-        public abstract Material Material { get; }
-        public abstract TextureMapping? TextureMapping { get; }
+        public abstract IEnumerable<Material> Materials { get; }
+        public abstract IEnumerable<TextureMapping?> TextureMappings { get; }
+
+        public abstract Material CurrentMaterial { get; }
+        public abstract TextureMapping? CurrentTextureMapping { get; }
 
         public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
@@ -18,9 +22,9 @@ namespace SpiceEngine.Entities
 
         public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
         {
-            if (TextureMapping.HasValue)
+            if (CurrentTextureMapping.HasValue)
             {
-                program.BindTextures(textureProvider, TextureMapping.Value);
+                program.BindTextures(textureProvider, CurrentTextureMapping.Value);
             }
             else
             {
@@ -28,11 +32,11 @@ namespace SpiceEngine.Entities
             }
         }
 
-        public override void SetUniforms(ShaderProgram program) => Material.SetUniforms(program);
+        public override void SetUniforms(ShaderProgram program) => CurrentMaterial.SetUniforms(program);
 
         public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
-            && Material.Equals(textureBinder.Material)
-            && TextureMapping.Equals(textureBinder.TextureMapping);
+            && CurrentMaterial.Equals(textureBinder.CurrentMaterial)
+            && TextureMappings.Equals(textureBinder.TextureMappings);
 
         protected virtual void OnTextureTransformed(object sender, TextureTransformEventArgs e) => TextureTransformed?.Invoke(sender, e);
     }

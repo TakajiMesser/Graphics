@@ -1,6 +1,5 @@
 ﻿using SauceEditor.Helpers;
 using SauceEditor.Models;
-using SauceEditor.ViewModels.Docks;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngineCore.Outputs;
 using System;
@@ -14,7 +13,7 @@ namespace SauceEditor.Views.GamePanels
     /// <summary>
     /// Interaction logic for GamePanelManager.xaml
     /// </summary>
-    public partial class GamePanelManager : LayoutAnchorable, IHaveDockViewModel
+    public partial class GamePanelManager : LayoutAnchorable
     {
         private GamePanelView _perspectiveView;
         private GamePanelView _xView;
@@ -38,8 +37,6 @@ namespace SauceEditor.Views.GamePanels
 
             SetView(EditorSettings.Instance.DefaultView);
         }
-
-        public DockViewModel GetViewModel() => ViewModel;
 
         private void MainDock_PreviewKeyDown(object sender, KeyEventArgs e)
         {

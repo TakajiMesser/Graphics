@@ -190,7 +190,7 @@ namespace SpiceEngine.Game
 
         public void CenterView()
         {
-            if (_entityProvider != null && SelectionManager.SelectionCount > 0)
+            if (_entityProvider != null && _panelCamera != null && SelectionManager.SelectionCount > 0)
             {
                 _panelCamera.CenterView(SelectionManager.Position);
                 Invalidate();
@@ -293,20 +293,23 @@ namespace SpiceEngine.Game
         // TODO - Make this method less janky and terrible
         public void DoLoad() => RenderManager?.BatchManager.Load();
 
-        public void SelectEntity(IEntity entity)
+        public void SelectEntity(int id)
         {
-            RenderManager?.SetSelected(entity.ID.Yield());
+            RenderManager?.SetSelected(id.Yield());
 
-            SelectionManager.Select(entity.ID);
+            SelectionManager.Select(id);
             Invalidate();
         }
 
-        public void SelectEntities(IEnumerable<IEntity> entities)
+        public void SelectEntities(IEnumerable<int> ids)
         {
-            if (entities.Any())
+            if (ids.Any())
             {
-                RenderManager?.SetSelected(entities.Select(e => e.ID));
-                SelectionManager.Select(entities.Select(e => e.ID));
+                RenderManager?.SetDeselected(SelectionManager.SelectedIDs);
+                SelectionManager.ClearSelection();
+
+                RenderManager?.SetSelected(ids);
+                SelectionManager.Select(ids);
             }
             else
             {
@@ -606,21 +609,6 @@ namespace SpiceEngine.Game
 
         public void Duplicate(int entityID, int duplicateEntityID) =>
             Invoke(new Action(() => RenderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
-
-        public void SetLayerOrSomeShit(string layerName)
-        {
-            //_entityProvider.EntityRenderIDs;
-
-            // We have four new entity types to deal with for model rendering...
-            // ShapeEntity -> Maps to a single mesh
-            // FaceEntity -> Maps to a face in MeshBuild
-            // TriangleEntity -> Maps to a triangle in MeshBuild
-            // VertexEntity -> Maps to a vertex billboard texture
-
-            // We have a few options...
-            // When we first open a ModelComponent, we should create ALL necessary entities and split them into the four layers
-            // We then need to give access to 
-        }
 
         private void HandleInput()
         {

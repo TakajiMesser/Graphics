@@ -10,10 +10,10 @@ namespace SpiceEngineCore.Entities
         int ID { get; set; }
         Vector3 Position { get; set; }
 
+        event EventHandler<EntityTransformEventArgs> Transformed;
+
         void Transform(Transform transform);
         void SetUniforms(ShaderProgram shader);
         bool CompareUniforms(IEntity entity);
-
-        event EventHandler<EntityTransformEventArgs> Transformed;
     }
 }

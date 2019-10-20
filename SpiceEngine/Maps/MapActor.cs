@@ -57,7 +57,10 @@ namespace SpiceEngine.Maps
 
         public override IEntity ToEntity(/*TextureManager textureManager = null*/)
         {
-            var actor = new Actor(Name);
+            var actor = new Actor()
+            {
+                Name = Name
+            };
 
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
@@ -72,7 +75,10 @@ namespace SpiceEngine.Maps
 
                     if (scene.HasAnimations)
                     {
-                        var animatedActor = new AnimatedActor(Name);
+                        var animatedActor = new AnimatedActor()
+                        {
+                            Name = Name
+                        };
 
                         animatedActor.Animator.AnimationEnd += (s, args) => animatedActor.Animator.CurrentAnimation = animatedActor.Animator.Animations.First();
                         animatedActor.Animator.Animate += (s, args) =>

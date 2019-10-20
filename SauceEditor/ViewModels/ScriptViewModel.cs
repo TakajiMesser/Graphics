@@ -1,14 +1,11 @@
-using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 
 namespace SauceEditor.ViewModels
 {
-    public class ScriptViewModel : DockViewModel
+    public class ScriptViewModel : DockableViewModel
     {
-        public ScriptViewModel() : base(DockTypes.Game) { }
-
         public IFile Filer { get; set; }
         public ScriptComponent Script { get; set; }
 

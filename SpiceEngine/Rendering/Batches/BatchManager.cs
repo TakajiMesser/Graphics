@@ -1,11 +1,11 @@
 ﻿using SpiceEngine.Entities;
 using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Lights;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
@@ -343,7 +343,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batchIndices = new HashSet<int>();
 
-            foreach (var id in _entityProvider.EntityRenderIDs)
+            foreach (var id in _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render))
             {
                 // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
                 if ((ids == null || ids.Contains(id)))
@@ -364,7 +364,7 @@ namespace SpiceEngine.Rendering.Batches
         {
             var batchIndices = new HashSet<int>();
 
-            foreach (var id in _entityProvider.EntityRenderIDs)
+            foreach (var id in _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render))
             {
                 // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
                 if ((ids == null || ids.Contains(id)) && GetEntityIDSet(renderType).Contains(id))

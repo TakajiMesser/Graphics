@@ -11,8 +11,8 @@ namespace SauceEditor.Views.Factories
         ViewModel CreateBehaviorView(BehaviorComponent behaviorComponent);
         ViewModel CreateScriptView(ScriptComponent scriptComponent);
 
-        void SetActiveInGameDock(DockViewModel viewModel);
-        void SetActiveInPropertyDock(DockViewModel viewModel);
-        void SetActiveInToolDock(DockViewModel viewModel);
+        void SetActiveInGameDock(DockableViewModel viewModel);
+        void SetActiveInPropertyDock(DockableViewModel viewModel);
+        void SetActiveInToolDock(DockableViewModel viewModel);
     }
 }

@@ -6,10 +6,8 @@ using SauceEditorCore.Models.Entities;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class PropertyViewModel : DockViewModel, /*ISideDockViewModel, */IDisplayProperties
+    public class PropertyViewModel : DockableViewModel, /*ISideDockViewModel, */IDisplayProperties
     {
-        public PropertyViewModel() : base(DockTypes.Property) { }
-
         public IPropertyViewModel Properties { get; set; }
         //public bool IsActive { get; set; }
 

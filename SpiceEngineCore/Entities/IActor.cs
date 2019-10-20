@@ -2,10 +2,8 @@
 
 namespace SpiceEngineCore.Entities
 {
-    public interface IActor : IEntity, IRotate, IScale
+    public interface IActor : INamedEntity, IRotate, IScale
     {
-        string Name { get; }
-
         /// <summary>
         /// All models are assumed to have their "forward" direction in the positive X direction.
         /// If the model is oriented in a different direction, this quaternion should orient it from the assumed direction to the correct one.

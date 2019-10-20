@@ -1,5 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using System;

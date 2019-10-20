@@ -1,5 +1,4 @@
 ﻿using SauceEditor.Helpers;
-using SauceEditor.ViewModels;
 using SauceEditor.ViewModels.Docks;
 using System.Collections.Generic;
 using Xceed.Wpf.AvalonDock;
@@ -7,116 +6,88 @@ using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views
 {
-    public class DockTracker : ITrackDocks
+    public class DockTracker : IDockTracker
     {
-        private DockingManager _gameDockingManager;
-        private DockingManager _propertyDockingManager;
-        private DockingManager _toolDockingManager;
+        private DockingManager _leftDockingManager;
+        private DockingManager _centerDockingManager;
+        private DockingManager _rightDockingManager;
 
-        private DockViewModel _activeGameDockVM;
-        private DockViewModel _activePropertyDockVM;
-        private DockViewModel _activeToolDockVM;
+        private DockableViewModel _activeLeftDockVM;
+        private DockableViewModel _activeCenterDockVM;
+        private DockableViewModel _activeRightDockVM;
 
-        private Dictionary<DockViewModel, LayoutAnchorable> _gameDockViewByVM = new Dictionary<DockViewModel, LayoutAnchorable>();
-        private Dictionary<DockViewModel, LayoutAnchorable> _propertyDockViewByVM = new Dictionary<DockViewModel, LayoutAnchorable>();
-        private Dictionary<DockViewModel, LayoutAnchorable> _toolDockViewByVM = new Dictionary<DockViewModel, LayoutAnchorable>();
+        private Dictionary<DockableViewModel, LayoutAnchorable> _leftDockViewByVM = new Dictionary<DockableViewModel, LayoutAnchorable>();
+        private Dictionary<DockableViewModel, LayoutAnchorable> _centerDockViewByVM = new Dictionary<DockableViewModel, LayoutAnchorable>();
+        private Dictionary<DockableViewModel, LayoutAnchorable> _rightDockViewByVM = new Dictionary<DockableViewModel, LayoutAnchorable>();
 
-        public DockTracker(DockingManager gameDockingManager, DockingManager propertyDockingManager, DockingManager toolDockingManager)
+        public DockTracker(DockingManager leftDockingManager, DockingManager centerDockingManager, DockingManager rightDockingManager)
         {
-            _gameDockingManager = gameDockingManager;
-            _propertyDockingManager = propertyDockingManager;
-            _toolDockingManager = toolDockingManager;
+            _leftDockingManager = leftDockingManager;
+            _centerDockingManager = centerDockingManager;
+            _rightDockingManager = rightDockingManager;
         }
 
-        public MainWindowViewModel MainWindowVM { get; set; }
-
-        public DockViewModel ActiveGameDockVM
+        public DockableViewModel ActiveLeftDockVM
         {
-            get => _activeGameDockVM;
+            get => _activeLeftDockVM;
             set
             {
-                if (!_gameDockViewByVM.ContainsKey(value)) throw new KeyNotFoundException("ViewModel not found in dock");
+                if (!_leftDockViewByVM.ContainsKey(value)) throw new KeyNotFoundException("ViewModel not found in dock");
 
-                _gameDockViewByVM[value].IsActive = true;
-                _activeGameDockVM = value;
-                //MainWindowVM.CurrentMainDockViewModel = value;
+                _leftDockViewByVM[value].IsActive = true;
+                _activeLeftDockVM = value;
             }
         }
 
-        public DockViewModel ActivePropertyDockVM
+        public DockableViewModel ActiveCenterDockVM
         {
-            get => _activePropertyDockVM;
+            get => _activeCenterDockVM;
             set
             {
-                if (!_propertyDockViewByVM.ContainsKey(value)) throw new KeyNotFoundException("ViewModel not found in dock");
+                if (!_centerDockViewByVM.ContainsKey(value)) throw new KeyNotFoundException("ViewModel not found in dock");
 
-                _propertyDockViewByVM[value].IsActive = true;
-                _activePropertyDockVM = value;
-                //MainWindowVM.CurrentMainDockViewModel = value;
+                _centerDockViewByVM[value].IsActive = true;
+                _activeCenterDockVM = value;
             }
         }
 
-        public DockViewModel ActiveToolDockVM
+        public DockableViewModel ActiveRightDockVM
         {
-            get => _activeToolDockVM;
+            get => _activeRightDockVM;
             set
             {
-                if (!_toolDockViewByVM.ContainsKey(value)) throw new KeyNotFoundException("ViewModel not found in dock");
+                if (!_rightDockViewByVM.ContainsKey(value)) throw new KeyNotFoundException("ViewModel not found in dock");
 
-                _toolDockViewByVM[value].IsActive = true;
-                _activeToolDockVM = value;
-                //MainWindowVM.CurrentMainDockViewModel = value;
+                _rightDockViewByVM[value].IsActive = true;
+                _activeRightDockVM = value;
             }
         }
 
-        public void AddToGameDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
+        public void AddToLeftDock(LayoutAnchorable view, DockableViewModel viewModel)
         {
-            var dockViewModel = view.GetViewModel();
-            dockViewModel.DockTracker = this;
-            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
+            view.IsActiveChanged += (s, args) => viewModel.IsActive = view.IsActive;
+            viewModel.BecameActive += (s, args) => _activeLeftDockVM = viewModel;
 
-            _gameDockViewByVM.Add(dockViewModel, view);
-            DockHelper.AddToDockAsDocument(_gameDockingManager, view);
+            _leftDockViewByVM.Add(viewModel, view);
+            DockHelper.AddToDockAsDocument(_leftDockingManager, view);
         }
 
-        public void AddToPropertyDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
+        public void AddToCenterDock(LayoutAnchorable view, DockableViewModel viewModel)
         {
-            var dockViewModel = view.GetViewModel();
-            dockViewModel.DockTracker = this;
-            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
+            view.IsActiveChanged += (s, args) => viewModel.IsActive = view.IsActive;
+            viewModel.BecameActive += (s, args) => _activeCenterDockVM = viewModel;
 
-            _propertyDockViewByVM.Add(dockViewModel, view);
-            DockHelper.AddToDockAsDocument(_propertyDockingManager, view);
+            _centerDockViewByVM.Add(viewModel, view);
+            DockHelper.AddToDockAsDocument(_centerDockingManager, view);
         }
 
-        public void AddToToolDock<T>(T view) where T : LayoutAnchorable, IHaveDockViewModel
+        public void AddToRightDock(LayoutAnchorable view, DockableViewModel viewModel)
         {
-            var dockViewModel = view.GetViewModel();
-            dockViewModel.DockTracker = this;
-            view.IsActiveChanged += (s, args) => dockViewModel.IsActive = view.IsActive;
+            view.IsActiveChanged += (s, args) => viewModel.IsActive = view.IsActive;
+            viewModel.BecameActive += (s, args) => _activeRightDockVM = viewModel;
 
-            _toolDockViewByVM.Add(dockViewModel, view);
-            DockHelper.AddToDockAsDocument(_toolDockingManager, view);
-        }
-
-        public void SetActive(DockViewModel dockViewModel)
-        {
-            if (_gameDockViewByVM.ContainsKey(dockViewModel))
-            {
-                ActiveGameDockVM = dockViewModel;
-            }
-            else if (_propertyDockViewByVM.ContainsKey(dockViewModel))
-            {
-                ActivePropertyDockVM = dockViewModel;
-            }
-            else if (_toolDockViewByVM.ContainsKey(dockViewModel))
-            {
-                ActiveToolDockVM = dockViewModel;
-            }
-            else
-            {
-                throw new KeyNotFoundException("Could not find in docks");
-            }
+            _rightDockViewByVM.Add(viewModel, view);
+            DockHelper.AddToDockAsDocument(_rightDockingManager, view);
         }
     }
 }

@@ -4,13 +4,9 @@ using SauceEditor.ViewModels;
 using SauceEditor.Views.Behaviors;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
-using SauceEditor.Views.Libraries;
-using SauceEditor.Views.Properties;
 using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
-using SauceEditor.Views.Trees.Entities;
-using SauceEditor.Views.Trees.Projects;
 using SauceEditorCore.Models.Components;
 using System;
 using System.ComponentModel;
@@ -27,16 +23,7 @@ namespace SauceEditor.Views
     /// </summary>
     public partial class MainWindow : Window, IMainView, IWindowFactory, IGameDockFactory
     {
-        private DockTracker _dockTracker;
-
-        // Side panels
-        private ProjectTreePanel _projectTree = new ProjectTreePanel();
-        private LibraryPanel _libraryPanel = new LibraryPanel();
-        private PropertyPanel _propertyPanel = new PropertyPanel();
-        private EntityTreePanel _entityTree = new EntityTreePanel();
-
-        private ToolsPanel _toolPanel = new ToolsPanel();
-        private ModelToolPanel _modelToolPanel = new ModelToolPanel();
+        private PanelManager _panelManager;
 
         // Separate windows
         private GameWindow _gameWindow;
@@ -48,13 +35,9 @@ namespace SauceEditor.Views
             PresentationTraceSources.DataBindingSource.Switch.Level = SourceLevels.Error;
             InitializeComponent();
 
-            _dockTracker = new DockTracker(MainDockingManager, PropertyDockingManager, ToolDockingManager)
-            {
-                MainWindowVM = ViewModel
-            };
+            _panelManager = new PanelManager(ViewModel, new DockTracker(LeftDockingManager, CenterDockingManager, RightDockingManager));
+            _panelManager.InitializePanels();
 
-            //ViewModel.MainViewFactory = _dockTracker;
-            ViewModel.DockTracker = _dockTracker;
             ViewModel.GameDockFactory = this;
             ViewModel.WindowFactory = this;
 
@@ -65,14 +48,7 @@ namespace SauceEditor.Views
             // TODO - Should this binding happen in the ViewModel itself?
             Menu.ViewModel.ComponentFactory = ViewModel;
 
-            ViewModel.ProjectTreePanelViewModel = _projectTree.ViewModel;
-            ViewModel.LibraryPanelViewModel = _libraryPanel.ViewModel;
-            ViewModel.PropertyViewModel = _propertyPanel.ViewModel;
-            ViewModel.EntityTreePanelViewModel = _entityTree.ViewModel;
-
-            ViewModel.ToolsPanelViewModel = _toolPanel.ViewModel;
-
-            MainDockingManager.ActiveContentChanged += (s, args) =>
+            CenterDockingManager.ActiveContentChanged += (s, args) =>
             {
                 ViewModel.PlayCommand.InvokeCanExecuteChanged();
                 //_propertyPanel.ViewModel.Properties = new EntityPropertyViewModel();
@@ -92,19 +68,11 @@ namespace SauceEditor.Views
             _projectTree.ModelSelected += (s, args) => OpenModel(args.FilePath);
             _projectTree.BehaviorSelected += (s, args) => OpenBehavior(args.FilePath);
             _projectTree.TextureSelected += (s, args) => OpenTexture(args.FilePath);
-            _projectTree.AudioSelected += (s, args) => OpenSound(args.FilePath);*/
+            _projectTree.AudioSelected += (s, args) => OpenSound(args.FilePath);
 
-            _toolPanel.ToolSelected += ToolPanel_ToolSelected;
+            _toolPanel.ToolSelected += ToolPanel_ToolSelected;*/
 
-            _dockTracker.AddToPropertyDock(_projectTree);
-            _dockTracker.AddToPropertyDock(_propertyPanel);
-            _dockTracker.AddToPropertyDock(_libraryPanel);
-            _dockTracker.AddToPropertyDock(_entityTree);
-
-            _dockTracker.AddToToolDock(_modelToolPanel);
-
-            _projectTree.IsActive = true;
-            //SideDockManager.ActiveContent = _projectTree;
+            _panelManager.AddDefaultPanels();
         }
 
         private void ToolPanel_ToolSelected(object sender, ToolSelectedEventArgs e)
@@ -152,20 +120,26 @@ namespace SauceEditor.Views
             };
 
             //gamePanelManager.ViewModel.Factory = this;
-            gamePanelManager.ViewModel.EntityDisplayer = ViewModel.EntityTreePanelViewModel;
             gamePanelManager.ViewModel.EntityFactory = ViewModel;
+
+            if (ViewModel.EntityTreePanelViewModel != null)
+            {
+                ViewModel.EntityTreePanelViewModel.LayerProvider = gamePanelManager.ViewModel.GameManager.EntityManager.LayerProvider;
+                gamePanelManager.ViewModel.EntityDisplayer = ViewModel.EntityTreePanelViewModel;
+            }
+
             gamePanelManager.ViewModel.UpdateFromModel(mapComponent);
             gamePanelManager.IsActiveChanged += (s, args) => ViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
 
-            _dockTracker.AddToGameDock(gamePanelManager);
+            _panelManager.AddGamePanel(gamePanelManager);
 
             if (component != null)
             {
                 switch (component)
                 {
                     case ModelComponent modelComponent:
-                        _modelToolPanel.ViewModel.ModelComponent = modelComponent;
-                        _modelToolPanel.ViewModel.LayerSetter = gamePanelManager.ViewModel;
+                        ViewModel.ModelToolPanelViewModel.ModelComponent = modelComponent;
+                        ViewModel.ModelToolPanelViewModel.LayerSetter = gamePanelManager.ViewModel;
 
                         // We need to wait for the set view to load
                         if (EditorSettings.Instance.DefaultView == ViewTypes.Perspective)
@@ -173,7 +147,7 @@ namespace SauceEditor.Views
                             // TODO - This is mad janky, we are waiting for this specific panel to load before we trigger adding the appropriate entities
                             gamePanelManager.ViewModel.PerspectiveViewModel.Panel.PanelLoaded += (s, args) =>
                             {
-                                _modelToolPanel.ViewModel.OnModelToolTypeChanged();
+                                ViewModel.ModelToolPanelViewModel.OnModelToolTypeChanged();
                             };
                         }
                         break;
@@ -192,7 +166,7 @@ namespace SauceEditor.Views
             };
             scriptView.ViewModel.UpdateFromModel(scriptComponent);
 
-            _dockTracker.AddToGameDock(scriptView);
+            _panelManager.AddScriptView(scriptView);
 
             return scriptView.ViewModel;
         }
@@ -205,7 +179,7 @@ namespace SauceEditor.Views
                 CanClose = true
             };
 
-            _dockTracker.AddToGameDock(behaviorView);
+            _panelManager.AddBehaviorView(behaviorView);
 
             return behaviorView.ViewModel;
 

@@ -9,6 +9,7 @@ using SpiceEngine.Rendering.Buffers;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Vertices;

@@ -11,6 +11,10 @@ namespace SpiceEngine.Scripting
     {
         private GameManager _gameManager;
 
-        public Director(string name, GameManager gameManager) : base(name) => _gameManager = gameManager;
+        public Director(string name, GameManager gameManager)
+        {
+            Name = name;
+            _gameManager = gameManager;
+        }
     }
 }

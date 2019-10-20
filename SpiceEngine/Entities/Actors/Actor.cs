@@ -9,11 +9,23 @@ using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Actors
 {
-    public class Actor : TexturedEntity, IActor, IRotate, IScale, ITextureBinder, IModel
+    public class Actor : TexturedEntity, IActor, IModel
     {
         protected int _meshIndex = 0;
 
-        public string Name { get; private set; }
+        private List<Material> _materials = new List<Material>();
+        private List<TextureMapping?> _textureMappings = new List<TextureMapping?>();
+
+        public override IEnumerable<Material> Materials => _materials;
+        public override IEnumerable<TextureMapping?> TextureMappings => _textureMappings;
+
+        public override Material CurrentMaterial => _materials[_meshIndex];
+        public override TextureMapping? CurrentTextureMapping => _textureMappings[_meshIndex];
+
+        public override void AddMaterial(Material material) => _materials.Add(material);
+        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);
+
+        public string Name { get; set; }
 
         /// <summary>
         /// All models are assumed to have their "forward" direction in the positive X direction.
@@ -43,35 +55,6 @@ namespace SpiceEngine.Entities.Actors
                 Rotation = Orientation * transform.Rotation,
                 Scale = transform.Scale
             });
-        }
-
-        private List<Material> _materials = new List<Material>();
-        private List<TextureMapping?> _textureMappings = new List<TextureMapping?>();
-
-        public override Material Material => _materials[_meshIndex];
-        public override TextureMapping? TextureMapping => _textureMappings[_meshIndex];
-
-        public Actor(string name) => Name = name;
-
-        public override void AddMaterial(Material material) => _materials.Add(material);
-        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);
-
-        public virtual Actor Duplicate(string name)
-        {
-            var actor = new Actor(name);
-            actor.FromActor(this);
-            return actor;
-        }
-
-        protected void FromActor(Actor actor)
-        {
-            Position = actor.Position;
-            Orientation = actor.Orientation;
-            Rotation = actor.Rotation;
-            Scale = actor.Scale;
-
-            _materials.AddRange(actor._materials);
-            _textureMappings.AddRange(actor._textureMappings);
         }
 
         public void SetMeshIndex(int meshIndex) => _meshIndex = meshIndex;

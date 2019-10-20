@@ -1,22 +1,22 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Rendering.Buffers
+namespace SpiceEngineCore.Rendering.Buffers
 {
     public class FrameBuffer : IDisposable
     {
         private readonly int _handle;
 
-        private Dictionary<FramebufferAttachment, Texture> _textures = new Dictionary<FramebufferAttachment, Texture>();
+        private Dictionary<FramebufferAttachment, ITexture> _textures = new Dictionary<FramebufferAttachment, ITexture>();
         private Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
 
         public FrameBuffer() => _handle = GL.GenFramebuffer();
 
-        public void Add(FramebufferAttachment attachment, Texture texture) => _textures.Add(attachment, texture);
+        public void Add(FramebufferAttachment attachment, ITexture texture) => _textures.Add(attachment, texture);
         public void Add(FramebufferAttachment attachment, RenderBuffer renderBuffer) => _renderBuffers.Add(attachment, renderBuffer);
 
         public void Clear()

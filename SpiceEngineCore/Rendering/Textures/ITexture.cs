@@ -7,6 +7,7 @@ namespace SpiceEngineCore.Rendering.Textures
 {
     public interface ITexture
     {
+        int Handle { get; }
         TextureTarget Target { get; set; }
 
         bool EnableMipMap { get; set; }

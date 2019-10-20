@@ -1,9 +1,8 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering;
 using System;
 
-namespace SpiceEngine.Rendering.Buffers
+namespace SpiceEngineCore.Rendering.Buffers
 {
     public class RenderBuffer : IDisposable, IBindable
     {

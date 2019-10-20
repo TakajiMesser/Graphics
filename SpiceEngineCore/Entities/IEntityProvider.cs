@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Game.Loading;
+﻿using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Game.Loading;
 using System;
 using System.Collections.Generic;
 
@@ -6,13 +7,13 @@ namespace SpiceEngineCore.Entities
 {
     public interface IEntityProvider
     {
-        IEnumerable<int> EntityRenderIDs { get; }
-        IEnumerable<int> EntityScriptIDs { get; }
-        IEnumerable<int> EntityPhysicsIDs { get; }
-        IEnumerable<int> EntitySelectIDs { get; }
+        ILayerProvider LayerProvider { get; }
 
-        List<ILight> Lights { get; }
         List<IActor> Actors { get; }
+        List<IBrush> Brushes { get; }
+        List<IVolume> Volumes { get; }
+        List<ILight> Lights { get; }
+        List<IUIControl> Controls { get; }
 
         event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         event EventHandler<IDEventArgs> EntitiesRemoved;
@@ -26,20 +27,11 @@ namespace SpiceEngineCore.Entities
         void Load();
 
         IEntity GetEntity(int id);
+        INamedEntity GetEntity(string name);
         IEntity GetEntityOrDefault(int id);
         IEnumerable<IEntity> GetEntities(IEnumerable<int> ids);
-        IActor GetActor(string name);
-        //EntityTypes GetEntityType(int id);
 
         void RemoveEntityByID(int id);
         IEntity DuplicateEntity(IEntity entity);
-
-        bool ContainsLayer(string layerName);
-        void AddLayer(string name);
-        void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs);
-        IEnumerable<int> GetLayerEntityIDs(string layerName);
-        //void SetLayerState(string name, LayerStates state);
-        //void SetRenderLayerState(string name, LayerStates state);
-        //void SetSelectLayerState(string name, LayerStates state);
     }
 }

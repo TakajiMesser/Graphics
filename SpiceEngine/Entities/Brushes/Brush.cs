@@ -4,6 +4,8 @@ using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Utilities;
+using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Brushes
 {
@@ -11,7 +13,7 @@ namespace SpiceEngine.Entities.Brushes
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : TexturedEntity, IRotate, IScale, ITextureBinder
+    public class Brush : TexturedEntity, IBrush
     {
         private Material _material;
         private TextureMapping? _textureMapping;
@@ -28,11 +30,11 @@ namespace SpiceEngine.Entities.Brushes
             set => _modelMatrix.Scale = value;
         }
 
-        //public List<Vector3> Vertices => Mesh.Vertices.Select(v => v.Position).Distinct().ToList();
-        //public Matrix4 GetModelMatrix() => _modelMatrix.Matrix;
+        public override IEnumerable<Material> Materials => _material.Yield();
+        public override IEnumerable<TextureMapping?> TextureMappings => _textureMapping.Yield();
 
-        public override Material Material => _material;
-        public override TextureMapping? TextureMapping => _textureMapping;
+        public override Material CurrentMaterial => _material;
+        public override TextureMapping? CurrentTextureMapping => _textureMapping;
 
         public override void AddMaterial(Material material) => _material = material;
         public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMapping = textureMapping;
@@ -42,25 +44,6 @@ namespace SpiceEngine.Entities.Brushes
             base.SetUniforms(program);
             program.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
             program.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
-        }
-
-        public Brush Duplicate()
-        {
-            var brush = new Brush()
-            {
-                Position = Position,
-                Rotation = Rotation,
-                Scale = Scale,
-                _material = Material
-            };
-
-            if (TextureMapping.HasValue)
-            {
-                var textureMapping = TextureMapping.Value;
-                brush.AddTextureMapping(new TextureMapping(textureMapping.DiffuseIndex, textureMapping.NormalIndex, textureMapping.ParallaxIndex, textureMapping.SpecularIndex));
-            }
-
-            return brush;
         }
     }
 }

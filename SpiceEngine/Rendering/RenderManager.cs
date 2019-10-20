@@ -20,6 +20,7 @@ using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
+using SpiceEngineCore.Entities.Layers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -427,10 +428,10 @@ namespace SpiceEngine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.EntitySelectIDs);
-            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.EntitySelectIDs.Contains(l.ID)));
+            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
+            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
 
-            var vertexEntities = _entityProvider.GetLayerEntityIDs("Vertices");
+            var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
             if (vertexEntities.Any())
             {
                 _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
@@ -600,7 +601,7 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(texture);
 
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
+            RenderUIControls();
             _logManager.RenderToScreen();
         }
 
@@ -633,6 +634,16 @@ namespace SpiceEngine.Rendering
 
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.Blend);
+        }
+
+        private void RenderUIControls()
+        {
+            foreach (var control in _entityProvider.Controls)
+            {
+
+            }
+
+            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
         }
     }
 }

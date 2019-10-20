@@ -1,20 +1,21 @@
-﻿using System.Collections.Generic;
+﻿using SpiceEngineCore.Entities.Layers;
+using System;
+using System.Collections.Generic;
 using System.Linq;
+using SpiceEngineCore.Utilities;
 
 namespace SpiceEngine.Entities.Layers
 {
-    public enum LayerStates
-    {
-        Neutral,
-        Enabled,
-        Disabled
-    }
-
-    public class LayerManager
+    public class LayerManager : ILayerProvider
     {
         public const string ROOT_LAYER_NAME = "Root";
 
         private Dictionary<string, EntityLayer> _layersByName = new Dictionary<string, EntityLayer>();
+
+        private List<string> _renderLayerNames = new List<string>();
+        private List<string> _scriptLayerNames = new List<string>();
+        private List<string> _physicsLayerNames = new List<string>();
+        private List<string> _selectLayerNames = new List<string>();
 
         private Dictionary<string, LayerStates> _renderLayerStatesByName = new Dictionary<string, LayerStates>();
         private Dictionary<string, LayerStates> _scriptLayerStatesByName = new Dictionary<string, LayerStates>();
@@ -23,81 +24,132 @@ namespace SpiceEngine.Entities.Layers
 
         public EntityLayer RootLayer { get; } = new EntityLayer(ROOT_LAYER_NAME);
 
-        public List<string> RenderLayerNames { get; } = new List<string>();
-        public List<string> ScriptLayerNames { get; } = new List<string>();
-        public List<string> PhysicsLayerNames { get; } = new List<string>();
-        public List<string> SelectLayerNames { get; } = new List<string>();
-
-        public IEnumerable<int> EntityRenderIDs => GetEntityIDs(RenderLayerNames, _renderLayerStatesByName);
-        public IEnumerable<int> EntityScriptIDs => GetEntityIDs(ScriptLayerNames, _scriptLayerStatesByName);
-        public IEnumerable<int> EntityPhysicsIDs => GetEntityIDs(PhysicsLayerNames, _physicsLayerStatesByName);
-        public IEnumerable<int> EntitySelectIDs => GetEntityIDs(SelectLayerNames, _selectLayerStatesByName);
-
         public LayerManager()
         {
             RootLayer = new EntityLayer(ROOT_LAYER_NAME);
             AddEntityLayer(RootLayer);
         }
 
+        public void AddLayer(string name) => AddEntityLayer(new EntityLayer(name));
+
+        public bool ContainsLayer(string name) => _layersByName.ContainsKey(name);
+
+        public void RemoveLayer(string name) => _layersByName.Remove(name);
+
+        public void ClearLayer(string name)
+        {
+            if (_layersByName.ContainsKey(name))
+            {
+                _layersByName[name].Clear();
+            }
+        }
+
         public void AddToLayer(string layerName, int entityID) => _layersByName[layerName].Add(entityID);
 
         public void RemoveFromLayer(string layerName, int entityID) => _layersByName[layerName].Remove(entityID);
 
-        public bool ContainsLayer(string layerName) => _layersByName.ContainsKey(layerName);
+        public IEnumerable<int> GetEntityIDs(LayerTypes layerType) => GetEntityIDs(GetLayerNames(layerType), GetLayerStatesByName(layerType));
 
-        public void AddLayer(string name) => AddEntityLayer(new EntityLayer(name));
-
-        private void AddEntityLayer(EntityLayer layer)
+        public void MoveLayerOrder(LayerTypes layerType, String layerName, int moveIndex)
         {
-            _layersByName.Add(layer.Name, layer);
+            switch (layerType)
+            {
+                case LayerTypes.Render:
+                    _renderLayerNames.Move(_renderLayerNames.IndexOf(layerName), moveIndex);
+                    break;
+                case LayerTypes.Script:
+                    _scriptLayerNames.Move(_scriptLayerNames.IndexOf(layerName), moveIndex);
+                    break;
+                case LayerTypes.Physics:
+                    _physicsLayerNames.Move(_physicsLayerNames.IndexOf(layerName), moveIndex);
+                    break;
+                case LayerTypes.Select:
+                    _selectLayerNames.Move(_selectLayerNames.IndexOf(layerName), moveIndex);
+                    break;
+            }
 
-            _renderLayerStatesByName[layer.Name] = LayerStates.Neutral;
-            _scriptLayerStatesByName[layer.Name] = LayerStates.Neutral;
-            _physicsLayerStatesByName[layer.Name] = LayerStates.Neutral;
-            _selectLayerStatesByName[layer.Name] = LayerStates.Neutral;
-
-            RenderLayerNames.Add(layer.Name);
-            ScriptLayerNames.Add(layer.Name);
-            PhysicsLayerNames.Add(layer.Name);
-            SelectLayerNames.Add(layer.Name);
+            throw new ArgumentOutOfRangeException("Could not handle layerType " + layerType);
         }
+
+        public IEnumerable<string> GetLayerNames(LayerTypes layerType)
+        {
+            switch (layerType)
+            {
+                case LayerTypes.Render:
+                    return _renderLayerNames;
+                case LayerTypes.Script:
+                    return _scriptLayerNames;
+                case LayerTypes.Physics:
+                    return _physicsLayerNames;
+                case LayerTypes.Select:
+                    return _selectLayerNames;
+            }
+
+            throw new ArgumentOutOfRangeException("Could not handle layerType " + layerType);
+        }
+
+        public LayerStates GetLayerState(LayerTypes layerType, string name) => GetLayerStatesByName(layerType)[name];
+
+        public IEnumerable<int> GetLayerEntityIDs(string name) => _layersByName.ContainsKey(name)
+            ? _layersByName[name].EntityIDs
+            : Enumerable.Empty<int>();
+
+        public void SetLayerState(string name, LayerStates state)
+        {
+            SetLayerState(LayerTypes.Render, name, state);
+            SetLayerState(LayerTypes.Script, name, state);
+            SetLayerState(LayerTypes.Physics, name, state);
+            SetLayerState(LayerTypes.Select, name, state);
+        }
+
+        public void SetLayerState(LayerTypes layerType, string name, LayerStates state) => GetLayerStatesByName(layerType)[name] = state;
 
         public void Clear()
         {
             _layersByName.Clear();
 
+            _renderLayerNames.Clear();
+            _scriptLayerNames.Clear();
+            _physicsLayerNames.Clear();
+            _selectLayerNames.Clear();
+
             _renderLayerStatesByName.Clear();
             _scriptLayerStatesByName.Clear();
             _physicsLayerStatesByName.Clear();
             _selectLayerStatesByName.Clear();
-
-            RenderLayerNames.Clear();
-            ScriptLayerNames.Clear();
-            PhysicsLayerNames.Clear();
-            SelectLayerNames.Clear();
         }
 
-        public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layersByName.ContainsKey(layerName)
-            ? _layersByName[layerName].EntityIDs
-            : Enumerable.Empty<int>();
-
-        public void ClearLayer(string layerName)
+        private void AddEntityLayer(EntityLayer layer)
         {
-            if (_layersByName.ContainsKey(layerName))
-            {
-                _layersByName[layerName].Clear();
-            }
+            _layersByName.Add(layer.Name, layer);
+
+            _renderLayerNames.Add(layer.Name);
+            _scriptLayerNames.Add(layer.Name);
+            _physicsLayerNames.Add(layer.Name);
+            _selectLayerNames.Add(layer.Name);
+
+            _renderLayerStatesByName[layer.Name] = LayerStates.Neutral;
+            _scriptLayerStatesByName[layer.Name] = LayerStates.Neutral;
+            _physicsLayerStatesByName[layer.Name] = LayerStates.Neutral;
+            _selectLayerStatesByName[layer.Name] = LayerStates.Neutral;
         }
 
-        public LayerStates GetRenderLayerState(string name) => _renderLayerStatesByName[name];
-        public LayerStates GetScriptLayerState(string name) => _scriptLayerStatesByName[name];
-        public LayerStates GetPhysicsLayerState(string name) => _physicsLayerStatesByName[name];
-        public LayerStates GetSelectLayerState(string name) => _selectLayerStatesByName[name];
+        private Dictionary<string, LayerStates> GetLayerStatesByName(LayerTypes layerType)
+        {
+            switch (layerType)
+            {
+                case LayerTypes.Render:
+                    return _renderLayerStatesByName;
+                case LayerTypes.Script:
+                    return _scriptLayerStatesByName;
+                case LayerTypes.Physics:
+                    return _physicsLayerStatesByName;
+                case LayerTypes.Select:
+                    return _selectLayerStatesByName;
+            }
 
-        public void SetRenderLayerState(string name, LayerStates state) => _renderLayerStatesByName[name] = state;
-        public void SetScriptLayerState(string name, LayerStates state) => _scriptLayerStatesByName[name] = state;
-        public void SetPhysicsLayerState(string name, LayerStates state) => _physicsLayerStatesByName[name] = state;
-        public void SetSelectLayerState(string name, LayerStates state) => _selectLayerStatesByName[name] = state;
+            throw new ArgumentOutOfRangeException("Could not handle layerType " + layerType);
+        }
 
         public IEnumerable<EntityLayer> GetLayers(int entityID) => _layersByName.Values.Where(l => l.Contains(entityID));
 

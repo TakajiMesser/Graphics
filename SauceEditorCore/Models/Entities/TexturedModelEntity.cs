@@ -6,7 +6,9 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Utilities;
 using System;
+using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Entities
 {
@@ -34,8 +36,12 @@ namespace SauceEditorCore.Models.Entities
         }
 
         public TexturePaths TexturePaths { get; }
-        public Material Material { get; private set; }
-        public TextureMapping? TextureMapping { get; private set; }
+
+        public IEnumerable<Material> Materials => CurrentMaterial.Yield();
+        public IEnumerable<TextureMapping?> TextureMappings => CurrentTextureMapping.Yield();
+
+        public Material CurrentMaterial { get; private set; }
+        public TextureMapping? CurrentTextureMapping { get; private set; }
 
         public abstract Vector3 XDirection { get; }
         public abstract Vector3 YDirection { get; }
@@ -64,15 +70,15 @@ namespace SauceEditorCore.Models.Entities
             TextureTransformed?.Invoke(this, new TextureTransformEventArgs(ID, Vector2.Zero, 0.0f, new Vector2(x, y)));
         }
 
-        public void AddMaterial(Material material) => Material = material;
+        public void AddMaterial(Material material) => CurrentMaterial = material;
 
-        public void AddTextureMapping(TextureMapping? textureMapping) => TextureMapping = textureMapping;
+        public void AddTextureMapping(TextureMapping? textureMapping) => CurrentTextureMapping = textureMapping;
 
         public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
         {
-            if (TextureMapping.HasValue)
+            if (CurrentTextureMapping.HasValue)
             {
-                program.BindTextures(textureProvider, TextureMapping.Value);
+                program.BindTextures(textureProvider, CurrentTextureMapping.Value);
             }
             else
             {
@@ -83,11 +89,11 @@ namespace SauceEditorCore.Models.Entities
         public override void SetUniforms(ShaderProgram program)
         {
             base.SetUniforms(program);
-            Material.SetUniforms(program);
+            CurrentMaterial.SetUniforms(program);
         }
 
         public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
-            && Material.Equals(textureBinder.Material)
-            && TextureMapping.Equals(textureBinder.TextureMapping);
+            && CurrentMaterial.Equals(textureBinder.CurrentMaterial)
+            && CurrentTextureMapping.Equals(textureBinder.CurrentTextureMapping);
     }
 }

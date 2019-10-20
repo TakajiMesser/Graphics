@@ -1,5 +1,6 @@
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
+using SpiceEngineCore.Entities.Layers;
 
 namespace SauceEditor.ViewModels.Trees.Entities
 {

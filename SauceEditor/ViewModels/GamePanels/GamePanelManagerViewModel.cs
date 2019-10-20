@@ -4,14 +4,13 @@ using SauceEditor.ViewModels.Trees.Entities;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities.Layers;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Utilities;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -20,7 +19,7 @@ using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
-    public class GamePanelManagerViewModel : DockViewModel, ILayerSetter
+    public class GamePanelManagerViewModel : DockableViewModel, ILayerSetter
     {
         private GameLoader _gameLoader = new GameLoader();
 
@@ -30,8 +29,6 @@ namespace SauceEditor.ViewModels
 
         private Stopwatch _loadWatch = new Stopwatch();
         private int _loadTimeout = 300000;
-
-        public GamePanelManagerViewModel() : base(DockTypes.Game) => IsPlayable = true;
 
         public IDisplayProperties PropertyDisplayer { get; set; }
         public IDisplayEntities EntityDisplayer { get; set; }
@@ -55,6 +52,14 @@ namespace SauceEditor.ViewModels
 
         //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         //public event EventHandler<CommandEventArgs> CommandExecuted;
+
+        public void OnResolutionChanged()
+        {
+            if (GameManager == null)
+            {
+                GameManager = new GameManager(Resolution);
+            }
+        }
 
         public void OnTransformModeChanged()
         {
@@ -92,28 +97,28 @@ namespace SauceEditor.ViewModels
         public void EnableLayer(string layerName)
         {
             // If the layer is enabled, it means that these IDs will get included regardless if they show up in other layers
-            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
+            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Enabled);
         }
 
         public void DisableLayer(string layerName)
         {
             // If the layer is disabled, it means that these IDs will get excluded regardless if they show up in other layers
-            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
+            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
         }
 
         public void NeutralizeLayer(string layerName)
         {
             // If the layer is neutralized, it means that these IDs will be included UNLESS they are excluded in another layer
-            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Neutral);
+            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Neutral);
         }
 
         public void ClearLayer(string layerName)
         {
             // TODO - Remove entities from EntityManager tracking as well
             // Disable the layer and delay removing the entities
-            var entityIDs = GameManager.EntityManager.GetLayerEntityIDs(layerName).ToList();
+            var entityIDs = GameManager.EntityManager.LayerProvider.GetLayerEntityIDs(layerName).ToList();
 
-            GameManager.EntityManager.SetLayerState(layerName, LayerStates.Disabled);
+            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
             GameManager.EntityManager.ClearLayer(layerName);
             //PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
 
@@ -159,10 +164,10 @@ namespace SauceEditor.ViewModels
             //GameManager.EntityManager.AddEntities(modelEntities);
             GameManager.EntityManager.EntitiesAdded += (s, args) =>
             {
-                GameManager.EntityManager.AddEntitiesToLayer(layerName, args.Builders.Select(b => b.Item1));
-
                 foreach (var builder in args.Builders)
                 {
+                    GameManager.EntityManager.LayerProvider.AddToLayer(layerName, builder.Item1);
+
                     if (builder.Item2 is IRenderableBuilder renderableBuilder)
                     {
                         var renderable = renderableBuilder.ToRenderable();
@@ -181,9 +186,9 @@ namespace SauceEditor.ViewModels
             };
 
             // Add these entities to a new layer, enable it, and disable all other layers
-            if (!GameManager.EntityManager.ContainsLayer(layerName))
+            if (!GameManager.EntityManager.LayerProvider.ContainsLayer(layerName))
             {
-                GameManager.EntityManager.AddLayer(layerName);
+                GameManager.EntityManager.LayerProvider.AddLayer(layerName);
             }
 
             GameManager.EntityManager.AddEntities(entityBuilders);
@@ -211,17 +216,25 @@ namespace SauceEditor.ViewModels
             //SelectionManager.SetSelectableEntities(entities);
         }
 
-        public void SelectEntities(IEnumerable<IEntity> entities) => throw new NotImplementedException();// SelectionManager.SelectEntities(entities);
+        public void SelectEntities(IEnumerable<int> ids)
+        {
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(ids);
+            if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(ids);
+            if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(ids);
+            if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(ids);
+
+            CenterView();
+        }
 
         private void UpdatedSelection(IEnumerable<IEntity> entities)
         {
             //SelectedEntities = MapManager.GetEditorEntities(entities).ToList();
             PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
 
-            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(entities);
-            if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(entities);
-            if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(entities);
-            if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(entities);
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Panel.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.X) XViewModel.Panel.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Y) YViewModel.Panel.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Z) ZViewModel.Panel.SelectEntities(entities.Select(e => e.ID));
 
             if (entities.Any())
             {
@@ -308,7 +321,7 @@ namespace SauceEditor.ViewModels
 
         private async void LoadAsync()
         {
-            GameManager = new GameManager(Resolution);
+            //GameManager = new GameManager(Resolution);
             GameManager.LoadFromMap(MapComponent.Map);
 
             // TODO - Make these less janky...

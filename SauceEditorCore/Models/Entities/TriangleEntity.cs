@@ -3,7 +3,6 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System.Linq;
@@ -18,15 +17,8 @@ namespace SauceEditorCore.Models.Entities
 
         public TriangleEntity(ModelTriangle modelTriangle, TexturePaths texturePaths) : base(modelTriangle, texturePaths) { }
 
-        public override void SetUniforms(ShaderProgram program)
-        {
-            base.SetUniforms(program);
-            Material.SetUniforms(program);
-        }
-
-        public override bool CompareUniforms(IEntity entity) => entity is TriangleEntity triangleEntity
-            && Material.Equals(triangleEntity.Material)
-            && TextureMapping.Equals(triangleEntity.TextureMapping);
+        public override bool CompareUniforms(IEntity entity) => entity is TriangleEntity
+            && base.CompareUniforms(entity);
 
         public override IRenderable ToRenderable()
         {

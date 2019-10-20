@@ -1,10 +1,5 @@
-﻿using SauceEditor.Models;
-using SauceEditor.ViewModels.Docks;
-using SauceEditor.Views.Factories;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Maps;
+﻿using SauceEditor.Views.Factories;
 using System;
-using System.Windows.Controls;
 using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Scripts
@@ -12,7 +7,7 @@ namespace SauceEditor.Views.Scripts
     /// <summary>
     /// Interaction logic for ScriptView.xaml
     /// </summary>
-    public partial class ScriptView : LayoutAnchorable, IHaveDockViewModel, IFile
+    public partial class ScriptView : LayoutAnchorable, IFile
     {
         public EventHandler<ScriptEventArgs> Saved;
 
@@ -21,8 +16,6 @@ namespace SauceEditor.Views.Scripts
             InitializeComponent();
             ViewModel.Filer = this;
         }
-
-        public DockViewModel GetViewModel() => ViewModel;
 
         public void Load(string filePath)
         {

@@ -3,7 +3,6 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System.Linq;
@@ -18,33 +17,13 @@ namespace SauceEditorCore.Models.Entities
 
         public MeshEntity(ModelMesh modelMesh, TexturePaths texturePaths) : base(modelMesh, texturePaths) { }
 
-        public override void SetUniforms(ShaderProgram program)
-        {
-            //base.SetUniforms(program);
-            base.SetUniforms(program);
-            //_modelMatrix.Set(program);
-            Material.SetUniforms(program);
-        }
-
-        public override bool CompareUniforms(IEntity entity) => entity is MeshEntity shapeEntity
-            && Material.Equals(shapeEntity.Material)
-            && TextureMapping.Equals(shapeEntity.TextureMapping);
+        public override bool CompareUniforms(IEntity entity) => entity is MeshEntity
+            && base.CompareUniforms(entity);
 
         public override IRenderable ToRenderable()
         {
             var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();
-
-            /*if (meshVertices.Any(v => v.IsAnimated))
-            {
-                var vertices = meshBuild.GetVertices().Select(v => v.ToJointVertex3D());
-                return new Mesh<JointVertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
-            }
-            else
-            {
-                var vertices = meshBuild.GetVertices().Select(v => v.ToVertex3D());
-                return new Mesh<Vertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
-            }*/
 
             var mesh = meshVertices.Any(v => v.IsAnimated)
                 ? (IMesh)new Mesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
@@ -52,12 +31,6 @@ namespace SauceEditorCore.Models.Entities
 
             mesh.Transform(_modelMatrix.WorldTransform);
             return mesh;
-
-            /*var vertices = meshVertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();
-            var triangleIndices = meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList();
-
-            mesh.Transform(_modelMatrix.Matrix);
-            return new Mesh<Vertex3D>(vertices, triangleIndices);*/
         }
     }
 }

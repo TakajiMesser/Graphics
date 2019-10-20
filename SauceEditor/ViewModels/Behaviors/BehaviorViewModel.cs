@@ -1,10 +1,9 @@
 using SauceEditor.ViewModels.Docks;
-using SpiceEngine.Maps;
 
 namespace SauceEditor.ViewModels.Behaviors
 {
-    public class BehaviorViewModel : DockViewModel
+    public class BehaviorViewModel : DockableViewModel
     {
-        public BehaviorViewModel() : base(DockTypes.Game) { }
+        
     }
 }

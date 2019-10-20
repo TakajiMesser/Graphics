@@ -8,7 +8,7 @@ namespace SpiceEngine.Entities.Volumes
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Volume : Entity, IRotate, IScale
+    public class Volume : Entity, IVolume
     {
         public Quaternion Rotation
         {
@@ -21,13 +21,6 @@ namespace SpiceEngine.Entities.Volumes
             get => _modelMatrix.Scale;
             set => _modelMatrix.Scale = value;
         }
-
-        public Volume Duplicate() => new Volume()
-        {
-            Position = Position,
-            Rotation = Rotation,
-            Scale = Scale
-        };
 
         //public void Load() => Mesh.Load();
         //public void Draw() => Mesh.Draw();

@@ -3,6 +3,7 @@ using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Entities.Layers;
 using SpiceEngine.Entities.Volumes;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Utilities;
 using System;
@@ -15,12 +16,8 @@ namespace SpiceEngine.Entities
 {
     public class EntityManager : IEntityProvider
     {
-        private LayerManager _layerManager = new LayerManager();
-
         private List<IEntity> _entities = new List<IEntity>();
-        private List<EntityTypes?> _entityTypes = new List<EntityTypes?>();
-        //private Dictionary<int, IEntity> _entitiesByID = new Dictionary<int, IEntity>();
-        //private Dictionary<int, EntityTypes> _entityTypeByID = new Dictionary<int, EntityTypes>();
+        private Dictionary<string, INamedEntity> _entitiesByName = new Dictionary<string, INamedEntity>();
         private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
 
         private ConcurrentDictionary<int, IEntityBuilder> _buildersByID = new ConcurrentDictionary<int, IEntityBuilder>();
@@ -31,14 +28,12 @@ namespace SpiceEngine.Entities
         private object _availableIDLock = new object();
 
         public List<IActor> Actors { get; } = new List<IActor>();
-        public List<Brush> Brushes { get; } = new List<Brush>();
-        public List<Volume> Volumes { get; } = new List<Volume>();
+        public List<IBrush> Brushes { get; } = new List<IBrush>();
+        public List<IVolume> Volumes { get; } = new List<IVolume>();
         public List<ILight> Lights { get; } = new List<ILight>();
+        public List<IUIControl> Controls { get; } = new List<IUIControl>();
 
-        public IEnumerable<int> EntityRenderIDs => _layerManager.EntityRenderIDs;
-        public IEnumerable<int> EntityScriptIDs => _layerManager.EntityScriptIDs;
-        public IEnumerable<int> EntityPhysicsIDs => _layerManager.EntityPhysicsIDs;
-        public IEnumerable<int> EntitySelectIDs => _layerManager.EntitySelectIDs;
+        public ILayerProvider LayerProvider { get; } = new LayerManager();
 
         public event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         public event EventHandler<IDEventArgs> EntitiesRemoved;
@@ -46,7 +41,7 @@ namespace SpiceEngine.Entities
         public void ClearEntities()
         {
             _entities.Clear();
-            _entityTypes.Clear();
+            _entitiesByName.Clear();
             _removedIDs.Clear();
 
             lock (_availableIDLock)
@@ -58,6 +53,7 @@ namespace SpiceEngine.Entities
             Brushes.Clear();
             Volumes.Clear();
             Lights.Clear();
+            Controls.Clear();
         }
 
         public IEntity GetEntity(int id)
@@ -74,6 +70,12 @@ namespace SpiceEngine.Entities
             throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
         }
 
+        public INamedEntity GetEntity(string name)
+        {
+            if (!_entitiesByName.ContainsKey(name)) throw new KeyNotFoundException("No entity found for name " + name);
+            return _entitiesByName[name];
+        }
+
         public IEntity GetEntityOrDefault(int id) => id <= _entities.Count ? _entities[id - 1] : null;
 
         public IEnumerable<IEntity> GetEntities(IEnumerable<int> ids)
@@ -82,28 +84,6 @@ namespace SpiceEngine.Entities
             {
                 yield return GetEntity(id);
             }
-        }
-
-        public EntityTypes GetEntityType(int id)
-        {
-            if (id <= _entityTypes.Count)
-            {
-                var entityType = _entityTypes[id - 1];
-                if (entityType.HasValue)
-                {
-                    return entityType.Value;
-                }
-            }
-
-            throw new KeyNotFoundException("Could not find any GameEntity with ID " + id);
-        }
-
-        public IActor GetActor(string name)
-        {
-            var actor = Actors.FirstOrDefault(a => a.Name == name);
-            if (actor == null) throw new KeyNotFoundException("No actor found for name " + name);
-
-            return actor;
         }
 
         public void AddEntities(IEnumerable<IEntityBuilder> entityBuilders)
@@ -129,44 +109,18 @@ namespace SpiceEngine.Entities
             //EntitiesAdded?.Invoke(this, new IDEventArgs(entities.Select(e => e.ID)));
         }
 
-        public void AddLayer(string layerName) => _layerManager.AddLayer(layerName);
-
-        public bool ContainsLayer(string layerName) => _layerManager.ContainsLayer(layerName);
-
-        public void AddEntitiesToLayer(string layerName, IEnumerable<int> entityIDs)
-        {
-            foreach (var id in entityIDs)
-            {
-                _layerManager.AddToLayer(layerName, id);
-            }
-        }
-
-        public IEnumerable<int> GetLayerEntityIDs(string layerName) => _layerManager.GetLayerEntityIDs(layerName);
-
-        public void SetLayerState(string name, LayerStates state)
-        {
-            _layerManager.SetPhysicsLayerState(name, state);
-            _layerManager.SetRenderLayerState(name, state);
-            _layerManager.SetScriptLayerState(name, state);
-            _layerManager.SetSelectLayerState(name, state);
-        }
-
         public void ClearLayer(string layerName)
         {
             // TODO - We need to ensure that these entity ID's are marked for deletion but maybe not yet deleted,
             //        because the RenderManager could be in the middle of drawing a batch
-            foreach (var id in _layerManager.GetLayerEntityIDs(layerName))
+            foreach (var id in LayerProvider.GetLayerEntityIDs(layerName))
             {
                 RemoveEntityByID(id);
-                _layerManager.RootLayer.Remove(id);
+                LayerProvider.RemoveFromLayer(LayerManager.ROOT_LAYER_NAME, id);
             }
 
-            _layerManager.ClearLayer(layerName);
+            LayerProvider.ClearLayer(layerName);
         }
-
-        public void SetRenderLayerState(string name, LayerStates state) => _layerManager.SetRenderLayerState(name, state);
-
-        public void SetSelectLayerState(string name, LayerStates state) => _layerManager.SetSelectLayerState(name, state);
 
         public int AddEntity(IEntityBuilder entityBuilder) => AddEntity(entityBuilder.ToEntity());
 
@@ -196,7 +150,6 @@ namespace SpiceEngine.Entities
                             _nextAvailableID += nReservedEntities;
 
                             _entities.PadTo(null, nReservedEntities);
-                            _entityTypes.PadTo(null, nReservedEntities);
                         }
                     }
                 }
@@ -216,41 +169,21 @@ namespace SpiceEngine.Entities
 
         public void LoadEntity(int id)
         {
-            var a = 3;
-            if (id == 13)
-            {
-                a = 4;
-            }
-
             if (_buildersByID.TryGetValue(id, out IEntityBuilder builder))
             {
                 var entity = builder.ToEntity();
                 entity.ID = id;
 
-                _layerManager.RootLayer.Add(id);
+                LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, id);
                 _entities[id - 1] = entity;
 
-                switch (entity)
+                if (entity is INamedEntity namedEntity)
                 {
-                    case Actor actor:
-                        if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
-                        if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
-                        Actors.Add(actor);
-                        _entityTypes[entity.ID - 1] = actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor;
-                        break;
-                    case Brush brush:
-                        Brushes.Add(brush);
-                        _entityTypes[entity.ID - 1] = EntityTypes.Brush;
-                        break;
-                    case Volume volume:
-                        Volumes.Add(volume);
-                        _entityTypes[entity.ID - 1] = EntityTypes.Volume;
-                        break;
-                    case ILight light:
-                        Lights.Add(light);
-                        _entityTypes[entity.ID - 1] = EntityTypes.Light;
-                        break;
+                    if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
+                    if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
                 }
+
+                AddToList(entity);
             }
         }
 
@@ -261,29 +194,15 @@ namespace SpiceEngine.Entities
                 var id = builderID.Item1;
                 var entity = builderID.Item2.ToEntity();
 
-                _layerManager.RootLayer.Add(id);
+                LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, id);
 
-                switch (entity)
+                if (entity is INamedEntity namedEntity)
                 {
-                    case Actor actor:
-                        if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
-                        if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
-                        Actors.Add(actor);
-                        _entityTypes[entity.ID - 1] = actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor;
-                        break;
-                    case Brush brush:
-                        Brushes.Add(brush);
-                        _entityTypes[entity.ID - 1] = EntityTypes.Brush;
-                        break;
-                    case Volume volume:
-                        Volumes.Add(volume);
-                        _entityTypes[entity.ID - 1] = EntityTypes.Volume;
-                        break;
-                    case ILight light:
-                        Lights.Add(light);
-                        _entityTypes[entity.ID - 1] = EntityTypes.Light;
-                        break;
+                    if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
+                    if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
                 }
+
+                AddToList(entity);
             }
         }
 
@@ -297,57 +216,49 @@ namespace SpiceEngine.Entities
                 entity.ID = id;
             }
 
-            _layerManager.RootLayer.Add(entity.ID);
+            LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, entity.ID);
 
-            switch (entity)
+            if (entity is INamedEntity namedEntity)
             {
-                case Actor actor:
-                    if (string.IsNullOrEmpty(actor.Name)) throw new ArgumentException("Actor must have a name defined");
-                    if (Actors.Any(g => g.Name == actor.Name)) throw new ArgumentException("Actor must have a unique name");
-                    Actors.Add(actor);
-                    _entityTypes[entity.ID - 1] = actor is AnimatedActor ? EntityTypes.Joint : EntityTypes.Actor;
-                    break;
-                case Brush brush:
-                    Brushes.Add(brush);
-                    _entityTypes[entity.ID - 1] = EntityTypes.Brush;
-                    break;
-                case Volume volume:
-                    Volumes.Add(volume);
-                    _entityTypes[entity.ID - 1] = EntityTypes.Volume;
-                    break;
-                case ILight light:
-                    Lights.Add(light);
-                    _entityTypes[entity.ID - 1] = EntityTypes.Light;
-                    break;
+                if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
+                if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
             }
+
+            AddToList(entity);
 
             return entity.ID;
         }
 
-        public IEntity DuplicateEntity(IEntity entity)
+        private void AddToList(IEntity entity)
         {
-            IEntity duplicateEntity = null;
-
             switch (entity)
             {
-                case Actor actor:
-                    var name = GetUniqueName(actor.Name);
-                    duplicateEntity = actor.Duplicate(name);
+                case IActor actor:
+                    Actors.Add(actor);
                     break;
-                case Brush brush:
-                    duplicateEntity = brush.Duplicate();
+                case IBrush brush:
+                    Brushes.Add(brush);
                     break;
-                case Volume volume:
-                    duplicateEntity = volume.Duplicate();
+                case IVolume volume:
+                    Volumes.Add(volume);
                     break;
                 case ILight light:
-                    /*duplicateEntity = new Light()
-                    {
-                        Position = light.Position,
-                        Rotation = light.Rotation,
-                        Scale = light.Scale,
-                    };*/
+                    Lights.Add(light);
                     break;
+                case IUIControl control:
+                    Controls.Add(control);
+                    break;
+            }
+        }
+
+        public IEntity DuplicateEntity(IEntity entity)
+        {
+            var duplicateEntity = EntityFactory.Duplicate(entity);
+
+            if (entity is INamedEntity namedEntity && duplicateEntity is INamedEntity duplicateNamedEntity)
+            {
+                var name = GetUniqueName(namedEntity.Name);
+                duplicateNamedEntity.Name = name;
             }
 
             AddEntity(duplicateEntity);
@@ -358,9 +269,6 @@ namespace SpiceEngine.Entities
         {
             var entity = GetEntity(id);
             _entities[id - 1] = null;
-            _entityTypes[id - 1] = null;
-            //_entitiesByID.Remove(id);
-            //_entityTypeByID.Remove(id);
 
             lock (_availableIDLock)
             {
@@ -369,36 +277,21 @@ namespace SpiceEngine.Entities
 
             switch (entity)
             {
-                case Actor actor:
+                case IActor actor:
                     Actors.Remove(actor);
                     break;
-                case Brush brush:
+                case IBrush brush:
                     Brushes.Remove(brush);
                     break;
-                case Volume volume:
+                case IVolume volume:
                     Volumes.Remove(volume);
                     break;
                 case ILight light:
                     Lights.Remove(light);
                     break;
-            }
-        }
-
-        public void LoadEntities()
-        {
-            foreach (var actor in Actors)
-            {
-                //actor.Load();
-            }
-
-            foreach (var brush in Brushes)
-            {
-                //brush.Load();
-            }
-
-            foreach (var volume in Volumes)
-            {
-                //volume.Load();
+                case IUIControl control:
+                    Controls.Remove(control);
+                    break;
             }
         }
 
@@ -422,7 +315,7 @@ namespace SpiceEngine.Entities
         private string GetUniqueName(string name)
         {
             // Check if this name is already taken
-            if (Actors.Any(a => a.Name == name))
+            if (_entitiesByName.ContainsKey(name))
             {
                 var regex = new Regex("(?<Name>.+)_(?<Number>[0-9]+$)");
                 var match = regex.Match(name);

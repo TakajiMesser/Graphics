@@ -27,7 +27,7 @@ namespace SpiceEngine.Scripting
 
         public IEntityProvider GetEntityProvider() => _entityProvider;
         public IEntity GetEntity(int id) => _entityProvider.GetEntity(id);
-        public IActor GetActor(string name) => _entityProvider.GetActor(name);
+        public IActor GetActor(string name) => (IActor)_entityProvider.GetEntity(name);
 
         public bool HasStimuli(int entityID, Stimulus stimulus) => _stimulusProvider.GetStimuli(entityID).Contains(stimulus);
 

@@ -49,6 +49,19 @@ namespace SpiceEngine.Game
             switch (ViewType)
             {
                 case ViewTypes.Perspective:
+                    // Determine new yaw and pitch
+                    var lookDirection = (position - Camera.Position).Normalized();
+                    _pitch = (float)Math.Asin(lookDirection.Z);
+                    _yaw = ((float)Math.Atan2(lookDirection.Y, lookDirection.X) + MAX_YAW) % MAX_YAW;
+
+                    /*if (mouseWheelDelta != 0.0f)
+                    {
+                        var translation = lookDirection * mouseWheelDelta * 1.0f;
+                        Camera.Position -= translation;
+                    }*/
+
+                    CalculateTranslation(position);
+                    CalculateUp();
                     break;
                 case ViewTypes.X:
                     var translationX = new Vector3()

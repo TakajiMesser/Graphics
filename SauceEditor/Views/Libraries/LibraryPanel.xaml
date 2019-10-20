@@ -6,9 +6,6 @@
         xmlns:local="clr-namespace:SauceEditor.Views"
         xmlns:vm="clr-namespace:SauceEditor.ViewModels.Libraries"
         xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
-        xmlns:ml="clr-namespace:SauceEditorCore.Models.Libraries"
-        xmlns:cb="clr-namespace:SauceEditor.ViewModels.AttachedBehaviors"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         mc:Ignorable="d"
         Title="Library">
@@ -16,15 +13,6 @@
         <StackPanel.DataContext>
             <vm:LibraryPanelViewModel x:Name="ViewModel"/>
         </StackPanel.DataContext>
-
-        <!--<StackPanel.Resources>
-            <DataTemplate>
-                <StackPanel Orientation="Vertical">
-                    <Image Source="{Binding Path=PreviewIcon}"/>
-                    <TextBlock Text="{Binding Path=Name}"/>
-                </StackPanel>
-            </DataTemplate>
-        </StackPanel.Resources>-->
 
         <Label Name="ProjectType" FontSize="14"/>
         <Button Command="{Binding BackCommand}">BACK</Button>
@@ -35,24 +23,6 @@
         <Label FontSize="14">Sort Style</Label>
         <btns:ToggleEnumButton x:Name="SortStyleButton" Orientation="Horizontal" Value="{Binding Path=SortStyle, Mode=TwoWay}" />
 
-        <ListBox ItemsSource="{Binding Children}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
-            <ListBox.ItemTemplate>
-                <DataTemplate>
-                    <Button cb:MouseDoubleClick.Command="{Binding OpenCommand}">
-                        <StackPanel Orientation="Vertical">
-                            <Image Width="100" Height="100" Source="{Binding Path=PreviewIcon}"/>
-                            <TextBlock Text="{Binding Path=PathInfo.Name}"/>
-                        </StackPanel>
-                    </Button>
-                </DataTemplate>
-            </ListBox.ItemTemplate>
-            <ListBox.ItemsPanel>
-                <ItemsPanelTemplate>
-                    <WrapPanel IsItemsHost="True"/>
-                </ItemsPanelTemplate>
-            </ListBox.ItemsPanel>
-        </ListBox>
-
-        <!--<DataGrid Name="Grid" ItemsSource="{Binding Components}"/>-->
+        <local:ImageButtonList ItemsSource="{Binding Children}" />
     </StackPanel>
 </xcad:LayoutAnchorable>
