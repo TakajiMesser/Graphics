@@ -1,5 +1,7 @@
-﻿using SauceEditor.ViewModels;
+﻿using SauceEditor.Models;
+using SauceEditor.ViewModels;
 using SauceEditor.Views.Behaviors;
+using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
 using SauceEditor.Views.Libraries;
 using SauceEditor.Views.Properties;
@@ -7,7 +9,9 @@ using SauceEditor.Views.Scripts;
 using SauceEditor.Views.Tools;
 using SauceEditor.Views.Trees.Entities;
 using SauceEditor.Views.Trees.Projects;
+using SauceEditorCore.Models.Components;
 using System.Collections.Generic;
+using Component = SauceEditorCore.Models.Components.Component;
 
 namespace SauceEditor.Views
 {
@@ -23,8 +27,8 @@ namespace SauceEditor.Views
 
         // Center Panels
         private List<GamePanel> _gamePanels = new List<GamePanel>();
-        private List<ScriptView> _scriptViews = new List<ScriptView>();
-        private List<BehaviorView> _behaviorViews = new List<BehaviorView>();
+        private List<ScriptPanel> _scriptPanels = new List<ScriptPanel>();
+        private List<BehaviorPanel> _behaviorPanels = new List<BehaviorPanel>();
 
         // Right Panels
         private ProjectTreePanel _projectTreePanel;
@@ -38,6 +42,7 @@ namespace SauceEditor.Views
             _dockTracker = dockTracker;
 
             _mainWindowViewModel.DockTracker = _dockTracker;
+            _mainWindowViewModel.PanelFactory = this;
         }
 
         public void InitializePanels()
@@ -67,24 +72,6 @@ namespace SauceEditor.Views
             AddDefaultRightPanels();
         }
 
-        public void AddGamePanel(GamePanel gamePanel)
-        {
-            _gamePanels.Add(gamePanel);
-            _dockTracker.AddToCenterDock(gamePanel, gamePanel.ViewModel);
-        }
-
-        public void AddScriptView(ScriptView scriptView)
-        {
-            _scriptViews.Add(scriptView);
-            _dockTracker.AddToCenterDock(scriptView, scriptView.ViewModel);
-        }
-
-        public void AddBehaviorView(BehaviorView behaviorView)
-        {
-            _behaviorViews.Add(behaviorView);
-            _dockTracker.AddToCenterDock(behaviorView, behaviorView.ViewModel);
-        }
-
         public void OpenModelToolPanel()
         {
             if (!_dockTracker.ContainsLeftDock(_modelToolPanel?.ViewModel))
@@ -107,6 +94,115 @@ namespace SauceEditor.Views
             }
 
             _brushToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void CreateGamePanel(MapComponent mapComponent, Component component = null)
+        {
+            var gamePanel = new GamePanel()
+            {
+                Title = mapComponent.Name,
+                CanClose = true
+            };
+
+            gamePanel.ViewModel.EntityFactory = _mainWindowViewModel;
+
+            if (_mainWindowViewModel.EntityTreePanelViewModel != null)
+            {
+                _mainWindowViewModel.EntityTreePanelViewModel.LayerProvider = gamePanel.ViewModel.GameManager.EntityManager.LayerProvider;
+                gamePanel.ViewModel.EntityDisplayer = _mainWindowViewModel.EntityTreePanelViewModel;
+            }
+
+            gamePanel.ViewModel.UpdateFromModel(mapComponent);
+            gamePanel.IsActiveChanged += (s, args) => _mainWindowViewModel.PropertyViewModel.InitializeProperties(component ?? mapComponent);
+
+            _gamePanels.Add(gamePanel);
+            _dockTracker.AddToCenterDock(gamePanel, gamePanel.ViewModel);
+
+            if (component != null)
+            {
+                switch (component)
+                {
+                    case ModelComponent modelComponent:
+                        _mainWindowViewModel.ModelToolPanelViewModel.ModelComponent = modelComponent;
+                        _mainWindowViewModel.ModelToolPanelViewModel.LayerSetter = gamePanel.ViewModel;
+
+                        // We need to wait for the set view to load
+                        if (EditorSettings.Instance.DefaultView == ViewTypes.Perspective)
+                        {
+                            // TODO - This is mad janky, we are waiting for this specific panel to load before we trigger adding the appropriate entities
+                            gamePanel.ViewModel.PerspectiveViewModel.Control.PanelLoaded += (s, args) =>
+                            {
+                                _mainWindowViewModel.ModelToolPanelViewModel.OnModelToolTypeChanged();
+                            };
+                        }
+                        break;
+                }
+            }
+            else
+            {
+                // Because this is a plain ol' MapComponent, update the main view model reference
+                _mainWindowViewModel.GamePanelViewModel = gamePanel.ViewModel;
+            }
+
+            gamePanel.ViewModel.IsActive = true;
+        }
+
+        public void CreateScriptPanel(ScriptComponent scriptComponent)
+        {
+            var scriptPanel = new ScriptPanel()
+            {
+                Title = scriptComponent.Name,
+                CanClose = true
+            };
+            scriptPanel.ViewModel.UpdateFromModel(scriptComponent);
+
+            _scriptPanels.Add(scriptPanel);
+            _dockTracker.AddToCenterDock(scriptPanel, scriptPanel.ViewModel);
+
+            _mainWindowViewModel.ScriptPanelViewModel = scriptPanel.ViewModel;
+
+            scriptPanel.ViewModel.IsActive = true;
+        }
+
+        public void CreateBehaviorPanel(BehaviorComponent behaviorComponent)
+        {
+            var behaviorPanel = new BehaviorPanel()
+            {
+                Title = behaviorComponent.Name,
+                CanClose = true
+            };
+
+            _behaviorPanels.Add(behaviorPanel);
+            _dockTracker.AddToCenterDock(behaviorPanel, behaviorPanel.ViewModel);
+
+            _mainWindowViewModel.BehaviorPanelViewModel = behaviorPanel.ViewModel;
+
+            behaviorPanel.ViewModel.IsActive = true;
+
+            // Temporary measures...
+            /*if (_scriptView == null)
+            {
+                _scriptView = new ScriptView(filePath);
+            }
+
+            var anchorable = new LayoutAnchorable
+            {
+                Title = Path.GetFileNameWithoutExtension(filePath),
+                Content = _scriptView,
+                CanClose = true
+            };
+            anchorable.Closed += (s, args) =>
+            {
+                PlayButton.Visibility = Visibility.Hidden;
+                _map = null;
+            };
+            anchorable.AddToLayout(MainDockingManager, AnchorableShowStrategy.Most);
+            anchorable.DockAsDocument();*/
+
+            /* if (_behaviorView == null)
+            {
+                _behaviorView = new BehaviorView();
+            }*/
         }
 
         public void OpenProjectTreePanel()

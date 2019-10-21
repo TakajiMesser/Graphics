@@ -1,5 +1,6 @@
 using OpenTK;
 using SauceEditor.Utilities;
+using SauceEditor.Views.Custom;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
@@ -10,9 +11,11 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class EntityPropertyViewModel : ViewModel, IPropertyViewModel<EditorEntity>
+    public class EntityPropertyViewModel : PropertyViewModel<EditorEntity>, IPropertyViewModel
     {
         public string ID { get; private set; }
+
+        [HideIfNullProperty]
         public string Name { get; set; }
 
         [Category("Transforms")]
@@ -27,18 +30,17 @@ namespace SauceEditor.ViewModels.Properties
         [ExpandableObject]
         public VectorProperty Scale { get; set; }
 
-        public Color Color { get; set; }
-
-        private EditorEntity _editorEntity;
+        [HideIfNullProperty]
+        public Color? Color { get; set; }
 
         public void OnPositionChanged()
         {
             AddChild(Position, (s, args) =>
             {
-                if (_editorEntity != null)
+                if (Model != null)
                 {
-                    _editorEntity.Entity.Position = Position.ToVector3();
-                    _editorEntity.MapEntity.Position = Position.ToVector3();
+                    Model.Entity.Position = Position.ToVector3();
+                    Model.MapEntity.Position = Position.ToVector3();
                     InvokePropertyChanged(nameof(Position));
                 }
             });
@@ -48,10 +50,10 @@ namespace SauceEditor.ViewModels.Properties
         {
             AddChild(Rotation, (s, args) =>
             {
-                if (_editorEntity != null && _editorEntity.Entity is IRotate rotator)
+                if (Model != null && Model.Entity is IRotate rotator)
                 {
                     rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
-                    if (_editorEntity.MapEntity is IMapEntity3D mapEntity)
+                    if (Model.MapEntity is IMapEntity3D mapEntity)
                     {
                         mapEntity.Rotation = Rotation.ToVector3();
                     }
@@ -64,10 +66,10 @@ namespace SauceEditor.ViewModels.Properties
         {
             AddChild(Scale, (s, args) =>
             {
-                if (_editorEntity != null && _editorEntity.Entity is IScale scaler)
+                if (Model != null && Model.Entity is IScale scaler)
                 {
                     scaler.Scale = Scale.ToVector3();
-                    if (_editorEntity.MapEntity is IMapEntity3D mapEntity)
+                    if (Model.MapEntity is IMapEntity3D mapEntity)
                     {
                         mapEntity.Scale = Scale.ToVector3();
                     }
@@ -76,9 +78,8 @@ namespace SauceEditor.ViewModels.Properties
             });
         }
 
-        public void UpdateFromModel(EditorEntity editorEntity)
+        protected override void UpdatePropertiesFromModel(EditorEntity editorEntity)
         {
-            _editorEntity = editorEntity;
             if (editorEntity == null) return; // Yikes
 
             ID = editorEntity.Entity.ID.ToString();
@@ -110,6 +111,10 @@ namespace SauceEditor.ViewModels.Properties
             if (editorEntity.MapEntity is MapLight mapLight)
             {
                 Color = mapLight.Color.ToMediaColor();
+            }
+            else
+            {
+                Color = null;
             }
         }
     }

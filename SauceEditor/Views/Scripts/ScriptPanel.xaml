@@ -1,16 +1,16 @@
-﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Scripts.ScriptView"
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Scripts.ScriptPanel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:SauceEditor.Views.Scripts"
-             xmlns:vm="clr-namespace:SauceEditor.ViewModels"
+             xmlns:vm="clr-namespace:SauceEditor.ViewModels.Scripts"
              xmlns:xcae="http://icsharpcode.net/sharpdevelop/avalonedit"
              xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
             mc:Ignorable="d">
     <xcae:TextEditor Name="TextEditor" FontFamily="Consolas" SyntaxHighlighting="C#" FontSize="12pt">
         <xcae:TextEditor.DataContext>
-            <vm:ScriptViewModel x:Name="ViewModel"/>
+            <vm:ScriptPanelViewModel x:Name="ViewModel"/>
         </xcae:TextEditor.DataContext>
     </xcae:TextEditor>
 </xcad:LayoutAnchorable>

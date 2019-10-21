@@ -3,7 +3,7 @@ using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class MaterialPropertyViewModel : ViewModel, IPropertyViewModel<MaterialComponent>
+    public class MaterialPropertyViewModel : PropertyViewModel<MaterialComponent>, IPropertyViewModel
     {
         public string Name { get; set; }
 
@@ -17,13 +17,6 @@ namespace SauceEditor.ViewModels.Properties
         public VectorProperty Specular { get; set; }
 
         public float SpecularExponent { get; set; }
-
-        private MaterialComponent _materialComponent;
-
-        public void UpdateFromModel(MaterialComponent materialComponent)
-        {
-            _materialComponent = materialComponent;
-        }
 
         /*public void OnPositionChanged()
         {

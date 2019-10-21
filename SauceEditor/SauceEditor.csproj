@@ -216,6 +216,7 @@
     <Compile Include="Models\EditorModel.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
+    <Compile Include="Utilities\ReflectionExtensions.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDrop.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDrag.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
@@ -239,9 +240,11 @@
     <Compile Include="ViewModels\Libraries\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
+    <Compile Include="ViewModels\Behaviors\BehaviorPanelViewModel.cs" />
     <Compile Include="ViewModels\Properties\IDisplayProperties.cs" />
+    <Compile Include="ViewModels\Properties\BooleanVisibilityConverter.cs" />
     <Compile Include="ViewModels\Properties\PropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\PropertyPanelViewModel.cs" />
     <Compile Include="ViewModels\Properties\IPropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\TexturePropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\MaterialPropertyViewModel.cs" />
@@ -269,13 +272,13 @@
     <Compile Include="ViewModels\Trees\Projects\ComponentViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\ProjectViewModel.cs" />
     <Compile Include="ViewModels\Trees\Projects\ProjectTreePanelViewModel.cs" />
-    <Compile Include="ViewModels\ScriptViewModel.cs" />
+    <Compile Include="ViewModels\Scripts\ScriptPanelViewModel.cs" />
     <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\TransformPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
-    <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
-      <DependentUpon>BehaviorView.xaml</DependentUpon>
+    <Compile Include="Views\Behaviors\BehaviorPanel.xaml.cs">
+      <DependentUpon>BehaviorPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Buttons\InverseBooleanConverter.cs" />
     <Compile Include="Views\Buttons\EnumToStringConverter.cs" />
@@ -283,14 +286,14 @@
     <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
       <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\Custom\PropertyConversionAttribute.cs" />
+    <Compile Include="Views\Custom\HideIfNullPropertyAttribute.cs" />
+    <Compile Include="Views\Custom\PropertyGrid.cs" />
     <Compile Include="Views\Docks\IDockTracker.cs" />
     <Compile Include="Views\Docks\DockTracker.cs" />
     <Compile Include="Views\Factories\IEntityFactory.cs" />
     <Compile Include="Views\Factories\IMainView.cs" />
     <Compile Include="Views\Factories\IComponentFactory.cs" />
-    <Compile Include="Views\Factories\IHaveViewModel.cs" />
-    <Compile Include="Views\Factories\IGameDockFactory.cs" />
-    <Compile Include="Views\Factories\IMainViewFactory.cs" />
     <Compile Include="Views\Factories\IFile.cs" />
     <Compile Include="Views\Factories\IWindow.cs" />
     <Compile Include="Views\Factories\IWindowFactory.cs" />
@@ -301,11 +304,11 @@
       <DependentUpon>GamePane.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
-    <Compile Include="Views\ImageButtonList.cs" />
+    <Compile Include="Views\Custom\ImageButtonList.cs" />
     <Compile Include="Views\Libraries\LibraryPanel.xaml.cs">
       <DependentUpon>LibraryPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\IPanelFactory.cs" />
+    <Compile Include="Views\Factories\IPanelFactory.cs" />
     <Compile Include="Views\PanelManager.cs" />
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
@@ -322,8 +325,8 @@
     </Compile>
     <Compile Include="Views\Trees\Projects\ItemSelectedEventArgs.cs" />
     <Compile Include="Views\Scripts\ScriptEventArgs.cs" />
-    <Compile Include="Views\Scripts\ScriptView.xaml.cs">
-      <DependentUpon>ScriptView.xaml</DependentUpon>
+    <Compile Include="Views\Scripts\ScriptPanel.xaml.cs">
+      <DependentUpon>ScriptPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
@@ -362,7 +365,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Behaviors\BehaviorView.xaml">
+    <Page Include="Views\Behaviors\BehaviorPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -398,7 +401,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Scripts\ScriptView.xaml">
+    <Page Include="Views\Scripts\ScriptPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

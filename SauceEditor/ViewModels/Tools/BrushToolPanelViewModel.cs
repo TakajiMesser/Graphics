@@ -1,5 +1,6 @@
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Tools.Primitives;
+using SauceEditor.Views.Factories;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
@@ -17,6 +18,8 @@ namespace SauceEditor.ViewModels.Tools
 
             Children = new ObservableCollection<Primitive>(_children);
         }
+
+        public IEntityFactory EntityFactory { get; set; }
 
         public ObservableCollection<Primitive> Children { get; set; }
     }

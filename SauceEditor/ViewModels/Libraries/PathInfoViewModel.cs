@@ -1,4 +1,4 @@
-using SauceEditor.Views;
+using SauceEditor.Views.Custom;
 using SauceEditorCore.Models.Libraries;
 using System.Windows.Media.Imaging;
 

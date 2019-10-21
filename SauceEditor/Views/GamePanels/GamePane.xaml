@@ -83,7 +83,7 @@
                     </Popup>
                 </Expander>
                 <Separator/>
-                <btns:ToggleEnumButton x:Name="ViewModeButton" Orientation="Horizontal" Value="{Binding Path=Panel.RenderMode, Mode=TwoWay}" />
+                <btns:ToggleEnumButton x:Name="ViewModeButton" Orientation="Horizontal" Value="{Binding Path=Control.RenderMode, Mode=TwoWay}" />
                 <Separator/>
                 <ToggleButton Name="GridButton" Content="Grid" IsChecked="{Binding ShowGrid}"/>
             </ToolBar>

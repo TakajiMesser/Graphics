@@ -4,6 +4,7 @@ using SauceEditor.Models.Components;
 using SauceEditor.ViewModels.Behaviors;
 using SauceEditor.ViewModels.Commands;
 using SauceEditor.ViewModels.Properties;
+using SauceEditor.ViewModels.Scripts;
 using SauceEditor.ViewModels.Tools;
 using SauceEditor.ViewModels.Trees.Entities;
 using SauceEditor.ViewModels.Trees.Projects;
@@ -23,7 +24,6 @@ namespace SauceEditor.ViewModels
     {
         public IWindowFactory WindowFactory { get; set; }
         //public IMainViewFactory MainViewFactory { get; set; }
-        public IGameDockFactory GameDockFactory { get; set; }
 
         public CommandStack CommandStack { get; private set; } = new CommandStack();
 
@@ -34,6 +34,7 @@ namespace SauceEditor.ViewModels
         public List<ViewModel> SideDockViewModels { get; set; } = new List<ViewModel>();*/
 
         public IDockTracker DockTracker { get; set; }
+        public IPanelFactory PanelFactory { get; set; }
 
         public string Title { get; set; }
         public bool IsPlayable { get; set; }
@@ -41,7 +42,7 @@ namespace SauceEditor.ViewModels
 
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
         public LibraryPanelViewModel LibraryPanelViewModel { get; set; }
-        public PropertyViewModel PropertyViewModel { get; set; }
+        public PropertyPanelViewModel PropertyViewModel { get; set; }
         public EntityTreePanelViewModel EntityTreePanelViewModel { get; set; }
 
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
@@ -49,8 +50,8 @@ namespace SauceEditor.ViewModels
         public BrushToolPanelViewModel BrushToolPanelViewModel { get; set; }
 
         public GamePanelViewModel GamePanelViewModel { get; set; }
-        public BehaviorViewModel BehaviorViewModel { get; set; }
-        public ScriptViewModel ScriptViewModel { get; set; }
+        public BehaviorPanelViewModel BehaviorPanelViewModel { get; set; }
+        public ScriptPanelViewModel ScriptPanelViewModel { get; set; }
 
         public SettingsWindowViewModel SettingsWindowViewModel { get; set; }
 
@@ -125,9 +126,9 @@ namespace SauceEditor.ViewModels
             }*/
         }
 
-        public void OnGamePanelManagerViewModelChanged()
+        public void OnGamePanelViewModelChanged()
         {
-            GamePanelViewModel.PropertyDisplayer = PropertyViewModel;
+            GamePanelViewModel.PropertyDisplayer = PropertyViewModel.PropertyDisplayer;
 
             /*if (EntityTreePanelViewModel != null)
             {
@@ -213,7 +214,7 @@ namespace SauceEditor.ViewModels
 
             Title = mapComponent.Name + " - SauceEditor";
 
-            GamePanelViewModel = (GamePanelViewModel)GameDockFactory.CreateGamePanel(mapComponent);
+            PanelFactory.CreateGamePanel(mapComponent);
             //EntityTreePanelViewModel.LayerProvider = GamePanelManagerViewModel.GameManager.EntityManager.LayerProvider;
             //GamePanelManagerViewModel.EntityDisplayer = EntityTreePanelViewModel;
             //GamePanelManagerViewModel.EntityFactory = this;
@@ -248,7 +249,7 @@ namespace SauceEditor.ViewModels
             Title = modelComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateModelMap(modelComponent);
 
-            GamePanelViewModel = (GamePanelViewModel)GameDockFactory.CreateGamePanel(mapComponent, modelComponent);
+            PanelFactory.CreateGamePanel(mapComponent, modelComponent);
             GamePanelViewModel.ViewType = ViewTypes.Perspective;
         }
 
@@ -257,7 +258,7 @@ namespace SauceEditor.ViewModels
             var behaviorComponent = new BehaviorComponent(filePath);
 
             Title = behaviorComponent.Name + " - SauceEditor";
-            BehaviorViewModel = (BehaviorViewModel)GameDockFactory.CreateBehaviorView(behaviorComponent);
+            PanelFactory.CreateBehaviorPanel(behaviorComponent);
         }
 
         public void OpenTexture(string filePath)
@@ -276,7 +277,7 @@ namespace SauceEditor.ViewModels
             Title = textureComponent.Name + " - " + "SauceEditor";
             var mapComponent = MapBuilder.GenerateTextureMap(textureComponent);
 
-            GamePanelViewModel = (GamePanelViewModel)GameDockFactory.CreateGamePanel(mapComponent, textureComponent);
+            PanelFactory.CreateGamePanel(mapComponent, textureComponent);
             GamePanelViewModel.ViewType = ViewTypes.Perspective;
             GamePanelViewModel.PerspectiveViewModel.Control.RenderMode = SpiceEngine.Rendering.RenderModes.Diffuse;
 
@@ -295,7 +296,7 @@ namespace SauceEditor.ViewModels
             Title = materialComponent.Name + " - SauceEditor";
             var mapComponent = MapBuilder.GenerateMaterialMap(materialComponent);
 
-            GamePanelViewModel = (GamePanelViewModel)GameDockFactory.CreateGamePanel(mapComponent, materialComponent);
+            PanelFactory.CreateGamePanel(mapComponent, materialComponent);
             GamePanelViewModel.ViewType = ViewTypes.Perspective;
         }
 
@@ -309,7 +310,7 @@ namespace SauceEditor.ViewModels
             var scriptComponent = new ScriptComponent(filePath);
 
             Title = scriptComponent.Name + " - SauceEditor";
-            ScriptViewModel = (ScriptViewModel)GameDockFactory.CreateScriptView(scriptComponent);
+            PanelFactory.CreateScriptPanel(scriptComponent);
         }
 
         public void CreateLight()

@@ -1,74 +1,89 @@
-using SauceEditor.Models;
-using SauceEditor.Models.Components;
-using SauceEditor.ViewModels.Docks;
-using SauceEditorCore.Models.Components;
-using SauceEditorCore.Models.Entities;
+using SauceEditor.Utilities;
+using SauceEditor.Views.Custom;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class PropertyViewModel : DockableViewModel, /*ISideDockViewModel, */IDisplayProperties
+    public abstract class PropertyViewModel<T> : ViewModel
     {
-        public IPropertyViewModel Properties { get; set; }
-        //public bool IsActive { get; set; }
+        private IDisplayProperties _propertyDisplayer;
 
-        public void OnPropertiesChanged() => AddChild((ViewModel)Properties, (s, args) => InvokePropertyChanged(nameof(Properties)));
+        [Browsable(false)]
+        public T Model { get; private set; }
 
-        public void InitializeProperties(Component component)
+        [Browsable(false)]
+        public bool HasValue => Model != null;
+
+        public void SetPropertyDisplayer(IDisplayProperties propertyDisplayer)
         {
-            switch (component)
-            {
-                case MapComponent mapComponent:
-                    Properties = new EntityPropertyViewModel();
-                    UpdateFromModel(null);
-                    break;
-                case MaterialComponent materialComponent:
-                    Properties = new MaterialPropertyViewModel();
-                    UpdateFromModel(component);
-                    break;
-                case TextureComponent textureComponent:
-                    Properties = new TexturePropertyViewModel();
-                    UpdateFromModel(component);
-                    break;
-            }
+            _propertyDisplayer = propertyDisplayer;
+            InitializeProperties();
         }
 
-        public void UpdateFromEntity(EditorEntity entity)
+        public void UpdateFromModel(T model)
         {
-            if (Properties is EntityPropertyViewModel entityPropertyViewModel)
-            {
-                entityPropertyViewModel.UpdateFromModel(entity);
+            Model = model;
+            UpdatePropertiesFromModel(model);
+        }
 
-                if (entity != null)
+        protected virtual void UpdatePropertiesFromModel(T model) { }
+
+        public virtual void OnPropertyChanged(string propertyName)
+        {
+            var propertyDisplayer = _propertyDisplayer;
+
+            if (propertyDisplayer != null)
+            {
+                var propertyInfo = GetType().GetProperty(propertyName);
+
+                if (propertyInfo != null)
                 {
-                    IsActive = true;
+                    HandleProperty(propertyDisplayer, propertyInfo);
+                }
+            }
+
+            InvokePropertyChanged(propertyName);
+        }
+
+        private void InitializeProperties()
+        {
+            var propertyDisplayer = _propertyDisplayer;
+
+            if (propertyDisplayer != null)
+            {
+                foreach (var propertyInfo in GetType().GetProperties())
+                {
+                    HandleProperty(propertyDisplayer, propertyInfo);
                 }
             }
         }
 
-        public void UpdateFromModel(object model)
+        private void HandleProperty(IDisplayProperties propertyDisplayer, PropertyInfo propertyInfo)
         {
-            /*if (model == null)
+            if (propertyInfo.HasCustomAttribute<HideIfNullPropertyAttribute>())
             {
-                // Find way to disable binding?
+                var propertyValue = propertyInfo.GetValue(this);
+
+                var visibility = propertyValue != null
+                    ? System.Windows.Visibility.Visible
+                    : System.Windows.Visibility.Collapsed;
+
+                propertyDisplayer.SetPropertyVisibility(propertyInfo.Name, visibility);
             }
-            else
-            {*/
-                switch (model)
-                {
-                    case EditorEntity editorEntity:
-                        if (Properties is EntityPropertyViewModel entityPropertyViewModel)
-                        {
-                            entityPropertyViewModel.UpdateFromModel(editorEntity);
-                        }
-                        break;
-                    case MaterialComponent materialComponent:
-                        ((MaterialPropertyViewModel)Properties).UpdateFromModel(materialComponent);
-                        break;
-                    case TextureComponent textureComponent:
-                        ((TexturePropertyViewModel)Properties).UpdateFromModel(textureComponent);
-                        break;
-                }
-            //}
+
+            /*var attribute = propertyInfo.GetCustomAttributes(typeof(HideIfNullPropertyAttribute), true).FirstOrDefault();
+
+            if (attribute is HideIfNullPropertyAttribute)
+            {
+                var propertyValue = propertyInfo.GetValue(this);
+
+                var visibility = propertyValue != null
+                    ? System.Windows.Visibility.Visible
+                    : System.Windows.Visibility.Collapsed;
+
+                propertyDisplayer.SetPropertyVisibility(propertyInfo.Name, visibility);
+            }*/
         }
     }
 }

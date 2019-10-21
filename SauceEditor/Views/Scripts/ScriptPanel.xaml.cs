@@ -5,13 +5,13 @@ using Xceed.Wpf.AvalonDock.Layout;
 namespace SauceEditor.Views.Scripts
 {
     /// <summary>
-    /// Interaction logic for ScriptView.xaml
+    /// Interaction logic for ScriptPanel.xaml
     /// </summary>
-    public partial class ScriptView : LayoutAnchorable, IFile
+    public partial class ScriptPanel : LayoutAnchorable, IFile
     {
         public EventHandler<ScriptEventArgs> Saved;
 
-        public ScriptView()
+        public ScriptPanel()
         {
             InitializeComponent();
             ViewModel.Filer = this;

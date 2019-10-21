@@ -4,11 +4,11 @@ using Xceed.Wpf.AvalonDock.Layout;
 namespace SauceEditor.Views.Behaviors
 {
     /// <summary>
-    /// Interaction logic for BehaviorView.xaml
+    /// Interaction logic for BehaviorPanel.xaml
     /// </summary>
-    public partial class BehaviorView : LayoutAnchorable
+    public partial class BehaviorPanel : LayoutAnchorable
     {
-        public BehaviorView()
+        public BehaviorPanel()
         {
             InitializeComponent();
 
