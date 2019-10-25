@@ -12,6 +12,7 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
@@ -80,13 +81,6 @@ namespace SpiceEngine.Rendering.Processing
             };
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
-        }
-
-        protected override void LoadBuffers()
-        {
-            _vertexBuffer.Bind();
-            _vertexArray.Load();
-            _vertexBuffer.Unbind();
 
             _vertexTexture = Texture.Load(Resources.vertex, false, false);
 
@@ -98,6 +92,19 @@ namespace SpiceEngine.Rendering.Processing
             _selectedSpotLightTexture = Texture.Load(Resources.selected_spot_light, false, false);
             _selectedDirectionalLightTexture = Texture.Load(Resources.selected_directional_light, false, false);
         }
+
+        protected override void LoadBuffers()
+        {
+            _vertexBuffer.Bind();
+            _vertexArray.Load();
+            _vertexBuffer.Unbind();
+        }
+
+        // TODO - Only load these textures in if we're in editor-mode
+        /*public void LoadBillboardTextures(ITextureProvider textureProvider)
+        {
+            textureProvider.AddTexture
+        }*/
 
         public void GeometryPass(ICamera camera, BatchManager batchManager)
         {
@@ -155,6 +162,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
+            _billboardProgram.SetUniform("overrideColor", Vector4.Zero);
 
             _billboardProgram.BindTexture(_pointLightTexture, "mainTexture", 0);
             DrawLights(lights.Where(l => l is PointLight));

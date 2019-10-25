@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SauceEditor.ViewModels.AttachedBehaviors
@@ -17,26 +16,26 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
 
         private static void CommandChanged(DependencyObject target, DependencyPropertyChangedEventArgs e)
         {
-            if (target is Control control)
+            if (target is UIElement uiElement)
             {
                 if (e.NewValue != null && e.OldValue == null)
                 {
-                    control.AllowDrop = true;
-                    control.Drop += OnDrop;
+                    uiElement.AllowDrop = true;
+                    uiElement.Drop += OnDrop;
                 }
                 else if (e.NewValue == null && e.OldValue != null)
                 {
-                    control.Drop -= OnDrop;
-                    control.AllowDrop = false;
+                    uiElement.Drop -= OnDrop;
+                    uiElement.AllowDrop = false;
                 }
             }
         }
 
         private static void OnDrop(object sender, DragEventArgs e)
         {
-            var control = sender as Control;
+            var dependencyObject = sender as DependencyObject;
 
-            var command = (ICommand)control.GetValue(CommandProperty);
+            var command = (ICommand)dependencyObject.GetValue(CommandProperty);
             command.Execute(e);
         }
     }

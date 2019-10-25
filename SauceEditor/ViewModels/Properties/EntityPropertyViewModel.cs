@@ -1,4 +1,5 @@
 using OpenTK;
+using PropertyChanged;
 using SauceEditor.Utilities;
 using SauceEditor.Views.Custom;
 using SauceEditorCore.Models.Entities;
@@ -20,14 +21,22 @@ namespace SauceEditor.ViewModels.Properties
 
         [Category("Transforms")]
         [ExpandableObject]
+        [PropagateChanges]
+        [DoNotCheckEquality]
         public VectorProperty Position { get; set; }
 
         [Category("Transforms")]
         [ExpandableObject]
+        [PropagateChanges]
+        [DoNotCheckEquality]
+        [HideIfNullProperty]
         public VectorProperty Rotation { get; set; }
 
         [Category("Transforms")]
         [ExpandableObject]
+        [PropagateChanges]
+        [DoNotCheckEquality]
+        [HideIfNullProperty]
         public VectorProperty Scale { get; set; }
 
         [HideIfNullProperty]
@@ -35,47 +44,37 @@ namespace SauceEditor.ViewModels.Properties
 
         public void OnPositionChanged()
         {
-            AddChild(Position, (s, args) =>
+            if (Model != null)
             {
-                if (Model != null)
-                {
-                    Model.Entity.Position = Position.ToVector3();
-                    Model.MapEntity.Position = Position.ToVector3();
-                    InvokePropertyChanged(nameof(Position));
-                }
-            });
+                Model.Entity.Position = Position.ToVector3();
+                Model.MapEntity.Position = Position.ToVector3();
+            }
         }
 
         public void OnRotationChanged()
         {
-            AddChild(Rotation, (s, args) =>
+            if (Model != null && Model.Entity is IRotate rotator)
             {
-                if (Model != null && Model.Entity is IRotate rotator)
+                rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
+
+                if (Model.MapEntity is IMapEntity3D mapEntity)
                 {
-                    rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
-                    if (Model.MapEntity is IMapEntity3D mapEntity)
-                    {
-                        mapEntity.Rotation = Rotation.ToVector3();
-                    }
-                    InvokePropertyChanged(nameof(Rotation));
+                    mapEntity.Rotation = Rotation.ToVector3();
                 }
-            });
+            }
         }
 
         public void OnScaleChanged()
         {
-            AddChild(Scale, (s, args) =>
+            if (Model != null && Model.Entity is IScale scaler)
             {
-                if (Model != null && Model.Entity is IScale scaler)
+                scaler.Scale = Scale.ToVector3();
+
+                if (Model.MapEntity is IMapEntity3D mapEntity)
                 {
-                    scaler.Scale = Scale.ToVector3();
-                    if (Model.MapEntity is IMapEntity3D mapEntity)
-                    {
-                        mapEntity.Scale = Scale.ToVector3();
-                    }
-                    InvokePropertyChanged(nameof(Scale));
+                    mapEntity.Scale = Scale.ToVector3();
                 }
-            });
+            }
         }
 
         protected override void UpdatePropertiesFromModel(EditorEntity editorEntity)

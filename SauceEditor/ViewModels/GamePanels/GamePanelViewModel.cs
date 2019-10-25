@@ -79,6 +79,7 @@ namespace SauceEditor.ViewModels
         private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
+            panelViewModel.EntityProvider = GameManager.EntityManager;
             panelViewModel.Control.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
             panelViewModel.Control.Load += (s, args) =>
             {
@@ -229,7 +230,7 @@ namespace SauceEditor.ViewModels
         private void UpdatedSelection(IEnumerable<IEntity> entities)
         {
             //SelectedEntities = MapManager.GetEditorEntities(entities).ToList();
-            PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
+            //PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
 
             if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(entities.Select(e => e.ID));
             if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(entities.Select(e => e.ID));
@@ -245,6 +246,8 @@ namespace SauceEditor.ViewModels
 
                 MapComponent.UpdateEntities(entities);
             }
+
+            PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
 
             //var editorEntities = MapManager.GetEditorEntities(entities);
             //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(editorEntities));

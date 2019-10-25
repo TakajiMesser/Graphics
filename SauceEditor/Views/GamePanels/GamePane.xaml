@@ -7,6 +7,7 @@
         xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
         xmlns:vm="clr-namespace:SauceEditor.ViewModels"
         xmlns:updowns="clr-namespace:SauceEditor.Views.UpDowns"
+        xmlns:cb="clr-namespace:SauceEditor.ViewModels.AttachedBehaviors"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
@@ -23,7 +24,7 @@
             </Style>
         </DockPanel.Resources>-->
     <xcad:LayoutAnchorable x:Name="Anchorable">
-        <DockPanel Name="DockPanel" Loaded="OnLoaded">
+        <DockPanel Name="DockPanel" Loaded="OnLoaded" cb:MouseDrop.Command="{Binding Path=DropCommand}">
             <DockPanel.DataContext>
                 <vm:GamePaneViewModel x:Name="ViewModel"></vm:GamePaneViewModel>
             </DockPanel.DataContext>

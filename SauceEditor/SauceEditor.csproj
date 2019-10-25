@@ -286,7 +286,7 @@
     <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
       <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Custom\PropertyConversionAttribute.cs" />
+    <Compile Include="Views\Custom\PropagateChangesAttribute.cs" />
     <Compile Include="Views\Custom\HideIfNullPropertyAttribute.cs" />
     <Compile Include="Views\Custom\PropertyGrid.cs" />
     <Compile Include="Views\Docks\IDockTracker.cs" />
@@ -305,6 +305,7 @@
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
     <Compile Include="Views\Custom\ImageButtonList.cs" />
+    <Compile Include="Views\GamePanels\IPosition.cs" />
     <Compile Include="Views\Libraries\LibraryPanel.xaml.cs">
       <DependentUpon>LibraryPanel.xaml</DependentUpon>
     </Compile>

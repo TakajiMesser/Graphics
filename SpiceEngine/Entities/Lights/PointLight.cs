@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using System;
@@ -9,7 +8,7 @@ namespace SpiceEngine.Entities.Lights
 {
     public class PointLight : Light<PLight>
     {
-        private float _radius;
+        private float _radius = 1.0f;
 
         public float Radius
         {

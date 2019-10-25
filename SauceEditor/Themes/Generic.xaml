@@ -33,7 +33,7 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type custom:IImageButton}">
-                    <Button cb:MouseDoubleClick.Command="{Binding Path=OpenCommand}">
+                    <Button cb:MouseDoubleClick.Command="{Binding Path=OpenCommand}" cb:MouseDrag.Command="{Binding Path=DragCommand}">
                         <StackPanel Orientation="Vertical">
                             <Image Width="100" Height="100" Source="{Binding Path=Icon}"/>
                             <TextBlock Text="{Binding Path=Name}"/>

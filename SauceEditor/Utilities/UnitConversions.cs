@@ -18,5 +18,9 @@ namespace SauceEditor.Utilities
         public static Vector2 ToVector2(this Vector vector) => new Vector2((float)vector.X, (float)vector.Y);
 
         public static Vector2 ToVector2(this Point point) => new Vector2((float)point.X, (float)point.Y);
+
+        public static System.Windows.Point ToWindowsPoint(this System.Drawing.Point point) => new Point(point.X, point.Y);
+
+        public static System.Drawing.Point ToDrawingPoint(this System.Windows.Point point) => new System.Drawing.Point((int)point.X, (int)point.Y);
     }
 }

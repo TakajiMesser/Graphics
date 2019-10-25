@@ -1,4 +1,6 @@
+using PropertyChanged;
 using SauceEditor.ViewModels.Docks;
+using SauceEditor.Views.Custom;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
 
@@ -7,12 +9,15 @@ namespace SauceEditor.ViewModels.Properties
     public class PropertyPanelViewModel : DockableViewModel
     {
         public IDisplayProperties PropertyDisplayer { get; set; }
+
+        [PropagateChanges]
+        [DoNotCheckEquality]
         public IPropertyViewModel Properties { get; set; }
 
         public bool IsVisible { get; set; }
         //public bool IsActive { get; set; }
 
-        public void OnPropertiesChanged() => AddChild((ViewModel)Properties, (s, args) => InvokePropertyChanged(nameof(Properties)));
+        //public void OnPropertiesChanged() => AddChild((ViewModel)Properties, (s, args) => InvokePropertyChanged(nameof(Properties)));
 
         public void InitializeProperties(Component component)
         {

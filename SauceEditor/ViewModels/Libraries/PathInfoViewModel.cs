@@ -9,11 +9,11 @@ namespace SauceEditor.ViewModels.Libraries
         public string Name => PathInfo.Name;
         public BitmapSource Icon => PreviewIcon;
 
-
         public IPathInfo PathInfo { get; set; }
 
         public BitmapImage PreviewIcon { get; set; }
         public RelayCommand OpenCommand { get; set; }
+        public RelayCommand DragCommand { get; set; }
         
         public abstract void LoadPreviewIcon();
 

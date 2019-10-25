@@ -1,5 +1,8 @@
+using SauceEditor.Views.GamePanels;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
+using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Entities;
 using System;
 using System.Timers;
 using System.Windows;
@@ -15,6 +18,9 @@ namespace SauceEditor.ViewModels
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
+        public IPosition Positioner { get; set; }
+        public IEntityProvider EntityProvider { get; set; }
+
         public GameControl Control { get; set; }
         public ViewTypes ViewType { get; set; }
         public string Title { get; set; }
@@ -25,6 +31,25 @@ namespace SauceEditor.ViewModels
         public float GridUnit { get; set; }
         public bool ShowGrid { get; set; }
         //public List<IEntity> SelectedEntities { get; set; }
+
+        private RelayCommand _dropCommand;
+        public RelayCommand DropCommand
+        {
+            get => _dropCommand ?? (_dropCommand = new RelayCommand(
+                p =>
+                {
+                    var args = (DragEventArgs)p;
+
+                    if (args.Data.GetDataPresent(typeof(ModelMesh)))
+                    {
+                        // TODO - We also need to get the drop position relative to the game view so we know where to place the object
+                        var meshShape = args.Data.GetData(typeof(ModelMesh)) as ModelMesh;
+                        Positioner?.Position(meshShape, args);
+                    }
+                },
+                p => true
+            ));
+        }
 
         public GamePaneViewModel()
         {

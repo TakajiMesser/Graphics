@@ -19,8 +19,8 @@ void main()
 	{
 		color = overrideColor;
 	}
-	else
+	/*else
 	{
 		discard;
-	}
+	}*/
 }

@@ -29,7 +29,7 @@ namespace SauceEditor.ViewModels.Properties
 
         protected virtual void UpdatePropertiesFromModel(T model) { }
 
-        public virtual void OnPropertyChanged(string propertyName)
+        public override void OnPropertyChanged(string propertyName)
         {
             var propertyDisplayer = _propertyDisplayer;
 
@@ -43,7 +43,8 @@ namespace SauceEditor.ViewModels.Properties
                 }
             }
 
-            InvokePropertyChanged(propertyName);
+            base.OnPropertyChanged(propertyName);
+            //InvokePropertyChanged(propertyName);
         }
 
         private void InitializeProperties()

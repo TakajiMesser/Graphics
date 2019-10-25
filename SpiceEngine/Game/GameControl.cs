@@ -499,12 +499,17 @@ namespace SpiceEngine.Game
             Invalidate();
         }
 
-        public void SelectEntity(Point coordinates, bool isMultiSelect)
+        public int GetEntityIDFromPoint(Point coordinates)
         {
             var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
 
             RenderFrame();
-            var id = RenderManager.GetEntityIDFromPoint(mouseCoordinates);
+            return RenderManager.GetEntityIDFromPoint(mouseCoordinates);
+        }
+
+        public void SelectEntity(Point coordinates, bool isMultiSelect)
+        {
+            var id = GetEntityIDFromPoint(coordinates);
 
             if (!SelectionRenderer.IsReservedID(id))
             {

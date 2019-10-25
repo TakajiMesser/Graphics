@@ -68,6 +68,12 @@ namespace SauceEditor.Views.Custom
             p => true
         ));
 
+        private RelayCommand _dragCommand;
+        public RelayCommand DragCommand => (_dragCommand = _dragCommand ?? new RelayCommand(
+            p => { },
+            p => true
+        ));
+
         public TestImageButton(string name) => Name = name;
     }
 
@@ -94,6 +100,7 @@ namespace SauceEditor.Views.Custom
         string Name { get; }
         BitmapSource Icon { get; }
         RelayCommand OpenCommand { get; }
+        RelayCommand DragCommand { get; }
     }
 
     /*<ListBox ItemsSource="{Binding Children}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">

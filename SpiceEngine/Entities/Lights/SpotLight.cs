@@ -7,8 +7,8 @@ namespace SpiceEngine.Entities.Lights
 {
     public class SpotLight : Light<SLight>, IRotate
     {
-        private float _radius;
-        private float _height;
+        private float _radius = 1.0f;
+        private float _height = 1.0f;
 
         public float Radius
         {

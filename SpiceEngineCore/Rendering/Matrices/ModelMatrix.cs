@@ -46,13 +46,16 @@ namespace SpiceEngineCore.Rendering.Matrices
             //set => Transform(Matrices.Transform.FromScale(value - Scale));
             set
             {
+                // TODO - Because we are calculating differences on scale set, if the scale is ever zero'd out we cannot recover from it :(
+                if (value.X == 0.0f || value.Y == 0.0f || value.Z == 0.0f) throw new NotSupportedException("Cannot handle a Scale value of zero!");
+
                 var scaleDifference = new Vector3()
                 {
-                    X = value.X != 0 ? value.X / Scale.X : 0,
-                    Y = value.Y != 0 ? value.Y / Scale.Y : 0,
-                    Z = value.Z != 0 ? value.Z / Scale.Z : 0
+                    X = value.X / Scale.X,
+                    Y = value.Y / Scale.Y,
+                    Z = value.Z / Scale.Z
                 };
-                //var scaleDifference = Vector3.Divide(value, Scale);
+
                 Transform(Matrices.Transform.FromScale(scaleDifference));
             }
         }

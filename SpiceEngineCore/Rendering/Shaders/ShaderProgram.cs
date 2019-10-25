@@ -62,6 +62,13 @@ namespace SpiceEngineCore.Rendering.Shaders
             GL.Uniform1(location, index);
         }
 
+        /*var diffuseMap = textureProvider.RetrieveTexture(textureMapping.DiffuseIndex);
+        GL.Uniform1(GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+        if (diffuseMap != null)
+        {
+            BindTexture(diffuseMap, "diffuseMap", 0);
+        }*/
+
         public void BindImageTexture(ITexture texture, string name, int index)
         {
             int location = GetUniformLocation(name);

@@ -1,6 +1,10 @@
-﻿using SauceEditor.Models;
+﻿using OpenTK;
+using SauceEditor.Models;
 using SauceEditor.Utilities;
+using SauceEditor.ViewModels.Tools.Primitives;
 using SauceEditor.Views.UpDowns;
+using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Windows;
@@ -12,7 +16,7 @@ namespace SauceEditor.Views.GamePanels
     /// <summary>
     /// Interaction logic for GamePane.xaml
     /// </summary>
-    public partial class GamePane : LayoutAnchorablePane, IAnchor
+    public partial class GamePane : LayoutAnchorablePane, IAnchor, IPosition
     {
         public readonly static DependencyProperty WireframeThicknessProperty = DependencyProperty.Register("WireframeThickness", typeof(float), typeof(NumericUpDown));
         public readonly static DependencyProperty SelectedWireframeThicknessProperty = DependencyProperty.Register("SelectedWireframeThickness", typeof(float), typeof(NumericUpDown));
@@ -87,6 +91,7 @@ namespace SauceEditor.Views.GamePanels
 
             DockPanel.Focusable = true;
             ViewModel.Control = GameControl;
+            ViewModel.Positioner = this;
 
             //ViewModeButton.Value = ViewModel.ViewType;
             //ViewModel.OnViewTypeChanged;
@@ -111,6 +116,37 @@ namespace SauceEditor.Views.GamePanels
             GridAxisColorPick.SelectedColorChanged += (s, args) => GameControl.SetGridAxisColor(args.NewValue.Value.ToVector4().ToColor4());
             Grid5ColorPick.SelectedColorChanged += (s, args) => GameControl.SetGrid5Color(args.NewValue.Value.ToVector4().ToColor4());
             Grid10ColorPick.SelectedColorChanged += (s, args) => GameControl.SetGrid10Color(args.NewValue.Value.ToVector4().ToColor4());
+        }
+
+        public void Position(ModelMesh modelMesh, DragEventArgs args)
+        {
+            // TODO - Pass primitive and type -> For now, assume that this is a Brush
+            var builder = new ModelBuilder(modelMesh);
+            var mapBrush = new MapBrush(builder);
+
+            // TODO - We also need to capture this drop command earlier on,
+            // or at least call out to the GamePanel here so we can add the mapBrush entity to the GameManager
+            var coordinates = args.GetPosition(PanelHost).ToDrawingPoint();
+            var placementID = GameControl.GetEntityIDFromPoint(coordinates);
+
+            if (placementID > 0)
+            {
+                var placementEntity = ViewModel.EntityProvider.GetEntity(placementID);
+                mapBrush.Position = new Vector3()
+                {
+                    X = placementEntity.Position.X,
+                    Y = placementEntity.Position.Y,
+                    Z = placementEntity.Position.Z
+                };
+
+                var entityID = ViewModel.EntityProvider.AddEntity(mapBrush.ToEntity());
+                GameControl.AddEntity(entityID, mapBrush.ToRenderable());
+                GameControl.RenderManager.Load();
+            }
+            else
+            {
+                // TODO - Default to Z = 0, then ray trace from camera to find corresponding X and Y coordinates
+            }
         }
 
         /*private void GamePanel_TransformModeChanged(object sender, TransformModeEventArgs e)

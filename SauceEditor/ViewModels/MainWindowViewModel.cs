@@ -1,3 +1,4 @@
+using PropertyChanged;
 using SauceEditor.Helpers.Builders;
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
@@ -9,6 +10,7 @@ using SauceEditor.ViewModels.Tools;
 using SauceEditor.ViewModels.Trees.Entities;
 using SauceEditor.ViewModels.Trees.Projects;
 using SauceEditor.Views;
+using SauceEditor.Views.Custom;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 using SpiceEngineCore.Utilities;
@@ -42,7 +44,11 @@ namespace SauceEditor.ViewModels
 
         public ProjectTreePanelViewModel ProjectTreePanelViewModel { get; set; }
         public LibraryPanelViewModel LibraryPanelViewModel { get; set; }
+
+        [PropagateChanges]
+        [DoNotCheckEquality]
         public PropertyPanelViewModel PropertyViewModel { get; set; }
+
         public EntityTreePanelViewModel EntityTreePanelViewModel { get; set; }
 
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
@@ -116,7 +122,8 @@ namespace SauceEditor.ViewModels
             });
         }*/
 
-        public void OnPropertyViewModelChanged() => AddChild(PropertyViewModel, (s, args) => GamePanelViewModel?.RequestUpdate());
+        public void OnPropertyViewModelChanged() => GamePanelViewModel?.RequestUpdate();
+        //public void OnPropertyViewModelChanged() => AddChild(PropertyViewModel, (s, args) => GamePanelViewModel?.RequestUpdate());
 
         public void OnEntityTreePanelViewModelChanged()
         {
