@@ -2,10 +2,12 @@
 using OpenTK.Graphics;
 using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using System.Collections.Generic;
-using static SpiceEngine.Maps.MapLight;
+using static SpiceEngineCore.Maps.MapLight;
 
 namespace SampleGameProject.Helpers.Builders
 {
@@ -15,7 +17,7 @@ namespace SampleGameProject.Helpers.Builders
         {
             var map = new Map3D()
             {
-                Camera = new Camera()
+                Camera = new SampleGameProject.GameObjects.Camera()
             };
 
             map.Actors.AddRange(GenerateActors());

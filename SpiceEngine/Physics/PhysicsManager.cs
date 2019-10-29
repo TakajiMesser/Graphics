@@ -1,9 +1,10 @@
-﻿using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics.Bodies;
 using SpiceEngineCore.Physics.Collisions;
 using SpiceEngineCore.Physics.Constraints;
@@ -91,11 +92,11 @@ namespace SpiceEngine.Physics
 
             switch (entity)
             {
-                case Actor actor:
+                case IActor actor:
                     return _actorTree;
-                case Brush brush:
+                case IBrush brush:
                     return _brushTree;
-                case Volume volume:
+                case IVolume volume:
                     return _volumeTree;
                 case ILight light:
                     return _lightTree;

@@ -37,6 +37,8 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
 
             var command = (ICommand)dependencyObject.GetValue(CommandProperty);
             command.Execute(e);
+
+            //e.Handled = true;
         }
     }
 }

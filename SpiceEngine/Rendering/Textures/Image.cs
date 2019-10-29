@@ -1,4 +1,6 @@
-﻿namespace SpiceEngine.Rendering.Textures
+﻿using SpiceEngineCore.Rendering.Textures;
+
+namespace SpiceEngine.Rendering.Textures
 {
     public class Image
     {

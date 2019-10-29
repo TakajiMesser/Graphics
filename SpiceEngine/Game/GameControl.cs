@@ -3,11 +3,11 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Outputs;
@@ -233,12 +233,11 @@ namespace SpiceEngine.Game
 
         public void Run(Action action) => Invoke(action);
 
-        public Task RunAsync(Action action)
-        {
-            return Task.Run(() => Invoke(action));
-            /*var result = BeginInvoke(action);
-            result.AsyncWaitHandle.WaitOne();*/
-        }
+        public T Run<T>(Func<T> func) => (T)Invoke(func);
+
+        public Task RunAsync(Action action) => Task.Run(() => Invoke(action));
+
+        public Task<object> RunAsync(Func<object> func) => Task.Run(() => Invoke(func));
 
         private void LoadFromGameManager()
         {

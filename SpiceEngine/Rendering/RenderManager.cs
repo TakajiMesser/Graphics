@@ -1,26 +1,31 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
-using SpiceEngineCore.Entities.Layers;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -54,7 +59,7 @@ namespace SpiceEngine.Rendering
         private ISelectionProvider _selectionProvider;
         private ICamera _camera;
 
-        private ForwardRenderer _forwardRenderer = new ForwardRenderer();
+        //private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
         private WireframeRenderer _wireframeRenderer = new WireframeRenderer();
         private ShadowRenderer _shadowRenderer = new ShadowRenderer();
@@ -148,7 +153,7 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
-                _forwardRenderer.Load(Resolution);
+                //_forwardRenderer.Load(Resolution);
                 _deferredRenderer.Load(Resolution);
                 _wireframeRenderer.Load(Resolution);
                 _shadowRenderer.Load(Resolution);
@@ -192,12 +197,12 @@ namespace SpiceEngine.Rendering
                     textureBinder.AddTextureMapping(textureMapping);
                 }
 
-                var colorID = SelectionRenderer.GetColorFromID(entityID);
+                var colorID = SelectionHelper.GetColorFromID(entityID);
                 var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
 
                 BatchManager.AddEntity(entityID, new Mesh<EditorVertex3D>(vertices, mesh.TriangleIndices.ToList()));
             }
-            else if (IsInEditorMode && renderable is Model model)
+            else if (IsInEditorMode && renderable is IModel model)
             {
                 var entity = _entityProvider.GetEntity(entityID);
 
@@ -208,7 +213,7 @@ namespace SpiceEngine.Rendering
                     textureBinder.AddTextureMapping(textureMapping);
                 }*/
 
-                var colorID = SelectionRenderer.GetColorFromID(entityID);
+                var colorID = SelectionHelper.GetColorFromID(entityID);
                 for (var i = 0; i < model.Meshes.Count; i++)
                 {
                     var vertices = model.Meshes[i].Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
@@ -229,7 +234,7 @@ namespace SpiceEngine.Rendering
         {
             if (IsLoaded)
             {
-                _forwardRenderer.ResizeTextures(Resolution);
+                //_forwardRenderer.ResizeTextures(Resolution);
                 _deferredRenderer.ResizeTextures(Resolution);
                 _wireframeRenderer.ResizeTextures(Resolution);
                 _shadowRenderer.ResizeTextures(Resolution);

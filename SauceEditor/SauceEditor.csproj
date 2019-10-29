@@ -228,6 +228,7 @@
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
+    <Compile Include="ViewModels\GamePanels\IMapper.cs" />
     <Compile Include="ViewModels\GamePanels\GamePaneViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
     <Compile Include="ViewModels\ILayerSetter.cs" />

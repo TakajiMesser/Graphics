@@ -1,6 +1,6 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Rendering.Models;
 using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.BSP

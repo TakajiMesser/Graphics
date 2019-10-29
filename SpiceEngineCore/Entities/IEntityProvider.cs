@@ -1,5 +1,8 @@
-﻿using SpiceEngineCore.Entities.Layers;
+﻿using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game.Loading.Builders;
 using System;
 using System.Collections.Generic;
 

@@ -1,6 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 
 namespace SpiceEngine.Helpers

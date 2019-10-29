@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Game.Loading;
+﻿using SpiceEngineCore.Game.Loading.Builders;
 using System.Collections.Generic;
 
 namespace SauceEditor.ViewModels

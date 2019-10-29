@@ -1,12 +1,13 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Animations;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Properties;
@@ -18,7 +19,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapActor : MapEntity3D<Actor>, IRenderableBuilder, IShapeBuilder, IBehaviorBuilder
+    public class MapActor : MapEntity3D<IActor>, IRenderableBuilder, IShapeBuilder, IBehaviorBuilder
     {
         public string Name { get; set; }
 
@@ -85,7 +86,7 @@ namespace SpiceEngine.Maps
                         {
                             for (var i = 0; i < 6; i++)
                             {
-                                animatedActor.RootJoint.ApplyKeyFrameTransforms(i, args.KeyFrame, Matrix4.Identity, animatedActor._globalInverseTransform);
+                                animatedActor.RootJoint.ApplyKeyFrameTransforms(i, args.KeyFrame, Matrix4.Identity, animatedActor.GlobalInverseTransform);
                             }
 
                             var meshTransforms = animatedActor.RootJoint.GetMeshTransforms(args.KeyFrame);
@@ -125,7 +126,7 @@ namespace SpiceEngine.Maps
                             animatedActor.RootJoint.CalculateInverseBindTransforms(i, Matrix4.Identity);
                         }
                         //_globalInverseTransform = scene.RootNode.Transform.ToMatrix4().Inverted();
-                        animatedActor._globalInverseTransform = scene.RootNode.Children[1].Transform.ToMatrix4().Inverted();
+                        animatedActor.GlobalInverseTransform = scene.RootNode.Children[1].Transform.ToMatrix4().Inverted();
 
                         foreach (var sceneAnimation in scene.Animations)
                         {

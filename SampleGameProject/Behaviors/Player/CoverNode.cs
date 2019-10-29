@@ -1,9 +1,9 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities.Brushes;
 using SpiceEngine.Helpers;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
+using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Physics.Bodies;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
 using System.Linq;
 
@@ -43,7 +43,7 @@ namespace SampleGameProject.Behaviors.Player
 
                         if (translation.IsSignificant())
                         {
-                            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is Brush);
+                            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is IBrush);
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
                             var shape = ((Body3D)context.Body).Shape;

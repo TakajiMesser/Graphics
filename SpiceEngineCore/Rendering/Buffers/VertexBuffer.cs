@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-namespace SpiceEngine.Rendering.Buffers
+namespace SpiceEngineCore.Rendering.Buffers
 {
     public class VertexBuffer<T> : IDisposable, IBindable where T : IVertex
     {

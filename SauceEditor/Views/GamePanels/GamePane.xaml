@@ -24,7 +24,7 @@
             </Style>
         </DockPanel.Resources>-->
     <xcad:LayoutAnchorable x:Name="Anchorable">
-        <DockPanel Name="DockPanel" Loaded="OnLoaded" cb:MouseDrop.Command="{Binding Path=DropCommand}">
+        <DockPanel Name="GameDockPanel" Loaded="OnLoaded" cb:MouseDrop.Command="{Binding Path=DropCommand}">
             <DockPanel.DataContext>
                 <vm:GamePaneViewModel x:Name="ViewModel"></vm:GamePaneViewModel>
             </DockPanel.DataContext>

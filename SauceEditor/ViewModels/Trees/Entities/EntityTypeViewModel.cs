@@ -1,10 +1,5 @@
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Helpers;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;

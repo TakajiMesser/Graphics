@@ -1,5 +1,4 @@
-﻿using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
+﻿using SpiceEngineCore.Scripting;
 
 namespace SampleGameProject.Behaviors.Player
 {

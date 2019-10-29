@@ -1,9 +1,9 @@
-﻿using SpiceEngine.Entities.Actors;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Nodes.Decorators;
+﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Physics.Bodies;
 using SpiceEngineCore.Physics.Raycasting;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Nodes;
+using SpiceEngineCore.Scripting.Nodes.Decorators;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Runtime.Serialization;
@@ -51,9 +51,7 @@ namespace SampleGameProject.Behaviors.Enemy
 
                     if (Raycast.TryRaycast(new Ray3(context.Position, playerDirection, ViewDistance), colliders, context.GetEntityProvider(), out RaycastHit hit))
                     {
-                        var hitEntity = context.GetEntity(hit.EntityID);
-
-                        if (hitEntity.GetType() == typeof(Actor) && ((Actor)hitEntity).Name == "Player")
+                        if (context.GetEntity(hit.EntityID) is IActor actor && actor.Name == "Player")
                         {
                             return true;
                         }

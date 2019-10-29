@@ -1,5 +1,5 @@
-﻿using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Meters;
+﻿using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Meters;
 using SpiceEngineCore.Scripting.StimResponse;
 
 namespace SampleGameProject.Behaviors.Enemy

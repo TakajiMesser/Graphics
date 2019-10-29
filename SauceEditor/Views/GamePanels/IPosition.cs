@@ -1,9 +1,4 @@
-﻿using SpiceEngine.Rendering.Meshes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using SpiceEngineCore.Rendering.Models;
 using System.Windows;
 
 namespace SauceEditor.Views.GamePanels

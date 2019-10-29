@@ -1,12 +1,12 @@
 ﻿using OpenTK;
 using SauceEditor.Models;
 using SauceEditor.Utilities;
-using SauceEditor.ViewModels.Tools.Primitives;
 using SauceEditor.Views.UpDowns;
-using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Utilities;
 using System;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using Xceed.Wpf.AvalonDock.Layout;
@@ -89,7 +89,7 @@ namespace SauceEditor.Views.GamePanels
             SettingsExpander.Expanded += (s, args) => SettingsPopup.IsOpen = true;
             SettingsExpander.Collapsed += (s, args) => SettingsPopup.IsOpen = false;
 
-            DockPanel.Focusable = true;
+            GameDockPanel.Focusable = true;
             ViewModel.Control = GameControl;
             ViewModel.Positioner = this;
 
@@ -120,6 +120,8 @@ namespace SauceEditor.Views.GamePanels
 
         public void Position(ModelMesh modelMesh, DragEventArgs args)
         {
+            if (ViewModel.GameLoader.IsLoading) return;
+
             // TODO - Pass primitive and type -> For now, assume that this is a Brush
             var builder = new ModelBuilder(modelMesh);
             var mapBrush = new MapBrush(builder);
@@ -127,7 +129,8 @@ namespace SauceEditor.Views.GamePanels
             // TODO - We also need to capture this drop command earlier on,
             // or at least call out to the GamePanel here so we can add the mapBrush entity to the GameManager
             var coordinates = args.GetPosition(PanelHost).ToDrawingPoint();
-            var placementID = GameControl.GetEntityIDFromPoint(coordinates);
+            var placementID = GameControl.Run(() => GameControl.GetEntityIDFromPoint(coordinates));
+            //var placementID = GameControl.GetEntityIDFromPoint(coordinates);
 
             if (placementID > 0)
             {
@@ -138,15 +141,13 @@ namespace SauceEditor.Views.GamePanels
                     Y = placementEntity.Position.Y,
                     Z = placementEntity.Position.Z
                 };
-
-                var entityID = ViewModel.EntityProvider.AddEntity(mapBrush.ToEntity());
-                GameControl.AddEntity(entityID, mapBrush.ToRenderable());
-                GameControl.RenderManager.Load();
             }
             else
             {
                 // TODO - Default to Z = 0, then ray trace from camera to find corresponding X and Y coordinates
             }
+
+            ViewModel.Mapper.AddMapBrush(mapBrush);
         }
 
         /*private void GamePanel_TransformModeChanged(object sender, TransformModeEventArgs e)

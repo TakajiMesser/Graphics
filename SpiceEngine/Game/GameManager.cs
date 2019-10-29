@@ -1,10 +1,10 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Maps;
 using SpiceEngine.Physics;
 using SpiceEngine.Scripting;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Outputs;

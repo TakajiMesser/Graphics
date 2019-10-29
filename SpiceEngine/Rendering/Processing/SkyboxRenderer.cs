@@ -1,15 +1,15 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Cameras;
+using SpiceEngine.Helpers;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
@@ -52,8 +52,8 @@ namespace SpiceEngine.Rendering.Processing
         {
             if (_texturePaths.Any())
             {
-                SkyTexture = Texture.LoadFromFile(_texturePaths, TextureTarget.TextureCubeMap, true, true);
-                SkyTexture2D = Texture.LoadFromFile(_texturePaths.First(), true, true);
+                SkyTexture = TextureHelper.LoadFromFile(_texturePaths, TextureTarget.TextureCubeMap, true, true);
+                SkyTexture2D = TextureHelper.LoadFromFile(_texturePaths.First(), true, true);
             }
         }
 
@@ -121,9 +121,10 @@ namespace SpiceEngine.Rendering.Processing
                 camera._viewMatrix.Set(_2DProgram);
                 //camera._projectionMatrix.Set(_2DProgram);
                 //var width = camera._projectionMatrix.Width;
-                var width = 0.8f;
+                /*var width = 0.8f;
                 var height = width / camera._projectionMatrix.Resolution.AspectRatio;
-                var projection = Matrix4.CreateOrthographic(width, height, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);
+                var projection = Matrix4.CreateOrthographic(width, height, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);*/
+                var projection = camera.CalculateProjection();
                 _2DProgram.SetUniform(ProjectionMatrix.NAME, projection);
 
                 var originalDirection = -Vector3.UnitZ;

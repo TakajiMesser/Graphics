@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
+using SpiceEngineCore.Maps;
 
 namespace SampleGameProject.GameObjects
 {

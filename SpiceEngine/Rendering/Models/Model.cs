@@ -1,16 +1,17 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
-using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SpiceEngine.Rendering.Meshes
+namespace SpiceEngineCore.Rendering.Models
 {
-    public class Model : IRenderable
+    public class Model : IModel
     {
         public List<IMesh> Meshes { get; } = new List<IMesh>();
         public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
@@ -100,7 +101,7 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public Model Duplicate()
+        public IModel Duplicate()
         {
             var model = new Model();
 

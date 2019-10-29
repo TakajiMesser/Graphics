@@ -6,6 +6,7 @@ using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;

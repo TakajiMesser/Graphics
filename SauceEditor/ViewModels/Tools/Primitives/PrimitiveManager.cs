@@ -14,6 +14,7 @@ namespace SauceEditor.ViewModels.Tools.Primitives
 
         private void BuildPrimitives()
         {
+            _primitives.Clear();
             _primitives.Add(new BoxPrimitive());
         }
 

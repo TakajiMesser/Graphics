@@ -1,12 +1,12 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngine.Helpers;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Drawing;
@@ -63,7 +63,7 @@ namespace SpiceEngine.Rendering.PostProcessing
 
             var bitmapPath = Path.GetDirectoryName(FONT_PATH) + "\\" + Path.GetFileNameWithoutExtension(FONT_PATH) + ".png";
             SaveFontBitmap(FONT_PATH, bitmapPath, 14);
-            FontTexture = Texture.LoadFromBitmap(bitmapPath, false, false);
+            FontTexture = TextureHelper.LoadFromBitmap(bitmapPath, false, false);
         }
 
         protected override void LoadBuffers()

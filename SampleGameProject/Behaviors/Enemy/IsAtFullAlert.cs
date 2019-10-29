@@ -1,6 +1,6 @@
-﻿using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Nodes.Decorators;
+﻿using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Nodes;
+using SpiceEngineCore.Scripting.Nodes.Decorators;
 using System.Runtime.Serialization;
 
 namespace SampleGameProject.Behaviors.Enemy

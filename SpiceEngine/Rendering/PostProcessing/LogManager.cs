@@ -1,4 +1,5 @@
-﻿using System.Collections.Concurrent;
+﻿using SpiceEngineCore.Rendering.PostProcessing;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.PostProcessing

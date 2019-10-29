@@ -55,6 +55,7 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
                 var commandParameter = e.OriginalSource;
 
                 command.Execute(commandParameter);
+                //e.Handled = true;
             }
         }
     }

@@ -1,8 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
+using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Physics.Raycasting;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Linq;
@@ -25,7 +25,7 @@ namespace SampleGameProject.Behaviors.Player
         public override BehaviorStatus Tick(BehaviorContext context)
         {
             // TODO - Filter gameobjects and brushes based on "coverable" property
-            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is Brush);
+            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is IBrush);
 
             if (Raycast.TryCircleCast(new RayCircle(context.Position, CoverDistance), filteredColliders, context.GetEntityProvider(), out RaycastHit hit))
             {

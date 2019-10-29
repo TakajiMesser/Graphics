@@ -36,6 +36,9 @@ namespace SauceEditor.ViewModels.Trees.Entities
 
         public void UpdateFromModel(MapComponent mapComponent, IEntityFactory entityFactory)
         {
+            _entityRoots.Clear();
+            _layerRoots.Clear();
+
             _entityRoots.Add(new EntityRootViewModel(mapComponent, entityFactory));
             _layerRoots.Add(new LayerRootViewModel(LayerType, LayerProvider, Rearranger));
 

@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using SauceEditor.Models.Components;
 using SauceEditorCore.Models.Components;
 using SpiceEngine.Maps;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Utilities;
 

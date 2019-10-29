@@ -1,10 +1,10 @@
 ﻿using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Maps;
 using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Components
@@ -13,16 +13,6 @@ namespace SauceEditorCore.Models.Components
     {
         public MapComponent() {}
         public MapComponent(string filePath) : base(filePath) {}
-
-        /*private enum MapEntityType
-        {
-            Actor,
-            Brush,
-            Volume,
-            Light
-        }
-
-        private Dictionary<int, MapEntityType> _entityTypeByEntityID = new Dictionary<int, MapEntityType>();*/
 
         private int _mapActorIndexCount;
         private int _mapBrushIndexCount;
@@ -35,6 +25,19 @@ namespace SauceEditorCore.Models.Components
         private BidirectionalDictionary<int, int> _mapLightIndexByEntityID = new BidirectionalDictionary<int, int>();
 
         public Map Map { get; set; }
+
+        public void ClearEntityMapping()
+        {
+            _mapActorIndexByEntityID.Clear();
+            _mapBrushIndexByEntityID.Clear();
+            _mapVolumeIndexByEntityID.Clear();
+            _mapLightIndexByEntityID.Clear();
+
+            _mapActorIndexCount = 0;
+            _mapBrushIndexCount = 0;
+            _mapVolumeIndexCount = 0;
+            _mapLightIndexCount = 0;
+        }
 
         public void SetEntityMap(EntityMap entityMap)
         {
@@ -101,13 +104,13 @@ namespace SauceEditorCore.Models.Components
             {
                 switch (entity)
                 {
-                    case Actor actor:
+                    case IActor actor:
                         UpdateMapActor(actor);
                         break;
-                    case Brush brush:
+                    case IBrush brush:
                         UpdateMapBrush(brush);
                         break;
-                    case Volume volume:
+                    case IVolume volume:
                         UpdateMapVolume(volume);
                         break;
                     case ILight light:
@@ -117,7 +120,7 @@ namespace SauceEditorCore.Models.Components
             }
         }
 
-        private void UpdateMapActor(Actor actor)
+        private void UpdateMapActor(IActor actor)
         {
             var index = _mapActorIndexByEntityID.GetValue(actor.ID);
             var mapActor = Map.Actors[index];
@@ -125,7 +128,7 @@ namespace SauceEditorCore.Models.Components
             mapActor.UpdateFrom(actor);
         }
 
-        private void UpdateMapBrush(Brush brush)
+        private void UpdateMapBrush(IBrush brush)
         {
             var index = _mapBrushIndexByEntityID.GetValue(brush.ID);
             var mapBrush = Map.Brushes[index];
@@ -133,7 +136,7 @@ namespace SauceEditorCore.Models.Components
             mapBrush.UpdateFrom(brush);
         }
 
-        private void UpdateMapVolume(Volume volume)
+        private void UpdateMapVolume(IVolume volume)
         {
             var index = _mapVolumeIndexByEntityID.GetValue(volume.ID);
             var mapVolume = Map.Volumes[index];
@@ -207,15 +210,15 @@ namespace SauceEditorCore.Models.Components
             {
                 switch (entity)
                 {
-                    case Actor actor:
+                    case IActor actor:
                         var mapActor = GetMapActor(actor.ID);
                         yield return new EditorEntity(actor, mapActor);
                         break;
-                    case Brush brush:
+                    case IBrush brush:
                         var mapBrush = GetMapBrush(brush.ID);
                         yield return new EditorEntity(brush, mapBrush);
                         break;
-                    case Volume volume:
+                    case IVolume volume:
                         var mapVolume = GetMapVolume(volume.ID);
                         yield return new EditorEntity(volume, mapVolume);
                         break;

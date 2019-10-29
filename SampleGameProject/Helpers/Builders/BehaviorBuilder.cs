@@ -1,7 +1,6 @@
 ﻿using OpenTK;
-using SpiceEngine.Maps;
-using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Scripting.StimResponse;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Scripting.Meters;
 using SpiceEngineCore.Scripting.Scripts;
 using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;

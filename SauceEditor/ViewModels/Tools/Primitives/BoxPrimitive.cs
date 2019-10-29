@@ -1,11 +1,4 @@
-﻿using SauceEditor.Views;
-using SpiceEngine.Rendering.Meshes;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using SpiceEngineCore.Rendering.Models;
 
 namespace SauceEditor.ViewModels.Tools.Primitives
 {

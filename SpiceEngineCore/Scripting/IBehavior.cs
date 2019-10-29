@@ -1,4 +1,6 @@
 ﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics.Collisions;
 using SpiceEngineCore.Scripting.StimResponse;

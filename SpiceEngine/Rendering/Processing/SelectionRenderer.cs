@@ -1,17 +1,17 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Actors;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System.Collections.Generic;
 
@@ -155,7 +155,7 @@ namespace SpiceEngine.Rendering.Processing
         public int GetEntityIDFromPoint(Vector2 point)
         {
             var color = FinalTexture.ReadPixelColor((int)point.X, (int)point.Y);
-            return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
+            return SelectionHelper.GetIDFromColorVector(color);
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
@@ -241,14 +241,6 @@ namespace SpiceEngine.Rendering.Processing
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
         }
-
-        public static Color4 GetColorFromID(int id) => new Color4()
-        {
-            R = ((id & 0x000000FF) >> 0) / 255.0f,
-            G = ((id & 0x0000FF00) >> 8) / 255.0f,
-            B = ((id & 0x00FF0000) >> 16) / 255.0f,
-            A = 1.0f
-        };
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)
         {

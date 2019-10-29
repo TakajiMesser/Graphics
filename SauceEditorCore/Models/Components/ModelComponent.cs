@@ -1,5 +1,6 @@
 ﻿using SauceEditorCore.Models.Entities;
-using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Models;
+using SpiceEngineCore.Rendering.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Serialization.Converters;
+﻿using SpiceEngineCore.Maps;
+using SpiceEngineCore.Serialization.Converters;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Maps

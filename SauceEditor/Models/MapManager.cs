@@ -1,12 +1,4 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Maps;
-using System.Collections.Generic;
-
-namespace SauceEditor.Models
+﻿namespace SauceEditor.Models
 {
     public class MapManager
     {

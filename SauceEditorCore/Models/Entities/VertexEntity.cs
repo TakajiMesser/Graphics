@@ -1,8 +1,8 @@
 ﻿using SauceEditorCore.Helpers;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Models;
+using SpiceEngineCore.Rendering.Textures;
 
 namespace SauceEditorCore.Models.Entities
 {

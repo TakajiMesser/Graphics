@@ -1,4 +1,6 @@
 ﻿using OpenTK.Graphics;
+using SpiceEngine.Helpers;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Concurrent;
@@ -50,7 +52,7 @@ namespace SpiceEngine.Rendering.Textures
                 // TODO - If Invoker is null, queue this action up
                 Invoker?.Run(() =>
                 {
-                    var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
+                    var texture = TextureHelper.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
                     _textures[index] = texture;
                 });
 

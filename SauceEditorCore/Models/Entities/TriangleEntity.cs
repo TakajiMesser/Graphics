@@ -1,8 +1,9 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System.Linq;

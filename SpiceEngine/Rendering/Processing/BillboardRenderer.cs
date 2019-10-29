@@ -1,15 +1,16 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
+using SpiceEngine.Helpers;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Entities.Volumes;
+using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
@@ -82,15 +83,15 @@ namespace SpiceEngine.Rendering.Processing
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
-            _vertexTexture = Texture.Load(Resources.vertex, false, false);
+            _vertexTexture = TextureHelper.Load(Resources.vertex, false, false);
 
-            _pointLightTexture = Texture.Load(Resources.point_light_billboard, false, false);
-            _spotLightTexture = Texture.Load(Resources.spot_light_billboard, false, false);
-            _directionalLightTexture = Texture.Load(Resources.directional_light_billboard, false, false);
+            _pointLightTexture = TextureHelper.Load(Resources.point_light_billboard, false, false);
+            _spotLightTexture = TextureHelper.Load(Resources.spot_light_billboard, false, false);
+            _directionalLightTexture = TextureHelper.Load(Resources.directional_light_billboard, false, false);
 
-            _selectedPointLightTexture = Texture.Load(Resources.selected_point_light, false, false);
-            _selectedSpotLightTexture = Texture.Load(Resources.selected_spot_light, false, false);
-            _selectedDirectionalLightTexture = Texture.Load(Resources.selected_directional_light, false, false);
+            _selectedPointLightTexture = TextureHelper.Load(Resources.selected_point_light, false, false);
+            _selectedSpotLightTexture = TextureHelper.Load(Resources.selected_spot_light, false, false);
+            _selectedDirectionalLightTexture = TextureHelper.Load(Resources.selected_directional_light, false, false);
         }
 
         protected override void LoadBuffers()
@@ -143,7 +144,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var entity in entities)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(entity.ID)));
+                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionHelper.GetColorFromID(entity.ID)));
             }
 
             _vertexArray.Bind();
@@ -269,7 +270,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var entity in entities)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(entity.ID)));
+                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionHelper.GetColorFromID(entity.ID)));
             }
 
             _vertexArray.Bind();
@@ -287,7 +288,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var light in lights)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(light.Position, SelectionRenderer.GetColorFromID(light.ID)));
+                _vertexBuffer.AddVertex(new ColorVertex3D(light.Position, SelectionHelper.GetColorFromID(light.ID)));
             }
 
             _vertexArray.Bind();

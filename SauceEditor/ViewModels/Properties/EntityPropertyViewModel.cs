@@ -5,6 +5,7 @@ using SauceEditor.Views.Custom;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Utilities;
 using System.ComponentModel;
 using System.Windows.Media;

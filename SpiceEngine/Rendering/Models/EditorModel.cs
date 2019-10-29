@@ -1,11 +1,13 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Rendering.Animations;
+using SpiceEngineCore.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Rendering.Meshes
+namespace SpiceEngine.Rendering.Models
 {
     public class EditorModel
     {

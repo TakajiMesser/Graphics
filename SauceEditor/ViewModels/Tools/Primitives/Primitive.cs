@@ -1,5 +1,5 @@
 ﻿using SauceEditor.Views.Custom;
-using SpiceEngine.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using System.Windows;
 using System.Windows.Media.Imaging;
 
@@ -21,7 +21,7 @@ namespace SauceEditor.ViewModels.Tools.Primitives
         ));
 
         private RelayCommand _dragCommand;
-        public RelayCommand DragCommand => (_dragCommand = _dragCommand ?? new RelayCommand(
+        /*public RelayCommand DragCommand => (_dragCommand = _dragCommand ?? new RelayCommand(
             p =>
             {
                 var draggedItem = p as DependencyObject;
@@ -29,9 +29,24 @@ namespace SauceEditor.ViewModels.Tools.Primitives
                 var data = new DataObject();
                 data.SetData(typeof(ModelMesh), MeshShape);
 
-                DragDrop.DoDragDrop(draggedItem, data, DragDropEffects.Move);
+                DragDrop.DoDragDrop(draggedItem, data, DragDropEffects.Copy);
             },
             p => true
-        ));
+        ));*/
+        public RelayCommand DragCommand
+        {
+            get => _dragCommand ?? (_dragCommand = new RelayCommand(
+                p =>
+                {
+                    var draggedItem = p as DependencyObject;
+
+                    var data = new DataObject();
+                    data.SetData(typeof(ModelMesh), MeshShape);
+
+                    DragDrop.DoDragDrop(draggedItem, data, DragDropEffects.Move);
+                },
+                p => true
+            ));
+        }
     }
 }

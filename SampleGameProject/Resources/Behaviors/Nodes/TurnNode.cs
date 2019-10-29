@@ -1,7 +1,7 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
 using System;
 

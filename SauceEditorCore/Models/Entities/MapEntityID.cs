@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Maps;
+using SpiceEngineCore.Maps;
 using System;
 
 namespace SauceEditorCore.Models.Entities

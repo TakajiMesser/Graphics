@@ -1,8 +1,10 @@
 using SauceEditor.Views.GamePanels;
+using SauceEditorCore.Models.Components;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Rendering.Models;
 using System;
 using System.Timers;
 using System.Windows;
@@ -20,6 +22,8 @@ namespace SauceEditor.ViewModels
 
         public IPosition Positioner { get; set; }
         public IEntityProvider EntityProvider { get; set; }
+        public IGameLoader GameLoader { get; set; }
+        public IMapper Mapper { get; set; }
 
         public GameControl Control { get; set; }
         public ViewTypes ViewType { get; set; }
@@ -39,6 +43,10 @@ namespace SauceEditor.ViewModels
                 p =>
                 {
                     var args = (DragEventArgs)p;
+
+                    Console.WriteLine("DEM ARGS = {");
+
+                    Console.WriteLine("}");
 
                     if (args.Data.GetDataPresent(typeof(ModelMesh)))
                     {

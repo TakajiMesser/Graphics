@@ -1,9 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Materials;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Utilities;
