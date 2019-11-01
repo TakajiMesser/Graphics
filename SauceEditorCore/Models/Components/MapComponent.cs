@@ -6,6 +6,7 @@ using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SauceEditorCore.Models.Components
 {
@@ -230,27 +231,27 @@ namespace SauceEditorCore.Models.Components
             }
         }
 
-        public MapCamera GetMapCamera() => Map.Camera;
+        public IMapCamera GetMapCamera() => Map.Cameras.First();
 
-        public MapActor GetMapActor(int entityID)
+        public IMapActor GetMapActor(int entityID)
         {
             var index = _mapActorIndexByEntityID.GetValue(entityID);
             return Map.Actors[index];
         }
 
-        public MapBrush GetMapBrush(int entityID)
+        public IMapBrush GetMapBrush(int entityID)
         {
             var index = _mapBrushIndexByEntityID.GetValue(entityID);
             return Map.Brushes[index];
         }
 
-        public MapVolume GetMapVolume(int entityID)
+        public IMapVolume GetMapVolume(int entityID)
         {
             var index = _mapVolumeIndexByEntityID.GetValue(entityID);
             return Map.Volumes[index];
         }
 
-        public MapLight GetMapLight(int entityID)
+        public IMapLight GetMapLight(int entityID)
         {
             var index = _mapLightIndexByEntityID.GetValue(entityID);
             return Map.Lights[index];

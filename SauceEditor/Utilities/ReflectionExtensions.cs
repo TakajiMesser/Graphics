@@ -1,9 +1,5 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using System;
+﻿using System;
 using System.Reflection;
-using System.Windows;
-using Color = System.Windows.Media.Color;
 
 namespace SauceEditor.Utilities
 {

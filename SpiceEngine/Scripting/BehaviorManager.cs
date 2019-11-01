@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 
 namespace SpiceEngine.Scripting
 {
-    public class BehaviorManager : EntityLoader<IBehaviorBuilder>, IStimulusProvider
+    public class BehaviorManager : ComponentLoader<IBehaviorBuilder>, IStimulusProvider
     {
         private ScriptManager _scriptManager = new ScriptManager();
 
@@ -87,7 +87,7 @@ namespace SpiceEngine.Scripting
             ? _stimuliByEntityID[entityID].Stimuli
             : Enumerable.Empty<Stimulus>();
 
-        public override void AddEntity(int entityID, IBehaviorBuilder builder)
+        public override void AddComponent(int entityID, IBehaviorBuilder builder)
         {
             var behavior = builder.ToBehavior();
             if (behavior != null)
@@ -101,7 +101,7 @@ namespace SpiceEngine.Scripting
             AddProperties(entityID, builder.Properties);
         }
 
-        protected override void LoadEntities() => _scriptManager.CompileScripts();
+        protected override void LoadComponents() => _scriptManager.CompileScripts();
 
         protected override Task LoadInternal()
         {

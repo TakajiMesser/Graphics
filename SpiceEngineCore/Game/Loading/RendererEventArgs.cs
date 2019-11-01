@@ -2,10 +2,10 @@
 
 namespace SpiceEngineCore.Game.Loading
 {
-    public class RendererLoadEventArgs : EventArgs
+    public class RendererEventArgs : EventArgs
     {
         public string Name { get; private set; }
 
-        public RendererLoadEventArgs(string name) => Name = name;
+        public RendererEventArgs(string name) => Name = name;
     }
 }

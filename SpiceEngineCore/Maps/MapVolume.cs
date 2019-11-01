@@ -2,7 +2,6 @@
 using OpenTK.Graphics;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Utilities;
@@ -11,7 +10,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapVolume : MapEntity3D<IVolume>, IShapeBuilder
+    public class MapVolume : MapEntity3D<IVolume>, IMapVolume
     {
         public enum VolumeTypes
         {
@@ -71,7 +70,7 @@ namespace SpiceEngineCore.Maps
             };
         }
 
-        public Shape3D ToShape() => new Box(Vertices);
+        public IShape ToShape() => new Box(Vertices);
 
         public static MapVolume Rectangle(Vector3 center, float width, float height)
         {

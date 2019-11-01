@@ -306,7 +306,7 @@
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
     <Compile Include="Views\Custom\ImageButtonList.cs" />
-    <Compile Include="Views\GamePanels\IPosition.cs" />
+    <Compile Include="Views\GamePanels\IDragPosition.cs" />
     <Compile Include="Views\Libraries\LibraryPanel.xaml.cs">
       <DependentUpon>LibraryPanel.xaml</DependentUpon>
     </Compile>

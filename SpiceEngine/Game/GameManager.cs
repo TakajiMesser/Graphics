@@ -7,6 +7,7 @@ using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Sounds;
 using System;
@@ -56,7 +57,15 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            Camera = map.Camera.ToCamera(_resolution);
+            // TODO - For now, just use the first camera
+            var mapCamera = map.GetCameraAt(0);
+            
+            if (mapCamera is MapCamera camera)
+            {
+                camera.Resolution = _resolution;
+            }
+
+            Camera = (Camera)mapCamera.ToEntity();
 
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
             BehaviorManager.SetCamera(Camera);

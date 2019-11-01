@@ -2,7 +2,6 @@
 using OpenTK.Graphics;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
@@ -17,7 +16,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapBrush : MapEntity3D<IBrush>, IRenderableBuilder, IShapeBuilder
+    public class MapBrush : MapEntity3D<IBrush>, IMapBrush
     {
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
@@ -57,7 +56,7 @@ namespace SpiceEngineCore.Maps
             return new Mesh<Vertex3D>(Vertices, TriangleIndices);
         }
 
-        public Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
+        public IShape ToShape() => new Box(Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

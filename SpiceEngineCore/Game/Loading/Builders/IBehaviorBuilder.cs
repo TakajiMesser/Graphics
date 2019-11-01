@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 namespace SpiceEngineCore.Game.Loading.Builders
 {
-    public interface IBehaviorBuilder : IBuilder
+    public interface IBehaviorBuilder : IComponentBuilder<IBehavior>
     {
         IEnumerable<Script> Scripts { get; }
         List<Stimulus> Stimuli { get; }

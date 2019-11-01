@@ -6,5 +6,8 @@ namespace SauceEditor.ViewModels
     public interface IMapper
     {
         void AddMapBrush(MapBrush mapBrush);
+        //void AddMapActor(MapActor mapActor);
+        void AddMapVolume(MapVolume mapVolume);
+        void AddMapLight(MapLight mapLight);
     }
 }

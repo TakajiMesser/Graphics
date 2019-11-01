@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
@@ -8,7 +9,7 @@ using SpiceEngineCore.Utilities;
 
 namespace SpiceEngineCore.Scripting
 {
-    public interface IBehavior
+    public interface IBehavior : IComponent
     {
         BehaviorStatus Tick();
 

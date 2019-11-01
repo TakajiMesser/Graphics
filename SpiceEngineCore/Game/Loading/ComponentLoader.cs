@@ -3,15 +3,16 @@ using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
 {
-    public abstract class EntityLoader<T> : UpdateManager, IEntityLoader<T> where T : IBuilder
+    public abstract class ComponentLoader<T> : UpdateManager, IComponentLoader<T> where T : IComponentBuilder
     {
         public bool IsLoaded { get; private set; }
 
-        public abstract void AddEntity(int id, T builder);
+        // TODO - Add builders to a load queue
+        public abstract void AddComponent(int id, T builder);
 
         public async Task Load()
         {
-            LoadEntities();
+            LoadComponents();
 
             if (!IsLoaded)
             {
@@ -21,6 +22,6 @@ namespace SpiceEngineCore.Game.Loading
         }
 
         protected abstract Task LoadInternal();
-        protected abstract void LoadEntities();
+        protected abstract void LoadComponents();
     }
 }

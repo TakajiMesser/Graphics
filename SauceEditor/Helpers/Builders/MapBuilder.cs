@@ -43,21 +43,20 @@ namespace SauceEditor.Helpers.Builders
 
         public static MapComponent GenerateModelMap(ModelComponent model)
         {
-            var map = new Map3D()
-            {
-                Camera = new MapCamera()
-                {
-                    Name = "MainCamera",
-                    AttachedActorName = "Player",
-                    Position = new Vector3(10.0f, 0.0f, 0.0f),
-                    Type = ProjectionTypes.Perspective,
-                    ZNear = 0.1f,
-                    ZFar = 1000.0f,
-                    FieldOfViewY = UnitConversions.ToRadians(45.0f)
-                }
-            };
+            var map = new Map3D();
 
-            var mapActor = new MapActor()
+            map.Cameras.Add(new MapCamera()
+            {
+                Name = "MainCamera",
+                AttachedActorName = "Player",
+                Position = new Vector3(10.0f, 0.0f, 0.0f),
+                Type = ProjectionTypes.Perspective,
+                ZNear = 0.1f,
+                ZFar = 1000.0f,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            });
+
+            map.Actors.Add(new MapActor()
             {
                 Name = "Player",
                 Position = Vector3.Zero,
@@ -65,9 +64,7 @@ namespace SauceEditor.Helpers.Builders
                 Orientation = Vector3.Zero,
                 Scale = Vector3.One,
                 ModelFilePath = model.Path
-            };
-
-            map.Actors.Add(mapActor);
+            });
 
             return new MapComponent()
             {
@@ -78,19 +75,18 @@ namespace SauceEditor.Helpers.Builders
 
         public static MapComponent GenerateTextureMap(TextureComponent texture)
         {
-            var map = new Map3D()
+            var map = new Map3D();
+
+            map.Cameras.Add(new MapCamera()
             {
-                Camera = new MapCamera()
-                {
-                    Name = "MainCamera",
-                    //AttachedActorName = "Player",
-                    Position = new Vector3(0.0f, -20.0f, -20.0f),
-                    Type = ProjectionTypes.Perspective,
-                    ZNear = 0.1f,
-                    ZFar = 1000.0f,
-                    FieldOfViewY = UnitConversions.ToRadians(45.0f)
-                }
-            };
+                Name = "MainCamera",
+                //AttachedActorName = "Player",
+                Position = new Vector3(0.0f, -20.0f, -20.0f),
+                Type = ProjectionTypes.Perspective,
+                ZNear = 0.1f,
+                ZFar = 1000.0f,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            });
 
             var mapBrush = MapBrush.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
             mapBrush.TexturesPaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
@@ -121,19 +117,18 @@ namespace SauceEditor.Helpers.Builders
 
         public static MapComponent GenerateMaterialMap(MaterialComponent material)
         {
-            var map = new Map3D()
+            var map = new Map3D();
+
+            map.Cameras.Add(new MapCamera()
             {
-                Camera = new MapCamera()
-                {
-                    Name = "MainCamera",
-                    AttachedActorName = "Player",
-                    Position = new Vector3(10.0f, 0.0f, 0.0f),
-                    Type = ProjectionTypes.Perspective,
-                    ZNear = 0.1f,
-                    ZFar = 1000.0f,
-                    FieldOfViewY = UnitConversions.ToRadians(45.0f)
-                }
-            };
+                Name = "MainCamera",
+                AttachedActorName = "Player",
+                Position = new Vector3(10.0f, 0.0f, 0.0f),
+                Type = ProjectionTypes.Perspective,
+                ZNear = 0.1f,
+                ZFar = 1000.0f,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            });
 
             //var mapBrush = MapBrush.Sphere(Vector3.Zero, 5.0f);
             //mapBrush.Material = SpiceEngine.Rendering.Materials.Material.LoadFromFile();

@@ -15,9 +15,9 @@ namespace SpiceEngine.Game
     public class GameLoader : IGameLoader
     {
         private IEntityProvider _entityProvider;
-        private IEntityLoader<IShapeBuilder> _physicsLoader;
-        private IEntityLoader<IBehaviorBuilder> _behaviorLoader;
-        private List<IEntityLoader<IRenderableBuilder>> _renderableLoaders = new List<IEntityLoader<IRenderableBuilder>>();
+        private IComponentLoader<IShapeBuilder> _physicsLoader;
+        private IComponentLoader<IBehaviorBuilder> _behaviorLoader;
+        private List<IComponentLoader<IRenderableBuilder>> _renderableLoaders = new List<IComponentLoader<IRenderableBuilder>>();
 
         private List<IEntityBuilder> _entityBuilders = new List<IEntityBuilder>();
         private List<IShapeBuilder> _shapeBuilders = new List<IShapeBuilder>();
@@ -73,7 +73,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void SetPhysicsLoader(IEntityLoader<IShapeBuilder> physicsLoader)
+        public void SetPhysicsLoader(IComponentLoader<IShapeBuilder> physicsLoader)
         {
             lock (_builderLock)
             {
@@ -81,7 +81,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void SetBehaviorLoader(IEntityLoader<IBehaviorBuilder> behaviorLoader)
+        public void SetBehaviorLoader(IComponentLoader<IBehaviorBuilder> behaviorLoader)
         {
             lock (_builderLock)
             {
@@ -89,7 +89,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void AddRenderableLoader(IEntityLoader<IRenderableBuilder> renderableLoader)
+        public void AddRenderableLoader(IComponentLoader<IRenderableBuilder> renderableLoader)
         {
             lock (_builderLock)
             {
@@ -122,10 +122,46 @@ namespace SpiceEngine.Game
                 _behaviorBuilders.Add(null);
                 _renderableBuilders.Add(mapBrush);
 
-                if (EntityMapping != null)
-                {
-                    EntityMapping.AddBrushes(1);
-                }
+                EntityMapping?.AddBrushes(1);
+            }
+        }
+
+        public void AddFromMapEntity(MapActor mapActor)
+        {
+            lock (_builderLock)
+            {
+                _entityBuilders.Add(mapActor);
+                _shapeBuilders.Add(mapActor);
+                _behaviorBuilders.Add(mapActor);
+                _renderableBuilders.Add(mapActor);
+
+                EntityMapping?.AddActors(1);
+            }
+        }
+
+        public void AddFromMapEntity(MapVolume mapVolume)
+        {
+            lock (_builderLock)
+            {
+                _entityBuilders.Add(mapVolume);
+                _shapeBuilders.Add(mapVolume);
+                _behaviorBuilders.Add(null);
+                _renderableBuilders.Add(null);
+
+                EntityMapping?.AddVolumes(1);
+            }
+        }
+
+        public void AddFromMapEntity(MapLight mapLight)
+        {
+            lock (_builderLock)
+            {
+                _entityBuilders.Add(mapLight);
+                _shapeBuilders.Add(null);
+                _behaviorBuilders.Add(null);
+                _renderableBuilders.Add(null);
+
+                EntityMapping?.AddLights(1);
             }
         }
 
@@ -183,9 +219,9 @@ namespace SpiceEngine.Game
 
             // Only process for builders added by the time we begin loading
             var entityCount = 0;
-            IEntityLoader<IShapeBuilder> physicsLoader = null;
-            IEntityLoader<IBehaviorBuilder> behaviorLoader = null;
-            IEntityLoader<IRenderableBuilder>[] renderableLoaders = null;
+            IComponentLoader<IShapeBuilder> physicsLoader = null;
+            IComponentLoader<IBehaviorBuilder> behaviorLoader = null;
+            IComponentLoader<IRenderableBuilder>[] renderableLoaders = null;
             var rendererWaitCount = 0;
 
             lock (_builderLock)
@@ -305,7 +341,7 @@ namespace SpiceEngine.Game
 
                     //logWatch.Log("LoadRenderTasks Done");
 
-                    IEntityLoader<IRenderableBuilder> renderableLoader;
+                    IComponentLoader<IRenderableBuilder> renderableLoader;
 
                     lock (_builderLock)
                     {
@@ -343,7 +379,7 @@ namespace SpiceEngine.Game
             logWatch.Stop();
         }
 
-        private async Task LoadRenderableBuilder(int id, int builderIndex, int rendererIndex, IEntityLoader<IRenderableBuilder>[] renderableLoaders)
+        private async Task LoadRenderableBuilder(int id, int builderIndex, int rendererIndex, IComponentLoader<IRenderableBuilder>[] renderableLoaders)
         {
             IRenderableBuilder renderableBuilder = _renderableBuilders[builderIndex];
 
@@ -351,7 +387,7 @@ namespace SpiceEngine.Game
             {
                 if (rendererIndex < renderableLoaders.Length)
                 {
-                    renderableLoaders[rendererIndex].AddEntity(id, renderableBuilder);
+                    renderableLoaders[rendererIndex].AddComponent(id, renderableBuilder);
                 }
                 else
                 {
@@ -359,20 +395,20 @@ namespace SpiceEngine.Game
 
                     if (result)
                     {
-                        IEntityLoader<IRenderableBuilder> renderableLoader;
+                        IComponentLoader<IRenderableBuilder> renderableLoader;
 
                         lock (_builderLock)
                         {
                             renderableLoader = _renderableLoaders[rendererIndex];
                         }
 
-                        renderableLoader.AddEntity(id, renderableBuilder);
+                        renderableLoader.AddComponent(id, renderableBuilder);
                     }
                 }
             }
         }
 
-        private void LoadShapeBuilder(int id, int builderIndex, IEntityLoader<IShapeBuilder> physicsLoader)
+        private void LoadShapeBuilder(int id, int builderIndex, IComponentLoader<IShapeBuilder> physicsLoader)
         {
             if (physicsLoader != null)
             {
@@ -380,12 +416,12 @@ namespace SpiceEngine.Game
 
                 if (shapeBuilder != null)
                 {
-                    physicsLoader.AddEntity(id, shapeBuilder);
+                    physicsLoader.AddComponent(id, shapeBuilder);
                 }
             }
         }
 
-        private void LoadBehaviorBuilder(int id, int builderIndex, IEntityLoader<IBehaviorBuilder> behaviorLoader)
+        private void LoadBehaviorBuilder(int id, int builderIndex, IComponentLoader<IBehaviorBuilder> behaviorLoader)
         {
             if (behaviorLoader != null)
             {
@@ -393,7 +429,7 @@ namespace SpiceEngine.Game
 
                 if (behaviorBuilder != null)
                 {
-                    behaviorLoader.AddEntity(id, behaviorBuilder);
+                    behaviorLoader.AddComponent(id, behaviorBuilder);
                 }
             }
         }
@@ -404,9 +440,9 @@ namespace SpiceEngine.Game
 
             // Only process for builders added by the time we begin loading
             var entityCount = 0;
-            IEntityLoader<IShapeBuilder> physicsLoader = null;
-            IEntityLoader<IBehaviorBuilder> behaviorLoader = null;
-            IEntityLoader<IRenderableBuilder>[] renderableLoaders = null;
+            IComponentLoader<IShapeBuilder> physicsLoader = null;
+            IComponentLoader<IBehaviorBuilder> behaviorLoader = null;
+            IComponentLoader<IRenderableBuilder>[] renderableLoaders = null;
             var rendererWaitCount = 0;
 
             lock (_builderLock)
@@ -492,7 +528,7 @@ namespace SpiceEngine.Game
                     {
                         await Task.WhenAll(loadRenderTasks[rendererIndex]);
 
-                        IEntityLoader<IRenderableBuilder> renderableLoader;
+                        IComponentLoader<IRenderableBuilder> renderableLoader;
 
                         lock (_builderLock)
                         {

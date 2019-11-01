@@ -15,11 +15,9 @@ namespace SampleGameProject.Helpers.Builders
     {
         public static void GenerateTestMap(string filePath)
         {
-            var map = new Map3D()
-            {
-                Camera = new SampleGameProject.GameObjects.Camera()
-            };
+            var map = new Map3D();
 
+            map.Cameras.AddRange(GenerateCameras());
             map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
@@ -36,6 +34,11 @@ namespace SampleGameProject.Helpers.Builders
             };
 
             map.Save(filePath);
+        }
+
+        private static IEnumerable<MapCamera> GenerateCameras()
+        {
+            yield return new SampleGameProject.GameObjects.Camera();
         }
 
         private static IEnumerable<MapActor> GenerateActors()

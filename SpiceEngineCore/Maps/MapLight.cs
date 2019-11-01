@@ -7,7 +7,7 @@ using System;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapLight : MapEntity3D<ILight>
+    public class MapLight : MapEntity3D<ILight>, IMapLight
     {
         public enum LightTypes
         {

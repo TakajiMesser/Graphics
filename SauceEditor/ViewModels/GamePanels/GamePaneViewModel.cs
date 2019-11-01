@@ -1,9 +1,11 @@
+using OpenTK;
 using SauceEditor.Views.GamePanels;
 using SauceEditorCore.Models.Components;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Models;
 using System;
 using System.Timers;
@@ -20,7 +22,7 @@ namespace SauceEditor.ViewModels
         private System.Drawing.Point _cursorLocation;
         private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
 
-        public IPosition Positioner { get; set; }
+        public IDragPosition DragPositioner { get; set; }
         public IEntityProvider EntityProvider { get; set; }
         public IGameLoader GameLoader { get; set; }
         public IMapper Mapper { get; set; }
@@ -44,15 +46,32 @@ namespace SauceEditor.ViewModels
                 {
                     var args = (DragEventArgs)p;
 
-                    Console.WriteLine("DEM ARGS = {");
-
-                    Console.WriteLine("}");
-
                     if (args.Data.GetDataPresent(typeof(ModelMesh)))
                     {
-                        // TODO - We also need to get the drop position relative to the game view so we know where to place the object
+                        // TODO - Pass primitive and type -> For now, assume that this is a Brush
                         var meshShape = args.Data.GetData(typeof(ModelMesh)) as ModelMesh;
-                        Positioner?.Position(meshShape, args);
+                        var builder = new ModelBuilder(meshShape);
+                        var mapBrush = new MapBrush(builder);
+
+                        var coordinates = DragPositioner.Position(args);
+                        var placementID = Control.Run(() => Control.GetEntityIDFromPoint(coordinates));
+
+                        if (placementID > 0)
+                        {
+                            var placementEntity = EntityProvider.GetEntity(placementID);
+                            mapBrush.Position = new Vector3()
+                            {
+                                X = placementEntity.Position.X,
+                                Y = placementEntity.Position.Y,
+                                Z = placementEntity.Position.Z
+                            };
+                        }
+                        else
+                        {
+                            // TODO - Default to Z = 0, then ray trace from camera to find corresponding X and Y coordinates
+                        }
+
+                        Mapper.AddMapBrush(mapBrush);
                     }
                 },
                 p => true

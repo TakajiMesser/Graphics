@@ -153,9 +153,9 @@ namespace SpiceEngine.Game
             _gameLoader.TimedOut += (s, args) => Run(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
-            if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
+            if (!string.IsNullOrEmpty(_map.Cameras.First().AttachedActorName))
             {
-                var attachedEntity = _gameManager.EntityManager.GetEntity(_map.Camera.AttachedActorName);
+                var attachedEntity = _gameManager.EntityManager.GetEntity(_map.Cameras.First().AttachedActorName);
                 _gameManager.Camera.AttachToEntity(attachedEntity, true, false);
             }
 

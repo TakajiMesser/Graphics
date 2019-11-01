@@ -1,14 +1,16 @@
-﻿using OpenTK;
+﻿using Newtonsoft.Json;
+using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapCamera
+    public class MapCamera : MapEntity3D<Camera>, IMapCamera
     {
         public string Name { get; set; }
-        public Vector3 Position { get; set; }
+
         public string AttachedActorName { get; set; }
         public ProjectionTypes Type { get; set; }
         public float ZNear { get; set; }
@@ -24,11 +26,14 @@ namespace SpiceEngineCore.Maps
         /// </summary>
         public float FieldOfViewY { get; set; }
 
-        public Camera ToCamera(Resolution resolution)
+        [JsonIgnore]
+        public Resolution Resolution { get; set; }
+
+        public override IEntity ToEntity()
         {
             var camera = Type == ProjectionTypes.Orthographic
-                ? (Camera)new OrthographicCamera(Name, resolution, ZNear, ZFar, StartingWidth)
-                : new PerspectiveCamera(Name, resolution, ZNear, ZFar, FieldOfViewY);
+                ? (Camera)new OrthographicCamera(Name, Resolution, ZNear, ZFar, StartingWidth)
+                : new PerspectiveCamera(Name, Resolution, ZNear, ZFar, FieldOfViewY);
 
             if (Position != null)
             {

@@ -17,7 +17,7 @@ using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics
 {
-    public class PhysicsManager : UpdateManager, ICollisionProvider, IEntityLoader<IShapeBuilder>
+    public class PhysicsManager : UpdateManager, ICollisionProvider, IComponentLoader<IShapeBuilder>
     {
         private IEntityProvider _entityProvider;
 
@@ -63,7 +63,7 @@ namespace SpiceEngine.Physics
 
         public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
 
-        public void AddEntity(int entityID, IShapeBuilder builder)
+        public void AddComponent(int entityID, IShapeBuilder builder)
         {
             var shape = builder.ToShape();
             var partition = shape.ToPartition(builder.Position);
@@ -105,29 +105,32 @@ namespace SpiceEngine.Physics
             throw new ArgumentOutOfRangeException("Could not handle entity type " + entity.GetType());
         }
 
-        private IBody GetBody(int entityID, Shape3D shape)
+        private IBody GetBody(int entityID, IShape shape)
         {
             var entity = _entityProvider.GetEntity(entityID);
 
-            switch (entity)
+            if (shape is Shape3D shape3D)
             {
-                case Actor actor:
-                    var body = new RigidBody3D(actor, shape);
-                    body.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
-                    body.Updated += (s, args) => actor.Position = args.Body.Position;
+                switch (entity)
+                {
+                    case IActor actor:
+                        var body = new RigidBody3D(actor, shape3D);
+                        body.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
+                        body.Updated += (s, args) => actor.Position = args.Body.Position;
 
-                    if (body.State == BodyStates.Awake)
-                    {
-                        _awakeBodyByEntityID.Add(entityID, body);
-                    }
+                        if (body.State == BodyStates.Awake)
+                        {
+                            _awakeBodyByEntityID.Add(entityID, body);
+                        }
 
-                    return body;
-                case Brush brush:
-                    return new StaticBody3D(brush, shape);
-                case Volume volume:
-                    return new StaticBody3D(volume, shape);
-                case ILight light:
-                    return null;
+                        return body;
+                    case IBrush brush:
+                        return new StaticBody3D(brush, shape3D);
+                    case IVolume volume:
+                        return new StaticBody3D(volume, shape3D);
+                    case ILight light:
+                        return null;
+                }
             }
 
             throw new ArgumentOutOfRangeException("Could not handle entity type " + entity.GetType());

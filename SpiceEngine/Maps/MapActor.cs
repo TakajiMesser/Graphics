@@ -3,7 +3,6 @@ using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Animations;
@@ -17,9 +16,9 @@ using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Maps
+namespace SpiceEngineCore.Maps
 {
-    public class MapActor : MapEntity3D<IActor>, IRenderableBuilder, IShapeBuilder, IBehaviorBuilder
+    public class MapActor : MapEntity3D<IActor>, IMapActor
     {
         public string Name { get; set; }
 
@@ -253,7 +252,7 @@ namespace SpiceEngine.Maps
 
         public IRenderable ToRenderable() => new Model(ModelFilePath);
 
-        public Shape3D ToShape()
+        public IShape ToShape()
         {
             using (var importer = new Assimp.AssimpContext())
             {

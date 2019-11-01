@@ -17,9 +17,9 @@ namespace SpiceEngineCore.Game.Loading
         event EventHandler<EntityMapEventArgs> EntitiesMapped;
 
         void SetEntityProvider(IEntityProvider entityProvider);
-        void SetPhysicsLoader(IEntityLoader<IShapeBuilder> physicsLoader);
-        void SetBehaviorLoader(IEntityLoader<IBehaviorBuilder> behaviorLoader);
-        void AddRenderableLoader(IEntityLoader<IRenderableBuilder> renderableLoader);
+        void SetPhysicsLoader(IComponentLoader<IShapeBuilder> physicsLoader);
+        void SetBehaviorLoader(IComponentLoader<IBehaviorBuilder> behaviorLoader);
+        void AddRenderableLoader(IComponentLoader<IRenderableBuilder> renderableLoader);
 
         void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
         void AddFromMapEntity(MapBrush mapBrush);

@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
 {
-    public interface IEntityLoader<T> where T : IBuilder
+    public interface IComponentLoader<T> where T : IComponentBuilder
     {
-        void AddEntity(int id, T builder);
+        void AddComponent(int entityID, T builder);
         Task Load();
     }
 }

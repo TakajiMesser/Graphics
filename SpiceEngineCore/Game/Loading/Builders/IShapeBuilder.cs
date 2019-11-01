@@ -3,7 +3,7 @@ using SpiceEngineCore.Physics.Shapes;
 
 namespace SpiceEngineCore.Game.Loading.Builders
 {
-    public interface IShapeBuilder : IBuilder
+    public interface IShapeBuilder : IComponentBuilder<IShape>
     {
         Vector3 Position { get; set; }
         //Vector3 Rotation { get; set; }
@@ -11,6 +11,6 @@ namespace SpiceEngineCore.Game.Loading.Builders
 
         bool IsPhysical { get; }
 
-        Shape3D ToShape();
+        IShape ToShape();
     }
 }

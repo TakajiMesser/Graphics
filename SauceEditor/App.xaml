@@ -9,76 +9,115 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Themes/Dark.xaml"/>
             </ResourceDictionary.MergedDictionaries>
-            <Style TargetType="{x:Type Button}">
-                <Setter Property="Button.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="Button.Background" Value="{DynamicResource BackgroundBrush}"/>
-                <Setter Property="Button.BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="Button">
+                <Setter Property="Padding" Value="1"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
             </Style>
-            <Style TargetType="{x:Type TreeView}">
-                <Setter Property="TreeView.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="TreeView.Background" Value="{DynamicResource BackgroundBrush}"/>
-                <Setter Property="TreeView.BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="ToggleButton">
+                <Setter Property="Padding" Value="1"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderThickness" Value="1"/>
             </Style>
-            <Style TargetType="{x:Type TextBlock}">
+            <Style TargetType="TreeView">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+            </Style>
+            <Style TargetType="TextBlock">
                 <Style.Triggers>
-                    <Trigger Property="TextBlock.IsEnabled" Value="true">
-                        <Setter Property="TextBlock.Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                    <Trigger Property="IsEnabled" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
                     </Trigger>
-                    <Trigger Property="TextBlock.IsEnabled" Value="false">
-                        <Setter Property="TextBlock.Foreground" Value="{DynamicResource DisabledBrush}"/>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}"/>
                     </Trigger>
                 </Style.Triggers>
-                <Setter Property="TextBlock.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="TextBlock.Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
             </Style>
-            <Style TargetType="{x:Type TextBox}">
+            <Style TargetType="TextBox">
                 <Style.Triggers>
-                    <Trigger Property="TextBox.IsEnabled" Value="true">
-                        <Setter Property="TextBox.Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                    <Trigger Property="IsEnabled" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
                     </Trigger>
-                    <Trigger Property="TextBox.IsEnabled" Value="false">
-                        <Setter Property="TextBox.Foreground" Value="{DynamicResource DisabledBrush}"/>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}"/>
                     </Trigger>
                 </Style.Triggers>
-                <Setter Property="TextBox.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="TextBox.Background" Value="{DynamicResource BackgroundBrush}"/>
-                <Setter Property="TextBox.BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
             </Style>
-            <Style TargetType="{x:Type Label}">
+            <Style TargetType="Label">
                 <Style.Triggers>
-                    <Trigger Property="Label.IsEnabled" Value="true">
-                        <Setter Property="Label.Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                    <Trigger Property="IsEnabled" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
                     </Trigger>
-                    <Trigger Property="Label.IsEnabled" Value="false">
-                        <Setter Property="Label.Foreground" Value="{DynamicResource DisabledBrush}"/>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}"/>
                     </Trigger>
                 </Style.Triggers>
-                <Setter Property="Label.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="Label.Background" Value="{DynamicResource BackgroundBrush}"/>
-                <Setter Property="Label.BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
             </Style>
-            <Style TargetType="{x:Type Menu}">
-                <Setter Property="Menu.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="Menu.Background" Value="{DynamicResource BackgroundBrush}"/>
-                <Setter Property="Menu.BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="Menu">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="Transparent"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
-            <Style TargetType="{x:Type MenuItem}">
-                <Setter Property="MenuItem.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="MenuItem.Background" Value="{DynamicResource BackgroundBrush}"/>
-                <Setter Property="MenuItem.BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="MenuItem">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
             </Style>
-            <Style TargetType="{x:Type Window}">
-                <Setter Property="Window.Foreground" Value="{DynamicResource ForegroundBrush}"/>
-                <Setter Property="Window.Background" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="Window">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
-            <Style TargetType="{x:Type ToolBarTray}">
-                <Setter Property="ToolBarTray.Background" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="ToolBarTray">
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
             </Style>
-            <Style TargetType="{x:Type StackPanel}">
-                <Setter Property="StackPanel.Background" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="StackPanel">
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
             </Style>
-            <Style TargetType="{x:Type DockPanel}">
-                <Setter Property="DockPanel.Background" Value="{DynamicResource BackgroundBrush}"/>
+            <Style TargetType="DockPanel">
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+            </Style>
+            <Style TargetType="ListBox">
+                <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
+                <Setter Property="BorderBrush" Value="{DynamicResource BackgroundBrush}"/>
+                <Style.Triggers>
+                    <Trigger Property="IsEnabled" Value="true">
+                        <Setter Property="Foreground" Value="{DynamicResource ForegroundBrush}"/>
+                    </Trigger>
+                    <Trigger Property="IsEnabled" Value="false">
+                        <Setter Property="Foreground" Value="{DynamicResource DisabledBrush}"/>
+                    </Trigger>
+                </Style.Triggers>
             </Style>
         </ResourceDictionary>
         

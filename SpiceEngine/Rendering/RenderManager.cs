@@ -41,7 +41,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : EntityLoader<IRenderableBuilder>, IGridRenderer
+    public class RenderManager : ComponentLoader<IRenderableBuilder>, IGridRenderer
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
@@ -106,7 +106,7 @@ namespace SpiceEngine.Rendering
 
         public void LoadFromMap(Map map) => _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
 
-        public override void AddEntity(int entityID, IRenderableBuilder builder)
+        public override void AddComponent(int entityID, IRenderableBuilder builder)
         {
             var renderable = builder.ToRenderable();
 
@@ -171,7 +171,7 @@ namespace SpiceEngine.Rendering
             });
         }
 
-        protected override void LoadEntities()
+        protected override void LoadComponents()
         {
             // TODO - If Invoker is null, queue up this action
             Invoker.RunAsync(() =>
@@ -554,13 +554,20 @@ namespace SpiceEngine.Rendering
 
             GL.Disable(EnableCap.DepthTest);
 
-            if (IsInEditorMode && _selectionProvider != null)
-            {
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
-            }
-
             _renderToScreen.Render(_deferredRenderer.FinalTexture);
             _logManager.RenderToScreen();
+
+            if (IsInEditorMode && _selectionProvider != null && _selectionProvider.SelectionCount > 0)
+            {
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+                GL.DepthFunc(DepthFunction.Always);
+
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+            }
         }
 
         public void RenderFullFrame()
@@ -588,10 +595,17 @@ namespace SpiceEngine.Rendering
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
 
-            if (IsInEditorMode && _selectionProvider != null)
+            /*if (IsInEditorMode && _selectionProvider != null && _selectionProvider.SelectionCount > 0)
             {
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+                GL.DepthFunc(DepthFunction.Always);
+
                 _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
-            }
+            }*/
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);

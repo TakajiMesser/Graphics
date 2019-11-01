@@ -3,8 +3,8 @@ using System.Windows;
 
 namespace SauceEditor.Views.GamePanels
 {
-    public interface IPosition
+    public interface IDragPosition
     {
-        void Position(ModelMesh modelMesh, DragEventArgs args);
+        System.Drawing.Point Position(DragEventArgs args);
     }
 }

@@ -87,6 +87,24 @@ namespace SauceEditor.ViewModels
             _gameLoader.Load();
         }
 
+        //public void AddMapActor(MapActor mapActor) { }
+
+        public void AddMapVolume(MapVolume mapVolume)
+        {
+            MapComponent.Map.Volumes.Add(mapVolume);
+
+            _gameLoader.AddFromMapEntity(mapVolume);
+            _gameLoader.Load();
+        }
+
+        public void AddMapLight(MapLight mapLight)
+        {
+            MapComponent.Map.Lights.Add(mapLight);
+
+            _gameLoader.AddFromMapEntity(mapLight);
+            _gameLoader.Load();
+        }
+
         private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
