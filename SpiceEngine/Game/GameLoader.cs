@@ -113,7 +113,30 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void AddFromMapEntity(MapBrush mapBrush)
+        public void Add(IMapEntity3D mapEntity)
+        {
+            lock (_builderLock)
+            {
+                _entityBuilders.Add(mapEntity);
+
+                if (mapEntity is IShapeBuilder shapeBuilder)
+                {
+                    _shapeBuilders.Add(shapeBuilder);
+                }
+
+                if (mapEntity is IBehaviorBuilder behaviorBuilder)
+                {
+                    _behaviorBuilders.Add(behaviorBuilder);
+                }
+
+                if (mapEntity is IRenderableBuilder renderableBuilder)
+                {
+                    _renderableBuilders.Add(renderableBuilder);
+                }
+            }
+        }
+
+        public void AddFromMapEntity(IMapBrush mapBrush)
         {
             lock (_builderLock)
             {
@@ -126,7 +149,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void AddFromMapEntity(MapActor mapActor)
+        public void AddFromMapEntity(IMapActor mapActor)
         {
             lock (_builderLock)
             {
@@ -139,7 +162,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void AddFromMapEntity(MapVolume mapVolume)
+        public void AddFromMapEntity(IMapVolume mapVolume)
         {
             lock (_builderLock)
             {
@@ -152,7 +175,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void AddFromMapEntity(MapLight mapLight)
+        public void AddFromMapEntity(IMapLight mapLight)
         {
             lock (_builderLock)
             {

@@ -30,6 +30,12 @@ namespace SpiceEngine.Maps
         public IMapVolume GetVolumeAt(int index) => Volumes[index];
         public IMapLight GetLightAt(int index) => Lights[index];
 
+        public void AddCamera(IMapCamera mapCamera) { }
+        public void AddActor(IMapActor mapActor) { }
+        public void AddBrush(IMapBrush mapBrush) { }
+        public void AddVolume(IMapVolume mapVolume) { }
+        public void AddLight(IMapLight mapLight) { }
+
         protected abstract void CalculateBounds();
 
         public void Save(string filePath) => Serializer.Save(filePath, this as Map3D);

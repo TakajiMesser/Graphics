@@ -14,10 +14,10 @@
         IMapVolume GetVolumeAt(int index);
         IMapLight GetLightAt(int index);
 
-        /*void AddCamera(IMapCamera mapCamera);
+        void AddCamera(IMapCamera mapCamera);
         void AddActor(IMapActor mapActor);
         void AddBrush(IMapBrush mapBrush);
         void AddVolume(IMapVolume mapVolume);
-        void AddLight(IMapLight mapLight);*/
+        void AddLight(IMapLight mapLight);
     }
 }

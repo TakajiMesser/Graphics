@@ -1,4 +1,3 @@
-using OpenTK;
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Properties;
 using SauceEditor.ViewModels.Trees.Entities;
@@ -15,7 +14,6 @@ using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Drawing;
 using System.Linq;
 using System.Windows.Input;
 using ViewTypes = SauceEditor.Models.ViewTypes;
@@ -79,9 +77,9 @@ namespace SauceEditor.ViewModels
         public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
         public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);*/
 
-        public void AddMapBrush(MapBrush mapBrush)
+        public void AddMapBrush(IMapBrush mapBrush)
         {
-            MapComponent.Map.Brushes.Add(mapBrush);
+            MapComponent.Map.AddBrush(mapBrush);
 
             _gameLoader.AddFromMapEntity(mapBrush);
             _gameLoader.Load();
