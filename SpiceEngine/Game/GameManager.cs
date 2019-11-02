@@ -43,7 +43,7 @@ namespace SpiceEngine.Game
             InputManager = new InputManager(mouseTracker);
         }
 
-        public void LoadFromMap(Map map)
+        public void LoadFromMap(IMap map)
         {
             IsLoaded = false;
 

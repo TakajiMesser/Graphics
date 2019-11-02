@@ -77,29 +77,43 @@ namespace SauceEditor.ViewModels
         public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
         public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);*/
 
+        public void AddMapCamera(IMapCamera mapCamera)
+        {
+            MapComponent.Map.AddCamera(mapCamera);
+
+            _gameLoader.Add(mapCamera);
+            _gameLoader.Load();
+        }
+
         public void AddMapBrush(IMapBrush mapBrush)
         {
             MapComponent.Map.AddBrush(mapBrush);
 
-            _gameLoader.AddFromMapEntity(mapBrush);
+            _gameLoader.Add(mapBrush);
             _gameLoader.Load();
         }
 
-        //public void AddMapActor(MapActor mapActor) { }
-
-        public void AddMapVolume(MapVolume mapVolume)
+        public void AddMapActor(IMapActor mapActor)
         {
-            MapComponent.Map.Volumes.Add(mapVolume);
+            MapComponent.Map.AddActor(mapActor);
 
-            _gameLoader.AddFromMapEntity(mapVolume);
+            _gameLoader.Add(mapActor);
             _gameLoader.Load();
         }
 
-        public void AddMapLight(MapLight mapLight)
+        public void AddMapLight(IMapLight mapLight)
         {
-            MapComponent.Map.Lights.Add(mapLight);
+            MapComponent.Map.AddLight(mapLight);
 
-            _gameLoader.AddFromMapEntity(mapLight);
+            _gameLoader.Add(mapLight);
+            _gameLoader.Load();
+        }
+
+        public void AddMapVolume(IMapVolume mapVolume)
+        {
+            MapComponent.Map.AddVolume(mapVolume);
+
+            _gameLoader.Add(mapVolume);
             _gameLoader.Load();
         }
 
@@ -368,7 +382,7 @@ namespace SauceEditor.ViewModels
             _gameLoader.EntitiesMapped += (s, args) =>
             {
                 MapComponent.ClearEntityMapping();
-                MapComponent.SetEntityMap(_gameLoader.EntityMapping);
+                MapComponent.SetEntityMapping(_gameLoader.EntityMapping);
                 EntityDisplayer.UpdateFromModel(MapComponent, EntityFactory);
             };
 

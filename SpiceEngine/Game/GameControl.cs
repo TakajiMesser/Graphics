@@ -10,6 +10,7 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
@@ -214,13 +215,14 @@ namespace SpiceEngine.Game
             base.OnLoad(e);
         }
 
-        public void LoadGameManager(GameManager gameManager, Map map/*, EntityMapping entityMapping*/)
+        public void LoadGameManager(GameManager gameManager, IMap map)
         {
             _entityProvider = gameManager.EntityManager;
             _inputProvider = gameManager.InputManager;
             SelectionManager = new SelectionManager(_entityProvider);
 
-            _map = map;
+            // TODO - Abstract out skybox texture provider to avoid needing map here
+            _map = map as Map;
 
             lock (_loadLock)
             {

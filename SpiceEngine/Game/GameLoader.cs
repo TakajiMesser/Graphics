@@ -1,5 +1,4 @@
-﻿using SpiceEngine.Maps;
-using SpiceEngine.Rendering.PostProcessing;
+﻿using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
@@ -9,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EntityMappingEventArgs = SpiceEngineCore.Maps.EntityMappingEventArgs;
 
 namespace SpiceEngine.Game
 {
@@ -32,12 +32,12 @@ namespace SpiceEngine.Game
         private readonly object _builderLock = new object();
         private readonly object _loadLock = new object();
 
-        public EntityMap EntityMapping { get; private set; } = null;
+        public EntityMapping EntityMapping { get; private set; } = null;
 
         public bool TrackEntityMapping
         {
             get => EntityMapping != null;
-            set => EntityMapping = value ? new EntityMap() : null;
+            set => EntityMapping = value ? new EntityMapping() : null;
         }
 
         public int RendererWaitCount
@@ -63,7 +63,7 @@ namespace SpiceEngine.Game
         public bool IsLoading { get; private set; }
 
         public event EventHandler<EventArgs> TimedOut;
-        public event EventHandler<EntityMapEventArgs> EntitiesMapped;
+        public event EventHandler<EntityMappingEventArgs> EntitiesMapped;
 
         public void SetEntityProvider(IEntityProvider entityProvider)
         {
@@ -117,119 +117,84 @@ namespace SpiceEngine.Game
         {
             lock (_builderLock)
             {
-                _entityBuilders.Add(mapEntity);
+                AddBuilders(mapEntity);
+                AddToEntityMapping(mapEntity);
+            }
+        }
 
-                if (mapEntity is IShapeBuilder shapeBuilder)
+        private void AddBuilders(IMapEntity3D mapEntity)
+        {
+            _entityBuilders.Add(mapEntity);
+            _shapeBuilders.Add(mapEntity is IShapeBuilder shapeBuilder ? shapeBuilder : null);
+            _behaviorBuilders.Add(mapEntity is IBehaviorBuilder behaviorBuilder ? behaviorBuilder : null);
+            _renderableBuilders.Add(mapEntity is IRenderableBuilder renderableBuilder ? renderableBuilder : null);
+        }
+
+        private void AddToEntityMapping(IMapEntity3D mapEntity)
+        {
+            var entityMapping = EntityMapping;
+
+            if (entityMapping != null)
+            {
+                if (mapEntity is IMapCamera)
                 {
-                    _shapeBuilders.Add(shapeBuilder);
+                    entityMapping.AddCameras(1);
                 }
-
-                if (mapEntity is IBehaviorBuilder behaviorBuilder)
+                else if (mapEntity is IMapBrush)
                 {
-                    _behaviorBuilders.Add(behaviorBuilder);
+                    entityMapping.AddBrushes(1);
                 }
-
-                if (mapEntity is IRenderableBuilder renderableBuilder)
+                else if (mapEntity is IMapActor)
                 {
-                    _renderableBuilders.Add(renderableBuilder);
+                    entityMapping.AddActors(1);
+                }
+                else if (mapEntity is IMapLight)
+                {
+                    entityMapping.AddLights(1);
+                }
+                else if (mapEntity is IMapVolume)
+                {
+                    entityMapping.AddVolumes(1);
                 }
             }
         }
 
-        public void AddFromMapEntity(IMapBrush mapBrush)
+        public void AddFromMap(IMap map)
         {
             lock (_builderLock)
             {
-                _entityBuilders.Add(mapBrush);
-                _shapeBuilders.Add(mapBrush);
-                _behaviorBuilders.Add(null);
-                _renderableBuilders.Add(mapBrush);
-
-                EntityMapping?.AddBrushes(1);
-            }
-        }
-
-        public void AddFromMapEntity(IMapActor mapActor)
-        {
-            lock (_builderLock)
-            {
-                _entityBuilders.Add(mapActor);
-                _shapeBuilders.Add(mapActor);
-                _behaviorBuilders.Add(mapActor);
-                _renderableBuilders.Add(mapActor);
-
-                EntityMapping?.AddActors(1);
-            }
-        }
-
-        public void AddFromMapEntity(IMapVolume mapVolume)
-        {
-            lock (_builderLock)
-            {
-                _entityBuilders.Add(mapVolume);
-                _shapeBuilders.Add(mapVolume);
-                _behaviorBuilders.Add(null);
-                _renderableBuilders.Add(null);
-
-                EntityMapping?.AddVolumes(1);
-            }
-        }
-
-        public void AddFromMapEntity(IMapLight mapLight)
-        {
-            lock (_builderLock)
-            {
-                _entityBuilders.Add(mapLight);
-                _shapeBuilders.Add(null);
-                _behaviorBuilders.Add(null);
-                _renderableBuilders.Add(null);
-
-                EntityMapping?.AddLights(1);
-            }
-        }
-
-        public void AddFromMap(Map map)
-        {
-            lock (_builderLock)
-            {
-                foreach (var light in map.Lights)
+                for (var i = 0; i < map.CameraCount; i++)
                 {
-                    _entityBuilders.Add(light);
-                    _shapeBuilders.Add(null);
-                    _behaviorBuilders.Add(null);
-                    _renderableBuilders.Add(null);
+                    AddBuilders(map.GetCameraAt(i));
                 }
 
-                foreach (var brush in map.Brushes)
+                for (var i = 0; i < map.BrushCount; i++)
                 {
-                    _entityBuilders.Add(brush);
-                    _shapeBuilders.Add(brush);
-                    _behaviorBuilders.Add(null);
-                    _renderableBuilders.Add(brush);
+                    AddBuilders(map.GetBrushAt(i));
                 }
 
-                foreach (var actor in map.Actors)
+                for (var i = 0; i < map.ActorCount; i++)
                 {
-                    _entityBuilders.Add(actor);
-                    _shapeBuilders.Add(actor);
-                    _behaviorBuilders.Add(actor);
-                    _renderableBuilders.Add(actor);
+                    AddBuilders(map.GetActorAt(i));
                 }
 
-                foreach (var volume in map.Volumes)
+                for (var i = 0; i < map.LightCount; i++)
                 {
-                    _entityBuilders.Add(volume);
-                    _shapeBuilders.Add(volume);
-                    _behaviorBuilders.Add(null);
-                    _renderableBuilders.Add(null);
+                    AddBuilders(map.GetLightAt(i));
+                }
+
+                for (var i = 0; i < map.VolumeCount; i++)
+                {
+                    AddBuilders(map.GetVolumeAt(i));
                 }
 
                 if (EntityMapping != null)
                 {
-                    EntityMapping.AddLights(map.Lights.Count);
-                    EntityMapping.AddBrushes(map.Brushes.Count);
-                    EntityMapping.AddActors(map.Actors.Count);
-                    EntityMapping.AddVolumes(map.Volumes.Count);
+                    EntityMapping.AddCameras(map.CameraCount);
+                    EntityMapping.AddBrushes(map.BrushCount);
+                    EntityMapping.AddActors(map.ActorCount);
+                    EntityMapping.AddLights(map.LightCount);
+                    EntityMapping.AddVolumes(map.VolumeCount);
                 }
             }
         }
@@ -311,7 +276,7 @@ namespace SpiceEngine.Game
                 }
             }
 
-            EntitiesMapped?.Invoke(this, new EntityMapEventArgs(EntityMapping));
+            EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
             //logWatch.Log("Loop End");
 
             await Task.WhenAll(loadEntityTasks);
@@ -522,7 +487,7 @@ namespace SpiceEngine.Game
                 }
             }
 
-            EntitiesMapped?.Invoke(this, new EntityMapEventArgs(EntityMapping));
+            EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
 
             physicsLoader.Load();
             behaviorLoader.Load();

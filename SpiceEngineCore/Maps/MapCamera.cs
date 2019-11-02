@@ -1,5 +1,4 @@
 ﻿using Newtonsoft.Json;
-using OpenTK;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Outputs;
@@ -7,7 +6,7 @@ using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapCamera : MapEntity3D<Camera>, IMapCamera
+    public class MapCamera : MapEntity3D<ICamera>, IMapCamera
     {
         public string Name { get; set; }
 
