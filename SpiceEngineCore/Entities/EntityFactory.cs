@@ -1,12 +1,7 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities.Actors;
+﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
-using System;
 
 namespace SpiceEngineCore.Entities
 {
@@ -105,7 +100,7 @@ namespace SpiceEngineCore.Entities
                     Orientation = baseActor.Orientation
                 };
             }
-            else if (actor is AnimatedActor animatedActor)
+            /*else if (actor is AnimatedActor animatedActor)
             {
                 return new AnimatedActor()
                 {
@@ -123,8 +118,8 @@ namespace SpiceEngineCore.Entities
                     }
 
                     return animatedActor;
-                }*/
-            }
+                }*
+            }*/
 
             return null;
         }

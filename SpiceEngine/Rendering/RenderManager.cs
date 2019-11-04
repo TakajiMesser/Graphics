@@ -7,9 +7,8 @@ using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
@@ -21,6 +20,7 @@ using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
@@ -56,6 +56,7 @@ namespace SpiceEngine.Rendering
         public bool IsInEditorMode { get; set; }
 
         private IEntityProvider _entityProvider;
+        private IAnimationProvider _animationProvider;
         private ISelectionProvider _selectionProvider;
         private ICamera _camera;
 
@@ -99,6 +100,17 @@ namespace SpiceEngine.Rendering
         {
             _entityProvider = entityProvider;
             BatchManager = new BatchManager(_entityProvider, TextureManager);
+
+            if (_animationProvider != null)
+            {
+                BatchManager.SetAnimationProvider(_animationProvider);
+            }
+        }
+
+        public void SetAnimationProvider(IAnimationProvider animationProvider)
+        {
+            _animationProvider = animationProvider;
+            BatchManager?.SetAnimationProvider(_animationProvider);
         }
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
@@ -110,37 +122,36 @@ namespace SpiceEngine.Rendering
         {
             var renderable = builder.ToRenderable();
 
-            if (builder is MapBrush mapBrush)
+            if (renderable is IBillboard billboard)
             {
-                var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-                var brush = _entityProvider.GetEntity(entityID) as Brush;
-                brush.AddTextureMapping(textureMapping);
+                billboard.LoadTexture(TextureManager);
             }
-            else if (builder is MapActor mapActor)
+            else if (renderable is ITexturedMesh texturedMesh)
             {
-                var actor = _entityProvider.GetEntity(entityID) as Actor;
-
-                if (mapActor.HasAnimations)
+                if (builder is MapBrush mapBrush)
+                {
+                    texturedMesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
+                }    
+            }
+            else if (renderable is IModel model)
+            {
+                if (builder is MapActor mapActor)
                 {
                     using (var importer = new Assimp.AssimpContext())
                     {
                         var scene = importer.ImportFile(mapActor.ModelFilePath);
 
-                        for (var i = 0; i < scene.Meshes.Count; i++)
+                        for (var i = 0; i < model.Meshes.Count; i++)
                         {
-                            var textureMapping = i < mapActor.TexturesPaths.Count
-                                ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+                            if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
+                            {
+                                var textureMapping = i < mapActor.TexturesPaths.Count
+                                    ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                    : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
 
-                            actor.AddTextureMapping(textureMapping);
+                                modelTexturedMesh.TextureMapping = textureMapping;
+                            }
                         }
-                    }
-                }
-                else
-                {
-                    foreach (var textureMapping in mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)))
-                    {
-                        actor.AddTextureMapping(textureMapping);
                     }
                 }
             }
@@ -182,11 +193,6 @@ namespace SpiceEngine.Rendering
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
-            if (renderable is TextureID textureID)
-            {
-                textureID.Index = TextureManager.AddTexture(textureID.FilePath);
-            }
-
             if (IsInEditorMode && renderable is IMesh mesh)
             {
                 var entity = _entityProvider.GetEntity(entityID);
@@ -204,10 +210,10 @@ namespace SpiceEngine.Rendering
             }
             else if (IsInEditorMode && renderable is IModel model)
             {
-                var entity = _entityProvider.GetEntity(entityID);
-
                 // TODO - Do I not need to do this for IModels?
-                /*if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
+                /*var entity = _entityProvider.GetEntity(entityID);
+
+                if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
                 {
                     var textureMapping = texturePath.TexturePaths.ToTextureMapping(TextureManager);
                     textureBinder.AddTextureMapping(textureMapping);
@@ -221,6 +227,10 @@ namespace SpiceEngine.Rendering
                 }
 
                 BatchManager.AddEntity(entityID, renderable);
+            }
+            else if (IsInEditorMode && renderable is IBillboard billboard)
+            {
+                billboard.SetColor(SelectionHelper.GetColorFromID(entityID));
             }
             else
             {

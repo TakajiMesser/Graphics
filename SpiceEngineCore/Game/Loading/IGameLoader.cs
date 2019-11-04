@@ -22,7 +22,7 @@ namespace SpiceEngineCore.Game.Loading
         void SetBehaviorLoader(IComponentLoader<IBehaviorBuilder> behaviorLoader);
         void AddRenderableLoader(IComponentLoader<IRenderableBuilder> renderableLoader);
 
-        void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
+        //void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
         void Add(IMapEntity3D mapEntity);
         void AddFromMap(IMap map);
 

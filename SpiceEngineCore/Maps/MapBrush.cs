@@ -42,7 +42,7 @@ namespace SpiceEngineCore.Maps
                 //HasCollision = HasCollision
             };
 
-            brush.AddMaterial(Material);
+            //brush.AddMaterial(Material);
             return brush;
         }
 
@@ -52,8 +52,11 @@ namespace SpiceEngineCore.Maps
             {
                 AddTestColors();
             }
-            
-            return new Mesh<Vertex3D>(Vertices, TriangleIndices);
+
+            return new TexturedMesh<Vertex3D>(Vertices, TriangleIndices)
+            {
+                Material = Material
+            };
         }
 
         public IShape ToShape() => new Box(Vertices.Select(v => v.Position));

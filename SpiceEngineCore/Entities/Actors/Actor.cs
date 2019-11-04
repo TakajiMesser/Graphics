@@ -1,16 +1,11 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
-using System.Collections.Generic;
 
 namespace SpiceEngineCore.Entities.Actors
 {
-    public class Actor : TexturedEntity, IActor, IHaveModel
+    public class Actor : Entity, IActor//TexturedEntity, IActor, IHaveModel
     {
-        protected int _meshIndex = 0;
+        /*protected int _meshIndex = 0;
 
         private List<Material> _materials = new List<Material>();
         private List<TextureMapping?> _textureMappings = new List<TextureMapping?>();
@@ -22,7 +17,7 @@ namespace SpiceEngineCore.Entities.Actors
         public override TextureMapping? CurrentTextureMapping => _textureMappings[_meshIndex];
 
         public override void AddMaterial(Material material) => _materials.Add(material);
-        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);
+        public override void AddTextureMapping(TextureMapping? textureMapping) => _textureMappings.Add(textureMapping);*/
 
         public string Name { get; set; }
 
@@ -56,9 +51,9 @@ namespace SpiceEngineCore.Entities.Actors
             });
         }
 
-        public void SetMeshIndex(int meshIndex) => _meshIndex = meshIndex;
+        //public void SetMeshIndex(int meshIndex) => _meshIndex = meshIndex;
 
-        public override void SetUniforms(ShaderProgram program)
+        /*public override void SetUniforms(ShaderProgram program)
         {
             // TODO - Make this less janky. For now, we only want to set the model matrix once for all meshes, so bind it for the first mesh only
             if (_meshIndex == 0)
@@ -67,7 +62,7 @@ namespace SpiceEngineCore.Entities.Actors
             }
 
             base.SetUniforms(program);
-        }
+        }*/
 
         /*On Model Position Change -> if (Bounds != null)
         {

@@ -1,8 +1,11 @@
-﻿using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Shaders;
@@ -29,6 +32,7 @@ namespace SpiceEngineCore.Rendering.Batches
     {
         private IEntityProvider _entityProvider;
         private ITextureProvider _textureProvider;
+        private IAnimationProvider _animationProvider;
 
         private HashSet<int> _opaqueStaticIDs = new HashSet<int>();
         private HashSet<int> _opaqueAnimatedIDs = new HashSet<int>();
@@ -49,6 +53,8 @@ namespace SpiceEngineCore.Rendering.Batches
             _textureProvider = textureProvider;
         }
 
+        public void SetAnimationProvider(IAnimationProvider animationProvider) => _animationProvider = animationProvider;
+
         public void DuplicateBatch(int entityID, int newID)
         {
             var batch = GetBatch(entityID);
@@ -62,8 +68,8 @@ namespace SpiceEngineCore.Rendering.Batches
                 case IModel model:
                     AddEntity(newID, model.Duplicate());
                     break;
-                case TextureID textureID:
-                    AddEntity(newID, textureID.Duplicate());
+                case IBillboard billboard:
+                    AddEntity(newID, billboard.Duplicate());
                     break;
             }
         }
@@ -137,6 +143,12 @@ namespace SpiceEngineCore.Rendering.Batches
                 }
             };
 
+            // TODO - Should we hold off on binding this animation model until the model batch has been loaded?
+            if (renderable is IAnimatedModel animatedModel && _animationProvider != null)
+            {
+                _animationProvider.AddModel(entityID, animatedModel);
+            }
+
             var batch = CreateOrGetBatch(entityID, renderable);
             batch.AddEntity(entityID, renderable);
 
@@ -146,7 +158,7 @@ namespace SpiceEngineCore.Rendering.Batches
 
             if (batch.EntityCount == 1)
             {
-                if (entity is Brush)
+                if (entity is IBrush)
                 {
                     // Unfortunately, we have to wait for batch.AddEntity() here, since that is what sets up the offset and count in the batch...
                     entity.Transformed += (s, args) =>
@@ -198,7 +210,7 @@ namespace SpiceEngineCore.Rendering.Batches
             batch?.UpdateVertices(entityID, vertexUpdate);
         }
 
-        private Batch CreateOrGetBatch(int entityID, IRenderable renderable)
+        private IBatch CreateOrGetBatch(int entityID, IRenderable renderable)
         {
             var match = FindAppropriateBatch(entityID, renderable);
 
@@ -227,7 +239,7 @@ namespace SpiceEngineCore.Rendering.Batches
             }
         }
 
-        private Batch CreateBatch(IRenderable renderable)
+        private IBatch CreateBatch(IRenderable renderable)
         {
             switch (renderable)
             {
@@ -235,77 +247,35 @@ namespace SpiceEngineCore.Rendering.Batches
                     return new MeshBatch(mesh);
                 case IModel model:
                     return new ModelBatch(model);
-                case TextureID textureID:
-                    return new BillboardBatch(textureID);
+                case IBillboard billboard:
+                    return new BillboardBatch(billboard);
             }
 
             throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
         }
 
-        private Batch FindAppropriateBatch(int entityID, IRenderable renderable)
+        private IBatch FindAppropriateBatch(int entityID, IRenderable renderable)
         {
-            if (renderable is IMesh || renderable is TextureID)
+            for (var i = 0; i < _batches.Count; i++)
             {
-                var entityA = _entityProvider.GetEntity(entityID);
+                var batch = _batches[i];
 
-                for (var i = 0; i < _batches.Count; i++)
+                if (batch.CompareUniforms(renderable))
                 {
-                    if (_batches[i] is MeshBatch meshBatch)
+                    //var entity = _entityProvider.GetEntity(entityID);
+
+                    // Any additional entities in the batch are responsible for transforming their vertices if their model matrix changes...
+                    // TODO - Don't recalculate matrix here (store in event args)
+                    /*entity.Transformed += (s, args) => batch.Transform(args.ID, args.Transform);
+
+                    if (entity is ITexturedEntity texturedEntity)
                     {
-                        var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
+                        texturedEntity.TextureTransformed += (s, args) => batch.TransformTexture(args.ID, entity.Position, args.Translation, args.Rotation, args.Scale);
+                    }*/
 
-                        if (entityA.CompareUniforms(entityB))
-                        {
-                            /*// Any additional entities in the batch is responsible for transforming their vertices if their model matrix changes...
-                            entityA.Transformed += (s, args) =>
-                            {
-                                // TODO - Don't recalculate matrix here (store in event args)
-                                meshBatch.Transform(args.ID, args.Transform);
-                            };
-
-                            if (entityA is ITexturedEntity texturedEntity)
-                            {
-                                texturedEntity.TextureTransformed += (s, args) =>
-                                {
-                                    meshBatch.TransformTexture(args.ID, entityA.Position, args.Translation, args.Rotation, args.Scale);
-                                };
-                            }*/
-
-                            _batchIndexByEntityID.Add(entityID, i);
-                            return meshBatch;
-                        }
-                    }
-                    else if (_batches[i] is BillboardBatch billboardBatch)
-                    {
-                        var entityB = _entityProvider.GetEntity(billboardBatch.EntityIDs.First());
-
-                        if (entityA.CompareUniforms(entityB))
-                        {
-                            entityA.Transformed += (s, args) =>
-                            {
-                                billboardBatch.Transform(args.ID, args.Transform);
-                            };
-
-                            _batchIndexByEntityID.Add(entityID, i);
-                            return billboardBatch;
-                        }
-                    }
+                    _batchIndexByEntityID.Add(entityID, i);
+                    return batch;
                 }
-
-                /*foreach (var meshBatch in _batches.OfType<MeshBatch>())
-                {
-                    var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
-
-                    if (entityA.CompareUniforms(entityB))
-                    {
-                        entityA.Transformed += (s, args) =>
-                        {
-                            meshBatch.Transform(args.ID, args.Transform);
-                        };
-
-                        return meshBatch;
-                    }
-                }*/
             }
 
             return null;
@@ -420,7 +390,7 @@ namespace SpiceEngineCore.Rendering.Batches
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentAnimated : RenderTypes.OpaqueAnimated;
             }
-            else if (renderable is TextureID)
+            else if (renderable is IBillboard)
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentBillboard : RenderTypes.OpaqueBillboard;
             }

@@ -32,11 +32,11 @@ namespace SpiceEngineCore.Entities
             }
         }
 
-        public override void SetUniforms(ShaderProgram program) => CurrentMaterial.SetUniforms(program);
+        /*public override void SetUniforms(ShaderProgram program) => CurrentMaterial.SetUniforms(program);
 
         public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
             && CurrentMaterial.Equals(textureBinder.CurrentMaterial)
-            && TextureMappings.Equals(textureBinder.TextureMappings);
+            && TextureMappings.Equals(textureBinder.TextureMappings);*/
 
         protected virtual void OnTextureTransformed(object sender, TextureTransformEventArgs e) => TextureTransformed?.Invoke(sender, e);
     }

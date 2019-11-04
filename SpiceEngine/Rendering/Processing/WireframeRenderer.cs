@@ -9,9 +9,11 @@ using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Processing
@@ -210,17 +212,38 @@ namespace SpiceEngine.Rendering.Processing
             _gridSquare.Draw();
         }
 
+        // TODO - Pass multiple entity ID's to this method to render all selections at once
         public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, BatchManager batchManager)
         {
-            var program = entity is AnimatedActor ? _jointWireframeProgram : _wireframeProgram;
+            batchManager.CreateBatchAction()
+                .SetShader(_wireframeProgram)
+                .SetCamera(camera)
+                .SetEntityIDs(entity.ID.Yield())
+                .SetUniform("lineThickness", SelectedLightLineThickness)
+                .SetUniform("lineColor", SelectedLineColor)
+                .RenderOpaqueStatic()
+                .SetShader(_jointWireframeProgram)
+                .SetCamera(camera)
+                .SetEntityIDs(entity.ID.Yield())
+                .SetUniform("lineThickness", SelectedLightLineThickness)
+                .SetUniform("lineColor", SelectedLineColor)
+                .RenderOpaqueAnimated()
+                .Execute();
+
+            /*var batch = batchManager.GetBatch(entity.ID);
+
+            //var program = entity is AnimatedActor ? _jointWireframeProgram : _wireframeProgram;
+            var program = batch is ModelBatch modelBatch && modelBatch.Model is IAnimatedModel animatedModel
+                ? _jointWireframeProgram
+                : _wireframeProgram;
+
             program.Use();
 
             camera.SetUniforms(program);
             program.SetUniform("lineThickness", SelectedLineThickness);
             program.SetUniform("lineColor", SelectedLineColor);
-
-            var batch = batchManager.GetBatch(entity.ID);
-            batch.Draw(entityProvider, program);
+            
+            batch.Draw(entityProvider, program);*/
         }
 
         public void SelectionPass(ICamera camera, ILight light, SimpleMesh mesh)

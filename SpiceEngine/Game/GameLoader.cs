@@ -15,14 +15,15 @@ namespace SpiceEngine.Game
     public class GameLoader : IGameLoader
     {
         private IEntityProvider _entityProvider;
-        private IComponentLoader<IShapeBuilder> _physicsLoader;
-        private IComponentLoader<IBehaviorBuilder> _behaviorLoader;
-        private List<IComponentLoader<IRenderableBuilder>> _renderableLoaders = new List<IComponentLoader<IRenderableBuilder>>();
 
         private List<IEntityBuilder> _entityBuilders = new List<IEntityBuilder>();
-        private List<IShapeBuilder> _shapeBuilders = new List<IShapeBuilder>();
-        private List<IBehaviorBuilder> _behaviorBuilders = new List<IBehaviorBuilder>();
         private List<IRenderableBuilder> _renderableBuilders = new List<IRenderableBuilder>();
+
+        private ComponentBuilderSet<IShapeBuilder> _shapeBuilders = new ComponentBuilderSet<IShapeBuilder>();
+        private ComponentBuilderSet<IBehaviorBuilder> _behaviorBuilders = new ComponentBuilderSet<IBehaviorBuilder>();
+        private ComponentBuilderSet<IAnimatorBuilder> _animatorBuilders = new ComponentBuilderSet<IAnimatorBuilder>();
+
+        private List<IComponentLoader<IRenderableBuilder>> _renderableLoaders = new List<IComponentLoader<IRenderableBuilder>>();
 
         private int _rendererWaitCount;
         private TaskCompletionSource<bool>[] _rendererAddedTasks;
@@ -30,6 +31,8 @@ namespace SpiceEngine.Game
         private int _loadIndex = 0;
 
         private readonly object _builderLock = new object();
+        private readonly object _loaderLock = new object();
+
         private readonly object _loadLock = new object();
 
         public EntityMapping EntityMapping { get; private set; } = null;
@@ -73,21 +76,9 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void SetPhysicsLoader(IComponentLoader<IShapeBuilder> physicsLoader)
-        {
-            lock (_builderLock)
-            {
-                _physicsLoader = physicsLoader;
-            }
-        }
-
-        public void SetBehaviorLoader(IComponentLoader<IBehaviorBuilder> behaviorLoader)
-        {
-            lock (_builderLock)
-            {
-                _behaviorLoader = behaviorLoader;
-            }
-        }
+        public void SetPhysicsLoader(IComponentLoader<IShapeBuilder> physicsLoader) => _shapeBuilders.SetLoader(physicsLoader);
+        public void SetBehaviorLoader(IComponentLoader<IBehaviorBuilder> behaviorLoader) => _behaviorBuilders.SetLoader(behaviorLoader);
+        public void SetAnimatorLoader(IComponentLoader<IAnimatorBuilder> animatorLoader) => _animatorBuilders.SetLoader(animatorLoader);
 
         public void AddRenderableLoader(IComponentLoader<IRenderableBuilder> renderableLoader)
         {
@@ -102,16 +93,17 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder)
+        /*public void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder)
         {
             lock (_builderLock)
             {
-                _entityBuilders.Add(entityBuilder);
-                _shapeBuilders.Add(shapeBuilder);
+                _shapeBuilders.AddBuilder(shapeBuilder);
                 _behaviorBuilders.Add(behaviorBuilder);
+
                 _renderableBuilders.Add(renderableBuilder);
+                _entityBuilders.Add(entityBuilder);
             }
-        }
+        }*/
 
         public void Add(IMapEntity3D mapEntity)
         {
@@ -124,10 +116,12 @@ namespace SpiceEngine.Game
 
         private void AddBuilders(IMapEntity3D mapEntity)
         {
-            _entityBuilders.Add(mapEntity);
-            _shapeBuilders.Add(mapEntity is IShapeBuilder shapeBuilder ? shapeBuilder : null);
-            _behaviorBuilders.Add(mapEntity is IBehaviorBuilder behaviorBuilder ? behaviorBuilder : null);
+            _shapeBuilders.AddBuilder(mapEntity);
+            _behaviorBuilders.AddBuilder(mapEntity);
+            _animatorBuilders.AddBuilder(mapEntity);
+
             _renderableBuilders.Add(mapEntity is IRenderableBuilder renderableBuilder ? renderableBuilder : null);
+            _entityBuilders.Add(mapEntity);
         }
 
         private void AddToEntityMapping(IMapEntity3D mapEntity)
@@ -207,16 +201,12 @@ namespace SpiceEngine.Game
 
             // Only process for builders added by the time we begin loading
             var entityCount = 0;
-            IComponentLoader<IShapeBuilder> physicsLoader = null;
-            IComponentLoader<IBehaviorBuilder> behaviorLoader = null;
             IComponentLoader<IRenderableBuilder>[] renderableLoaders = null;
             var rendererWaitCount = 0;
 
             lock (_builderLock)
             {
                 entityCount = _entityBuilders.Count;
-                physicsLoader = _physicsLoader;
-                behaviorLoader = _behaviorLoader;
                 renderableLoaders = _renderableLoaders.ToArray();
                 rendererWaitCount = _rendererWaitCount;
             }
@@ -232,14 +222,16 @@ namespace SpiceEngine.Game
             entityCount -= startBuilderIndex;
 
             var loadEntityTasks = new Task[entityCount];
-            var loadShapeTasks = new Task[entityCount];
-            var loadBehaviorTasks = new Task[entityCount];
             var loadRenderTasks = new Task[rendererWaitCount][];
 
             for (var i = 0; i < rendererWaitCount; i++)
             {
                 loadRenderTasks[i] = new Task[entityCount];
             }
+
+            _shapeBuilders.Begin(entityCount, startBuilderIndex);
+            _behaviorBuilders.Begin(entityCount, startBuilderIndex);
+            _animatorBuilders.Begin(entityCount, startBuilderIndex);
 
             var index = startBuilderIndex;
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
@@ -267,8 +259,9 @@ namespace SpiceEngine.Game
                         }
 
                         // Load the game data (which we NEED to wait for completion on)
-                        loadShapeTasks[taskIndex] = Task.Run(() => LoadShapeBuilder(id, currentBuilderIndex, physicsLoader));
-                        loadBehaviorTasks[taskIndex] = Task.Run(() => LoadBehaviorBuilder(id, currentBuilderIndex, behaviorLoader));
+                        _shapeBuilders.ProcessTask(taskIndex, currentBuilderIndex, id);
+                        _behaviorBuilders.ProcessTask(taskIndex, currentBuilderIndex, id);
+                        _animatorBuilders.ProcessTask(taskIndex, currentBuilderIndex, id);
                     });
 
                     EntityMapping?.AddID(id);
@@ -292,30 +285,9 @@ namespace SpiceEngine.Game
 
             var loadTasks = new List<Task>
             {
-                Task.Run(async () =>
-                {
-                    await Task.WhenAll(loadShapeTasks);
-                    await physicsLoader.Load();
-                    lock (_builderLock)
-                    {
-                        for (var i = startBuilderIndex; i < index; i++)
-                        {
-                            _shapeBuilders[i] = null;
-                        }
-                    }
-                }),
-                Task.Run(async () =>
-                {
-                    await Task.WhenAll(loadBehaviorTasks);
-                    await behaviorLoader.Load();
-                    lock (_builderLock)
-                    {
-                        for (var i = startBuilderIndex; i < index; i++)
-                        {
-                            _behaviorBuilders[i] = null;
-                        }
-                    }
-                }),
+                _shapeBuilders.ProcessTasks(),
+                _behaviorBuilders.ProcessTasks(),
+                _animatorBuilders.ProcessTasks()
             };
 
             // Hook up renderable loaders to fire events when all renderable builders have been added for each available render loader
@@ -353,17 +325,6 @@ namespace SpiceEngine.Game
             }
 
             //logWatch.Log("Load Tasks End");
-
-            // TODO - For now, just clear out builders when we're done with them. 
-            // Later, we might want to allow some additional loading even while this task is running...
-            /*lock (_lock)
-            {
-                _entityBuilders.Clear();
-                _shapeBuilders.Clear();
-                _behaviorBuilders.Clear();
-                _renderableBuilders.Clear();
-            }*/
-
             logWatch.Stop();
         }
 
@@ -396,32 +357,6 @@ namespace SpiceEngine.Game
             }
         }
 
-        private void LoadShapeBuilder(int id, int builderIndex, IComponentLoader<IShapeBuilder> physicsLoader)
-        {
-            if (physicsLoader != null)
-            {
-                var shapeBuilder = _shapeBuilders[builderIndex];
-
-                if (shapeBuilder != null)
-                {
-                    physicsLoader.AddComponent(id, shapeBuilder);
-                }
-            }
-        }
-
-        private void LoadBehaviorBuilder(int id, int builderIndex, IComponentLoader<IBehaviorBuilder> behaviorLoader)
-        {
-            if (behaviorLoader != null)
-            {
-                var behaviorBuilder = _behaviorBuilders[builderIndex];
-
-                if (behaviorBuilder != null)
-                {
-                    behaviorLoader.AddComponent(id, behaviorBuilder);
-                }
-            }
-        }
-
         public void Load()
         {
             IsLoading = true;
@@ -430,14 +365,16 @@ namespace SpiceEngine.Game
             var entityCount = 0;
             IComponentLoader<IShapeBuilder> physicsLoader = null;
             IComponentLoader<IBehaviorBuilder> behaviorLoader = null;
+            IComponentLoader<IAnimatorBuilder> animatorLoader = null;
             IComponentLoader<IRenderableBuilder>[] renderableLoaders = null;
             var rendererWaitCount = 0;
 
             lock (_builderLock)
             {
                 entityCount = _entityBuilders.Count;
-                physicsLoader = _physicsLoader;
-                behaviorLoader = _behaviorLoader;
+                physicsLoader = _shapeBuilders.GetLoader();
+                behaviorLoader = _behaviorBuilders.GetLoader();
+                animatorLoader = _animatorBuilders.GetLoader();
                 renderableLoaders = _renderableLoaders.ToArray();
                 rendererWaitCount = _rendererWaitCount;
             }
@@ -473,8 +410,9 @@ namespace SpiceEngine.Game
                     // We need to ensure that the entity builder has been loaded before loading ANYTHING else
                     _entityProvider.LoadEntity(id);
 
-                    LoadShapeBuilder(id, index, physicsLoader);
-                    LoadBehaviorBuilder(id, index, behaviorLoader);
+                    _shapeBuilders.LoadBuilder(id, index, physicsLoader);
+                    _behaviorBuilders.LoadBuilder(id, index, behaviorLoader);
+                    _animatorBuilders.LoadBuilder(id, index, animatorLoader);
 
                     // TODO - We need to wait for AT LEAST ONE renderer to load this entity, but not for all. We do, however, need to track completion for the others
                     for (var i = 0; i < rendererWaitCount; i++)
@@ -498,10 +436,12 @@ namespace SpiceEngine.Game
                 for (var i = startBuilderIndex; i < index; i++)
                 {
                     _entityBuilders[i] = null;
-                    _shapeBuilders[i] = null;
-                    _behaviorBuilders[i] = null;
                 }
             }
+
+            _shapeBuilders.RemoveBuilders(startBuilderIndex, index);
+            _behaviorBuilders.RemoveBuilders(startBuilderIndex, index);
+            _animatorBuilders.RemoveBuilders(startBuilderIndex, index);
 
             var fullyLoadRenderableTasks = new Task[rendererWaitCount];
 

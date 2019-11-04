@@ -141,11 +141,13 @@ namespace SpiceEngine.Game
             _gameLoader.SetEntityProvider(_gameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
+            _gameLoader.SetAnimatorLoader(_gameManager.AnimationManager);
             _gameLoader.AddRenderableLoader(_renderManager);
 
             _gameLoader.AddFromMap(_map);
 
             _renderManager.SetEntityProvider(_gameManager.EntityManager);
+            _renderManager.SetAnimationProvider(_gameManager.AnimationManager);
             _renderManager.SetCamera(_gameManager.Camera);
             _renderManager.LoadFromMap(_map);
 

@@ -376,6 +376,7 @@ namespace SauceEditor.ViewModels
             _gameLoader.SetEntityProvider(GameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(GameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(GameManager.BehaviorManager);
+            _gameLoader.SetAnimatorLoader(GameManager.AnimationManager);
             //_gameLoader.AddRenderManager(_renderManager);
 
             _gameLoader.AddFromMap(MapComponent.Map);

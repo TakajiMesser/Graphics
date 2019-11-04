@@ -1,6 +1,8 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Meshes;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
@@ -9,7 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SpiceEngineCore.Rendering.Models
+namespace SpiceEngine.Rendering.Models
 {
     public class Model : IModel
     {
@@ -62,7 +64,12 @@ namespace SpiceEngineCore.Rendering.Models
                             vertices.Add(new AnimatedVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                         }
 
-                        Add(new Mesh<AnimatedVertex3D>(vertices, mesh.GetIndices().ToList()));
+                        var triangleIndices = mesh.GetIndices().ToList();
+
+                        var texturedMesh = new TexturedMesh<AnimatedVertex3D>(vertices, triangleIndices);
+                        texturedMesh.Material = scene.Materials[mesh.MaterialIndex].ToMaterial();
+
+                        Add(texturedMesh);
                     }
                 }
                 else
@@ -81,7 +88,12 @@ namespace SpiceEngineCore.Rendering.Models
                             vertices.Add(new Vertex3D(position, normals, tangents, textureCoords));
                         }
 
-                        Add(new Mesh<Vertex3D>(vertices, mesh.GetIndices().ToList()));
+                        var triangleIndices = mesh.GetIndices().ToList();
+
+                        var texturedMesh = new TexturedMesh<Vertex3D>(vertices, triangleIndices);
+                        texturedMesh.Material = scene.Materials[mesh.MaterialIndex].ToMaterial();
+
+                        Add(texturedMesh);
                     }
                 }
             }
@@ -98,6 +110,14 @@ namespace SpiceEngineCore.Rendering.Models
             foreach (var mesh in Meshes)
             {
                 mesh.Load();
+            }
+        }
+
+        public void Draw()
+        {
+            foreach (var mesh in Meshes)
+            {
+                mesh.Draw();
             }
         }
 

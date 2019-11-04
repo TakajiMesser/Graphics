@@ -12,10 +12,10 @@ namespace SpiceEngineCore.Entities.Brushes
     /// Brushes are static geometric shapes that are baked into a scene.
     /// Unlike meshes, brushes cannot be deformed.
     /// </summary>
-    public class Brush : TexturedEntity, IBrush
+    public class Brush : Entity, IBrush
     {
-        private Material _material;
-        private TextureMapping? _textureMapping;
+        //private Material _material;
+        //private TextureMapping? _textureMapping;
 
         public Quaternion Rotation
         {
@@ -29,7 +29,7 @@ namespace SpiceEngineCore.Entities.Brushes
             set => _modelMatrix.Scale = value;
         }
 
-        public override IEnumerable<Material> Materials => _material.Yield();
+        /*public override IEnumerable<Material> Materials => _material.Yield();
         public override IEnumerable<TextureMapping?> TextureMappings => _textureMapping.Yield();
 
         public override Material CurrentMaterial => _material;
@@ -43,6 +43,6 @@ namespace SpiceEngineCore.Entities.Brushes
             base.SetUniforms(program);
             program.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
             program.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
-        }
+        }*/
     }
 }

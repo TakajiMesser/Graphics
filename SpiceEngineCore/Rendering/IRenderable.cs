@@ -8,6 +8,9 @@ namespace SpiceEngineCore.Rendering
         bool IsAnimated { get; }
         bool IsTransparent { get; }
 
+        void Load();
+        void Draw();
+
         event EventHandler<AlphaEventArgs> AlphaChanged;
     }
 }

@@ -14,6 +14,9 @@ namespace SpiceEngineCore.Entities.Cameras
         public int ID { get; set; }
         public string Name { get; }
 
+        // TODO - Fix this...
+        public ModelMatrix WorldMatrix => throw new NotImplementedException();
+
         public Vector3 Position
         {
             get => _viewMatrix.Translation;

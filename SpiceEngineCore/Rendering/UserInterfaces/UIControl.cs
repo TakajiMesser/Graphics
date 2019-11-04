@@ -11,6 +11,9 @@ namespace SpiceEngineCore.Rendering.UserInterfaces
         public int ID { get; set; }
         public string Name { get; set; }
 
+        // TODO - Fix this...
+        public ModelMatrix WorldMatrix => throw new NotImplementedException();
+
         public Vector3 Position { get; set; }
 
         public event EventHandler<EntityTransformEventArgs> Transformed;

@@ -8,7 +8,6 @@ namespace SpiceEngineCore.Rendering.Models
         List<IMesh> Meshes { get; }
 
         void Add(IMesh mesh);
-        void Load();
         IModel Duplicate();
     }
 }

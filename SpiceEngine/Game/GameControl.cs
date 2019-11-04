@@ -6,6 +6,7 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Processing;
+using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game;
@@ -39,6 +40,7 @@ namespace SpiceEngine.Game
 
         private IEntityProvider _entityProvider;
         private IInputProvider _inputProvider;
+        private IAnimationProvider _animationProvider;
 
         private Map _map;
 
@@ -219,6 +221,8 @@ namespace SpiceEngine.Game
         {
             _entityProvider = gameManager.EntityManager;
             _inputProvider = gameManager.InputManager;
+            _animationProvider = gameManager.AnimationManager;
+
             SelectionManager = new SelectionManager(_entityProvider);
 
             // TODO - Abstract out skybox texture provider to avoid needing map here
@@ -260,6 +264,8 @@ namespace SpiceEngine.Game
                     ViewType = ViewType
                 };
                 _panelCamera.Load();
+
+                RenderManager.SetAnimationProvider(_animationProvider);
                 RenderManager.SetSelectionProvider(SelectionManager);
                 RenderManager.SetCamera(_panelCamera.Camera);
 

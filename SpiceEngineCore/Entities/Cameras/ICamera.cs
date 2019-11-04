@@ -20,6 +20,7 @@ namespace SpiceEngineCore.Entities.Cameras
         void OnUpdateFrame();
         void OnHandleInput(InputManager inputManager);
 
+        void SetUniforms(ShaderProgram program);
         void SetUniforms(ShaderProgram program, ILight light);
     }
 }

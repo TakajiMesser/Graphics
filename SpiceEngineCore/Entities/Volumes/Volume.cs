@@ -25,8 +25,8 @@ namespace SpiceEngineCore.Entities.Volumes
         //public void Load() => Mesh.Load();
         //public void Draw() => Mesh.Draw();
 
-        public override void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
+        /*public override void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
 
-        public override bool CompareUniforms(IEntity entity) => false;
+        public override bool CompareUniforms(IEntity entity) => false;*/
     }
 }

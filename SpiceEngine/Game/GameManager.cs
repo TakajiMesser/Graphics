@@ -2,6 +2,7 @@
 using SpiceEngine.Maps;
 using SpiceEngine.Physics;
 using SpiceEngine.Scripting;
+using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
@@ -25,6 +26,7 @@ namespace SpiceEngine.Game
         public InputManager InputManager { get; private set; }
         public PhysicsManager PhysicsManager { get; private set; }
         public BehaviorManager BehaviorManager { get; private set; }
+        public AnimationManager AnimationManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
@@ -70,6 +72,8 @@ namespace SpiceEngine.Game
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
             BehaviorManager.SetCamera(Camera);
             BehaviorManager.SetInputProvider(InputManager);
+
+            AnimationManager = new AnimationManager(EntityManager);
 
             EntityManager.ClearEntities();
 
@@ -173,12 +177,8 @@ namespace SpiceEngine.Game
 
             PhysicsManager.Tick();
             BehaviorManager.Tick();
+            AnimationManager.Tick();
             InputManager.Tick();
-
-            foreach (var animatedActor in EntityManager.Actors.OfType<AnimatedActor>())
-            {
-                animatedActor.UpdateAnimation();
-            }
         }
 
         public void SaveToFile(string path) => throw new NotImplementedException();

@@ -152,6 +152,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Models\EditorModel.cs" />
+    <Compile Include="Rendering\Models\AnimatedModel.cs" />
     <Compile Include="Rendering\Models\Model.cs" />
     <Compile Include="Rendering\PostProcessing\Blur.cs" />
     <Compile Include="Rendering\PostProcessing\InvertColors.cs" />

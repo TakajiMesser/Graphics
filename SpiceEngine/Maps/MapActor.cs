@@ -1,11 +1,12 @@
 ﻿using OpenTK;
+using SpiceEngine.Rendering.Models;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Animations;
-using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Properties;
@@ -36,7 +37,108 @@ namespace SpiceEngineCore.Maps
         public bool IsPhysical { get; set; }
         //public ICollider Collider { get; set; }
 
-        public bool HasAnimations
+        public override IEntity ToEntity(/*TextureManager textureManager = null*/)
+        {
+            var actor = new Actor()
+            {
+                Name = Name
+            };
+
+            actor.Position = Position;
+            actor.Orientation = Quaternion.FromEulerAngles(Orientation.ToRadians());
+            actor.Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians());
+            actor.Scale = Scale;
+
+            return actor;
+        }
+
+        public IRenderable ToRenderable()
+        {
+            //if (string.IsNullOrEmpty(ModelFilePath))
+
+            using (var importer = new Assimp.AssimpContext())
+            {
+                var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                    | Assimp.PostProcessSteps.CalculateTangentSpace
+                    | Assimp.PostProcessSteps.LimitBoneWeights
+                    | Assimp.PostProcessSteps.Triangulate
+                    | Assimp.PostProcessSteps.GenerateSmoothNormals
+                    | Assimp.PostProcessSteps.FlipUVs);
+
+                var model = scene.HasAnimations
+                    ? new AnimatedModel(ModelFilePath)
+                    : new Model(ModelFilePath);
+
+                return model;
+            }
+        }
+
+        public IShape ToShape()
+        {
+            using (var importer = new Assimp.AssimpContext())
+            {
+                var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                    | Assimp.PostProcessSteps.CalculateTangentSpace
+                    | Assimp.PostProcessSteps.LimitBoneWeights
+                    | Assimp.PostProcessSteps.Triangulate
+                    | Assimp.PostProcessSteps.GenerateSmoothNormals
+                    | Assimp.PostProcessSteps.FlipUVs);
+
+                /*public Quaternion Rotation
+                {
+                    get => Orientation * _modelMatrix.Rotation;
+                    set => _modelMatrix.Rotation = Orientation * value;
+                }
+
+                actor.Orientation = Quaternion.FromEulerAngles(Orientation);*/
+
+                var vertices = scene.Meshes
+                    .SelectMany(m => m.Vertices
+                        .Select(v => v.ToVector3()))
+                    .Select(v => (Matrix4.CreateScale(Scale)
+                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
+                        * Quaternion.FromEulerAngles(Rotation.ToRadians()))
+                        * new Vector4(v, 1.0f)).Xyz);
+
+                if (Name == "Player")
+                {
+                    return new Sphere(vertices);
+                }
+                else
+                {
+                    return new Box(vertices);
+                }
+            }
+
+            /*actor.HasCollision = mapActor.HasCollision;
+            actor.Bounds = actor.Name == "Player"
+                ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
+                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
+        }
+
+        public IBehavior ToBehavior() => Behavior?.ToBehavior();
+
+        public IAnimator ToAnimator()
+        {
+            using (var importer = new Assimp.AssimpContext())
+            {
+                var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                    | Assimp.PostProcessSteps.CalculateTangentSpace
+                    | Assimp.PostProcessSteps.LimitBoneWeights
+                    | Assimp.PostProcessSteps.Triangulate
+                    | Assimp.PostProcessSteps.GenerateSmoothNormals
+                    | Assimp.PostProcessSteps.FlipUVs);
+
+                if (scene.HasAnimations)
+                {
+                    return new Animator();
+                }
+            }
+
+            return null;
+        }
+
+        public IEnumerable<Animation> Animations
         {
             get
             {
@@ -49,90 +151,10 @@ namespace SpiceEngineCore.Maps
                         | Assimp.PostProcessSteps.GenerateSmoothNormals
                         | Assimp.PostProcessSteps.FlipUVs);
 
-                    return scene.HasAnimations;
-                }
-            }
-        }
-
-        public override IEntity ToEntity(/*TextureManager textureManager = null*/)
-        {
-            var actor = new Actor()
-            {
-                Name = Name
-            };
-
-            if (!string.IsNullOrEmpty(ModelFilePath))
-            {
-                using (var importer = new Assimp.AssimpContext())
-                {
-                    var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
-                        | Assimp.PostProcessSteps.CalculateTangentSpace
-                        | Assimp.PostProcessSteps.LimitBoneWeights
-                        | Assimp.PostProcessSteps.Triangulate
-                        | Assimp.PostProcessSteps.GenerateSmoothNormals
-                        | Assimp.PostProcessSteps.FlipUVs);
-
                     if (scene.HasAnimations)
                     {
-                        var animatedActor = new AnimatedActor()
-                        {
-                            Name = Name
-                        };
-
-                        animatedActor.Animator.AnimationEnd += (s, args) => animatedActor.Animator.CurrentAnimation = animatedActor.Animator.Animations.First();
-                        animatedActor.Animator.Animate += (s, args) =>
-                        {
-                            for (var i = 0; i < 6; i++)
-                            {
-                                animatedActor.RootJoint.ApplyKeyFrameTransforms(i, args.KeyFrame, Matrix4.Identity, animatedActor.GlobalInverseTransform);
-                            }
-
-                            var meshTransforms = animatedActor.RootJoint.GetMeshTransforms(args.KeyFrame);
-                            foreach (var transforms in meshTransforms)
-                            {
-                                var jointTransforms = ArrayExtensions.Initialize(AnimatedActor.MAX_JOINTS, Matrix4.Identity);
-
-                                for (var i = 0; i < AnimatedActor.MAX_JOINTS; i++)
-                                {
-                                    jointTransforms[i] = Matrix4.Zero;
-                                }
-
-                                foreach (var kvp in transforms.TransformsByBoneIndex)
-                                {
-                                    jointTransforms[kvp.Key] = kvp.Value;
-                                }
-
-                                animatedActor.SetJointTransforms(transforms.MeshIndex, jointTransforms);
-                            }
-                        };
-
-                        foreach (var texture in scene.Textures)
-                        {
-                            //texture.
-                        }
-
-                        /*if (textureManager != null)
-                        {
-                            jointMesh.TextureMapping = new TexturePaths(scene.Materials[mesh.MaterialIndex], Path.GetDirectoryName(filePath)).ToTextureMapping(textureManager);
-                        }*/
-
-                        // Every bone has an offset matrix, which converts it from model-space to bone-space (animation transforms are done in bone-space)
-                        animatedActor.RootJoint = scene.RootNode.ToJoint(scene.Meshes);
-
-                        for (var i = 0; i < scene.Meshes.Count; i++)
-                        {
-                            animatedActor.RootJoint.CalculateInverseBindTransforms(i, Matrix4.Identity);
-                        }
-                        //_globalInverseTransform = scene.RootNode.Transform.ToMatrix4().Inverted();
-                        animatedActor.GlobalInverseTransform = scene.RootNode.Children[1].Transform.ToMatrix4().Inverted();
-
                         foreach (var sceneAnimation in scene.Animations)
                         {
-                            var animation = new Animation(sceneAnimation.Name)
-                            {
-                                Duration = (float)sceneAnimation.DurationInTicks
-                            };
-
                             sceneAnimation.TicksPerSecond = 60.0;
 
                             var keyFrames = new Dictionary<double, KeyFrame>();
@@ -220,81 +242,15 @@ namespace SpiceEngineCore.Maps
                                 }
                             }
 
-                            /*foreach (var kvp in keyFrames)
+                            yield return new Animation(sceneAnimation.Name, (float)sceneAnimation.DurationInTicks)
                             {
-                                kvp.Value.Transforms.OrderBy(t => t.MeshIndex).ToList();
-                            }*/
-
-                            animation.KeyFrames.AddRange(keyFrames.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value));
-
-                            animatedActor.Animator.Animations.Add(animation);
+                                KeyFrames = keyFrames.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList()
+                            };
                         }
-
-                        actor = animatedActor;
-                    }
-
-                    for (var i = 0; i < scene.Meshes.Count; i++)
-                    {
-                        var material = scene.Materials[scene.Meshes[i].MaterialIndex].ToMaterial();
-                        actor.AddMaterial(material);
                     }
                 }
             }
-
-            actor.Position = Position;
-            actor.Orientation = Quaternion.FromEulerAngles(Orientation.ToRadians());
-            actor.Rotation = Quaternion.FromEulerAngles(Rotation.ToRadians());
-            actor.Scale = Scale;
-
-            return actor;
         }
-
-        public IRenderable ToRenderable() => new Model(ModelFilePath);
-
-        public IShape ToShape()
-        {
-            using (var importer = new Assimp.AssimpContext())
-            {
-                var scene = importer.ImportFile(ModelFilePath, Assimp.PostProcessSteps.JoinIdenticalVertices
-                    | Assimp.PostProcessSteps.CalculateTangentSpace
-                    | Assimp.PostProcessSteps.LimitBoneWeights
-                    | Assimp.PostProcessSteps.Triangulate
-                    | Assimp.PostProcessSteps.GenerateSmoothNormals
-                    | Assimp.PostProcessSteps.FlipUVs);
-
-                /*public Quaternion Rotation
-                {
-                    get => Orientation * _modelMatrix.Rotation;
-                    set => _modelMatrix.Rotation = Orientation * value;
-                }
-
-                actor.Orientation = Quaternion.FromEulerAngles(Orientation);*/
-
-                var vertices = scene.Meshes
-                    .SelectMany(m => m.Vertices
-                        .Select(v => v.ToVector3()))
-                    .Select(v => (Matrix4.CreateScale(Scale)
-                        * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
-                        * Quaternion.FromEulerAngles(Rotation.ToRadians()))
-                        * new Vector4(v, 1.0f)).Xyz);
-
-                if (Name == "Player")
-                {
-                    return new Sphere(vertices);
-                }
-                else
-                {
-                    return new Box(vertices);
-                }
-            }
-
-            /*actor.HasCollision = mapActor.HasCollision;
-            actor.Bounds = actor.Name == "Player"
-                ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
-        }
-
-        public IBehavior ToBehavior() => Behavior?.ToBehavior();
 
         /*public Script ToScript()
         {

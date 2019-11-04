@@ -18,6 +18,8 @@ namespace SpiceEngineCore.Entities
             set => _modelMatrix.Position = value;
         }
 
+        public ModelMatrix WorldMatrix => _modelMatrix;
+
         private event EventHandler<EntityTransformEventArgs> _transformed;
 
         public event EventHandler<EntityEventArgs> UniformsChanged;
@@ -47,9 +49,9 @@ namespace SpiceEngineCore.Entities
         public virtual void Transform(Transform transform) => _modelMatrix.Transform(transform);
 
         //public virtual void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
-        public abstract void SetUniforms(ShaderProgram program);
+        //public abstract void SetUniforms(ShaderProgram program);
 
-        public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
+        //public virtual bool CompareUniforms(IEntity entity) => entity is Entity castEntity && _modelMatrix.Equals(castEntity._modelMatrix);
 
         // TODO - By the time we've hooked up the transform event, it could be too late, so we need to fire it as soon as we hook up
         private void OnTransformed(object sender, TransformEventArgs e) => _transformed?.Invoke(this, new EntityTransformEventArgs(ID, Position, e.Transform));

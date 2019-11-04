@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
@@ -12,9 +11,6 @@ namespace SpiceEngineCore.Rendering.Meshes
         IEnumerable<IVertex3D> Vertices { get; }
         IEnumerable<int> TriangleIndices { get; }
         float Alpha { get; set; }
-
-        void Load();
-        void Draw();
 
         void Combine(IMesh mesh);
 

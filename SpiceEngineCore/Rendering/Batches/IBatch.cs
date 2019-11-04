@@ -12,6 +12,7 @@ namespace SpiceEngineCore.Rendering.Batches
     public interface IBatch
     {
         IEnumerable<int> EntityIDs { get; }
+        int EntityCount { get; }
         bool IsLoaded { get; }
 
         void AddEntity(int id, IRenderable renderable);
@@ -19,6 +20,10 @@ namespace SpiceEngineCore.Rendering.Batches
         void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale);
         void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate);
         void RemoveEntity(int id);
+
+        void SetUniforms(IEntityProvider entityProvider, ShaderProgram program);
+        bool CompareUniforms(IRenderable renderable);
+        void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
 
         void Load();
         void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null);
