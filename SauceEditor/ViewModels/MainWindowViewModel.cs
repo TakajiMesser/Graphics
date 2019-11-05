@@ -257,7 +257,11 @@ namespace SauceEditor.ViewModels
             var mapComponent = MapBuilder.GenerateModelMap(modelComponent);
 
             PanelFactory.CreateGamePanel(mapComponent, modelComponent);
-            GamePanelViewModel.ViewType = ViewTypes.Perspective;
+
+            if (GamePanelViewModel != null)
+            {
+                GamePanelViewModel.ViewType = ViewTypes.Perspective;
+            }
         }
 
         public void OpenBehavior(string filePath)

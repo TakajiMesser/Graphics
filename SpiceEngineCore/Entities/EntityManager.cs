@@ -1,5 +1,6 @@
 ﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
@@ -15,8 +16,9 @@ namespace SpiceEngineCore.Entities
     public class EntityManager : IEntityProvider
     {
         private List<IEntity> _entities = new List<IEntity>();
-        private Dictionary<string, INamedEntity> _entitiesByName = new Dictionary<string, INamedEntity>();
-        private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
+
+        private ConcurrentDictionary<string, INamedEntity> _entitiesByName = new ConcurrentDictionary<string, INamedEntity>();
+        //private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
 
         private ConcurrentDictionary<int, IEntityBuilder> _buildersByID = new ConcurrentDictionary<int, IEntityBuilder>();
         private ConcurrentQueue<Tuple<int, IEntityBuilder>> _builderIDQueue = new ConcurrentQueue<Tuple<int, IEntityBuilder>>();
@@ -25,6 +27,7 @@ namespace SpiceEngineCore.Entities
 
         private object _availableIDLock = new object();
 
+        public List<ICamera> Cameras { get; } = new List<ICamera>();
         public List<IActor> Actors { get; } = new List<IActor>();
         public List<IBrush> Brushes { get; } = new List<IBrush>();
         public List<IVolume> Volumes { get; } = new List<IVolume>();
@@ -47,6 +50,7 @@ namespace SpiceEngineCore.Entities
                 _nextAvailableID = 1;
             }
 
+            Cameras.Clear();
             Actors.Clear();
             Brushes.Clear();
             Volumes.Clear();
@@ -70,8 +74,12 @@ namespace SpiceEngineCore.Entities
 
         public INamedEntity GetEntity(string name)
         {
-            if (!_entitiesByName.ContainsKey(name)) throw new KeyNotFoundException("No entity found for name " + name);
-            return _entitiesByName[name];
+            if (_entitiesByName.TryGetValue(name, out INamedEntity value))
+            {
+                return value;
+            }
+
+            throw new KeyNotFoundException("No entity found for name " + name);
         }
 
         public IEntity GetEntityOrDefault(int id) => id <= _entities.Count ? _entities[id - 1] : null;
@@ -178,8 +186,8 @@ namespace SpiceEngineCore.Entities
                 {
                     if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
                     if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
-
-                    _entitiesByName.Add(namedEntity.Name, namedEntity);
+                    
+                    _entitiesByName[namedEntity.Name] = namedEntity;
                 }
 
                 AddToList(entity);
@@ -200,7 +208,7 @@ namespace SpiceEngineCore.Entities
                     if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
                     if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
 
-                    _entitiesByName.Add(namedEntity.Name, namedEntity);
+                    _entitiesByName[namedEntity.Name] = namedEntity;
                 }
 
                 AddToList(entity);
@@ -224,7 +232,7 @@ namespace SpiceEngineCore.Entities
                 if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
                 if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
 
-                _entitiesByName.Add(namedEntity.Name, namedEntity);
+                _entitiesByName[namedEntity.Name] = namedEntity;
             }
 
             AddToList(entity);
@@ -236,6 +244,9 @@ namespace SpiceEngineCore.Entities
         {
             switch (entity)
             {
+                case ICamera camera:
+                    Cameras.Add(camera);
+                    break;
                 case IActor actor:
                     Actors.Add(actor);
                     break;
@@ -280,6 +291,9 @@ namespace SpiceEngineCore.Entities
 
             switch (entity)
             {
+                case ICamera camera:
+                    Cameras.Remove(camera);
+                    break;
                 case IActor actor:
                     Actors.Remove(actor);
                     break;

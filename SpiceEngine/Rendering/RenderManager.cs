@@ -93,6 +93,8 @@ namespace SpiceEngine.Rendering
             Resolution = resolution;
             WindowSize = windowSize;
 
+            //Resolution.ResolutionChanged += (s, args) => _camera?.UpdateAspectRatio(args.AspectRatio);
+
             _logManager = new LogManager(_textRenderer);
         }
 
@@ -114,9 +116,16 @@ namespace SpiceEngine.Rendering
         }
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
+
         public void SetCamera(ICamera camera) => _camera = camera;
 
-        public void LoadFromMap(Map map) => _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
+        public void LoadFromMap(IMap map)
+        {
+            if (map is Map castMap)
+            {
+                _skyboxRenderer.SetTextures(castMap.SkyboxTextureFilePaths);
+            }
+        }
 
         public override void AddComponent(int entityID, IRenderableBuilder builder)
         {
@@ -164,6 +173,9 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
+                // TODO - For now, just use the first available camera
+                //_camera = _entityProvider.Cameras.First();
+
                 //_forwardRenderer.Load(Resolution);
                 _deferredRenderer.Load(Resolution);
                 _wireframeRenderer.Load(Resolution);

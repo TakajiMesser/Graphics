@@ -4,7 +4,9 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
@@ -35,12 +37,12 @@ namespace SpiceEngine.Game
 
         private bool _isClosing = false;
 
-        private Map _map;
+        private IMap _map;
         private object _loadLock = new object();
 
         public event EventHandler<EventArgs> GameLoaded;
 
-        public GameWindow(Map map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameWindow(IMap map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             _map = map;
 
@@ -155,9 +157,10 @@ namespace SpiceEngine.Game
             _gameLoader.TimedOut += (s, args) => Run(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
-            if (!string.IsNullOrEmpty(_map.Cameras.First().AttachedActorName))
+            var firstCamera = _map.GetCameraAt(0);
+            if (firstCamera is IMapCamera camera && !string.IsNullOrEmpty(camera.AttachedActorName))
             {
-                var attachedEntity = _gameManager.EntityManager.GetEntity(_map.Cameras.First().AttachedActorName);
+                var attachedEntity = _gameManager.EntityManager.GetEntity(camera.AttachedActorName);
                 _gameManager.Camera.AttachToEntity(attachedEntity, true, false);
             }
 

@@ -308,10 +308,10 @@ namespace SauceEditorCore.Models.Components
 
         public override void Load()
         {
-            if (Map is Map)
-            {
+            //if (Map is Map)
+            //{
                 Map = SpiceEngine.Maps.Map.Load(Path);
-            }
+            //}
         }
 
         public static bool IsValidExtension(string extension) => extension == ".map";

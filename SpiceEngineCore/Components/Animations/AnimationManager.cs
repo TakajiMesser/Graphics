@@ -20,8 +20,6 @@ namespace SpiceEngineCore.Components.Animations
 
         public AnimationManager(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public void AddModel(int entityID, IAnimatedModel model) => _modelByEntityID.Add(entityID, model);
-
         public override void AddComponent(int entityID, IAnimatorBuilder builder)
         {
             var animator = builder.ToAnimator();
@@ -36,17 +34,42 @@ namespace SpiceEngineCore.Components.Animations
             _animations.AddRange(builder.Animations);
         }
 
+        private readonly object _lock = new object();
+
+        // TODO - Unfortunately, we have a race condition between the Renderer loaders and the Animator loaders here... when do we want to bind the event handler?
+        public void AddModel(int entityID, IAnimatedModel model)
+        {
+            lock (_lock)
+            {
+                _modelByEntityID.Add(entityID, model);
+
+                if (_animatorByEntityID.ContainsKey(entityID))
+                {
+                    var animator = _animatorByEntityID[entityID];
+                    animator.Animate += (s, args) => model.SetKeyFrame(args.KeyFrame);
+                }
+            }
+        }
+
         protected override void LoadComponents()
         {
             foreach (var actor in _entityProvider.Actors)
             {
-                if (_animatorByEntityID.ContainsKey(actor.ID))
+                // TODO - Come up with a better way than constantly locking and unlocking here
+                lock (_lock)
                 {
-                    var animator = _animatorByEntityID[actor.ID];
-                    var model = _modelByEntityID[actor.ID];
+                    if (_animatorByEntityID.ContainsKey(actor.ID))
+                    {
+                        var animator = _animatorByEntityID[actor.ID];
 
-                    animator.Animate += (s, args) => model.SetKeyFrame(args.KeyFrame);
+                        if (_modelByEntityID.ContainsKey(actor.ID))
+                        {
+                            var model = _modelByEntityID[actor.ID];
+                            animator.Animate += (s, args) => model.SetKeyFrame(args.KeyFrame);
+                        }
+                    }
                 }
+                
             }
         }
 

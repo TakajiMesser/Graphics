@@ -4,7 +4,6 @@ using SpiceEngine.Physics;
 using SpiceEngine.Scripting;
 using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
@@ -20,17 +19,6 @@ namespace SpiceEngine.Game
 {
     public class GameManager
     {
-        public Camera Camera { get; set; }
-
-        public EntityManager EntityManager { get; } = new EntityManager();
-        public InputManager InputManager { get; private set; }
-        public PhysicsManager PhysicsManager { get; private set; }
-        public BehaviorManager BehaviorManager { get; private set; }
-        public AnimationManager AnimationManager { get; private set; }
-        public SoundManager SoundManager { get; private set; }
-
-        public bool IsLoaded { get; private set; }
-
         private Resolution _resolution;
 
         public GameManager(Resolution resolution)
@@ -44,6 +32,17 @@ namespace SpiceEngine.Game
             _resolution = resolution;
             InputManager = new InputManager(mouseTracker);
         }
+
+        public ICamera Camera { get; private set; }
+
+        public EntityManager EntityManager { get; } = new EntityManager();
+        public InputManager InputManager { get; private set; }
+        public PhysicsManager PhysicsManager { get; private set; }
+        public BehaviorManager BehaviorManager { get; private set; }
+        public AnimationManager AnimationManager { get; private set; }
+        public SoundManager SoundManager { get; private set; }
+
+        public bool IsLoaded { get; private set; }
 
         public void LoadFromMap(IMap map)
         {
@@ -59,9 +58,8 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            // TODO - For now, just use the first camera
             var mapCamera = map.GetCameraAt(0);
-            
+
             if (mapCamera is MapCamera camera)
             {
                 camera.Resolution = _resolution;

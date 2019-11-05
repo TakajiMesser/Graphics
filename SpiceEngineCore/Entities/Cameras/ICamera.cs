@@ -14,6 +14,8 @@ namespace SpiceEngineCore.Entities.Cameras
         Matrix4 ProjectionMatrix { get; }
         Matrix4 ViewProjectionMatrix { get; }
 
+        void UpdateAspectRatio(float value);
+
         void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation);
         void DetachFromEntity();
 

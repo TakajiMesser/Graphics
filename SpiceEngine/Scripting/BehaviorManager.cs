@@ -18,7 +18,7 @@ namespace SpiceEngine.Scripting
     {
         private ScriptManager _scriptManager = new ScriptManager();
 
-        private Camera _camera;
+        private ICamera _camera;
         private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
         private IInputProvider _inputProvider;
@@ -33,7 +33,7 @@ namespace SpiceEngine.Scripting
             _collisionProvider = collisionProvider;
         }
 
-        public void SetCamera(Camera camera)
+        public void SetCamera(ICamera camera)
         {
             _camera = camera;
 

@@ -50,6 +50,11 @@ namespace SpiceEngineCore.Entities.Cameras
             //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _viewMatrix.Matrix));
         }
 
+        public void UpdateAspectRatio(float value)
+        {
+
+        }
+
         public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {
             AttachedEntity = entity;

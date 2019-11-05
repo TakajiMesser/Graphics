@@ -1,5 +1,6 @@
 ﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
@@ -12,6 +13,7 @@ namespace SpiceEngineCore.Entities
     {
         ILayerProvider LayerProvider { get; }
 
+        List<ICamera> Cameras { get; }
         List<IActor> Actors { get; }
         List<IBrush> Brushes { get; }
         List<IVolume> Volumes { get; }

@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class FaceEntity : TexturedModelEntity<ModelFace>, ITextureBinder, ITexturePath, IDirectional
+    public class FaceEntity : TexturedModelEntity<ModelFace>, /*ITextureBinder, ITexturePath, */IDirectional
     {
         private Vector2 _texturePosition;
         private float _textureRotation;
@@ -22,9 +22,9 @@ namespace SauceEditorCore.Models.Entities
 
         public FaceEntity(ModelFace modelFace, TexturePaths texturePaths) : base(modelFace, texturePaths) { }
 
-        public override bool CompareUniforms(IEntity entity) => entity is FaceEntity faceEntity
+        /*public override bool CompareUniforms(IEntity entity) => entity is FaceEntity faceEntity
             && IsInTextureMode == faceEntity.IsInTextureMode
-            && base.CompareUniforms(entity);
+            && base.CompareUniforms(entity);*/
 
         public override IRenderable ToRenderable()
         {
@@ -32,8 +32,11 @@ namespace SauceEditorCore.Models.Entities
             var meshVertices = meshBuild.GetVertices();
 
             var mesh = meshVertices.Any(v => v.IsAnimated)
-                ? (IMesh)new Mesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
-                : new Mesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+                ? (ITexturedMesh)new TexturedMesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
+                : new TexturedMesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+
+            mesh.Material = _material;
+            mesh.TextureMapping = _textureMapping;
 
             mesh.Transform(_modelMatrix.WorldTransform);
             return mesh;

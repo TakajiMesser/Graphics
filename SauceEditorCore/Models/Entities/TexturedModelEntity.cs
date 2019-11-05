@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public abstract class TexturedModelEntity<T> : ModelEntity<T>, IRotate, IScale, ITextureBinder, ITexturePath, ITexturedEntity, IDirectional where T : IModelShape, ITexturedShape
+    public abstract class TexturedModelEntity<T> : ModelEntity<T>, IRotate, IScale, /*ITextureBinder, ITexturePath,*/ ITexturedEntity, IDirectional where T : IModelShape, ITexturedShape
     {
         private Vector2 _texturePosition;
         private float _textureRotation;
@@ -34,13 +34,15 @@ namespace SauceEditorCore.Models.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public TexturePaths TexturePaths { get; }
+        protected TexturePaths _texturePaths;
+        protected Material _material;
+        protected TextureMapping _textureMapping;
 
-        public IEnumerable<Material> Materials => CurrentMaterial.Yield();
+        /*public IEnumerable<Material> Materials => CurrentMaterial.Yield();
         public IEnumerable<TextureMapping?> TextureMappings => CurrentTextureMapping.Yield();
 
         public Material CurrentMaterial { get; private set; }
-        public TextureMapping? CurrentTextureMapping { get; private set; }
+        public TextureMapping? CurrentTextureMapping { get; private set; }*/
 
         public abstract Vector3 XDirection { get; }
         public abstract Vector3 YDirection { get; }
@@ -49,7 +51,7 @@ namespace SauceEditorCore.Models.Entities
         //public override event EventHandler<EntityTransformEventArgs> Transformed;
         public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
-        public TexturedModelEntity(T modelShape, TexturePaths texturePaths) : base(modelShape) => TexturePaths = texturePaths;
+        public TexturedModelEntity(T modelShape, TexturePaths texturePaths) : base(modelShape) => _texturePaths = texturePaths;
 
         public void TranslateTexture(float x, float y)
         {
@@ -69,7 +71,7 @@ namespace SauceEditorCore.Models.Entities
             TextureTransformed?.Invoke(this, new TextureTransformEventArgs(ID, Vector2.Zero, 0.0f, new Vector2(x, y)));
         }
 
-        public void AddMaterial(Material material) => CurrentMaterial = material;
+        /*public void AddMaterial(Material material) => CurrentMaterial = material;
 
         public void AddTextureMapping(TextureMapping? textureMapping) => CurrentTextureMapping = textureMapping;
 
@@ -93,6 +95,6 @@ namespace SauceEditorCore.Models.Entities
 
         public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
             && CurrentMaterial.Equals(textureBinder.CurrentMaterial)
-            && CurrentTextureMapping.Equals(textureBinder.CurrentTextureMapping);
+            && CurrentTextureMapping.Equals(textureBinder.CurrentTextureMapping);*/
     }
 }
