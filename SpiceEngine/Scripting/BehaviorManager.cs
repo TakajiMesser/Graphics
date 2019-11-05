@@ -92,6 +92,7 @@ namespace SpiceEngine.Scripting
             var behavior = builder.ToBehavior();
             if (behavior != null)
             {
+                // TODO - Cannot add to dictionary in parallel like this
                 _behaviorsByEntityID.Add(entityID, behavior);
             }
 

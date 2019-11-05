@@ -31,8 +31,8 @@ namespace SpiceEngineCore.Maps
         public override IEntity ToEntity()
         {
             var camera = Type == ProjectionTypes.Orthographic
-                ? (ICamera)new OrthographicCamera(Name, Resolution, ZNear, ZFar, StartingWidth)
-                : new PerspectiveCamera(Name, Resolution, ZNear, ZFar, FieldOfViewY);
+                ? (ICamera)new OrthographicCamera(Name, ZNear, ZFar, StartingWidth)
+                : new PerspectiveCamera(Name, ZNear, ZFar, FieldOfViewY);
 
             if (Position != null)
             {

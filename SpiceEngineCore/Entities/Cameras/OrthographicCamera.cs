@@ -16,16 +16,15 @@ namespace SpiceEngineCore.Entities.Cameras
             set => _projectionMatrix.Width = value;
         }
 
-        public OrthographicCamera(string name, Resolution resolution, float zNear, float zFar, float startingWidth) : base(name)
+        public OrthographicCamera(string name, float zNear, float zFar, float startingWidth) : base(name, ProjectionTypes.Orthographic)
         {
-            _projectionMatrix = new ProjectionMatrix(ProjectionTypes.Orthographic, resolution);
             _projectionMatrix.UpdateOrthographic(startingWidth, zNear, zFar);
         }
 
         public Matrix4 CalculateProjection()
         {
             var width = 0.8f;
-            var height = width / _projectionMatrix.Resolution.AspectRatio;
+            var height = width / _projectionMatrix.AspectRatio;
             return Matrix4.CreateOrthographic(width, height, _projectionMatrix.ZNear, _projectionMatrix.ZFar);
         }
 

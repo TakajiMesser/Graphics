@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Shaders;
 using System;
 
@@ -19,7 +18,6 @@ namespace SpiceEngineCore.Rendering.Matrices
         public Matrix4 Matrix { get; private set; }
 
         public ProjectionTypes Type { get; }
-        public Resolution Resolution { get; }
 
         public float Width
         {
@@ -27,6 +25,16 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _width = value;
+                CalculateMatrix();
+            }
+        }
+
+        public float AspectRatio
+        {
+            get => _aspectRatio;
+            set
+            {
+                _aspectRatio = value;
                 CalculateMatrix();
             }
         }
@@ -62,20 +70,14 @@ namespace SpiceEngineCore.Rendering.Matrices
         }
 
         private float _width = 0.0f;
+        private float _aspectRatio = 1.0f;
         private float _fieldOfView = 0.0f;
         private float _zNear = 0.0f;
         private float _zFar = 0.0f;
 
         private Matrix4 _previousMatrix;
 
-        public ProjectionMatrix() { }
-        public ProjectionMatrix(ProjectionTypes type, Resolution resolution)
-        {
-            Type = type;
-            Resolution = resolution;
-
-            Resolution.ResolutionChanged += (s, args) => CalculateMatrix();
-        }
+        public ProjectionMatrix(ProjectionTypes type) => Type = type;
 
         public void UpdateOrthographic(float width, float zNear, float zFar)
         {
@@ -108,10 +110,10 @@ namespace SpiceEngineCore.Rendering.Matrices
             switch (Type)
             {
                 case ProjectionTypes.Orthographic:
-                    Matrix = Matrix4.CreateOrthographic(_width, _width / Resolution.AspectRatio, _zNear, _zFar);
+                    Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, _zNear, _zFar);
                     break;
                 case ProjectionTypes.Perspective:
-                    Matrix = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, Resolution.AspectRatio, _zNear, _zFar);
+                    Matrix = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
                     break;
                 default:
                     throw new NotImplementedException();

@@ -1,10 +1,8 @@
 ﻿using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
-using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
@@ -18,7 +16,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Rendering.Batches
 {
-    public enum RenderTypes
+    internal enum RenderTypes
     {
         OpaqueStatic,
         OpaqueAnimated,
@@ -28,7 +26,7 @@ namespace SpiceEngineCore.Rendering.Batches
         TransparentBillboard
     }
 
-    public class BatchManager
+    public class BatchManager : IBatcher
     {
         private IEntityProvider _entityProvider;
         private ITextureProvider _textureProvider;
@@ -318,7 +316,7 @@ namespace SpiceEngineCore.Rendering.Batches
             IsLoaded = true;
         }
 
-        public BatchAction CreateBatchAction() => new BatchAction(this);
+        public IBatchAction CreateBatchAction() => new BatchAction(this);
 
         private void DrawEntities(ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
@@ -400,150 +398,141 @@ namespace SpiceEngineCore.Rendering.Batches
             }
         }
 
-        public class BatchAction
+        public class BatchAction : IBatchAction
         {
             private BatchManager _batchManager;
             private Queue<Action> _commandQueue = new Queue<Action>();
+
+            private ShaderProgram _shader;
             private HashSet<int> _entityIDs;
 
             public BatchAction(BatchManager batchManager) => _batchManager = batchManager;
 
-            public ShaderProgram Shader { get; set; }
             public ICamera Camera { get; set; }
 
-            public BatchAction SetShader(ShaderProgram shader)
+            public IBatchAction SetShader(ShaderProgram shader)
             {
                 _commandQueue.Enqueue(() =>
                 {
-                    Shader = shader;
-                    Shader.Use();
+                    _shader = shader;
+                    _shader.Use();
                 });
                 return this;
             }
 
-            public BatchAction SetCamera(ICamera camera)
-            {
-                _commandQueue.Enqueue(() =>
-                {
-                    Camera = camera;
-                    Camera.SetUniforms(Shader);
-                });
-                return this;
-            }
-
-            public BatchAction SetCamera(ICamera camera, PointLight pointLight)
+            public IBatchAction SetCamera(ICamera camera)
             {
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    Camera.SetUniforms(Shader, pointLight);
+                    Camera.SetUniforms(_shader);
                 });
                 return this;
             }
 
-            public BatchAction SetCamera(ICamera camera, SpotLight spotLight)
+            public IBatchAction SetCamera(ICamera camera, ILight light)
             {
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    Camera.SetUniforms(Shader, spotLight);
+                    Camera.SetUniforms(_shader, light);
                 });
                 return this;
             }
 
-            public BatchAction SetUniform<T>(string name, T value) where T : struct
+            public IBatchAction SetUniform<T>(string name, T value) where T : struct
             {
-                _commandQueue.Enqueue(() => Shader.SetUniform<T>(name, value));
+                _commandQueue.Enqueue(() => _shader.SetUniform<T>(name, value));
                 return this;
             }
 
-            public BatchAction SetEntityIDs(IEnumerable<int> ids)
+            public IBatchAction SetEntityIDs(IEnumerable<int> ids)
             {
                 _commandQueue.Enqueue(() => _entityIDs = new HashSet<int>(ids));
                 return this;
             }
 
-            public BatchAction ClearEntityIDs()
+            public IBatchAction ClearEntityIDs()
             {
                 _commandQueue.Enqueue(() => _entityIDs = null);
                 return this;
             }
 
-            public BatchAction PerformAction(Action action)
+            public IBatchAction PerformAction(Action action)
             {
                 _commandQueue.Enqueue(action);
                 return this;
             }
 
-            public BatchAction SetTexture(ITexture texture, string name, int index)
+            public IBatchAction SetTexture(ITexture texture, string name, int index)
             {
-                _commandQueue.Enqueue(() => Shader.BindTexture(texture, name, index));
+                _commandQueue.Enqueue(() => _shader.BindTexture(texture, name, index));
                 return this;
             }
 
-            public BatchAction RenderEntities()
+            public IBatchAction RenderEntities()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(_shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderOpaqueStatic()
+            public IBatchAction RenderOpaqueStatic()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, _shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderOpaqueAnimated()
+            public IBatchAction RenderOpaqueAnimated()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, _shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderOpaqueBillboard()
+            public IBatchAction RenderOpaqueBillboard()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueBillboard, Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueBillboard, _shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderTransparentStatic()
+            public IBatchAction RenderTransparentStatic()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, _shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderTransparentAnimated()
+            public IBatchAction RenderTransparentAnimated()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, _shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderTransparentBillboard()
+            public IBatchAction RenderTransparentBillboard()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentBillboard, Shader, _entityIDs));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentBillboard, _shader, _entityIDs));
                 return this;
             }
 
-            public BatchAction RenderOpaqueStaticWithAction(Action<int> action)
+            public IBatchAction RenderOpaqueStaticWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, Shader, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, _shader, _entityIDs, action));
                 return this;
             }
 
-            public BatchAction RenderOpaqueAnimatedWithAction(Action<int> action)
+            public IBatchAction RenderOpaqueAnimatedWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, Shader, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, _shader, _entityIDs, action));
                 return this;
             }
 
-            public BatchAction RenderTransparentStaticWithAction(Action<int> action)
+            public IBatchAction RenderTransparentStaticWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, Shader, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, _shader, _entityIDs, action));
                 return this;
             }
 
-            public BatchAction RenderTransparentAnimatedWithAction(Action<int> action)
+            public IBatchAction RenderTransparentAnimatedWithAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, Shader, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, _shader, _entityIDs, action));
                 return this;
             }
 

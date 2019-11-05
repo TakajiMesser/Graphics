@@ -23,7 +23,6 @@ using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
@@ -49,7 +48,6 @@ namespace SpiceEngine.Rendering
         public double Frequency { get; internal set; }
         public bool RenderGrid { get; set; }
 
-        public BatchManager BatchManager { get; private set; }
         public TextureManager TextureManager { get; } = new TextureManager();
 
         // TODO - Make this less janky
@@ -59,6 +57,8 @@ namespace SpiceEngine.Rendering
         private IAnimationProvider _animationProvider;
         private ISelectionProvider _selectionProvider;
         private ICamera _camera;
+
+        private BatchManager _batchManager;
 
         //private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -93,7 +93,7 @@ namespace SpiceEngine.Rendering
             Resolution = resolution;
             WindowSize = windowSize;
 
-            //Resolution.ResolutionChanged += (s, args) => _camera?.UpdateAspectRatio(args.AspectRatio);
+            Resolution.ResolutionChanged += (s, args) => _camera?.UpdateAspectRatio(args.AspectRatio);
 
             _logManager = new LogManager(_textRenderer);
         }
@@ -101,23 +101,27 @@ namespace SpiceEngine.Rendering
         public void SetEntityProvider(IEntityProvider entityProvider)
         {
             _entityProvider = entityProvider;
-            BatchManager = new BatchManager(_entityProvider, TextureManager);
+            _batchManager = new BatchManager(_entityProvider, TextureManager);
 
             if (_animationProvider != null)
             {
-                BatchManager.SetAnimationProvider(_animationProvider);
+                _batchManager.SetAnimationProvider(_animationProvider);
             }
         }
 
         public void SetAnimationProvider(IAnimationProvider animationProvider)
         {
             _animationProvider = animationProvider;
-            BatchManager?.SetAnimationProvider(_animationProvider);
+            _batchManager?.SetAnimationProvider(_animationProvider);
         }
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
 
-        public void SetCamera(ICamera camera) => _camera = camera;
+        public void SetCamera(ICamera camera)
+        {
+            _camera = camera;
+            camera.UpdateAspectRatio(Resolution.AspectRatio);
+        }
 
         public void LoadFromMap(IMap map)
         {
@@ -199,46 +203,30 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             Invoker.RunAsync(() =>
             {
-                BatchManager.Load();
+                _batchManager.Load();
             });
         }
+
+        // TODO - Can we remove this call?
+        public void LoadBatcher() => _batchManager.Load();
 
         public void AddEntity(int entityID, IRenderable renderable)
         {
             if (IsInEditorMode && renderable is IMesh mesh)
             {
-                var entity = _entityProvider.GetEntity(entityID);
-
-                if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
-                {
-                    var textureMapping = texturePath.TexturePaths.ToTextureMapping(TextureManager);
-                    textureBinder.AddTextureMapping(textureMapping);
-                }
-
                 var colorID = SelectionHelper.GetColorFromID(entityID);
-                var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
-
-                BatchManager.AddEntity(entityID, new Mesh<EditorVertex3D>(vertices, mesh.TriangleIndices.ToList()));
+                _batchManager.AddEntity(entityID, TransformToEditorMesh(mesh, colorID));
             }
             else if (IsInEditorMode && renderable is IModel model)
             {
-                // TODO - Do I not need to do this for IModels?
-                /*var entity = _entityProvider.GetEntity(entityID);
-
-                if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
-                {
-                    var textureMapping = texturePath.TexturePaths.ToTextureMapping(TextureManager);
-                    textureBinder.AddTextureMapping(textureMapping);
-                }*/
-
                 var colorID = SelectionHelper.GetColorFromID(entityID);
+
                 for (var i = 0; i < model.Meshes.Count; i++)
                 {
-                    var vertices = model.Meshes[i].Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
-                    model.Meshes[i] = new Mesh<EditorVertex3D>(vertices, model.Meshes[i].TriangleIndices.ToList());
+                    model.Meshes[i] = TransformToEditorMesh(model.Meshes[i], colorID);
                 }
 
-                BatchManager.AddEntity(entityID, renderable);
+                _batchManager.AddEntity(entityID, renderable);
             }
             else if (IsInEditorMode && renderable is IBillboard billboard)
             {
@@ -246,11 +234,32 @@ namespace SpiceEngine.Rendering
             }
             else
             {
-                BatchManager.AddEntity(entityID, renderable);
+                _batchManager.AddEntity(entityID, renderable);
             }
         }
 
-        public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);
+        private IMesh TransformToEditorMesh(IMesh mesh, Color4 colorID)
+        {
+            var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
+            var triangleIndices = mesh.TriangleIndices.ToList();
+
+            if (mesh is ITexturedMesh texturedMesh)
+            {
+                return new TexturedMesh<EditorVertex3D>(vertices, triangleIndices)
+                {
+                    Material = texturedMesh.Material,
+                    TextureMapping = texturedMesh.TextureMapping
+                };
+            }
+            else
+            {
+                return new Mesh<EditorVertex3D>(vertices, triangleIndices);
+            }
+        }
+
+        public void RemoveEntity(int entityID) => _batchManager.RemoveByEntityID(entityID);
+
+        public void Duplicate(int entityID, int duplicateID) => _batchManager.DuplicateBatch(entityID, duplicateID);
 
         public void ResizeResolution()
         {
@@ -293,7 +302,7 @@ namespace SpiceEngine.Rendering
             foreach (var entityID in entityIDs)
             {
                 // TODO - Handle light selection differently, since lights are not stored in the BatchManager
-                BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Selected());
+                _batchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Selected());
             }
         }
 
@@ -301,7 +310,7 @@ namespace SpiceEngine.Rendering
         {
             foreach (var entityID in entityIDs)
             {
-                BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Deselected());
+                _batchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Deselected());
             }
         }
 
@@ -455,7 +464,7 @@ namespace SpiceEngine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
+            _selectionRenderer.SelectionPass(_camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
             _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
 
             var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
@@ -475,7 +484,7 @@ namespace SpiceEngine.Rendering
                 _wireframeRenderer.RenderGridLines(_camera);
             }
 
-            _wireframeRenderer.WireframePass(_camera, BatchManager);
+            _wireframeRenderer.WireframePass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
@@ -496,7 +505,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager);
+            _deferredRenderer.GeometryPass(_camera, _batchManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
@@ -508,7 +517,7 @@ namespace SpiceEngine.Rendering
             }
 
             _skyboxRenderer.Render(_camera);
-            _billboardRenderer.GeometryPass(_camera, BatchManager);
+            _billboardRenderer.GeometryPass(_camera, _batchManager);
             _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             _deferredRenderer.BindForLitTransparentWriting();
@@ -518,7 +527,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -537,7 +546,7 @@ namespace SpiceEngine.Rendering
                 GL.Disable(EnableCap.Blend);
                 GL.DepthFunc(DepthFunction.Always);
 
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, _batchManager);
             }
         }
 
@@ -546,7 +555,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager);
+            _deferredRenderer.GeometryPass(_camera, _batchManager);
 
             RenderLights();
 
@@ -569,7 +578,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -588,7 +597,7 @@ namespace SpiceEngine.Rendering
                 GL.Disable(EnableCap.Blend);
                 GL.DepthFunc(DepthFunction.Always);
 
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, _batchManager);
             }
         }
 
@@ -597,7 +606,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager);
+            _deferredRenderer.GeometryPass(_camera, _batchManager);
 
             RenderLights();
 
@@ -612,7 +621,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -659,7 +668,7 @@ namespace SpiceEngine.Rendering
                 _lightRenderer.StencilPass(light, _camera, lightMesh);
 
                 GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(_camera, light, BatchManager);
+                _shadowRenderer.Render(_camera, light, _batchManager);
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();

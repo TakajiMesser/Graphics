@@ -65,7 +65,7 @@ namespace SpiceEngine.Game
                 camera.Resolution = _resolution;
             }
 
-            Camera = (Camera)mapCamera.ToEntity();
+            Camera = mapCamera.ToEntity() as ICamera;
 
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
             BehaviorManager.SetCamera(Camera);

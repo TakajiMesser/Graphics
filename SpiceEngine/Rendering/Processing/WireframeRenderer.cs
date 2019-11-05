@@ -136,7 +136,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Disable(EnableCap.CullFace);
         }
 
-        /*public void VolumeWireframePass(Camera camera, BatchManager batchManager)
+        /*public void VolumeWireframePass(Camera camera, IBatcher batcher)
         {
             _wireframeProgram.Use();
 
@@ -144,12 +144,12 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", LineColor);
 
-            batchManager.DrawVolumes(_wireframeProgram);
+            batcher.DrawVolumes(_wireframeProgram);
         }*/
 
-        public void WireframePass(ICamera camera, BatchManager batchManager)
+        public void WireframePass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
@@ -169,9 +169,9 @@ namespace SpiceEngine.Rendering.Processing
                 .Execute();
         }
 
-        public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, BatchManager batchManager)
+        public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetEntityIDs(entityIDs)
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
@@ -213,9 +213,9 @@ namespace SpiceEngine.Rendering.Processing
         }
 
         // TODO - Pass multiple entity ID's to this method to render all selections at once
-        public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, BatchManager batchManager)
+        public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
                 .SetEntityIDs(entity.ID.Yield())

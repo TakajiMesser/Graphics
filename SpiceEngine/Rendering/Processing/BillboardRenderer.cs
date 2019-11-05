@@ -107,9 +107,9 @@ namespace SpiceEngine.Rendering.Processing
             textureProvider.AddTexture
         }*/
 
-        public void GeometryPass(ICamera camera, BatchManager batchManager)
+        public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_billboardProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
@@ -120,9 +120,9 @@ namespace SpiceEngine.Rendering.Processing
             //GL.Enable(EnableCap.CullFace);
         }
 
-        public void SelectionPass(ICamera camera, BatchManager batchManager)
+        public void SelectionPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_billboardProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
@@ -133,7 +133,7 @@ namespace SpiceEngine.Rendering.Processing
             //GL.Enable(EnableCap.CullFace);
         }
 
-        public void RenderEntities(Camera camera, IEnumerable<IEntity> entities, Texture texture)
+        public void RenderEntities(ICamera camera, IEnumerable<IEntity> entities, ITexture texture)
         {
             _billboardProgram.Use();
             _billboardProgram.BindTexture(texture, "mainTexture", 0);
@@ -175,7 +175,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
-        public void RenderSelection(ICamera camera, Volume volume, BatchManager batchManager)
+        public void RenderSelection(ICamera camera, Volume volume, IBatcher batcher)
         {
             _billboardProgram.Use();
 
@@ -187,7 +187,7 @@ namespace SpiceEngine.Rendering.Processing
 
             _vertexBuffer.Clear();
 
-            var batch = batchManager.GetBatch(volume.ID);
+            var batch = batcher.GetBatch(volume.ID);
             /*foreach (var vertex in batch.Vertices)
             {
                 _vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));

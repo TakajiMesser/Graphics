@@ -31,7 +31,7 @@ namespace SpiceEngineCore.Entities.Cameras
         public Vector3 AttachedTranslation { get; protected set; }
 
         public ViewMatrix _viewMatrix = new ViewMatrix();
-        internal ProjectionMatrix _projectionMatrix = new ProjectionMatrix();
+        internal ProjectionMatrix _projectionMatrix;
 
         protected float _distance;
         public Matrix4 ViewMatrix => _viewMatrix.Matrix;
@@ -40,7 +40,11 @@ namespace SpiceEngineCore.Entities.Cameras
 
         public event EventHandler<EntityTransformEventArgs> Transformed;
 
-        public Camera(string name) => Name = name;
+        public Camera(string name, ProjectionTypes projectionType)
+        {
+            Name = name;
+            _projectionMatrix = new ProjectionMatrix(projectionType);
+        }
 
         public void Transform(Transform transform) => throw new NotImplementedException();
 
@@ -50,10 +54,7 @@ namespace SpiceEngineCore.Entities.Cameras
             //Transformed?.Invoke(this, new EntityTransformEventArgs(ID, _viewMatrix.Matrix));
         }
 
-        public void UpdateAspectRatio(float value)
-        {
-
-        }
+        public void UpdateAspectRatio(float value) => _projectionMatrix.AspectRatio = value;
 
         public void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation)
         {

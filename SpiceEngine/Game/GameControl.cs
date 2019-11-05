@@ -149,7 +149,7 @@ namespace SpiceEngine.Game
                             {
                                 if (RenderManager != null)
                                 {
-                                    RenderManager.BatchManager.RemoveByEntityID(_toolVolume.ID);
+                                    RenderManager.RemoveEntity(_toolVolume.ID);
                                     _toolVolume = null;
                                 }
                             }
@@ -298,7 +298,7 @@ namespace SpiceEngine.Game
         public void RemoveEntity(int entityID) => RenderManager?.RemoveEntity(entityID);
 
         // TODO - Make this method less janky and terrible
-        public void DoLoad() => RenderManager?.BatchManager.Load();
+        public void DoLoad() => RenderManager?.LoadBatcher();
 
         public void SelectEntity(int id)
         {
@@ -619,8 +619,8 @@ namespace SpiceEngine.Game
             _pollTimer.Stop();
         }
 
-        public void Duplicate(int entityID, int duplicateEntityID) =>
-            Invoke(new Action(() => RenderManager.BatchManager.DuplicateBatch(entityID, duplicateEntityID)));
+        public void Duplicate(int entityID, int duplicateID) =>
+            Invoke(new Action(() => RenderManager.Duplicate(entityID, duplicateID)));
 
         private void HandleInput()
         {

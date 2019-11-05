@@ -274,9 +274,9 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
         }
 
-        public void GeometryPass(ICamera camera, BatchManager batchManager)
+        public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
@@ -290,9 +290,9 @@ namespace SpiceEngine.Rendering.Processing
             GL.Enable(EnableCap.CullFace);
         }
 
-        public void TransparentGeometryPass(ICamera camera, BatchManager batchManager)
+        public void TransparentGeometryPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)

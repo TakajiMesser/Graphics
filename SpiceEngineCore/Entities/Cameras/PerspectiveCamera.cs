@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Utilities;
 using System;
@@ -18,9 +17,8 @@ namespace SpiceEngineCore.Entities.Cameras
 
         private Vector3 CurrentAngles { get; set; } = new Vector3(0, -MathExtensions.HALF_PI, 0);
 
-        public PerspectiveCamera(string name, Resolution resolution, float zNear, float zFar, float fieldOfViewY) : base(name)
+        public PerspectiveCamera(string name, float zNear, float zFar, float fieldOfViewY) : base(name, ProjectionTypes.Perspective)
         {
-            _projectionMatrix = new ProjectionMatrix(ProjectionTypes.Perspective, resolution);
             _projectionMatrix.UpdatePerspective(fieldOfViewY, zNear, zFar);
         }
 

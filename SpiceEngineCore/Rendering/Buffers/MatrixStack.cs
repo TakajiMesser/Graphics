@@ -26,7 +26,7 @@ namespace SpiceEngineCore.Rendering.Buffers
 
         public MatrixStack() { }
 
-        public void AddEntities(Camera camera, IEnumerable<Actor> actors, IEnumerable<Brush> brushes)
+        public void AddEntities(ICamera camera, IEnumerable<Actor> actors, IEnumerable<Brush> brushes)
         {
             _viewMatrixBuffer.AddMatrix(camera.ViewMatrix);
             _projectionMatrixBuffer.AddMatrix(camera.ProjectionMatrix);
