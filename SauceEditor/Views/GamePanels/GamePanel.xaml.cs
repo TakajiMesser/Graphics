@@ -16,9 +16,9 @@ namespace SauceEditor.Views.GamePanels
     public partial class GamePanel : LayoutAnchorable
     {
         private GamePane _perspectivePane;
-        //private GamePane _xPane;
-        //private GamePane _yPane;
-        //private GamePane _zPane;
+        private GamePane _xPane;
+        private GamePane _yPane;
+        private GamePane _zPane;
 
         //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
         //public event EventHandler<CommandEventArgs> CommandExecuted;
@@ -31,9 +31,9 @@ namespace SauceEditor.Views.GamePanels
             CreateAndShowPanes();
 
             ViewModel.PerspectiveViewModel = _perspectivePane.ViewModel;
-            //ViewModel.XViewModel = _xPane.ViewModel;
-            //ViewModel.YViewModel = _yPane.ViewModel;
-            //ViewModel.ZViewModel = _zPane.ViewModel;
+            ViewModel.XViewModel = _xPane.ViewModel;
+            ViewModel.YViewModel = _yPane.ViewModel;
+            ViewModel.ZViewModel = _zPane.ViewModel;
 
             SetView(EditorSettings.Instance.DefaultView);
         }
@@ -56,12 +56,12 @@ namespace SauceEditor.Views.GamePanels
         private void CreateAndShowPanes()
         {
             _perspectivePane = CreatePane(ViewTypes.Perspective, AnchorableShowStrategy.Most);
-            //_xPane = CreatePane(ViewTypes.X, AnchorableShowStrategy.Right);
-            //_yPane = CreatePane(ViewTypes.Y, AnchorableShowStrategy.Bottom);
-            //_zPane = CreatePane(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
+            _xPane = CreatePane(ViewTypes.X, AnchorableShowStrategy.Right);
+            _yPane = CreatePane(ViewTypes.Y, AnchorableShowStrategy.Bottom);
+            _zPane = CreatePane(ViewTypes.Z, AnchorableShowStrategy.Right | AnchorableShowStrategy.Bottom);
 
-            DockHelper.AddPanesToDockAsGrid(MainDockingManager, 1, _perspectivePane);
-            //DockHelper.AddPanesToDockAsGrid(MainDockingManager, 2, _perspectivePane, _xPane, _yPane, _zPane);
+            //DockHelper.AddPanesToDockAsGrid(MainDockingManager, 1, _perspectivePane);
+            DockHelper.AddPanesToDockAsGrid(MainDockingManager, 2, _perspectivePane, _xPane, _yPane, _zPane);
         }
 
         private GamePane CreatePane(ViewTypes viewType, AnchorableShowStrategy showStrategy)
@@ -149,13 +149,13 @@ namespace SauceEditor.Views.GamePanels
                     DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _perspectivePane);
                     break;
                 case "X":
-                    //DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _xPane);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _xPane);
                     break;
                 case "Y":
-                    //DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _yPane);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _yPane);
                     break;
                 case "Z":
-                    //DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _zPane);
+                    DockHelper.ShowSinglePaneInDockGrid(MainDockingManager, _zPane);
                     break;
             }
         }

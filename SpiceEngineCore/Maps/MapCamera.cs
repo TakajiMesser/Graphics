@@ -1,7 +1,5 @@
-﻿using Newtonsoft.Json;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngineCore.Maps
@@ -10,7 +8,7 @@ namespace SpiceEngineCore.Maps
     {
         public string Name { get; set; }
 
-        public string AttachedActorName { get; set; }
+        public string AttachedEntityName { get; set; }
         public ProjectionTypes Type { get; set; }
         public float ZNear { get; set; }
         public float ZFar { get; set; }
@@ -24,9 +22,6 @@ namespace SpiceEngineCore.Maps
         /// Only relevant for perspective cameras
         /// </summary>
         public float FieldOfViewY { get; set; }
-
-        [JsonIgnore]
-        public Resolution Resolution { get; set; }
 
         public override IEntity ToEntity()
         {

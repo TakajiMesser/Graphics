@@ -76,7 +76,7 @@ namespace SpiceEngineCore.Game.Loading
             try
             {
                 await Task.WhenAll(_loadTasks);
-                await _currentLoader.Load();
+                await _currentLoader?.Load();
             }
             catch (Exception ex)
             {

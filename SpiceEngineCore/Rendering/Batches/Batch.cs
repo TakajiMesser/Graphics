@@ -20,7 +20,11 @@ namespace SpiceEngineCore.Rendering.Batches
         public int EntityCount => _entityIDs.Count;
         public bool IsLoaded { get; protected set; }
 
-        public virtual void AddEntity(int id, IRenderable renderable) => _entityIDs.Add(id);
+        public virtual void AddEntity(int id, IRenderable renderable)
+        {
+            _entityIDs.Add(id);
+            IsLoaded = false;
+        }
 
         public virtual void Transform(int entityID, Transform transform) { }
         public virtual void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale) { }

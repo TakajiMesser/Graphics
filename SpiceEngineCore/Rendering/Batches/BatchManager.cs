@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Rendering.Batches
 {
-    internal enum RenderTypes
+    public enum RenderTypes
     {
         OpaqueStatic,
         OpaqueAnimated,

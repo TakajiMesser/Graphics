@@ -27,6 +27,18 @@ namespace SpiceEngineCore.Entities.Cameras
             }
         }
 
+        public Vector3 LookAt
+        {
+            get => _viewMatrix.LookAt;
+            set => _viewMatrix.LookAt = value;
+        }
+
+        public Vector3 Up
+        {
+            get => _viewMatrix.Up;
+            set => _viewMatrix.Up = value;
+        }
+
         public IEntity AttachedEntity { get; private set; }
         public Vector3 AttachedTranslation { get; protected set; }
 
@@ -63,6 +75,12 @@ namespace SpiceEngineCore.Entities.Cameras
             // Determine the original distance from the attached object, based on the current camera position
             AttachedTranslation = entity.Position - Position;
             _distance = AttachedTranslation.Length;
+
+            AttachedEntity.Transformed += (s, args) =>
+            {
+                Position = args.Position - AttachedTranslation;
+                LookAt = AttachedEntity.Position;
+            };
         }
 
         public void DetachFromEntity()
@@ -70,15 +88,6 @@ namespace SpiceEngineCore.Entities.Cameras
             AttachedEntity = null;
             AttachedTranslation = Vector3.Zero;
             _distance = 0.0f;
-        }
-
-        public void OnUpdateFrame()
-        {
-            if (AttachedEntity != null)
-            {
-                Position = AttachedEntity.Position - AttachedTranslation;
-                _viewMatrix.LookAt = AttachedEntity.Position;
-            }
         }
 
         public abstract void OnHandleInput(InputManager inputManager);

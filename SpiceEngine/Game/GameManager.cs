@@ -33,7 +33,7 @@ namespace SpiceEngine.Game
             InputManager = new InputManager(mouseTracker);
         }
 
-        public ICamera Camera { get; private set; }
+        public ICamera Camera { get; set; }
 
         public EntityManager EntityManager { get; } = new EntityManager();
         public InputManager InputManager { get; private set; }
@@ -58,17 +58,10 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            var mapCamera = map.GetCameraAt(0);
-
-            if (mapCamera is MapCamera camera)
-            {
-                camera.Resolution = _resolution;
-            }
-
-            Camera = mapCamera.ToEntity() as ICamera;
+            Camera = map.GetCameraAt(0).ToEntity() as ICamera;
 
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
-            BehaviorManager.SetCamera(Camera);
+            //BehaviorManager.SetCamera(Camera);
             BehaviorManager.SetInputProvider(InputManager);
 
             AnimationManager = new AnimationManager(EntityManager);
@@ -171,7 +164,6 @@ namespace SpiceEngine.Game
         public void Update()
         {
             Camera.OnHandleInput(InputManager);
-            Camera.OnUpdateFrame();
 
             PhysicsManager.Tick();
             BehaviorManager.Tick();

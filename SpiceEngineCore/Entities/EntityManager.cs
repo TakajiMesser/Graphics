@@ -4,6 +4,7 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -17,11 +18,15 @@ namespace SpiceEngineCore.Entities
     {
         private List<IEntity> _entities = new List<IEntity>();
 
-        private ConcurrentDictionary<string, INamedEntity> _entitiesByName = new ConcurrentDictionary<string, INamedEntity>();
+        private Dictionary<string, INamedEntity> _entitiesByName = new Dictionary<string, INamedEntity>();
         //private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
 
         private ConcurrentDictionary<int, IEntityBuilder> _buildersByID = new ConcurrentDictionary<int, IEntityBuilder>();
         private ConcurrentQueue<Tuple<int, IEntityBuilder>> _builderIDQueue = new ConcurrentQueue<Tuple<int, IEntityBuilder>>();
+
+        private ConcurrentQueue<INamedEntity> _namedEntityQueue = new ConcurrentQueue<INamedEntity>();
+        private ConcurrentQueue<Tuple<string, ICamera>> _attachedCameraQueue = new ConcurrentQueue<Tuple<string, ICamera>>();
+
         private ConcurrentQueue<int> _removedIDs = new ConcurrentQueue<int>();
         private int _nextAvailableID = 1;
 
@@ -186,8 +191,13 @@ namespace SpiceEngineCore.Entities
                 {
                     if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
                     if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
-                    
-                    _entitiesByName[namedEntity.Name] = namedEntity;
+
+                    _namedEntityQueue.Enqueue(namedEntity);
+                }
+
+                if (entity is ICamera camera && builder is IMapCamera mapCamera && !string.IsNullOrEmpty(mapCamera.AttachedEntityName))
+                {
+                    _attachedCameraQueue.Enqueue(Tuple.Create(mapCamera.AttachedEntityName, camera));
                 }
 
                 AddToList(entity);
@@ -196,7 +206,18 @@ namespace SpiceEngineCore.Entities
 
         public void Load()
         {
-            while (_builderIDQueue.TryDequeue(out Tuple<int, IEntityBuilder> builderID))
+            if (_namedEntityQueue.TryDequeue(out INamedEntity namedEntity))
+            {
+                _entitiesByName.Add(namedEntity.Name, namedEntity);
+            }
+
+            if (_attachedCameraQueue.TryDequeue(out Tuple<string, ICamera> nameAndCamera))
+            {
+                var attachedEntity = GetEntity(nameAndCamera.Item1);
+                nameAndCamera.Item2.AttachToEntity(attachedEntity, true, false);
+            }
+
+            /*while (_builderIDQueue.TryDequeue(out Tuple<int, IEntityBuilder> builderID))
             {
                 var id = builderID.Item1;
                 var entity = builderID.Item2.ToEntity();
@@ -211,8 +232,10 @@ namespace SpiceEngineCore.Entities
                     _entitiesByName[namedEntity.Name] = namedEntity;
                 }
 
+                if ()
+
                 AddToList(entity);
-            }
+            }*/
         }
 
         public int AddEntity(IEntity entity)
@@ -232,7 +255,7 @@ namespace SpiceEngineCore.Entities
                 if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
                 if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
 
-                _entitiesByName[namedEntity.Name] = namedEntity;
+                _namedEntityQueue.Enqueue(namedEntity);
             }
 
             AddToList(entity);

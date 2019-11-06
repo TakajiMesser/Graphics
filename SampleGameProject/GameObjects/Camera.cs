@@ -12,7 +12,7 @@ namespace SampleGameProject.GameObjects
         public Camera()
         {
             Name = NAME;
-            AttachedActorName = "Player";
+            AttachedEntityName = "Player";
             Position = new Vector3(0.0f, 0.0f, 20.0f);
             Type = ProjectionTypes.Perspective;
             ZNear = 0.1f;

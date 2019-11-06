@@ -19,7 +19,6 @@ namespace SpiceEngineCore.Entities.Cameras
         void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation);
         void DetachFromEntity();
 
-        void OnUpdateFrame();
         void OnHandleInput(InputManager inputManager);
 
         void SetUniforms(ShaderProgram program);

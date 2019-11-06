@@ -274,6 +274,8 @@ namespace SpiceEngine.Game
 
             await Task.WhenAll(loadEntityTasks);
 
+            _entityProvider.Load();
+
             lock (_builderLock)
             {
                 // TODO - If we're just setting the value in the list to null, we can do this after each task
@@ -427,8 +429,9 @@ namespace SpiceEngine.Game
 
             EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
 
-            physicsLoader.Load();
-            behaviorLoader.Load();
+            physicsLoader?.Load();
+            behaviorLoader?.Load();
+            animatorLoader?.Load();
 
             lock (_builderLock)
             {

@@ -150,19 +150,24 @@ namespace SpiceEngine.Game
 
             _renderManager.SetEntityProvider(_gameManager.EntityManager);
             _renderManager.SetAnimationProvider(_gameManager.AnimationManager);
-            _renderManager.SetCamera(_gameManager.Camera);
+            
             _renderManager.LoadFromMap(_map);
 
             //_gameLoader.Load();
             _gameLoader.TimedOut += (s, args) => Run(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
-            var firstCamera = _map.GetCameraAt(0);
-            if (firstCamera is IMapCamera camera && !string.IsNullOrEmpty(camera.AttachedActorName))
+            var defaultCamera = _gameManager.EntityManager.Cameras.First();
+            _gameManager.Camera = defaultCamera;
+            _gameManager.BehaviorManager.SetCamera(defaultCamera);
+            _renderManager.SetCamera(defaultCamera);
+
+            /*var firstCamera = _map.GetCameraAt(0);
+            if (firstCamera is IMapCamera camera && !string.IsNullOrEmpty(camera.AttachedEntityName))
             {
-                var attachedEntity = _gameManager.EntityManager.GetEntity(camera.AttachedActorName);
+                var attachedEntity = _gameManager.EntityManager.GetEntity(camera.AttachedEntityName);
                 _gameManager.Camera.AttachToEntity(attachedEntity, true, false);
-            }
+            }*/
 
             //_stopWatch.Stop();
             //LogWatch("Total");

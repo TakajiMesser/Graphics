@@ -48,7 +48,7 @@ namespace SauceEditor.Helpers.Builders
             map.Cameras.Add(new MapCamera()
             {
                 Name = "MainCamera",
-                AttachedActorName = "Player",
+                AttachedEntityName = "Player",
                 Position = new Vector3(10.0f, 0.0f, 0.0f),
                 Type = ProjectionTypes.Perspective,
                 ZNear = 0.1f,
@@ -122,7 +122,7 @@ namespace SauceEditor.Helpers.Builders
             map.Cameras.Add(new MapCamera()
             {
                 Name = "MainCamera",
-                AttachedActorName = "Player",
+                AttachedEntityName = "Player",
                 Position = new Vector3(10.0f, 0.0f, 0.0f),
                 Type = ProjectionTypes.Perspective,
                 ZNear = 0.1f,

@@ -42,9 +42,9 @@ namespace SauceEditor.ViewModels
         public ViewTypes ViewType { get; set; }
 
         public GamePaneViewModel PerspectiveViewModel { get; set; }
-        //public GamePaneViewModel XViewModel { get; set; }
-        //public GamePaneViewModel YViewModel { get; set; }
-        //public GamePaneViewModel ZViewModel { get; set; }
+        public GamePaneViewModel XViewModel { get; set; }
+        public GamePaneViewModel YViewModel { get; set; }
+        public GamePaneViewModel ZViewModel { get; set; }
 
         //public SelectionManager SelectionManager { get; set; }
         //public List<EditorEntity> SelectedEntities { get; set; }
@@ -65,17 +65,17 @@ namespace SauceEditor.ViewModels
         public void OnTransformModeChanged()
         {
             PerspectiveViewModel.Control.TransformMode = TransformMode;
-            //XViewModel.Control.TransformMode = TransformMode;
-            //YViewModel.Control.TransformMode = TransformMode;
-            //ZViewModel.Control.TransformMode = TransformMode;
+            XViewModel.Control.TransformMode = TransformMode;
+            YViewModel.Control.TransformMode = TransformMode;
+            ZViewModel.Control.TransformMode = TransformMode;
 
             CommandManager.InvalidateRequerySuggested();
         }
 
         public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange(PerspectiveViewModel);
-        /*public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
+        public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
         public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
-        public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);*/
+        public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);
 
         public void AddMapCamera(IMapCamera mapCamera)
         {
@@ -169,9 +169,9 @@ namespace SauceEditor.ViewModels
             foreach (var entityID in entityIDs)
             {
                 PerspectiveViewModel.Control.RemoveEntity(entityID);
-                /*XViewModel.Control.RemoveEntity(entityID);
+                XViewModel.Control.RemoveEntity(entityID);
                 YViewModel.Control.RemoveEntity(entityID);
-                ZViewModel.Control.RemoveEntity(entityID);*/
+                ZViewModel.Control.RemoveEntity(entityID);
             }
         }
 
@@ -217,16 +217,16 @@ namespace SauceEditor.ViewModels
                         var renderable = renderableBuilder.ToRenderable();
 
                         PerspectiveViewModel.Control.AddEntity(builder.Item1, renderable);
-                        /*XViewModel.Control.AddEntity(builder.Item1, renderable);
+                        XViewModel.Control.AddEntity(builder.Item1, renderable);
                         YViewModel.Control.AddEntity(builder.Item1, renderable);
-                        ZViewModel.Control.AddEntity(builder.Item1, renderable);*/
+                        ZViewModel.Control.AddEntity(builder.Item1, renderable);
                     }
                 }
 
                 PerspectiveViewModel.Control.DoLoad();
-                /*XViewModel.Control.DoLoad();
+                XViewModel.Control.DoLoad();
                 YViewModel.Control.DoLoad();
-                ZViewModel.Control.DoLoad();*/
+                ZViewModel.Control.DoLoad();
             };
 
             // Add these entities to a new layer, enable it, and disable all other layers
@@ -263,9 +263,9 @@ namespace SauceEditor.ViewModels
         public void SelectEntities(IEnumerable<int> ids)
         {
             if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(ids);
-            /*if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(ids);
+            if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(ids);
             if (ViewType != ViewTypes.Y) YViewModel.Control.SelectEntities(ids);
-            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(ids);*/
+            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(ids);
 
             CenterView();
         }
@@ -276,16 +276,16 @@ namespace SauceEditor.ViewModels
             //PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
 
             if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(entities.Select(e => e.ID));
-            /*if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(entities.Select(e => e.ID));
             if (ViewType != ViewTypes.Y) YViewModel.Control.SelectEntities(entities.Select(e => e.ID));
-            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(entities.Select(e => e.ID));*/
+            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(entities.Select(e => e.ID));
 
             if (entities.Any())
             {
                 if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.UpdateEntities(entities);
-                /*if (ViewType != ViewTypes.X) XViewModel.Control.UpdateEntities(entities);
+                if (ViewType != ViewTypes.X) XViewModel.Control.UpdateEntities(entities);
                 if (ViewType != ViewTypes.Y) YViewModel.Control.UpdateEntities(entities);
-                if (ViewType != ViewTypes.Z) ZViewModel.Control.UpdateEntities(entities);*/
+                if (ViewType != ViewTypes.Z) ZViewModel.Control.UpdateEntities(entities);
 
                 MapComponent.UpdateEntities(entities);
             }
@@ -300,49 +300,49 @@ namespace SauceEditor.ViewModels
         public void RequestUpdate()
         {
             PerspectiveViewModel.Control.Invalidate();
-            /*XViewModel.Control.Invalidate();
+            XViewModel.Control.Invalidate();
             YViewModel.Control.Invalidate();
-            ZViewModel.Control.Invalidate();*/
+            ZViewModel.Control.Invalidate();
         }
 
         public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
             PerspectiveViewModel.Control.SelectedTool = tool;
-            /*XViewModel.Control.SelectedTool = tool;
+            XViewModel.Control.SelectedTool = tool;
             YViewModel.Control.SelectedTool = tool;
-            ZViewModel.Control.SelectedTool = tool;*/
+            ZViewModel.Control.SelectedTool = tool;
         }
 
         public void UpdateEntity(EditorEntity entity)
         {
             PerspectiveViewModel.Control.UpdateEntities(entity.Entity.Yield());
-            /*XViewModel.Control.UpdateEntities(entity.Entity.Yield());
+            XViewModel.Control.UpdateEntities(entity.Entity.Yield());
             YViewModel.Control.UpdateEntities(entity.Entity.Yield());
-            ZViewModel.Control.UpdateEntities(entity.Entity.Yield());*/
+            ZViewModel.Control.UpdateEntities(entity.Entity.Yield());
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
         {
             PerspectiveViewModel.Control.UpdateEntities(entities);
-            /*XViewModel.Control.UpdateEntities(entities);
+            XViewModel.Control.UpdateEntities(entities);
             YViewModel.Control.UpdateEntities(entities);
-            ZViewModel.Control.UpdateEntities(entities);*/
+            ZViewModel.Control.UpdateEntities(entities);
         }
 
         public void DuplicateEntity(int entityID, int duplicateEntityID)
         {
             PerspectiveViewModel.Control.Duplicate(entityID, duplicateEntityID);
-            /*XViewModel.Control.Duplicate(entityID, duplicateEntityID);
+            XViewModel.Control.Duplicate(entityID, duplicateEntityID);
             YViewModel.Control.Duplicate(entityID, duplicateEntityID);
-            ZViewModel.Control.Duplicate(entityID, duplicateEntityID);*/
+            ZViewModel.Control.Duplicate(entityID, duplicateEntityID);
         }
 
         public void CenterView()
         {
             PerspectiveViewModel?.Control.CenterView();
-            /*XViewModel?.Control.CenterView();
+            XViewModel?.Control.CenterView();
             YViewModel?.Control.CenterView();
-            ZViewModel?.Control.CenterView();*/
+            ZViewModel?.Control.CenterView();
         }
 
         /*public void LoadAndRun()
@@ -368,7 +368,7 @@ namespace SauceEditor.ViewModels
         private async void LoadAsync()
         {
             //GameManager = new GameManager(Resolution);
-            GameManager.LoadFromMap(MapComponent.Map);
+            //GameManager.LoadFromMap(MapComponent.Map);
 
             // TODO - Make these less janky...
             _gameLoader.RendererWaitCount = 4;
@@ -412,9 +412,9 @@ namespace SauceEditor.ViewModels
                     {
                         // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
                         PerspectiveViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
-                        /*XViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
+                        XViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
                         YViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
-                        ZViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);*/
+                        ZViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
 
                         _isMapLoadedInPanels = true;
                     }
