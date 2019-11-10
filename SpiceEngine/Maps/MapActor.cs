@@ -4,6 +4,7 @@ using SpiceEngine.Utilities;
 using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Animations;
@@ -52,7 +53,7 @@ namespace SpiceEngineCore.Maps
             return actor;
         }
 
-        public IRenderable ToRenderable()
+        IRenderable IComponentBuilder<IRenderable>.ToComponent()
         {
             //if (string.IsNullOrEmpty(ModelFilePath))
 
@@ -73,7 +74,7 @@ namespace SpiceEngineCore.Maps
             }
         }
 
-        public IShape ToShape()
+        IShape IComponentBuilder<IShape>.ToComponent()
         {
             using (var importer = new Assimp.AssimpContext())
             {
@@ -116,9 +117,9 @@ namespace SpiceEngineCore.Maps
                 : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*/
         }
 
-        public IBehavior ToBehavior() => Behavior?.ToBehavior();
+        IBehavior IComponentBuilder<IBehavior>.ToComponent() => Behavior?.ToBehavior();
 
-        public IAnimator ToAnimator()
+        IAnimator IComponentBuilder<IAnimator>.ToComponent()
         {
             using (var importer = new Assimp.AssimpContext())
             {

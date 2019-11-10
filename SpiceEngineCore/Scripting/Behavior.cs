@@ -1,5 +1,4 @@
 ﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics.Collisions;
@@ -17,7 +16,7 @@ namespace SpiceEngineCore.Scripting
 
         public BehaviorContext Context { get; private set; } = new BehaviorContext();
 
-        public void SetActor(IActor actor) => Context.Actor = actor;
+        public void SetEntity(IEntity entity) => Context.Entity = entity;
         public void SetCamera(ICamera camera) => Context.Camera = camera;
         public void SetEntityProvider(IEntityProvider entityProvider) => Context.SetEntityProvider(entityProvider);
         public void SetCollisionProvider(ICollisionProvider collisionProvider) => Context.SetCollisionProvider(collisionProvider);

@@ -27,7 +27,7 @@ namespace SampleGameProject.Behaviors.Enemy
 
         public override bool Condition(BehaviorContext context)
         {
-            var player = context.GetActor("Player");
+            var player = context.GetEntity("Player");
 
             if (player != null)
             {

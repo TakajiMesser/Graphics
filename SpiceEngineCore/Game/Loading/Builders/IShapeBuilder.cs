@@ -10,7 +10,5 @@ namespace SpiceEngineCore.Game.Loading.Builders
         //Vector3 Scale { get; set; }
 
         bool IsPhysical { get; }
-
-        IShape ToShape();
     }
 }

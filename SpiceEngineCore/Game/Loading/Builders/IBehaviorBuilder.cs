@@ -11,7 +11,5 @@ namespace SpiceEngineCore.Game.Loading.Builders
         IEnumerable<Script> Scripts { get; }
         List<Stimulus> Stimuli { get; }
         List<Property> Properties { get; }
-
-        IBehavior ToBehavior();
     }
 }

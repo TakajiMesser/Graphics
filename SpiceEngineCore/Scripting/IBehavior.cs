@@ -1,6 +1,5 @@
 ﻿using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics.Collisions;
@@ -13,7 +12,7 @@ namespace SpiceEngineCore.Scripting
     {
         BehaviorStatus Tick();
 
-        void SetActor(IActor actor);
+        void SetEntity(IEntity entity);
         void SetCamera(ICamera camera);
         void SetEntityProvider(IEntityProvider entityProvider);
         void SetCollisionProvider(ICollisionProvider collisionProvider);

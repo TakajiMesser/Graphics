@@ -25,6 +25,7 @@ using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -40,7 +41,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : ComponentLoader<IRenderableBuilder>, IGridRenderer
+    public class RenderManager : MultiComponentLoader<IRenderable, IRenderableBuilder>, IGridRenderer
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
@@ -53,7 +54,6 @@ namespace SpiceEngine.Rendering
         // TODO - Make this less janky
         public bool IsInEditorMode { get; set; }
 
-        private IEntityProvider _entityProvider;
         private IAnimationProvider _animationProvider;
         private ISelectionProvider _selectionProvider;
         private ICamera _camera;
@@ -98,9 +98,9 @@ namespace SpiceEngine.Rendering
             _logManager = new LogManager(_textRenderer);
         }
 
-        public void SetEntityProvider(IEntityProvider entityProvider)
+        public override void SetEntityProvider(IEntityProvider entityProvider)
         {
-            _entityProvider = entityProvider;
+            base.SetEntityProvider(entityProvider);
             _batchManager = new BatchManager(_entityProvider, TextureManager);
 
             if (_animationProvider != null)
@@ -131,48 +131,51 @@ namespace SpiceEngine.Rendering
             }
         }
 
-        public override void AddComponent(int entityID, IRenderableBuilder builder)
+        public override Task LoadBuilderAsync(int entityID, IRenderableBuilder builder) => Task.Run(() =>
         {
-            var renderable = builder.ToRenderable();
+            var component = builder.ToComponent();
 
-            if (renderable is IBillboard billboard)
+            if (component != null)
             {
-                billboard.LoadTexture(TextureManager);
-            }
-            else if (renderable is ITexturedMesh texturedMesh)
-            {
-                if (builder is MapBrush mapBrush)
+                if (component is IBillboard billboard)
                 {
-                    texturedMesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-                }    
-            }
-            else if (renderable is IModel model)
-            {
-                if (builder is MapActor mapActor)
+                    billboard.LoadTexture(TextureManager);
+                }
+                else if (component is ITexturedMesh texturedMesh)
                 {
-                    using (var importer = new Assimp.AssimpContext())
+                    if (builder is MapBrush mapBrush)
                     {
-                        var scene = importer.ImportFile(mapActor.ModelFilePath);
-
-                        for (var i = 0; i < model.Meshes.Count; i++)
+                        texturedMesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
+                    }
+                }
+                else if (component is IModel model)
+                {
+                    if (builder is MapActor mapActor)
+                    {
+                        using (var importer = new Assimp.AssimpContext())
                         {
-                            if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
-                            {
-                                var textureMapping = i < mapActor.TexturesPaths.Count
-                                    ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                    : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+                            var scene = importer.ImportFile(mapActor.ModelFilePath);
 
-                                modelTexturedMesh.TextureMapping = textureMapping;
+                            for (var i = 0; i < model.Meshes.Count; i++)
+                            {
+                                if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
+                                {
+                                    var textureMapping = i < mapActor.TexturesPaths.Count
+                                        ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                        : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
+
+                                    modelTexturedMesh.TextureMapping = textureMapping;
+                                }
                             }
                         }
                     }
                 }
+
+                _componentAndIDQueue.Enqueue(Tuple.Create(component, entityID));
             }
+        });
 
-            AddEntity(entityID, renderable);
-        }
-
-        protected override Task LoadInternal()
+        protected override Task LoadInitial()
         {
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
@@ -200,6 +203,8 @@ namespace SpiceEngine.Rendering
 
         protected override void LoadComponents()
         {
+            base.LoadComponents();
+
             // TODO - If Invoker is null, queue up this action
             Invoker.RunAsync(() =>
             {
@@ -210,14 +215,16 @@ namespace SpiceEngine.Rendering
         // TODO - Can we remove this call?
         public void LoadBatcher() => _batchManager.Load();
 
-        public void AddEntity(int entityID, IRenderable renderable)
+        protected override void LoadComponent(int entityID, IRenderable component)
         {
-            if (IsInEditorMode && renderable is IMesh mesh)
+            base.LoadComponent(entityID, component);
+
+            if (IsInEditorMode && component is IMesh mesh)
             {
                 var colorID = SelectionHelper.GetColorFromID(entityID);
                 _batchManager.AddEntity(entityID, TransformToEditorMesh(mesh, colorID));
             }
-            else if (IsInEditorMode && renderable is IModel model)
+            else if (IsInEditorMode && component is IModel model)
             {
                 var colorID = SelectionHelper.GetColorFromID(entityID);
 
@@ -226,15 +233,15 @@ namespace SpiceEngine.Rendering
                     model.Meshes[i] = TransformToEditorMesh(model.Meshes[i], colorID);
                 }
 
-                _batchManager.AddEntity(entityID, renderable);
+                _batchManager.AddEntity(entityID, component);
             }
-            else if (IsInEditorMode && renderable is IBillboard billboard)
+            else if (IsInEditorMode && component is IBillboard billboard)
             {
                 billboard.SetColor(SelectionHelper.GetColorFromID(entityID));
             }
             else
             {
-                _batchManager.AddEntity(entityID, renderable);
+                _batchManager.AddEntity(entityID, component);
             }
         }
 

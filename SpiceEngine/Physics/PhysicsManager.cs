@@ -1,8 +1,8 @@
-﻿using SpiceEngineCore.Entities;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics.Bodies;
@@ -17,10 +17,8 @@ using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics
 {
-    public class PhysicsManager : UpdateManager, ICollisionProvider, IComponentLoader<IShapeBuilder>
+    public class PhysicsManager : ComponentLoader<IShape, IShapeBuilder>, ICollisionProvider
     {
-        private IEntityProvider _entityProvider;
-
         private IPartitionTree _actorTree;
         private IPartitionTree _brushTree;
         private IPartitionTree _volumeTree;
@@ -28,16 +26,17 @@ namespace SpiceEngine.Physics
 
         private CollisionManager _collisionManager = new CollisionManager();
 
-        private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
+        private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
+        //private Dictionary<int, Bounds> _boundsByEntityID = new Dictionary<int, Bounds>();
         private Dictionary<int, IBody> _awakeBodyByEntityID = new Dictionary<int, IBody>();
         //private Dictionary<int, IBody> _bodyByEntityID = new Dictionary<int, IBody>();
-        private ConcurrentDictionary<int, IBody> _bodyByEntityID = new ConcurrentDictionary<int, IBody>();
+        //private ConcurrentDictionary<int, IBody> _bodyByEntityID = new ConcurrentDictionary<int, IBody>();
 
         private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
 
         public PhysicsManager(IEntityProvider entityProvider, Quad worldBoundaries)
         {
-            _entityProvider = entityProvider;
+            SetEntityProvider(entityProvider);
 
             _actorTree = new QuadTree(0, worldBoundaries);
             _brushTree = new QuadTree(0, worldBoundaries);
@@ -47,7 +46,7 @@ namespace SpiceEngine.Physics
 
         public PhysicsManager(IEntityProvider entityProvider, Oct worldBoundaries)
         {
-            _entityProvider = entityProvider;
+            SetEntityProvider(entityProvider);
 
             _actorTree = new OctTree(0, worldBoundaries);
             _brushTree = new OctTree(0, worldBoundaries);
@@ -63,9 +62,71 @@ namespace SpiceEngine.Physics
 
         public IEnumerable<int> GetCollisionIDs(int entityID) => _collisionManager.GetNarrowCollisionIDs(entityID);
 
-        public void AddComponent(int entityID, IShapeBuilder builder)
+        /*public override Task LoadBuilderAsync(int entityID, IShapeBuilder builder) => Task.Run(() =>
         {
-            var shape = builder.ToShape();
+            var component = builder.ToComponent();
+
+            if (component != null)
+            {
+                var partition = component.ToPartition(builder.Position);
+                var bounds = new Bounds(entityID, partition);
+
+                // TODO - This incorrectly relies on the entity provider to have already inserted this entity
+                var partitionTree = GetPartitionTree(entityID);
+                partitionTree.Insert(bounds);
+
+                // TODO - So does this :/
+                var body = GetBody(entityID, component);
+                if (body != null)
+                {
+                    body.IsPhysical = builder.IsPhysical;
+                }
+            }
+        });*/
+
+        private Dictionary<int, Vector3> _initialPositionByID = new Dictionary<int, Vector3>();
+        private Dictionary<int, bool> _isPhysicalByID = new Dictionary<int, bool>();
+
+        protected override void LoadBuilderSync(int entityID, IShapeBuilder builder)
+        {
+            base.LoadBuilderSync(entityID, builder);
+
+            _initialPositionByID.Add(entityID, builder.Position);
+            _isPhysicalByID.Add(entityID, builder.IsPhysical);
+        }
+
+        protected override void LoadComponents()
+        {
+            base.LoadComponents();
+
+            _initialPositionByID.Clear();
+            _isPhysicalByID.Clear();
+        }
+
+        // TODO - Set up component loaders to rely on this entity being loaded in the EntityProvider by the time this method is invoked (not currently guaranteed)
+        protected override void LoadComponent(int entityID, IShape component)
+        {
+            base.LoadComponent(entityID, component);
+
+            var partition = component.ToPartition(_initialPositionByID[entityID]);
+            var bounds = new Bounds(entityID, partition);
+
+            // TODO - This incorrectly relies on the entity provider to have already inserted this entity
+            var partitionTree = GetPartitionTree(entityID);
+            partitionTree.Insert(bounds);
+
+            // TODO - So does this :/
+            var body = GetBody(entityID, component);
+            if (body != null)
+            {
+                body.IsPhysical = _isPhysicalByID[entityID];
+                _bodyByEntityID.Add(entityID, body);
+            }
+        }
+
+        /*public void AddComponent(int entityID, IShapeBuilder builder)
+        {
+            var shape = builder.ToComponent();
             var partition = shape.ToPartition(builder.Position);
             var bounds = new Bounds(entityID, partition);
 
@@ -78,13 +139,7 @@ namespace SpiceEngine.Physics
                 body.IsPhysical = builder.IsPhysical;
                 _bodyByEntityID.TryAdd(entityID, body);
             }
-        }
-
-        public Task Load()
-        {
-            //TODO - Do something here...
-            return Task.Run(() => { });
-        }
+        }*/
 
         private IPartitionTree GetPartitionTree(int entityID)
         {
@@ -229,16 +284,19 @@ namespace SpiceEngine.Physics
             _actorTree.Clear();
             var boundsByEntityID = new Dictionary<int, Bounds>();
 
+            // TODO - ONLY move the actor colliders that reported movement in the last frame (including physics)
             // Update the actor colliders every frame, since they could have moved
             foreach (var actor in _entityProvider.Actors)
             {
-                if (_bodyByEntityID.TryGetValue(actor.ID, out IBody body))
+                if (_componentByID.ContainsKey(actor.ID))
                 {
-                    var partition = ((Body3D)body).Shape.ToPartition(actor.Position);
+                    var shape = _componentByID[actor.ID];
+                    var partition = shape.ToPartition(actor.Position);
                     var bounds = new Bounds(actor.ID, partition);
 
                     boundsByEntityID.Add(actor.ID, bounds);
                     _actorTree.Insert(bounds);
+
                 }
             }
 

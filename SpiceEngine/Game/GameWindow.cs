@@ -2,9 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
-using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
@@ -136,10 +134,10 @@ namespace SpiceEngine.Game
 
             _gameManager.LoadFromMap(_map);
 
-            _gameLoader = new GameLoader()
-            {
+            _gameLoader = new GameLoader();
+            /*{
                 RendererWaitCount = 1
-            };
+            };*/
             _gameLoader.SetEntityProvider(_gameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);

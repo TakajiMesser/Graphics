@@ -294,7 +294,8 @@ namespace SpiceEngine.Game
             }));
         }
 
-        public void AddEntity(int entityID, IRenderable renderable) => RenderManager?.AddEntity(entityID, renderable);
+        // TODO - Fix this call...
+        public void AddEntity(int entityID, IRenderable renderable) { }// => RenderManager?.AddEntity(entityID, renderable);
         public void RemoveEntity(int entityID) => RenderManager?.RemoveEntity(entityID);
 
         // TODO - Make this method less janky and terrible

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Physics.Bodies;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Nodes;
@@ -11,12 +12,15 @@ namespace SampleGameProject.Behaviors.Enemy
     {
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
+            if (context.Entity is IActor actor)
             {
-                float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
+                if (((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
+                {
+                    float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 
-                context.Actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
-                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
+                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                    context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
+                }
             }
 
             return BehaviorStatus.Success;

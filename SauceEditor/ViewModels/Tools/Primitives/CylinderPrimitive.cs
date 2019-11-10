@@ -2,15 +2,15 @@
 
 namespace SauceEditor.ViewModels.Tools.Primitives
 {
-    public class BoxPrimitive : Primitive
+    public class CylinderPrimitive : Primitive
     {
-        public BoxPrimitive() : base("Box") { }
+        public CylinderPrimitive() : base("Cylinder") { }
 
-        public float Width { get; set; } = 10.0f;
+        public float Radius { get; set; } = 10.0f;
         public float Height { get; set; } = 10.0f;
-        public float Depth { get; set; } = 10.0f;
+        public int NumberOfSides { get; set; } = 10;
 
-        public override ModelMesh MeshShape => ModelMesh.Box(Width, Height, Depth);
+        public override ModelMesh MeshShape => ModelMesh.Cylinder(Radius, Height, NumberOfSides);
 
         private RelayCommand _openCommand;
         public RelayCommand OpenCommand => (_openCommand = _openCommand ?? new RelayCommand(

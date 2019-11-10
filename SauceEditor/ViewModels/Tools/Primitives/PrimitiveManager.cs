@@ -1,10 +1,4 @@
-﻿using SauceEditor.Views;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Media.Imaging;
+﻿using System.Collections.Generic;
 
 namespace SauceEditor.ViewModels.Tools.Primitives
 {
@@ -16,6 +10,9 @@ namespace SauceEditor.ViewModels.Tools.Primitives
         {
             _primitives.Clear();
             _primitives.Add(new BoxPrimitive());
+            _primitives.Add(new ConePrimitive());
+            _primitives.Add(new CylinderPrimitive());
+            _primitives.Add(new SpherePrimitive());
         }
 
         public IEnumerable<Primitive> GetPrimitives()

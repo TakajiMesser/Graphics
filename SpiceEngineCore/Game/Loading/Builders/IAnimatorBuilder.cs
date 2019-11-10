@@ -8,7 +8,5 @@ namespace SpiceEngineCore.Game.Loading.Builders
     {
         Vector3 Position { get; set; }
         IEnumerable<Animation> Animations { get; }
-
-        IAnimator ToAnimator();
     }
 }

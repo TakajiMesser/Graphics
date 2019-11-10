@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities.Lights;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Shaders;
 using System;
@@ -89,8 +88,6 @@ namespace SpiceEngineCore.Entities.Cameras
             AttachedTranslation = Vector3.Zero;
             _distance = 0.0f;
         }
-
-        public abstract void OnHandleInput(InputManager inputManager);
 
         public void SetUniforms(ShaderProgram program)
         {

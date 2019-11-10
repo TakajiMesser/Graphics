@@ -17,25 +17,25 @@ namespace SpiceEngineCore.Scripting
         private ICollisionProvider _collisionProvider;
         private IStimulusProvider _stimulusProvider;
 
-        public IActor Actor { get; internal set; }
+        public IEntity Entity { get; internal set; }
 
         public Vector3 Position
         {
-            get => ((Body3D)_collisionProvider.GetBody(Actor.ID)).Position;
-            set => ((Body3D)_collisionProvider.GetBody(Actor.ID)).Position = value;
+            get => ((Body3D)_collisionProvider.GetBody(Entity.ID)).Position;
+            set => ((Body3D)_collisionProvider.GetBody(Entity.ID)).Position = value;
         }
 
-        public IBody Body => _collisionProvider.GetBody(Actor.ID);
+        public IBody Body => _collisionProvider.GetBody(Entity.ID);
 
         public IEntityProvider GetEntityProvider() => _entityProvider;
         public IEntity GetEntity(int id) => _entityProvider.GetEntity(id);
-        public IActor GetActor(string name) => (IActor)_entityProvider.GetEntity(name);
+        public IEntity GetEntity(string name) => _entityProvider.GetEntity(name);
 
         public bool HasStimuli(int entityID, Stimulus stimulus) => _stimulusProvider.GetStimuli(entityID).Contains(stimulus);
 
         public IBody GetBody(int entityID) => _collisionProvider.GetBody(entityID);
         public IEnumerable<IBody> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
-        public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Actor.ID).Select(c => _collisionProvider.GetBody(c));
+        public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Entity.ID).Select(c => _collisionProvider.GetBody(c));
 
         public ICamera Camera { get; internal set; }
         public IInputProvider InputProvider { get; internal set; }

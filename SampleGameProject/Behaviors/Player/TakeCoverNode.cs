@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Physics.Raycasting;
 using SpiceEngineCore.Scripting;
@@ -24,20 +25,23 @@ namespace SampleGameProject.Behaviors.Player
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            // TODO - Filter gameobjects and brushes based on "coverable" property
-            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is IBrush);
-
-            if (Raycast.TryCircleCast(new RayCircle(context.Position, CoverDistance), filteredColliders, context.GetEntityProvider(), out RaycastHit hit))
+            if (context.Entity is IActor actor)
             {
-                var vectorBetween = hit.Intersection - context.Position;
-                context.SetVariable("coverDirection", vectorBetween.Xy);
-                context.SetVariable("coverDistance", vectorBetween.Length);
+                // TODO - Filter gameobjects and brushes based on "coverable" property
+                var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is IBrush);
 
-                float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
-                context.Actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle + MathExtensions.PI);
-                context.EulerRotation = new Vector3(0.0f, context.EulerRotation.Y, turnAngle + MathExtensions.PI);
+                if (Raycast.TryCircleCast(new RayCircle(context.Position, CoverDistance), filteredColliders, context.GetEntityProvider(), out RaycastHit hit))
+                {
+                    var vectorBetween = hit.Intersection - context.Position;
+                    context.SetVariable("coverDirection", vectorBetween.Xy);
+                    context.SetVariable("coverDistance", vectorBetween.Length);
 
-                return BehaviorStatus.Success;
+                    float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle + MathExtensions.PI);
+                    context.EulerRotation = new Vector3(0.0f, context.EulerRotation.Y, turnAngle + MathExtensions.PI);
+
+                    return BehaviorStatus.Success;
+                }
             }
 
             return BehaviorStatus.Failure;

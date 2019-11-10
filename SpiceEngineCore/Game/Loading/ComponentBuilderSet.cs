@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
 {
-    public class ComponentBuilderSet<T> where T : class, IComponentBuilder
+    public class ComponentBuilderSet<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
     {
-        private IComponentLoader<T> _loader;
-        private List<T> _builders = new List<T>();
+        private IComponentLoader<T, U> _loader;
+        private List<U> _builders = new List<U>();
 
         private readonly object _lock = new object();
 
-        public void SetLoader(IComponentLoader<T> componentLoader)
+        public void SetLoader(IComponentLoader<T, U> componentLoader)
         {
             lock (_lock)
             {
@@ -22,9 +22,9 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        public IComponentLoader<T> GetLoader()
+        public IComponentLoader<T, U> GetLoader()
         {
-            IComponentLoader<T> loader;
+            IComponentLoader<T, U> loader;
 
             lock (_lock)
             {
@@ -34,9 +34,9 @@ namespace SpiceEngineCore.Game.Loading
             return loader;
         }
 
-        public void AddBuilder(IMapEntity3D mapEntity) => _builders.Add(mapEntity is T t ? t : null);
+        public void AddBuilder(IMapEntity3D mapEntity) => _builders.Add(mapEntity is U u ? u : null);
 
-        public void LoadBuilder(int id, int builderIndex, IComponentLoader<T> componentLoader)
+        public void LoadBuilder(int id, int builderIndex, IComponentLoader<T, U> componentLoader)
         {
             if (componentLoader != null)
             {
@@ -44,13 +44,13 @@ namespace SpiceEngineCore.Game.Loading
 
                 if (shapeBuilder != null)
                 {
-                    componentLoader.AddComponent(id, shapeBuilder);
+                    componentLoader.LoadBuilderAsync(id, shapeBuilder);
                 }
             }
         }
 
         private bool _isProcessing = false;
-        private IComponentLoader<T> _currentLoader;
+        private IComponentLoader<T, U> _currentLoader;
         private Task[] _loadTasks;
         private int _startIndex;
 
@@ -76,7 +76,7 @@ namespace SpiceEngineCore.Game.Loading
             try
             {
                 await Task.WhenAll(_loadTasks);
-                await _currentLoader?.Load();
+                await _currentLoader?.LoadAsync();
             }
             catch (Exception ex)
             {

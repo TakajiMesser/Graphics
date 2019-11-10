@@ -257,6 +257,9 @@
     <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\BrushToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Primitives\CylinderPrimitive.cs" />
+    <Compile Include="ViewModels\Tools\Primitives\ConePrimitive.cs" />
+    <Compile Include="ViewModels\Tools\Primitives\SpherePrimitive.cs" />
     <Compile Include="ViewModels\Tools\Primitives\BoxPrimitive.cs" />
     <Compile Include="ViewModels\Tools\Primitives\PrimitiveManager.cs" />
     <Compile Include="ViewModels\Tools\Primitives\Primitive.cs" />

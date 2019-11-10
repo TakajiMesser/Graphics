@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
@@ -46,7 +47,7 @@ namespace SpiceEngineCore.Maps
             return brush;
         }
 
-        public IRenderable ToRenderable()
+        IRenderable IComponentBuilder<IRenderable>.ToComponent()
         {
             if (TexturesPaths.IsEmpty)
             {
@@ -59,7 +60,7 @@ namespace SpiceEngineCore.Maps
             };
         }
 
-        public IShape ToShape() => new Box(Vertices.Select(v => v.Position));
+        IShape IComponentBuilder<IShape>.ToComponent() => new Box(Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

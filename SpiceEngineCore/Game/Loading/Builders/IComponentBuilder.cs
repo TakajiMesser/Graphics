@@ -9,6 +9,6 @@ namespace SpiceEngineCore.Game.Loading.Builders
 
     public interface IComponentBuilder<T> : IComponentBuilder where T : IComponent
     {
-        
+        T ToComponent();
     }
 }

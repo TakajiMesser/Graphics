@@ -3,36 +3,16 @@ using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Rendering.Models;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Components.Animations
 {
     // TODO - This class violates the boundary between game logic and rendering logic
-    public class AnimationManager : ComponentLoader<IAnimatorBuilder>, IAnimationProvider
+    public class AnimationManager : ComponentLoader<IAnimator, IAnimatorBuilder>, IAnimationProvider
     {
-        private IEntityProvider _entityProvider;
-
-        private Dictionary<int, IAnimator> _animatorByEntityID = new Dictionary<int, IAnimator>();
+        private List<Animation> _animations = new List<Animation>();
         private Dictionary<int, IAnimatedModel> _modelByEntityID = new Dictionary<int, IAnimatedModel>();
 
-        private List<Animation> _animations = new List<Animation>();
-
-        public AnimationManager(IEntityProvider entityProvider) => _entityProvider = entityProvider;
-
-        public override void AddComponent(int entityID, IAnimatorBuilder builder)
-        {
-            var animator = builder.ToAnimator();
-
-            if (animator != null)
-            {
-                animator.DefaultAnimation = builder.Animations.First();
-                _animatorByEntityID.Add(entityID, animator);
-            }
-
-            // TODO - Check for duplicate animations
-            _animations.AddRange(builder.Animations);
-        }
+        public AnimationManager(IEntityProvider entityProvider) => SetEntityProvider(entityProvider);
 
         private readonly object _lock = new object();
 
@@ -43,57 +23,61 @@ namespace SpiceEngineCore.Components.Animations
             {
                 _modelByEntityID.Add(entityID, model);
 
-                if (_animatorByEntityID.ContainsKey(entityID))
+                if (_componentByID.ContainsKey(entityID))
                 {
-                    var animator = _animatorByEntityID[entityID];
+                    var animator = _componentByID[entityID];
                     animator.Animate += (s, args) => model.SetKeyFrame(args.KeyFrame);
                 }
             }
         }
 
-        protected override void LoadComponents()
-        {
-            foreach (var actor in _entityProvider.Actors)
-            {
-                // TODO - Come up with a better way than constantly locking and unlocking here
-                lock (_lock)
-                {
-                    if (_animatorByEntityID.ContainsKey(actor.ID))
-                    {
-                        var animator = _animatorByEntityID[actor.ID];
+        private Dictionary<int, int> _defaultAnimationIndexByID = new Dictionary<int, int>();
 
-                        if (_modelByEntityID.ContainsKey(actor.ID))
-                        {
-                            var model = _modelByEntityID[actor.ID];
-                            animator.Animate += (s, args) => model.SetKeyFrame(args.KeyFrame);
-                        }
-                    }
-                }
-                
-            }
+        protected override void LoadBuilderSync(int entityID, IAnimatorBuilder builder)
+        {
+            base.LoadBuilderSync(entityID, builder);
+
+            // TODO - Check for duplicate animations
+            _defaultAnimationIndexByID.Add(entityID, _animations.Count);
+            _animations.AddRange(builder.Animations);
+
+            /*var animator = builder.ToAnimator();
+
+            if (animator != null)
+            {
+                animator.DefaultAnimation = builder.Animations.First();
+                _animatorByEntityID.Add(entityID, animator);
+            }*/
         }
 
-        protected override Task LoadInternal()
+        protected override void LoadComponents()
         {
-            return Task.Run(() =>
-            {
+            base.LoadComponents();
 
-            });
+            foreach (var componentAndID in _componentsAndIDs)
+            {
+                var animator = componentAndID.Item1;
+
+                var animationIndex = _defaultAnimationIndexByID[componentAndID.Item2];
+                animator.DefaultAnimation = _animations[animationIndex];
+
+                if (_modelByEntityID.ContainsKey(componentAndID.Item2))
+                {
+                    var model = _modelByEntityID[componentAndID.Item2];
+                    animator.Animate += (s, args) => model.SetKeyFrame(args.KeyFrame);
+                }
+            }
         }
 
         protected override void Update()
         {
-            // TODO - Replace this with a list of id's to avoid checking every actor each frame
-            foreach (var actor in _entityProvider.Actors)
+            foreach (var componentAndID in _componentsAndIDs)
             {
-                if (_animatorByEntityID.ContainsKey(actor.ID))
-                {
-                    var animator = _animatorByEntityID[actor.ID];
+                var animator = componentAndID.Item1;
 
-                    // TODO - Remove this -> setting to first animation by default
-                    animator.CurrentAnimation = animator.DefaultAnimation;
-                    animator.Tick(TickRate);
-                }
+                // TODO - Remove this -> setting to first animation by default
+                animator.CurrentAnimation = animator.DefaultAnimation;
+                animator.Tick(TickRate);
             }
         }
     }

@@ -1,6 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngineCore.Entities.Cameras
@@ -26,15 +24,6 @@ namespace SpiceEngineCore.Entities.Cameras
             var width = 0.8f;
             var height = width / _projectionMatrix.AspectRatio;
             return Matrix4.CreateOrthographic(width, height, _projectionMatrix.ZNear, _projectionMatrix.ZFar);
-        }
-
-        public override void OnHandleInput(InputManager inputManager)
-        {
-            float amount = inputManager.MouseWheelDelta * 1.0f;
-            if (amount > 0.0f || amount < 0.0f)
-            {
-                _projectionMatrix.Width += amount;
-            }
         }
     }
 }

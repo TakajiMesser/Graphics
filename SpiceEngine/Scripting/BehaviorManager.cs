@@ -14,22 +14,20 @@ using System.Threading.Tasks;
 
 namespace SpiceEngine.Scripting
 {
-    public class BehaviorManager : ComponentLoader<IBehaviorBuilder>, IStimulusProvider
+    public class BehaviorManager : ComponentLoader<IBehavior, IBehaviorBuilder>, IStimulusProvider
     {
         private ScriptManager _scriptManager = new ScriptManager();
 
         private ICamera _camera;
-        private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
         private IInputProvider _inputProvider;
 
-        private Dictionary<int, IBehavior> _behaviorsByEntityID = new Dictionary<int, IBehavior>();
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
 
         public BehaviorManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
         {
-            _entityProvider = entityProvider;
+            SetEntityProvider(entityProvider);
             _collisionProvider = collisionProvider;
         }
 
@@ -41,9 +39,9 @@ namespace SpiceEngine.Scripting
             {
                 foreach (var actor in _entityProvider.Actors)
                 {
-                    if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                    if (_componentByID.ContainsKey(actor.ID))
                     {
-                        var behavior = _behaviorsByEntityID[actor.ID];
+                        var behavior = _componentByID[actor.ID];
                         behavior.SetCamera(_camera);
                     }
                 }
@@ -58,9 +56,9 @@ namespace SpiceEngine.Scripting
             {
                 foreach (var actor in _entityProvider.Actors)
                 {
-                    if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                    if (_componentByID.ContainsKey(actor.ID))
                     {
-                        var behavior = _behaviorsByEntityID[actor.ID];
+                        var behavior = _componentByID[actor.ID];
                         behavior.SetInputProvider(inputProvider);
                     }
                 }
@@ -87,67 +85,78 @@ namespace SpiceEngine.Scripting
             ? _stimuliByEntityID[entityID].Stimuli
             : Enumerable.Empty<Stimulus>();
 
-        public override void AddComponent(int entityID, IBehaviorBuilder builder)
+        protected override void LoadBuilderSync(int entityID, IBehaviorBuilder builder)
         {
-            var behavior = builder.ToBehavior();
-            if (behavior != null)
-            {
-                // TODO - Cannot add to dictionary in parallel like this
-                _behaviorsByEntityID.Add(entityID, behavior);
-            }
-
+            base.LoadBuilderSync(entityID, builder);
             _scriptManager.AddScripts(builder.Scripts);
 
             AddStimuli(entityID, builder.Stimuli);
             AddProperties(entityID, builder.Properties);
         }
 
-        protected override void LoadComponents() => _scriptManager.CompileScripts();
-
-        protected override Task LoadInternal()
+        protected override void LoadComponents()
         {
-            return Task.Run(() =>
+            base.LoadComponents();
+            _scriptManager.CompileScripts();
+
+            foreach (var componentAndID in _componentsAndIDs)
             {
-                foreach (var actor in _entityProvider.Actors)
+                var behavior = componentAndID.Item1;
+                var entity = _entityProvider.GetEntity(componentAndID.Item2);
+
+                behavior.SetEntity(entity);
+                behavior.SetCamera(_camera);
+                behavior.SetEntityProvider(_entityProvider);
+                behavior.SetCollisionProvider(_collisionProvider);
+                behavior.SetInputProvider(_inputProvider);
+                behavior.SetStimulusProvider(this);
+
+                /*foreach (var property in Properties)
                 {
-                    if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                    if (property.Value.IsConstant)
                     {
-                        var behavior = _behaviorsByEntityID[actor.ID];
-
-                        behavior.SetActor(actor);
-                        behavior.SetCamera(_camera);
-                        behavior.SetEntityProvider(_entityProvider);
-                        behavior.SetCollisionProvider(_collisionProvider);
-                        behavior.SetInputProvider(_inputProvider);
-                        behavior.SetStimulusProvider(this);
-
-                        /*foreach (var property in Properties)
-                        {
-                            if (property.Value.IsConstant)
-                            {
-                                Behaviors.Context.AddProperty(property.Key, property.Value.Value);
-                            }
-                        }*/
+                        Behaviors.Context.AddProperty(property.Key, property.Value.Value);
                     }
-                }
-            });
+                }*/
+            }
         }
+
+        /*protected override Task LoadInitial() => Task.Run(() =>
+        {
+            foreach (var componentAndID in _componentsAndIDs)
+            {
+                var behavior = componentAndID.Item1;
+                var entity = _entityProvider.GetEntity(componentAndID.Item2);
+
+                behavior.SetEntity(entity);
+                behavior.SetCamera(_camera);
+                behavior.SetEntityProvider(_entityProvider);
+                behavior.SetCollisionProvider(_collisionProvider);
+                behavior.SetInputProvider(_inputProvider);
+                behavior.SetStimulusProvider(this);
+
+                /*foreach (var property in Properties)
+                {
+                    if (property.Value.IsConstant)
+                    {
+                        Behaviors.Context.AddProperty(property.Key, property.Value.Value);
+                    }
+                }*
+            }
+        });*/
 
         protected override void Update()
         {
-            foreach (var actor in _entityProvider.Actors)
+            foreach (var componentAndID in _componentsAndIDs)
             {
-                if (_behaviorsByEntityID.ContainsKey(actor.ID))
+                var behavior = componentAndID.Item1;
+
+                foreach (var property in _propertiesByEntityID[componentAndID.Item2].VariableProperties)
                 {
-                    var behavior = _behaviorsByEntityID[actor.ID];
-
-                    foreach (var property in _propertiesByEntityID[actor.ID].VariableProperties)
-                    {
-                        behavior.SetProperty(property.Name, property);
-                    }
-
-                    behavior.Tick();
+                    behavior.SetProperty(property.Name, property);
                 }
+
+                behavior.Tick();
             }
         }
     }

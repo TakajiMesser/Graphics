@@ -58,7 +58,7 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            Camera = map.GetCameraAt(0).ToEntity() as ICamera;
+            //Camera = map.GetCameraAt(0).ToEntity() as ICamera;
 
             BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
             //BehaviorManager.SetCamera(Camera);
@@ -163,8 +163,6 @@ namespace SpiceEngine.Game
 
         public void Update()
         {
-            Camera.OnHandleInput(InputManager);
-
             PhysicsManager.Tick();
             BehaviorManager.Tick();
             AnimationManager.Tick();
@@ -193,80 +191,5 @@ namespace SpiceEngine.Game
             bitmap.Save(fileName, ImageFormat.Png);
             bitmap.Dispose();
         }
-
-        /*private void LoadLightsFromMap(Map map)
-        {
-            _lightQuads = new QuadTree(0, map.Boundaries);
-            _lightQuads.InsertRange(map.Lights.Select(l => new BoundingCircle(l)));
-
-            EntityManager.AddEntities(map.Lights);
-        }
-
-        private void LoadBrushesFromMap(Map map)
-        {
-            _brushQuads = new QuadTree(0, map.Boundaries);
-
-            foreach (var mapBrush in map.Brushes)
-            {
-                var brush = mapBrush.ToBrush();
-
-                if (brush.HasCollision)
-                {
-                    _brushQuads.Insert(brush.Bounds);
-                }
-                //brush.AddPointLights(_lightQuads.Retrieve(brush.Bounds).Where(c => c.AttachedEntity is PointLight).Select(c => (PointLight)c.AttachedEntity));
-                brush.Mesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-
-                EntityManager.AddEntity(brush);
-            }
-        }
-
-        private void LoadVolumesFromMap(Map map)
-        {
-            _volumeQuads = new QuadTree(0, map.Boundaries);
-
-            EntityManager.AddEntities(map.Volumes.Select(v => v.ToVolume()));
-            _volumeQuads.InsertRange(EntityManager.Volumes.Select(v => v.Bounds));
-        }
-
-        private void LoadActorsFromMap(Map map)
-        {
-            _actorQuads = new QuadTree(0, map.Boundaries);
-
-            foreach (var mapActor in map.Actors)
-            {
-                var actor = mapActor.ToActor(TextureManager);
-
-                switch (actor.Model)
-                {
-                    case AnimatedModel3D a:
-                        for (var i = 0; i < a.Meshes.Count; i++)
-                        {
-                            if (i < mapActor.TexturesPaths.Count)
-                            {
-                                a.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
-                            }
-                        }
-                        break;
-
-                    case Model3D<Vertex3D> s:
-                        for (var i = 0; i < s.Meshes.Count; i++)
-                        {
-                            if (i < mapActor.TexturesPaths.Count)
-                            {
-                                s.Meshes[i].TextureMapping = mapActor.TexturesPaths[i].ToTextureMapping(TextureManager);
-                            }
-                        }
-                        break;
-                }
-
-                if (map.Camera.AttachedActorName == actor.Name)
-                {
-                    Camera.AttachToEntity(actor, true, false);
-                }
-
-                EntityManager.AddEntity(actor);
-            }
-        }*/
     }
 }

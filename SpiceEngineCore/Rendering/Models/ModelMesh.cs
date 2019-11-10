@@ -156,6 +156,27 @@ namespace SpiceEngineCore.Rendering.Models
             return shape;
         }
 
+        public static ModelMesh Cone(float radius, float height, int nSides)
+        {
+            var shape = new ModelMesh();
+
+            return shape;
+        }
+
+        public static ModelMesh Cylinder(float radius, float height, int nSides)
+        {
+            var shape = new ModelMesh();
+
+            return shape;
+        }
+
+        public static ModelMesh Sphere(float radius, int nSides)
+        {
+            var shape = new ModelMesh();
+
+            return shape;
+        }
+
         /// <summary>
         /// Generate a polygon with equal angles and sidelengths
         /// </summary>

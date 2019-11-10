@@ -214,7 +214,7 @@ namespace SauceEditor.ViewModels
 
                     if (builder.Item2 is IRenderableBuilder renderableBuilder)
                     {
-                        var renderable = renderableBuilder.ToRenderable();
+                        var renderable = renderableBuilder.ToComponent();
 
                         PerspectiveViewModel.Control.AddEntity(builder.Item1, renderable);
                         XViewModel.Control.AddEntity(builder.Item1, renderable);

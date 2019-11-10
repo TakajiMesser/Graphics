@@ -1,6 +1,10 @@
-﻿using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
+using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Scripting;
 using System;
 using System.Threading.Tasks;
 using EntityMappingEventArgs = SpiceEngineCore.Maps.EntityMappingEventArgs;
@@ -18,15 +22,16 @@ namespace SpiceEngineCore.Game.Loading
         event EventHandler<EntityMappingEventArgs> EntitiesMapped;
 
         void SetEntityProvider(IEntityProvider entityProvider);
-        void SetPhysicsLoader(IComponentLoader<IShapeBuilder> physicsLoader);
-        void SetBehaviorLoader(IComponentLoader<IBehaviorBuilder> behaviorLoader);
-        void AddRenderableLoader(IComponentLoader<IRenderableBuilder> renderableLoader);
+        void SetPhysicsLoader(IComponentLoader<IShape, IShapeBuilder> physicsLoader);
+        void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader);
+        void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader);
+        void AddRenderableLoader(IMultiComponentLoader<IRenderable, IRenderableBuilder> renderableLoader);
 
         //void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
         void Add(IMapEntity3D mapEntity);
         void AddFromMap(IMap map);
 
         Task LoadAsync();
-        void Load();
+        void LoadSync();
     }
 }

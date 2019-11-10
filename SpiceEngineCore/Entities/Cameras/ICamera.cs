@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Rendering.Shaders;
 
 namespace SpiceEngineCore.Entities.Cameras
@@ -18,8 +17,6 @@ namespace SpiceEngineCore.Entities.Cameras
 
         void AttachToEntity(IEntity entity, bool attachTranslation, bool attachRotation);
         void DetachFromEntity();
-
-        void OnHandleInput(InputManager inputManager);
 
         void SetUniforms(ShaderProgram program);
         void SetUniforms(ShaderProgram program, ILight light);
