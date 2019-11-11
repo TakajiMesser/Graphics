@@ -23,6 +23,7 @@ using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System;
@@ -143,28 +144,42 @@ namespace SpiceEngine.Rendering
                 }
                 else if (component is ITexturedMesh texturedMesh)
                 {
-                    if (builder is MapBrush mapBrush)
+                    if (builder is ITexturePather texturePather)
                     {
-                        texturedMesh.TextureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
+                        var texturePaths = texturePather.TexturesPaths.FirstOrDefault();
+                        texturedMesh.TextureMapping = texturePaths.ToTextureMapping(TextureManager);
                     }
                 }
                 else if (component is IModel model)
                 {
-                    if (builder is MapActor mapActor)
+                    if (builder is ITexturePather texturePather)
                     {
-                        using (var importer = new Assimp.AssimpContext())
+                        if (builder is IModelPather modelPather)
                         {
-                            var scene = importer.ImportFile(mapActor.ModelFilePath);
+                            using (var importer = new Assimp.AssimpContext())
+                            {
+                                var scene = importer.ImportFile(modelPather.ModelFilePath);
 
+                                for (var i = 0; i < model.Meshes.Count; i++)
+                                {
+                                    if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
+                                    {
+                                        var textureMapping = i < texturePather.TexturesPaths.Count
+                                            ? texturePather.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                            : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(modelPather.ModelFilePath)).ToTextureMapping(TextureManager);
+
+                                        modelTexturedMesh.TextureMapping = textureMapping;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
                             for (var i = 0; i < model.Meshes.Count; i++)
                             {
-                                if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
+                                if (model.Meshes[i] is ITexturedMesh modelTexturedMesh && i < texturePather.TexturesPaths.Count)
                                 {
-                                    var textureMapping = i < mapActor.TexturesPaths.Count
-                                        ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                        : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-
-                                    modelTexturedMesh.TextureMapping = textureMapping;
+                                    modelTexturedMesh.TextureMapping = texturePather.TexturesPaths[i].ToTextureMapping(TextureManager);
                                 }
                             }
                         }

@@ -171,7 +171,7 @@
     <Compile Include="Rendering\Processing\ShadowRenderer.cs" />
     <Compile Include="Rendering\Processing\SkyboxRenderer.cs" />
     <Compile Include="Rendering\Processing\WireframeRenderer.cs" />
-    <Compile Include="Rendering\RenderManager.cs" />
+    <Compile Include="Rendering\Textures\RenderManager.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Scripting\BehaviorManager.cs" />

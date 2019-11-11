@@ -8,6 +8,7 @@ using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics.Shapes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Animations;
+using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Properties;
@@ -19,7 +20,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapActor : MapEntity3D<IActor>, IMapActor
+    public class MapActor : MapEntity3D<IActor>, IMapActor, IModelPather, ITexturePather
     {
         public string Name { get; set; }
 

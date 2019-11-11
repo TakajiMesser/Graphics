@@ -17,13 +17,13 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapBrush : MapEntity3D<IBrush>, IMapBrush
+    public class MapBrush : MapEntity3D<IBrush>, IMapBrush, ITexturePather
     {
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool IsPhysical { get; set; }
-        public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
+        public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
         public MapBrush() { }
         public MapBrush(ModelBuilder meshBuild)
@@ -49,7 +49,7 @@ namespace SpiceEngineCore.Maps
 
         IRenderable IComponentBuilder<IRenderable>.ToComponent()
         {
-            if (TexturesPaths.IsEmpty)
+            if (!TexturesPaths.Any())
             {
                 AddTestColors();
             }
