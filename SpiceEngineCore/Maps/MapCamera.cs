@@ -1,6 +1,13 @@
 ﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Scripting.Properties;
+using SpiceEngineCore.Scripting.Scripts;
+using SpiceEngineCore.Scripting.StimResponse;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
@@ -23,6 +30,12 @@ namespace SpiceEngineCore.Maps
         /// </summary>
         public float FieldOfViewY { get; set; }
 
+        public MapBehavior Behavior { get; set; }
+
+        public IEnumerable<Script> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<Script>();
+        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
+        public List<Property> Properties { get; set; } = new List<Property>();
+
         public override IEntity ToEntity()
         {
             var camera = Type == ProjectionTypes.Orthographic
@@ -36,5 +49,7 @@ namespace SpiceEngineCore.Maps
 
             return camera;
         }
+
+        IBehavior IComponentBuilder<IBehavior>.ToComponent() => Behavior?.ToBehavior();
     }
 }

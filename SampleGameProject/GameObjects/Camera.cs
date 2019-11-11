@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SampleGameProject.Helpers;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Utilities;
@@ -18,6 +19,7 @@ namespace SampleGameProject.GameObjects
             ZNear = 0.1f;
             ZFar = 1000.0f;
             FieldOfViewY = UnitConversions.ToRadians(45.0f);
+            Behavior = MapBehavior.Load(FilePathHelper.CAMERA_BEHAVIOR_PATH);
         }
     }
 }
