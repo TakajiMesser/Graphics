@@ -42,7 +42,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : MultiComponentLoader<IRenderable, IRenderableBuilder>, IGridRenderer
+    public class RenderManager : ComponentLoader<IRenderable, IRenderableBuilder>, IGridRenderer
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
@@ -147,7 +147,11 @@ namespace SpiceEngine.Rendering
                     if (builder is ITexturePather texturePather)
                     {
                         var texturePaths = texturePather.TexturesPaths.FirstOrDefault();
-                        texturedMesh.TextureMapping = texturePaths.ToTextureMapping(TextureManager);
+
+                        if (texturePaths != null && !texturePaths.IsEmpty)
+                        {
+                            texturedMesh.TextureMapping = texturePaths.ToTextureMapping(TextureManager);
+                        }
                     }
                 }
                 else if (component is IModel model)
@@ -221,10 +225,9 @@ namespace SpiceEngine.Rendering
             base.LoadComponents();
 
             // TODO - If Invoker is null, queue up this action
-            Invoker.RunAsync(() =>
-            {
-                _batchManager.Load();
-            });
+            //Invoker.RunSync(() => _batchManager.Load());
+            //Invoker.ForceUpdate();
+            Invoker.RunAsync(() => _batchManager.Load()).ContinueWith(t => Invoker.ForceUpdate());
         }
 
         // TODO - Can we remove this call?

@@ -46,6 +46,8 @@ namespace SpiceEngineCore.Game.Loading
             if (_isProcessing) throw new InvalidOperationException("Components are already being processed");
             _isProcessing = true;
 
+            _taskIndex = 0;
+
             _entityIDs = new int[entityCount];
             _loadTasks = new Task[entityCount];
             
@@ -76,13 +78,7 @@ namespace SpiceEngineCore.Game.Loading
             await LoadBuildersAsync();
             LoadBuildersSync();
 
-            if (!IsLoaded)
-            {
-                await LoadInitial();
-                IsLoaded = true;
-            }
-
-            LoadComponents();
+            await InitializeComponents();
 
             // TODO - Do we need to add one to this endIndex?
             RemoveBuilders(_startBuilderIndex, _startBuilderIndex + _loadTasks.Length);
@@ -106,6 +102,19 @@ namespace SpiceEngineCore.Game.Loading
             _isProcessing = false;
         }
 
+        protected async Task LoadBuildersAsync()
+        {
+            var a = 3;
+            try
+            {
+                await Task.WhenAll(_loadTasks);
+            }
+            catch (Exception ex)
+            {
+                a = 4;
+            }
+        }
+
         protected virtual void LoadBuildersSync()
         {
             for (var i = 0; i < _loadTasks.Length; i++)
@@ -120,21 +129,6 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        protected async Task LoadBuildersAsync()
-        {
-            var a = 3;
-            try
-            {
-                await Task.WhenAll(_loadTasks);
-            }
-            catch (Exception ex)
-            {
-                a = 4;
-            }
-        }
-
-        protected virtual void LoadBuilderSync(int entityID, U builder) { }
-
         public virtual Task LoadBuilderAsync(int entityID, U builder) => Task.Run(() =>
         {
             var component = builder.ToComponent();
@@ -144,6 +138,22 @@ namespace SpiceEngineCore.Game.Loading
                 _componentAndIDQueue.Enqueue(Tuple.Create(component, entityID));
             }
         });
+
+        public virtual void LoadBuilderSync(int entityID, U builder) { }
+
+        public async Task InitializeComponents()
+        {
+            if (!IsLoaded)
+            {
+                await LoadInitial();
+                LoadComponents();
+                IsLoaded = true;
+            }
+            else
+            {
+                LoadComponents();
+            }
+        }
 
         protected virtual Task LoadInitial() => Task.Run(() => { });
 

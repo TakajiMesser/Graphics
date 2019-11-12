@@ -237,13 +237,15 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void Run(Action action) => Invoke(action);
-
-        public T Run<T>(Func<T> func) => (T)Invoke(func);
-
         public Task RunAsync(Action action) => Task.Run(() => Invoke(action));
 
+        public void RunSync(Action action) => Invoke(action);
+
+        public void ForceUpdate() => Invalidate();
+
         public Task<object> RunAsync(Func<object> func) => Task.Run(() => Invoke(func));
+
+        public T RunSync<T>(Func<T> func) => (T)Invoke(func);
 
         private void LoadFromGameManager()
         {

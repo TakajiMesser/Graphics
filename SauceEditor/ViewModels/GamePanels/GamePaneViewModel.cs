@@ -54,7 +54,7 @@ namespace SauceEditor.ViewModels
                         var mapBrush = new MapBrush(builder);
 
                         var coordinates = DragPositioner.Position(args);
-                        var placementID = Control.Run(() => Control.GetEntityIDFromPoint(coordinates));
+                        var placementID = Control.RunSync(() => Control.GetEntityIDFromPoint(coordinates));
 
                         if (placementID > 0)
                         {

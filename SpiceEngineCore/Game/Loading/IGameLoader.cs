@@ -25,7 +25,7 @@ namespace SpiceEngineCore.Game.Loading
         void SetPhysicsLoader(IComponentLoader<IShape, IShapeBuilder> physicsLoader);
         void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader);
         void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader);
-        void AddRenderableLoader(IMultiComponentLoader<IRenderable, IRenderableBuilder> renderableLoader);
+        void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader);
 
         //void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
         void Add(IMapEntity3D mapEntity);

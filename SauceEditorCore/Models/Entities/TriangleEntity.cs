@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using SpiceEngine.Entities.Selection;
-using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
@@ -21,7 +20,7 @@ namespace SauceEditorCore.Models.Entities
         /*public override bool CompareUniforms(IEntity entity) => entity is TriangleEntity
             && base.CompareUniforms(entity);*/
 
-        public override IRenderable ToRenderable()
+        public override IRenderable ToComponent()
         {
             var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();

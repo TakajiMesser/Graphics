@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using OpenTK.Platform;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
@@ -16,14 +17,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 
-namespace SpiceEngine.Game
+namespace SpiceEngine.Game.Controls
 {
-    public class GameWindow : OpenTK.GameWindow, IMouseTracker, IInvoker
+    /*public class GameWindow : NativeWindow, IGameWindow, IMouseTracker, IInvoker, IDisposable
     {
-        private GameManager _gameManager;
-        private RenderManager _renderManager;
+        private const string TITLE = "My Game Window";
+
+        private IGraphicsContext _glContext;
+        private VSyncMode _vsyncMode;
 
         private GameLoader _gameLoader;
+        private GameManager _gameManager;
+        private RenderManager _renderManager;
 
         //private Dispatcher _mainDispatcher;
         private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
@@ -38,11 +43,29 @@ namespace SpiceEngine.Game
         private IMap _map;
         private object _loadLock = new object();
 
+        public GameWindow(int width, int height) : base(width, height, TITLE, GameWindowFlags.Fullscreen, GraphicsMode.Default, DisplayDevice.Default)
+        {
+
+        }
+
+        public Resolution Resolution { get; private set; }
+        public Resolution WindowSize { get; private set; }
+
+        public Vector2? MouseCoordinates => _mouseState.HasValue
+            ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
+            : (Vector2?)null;
+
+        public bool IsMouseInWindow => _mouseState != null
+            ? (_mouseState.Value.X.IsBetween(0, WindowSize.Width) && _mouseState.Value.Y.IsBetween(0, WindowSize.Height))
+            : false;
+
+        public bool IsLoaded { get; private set; }
+
         public event EventHandler<EventArgs> GameLoaded;
 
-        public GameWindow(IMap map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameWindow() : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
-            _map = map;
+            InitializeGLContext();
 
             Resolution = new Resolution(Width, Height);
             WindowSize = new Resolution(Width, Height);
@@ -57,6 +80,27 @@ namespace SpiceEngine.Game
                     _frequencies.Clear();
                 }
             };
+        }
+
+        public void SetMap(IMap map) => _map = map;
+
+        private void InitializeGLContext()
+        {
+            try
+            {
+                _glContext = new GraphicsContext(GraphicsMode.Default, WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
+                _glContext.MakeCurrent(WindowInfo);
+
+                var internalContext = _glContext as IGraphicsContextInternal;
+                internalContext.LoadAll();
+
+                _vsyncMode = VSyncMode.On;
+            }
+            catch (Exception ex)
+            {
+                base.Dispose();
+                throw;
+            }
         }
 
         public void LoadAndRun()
@@ -105,6 +149,8 @@ namespace SpiceEngine.Game
             }
         }
 
+        public void Run(Action action) => _mainActionQueue.Enqueue(action);
+
         public async Task RunAsync(Action action)
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
@@ -117,11 +163,6 @@ namespace SpiceEngine.Game
 
             await taskCompletionSource.Task;
         }
-
-        public void RunSync(Action action) => _mainActionQueue.Enqueue(action);
-
-        // TODO - No-op...
-        public void ForceUpdate() { }
 
         private async void LoadAsync()
         {
@@ -137,10 +178,7 @@ namespace SpiceEngine.Game
 
             _gameManager.LoadFromMap(_map);
 
-            _gameLoader = new GameLoader()
-            {
-                RendererWaitCount = 1
-            };
+            _gameLoader = new GameLoader();
             _gameLoader.SetEntityProvider(_gameManager.EntityManager);
             _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
@@ -155,7 +193,7 @@ namespace SpiceEngine.Game
             _renderManager.LoadFromMap(_map);
 
             //_gameLoader.Load();
-            _gameLoader.TimedOut += (s, args) => RunSync(() => throw new TimeoutException());
+            _gameLoader.TimedOut += (s, args) => Run(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
             var defaultCamera = _gameManager.EntityManager.Cameras.First();
@@ -170,36 +208,10 @@ namespace SpiceEngine.Game
 
             //_renderManager.LoadFromMap(_map);
 
-            /*_gameManager.BehaviorManager.Load();
-
-            if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
-            {
-                var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
-                _gameManager.Camera.AttachToEntity(actor, true, false);
-            }
-
-            ProcessOnMainThread(() =>
-            {
-                MakeCurrent();
-                _renderManager.LoadFromMap(_map);
-                IsLoaded = true;
-            });*/
-
             GameLoaded?.Invoke(this, new EventArgs());
         }
 
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
-
-        public Vector2? MouseCoordinates => _mouseState.HasValue
-            ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
-            : (Vector2?)null;
-
-        public bool IsMouseInWindow => _mouseState != null
-            ? (_mouseState.Value.X.IsBetween(0, WindowSize.Width) && _mouseState.Value.Y.IsBetween(0, WindowSize.Height))
-            : false;
-
-        public bool IsLoaded { get; private set; }
+        
 
         protected override void OnResize(EventArgs e)
         {
@@ -218,75 +230,7 @@ namespace SpiceEngine.Game
         protected override void OnLoad(EventArgs e)
         {
             Location = new Point(0, 0);
-            //WindowState = WindowState.Maximized;
-            //Size = new System.Drawing.Size(1280, 720);
-
-            /*_gameManager = new GameManager(Resolution, this);
-            _gameManager.InputManager.EscapePressed += (s, args) => Close();
-
-            _renderManager = new RenderManager(Resolution, WindowSize)
-            {
-                RenderMode = RenderModes.Full
-            };
-            _fpsTimer.Start();
-
-            _gameManager.LoadFromMap(_map);
-
-            _gameLoader = new GameLoader(_gameManager.EntityManager);
-            _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
-            _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
-            _gameLoader.AddRenderableLoader(_renderManager);
-
-            _gameLoader.AddFromMap(_map);
-
-            _renderManager.SetEntityProvider(_gameManager.EntityManager);
-            _renderManager.SetCamera(_gameManager.Camera);
-
-            //_gameLoader.Load();
-            await _gameLoader.LoadAsync();
-            _renderManager.LoadFromMap(_map);
-            _gameManager.BehaviorManager.Load();
-
-            if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
-            {
-                var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
-                _gameManager.Camera.AttachToEntity(actor, true, false);
-            }
-
-            IsLoaded = true;
-            GameLoaded?.Invoke(this, new EventArgs());*/
-
-            /*lock (_loadLock)
-            {
-                IsLoaded = true;
-
-                if (_map != null)
-                {
-                    var entityMapping = _gameManager.LoadFromMap(_map);
-                    _renderManager.SetEntityProvider(_gameManager.EntityManager);
-                    _renderManager.SetCamera(_gameManager.Camera);
-                    _renderManager.LoadFromMap(_map, entityMapping);
-                }
-            }*/
         }
-
-        /*public void LoadMap(Map map)
-        {
-            lock (_loadLock)
-            {
-                _map = map;
-
-                if (IsLoaded)
-                {
-                    var entityMapping = _gameManager.LoadFromMap(_map);
-                    _renderManager.LoadFromMap(_map, _gameManager.EntityManager, entityMapping);
-                }
-            }
-        }*/
-
-        //protected override void OnMouseEnter(EventArgs e) => CursorVisible = false;
-
-        //protected override void OnMouseLeave(EventArgs e) => CursorVisible = true;
 
         // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
         protected override void OnUpdateFrame(FrameEventArgs e)
@@ -309,5 +253,7 @@ namespace SpiceEngine.Game
                 SwapBuffers();
             //}
         }
-    }
+
+
+    }*/
 }

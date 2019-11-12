@@ -9,9 +9,6 @@ namespace SauceEditorCore.Models.Entities
     {
         public VertexEntity(ModelVertex meshVertex) : base(meshVertex) { }
 
-        public override IRenderable ToRenderable()
-        {
-            return new Billboard(Position, FilePathHelper.VERTEX_TEXTURE_PATH);
-        }
+        public override IRenderable ToComponent() => new Billboard(Position, FilePathHelper.VERTEX_TEXTURE_PATH);
     }
 }

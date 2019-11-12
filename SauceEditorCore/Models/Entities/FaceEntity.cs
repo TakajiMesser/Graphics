@@ -26,7 +26,7 @@ namespace SauceEditorCore.Models.Entities
             && IsInTextureMode == faceEntity.IsInTextureMode
             && base.CompareUniforms(entity);*/
 
-        public override IRenderable ToRenderable()
+        public override IRenderable ToComponent()
         {
             var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();

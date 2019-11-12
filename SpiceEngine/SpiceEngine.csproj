@@ -129,6 +129,7 @@
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
     <Compile Include="Game\GameManager.cs" />
+    <Compile Include="Game\Controls\GameWindow.cs" />
     <Compile Include="Game\PanelCamera.cs" />
     <Compile Include="Game\PanelLoadedEventArgs.cs" />
     <Compile Include="Game\TransformModeEventArgs.cs" />

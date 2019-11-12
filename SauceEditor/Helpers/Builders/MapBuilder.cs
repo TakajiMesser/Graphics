@@ -5,7 +5,9 @@ using SauceEditorCore.Models.Components;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Utilities;
+using System.Collections.Generic;
 
 namespace SauceEditor.Helpers.Builders
 {
@@ -89,12 +91,15 @@ namespace SauceEditor.Helpers.Builders
             });
 
             var mapBrush = MapBrush.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-            mapBrush.TexturesPaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
+            mapBrush.TexturesPaths = new List<TexturePaths>
             {
-                DiffuseMapFilePath = texture.TexturePaths.DiffuseMapFilePath,
-                NormalMapFilePath = texture.TexturePaths.NormalMapFilePath,
-                //SpecularMapFilePath = texture.TexturePaths.SpecularMapFilePath,
-                //ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
+                new TexturePaths()
+                {
+                    DiffuseMapFilePath = texture.TexturePaths.DiffuseMapFilePath,
+                    NormalMapFilePath = texture.TexturePaths.NormalMapFilePath,
+                    //SpecularMapFilePath = texture.TexturePaths.SpecularMapFilePath,
+                    //ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
+                }
             };
 
             map.Brushes.Add(mapBrush);

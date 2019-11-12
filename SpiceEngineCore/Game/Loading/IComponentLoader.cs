@@ -16,14 +16,18 @@ namespace SpiceEngineCore.Game.Loading
         //void RemoveBuilders(int startIndex, int endIndex);
 
         Task LoadBuilderAsync(int entityID, U builder);
+        void LoadBuilderSync(int entityID, U builder);
 
         //void AddComponent(int entityID, IComponentBuilder<T> builder);
 
         void InitializeLoad(int entityCount, int startIndex);
         void AddLoadTask(int entityID);
 
-        void LoadSync();
         Task LoadAsync();
+        void LoadSync();
+        
         //Task LoadAsync2();
+
+        Task InitializeComponents();
     }
 }

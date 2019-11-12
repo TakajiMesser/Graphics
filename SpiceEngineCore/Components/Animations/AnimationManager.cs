@@ -33,7 +33,7 @@ namespace SpiceEngineCore.Components.Animations
 
         private Dictionary<int, int> _defaultAnimationIndexByID = new Dictionary<int, int>();
 
-        protected override void LoadBuilderSync(int entityID, IAnimatorBuilder builder)
+        public override void LoadBuilderSync(int entityID, IAnimatorBuilder builder)
         {
             base.LoadBuilderSync(entityID, builder);
 

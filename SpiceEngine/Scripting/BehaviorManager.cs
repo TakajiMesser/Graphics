@@ -85,7 +85,7 @@ namespace SpiceEngine.Scripting
             ? _stimuliByEntityID[entityID].Stimuli
             : Enumerable.Empty<Stimulus>();
 
-        protected override void LoadBuilderSync(int entityID, IBehaviorBuilder builder)
+        public override void LoadBuilderSync(int entityID, IBehaviorBuilder builder)
         {
             base.LoadBuilderSync(entityID, builder);
             _scriptManager.AddScripts(builder.Scripts);

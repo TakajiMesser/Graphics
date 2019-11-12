@@ -24,13 +24,12 @@ namespace SpiceEngine.Game
         private IComponentLoader<IShape, IShapeBuilder> _physicsLoader;
         private IComponentLoader<IBehavior, IBehaviorBuilder> _behaviorLoader;
         private IComponentLoader<IAnimator, IAnimatorBuilder> _animatorLoader;
-        private IMultiComponentLoader<IRenderable, IRenderableBuilder> _renderableLoader;
+
+        private IMultiComponentLoader<IRenderable, IRenderableBuilder> _renderableLoader = new MultiComponentLoader<IRenderable, IRenderableBuilder>();
 
         private int _loadIndex = 0;
 
         private readonly object _builderLock = new object();
-        private readonly object _rendererLock = new object();
-
         private readonly object _loadLock = new object();
 
         public EntityMapping EntityMapping { get; private set; } = null;
@@ -43,8 +42,8 @@ namespace SpiceEngine.Game
 
         public int RendererWaitCount
         {
-            get => _renderableLoader.MultiLoaderWaitCount;
-            set => _renderableLoader.MultiLoaderWaitCount = value;
+            get => _renderableLoader.LoaderWaitCount;
+            set => _renderableLoader.LoaderWaitCount = value;
         }
 
         public bool IsLoading { get; private set; }
@@ -64,20 +63,7 @@ namespace SpiceEngine.Game
         public void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader) => _behaviorLoader = behaviorLoader;
         public void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader) => _animatorLoader = animatorLoader;
 
-        public void AddRenderableLoader(IMultiComponentLoader<IRenderable, IRenderableBuilder> renderableLoader)
-        {
-            lock (_rendererLock)
-            {
-                if (_renderableLoader == null)
-                {
-                    _renderableLoader = renderableLoader;
-                }
-                else
-                {
-                    _renderableLoader.AddLoader(renderableLoader);
-                }
-            }
-        }
+        public void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader) => _renderableLoader.AddLoader(renderableLoader);
 
         public void Add(IMapEntity3D mapEntity)
         {
@@ -301,6 +287,11 @@ namespace SpiceEngine.Game
             }
 
             entityCount -= startBuilderIndex;
+
+            _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _renderableLoader.InitializeLoad(entityCount, startBuilderIndex);
 
             var index = startBuilderIndex;
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));

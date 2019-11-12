@@ -82,7 +82,7 @@ namespace SauceEditor.ViewModels
             MapComponent.Map.AddCamera(mapCamera);
 
             _gameLoader.Add(mapCamera);
-            _gameLoader.Load();
+            _gameLoader.LoadSync();
         }
 
         public void AddMapBrush(IMapBrush mapBrush)
@@ -90,7 +90,7 @@ namespace SauceEditor.ViewModels
             MapComponent.Map.AddBrush(mapBrush);
 
             _gameLoader.Add(mapBrush);
-            _gameLoader.Load();
+            _gameLoader.LoadSync();
         }
 
         public void AddMapActor(IMapActor mapActor)
@@ -98,7 +98,7 @@ namespace SauceEditor.ViewModels
             MapComponent.Map.AddActor(mapActor);
 
             _gameLoader.Add(mapActor);
-            _gameLoader.Load();
+            _gameLoader.LoadSync();
         }
 
         public void AddMapLight(IMapLight mapLight)
@@ -106,7 +106,7 @@ namespace SauceEditor.ViewModels
             MapComponent.Map.AddLight(mapLight);
 
             _gameLoader.Add(mapLight);
-            _gameLoader.Load();
+            _gameLoader.LoadSync();
         }
 
         public void AddMapVolume(IMapVolume mapVolume)
@@ -114,7 +114,7 @@ namespace SauceEditor.ViewModels
             MapComponent.Map.AddVolume(mapVolume);
 
             _gameLoader.Add(mapVolume);
-            _gameLoader.Load();
+            _gameLoader.LoadSync();
         }
 
         private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
@@ -368,7 +368,7 @@ namespace SauceEditor.ViewModels
         private async void LoadAsync()
         {
             //GameManager = new GameManager(Resolution);
-            //GameManager.LoadFromMap(MapComponent.Map);
+            GameManager.LoadFromMap(MapComponent.Map);
 
             // TODO - Make these less janky...
             _gameLoader.RendererWaitCount = 4;

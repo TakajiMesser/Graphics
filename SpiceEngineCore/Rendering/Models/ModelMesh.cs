@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
@@ -160,12 +159,52 @@ namespace SpiceEngineCore.Rendering.Models
         {
             var shape = new ModelMesh();
 
+            var baseFace = ModelFace.RegularPolygon(nSides, radius)
+                .Translated(0.0f, 0.0f, height / 2.0f)
+                .Rotated(Vector3.UnitY, MathExtensions.PI);
+
+            shape.Faces.Add(baseFace);
+
+            var vertexA = new Vector3(0.0f, 0.0f, height / 2.0f);
+
+            for (var i = 0; i < nSides - 1; i++)
+            {
+                shape.Faces.Add(new ModelFace(new List<Vector3>
+                {
+                    vertexA,
+                    baseFace.Vertices[i].Position,
+                    baseFace.Vertices[i + 1].Position
+                }));
+            }
+
             return shape;
         }
 
         public static ModelMesh Cylinder(float radius, float height, int nSides)
         {
             var shape = new ModelMesh();
+
+            var baseFace = ModelFace.RegularPolygon(nSides, radius)
+                .Translated(0.0f, 0.0f, height / 2.0f)
+                .Rotated(Vector3.UnitY, MathExtensions.PI);
+
+            shape.Faces.Add(baseFace);
+
+            var topFace = ModelFace.RegularPolygon(nSides, radius)
+                .Translated(0.0f, 0.0f, height / 2.0f);
+
+            shape.Faces.Add(topFace);
+
+            for (var i = 0; i < nSides - 1; i++)
+            {
+                shape.Faces.Add(new ModelFace(new List<Vector3>
+                {
+                    baseFace.Vertices[i].Position,
+                    baseFace.Vertices[i + 1].Position,
+                    topFace.Vertices[i + 1].Position,
+                    topFace.Vertices[i].Position
+                }));
+            }
 
             return shape;
         }

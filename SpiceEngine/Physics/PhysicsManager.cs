@@ -10,10 +10,8 @@ using SpiceEngineCore.Physics.Collisions;
 using SpiceEngineCore.Physics.Constraints;
 using SpiceEngineCore.Physics.Shapes;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SpiceEngine.Physics
 {
@@ -87,7 +85,7 @@ namespace SpiceEngine.Physics
         private Dictionary<int, Vector3> _initialPositionByID = new Dictionary<int, Vector3>();
         private Dictionary<int, bool> _isPhysicalByID = new Dictionary<int, bool>();
 
-        protected override void LoadBuilderSync(int entityID, IShapeBuilder builder)
+        public override void LoadBuilderSync(int entityID, IShapeBuilder builder)
         {
             base.LoadBuilderSync(entityID, builder);
 

@@ -50,7 +50,7 @@ namespace SpiceEngine.Rendering.Textures
                 }
 
                 // TODO - If Invoker is null, queue this action up
-                Invoker?.Run(() =>
+                Invoker?.RunSync(() =>
                 {
                     var texture = TextureHelper.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
                     _textures[index] = texture;

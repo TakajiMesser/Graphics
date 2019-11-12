@@ -62,10 +62,13 @@ namespace SampleGameProject.Helpers.Builders
             {
                 Position = new Vector3(10.0f, 0.0f, 0.0f),
                 IsPhysical = true,
-                TexturesPaths = new TexturePaths()
+                TexturesPaths = new List<TexturePaths>
                 {
-                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    new TexturePaths()
+                    {
+                        DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                        NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    }
                 }
             };
             yield return wall;
@@ -77,10 +80,13 @@ namespace SampleGameProject.Helpers.Builders
             {
                 Position = new Vector3(-10.0f, 0.0f, 0.0f),
                 IsPhysical = true,
-                TexturesPaths = new TexturePaths()
+                TexturesPaths = new List<TexturePaths>
                 {
-                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    new TexturePaths()
+                    {
+                        DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                        NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    }
                 }
             };
             yield return wall2;
