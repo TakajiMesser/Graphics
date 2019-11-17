@@ -1,6 +1,5 @@
 using OpenTK;
 using SauceEditor.Views.GamePanels;
-using SauceEditorCore.Models.Components;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Entities;
@@ -44,37 +43,34 @@ namespace SauceEditor.ViewModels
             get => _dropCommand ?? (_dropCommand = new RelayCommand(
                 p =>
                 {
-                    var args = (DragEventArgs)p;
+                    var args = p as DragEventArgs;
 
-                    if (args.Data.GetDataPresent(typeof(ModelMesh)))
+                    // TODO - Pass primitive and type -> For now, assume that this is a Brush
+                    var meshShape = args.Data.GetData(typeof(ModelMesh)) as ModelMesh;
+                    var builder = new ModelBuilder(meshShape);
+                    var mapBrush = new MapBrush(builder);
+
+                    var coordinates = DragPositioner.Position(args);
+                    var placementID = Control.RunSync(() => Control.GetEntityIDFromPoint(coordinates));
+
+                    if (placementID > 0)
                     {
-                        // TODO - Pass primitive and type -> For now, assume that this is a Brush
-                        var meshShape = args.Data.GetData(typeof(ModelMesh)) as ModelMesh;
-                        var builder = new ModelBuilder(meshShape);
-                        var mapBrush = new MapBrush(builder);
-
-                        var coordinates = DragPositioner.Position(args);
-                        var placementID = Control.RunSync(() => Control.GetEntityIDFromPoint(coordinates));
-
-                        if (placementID > 0)
+                        var placementEntity = EntityProvider.GetEntity(placementID);
+                        mapBrush.Position = new Vector3()
                         {
-                            var placementEntity = EntityProvider.GetEntity(placementID);
-                            mapBrush.Position = new Vector3()
-                            {
-                                X = placementEntity.Position.X,
-                                Y = placementEntity.Position.Y,
-                                Z = placementEntity.Position.Z
-                            };
-                        }
-                        else
-                        {
-                            // TODO - Default to Z = 0, then ray trace from camera to find corresponding X and Y coordinates
-                        }
-
-                        Mapper.AddMapBrush(mapBrush);
+                            X = placementEntity.Position.X,
+                            Y = placementEntity.Position.Y,
+                            Z = placementEntity.Position.Z
+                        };
                     }
+                    else
+                    {
+                        // TODO - Default to Z = 0, then ray trace from camera to find corresponding X and Y coordinates
+                    }
+
+                    Mapper.AddMapBrush(mapBrush);
                 },
-                p => true
+                p => p is DragEventArgs args && args.Data.GetDataPresent(typeof(ModelMesh))
             ));
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using SpiceEngine.Rendering.PostProcessing;
+using System.Windows;
 using System.Windows.Input;
 
 namespace SauceEditor.ViewModels.AttachedBehaviors
@@ -21,13 +22,27 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
                 if (e.NewValue != null && e.OldValue == null)
                 {
                     uiElement.AllowDrop = true;
+                    uiElement.DragEnter += OnDragEnter;
                     uiElement.Drop += OnDrop;
                 }
                 else if (e.NewValue == null && e.OldValue != null)
                 {
                     uiElement.Drop -= OnDrop;
+                    uiElement.DragEnter -= OnDragEnter;
                     uiElement.AllowDrop = false;
                 }
+            }
+        }
+
+        private static void OnDragEnter(object sender, DragEventArgs e)
+        {
+            var dependencyObject = sender as DependencyObject;
+            var command = (ICommand)dependencyObject.GetValue(CommandProperty);
+
+            if (!command.CanExecute(e.Data))
+            {
+                e.Effects = DragDropEffects.None;
+                e.Handled = true;
             }
         }
 
@@ -37,8 +52,6 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
 
             var command = (ICommand)dependencyObject.GetValue(CommandProperty);
             command.Execute(e);
-
-            //e.Handled = true;
         }
     }
 }
