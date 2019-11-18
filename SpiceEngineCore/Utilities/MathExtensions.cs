@@ -88,5 +88,13 @@ namespace SpiceEngineCore.Utilities
                     : min;
             }
         }
+
+        public static int Modulo(this int value, int moduloBy)
+        {
+            var remainder = value % moduloBy;
+            return remainder < 0 ? remainder + moduloBy : remainder;
+        }
+
+        public static float Modulo(this float value, float moduloBy) => value - moduloBy * (float)Math.Floor(value / moduloBy);
     }
 }

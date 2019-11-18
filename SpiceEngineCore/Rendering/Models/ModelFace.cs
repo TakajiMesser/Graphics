@@ -246,14 +246,14 @@ namespace SpiceEngineCore.Rendering.Models
 
             var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
             var exteriorAngle = MathExtensions.TWO_PI / nSides;
-            var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, exteriorAngle);
+            var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -exteriorAngle);
 
-            var direction = Vector3.UnitX;
-            vertices.Add(new Vector3(-sideLength, -apothem, 0.0f));
+            var direction = -Vector3.UnitX;
+            vertices.Add(new Vector3(sideLength / 2.0f, -apothem, 0.0f));
 
-            for (var i = 0; i < nSides; i++)
+            for (var i = 0; i < nSides - 1; i++)
             {
-                vertices.Add(vertices[i] + direction);
+                vertices.Add(vertices[i] + sideLength * direction);
                 direction = rotation * direction;
             }
 

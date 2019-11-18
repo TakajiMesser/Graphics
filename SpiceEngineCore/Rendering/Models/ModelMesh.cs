@@ -167,13 +167,13 @@ namespace SpiceEngineCore.Rendering.Models
 
             var vertexA = new Vector3(0.0f, 0.0f, height / 2.0f);
 
-            for (var i = 0; i < nSides - 1; i++)
+            for (var i = 0; i < nSides; i++)
             {
                 shape.Faces.Add(new ModelFace(new List<Vector3>
                 {
                     vertexA,
-                    baseFace.Vertices[i].Position,
-                    baseFace.Vertices[i + 1].Position
+                    baseFace.Vertices[(i + 1) % nSides].Position,
+                    baseFace.Vertices[i].Position
                 }));
             }
 
@@ -182,6 +182,7 @@ namespace SpiceEngineCore.Rendering.Models
 
         public static ModelMesh Cylinder(float radius, float height, int nSides)
         {
+            nSides = 6;
             var shape = new ModelMesh();
 
             var baseFace = ModelFace.RegularPolygon(nSides, radius)
@@ -195,14 +196,14 @@ namespace SpiceEngineCore.Rendering.Models
 
             shape.Faces.Add(topFace);
 
-            for (var i = 0; i < nSides - 1; i++)
+            for (var i = 0; i < nSides; i++)
             {
                 shape.Faces.Add(new ModelFace(new List<Vector3>
                 {
                     baseFace.Vertices[i].Position,
-                    baseFace.Vertices[i + 1].Position,
-                    topFace.Vertices[i + 1].Position,
-                    topFace.Vertices[i].Position
+                    topFace.Vertices[(1 - i).Modulo(nSides)].Position,
+                    topFace.Vertices[(-i).Modulo(nSides)].Position,
+                    baseFace.Vertices[(i + 1).Modulo(nSides)].Position
                 }));
             }
 
