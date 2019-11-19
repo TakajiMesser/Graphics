@@ -28,9 +28,9 @@
         </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="6*"/>
                 <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
             <xcad:DockingManager Name ="LeftDockingManager" Grid.Column="0"/>
             <xcad:DockingManager Name ="CenterDockingManager" Grid.Column="1"/>

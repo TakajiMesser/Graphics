@@ -1,5 +1,7 @@
+using PropertyChanged;
 using SauceEditor.ViewModels.Docks;
 using SauceEditor.ViewModels.Tools.Primitives;
+using SauceEditor.Views.Custom;
 using SauceEditor.Views.Factories;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -10,6 +12,12 @@ namespace SauceEditor.ViewModels.Tools
     {
         private PrimitiveManager _primitiveManager = new PrimitiveManager();
         private List<Primitive> _children = new List<Primitive>();
+
+        [PropagateChanges]
+        [DoNotCheckEquality]
+        public Primitive Primitive { get; set; }
+
+        public object Selection { get; set; }
 
         public BrushToolPanelViewModel()
         {

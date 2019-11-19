@@ -171,6 +171,7 @@ namespace SpiceEngineCore.Entities
                     availableID++;
                 }
 
+                LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, id);
                 _buildersByID.TryAdd(id, entityBuilder);
                 //_builderIDQueue.Enqueue(Tuple.Create(id, entityBuilder));
                 yield return id;
@@ -184,7 +185,7 @@ namespace SpiceEngineCore.Entities
                 var entity = builder.ToEntity();
                 entity.ID = id;
 
-                LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, id);
+                //LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, id);
                 _entities[id - 1] = entity;
 
                 if (entity is INamedEntity namedEntity)

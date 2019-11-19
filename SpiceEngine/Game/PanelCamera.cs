@@ -146,7 +146,7 @@ namespace SpiceEngine.Game
                     };
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
-                    _gridRenderer.RotateGrid(0.0f, 0.0f, MathExtensions.HALF_PI);
+                    _gridRenderer.RotateGrid(MathExtensions.HALF_PI, 0.0f, 0.0f);
                     _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;
