@@ -3,7 +3,7 @@ using SpiceEngineCore.Game.Loading.Builders;
 
 namespace SpiceEngineCore.Maps
 {
-    public interface IMapEntity3D : IEntityBuilder
+    public interface IMapEntity : IEntityBuilder
     {
         //Vector3 Position { get; set; }
         Vector3 Rotation { get; set; }

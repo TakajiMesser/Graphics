@@ -34,7 +34,7 @@ namespace SpiceEngineCore.Game.Loading
             return loader;
         }
 
-        public void AddBuilder(IMapEntity3D mapEntity) => _builders.Add(mapEntity is U u ? u : null);
+        public void AddBuilder(IMapEntity mapEntity) => _builders.Add(mapEntity is U u ? u : null);
 
         public void LoadBuilder(int id, int builderIndex, IComponentLoader<T, U> componentLoader)
         {

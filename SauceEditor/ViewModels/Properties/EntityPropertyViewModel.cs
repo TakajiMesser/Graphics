@@ -58,7 +58,7 @@ namespace SauceEditor.ViewModels.Properties
             {
                 rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
 
-                if (Model.MapEntity is IMapEntity3D mapEntity)
+                if (Model.MapEntity is IMapEntity mapEntity)
                 {
                     mapEntity.Rotation = Rotation.ToVector3();
                 }
@@ -71,7 +71,7 @@ namespace SauceEditor.ViewModels.Properties
             {
                 scaler.Scale = Scale.ToVector3();
 
-                if (Model.MapEntity is IMapEntity3D mapEntity)
+                if (Model.MapEntity is IMapEntity mapEntity)
                 {
                     mapEntity.Scale = Scale.ToVector3();
                 }
@@ -95,7 +95,7 @@ namespace SauceEditor.ViewModels.Properties
 
             Position = new VectorProperty(editorEntity.MapEntity.Position);
 
-            if (editorEntity.MapEntity is IMapEntity3D mapEntity)
+            if (editorEntity.MapEntity is IMapEntity mapEntity)
             {
                 if (editorEntity.Entity is IRotate)
                 {

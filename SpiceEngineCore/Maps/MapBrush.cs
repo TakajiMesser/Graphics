@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapBrush : MapEntity3D<IBrush>, IMapBrush, ITexturePather
+    public class MapBrush : MapEntity<IBrush>, IMapBrush, ITexturePather
     {
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }

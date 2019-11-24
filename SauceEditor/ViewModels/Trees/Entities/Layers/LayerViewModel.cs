@@ -39,11 +39,14 @@ namespace SauceEditor.ViewModels.Trees.Entities.Layers
                 {
                     var args = (DragEventArgs)p;
 
-                    var name = args.Data.GetData(DataFormats.StringFormat);
-                    /*var originalSource = args.OriginalSource;
-                    var source = args.Source;
-                    var position = args.GetPosition(null);*/
-                    _rearranger.Rearrange((string)name, args);
+                    if (args.Data.GetDataPresent(DataFormats.StringFormat))
+                    {
+                        var name = args.Data.GetData(DataFormats.StringFormat);
+                        /*var originalSource = args.OriginalSource;
+                        var source = args.Source;
+                        var position = args.GetPosition(null);*/
+                        _rearranger.Rearrange((string)name, args);
+                    }
                 },
                 p => true
             ));

@@ -2,6 +2,7 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -31,7 +32,7 @@ namespace SpiceEngineCore.Game.Loading
 
         public virtual void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public void AddBuilder(IMapEntity3D mapEntity) => _componentBuilders.Add(mapEntity is U builder ? builder : null);
+        public void AddBuilder(IMapEntity mapEntity) => _componentBuilders.Add(mapEntity is U builder ? builder : null);
 
         private void RemoveBuilders(int startIndex, int endIndex)
         {
@@ -102,18 +103,7 @@ namespace SpiceEngineCore.Game.Loading
             _isProcessing = false;
         }
 
-        protected async Task LoadBuildersAsync()
-        {
-            var a = 3;
-            try
-            {
-                await Task.WhenAll(_loadTasks);
-            }
-            catch (Exception ex)
-            {
-                a = 4;
-            }
-        }
+        protected async Task LoadBuildersAsync() => await Task.WhenAll(_loadTasks);
 
         protected virtual void LoadBuildersSync()
         {
@@ -159,9 +149,20 @@ namespace SpiceEngineCore.Game.Loading
 
         protected virtual void LoadComponents()
         {
+            var a = 3;
+            if (this is ComponentLoader<IRenderable, IRenderableBuilder>)
+            {
+                a = 4;
+            }
+
             while (_componentAndIDQueue.TryDequeue(out Tuple<T, int> componentAndID))
             {
                 LoadComponent(componentAndID.Item2, componentAndID.Item1);
+            }
+
+            if (this is ComponentLoader<IRenderable, IRenderableBuilder>)
+            {
+                a = 4;
             }
         }
 

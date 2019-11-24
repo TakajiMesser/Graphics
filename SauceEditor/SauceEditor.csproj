@@ -253,17 +253,34 @@
     <Compile Include="ViewModels\Properties\VectorProperty.cs" />
     <Compile Include="ViewModels\Properties\EntityPropertyViewModel.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Actors\ActorTool.cs" />
+    <Compile Include="ViewModels\Tools\Cameras\OrthographicCameraTool.cs" />
+    <Compile Include="ViewModels\Tools\Cameras\PerspectiveCameraTool.cs" />
+    <Compile Include="ViewModels\Tools\Cameras\CameraTool.cs" />
+    <Compile Include="ViewModels\Tools\ActorToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\BoxVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\ConeVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\CylinderVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\SphereVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\VolumeToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Lights\DirectionalLightTool.cs" />
+    <Compile Include="ViewModels\Tools\Lights\SpotLightTool.cs" />
+    <Compile Include="ViewModels\Tools\Lights\PointLightTool.cs" />
+    <Compile Include="ViewModels\Tools\Lights\LightTool.cs" />
+    <Compile Include="ViewModels\Tools\CameraToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\LightToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\LibraryPageViewModel.cs" />
     <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\BrushToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
-    <Compile Include="ViewModels\Tools\Primitives\CylinderPrimitive.cs" />
-    <Compile Include="ViewModels\Tools\Primitives\ConePrimitive.cs" />
-    <Compile Include="ViewModels\Tools\Primitives\SpherePrimitive.cs" />
-    <Compile Include="ViewModels\Tools\Primitives\BoxPrimitive.cs" />
-    <Compile Include="ViewModels\Tools\Primitives\PrimitiveManager.cs" />
-    <Compile Include="ViewModels\Tools\Primitives\Primitive.cs" />
+    <Compile Include="ViewModels\Tools\Tool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\CylinderBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\ConeBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\SphereBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\BoxBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\BrushTool.cs" />
     <Compile Include="ViewModels\Tools\ToolsPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\VolumeTool.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityTypeViewModel.cs" />
     <Compile Include="ViewModels\Trees\Entities\EntityTreePanelViewModel.cs" />
@@ -317,6 +334,18 @@
     <Compile Include="Views\PanelManager.cs" />
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\VolumeToolPanel.xaml.cs">
+      <DependentUpon>VolumeToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\ActorToolPanel.xaml.cs">
+      <DependentUpon>ActorToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\CameraToolPanel.xaml.cs">
+      <DependentUpon>CameraToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\LightToolPanel.xaml.cs">
+      <DependentUpon>LightToolPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Tools\BrushToolPanel.xaml.cs">
       <DependentUpon>BrushToolPanel.xaml</DependentUpon>
@@ -391,6 +420,22 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainMenu.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\VolumeToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\ActorToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\CameraToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\LightToolPanel.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -44,11 +44,7 @@ namespace SauceEditor.ViewModels
                 p =>
                 {
                     var args = p as DragEventArgs;
-
-                    // TODO - Pass primitive and type -> For now, assume that this is a Brush
-                    var meshShape = args.Data.GetData(typeof(ModelMesh)) as ModelMesh;
-                    var builder = new ModelBuilder(meshShape);
-                    var mapBrush = new MapBrush(builder);
+                    var mapEntity = GetDropData(args.Data);
 
                     var coordinates = DragPositioner.Position(args);
                     var placementID = Control.RunSync(() => Control.GetEntityIDFromPoint(coordinates));
@@ -56,7 +52,7 @@ namespace SauceEditor.ViewModels
                     if (placementID > 0)
                     {
                         var placementEntity = EntityProvider.GetEntity(placementID);
-                        mapBrush.Position = new Vector3()
+                        mapEntity.Position = new Vector3()
                         {
                             X = placementEntity.Position.X,
                             Y = placementEntity.Position.Y,
@@ -68,9 +64,13 @@ namespace SauceEditor.ViewModels
                         // TODO - Default to Z = 0, then ray trace from camera to find corresponding X and Y coordinates
                     }
 
-                    Mapper.AddMapBrush(mapBrush);
+                    AddMapEntity(mapEntity);
                 },
-                p => p is DragEventArgs args && args.Data.GetDataPresent(typeof(ModelMesh))
+                p => p is DragEventArgs args && (args.Data.GetDataPresent(typeof(MapCamera))
+                    || args.Data.GetDataPresent(typeof(MapBrush))
+                    || args.Data.GetDataPresent(typeof(MapActor))
+                    || args.Data.GetDataPresent(typeof(MapLight))
+                    || args.Data.GetDataPresent(typeof(MapVolume)))
             ));
         }
 
@@ -125,6 +125,56 @@ namespace SauceEditor.ViewModels
                     break;
                 default:
                     throw new ArgumentException("Could not handle ViewType " + ViewType);
+            }
+        }
+
+        private IMapEntity GetDropData(IDataObject dataObject)
+        {
+            if (dataObject.GetDataPresent(typeof(MapCamera)))
+            {
+                return dataObject.GetData(typeof(MapCamera)) as MapCamera;
+            }
+            else if (dataObject.GetDataPresent(typeof(MapBrush)))
+            {
+                return dataObject.GetData(typeof(MapBrush)) as MapBrush;
+            }
+            else if (dataObject.GetDataPresent(typeof(MapActor)))
+            {
+                return dataObject.GetData(typeof(MapActor)) as MapActor;
+            }
+            else if (dataObject.GetDataPresent(typeof(MapLight)))
+            {
+                return dataObject.GetData(typeof(MapLight)) as MapLight;
+            }
+            else if (dataObject.GetDataPresent(typeof(MapVolume)))
+            {
+                return dataObject.GetData(typeof(MapVolume)) as MapVolume;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
+        private void AddMapEntity(IMapEntity mapEntity)
+        {
+            switch (mapEntity)
+            {
+                case MapCamera mapCamera:
+                    Mapper.AddMapCamera(mapCamera);
+                    break;
+                case MapBrush mapBrush:
+                    Mapper.AddMapBrush(mapBrush);
+                    break;
+                case MapActor mapActor:
+                    Mapper.AddMapActor(mapActor);
+                    break;
+                case MapLight mapLight:
+                    Mapper.AddMapLight(mapLight);
+                    break;
+                case MapVolume mapVolume:
+                    Mapper.AddMapVolume(mapVolume);
+                    break;
             }
         }
 

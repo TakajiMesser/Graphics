@@ -11,7 +11,7 @@ namespace SpiceEngineCore.Game.Loading
         int LoaderWaitCount { get; set; }
 
         void AddLoader(IComponentLoader<T, U> loader);
-        void AddBuilder(IMapEntity3D mapEntity);
+        void AddBuilder(IMapEntity mapEntity);
 
         void InitializeLoad(int entityCount, int startIndex);
         void AddLoadTask(int entityID);

@@ -53,7 +53,11 @@ namespace SauceEditor.ViewModels
 
         public ToolsPanelViewModel ToolsPanelViewModel { get; set; }
         public ModelToolPanelViewModel ModelToolPanelViewModel { get; set; }
+        public CameraToolPanelViewModel CameraToolPanelViewModel { get; set; }
         public BrushToolPanelViewModel BrushToolPanelViewModel { get; set; }
+        public ActorToolPanelViewModel ActorToolPanelViewModel { get; set; }
+        public LightToolPanelViewModel LightToolPanelViewModel { get; set; }
+        public VolumeToolPanelViewModel VolumeToolPanelViewModel { get; set; }
 
         public GamePanelViewModel GamePanelViewModel { get; set; }
         public BehaviorPanelViewModel BehaviorPanelViewModel { get; set; }

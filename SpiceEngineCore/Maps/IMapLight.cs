@@ -2,7 +2,7 @@
 
 namespace SpiceEngineCore.Maps
 {
-    public interface IMapLight : IMapEntity3D
+    public interface IMapLight : IMapEntity
     {
         void UpdateFrom(ILight light);
     }

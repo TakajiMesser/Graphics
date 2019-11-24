@@ -23,10 +23,10 @@
         </StackPanel.Resources>
 
         <Label FontSize="14">Primitives</Label>
-        <custom:ImageButtonList x:Name="PrimitiveList" SelectedItem="{Binding Primitive}" ItemsSource="{Binding Children}" />
+        <custom:ImageButtonList x:Name="ToolList" SelectedItem="{Binding Tool}" ItemsSource="{Binding Children}" />
 
         <Label FontSize="14">Primitive Properties</Label>
-        <xctk:PropertyGrid x:Name="PropertyGrid" SelectedObject="{Binding Primitive}" Margin="4" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+        <xctk:PropertyGrid x:Name="PropertyGrid" SelectedObject="{Binding Tool}" Margin="4" Visibility="{Binding IsVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             
         </xctk:PropertyGrid>
         

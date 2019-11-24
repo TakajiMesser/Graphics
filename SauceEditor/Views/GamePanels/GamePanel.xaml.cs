@@ -35,6 +35,7 @@ namespace SauceEditor.Views.GamePanels
             ViewModel.YViewModel = _yPane.ViewModel;
             ViewModel.ZViewModel = _zPane.ViewModel;
 
+            //SetView(Models.ViewTypes.Y);
             SetView(EditorSettings.Instance.DefaultView);
         }
 

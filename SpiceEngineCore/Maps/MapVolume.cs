@@ -11,13 +11,20 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapVolume : MapEntity3D<IVolume>, IMapVolume
+    public class MapVolume : MapEntity<IVolume>, IMapVolume
     {
         public enum VolumeTypes
         {
             Blocking,
             Physics,
             Trigger
+        }
+
+        public MapVolume() { }
+        public MapVolume(ModelBuilder meshBuild)
+        {
+            Vertices.AddRange(meshBuild.GetVertices().Select(v => v.Position));
+            TriangleIndices.AddRange(meshBuild.TriangleIndices);
         }
 
         public VolumeTypes VolumeType { get; set; }

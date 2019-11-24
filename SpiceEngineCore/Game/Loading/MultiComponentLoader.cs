@@ -12,7 +12,7 @@ namespace SpiceEngineCore.Game.Loading
     public class MultiComponentLoader<T, U> : IMultiComponentLoader<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
     {
         private List<U> _componentBuilders = new List<U>();
-        protected ConcurrentQueue<Tuple<T, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<T, int>>();
+        //protected ConcurrentQueue<Tuple<T, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<T, int>>();
 
         private bool _isProcessing = false;
         private int[] _entityIDs;
@@ -70,7 +70,7 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        public void AddBuilder(IMapEntity3D mapEntity) => _componentBuilders.Add(mapEntity is U builder ? builder : null);
+        public void AddBuilder(IMapEntity mapEntity) => _componentBuilders.Add(mapEntity is U builder ? builder : null);
 
         private void RemoveBuilders(int startIndex, int endIndex)
         {
@@ -112,28 +112,28 @@ namespace SpiceEngineCore.Game.Loading
                 {
                     var builder = _componentBuilders[builderIndex];
 
-                    if (builder != null)
+                    //await LoadBuilderAsync(entityID, builder);
+                    if (loaderIndex < _loaders.Count)
                     {
-                        //await LoadBuilderAsync(entityID, builder);
-                        if (loaderIndex < _loaders.Count)
+                        if (builder != null)
                         {
                             await _loaders[loaderIndex].LoadBuilderAsync(entityID, builder);
                         }
-                        else
+                    }
+                    else
+                    {
+                        var result = await _loaderAddedTasks[loaderIndex].Task;
+
+                        if (result && builder != null)
                         {
-                            var result = await _loaderAddedTasks[loaderIndex].Task;
+                            IComponentLoader<T, U> loader;
 
-                            if (result)
+                            lock (_loaderLock)
                             {
-                                IComponentLoader<T, U> loader;
-
-                                lock (_loaderLock)
-                                {
-                                    loader = _loaders[loaderIndex];
-                                }
-
-                                await loader.LoadBuilderAsync(entityID, builder);
+                                loader = _loaders[loaderIndex];
                             }
+
+                            await loader.LoadBuilderAsync(entityID, builder);
                         }
                     }
                 });
@@ -174,16 +174,19 @@ namespace SpiceEngineCore.Game.Loading
             _isProcessing = false;
         }
 
-        public async Task InitializeComponents()
+        /*public async Task InitializeComponents()
         {
             if (!IsLoaded)
             {
                 await LoadInitial();
+                LoadComponents();
                 IsLoaded = true;
             }
-
-            LoadComponents();
-        }
+            else
+            {
+                LoadComponents();
+            }
+        }*/
 
         public void LoadSync()
         {
@@ -219,18 +222,7 @@ namespace SpiceEngineCore.Game.Loading
             });
         }
 
-        protected async Task LoadBuildersAsync(int loaderIndex)
-        {
-            var a = 3;
-            try
-            {
-                await Task.WhenAll(_loadTasks[loaderIndex]);
-            }
-            catch (Exception ex)
-            {
-                a = 4;
-            }
-        }
+        protected async Task LoadBuildersAsync(int loaderIndex) => await Task.WhenAll(_loadTasks[loaderIndex]);
 
         protected virtual void LoadBuildersSync(int loaderIndex)
         {
@@ -246,7 +238,7 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        protected virtual Task LoadInitial() => Task.Run(() => { });
+        /*protected virtual Task LoadInitial() => Task.Run(() => { });
 
         protected virtual void LoadComponents()
         {
@@ -260,6 +252,6 @@ namespace SpiceEngineCore.Game.Loading
         {
             _componentsAndIDs.Add(Tuple.Create(component, entityID));
             _componentByID.Add(entityID, component);
-        }
+        }*/
     }
 }

@@ -28,7 +28,7 @@ namespace SpiceEngineCore.Game.Loading
         void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader);
 
         //void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
-        void Add(IMapEntity3D mapEntity);
+        void Add(IMapEntity mapEntity);
         void AddFromMap(IMap map);
 
         Task LoadAsync();

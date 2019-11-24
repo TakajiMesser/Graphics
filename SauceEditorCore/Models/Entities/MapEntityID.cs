@@ -8,13 +8,13 @@ namespace SauceEditorCore.Models.Entities
     {
         private int _id;
 
-        public MapEntityID(IMapEntity3D mapEntity)
+        public MapEntityID(IMapEntity mapEntity)
         {
             MapEntity = mapEntity;
             Name = GetInitialName();
         }
 
-        public IMapEntity3D MapEntity { get; }
+        public IMapEntity MapEntity { get; }
         public string Name { get; private set; }
 
         public int ID

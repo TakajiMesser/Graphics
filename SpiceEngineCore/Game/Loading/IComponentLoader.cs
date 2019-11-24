@@ -12,7 +12,7 @@ namespace SpiceEngineCore.Game.Loading
         bool IsLoaded { get; }
 
         void SetEntityProvider(IEntityProvider entityProvider);
-        void AddBuilder(IMapEntity3D mapEntity);
+        void AddBuilder(IMapEntity mapEntity);
         //void RemoveBuilders(int startIndex, int endIndex);
 
         Task LoadBuilderAsync(int entityID, U builder);

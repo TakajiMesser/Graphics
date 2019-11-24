@@ -23,7 +23,12 @@ namespace SauceEditor.Views
         // Left Panels
         //private ToolsPanel _toolsPanel;
         private ModelToolPanel _modelToolPanel;
+        private CameraToolPanel _cameraToolPanel;
         private BrushToolPanel _brushToolPanel;
+        private ActorToolPanel _actorToolPanel;
+        private LightToolPanel _lightToolPanel;
+        private VolumeToolPanel _volumeToolPanel;
+
 
         // Center Panels
         private List<GamePanel> _gamePanels = new List<GamePanel>();
@@ -48,7 +53,11 @@ namespace SauceEditor.Views
         public void InitializePanels()
         {
             _modelToolPanel = new ModelToolPanel();
+            _cameraToolPanel = new CameraToolPanel();
             _brushToolPanel = new BrushToolPanel();
+            _actorToolPanel = new ActorToolPanel();
+            _lightToolPanel = new LightToolPanel();
+            _volumeToolPanel = new VolumeToolPanel();
 
             _projectTreePanel = new ProjectTreePanel();
             _libraryPanel = new LibraryPanel();
@@ -84,6 +93,18 @@ namespace SauceEditor.Views
             _modelToolPanel.ViewModel.IsActive = true;
         }
 
+        public void OpenCameraToolPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_cameraToolPanel?.ViewModel))
+            {
+                _cameraToolPanel = new CameraToolPanel();
+                _mainWindowViewModel.CameraToolPanelViewModel = _cameraToolPanel.ViewModel;
+                _dockTracker.AddToLeftDock(_cameraToolPanel, _cameraToolPanel.ViewModel);
+            }
+
+            _cameraToolPanel.ViewModel.IsActive = true;
+        }
+
         public void OpenBrushToolPanel()
         {
             if (!_dockTracker.ContainsLeftDock(_brushToolPanel?.ViewModel))
@@ -94,6 +115,42 @@ namespace SauceEditor.Views
             }
 
             _brushToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenActorToolPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_actorToolPanel?.ViewModel))
+            {
+                _actorToolPanel = new ActorToolPanel();
+                _mainWindowViewModel.ActorToolPanelViewModel = _actorToolPanel.ViewModel;
+                _dockTracker.AddToLeftDock(_actorToolPanel, _actorToolPanel.ViewModel);
+            }
+
+            _actorToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenLightToolPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_lightToolPanel?.ViewModel))
+            {
+                _lightToolPanel = new LightToolPanel();
+                _mainWindowViewModel.LightToolPanelViewModel = _lightToolPanel.ViewModel;
+                _dockTracker.AddToLeftDock(_lightToolPanel, _lightToolPanel.ViewModel);
+            }
+
+            _lightToolPanel.ViewModel.IsActive = true;
+        }
+
+        public void OpenVolumeToolPanel()
+        {
+            if (!_dockTracker.ContainsLeftDock(_volumeToolPanel?.ViewModel))
+            {
+                _volumeToolPanel = new VolumeToolPanel();
+                _mainWindowViewModel.VolumeToolPanelViewModel = _volumeToolPanel.ViewModel;
+                _dockTracker.AddToLeftDock(_volumeToolPanel, _volumeToolPanel.ViewModel);
+            }
+
+            _volumeToolPanel.ViewModel.IsActive = true;
         }
 
         public void CreateGamePanel(MapComponent mapComponent, Component component = null)
@@ -257,7 +314,11 @@ namespace SauceEditor.Views
         {
             //_dockTracker.AddToLeftDock(_toolsPanel, _toolsPanel.ViewModel);
             _dockTracker.AddToLeftDock(_modelToolPanel, _modelToolPanel.ViewModel);
+            _dockTracker.AddToLeftDock(_cameraToolPanel, _cameraToolPanel.ViewModel);
             _dockTracker.AddToLeftDock(_brushToolPanel, _brushToolPanel.ViewModel);
+            _dockTracker.AddToLeftDock(_actorToolPanel, _actorToolPanel.ViewModel);
+            _dockTracker.AddToLeftDock(_lightToolPanel, _lightToolPanel.ViewModel);
+            _dockTracker.AddToLeftDock(_volumeToolPanel, _volumeToolPanel.ViewModel);
         }
 
         private void AddDefaultCenterPanels()

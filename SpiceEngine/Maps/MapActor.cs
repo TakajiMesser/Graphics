@@ -20,7 +20,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapActor : MapEntity3D<IActor>, IMapActor, IModelPather, ITexturePather
+    public class MapActor : MapEntity<IActor>, IMapActor, IModelPather, ITexturePather
     {
         public string Name { get; set; }
 

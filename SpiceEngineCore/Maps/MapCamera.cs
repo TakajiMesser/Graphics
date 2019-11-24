@@ -11,7 +11,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapCamera : MapEntity3D<ICamera>, IMapCamera
+    public class MapCamera : MapEntity<ICamera>, IMapCamera
     {
         public string Name { get; set; }
 

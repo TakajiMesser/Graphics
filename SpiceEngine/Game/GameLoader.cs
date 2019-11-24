@@ -65,7 +65,7 @@ namespace SpiceEngine.Game
 
         public void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader) => _renderableLoader.AddLoader(renderableLoader);
 
-        public void Add(IMapEntity3D mapEntity)
+        public void Add(IMapEntity mapEntity)
         {
             lock (_builderLock)
             {
@@ -74,7 +74,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        private void AddBuilders(IMapEntity3D mapEntity)
+        private void AddBuilders(IMapEntity mapEntity)
         {
             _physicsLoader.AddBuilder(mapEntity);
             _behaviorLoader.AddBuilder(mapEntity);
@@ -84,7 +84,7 @@ namespace SpiceEngine.Game
             _entityBuilders.Add(mapEntity);
         }
 
-        private void AddToEntityMapping(IMapEntity3D mapEntity)
+        private void AddToEntityMapping(IMapEntity mapEntity)
         {
             var entityMapping = EntityMapping;
 

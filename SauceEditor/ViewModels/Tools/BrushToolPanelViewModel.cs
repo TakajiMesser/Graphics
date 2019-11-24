@@ -1,6 +1,6 @@
 using PropertyChanged;
 using SauceEditor.ViewModels.Docks;
-using SauceEditor.ViewModels.Tools.Primitives;
+using SauceEditor.ViewModels.Tools.Brushes;
 using SauceEditor.Views.Custom;
 using SauceEditor.Views.Factories;
 using System.Collections.Generic;
@@ -10,25 +10,26 @@ namespace SauceEditor.ViewModels.Tools
 {
     public class BrushToolPanelViewModel : DockableViewModel
     {
-        private PrimitiveManager _primitiveManager = new PrimitiveManager();
-        private List<Primitive> _children = new List<Primitive>();
+        private List<BrushTool> _children = new List<BrushTool>();
 
         [PropagateChanges]
         [DoNotCheckEquality]
-        public Primitive Primitive { get; set; }
+        public BrushTool Tool { get; set; }
 
         public object Selection { get; set; }
 
         public BrushToolPanelViewModel()
         {
-            var primitives = _primitiveManager.GetPrimitives();
-            _children.AddRange(primitives);
+            _children.Add(new BoxBrushTool());
+            _children.Add(new ConeBrushTool());
+            _children.Add(new CylinderBrushTool());
+            _children.Add(new SphereBrushTool());
 
-            Children = new ObservableCollection<Primitive>(_children);
+            Children = new ObservableCollection<BrushTool>(_children);
         }
 
         public IEntityFactory EntityFactory { get; set; }
 
-        public ObservableCollection<Primitive> Children { get; set; }
+        public ObservableCollection<BrushTool> Children { get; set; }
     }
 }

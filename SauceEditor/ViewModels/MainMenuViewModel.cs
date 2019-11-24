@@ -1,7 +1,6 @@
 using Microsoft.Win32;
 using SauceEditor.Models;
 using SauceEditor.Models.Components;
-using SauceEditor.Views;
 using SauceEditor.Views.Factories;
 using System;
 using System.IO;
@@ -331,6 +330,18 @@ namespace SauceEditor.ViewModels
             }
         }
 
+        private RelayCommand _openCameraToolPanelCommand;
+        public RelayCommand OpenCameraToolPanelCommand
+        {
+            get
+            {
+                return _openCameraToolPanelCommand ?? (_openCameraToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenCameraToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
         private RelayCommand _openBrushToolPanelCommand;
         public RelayCommand OpenBrushToolPanelCommand
         {
@@ -338,6 +349,42 @@ namespace SauceEditor.ViewModels
             {
                 return _openBrushToolPanelCommand ?? (_openBrushToolPanelCommand = new RelayCommand(
                     p => PanelFactory.OpenBrushToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openActorToolPanelCommand;
+        public RelayCommand OpenActorToolPanelCommand
+        {
+            get
+            {
+                return _openActorToolPanelCommand ?? (_openActorToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenActorToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openLightToolPanelCommand;
+        public RelayCommand OpenLightToolPanelCommand
+        {
+            get
+            {
+                return _openLightToolPanelCommand ?? (_openLightToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenLightToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openVolumeToolPanelCommand;
+        public RelayCommand OpenVolumeToolPanelCommand
+        {
+            get
+            {
+                return _openVolumeToolPanelCommand ?? (_openVolumeToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenVolumeToolPanel(),
                     p => true
                 ));
             }
