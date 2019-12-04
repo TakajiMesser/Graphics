@@ -36,6 +36,22 @@ namespace SpiceEngine.Game
 
     public class GameControl : GLControl, IMouseTracker, IInvoker
     {
+        private string _name;
+
+        // TODO - DELETE DIS
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+                if (RenderManager != null)
+                {
+                    RenderManager.Name = value;
+                }
+            }
+        }
+
         private PanelCamera _panelCamera;
 
         private IEntityProvider _entityProvider;
@@ -256,7 +272,8 @@ namespace SpiceEngine.Game
                 {
                     IsInEditorMode = true,
                     RenderMode = _renderMode,
-                    Invoker = this
+                    Invoker = this,
+                    Name = _name
                 };
                 RenderManager.SetEntityProvider(_entityProvider);
                 //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
@@ -400,21 +417,26 @@ namespace SpiceEngine.Game
             }
         }
 
+        //private static object _glContextLock = new object();
+
         private void RenderFrame()
         {
-            MakeCurrent();
+            //lock (_glContextLock)
+            //{
+                MakeCurrent();
 
-            RenderManager.Tick();
+                RenderManager.Tick();
 
-            // TODO - Determine how to handle this
-            if (SelectionManager.SelectionCount > 0)
-            {
-                // This is still necessary right now for rendering lights and transform arrows...
-                RenderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
-            }
+                // TODO - Determine how to handle this
+                if (SelectionManager.SelectionCount > 0)
+                {
+                    // This is still necessary right now for rendering lights and transform arrows...
+                    RenderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
+                }
 
-            GL.UseProgram(0);
-            SwapBuffers();
+                GL.UseProgram(0);
+                SwapBuffers();
+            //}
         }
 
         protected override void OnMouseEnter(EventArgs e)

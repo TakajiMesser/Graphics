@@ -217,6 +217,7 @@
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
     <Compile Include="Utilities\ReflectionExtensions.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseClick.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDrop.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDrag.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />

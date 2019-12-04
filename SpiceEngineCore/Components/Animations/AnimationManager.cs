@@ -21,7 +21,10 @@ namespace SpiceEngineCore.Components.Animations
         {
             lock (_lock)
             {
-                _modelByEntityID.Add(entityID, model);
+                if (!_modelByEntityID.ContainsKey(entityID))
+                {
+                    _modelByEntityID.Add(entityID, model);
+                }
 
                 if (_componentByID.ContainsKey(entityID))
                 {

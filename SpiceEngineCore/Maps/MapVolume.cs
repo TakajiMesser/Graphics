@@ -4,7 +4,10 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
+using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
@@ -79,6 +82,8 @@ namespace SpiceEngineCore.Maps
         }
 
         IShape IComponentBuilder<IShape>.ToComponent() => new Box(Vertices);
+
+        IRenderable IComponentBuilder<IRenderable>.ToComponent() => new ColoredMesh<ColorVertex3D>(Vertices.Select(v => new ColorVertex3D(v, Color4.White)).ToList(), TriangleIndices);
 
         public static MapVolume Rectangle(Vector3 center, float width, float height)
         {

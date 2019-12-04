@@ -21,17 +21,17 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
 
         private static void CommandChanged(DependencyObject target, DependencyPropertyChangedEventArgs e)
         {
-            if (target is Control control)
+            if (target is UIElement uiElement)
             {
                 if (e.NewValue != null && e.OldValue == null)
                 {
-                    control.PreviewMouseLeftButtonDown += OnPreviewMouseLeftButtonDown;
-                    control.PreviewMouseMove += OnPreviewMouseMove;
+                    uiElement.PreviewMouseLeftButtonDown += OnPreviewMouseLeftButtonDown;
+                    uiElement.PreviewMouseMove += OnPreviewMouseMove;
                 }
                 else if (e.NewValue == null && e.OldValue != null)
                 {
-                    control.PreviewMouseLeftButtonDown -= OnPreviewMouseLeftButtonDown;
-                    control.PreviewMouseMove -= OnPreviewMouseMove;
+                    uiElement.PreviewMouseLeftButtonDown -= OnPreviewMouseLeftButtonDown;
+                    uiElement.PreviewMouseMove -= OnPreviewMouseMove;
                 }
             }
         }
@@ -48,9 +48,9 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
 
             if (e.LeftButton == MouseButtonState.Pressed && DragHelper.IsSignificantDrag(difference))
             {
-                var control = sender as Control;
+                var dependencyObject = sender as DependencyObject;
 
-                var command = (ICommand)control.GetValue(CommandProperty);
+                var command = (ICommand)dependencyObject.GetValue(CommandProperty);
                 //var commandParameter = control.GetValue(CommandParameterProperty);
                 var commandParameter = e.OriginalSource;
 

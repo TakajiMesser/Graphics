@@ -8,6 +8,8 @@ namespace SauceEditor.ViewModels.Tools
 {
     public abstract class Tool<T> : IImageButton where T : IMapEntity
     {
+        private RelayCommand _selectCommand;
+        private RelayCommand _openCommand;
         private RelayCommand _dragCommand;
 
         public Tool(string name) => Name = name;
@@ -22,7 +24,16 @@ namespace SauceEditor.ViewModels.Tools
         public abstract T MapEntity { get; }
 
         [Browsable(false)]
-        public abstract RelayCommand OpenCommand { get; }
+        public RelayCommand SelectCommand => _selectCommand ?? (_selectCommand = new RelayCommand(
+            p => { },
+            p => true
+        ));
+
+        [Browsable(false)]
+        public virtual RelayCommand OpenCommand => _openCommand ?? (_openCommand = new RelayCommand(
+            p => { },
+            p => true
+        ));
 
         [Browsable(false)]
         public RelayCommand DragCommand => _dragCommand ?? (_dragCommand = new RelayCommand(

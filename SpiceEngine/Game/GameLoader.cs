@@ -32,6 +32,8 @@ namespace SpiceEngine.Game
         private readonly object _builderLock = new object();
         private readonly object _loadLock = new object();
 
+        public bool IsInEditorMode { get; set; } = false;
+
         public EntityMapping EntityMapping { get; private set; } = null;
 
         public bool TrackEntityMapping
@@ -262,7 +264,7 @@ namespace SpiceEngine.Game
             logWatch.Stop();
             } catch (Exception ex)
             {
-                a = 4;
+                Console.WriteLine(ex);
             }
         }
 
@@ -311,7 +313,7 @@ namespace SpiceEngine.Game
                     _physicsLoader?.AddLoadTask(id);
                     _behaviorLoader?.AddLoadTask(id);
                     _animatorLoader?.AddLoadTask(id);
-                    _renderableLoader.AddLoadTask(id);
+                    _renderableLoader?.AddLoadTask(id);
 
                     EntityMapping?.AddID(id);
                     index++;

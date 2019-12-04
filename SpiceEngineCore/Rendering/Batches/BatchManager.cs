@@ -28,6 +28,9 @@ namespace SpiceEngineCore.Rendering.Batches
 
     public class BatchManager : IBatcher
     {
+        // TODO - DELETE DIS
+        public string Name { get; set; }
+
         private IEntityProvider _entityProvider;
         private ITextureProvider _textureProvider;
         private IAnimationProvider _animationProvider;
@@ -304,6 +307,8 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public void Load()
         {
+            var name = Name;
+
             // TODO - Instead of checking every time, have a load queue
             foreach (var batch in _batches)
             {

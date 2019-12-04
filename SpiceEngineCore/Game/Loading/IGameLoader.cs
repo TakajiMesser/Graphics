@@ -13,6 +13,8 @@ namespace SpiceEngineCore.Game.Loading
 {
     public interface IGameLoader
     {
+        bool IsInEditorMode { get; set; }
+
         EntityMapping EntityMapping { get; }
         bool TrackEntityMapping { get; set; }
         int RendererWaitCount { get; set; }

@@ -1,4 +1,5 @@
 using OpenTK;
+using PropertyChanged;
 using SauceEditor.Views.GamePanels;
 using SpiceEngine.Game;
 using SpiceEngine.Rendering;
@@ -27,6 +28,8 @@ namespace SauceEditor.ViewModels
         public IMapper Mapper { get; set; }
 
         public GameControl Control { get; set; }
+
+        [DoNotCheckEquality]
         public ViewTypes ViewType { get; set; }
         public string Title { get; set; }
         public float WireframeThickness { get; set; }
@@ -126,6 +129,8 @@ namespace SauceEditor.ViewModels
                 default:
                     throw new ArgumentException("Could not handle ViewType " + ViewType);
             }
+
+            Control.Name = Title;
         }
 
         private IMapEntity GetDropData(IDataObject dataObject)

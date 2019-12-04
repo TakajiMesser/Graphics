@@ -51,56 +51,64 @@ namespace SauceEditor.Views.Custom
             ItemsSource = ImageButtons;*/
         }
 
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+
+            /*var container = element as ListBoxItem;
+            var imageButton = item as IImageButton;
+
+            if (imageButton != null && imageButton.SelectCommand != null)
+            {
+                imageButton.SelectCommand.Executed += (s, args) =>
+                {
+                    SelectedItem = item;
+                };
+                //imageButton.SelectCommand = 
+            }*/
+        }
+
         static ImageButtonList()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ImageButtonList), new FrameworkPropertyMetadata(typeof(ImageButtonList)));
-        }
-    }
-
-    public class TestImageButton : IImageButton
-    {
-        public string Name { get; private set; }
-        public BitmapSource Icon => null;
-
-        private RelayCommand _openCommand;
-        public RelayCommand OpenCommand => (_openCommand = _openCommand ?? new RelayCommand(
-            p => { },
-            p => true
-        ));
-
-        private RelayCommand _dragCommand;
-        public RelayCommand DragCommand => (_dragCommand = _dragCommand ?? new RelayCommand(
-            p => { },
-            p => true
-        ));
-
-        public TestImageButton(string name) => Name = name;
-    }
-
-    public abstract class ImageButton
-    {
-        private RelayCommand _selectCommand;
-
-        public string Name { get; set; }
-        public BitmapSource Icon { get; set; }
-        
-        public RelayCommand OpenCommand { get; set; }
-
-        public RelayCommand SelectCommand => (_selectCommand = _selectCommand ?? new RelayCommand(
-            p =>
-            {
-
-            },
-            p => true
-        )); 
+        }   
     }
 
     public interface IImageButton
     {
         string Name { get; }
         BitmapSource Icon { get; }
+        RelayCommand SelectCommand { get; }
         RelayCommand OpenCommand { get; }
         RelayCommand DragCommand { get; }
+    }
+
+    public abstract class ImageButton : IImageButton
+    {
+        private RelayCommand _selectCommand;
+        private RelayCommand _openCommand;
+        private RelayCommand _dragCommand;
+
+        public ImageButton(string name) => Name = name;
+
+        public string Name { get; set; }
+        public BitmapSource Icon { get; set; }
+
+        
+        public virtual RelayCommand SelectCommand => (_selectCommand = _selectCommand ?? new RelayCommand(
+            p => { },
+            p => true
+        ));
+        
+        public virtual RelayCommand OpenCommand => (_openCommand = _openCommand ?? new RelayCommand(
+            p => { },
+            p => true
+        ));
+        
+        public virtual RelayCommand DragCommand => (_dragCommand = _dragCommand ?? new RelayCommand(
+            p => { },
+            p => true
+        ));
     }
 
     /*<ListBox ItemsSource="{Binding Children}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">

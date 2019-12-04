@@ -4,10 +4,10 @@ using System.Windows.Input;
 
 namespace SauceEditor.ViewModels.AttachedBehaviors
 {
-    public class MouseDoubleClick
+    public class MouseClick
     {
-        public static DependencyProperty CommandProperty = DependencyProperty.RegisterAttached("Command", typeof(ICommand), typeof(MouseDoubleClick), new UIPropertyMetadata(CommandChanged));
-        public static DependencyProperty CommandParameterProperty = DependencyProperty.RegisterAttached("CommandParameter", typeof(object), typeof(MouseDoubleClick), new UIPropertyMetadata(null));
+        public static DependencyProperty CommandProperty = DependencyProperty.RegisterAttached("Command", typeof(ICommand), typeof(MouseClick), new UIPropertyMetadata(CommandChanged));
+        public static DependencyProperty CommandParameterProperty = DependencyProperty.RegisterAttached("CommandParameter", typeof(object), typeof(MouseClick), new UIPropertyMetadata(null));
 
         public static void SetCommand(DependencyObject target, ICommand value) => target.SetValue(CommandProperty, value);
 
@@ -21,16 +21,16 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
             {
                 if (e.NewValue != null && e.OldValue == null)
                 {
-                    control.MouseDoubleClick += OnMouseDoubleClick;
+                    control.MouseLeftButtonDown += OnMouseLeftButtonDown;
                 }
                 else if (e.NewValue == null && e.OldValue != null)
                 {
-                    control.MouseDoubleClick -= OnMouseDoubleClick;
+                    control.MouseLeftButtonDown -= OnMouseLeftButtonDown;
                 }
             }
         }
 
-        private static void OnMouseDoubleClick(object sender, RoutedEventArgs e)
+        private static void OnMouseLeftButtonDown(object sender, RoutedEventArgs e)
         {
             var dependencyObject = sender as DependencyObject;
 

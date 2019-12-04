@@ -3,7 +3,7 @@ using SpiceEngineCore.Game.Loading.Builders;
 
 namespace SpiceEngineCore.Maps
 {
-    public interface IMapVolume : IMapEntity, IShapeBuilder
+    public interface IMapVolume : IMapEntity, IShapeBuilder, IRenderableBuilder
     {
         void UpdateFrom(IVolume volume);
     }

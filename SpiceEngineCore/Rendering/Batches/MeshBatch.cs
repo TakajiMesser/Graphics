@@ -110,6 +110,17 @@ namespace SpiceEngineCore.Rendering.Batches
                         return false;
                     }
                 }
+                else if (_renderable is IColoredMesh coloredRenderable)
+                {
+                    if (renderable is IColoredMesh coloredMesh)
+                    {
+                        return coloredRenderable.Color.Equals(coloredMesh.Color);
+                    }
+                    else
+                    {
+                        return false;
+                    }
+                }
 
                 return true;
             }

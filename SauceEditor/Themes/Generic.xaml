@@ -33,12 +33,18 @@
         <Setter Property="ItemTemplate">
             <Setter.Value>
                 <DataTemplate DataType="{x:Type custom:IImageButton}">
-                    <Button cb:MouseDoubleClick.Command="{Binding Path=OpenCommand}" cb:MouseDrag.Command="{Binding Path=DragCommand}">
-                        <StackPanel Orientation="Vertical">
+                    <!--<Button cb:MouseClick.Command="{Binding Path=SelectCommand}" cb:MouseDoubleClick.Command="{Binding Path=OpenCommand}" cb:MouseDrag.Command="{Binding Path=DragCommand}">-->
+                    <Border>
+                        <Border.InputBindings>
+                            <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding OpenCommand}"/>
+                        </Border.InputBindings>
+                        <StackPanel Orientation="Vertical" cb:MouseDrag.Command="{Binding Path=DragCommand}">
                             <Image Width="100" Height="100" Source="{Binding Path=Icon}"/>
                             <TextBlock Text="{Binding Path=Name}"/>
                         </StackPanel>
-                    </Button>
+                    </Border>
+                        
+                    <!--</Button>-->
                 </DataTemplate>
             </Setter.Value>
         </Setter>

@@ -44,6 +44,22 @@ namespace SpiceEngine.Rendering
 
     public class RenderManager : ComponentLoader<IRenderable, IRenderableBuilder>, IGridRenderer
     {
+        // TODO - DELETE DIS
+        private string _name;
+        public string Name
+        {
+            get => _name;
+            set
+            {
+                _name = value;
+
+                if (_batchManager != null)
+                {
+                    _batchManager.Name = value;
+                }
+            }
+        }
+
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
@@ -78,6 +94,9 @@ namespace SpiceEngine.Rendering
 
         private LogManager _logManager;
 
+        // TODO - If color changed, adjust all loaded colored meshes
+        private Color4 _physicsVolumeColor = new Color4(0.2f, 0.2f, 0.5f, 0.5f);
+
         private IInvoker _invoker;
         public IInvoker Invoker
         {
@@ -102,7 +121,10 @@ namespace SpiceEngine.Rendering
         public override void SetEntityProvider(IEntityProvider entityProvider)
         {
             base.SetEntityProvider(entityProvider);
-            _batchManager = new BatchManager(_entityProvider, TextureManager);
+            _batchManager = new BatchManager(_entityProvider, TextureManager)
+            {
+                Name = Name
+            };
 
             if (_animationProvider != null)
             {
@@ -201,7 +223,7 @@ namespace SpiceEngine.Rendering
             {
                 // TODO - For now, just use the first available camera
                 //_camera = _entityProvider.Cameras.First();
-
+                try {
                 //_forwardRenderer.Load(Resolution);
                 _deferredRenderer.Load(Resolution);
                 _wireframeRenderer.Load(Resolution);
@@ -217,17 +239,42 @@ namespace SpiceEngine.Rendering
                 _renderToScreen.Load(WindowSize);
 
                 GL.ClearColor(Color4.Black);
+                } catch (Exception ex)
+                {
+                    Console.WriteLine(ex);
+                }
             });
         }
 
         protected override void LoadComponents()
         {
-            base.LoadComponents();
+            var name = Name;
 
-            // TODO - If Invoker is null, queue up this action
-            //Invoker.RunSync(() => _batchManager.Load());
-            //Invoker.ForceUpdate();
-            Invoker.RunAsync(() => _batchManager.Load()).ContinueWith(t => Invoker.ForceUpdate());
+            try
+            {
+                base.LoadComponents();
+
+                // TODO - If Invoker is null, queue up this action
+                //Invoker.RunSync(() => _batchManager.Load());
+                //Invoker.ForceUpdate();
+                //Invoker.RunAsync(() => _batchManager.Load()).ContinueWith(t => Invoker.ForceUpdate());
+                Invoker.RunAsync(() =>
+                {
+                    try
+                    {
+                        _batchManager.Load();
+                        Invoker.ForceUpdate();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         // TODO - Can we remove this call?
@@ -274,6 +321,13 @@ namespace SpiceEngine.Rendering
                 {
                     Material = texturedMesh.Material,
                     TextureMapping = texturedMesh.TextureMapping
+                };
+            }
+            else if (mesh is IColoredMesh coloredMesh)
+            {
+                return new ColoredMesh<EditorVertex3D>(vertices, triangleIndices)
+                {
+                    Color = _physicsVolumeColor//coloredMesh.Color
                 };
             }
             else
@@ -449,6 +503,22 @@ namespace SpiceEngine.Rendering
         public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
         public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
 
+        public void SetPhysicsVolumeColor(Color4 color)
+        {
+            var entityIDs = _entityProvider.Volumes.Where(v => v is PhysicsVolume).Select(v => v.ID);
+
+            foreach (var entityID in entityIDs)
+            {
+                var batch = _batchManager.GetBatchOrDefault(entityID);
+                if (batch is MeshBatch meshBatch)
+                {
+                    meshBatch.UpdateVertices(entityID, v => v is IColorVertex colorVertex
+                        ? (IVertex3D)colorVertex.Colored(color)
+                        : v);
+                }
+            }
+        }
+
         //public bool RenderWireframe { get; set; }
         public bool LogToScreen { get; set; }
 
@@ -545,7 +615,7 @@ namespace SpiceEngine.Rendering
             _billboardRenderer.GeometryPass(_camera, _batchManager);
             _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
-            _deferredRenderer.BindForLitTransparentWriting();
+            _deferredRenderer.BindForTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
