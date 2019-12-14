@@ -11,27 +11,19 @@ namespace SpiceEngineCore.Game.Loading
 {
     public class MultiComponentLoader<T, U> : IMultiComponentLoader<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
     {
-        private List<U> _componentBuilders = new List<U>();
-        //protected ConcurrentQueue<Tuple<T, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<T, int>>();
+        private List<IComponentLoader<T, U>> _loaders = new List<IComponentLoader<T, U>>();
 
         private bool _isProcessing = false;
-        private int[] _entityIDs;
-        //private Task[] _loadTasks;
-        private int _taskIndex = 0;
+        private int _loaderWaitCount = 0;
+        private TaskCompletionSource<bool>[] _loaderAddedTasks;
 
-        private int _startBuilderIndex;
-        //private int _builderIndex = 0;
-        //private readonly object _builderLock = new object();
+        private List<Action>[] _loadActions;
 
         protected IEntityProvider _entityProvider;
-        protected List<Tuple<T, int>> _componentsAndIDs = new List<Tuple<T, int>>();
-        protected Dictionary<int, T> _componentByID = new Dictionary<int, T>();
 
-        private int _loaderWaitCount = 0;
-        private Task[][] _loadTasks;
-        private TaskCompletionSource<bool>[] _loaderAddedTasks;
-        private List<IComponentLoader<T, U>> _loaders = new List<IComponentLoader<T, U>>();
         private readonly object _loaderLock = new object();
+        private readonly object _mapEntityLock = new object();
+        private readonly object _entityIDLock = new object();
 
         public int LoaderWaitCount
         {
@@ -48,6 +40,13 @@ namespace SpiceEngineCore.Game.Loading
                     for (var i = 0; i < value; i++)
                     {
                         _loaderAddedTasks[i] = new TaskCompletionSource<bool>();
+                    }
+
+                    _loadActions = new List<Action>[_loaderWaitCount];
+
+                    for (var i = 0; i < _loaderWaitCount; i++)
+                    {
+                        _loadActions[i] = new List<Action>();
                     }
                 }
             }
@@ -70,13 +69,27 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        public void AddBuilder(IMapEntity mapEntity) => _componentBuilders.Add(mapEntity is U builder ? builder : null);
-
-        private void RemoveBuilders(int startIndex, int endIndex)
+        public void AddBuilder(IMapEntity mapEntity)
         {
-            for (var i = startIndex; i < endIndex; i++)
+            int loaderCount;
+
+            lock (_loaderLock)
             {
-                _componentBuilders[i] = null;
+                loaderCount = _loaders.Count;
+            }
+
+            for (var i = 0; i < _loaderWaitCount; i++)
+            {
+                var loaderIndex = i;
+
+                /*if (loaderIndex < loaderCount)
+                {
+                    _loaders[loaderIndex].AddBuilder(mapEntity);
+                }
+                else
+                {*/
+                    _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddBuilder(mapEntity));
+                //}
             }
         }
 
@@ -84,48 +97,96 @@ namespace SpiceEngineCore.Game.Loading
         {
             //if (_isProcessing) throw new InvalidOperationException("Components are already being processed");
             _isProcessing = true;
-            _taskIndex = 0;
 
-            _entityIDs = new int[entityCount];
-            _loadTasks = new Task[_loaderWaitCount][];
+            int loaderCount;
 
-            for (var i = 0; i < _loaderWaitCount; i++)
+            lock (_loaderLock)
             {
-                _loadTasks[i] = new Task[entityCount];
-                //renderableLoaders[i].InitializeLoad(entityCount, startIndex);
+                loaderCount = _loaders.Count;
             }
-            
-            _startBuilderIndex = startIndex;
-        }
-
-        public void AddLoadTask(int entityID)
-        {
-            _entityIDs[_taskIndex] = entityID;
-            //_loadTasks[_taskIndex] = LoadBuilderAsync(_startBuilderIndex + _taskIndex);
-            var builderIndex = _startBuilderIndex + _taskIndex;
 
             for (var i = 0; i < _loaderWaitCount; i++)
             {
                 var loaderIndex = i;
 
-                _loadTasks[i][_taskIndex] = Task.Run(async () => //LoadRenderableBuilder(id, index, i, renderableLoaders);
+                /*if (loaderIndex < loaderCount)
                 {
-                    var builder = _componentBuilders[builderIndex];
-
-                    //await LoadBuilderAsync(entityID, builder);
-                    if (loaderIndex < _loaders.Count)
+                    _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
+                }
+                else
+                {*/
+                    _loadActions[loaderIndex].Add(() =>
                     {
-                        if (builder != null)
+                        _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
+                    });
+                //}
+            }
+        }
+
+        public void AddLoadTask(int entityID)
+        {
+            int loaderCount;
+
+            lock (_loaderLock)
+            {
+                loaderCount = _loaders.Count;
+            }
+
+            for (var i = 0; i < _loaderWaitCount; i++)
+            {
+                var loaderIndex = i;
+
+                /*if (i < loaderCount)
+                {
+                    _loaders[i].AddLoadTask(entityID);
+                }
+                else
+                {*/
+                    _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddLoadTask(entityID));
+                //}
+            }
+        }
+
+        public async Task LoadAsync()
+        {
+            int loaderCount;
+
+            lock (_loaderLock)
+            {
+                loaderCount = _loaders.Count;
+            }
+
+            var multiLoaderTasks = new Task[_loaderWaitCount];
+
+            for (var i = 0; i < _loaderWaitCount; i++)
+            {
+                var loaderIndex = i;
+
+                /*if (loaderIndex < loaderCount)
+                {
+                    multiLoaderTasks[loaderIndex] = Task.Run(async () =>
+                    {
+                        foreach (var loadAction in _loadActions[loaderIndex])
                         {
-                            await _loaders[loaderIndex].LoadBuilderAsync(entityID, builder);
+                            loadAction();
                         }
-                    }
-                    else
+
+                        await _loaders[loaderIndex].LoadAsync();
+                    });
+                }
+                else
+                {*/
+                    multiLoaderTasks[loaderIndex] = Task.Run(async () =>
                     {
                         var result = await _loaderAddedTasks[loaderIndex].Task;
 
-                        if (result && builder != null)
+                        if (result)
                         {
+                            foreach (var loadAction in _loadActions[loaderIndex])
+                            {
+                                loadAction();
+                            }
+
                             IComponentLoader<T, U> loader;
 
                             lock (_loaderLock)
@@ -133,44 +194,13 @@ namespace SpiceEngineCore.Game.Loading
                                 loader = _loaders[loaderIndex];
                             }
 
-                            await loader.LoadBuilderAsync(entityID, builder);
+                            await loader.LoadAsync();
                         }
-                    }
-                });
-            }
-
-            _taskIndex++;
-        }
-
-        public async Task LoadAsync()
-        {
-            var multiLoaderTasks = new Task[_loaderWaitCount];
-
-            // Hook up renderable loaders to fire events when all renderable builders have been added for each available render loader
-            for (var i = 0; i < _loaderWaitCount; i++)
-            {
-                var loaderIndex = i;
-
-                multiLoaderTasks[i] = Task.Run(async () =>
-                {
-                    await LoadBuildersAsync(loaderIndex);
-
-                    IComponentLoader<T, U> loader;
-
-                    lock (_loaderLock)
-                    {
-                        loader = _loaders[loaderIndex];
-                    }
-
-                    LoadBuildersSync(loaderIndex);
-                    await loader.InitializeComponents();
-                });
+                    });
+                //}
             }
 
             await Task.WhenAll(multiLoaderTasks);
-
-            // TODO - Do we need to add one to this endIndex?
-            RemoveBuilders(_startBuilderIndex, _startBuilderIndex + _loadTasks.Length);
             _isProcessing = false;
         }
 
@@ -190,7 +220,7 @@ namespace SpiceEngineCore.Game.Loading
 
         public void LoadSync()
         {
-            var multiLoaderTasks = new Task[_loaderWaitCount];
+            /*var multiLoaderTasks = new Task[_loaderWaitCount];
 
             // Hook up renderable loaders to fire events when all renderable builders have been added for each available render loader
             for (var i = 0; i < _loaderWaitCount; i++)
@@ -219,10 +249,10 @@ namespace SpiceEngineCore.Game.Loading
             {
                 RemoveBuilders(_startBuilderIndex, _startBuilderIndex + _loadTasks.Length);
                 _isProcessing = false;
-            });
+            });*/
         }
 
-        protected async Task LoadBuildersAsync(int loaderIndex) => await Task.WhenAll(_loadTasks[loaderIndex]);
+        /*protected async Task LoadBuildersAsync(int loaderIndex) => await Task.WhenAll(_loadTasks[loaderIndex]);
 
         protected virtual void LoadBuildersSync(int loaderIndex)
         {
@@ -236,22 +266,6 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[loaderIndex].LoadBuilderSync(entityID, builder);
                 }
             }
-        }
-
-        /*protected virtual Task LoadInitial() => Task.Run(() => { });
-
-        protected virtual void LoadComponents()
-        {
-            while (_componentAndIDQueue.TryDequeue(out Tuple<T, int> componentAndID))
-            {
-                LoadComponent(componentAndID.Item2, componentAndID.Item1);
-            }
-        }
-
-        protected virtual void LoadComponent(int entityID, T component)
-        {
-            _componentsAndIDs.Add(Tuple.Create(component, entityID));
-            _componentByID.Add(entityID, component);
         }*/
     }
 }

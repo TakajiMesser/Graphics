@@ -81,8 +81,17 @@ namespace SpiceEngine.Game
             _physicsLoader.AddBuilder(mapEntity);
             _behaviorLoader.AddBuilder(mapEntity);
             _animatorLoader.AddBuilder(mapEntity);
-            _renderableLoader.AddBuilder(mapEntity);
 
+            // TODO - Handle this in a cleaner way
+            if (!IsInEditorMode && mapEntity is IMapVolume)
+            {
+                _renderableLoader.AddBuilder(null);
+            }
+            else
+            {
+                _renderableLoader.AddBuilder(mapEntity);
+            }
+            
             _entityBuilders.Add(mapEntity);
         }
 

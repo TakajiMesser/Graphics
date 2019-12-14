@@ -35,9 +35,10 @@ namespace SauceEditor.Views.GamePanels
             ViewModel.YViewModel = _yPane.ViewModel;
             ViewModel.ZViewModel = _zPane.ViewModel;
 
+            SetView(Models.ViewTypes.Perspective);
             //SetView(Models.ViewTypes.Y);
             //SetView(Models.ViewTypes.All);
-            SetView(EditorSettings.Instance.DefaultView);
+            //SetView(EditorSettings.Instance.DefaultView);
         }
 
         private void MainDock_PreviewKeyDown(object sender, KeyEventArgs e)

@@ -65,7 +65,7 @@ namespace SpiceEngine.Game
 
         private Point _currentMouseLocation;
         private Point _startMouseLocation;
-        private Timer _pollTimer = new Timer(); 
+        private Timer _pollTimer = new Timer();
 
         private Tools _selectedTool = Tools.Brush;
         private Volume _toolVolume;
@@ -253,21 +253,47 @@ namespace SpiceEngine.Game
             }
         }
 
-        public Task RunAsync(Action action) => Task.Run(() => Invoke(action));
+        public Task RunAsync(Action action) => Task.Run(() =>
+        {
+            Invoke((Action)(() =>
+            {
+                MakeCurrent();
+                action();
+            }));
+        });
 
-        public void RunSync(Action action) => Invoke(action);
+        public void RunSync(Action action)
+        {
+            Invoke((Action)(() =>
+            {
+                MakeCurrent();
+                action();
+            }));
+        }
 
         public void ForceUpdate() => Invalidate();
 
-        public Task<object> RunAsync(Func<object> func) => Task.Run(() => Invoke(func));
+        public Task<object> RunAsync(Func<object> func) => Task.Run(() =>
+        {
+            return Invoke((Func<object>)(() =>
+            {
+                MakeCurrent();
+                return func();
+            }));
+        });
 
-        public T RunSync<T>(Func<T> func) => (T)Invoke(func);
+        public T RunSync<T>(Func<T> func) => (T)Invoke((Func<object>)(() =>
+        {
+            MakeCurrent();
+            return func();
+        }));
 
         private void LoadFromGameManager()
         {
             // TODO - Should we run this all on the UI thread?
-            Invoke(new Action(() =>
+            RunSync(() =>
             {
+                //MakeCurrent();
                 RenderManager = new RenderManager(Resolution, WindowSize)
                 {
                     IsInEditorMode = true,
@@ -310,7 +336,7 @@ namespace SpiceEngine.Game
                 Invalidate();
                 IsLoaded = true;
                 PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
-            }));
+            });
         }
 
         // TODO - Fix this call...
@@ -330,6 +356,9 @@ namespace SpiceEngine.Game
 
         public void SelectEntities(IEnumerable<int> ids)
         {
+            // TODO - This should get queued even if the control isn't loaded yet
+            if (SelectionManager == null) return;
+
             if (ids.Any())
             {
                 RenderManager?.SetDeselected(SelectionManager.SelectedIDs);
@@ -355,6 +384,9 @@ namespace SpiceEngine.Game
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
         {
+            // TODO - This should get queued even if the control isn't loaded yet
+            if (SelectionManager == null) return;
+
             foreach (var entity in entities)
             {
                 var selectedEntity = _entityProvider.GetEntity(entity.ID);

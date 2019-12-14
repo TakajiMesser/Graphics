@@ -9,7 +9,7 @@ namespace SpiceEngineCore.Rendering.Meshes
 {
     public class ColoredMesh<T> : Mesh<T>, IColoredMesh, IDisposable where T : IVertex3D, IColorVertex
     {
-        private static Color4 DEFAULT_COLOR = new Color4(1.0f, 1.0f, 1.0f, 0.5f);
+        private static Color4 DEFAULT_COLOR = new Color4(0.2f, 0.2f, 0.2f, 0.5f);
 
         private Color4 _color;
 

@@ -348,6 +348,14 @@ namespace SpiceEngineCore.Rendering.Batches
         {
             var batchIndices = new HashSet<int>();
 
+            var name = Name;
+
+            var a = 3;
+            if (renderType == RenderTypes.OpaqueStatic)
+            {
+                a = 4;
+            }
+
             foreach (var id in _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render))
             {
                 // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch

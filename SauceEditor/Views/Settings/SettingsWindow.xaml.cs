@@ -10,7 +10,7 @@ namespace SauceEditor.Views.Settings
     /// </summary>
     public partial class SettingsWindow : Window, IWindow
     {
-        public EditorSettings Settings
+        /*public EditorSettings Settings
         {
             get => _settings;
             private set
@@ -21,7 +21,7 @@ namespace SauceEditor.Views.Settings
             }
         }
 
-        private EditorSettings _settings;
+        private EditorSettings _settings;*/
 
         public SettingsWindow()
         {
@@ -31,7 +31,7 @@ namespace SauceEditor.Views.Settings
 
         private void SetDefaultView()
         {
-            switch (Settings.DefaultView)
+            switch (ViewModel.Settings.DefaultView)
             {
                 case ViewTypes.All:
                     View_All.IsSelected = true;
@@ -53,7 +53,7 @@ namespace SauceEditor.Views.Settings
 
         private void SetDefaultTool()
         {
-            switch (Settings.DefaultTool)
+            switch (ViewModel.Settings.DefaultTool)
             {
                 case SpiceEngine.Game.Tools.Brush:
                     Tool_Brush.IsSelected = true;
@@ -80,19 +80,19 @@ namespace SauceEditor.Views.Settings
             switch (selectedItem.Content)
             {
                 case "All":
-                    Settings.DefaultView = ViewTypes.All;
+                    ViewModel.Settings.DefaultView = ViewTypes.All;
                     break;
                 case "Perspective":
-                    Settings.DefaultView = ViewTypes.Perspective;
+                    ViewModel.Settings.DefaultView = ViewTypes.Perspective;
                     break;
                 case "X":
-                    Settings.DefaultView = ViewTypes.X;
+                    ViewModel.Settings.DefaultView = ViewTypes.X;
                     break;
                 case "Y":
-                    Settings.DefaultView = ViewTypes.Y;
+                    ViewModel.Settings.DefaultView = ViewTypes.Y;
                     break;
                 case "Z":
-                    Settings.DefaultView = ViewTypes.Z;
+                    ViewModel.Settings.DefaultView = ViewTypes.Z;
                     break;
             }
         }
@@ -104,19 +104,19 @@ namespace SauceEditor.Views.Settings
             switch (selectedItem.Content)
             {
                 case "Brush":
-                    Settings.DefaultTool = SpiceEngine.Game.Tools.Brush;
+                    ViewModel.Settings.DefaultTool = SpiceEngine.Game.Tools.Brush;
                     break;
                 case "Mesh":
-                    Settings.DefaultTool = SpiceEngine.Game.Tools.Mesh;
+                    ViewModel.Settings.DefaultTool = SpiceEngine.Game.Tools.Mesh;
                     break;
                 case "Selector":
-                    Settings.DefaultTool = SpiceEngine.Game.Tools.Selector;
+                    ViewModel.Settings.DefaultTool = SpiceEngine.Game.Tools.Selector;
                     break;
                 case "Texture":
-                    Settings.DefaultTool = SpiceEngine.Game.Tools.Texture;
+                    ViewModel.Settings.DefaultTool = SpiceEngine.Game.Tools.Texture;
                     break;
                 case "Volume":
-                    Settings.DefaultTool = SpiceEngine.Game.Tools.Volume;
+                    ViewModel.Settings.DefaultTool = SpiceEngine.Game.Tools.Volume;
                     break;
             }
         }

@@ -31,6 +31,8 @@ namespace SauceEditor.ViewModels
         private Stopwatch _loadWatch = new Stopwatch();
         private int _loadTimeout = 300000;
 
+        public GamePanelViewModel() => _gameLoader.IsInEditorMode = true;
+
         public IDisplayProperties PropertyDisplayer { get; set; }
         public IDisplayEntities EntityDisplayer { get; set; }
         public IEntityFactory EntityFactory { get; set; }
@@ -128,7 +130,8 @@ namespace SauceEditor.ViewModels
             {
                 // Because this panel has finished loading in, we can now safely notify the GameLoader that we are ready to load in some RenderBuilders
                 //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
-                LoadPanels();
+                panelViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
+                //LoadPanels();
                 _gameLoader.AddRenderableLoader(panelViewModel.Control.RenderManager);
             };
             panelViewModel.Control.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);

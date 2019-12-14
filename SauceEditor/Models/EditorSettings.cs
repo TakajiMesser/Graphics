@@ -26,7 +26,7 @@ namespace SauceEditor.Models
         private EditorSettings() { }
 
         public Tools DefaultTool { get; set; }
-        public ViewTypes DefaultView { get; set; }
+        public ViewTypes DefaultView { get; set; } = ViewTypes.Perspective;
 
         public int WireframeThickness { get; set; }
         public Color4 WireframeColor { get; set; }
@@ -36,6 +36,10 @@ namespace SauceEditor.Models
 
         public int WireframeSelectedLightThickness { get; set; }
         public Color4 WireframeSelectedLightColor { get; set; }
+
+        public Color4 PhysicsVolumeColor { get; set; } = new Color4(0.2f, 0.2f, 0.5f, 0.5f);
+        public Color4 BlockingVolumeColor { get; set; } = new Color4(0.2f, 0.5f, 0.2f, 0.5f);
+        public Color4 TriggerVolumeColor { get; set; } = new Color4(0.5f, 0.2f, 0.2f, 0.5f);
 
         public string InitialProjectDirectory { get; set; } = FilePathHelper.INITIAL_PROJECT_DIRECTORY;
         public string InitialMapDirectory { get; set; } = FilePathHelper.INITIAL_MAP_DIRECTORY;

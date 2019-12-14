@@ -121,7 +121,15 @@ namespace SpiceEngineCore.Rendering.Meshes
             for (var i = offset; i < count; i++)
             {
                 var updatedVertex = vertexUpdate(_vertices[i]);
-                _vertices[i] = (T)updatedVertex;
+
+                /*if (updatedVertex is EditorVertex3D editorVertex)
+                {
+                    _vertices[i] = (T)editorVertex.Colored(new Color4(1.0f, 0.0f, 0.0f, 1.0f));
+                }
+                else
+                {*/
+                    _vertices[i] = (T)updatedVertex;
+                //}
             }
 
             // TODO - This is very redundant to keep two separate lists of vertex (struct) data

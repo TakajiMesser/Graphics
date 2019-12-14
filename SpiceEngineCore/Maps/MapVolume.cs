@@ -83,7 +83,7 @@ namespace SpiceEngineCore.Maps
 
         IShape IComponentBuilder<IShape>.ToComponent() => new Box(Vertices);
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent() => new ColoredMesh<ColorVertex3D>(Vertices.Select(v => new ColorVertex3D(v, Color4.White)).ToList(), TriangleIndices);
+        IRenderable IComponentBuilder<IRenderable>.ToComponent() => new ColoredMesh<Vertex3D>(Vertices.Select(v => new Vertex3D(v, Vector3.Zero, Vector3.Zero, Vector2.Zero, new Color4(0.2f, 0.2f, 0.2f, 0.5f))).ToList(), TriangleIndices);
 
         public static MapVolume Rectangle(Vector3 center, float width, float height)
         {

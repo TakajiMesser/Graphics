@@ -94,9 +94,6 @@ namespace SpiceEngine.Rendering
 
         private LogManager _logManager;
 
-        // TODO - If color changed, adjust all loaded colored meshes
-        private Color4 _physicsVolumeColor = new Color4(0.2f, 0.2f, 0.5f, 0.5f);
-
         private IInvoker _invoker;
         public IInvoker Invoker
         {
@@ -221,6 +218,8 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
+                var name = Name;
+
                 // TODO - For now, just use the first available camera
                 //_camera = _entityProvider.Cameras.First();
                 try {
@@ -327,7 +326,7 @@ namespace SpiceEngine.Rendering
             {
                 return new ColoredMesh<EditorVertex3D>(vertices, triangleIndices)
                 {
-                    Color = _physicsVolumeColor//coloredMesh.Color
+                    Color = coloredMesh.Color
                 };
             }
             else
@@ -586,7 +585,7 @@ namespace SpiceEngine.Rendering
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
+            //_billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
