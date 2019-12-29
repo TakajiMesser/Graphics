@@ -24,6 +24,7 @@ using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.UserInterfaces;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System;
@@ -44,22 +45,6 @@ namespace SpiceEngine.Rendering
 
     public class RenderManager : ComponentLoader<IRenderable, IRenderableBuilder>, IGridRenderer
     {
-        // TODO - DELETE DIS
-        private string _name;
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-
-                if (_batchManager != null)
-                {
-                    _batchManager.Name = value;
-                }
-            }
-        }
-
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
         public Resolution WindowSize { get; private set; }
@@ -76,6 +61,7 @@ namespace SpiceEngine.Rendering
         private ICamera _camera;
 
         private BatchManager _batchManager;
+        private UIManager _uiManager;
 
         //private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -91,6 +77,7 @@ namespace SpiceEngine.Rendering
         private InvertColors _invertRenderer = new InvertColors();
         private TextRenderer _textRenderer = new TextRenderer();
         private RenderToScreen _renderToScreen = new RenderToScreen();
+        private UIRenderer _uiRenderer = new UIRenderer();
 
         private LogManager _logManager;
 
@@ -118,10 +105,8 @@ namespace SpiceEngine.Rendering
         public override void SetEntityProvider(IEntityProvider entityProvider)
         {
             base.SetEntityProvider(entityProvider);
-            _batchManager = new BatchManager(_entityProvider, TextureManager)
-            {
-                Name = Name
-            };
+            _batchManager = new BatchManager(_entityProvider, TextureManager);
+            _uiManager = new UIManager(_entityProvider);
 
             if (_animationProvider != null)
             {
@@ -218,8 +203,6 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
-                var name = Name;
-
                 // TODO - For now, just use the first available camera
                 //_camera = _entityProvider.Cameras.First();
                 try {
@@ -236,6 +219,7 @@ namespace SpiceEngine.Rendering
                 _invertRenderer.Load(Resolution);
                 _textRenderer.Load(Resolution);
                 _renderToScreen.Load(WindowSize);
+                _uiRenderer.Load(WindowSize);
 
                 GL.ClearColor(Color4.Black);
                 } catch (Exception ex)
@@ -247,8 +231,6 @@ namespace SpiceEngine.Rendering
 
         protected override void LoadComponents()
         {
-            var name = Name;
-
             try
             {
                 base.LoadComponents();
@@ -355,6 +337,7 @@ namespace SpiceEngine.Rendering
                 _blurRenderer.ResizeTextures(Resolution);
                 _invertRenderer.ResizeTextures(Resolution);
                 _textRenderer.ResizeTextures(Resolution);
+                _uiRenderer.ResizeTextures(Resolution);
             }
         }
 
@@ -782,11 +765,12 @@ namespace SpiceEngine.Rendering
 
         private void RenderUIControls()
         {
-            foreach (var control in _entityProvider.Controls)
+            /*foreach (var control in _entityProvider.Controls)
             {
 
-            }
+            }*/
 
+            _uiRenderer.Render(_batchManager, _uiManager);
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
         }
     }

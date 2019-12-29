@@ -1,10 +1,13 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.UserInterfaces;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {
@@ -54,6 +57,34 @@ namespace SpiceEngine.Rendering.PostProcessing
             FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
+        }
+
+        /*public void Render(IBatcher batcher)
+        {
+            batcher.CreateBatchAction()
+                .SetShader(_uiProgram)
+                .RenderOpaqueViews()
+                .Execute();
+        }*/
+
+        public void Render(IBatcher batcher, UIManager uiManager)
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+            // TODO - Contain all rendering logic in batcher as well in view batches
+            batcher.CreateBatchAction()
+                .SetShader(_uiProgram)
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .RenderOpaqueViews()
+                .Execute();
+
+            uiManager.TestDraw();
+
+            GL.Disable(EnableCap.Blend);
         }
     }
 }

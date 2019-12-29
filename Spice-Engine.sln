@@ -12,12 +12,14 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SauceEditor", "SauceEditor\
 		{277CCF06-76D9-45D3-BC92-25DCCA43E426} = {277CCF06-76D9-45D3-BC92-25DCCA43E426}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SauceEditorCore", "SauceEditorCore\SauceEditorCore.csproj", "{277CCF06-76D9-45D3-BC92-25DCCA43E426}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SauceEditorCore", "SauceEditorCore\SauceEditorCore.csproj", "{277CCF06-76D9-45D3-BC92-25DCCA43E426}"
 	ProjectSection(ProjectDependencies) = postProject
 		{016D7A9D-C5D9-4D7F-A6E5-7753CC8832FE} = {016D7A9D-C5D9-4D7F-A6E5-7753CC8832FE}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SpiceEngineCore", "SpiceEngineCore\SpiceEngineCore.csproj", "{6C5C7F0D-05AF-4817-9FD3-C817B1111872}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiceEngineCore", "SpiceEngineCore\SpiceEngineCore.csproj", "{6C5C7F0D-05AF-4817-9FD3-C817B1111872}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TowerWarfare", "TowerWarfare\TowerWarfare.csproj", "{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,18 @@ Global
 		{6C5C7F0D-05AF-4817-9FD3-C817B1111872}.Release|x64.Build.0 = Release|Any CPU
 		{6C5C7F0D-05AF-4817-9FD3-C817B1111872}.Release|x86.ActiveCfg = Release|Any CPU
 		{6C5C7F0D-05AF-4817-9FD3-C817B1111872}.Release|x86.Build.0 = Release|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Debug|x64.Build.0 = Debug|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Debug|x86.Build.0 = Debug|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x64.ActiveCfg = Release|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x64.Build.0 = Release|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x86.ActiveCfg = Release|Any CPU
+		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

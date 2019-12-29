@@ -313,7 +313,7 @@ namespace SpiceEngine.Rendering.Processing
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)
         {
-            // Don't render meshes that are not in the camera's view
+            // TODO - Don't render meshes that are not in the camera's view
 
             // Using the position of the actor, determine if we should render the mesh
             // We will also need a bounding sphere or bounding box from the mesh to determine this
@@ -327,7 +327,7 @@ namespace SpiceEngine.Rendering.Processing
 
         private IEnumerable<Actor> PerformOcclusionCulling(IEnumerable<Actor> actors)
         {
-            // Don't render meshes that are obscured by closer meshes
+            // TODO - Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
                 Vector3 position = actor.Position;

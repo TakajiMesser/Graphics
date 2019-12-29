@@ -30,9 +30,11 @@ namespace SpiceEngineCore.Rendering.Batches
         IBatchAction RenderOpaqueStatic();
         IBatchAction RenderOpaqueAnimated();
         IBatchAction RenderOpaqueBillboard();
+        IBatchAction RenderOpaqueViews();
         IBatchAction RenderTransparentStatic();
         IBatchAction RenderTransparentAnimated();
         IBatchAction RenderTransparentBillboard();
+        IBatchAction RenderTransparentViews();
 
         IBatchAction RenderOpaqueStaticWithAction(Action<int> action);
         IBatchAction RenderOpaqueAnimatedWithAction(Action<int> action);

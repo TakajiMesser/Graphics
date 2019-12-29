@@ -8,6 +8,7 @@ using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.UserInterfaces.Views;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System;
@@ -21,16 +22,15 @@ namespace SpiceEngineCore.Rendering.Batches
         OpaqueStatic,
         OpaqueAnimated,
         OpaqueBillboard,
+        OpaqueView,
         TransparentStatic,
         TransparentAnimated,
-        TransparentBillboard
+        TransparentBillboard,
+        TransparentView
     }
 
     public class BatchManager : IBatcher
     {
-        // TODO - DELETE DIS
-        public string Name { get; set; }
-
         private IEntityProvider _entityProvider;
         private ITextureProvider _textureProvider;
         private IAnimationProvider _animationProvider;
@@ -38,9 +38,11 @@ namespace SpiceEngineCore.Rendering.Batches
         private HashSet<int> _opaqueStaticIDs = new HashSet<int>();
         private HashSet<int> _opaqueAnimatedIDs = new HashSet<int>();
         private HashSet<int> _opaqueBillboardIDs = new HashSet<int>();
+        private HashSet<int> _opaqueViewIDs = new HashSet<int>();
         private HashSet<int> _transparentStaticIDs = new HashSet<int>();
         private HashSet<int> _transparentAnimatedIDs = new HashSet<int>();
         private HashSet<int> _transparentBillboardIDs = new HashSet<int>();
+        private HashSet<int> _transparentViewIDs = new HashSet<int>();
 
         private Dictionary<int, RenderTypes> _renderTypeByEntityID = new Dictionary<int, RenderTypes>();
         private Dictionary<int, int> _batchIndexByEntityID = new Dictionary<int, int>();
@@ -71,6 +73,9 @@ namespace SpiceEngineCore.Rendering.Batches
                     break;
                 case IBillboard billboard:
                     AddEntity(newID, billboard.Duplicate());
+                    break;
+                case IUIView view:
+                    AddEntity(newID, view.Duplicate());
                     break;
             }
         }
@@ -205,7 +210,7 @@ namespace SpiceEngineCore.Rendering.Batches
             //AddBatch(entityID, batch);
         }
 
-        public void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        public void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate)
         {
             var batch = GetBatchOrDefault(entityID);
             batch?.UpdateVertices(entityID, vertexUpdate);
@@ -250,6 +255,8 @@ namespace SpiceEngineCore.Rendering.Batches
                     return new ModelBatch(model);
                 case IBillboard billboard:
                     return new BillboardBatch(billboard);
+                case IUIView view:
+                    return new ViewBatch(view);
             }
 
             throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
@@ -307,8 +314,6 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public void Load()
         {
-            var name = Name;
-
             // TODO - Instead of checking every time, have a load queue
             foreach (var batch in _batches)
             {
@@ -348,14 +353,6 @@ namespace SpiceEngineCore.Rendering.Batches
         {
             var batchIndices = new HashSet<int>();
 
-            var name = Name;
-
-            var a = 3;
-            if (renderType == RenderTypes.OpaqueStatic)
-            {
-                a = 4;
-            }
-
             foreach (var id in _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render))
             {
                 // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
@@ -384,12 +381,16 @@ namespace SpiceEngineCore.Rendering.Batches
                     return _opaqueAnimatedIDs;
                 case RenderTypes.OpaqueBillboard:
                     return _opaqueBillboardIDs;
+                case RenderTypes.OpaqueView:
+                    return _opaqueViewIDs;
                 case RenderTypes.TransparentStatic:
                     return _transparentStaticIDs;
                 case RenderTypes.TransparentAnimated:
                     return _transparentAnimatedIDs;
                 case RenderTypes.TransparentBillboard:
                     return _transparentBillboardIDs;
+                case RenderTypes.TransparentView:
+                    return _transparentViewIDs;
             }
 
             throw new ArgumentOutOfRangeException("Could not handle render type " + renderType);
@@ -397,7 +398,11 @@ namespace SpiceEngineCore.Rendering.Batches
 
         private RenderTypes GetRenderTypeForRenderable(IRenderable renderable)
         {
-            if (renderable.IsAnimated)
+            if (renderable is IUIView)
+            {
+                return renderable.IsTransparent ? RenderTypes.TransparentView : RenderTypes.OpaqueView;
+            }
+            else if (renderable.IsAnimated)
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentAnimated : RenderTypes.OpaqueAnimated;
             }
@@ -507,6 +512,12 @@ namespace SpiceEngineCore.Rendering.Batches
                 return this;
             }
 
+            public IBatchAction RenderOpaqueViews()
+            {
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueView, _shader, _entityIDs));
+                return this;
+            }
+
             public IBatchAction RenderTransparentStatic()
             {
                 _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, _shader, _entityIDs));
@@ -522,6 +533,12 @@ namespace SpiceEngineCore.Rendering.Batches
             public IBatchAction RenderTransparentBillboard()
             {
                 _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentBillboard, _shader, _entityIDs));
+                return this;
+            }
+
+            public IBatchAction RenderTransparentViews()
+            {
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentView, _shader, _entityIDs));
                 return this;
             }
 

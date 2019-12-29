@@ -61,7 +61,7 @@ namespace SpiceEngineCore.Rendering.Batches
             _renderable.TransformTexture(center, translation, rotation, scale, offset, count);
         }
 
-        public override void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        public override void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate)
         {
             // TODO - This is redundant with function overloads for Mesh.Transform()
             var offset = _offsetByID.ContainsKey(entityID) ? _offsetByID[entityID] : 0;

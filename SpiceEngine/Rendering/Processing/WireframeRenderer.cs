@@ -9,7 +9,6 @@ using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;

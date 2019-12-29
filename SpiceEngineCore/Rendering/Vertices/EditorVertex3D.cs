@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace SpiceEngineCore.Rendering.Vertices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct EditorVertex3D : IVertex3D, ITextureVertex, IColorVertex
+    public struct EditorVertex3D : IVertex3D, ITextureVertex, IColorVertex, ISelectionVertex
     {
         public Vector3 Position { get; private set; }
         public Vector3 Normal { get; private set; }
@@ -15,9 +15,9 @@ namespace SpiceEngineCore.Rendering.Vertices
         public Color4 Color { get; private set; }
         public Vector4 BoneIDs { get; private set; }
         public Vector4 BoneWeights { get; private set; }
-        public Color4 ID { get; private set; }
+        public Color4 SelectionID { get; private set; }
 
-        public EditorVertex3D(IVertex3D vertex, Color4 id)
+        public EditorVertex3D(IVertex3D vertex, Color4 selectionID)
         {
             Position = vertex.Position;
 
@@ -46,8 +46,8 @@ namespace SpiceEngineCore.Rendering.Vertices
                 BoneIDs = Vector4.Zero;
                 BoneWeights = Vector4.Zero;
             }
-            
-            ID = id;
+
+            SelectionID = selectionID;
         }
 
         public IVertex3D Transformed(Transform transform)
@@ -64,7 +64,7 @@ namespace SpiceEngineCore.Rendering.Vertices
                 Color = Color,
                 BoneIDs = BoneIDs,
                 BoneWeights = BoneWeights,
-                ID = ID
+                SelectionID = SelectionID
             };
         }
 
@@ -93,11 +93,11 @@ namespace SpiceEngineCore.Rendering.Vertices
                 Color = Color,
                 BoneIDs = BoneIDs,
                 BoneWeights = BoneWeights,
-                ID = ID
+                SelectionID = SelectionID
             };
         }
 
-        public IVertex3D Selected() => new EditorVertex3D()
+        public ISelectionVertex Selected() => new EditorVertex3D()
         {
             Position = Position,
             Normal = Normal,
@@ -106,10 +106,10 @@ namespace SpiceEngineCore.Rendering.Vertices
             Color = Color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,
-            ID = new Color4(ID.R, ID.G, ID.B, 0.5f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 0.5f)
         };
 
-        public IVertex3D Deselected() => new EditorVertex3D()
+        public ISelectionVertex Deselected() => new EditorVertex3D()
         {
             Position = Position,
             Normal = Normal,
@@ -118,7 +118,7 @@ namespace SpiceEngineCore.Rendering.Vertices
             Color = Color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,
-            ID = new Color4(ID.R, ID.G, ID.B, 1.0f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 1.0f)
         };
 
         public IColorVertex Colored(Color4 color) => new EditorVertex3D()
@@ -130,7 +130,7 @@ namespace SpiceEngineCore.Rendering.Vertices
             Color = color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,
-            ID = ID
+            SelectionID = SelectionID
         };
     }
 }

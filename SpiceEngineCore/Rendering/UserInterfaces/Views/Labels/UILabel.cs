@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SpiceEngineCore.Rendering.UserInterfaces.Panels
+namespace SpiceEngineCore.Rendering.UserInterfaces.Views.Labels
 {
-    public class UIPanel : UIControl
+    public class UILabel : UIView
     {
         
     }

@@ -2,6 +2,7 @@
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Entities.UserInterfaces;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using System;
@@ -18,7 +19,7 @@ namespace SpiceEngineCore.Entities
         List<IBrush> Brushes { get; }
         List<IVolume> Volumes { get; }
         List<ILight> Lights { get; }
-        List<IUIControl> Controls { get; }
+        List<IUIElement> UIElements { get; }
 
         event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         event EventHandler<IDEventArgs> EntitiesRemoved;

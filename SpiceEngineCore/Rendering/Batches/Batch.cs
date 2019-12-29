@@ -29,7 +29,7 @@ namespace SpiceEngineCore.Rendering.Batches
         public virtual void Transform(int entityID, Transform transform) { }
         public virtual void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale) { }
 
-        public virtual void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate) { }
+        public virtual void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate) { }
 
         public virtual void RemoveEntity(int id) => _entityIDs.Remove(id);
 
@@ -41,7 +41,7 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public abstract bool CompareUniforms(IRenderable renderable);
         public abstract void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram);
-        public abstract void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider);
+        public virtual void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider) { }
         public virtual void Draw() => _renderable.Draw();
         
         public virtual void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)

@@ -36,22 +36,6 @@ namespace SpiceEngine.Game
 
     public class GameControl : GLControl, IMouseTracker, IInvoker
     {
-        private string _name;
-
-        // TODO - DELETE DIS
-        public string Name
-        {
-            get => _name;
-            set
-            {
-                _name = value;
-                if (RenderManager != null)
-                {
-                    RenderManager.Name = value;
-                }
-            }
-        }
-
         private PanelCamera _panelCamera;
 
         private IEntityProvider _entityProvider;
@@ -298,8 +282,7 @@ namespace SpiceEngine.Game
                 {
                     IsInEditorMode = true,
                     RenderMode = _renderMode,
-                    Invoker = this,
-                    Name = _name
+                    Invoker = this
                 };
                 RenderManager.SetEntityProvider(_entityProvider);
                 //RenderManager.LoadFromMap(_map/*, _entityMapping*/);

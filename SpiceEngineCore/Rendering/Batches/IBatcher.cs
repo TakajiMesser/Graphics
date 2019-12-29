@@ -19,7 +19,7 @@ namespace SpiceEngineCore.Rendering.Batches
         void Load();
         void Load(int entityID);
 
-        void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate);
+        void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate);
         void DuplicateBatch(int entityID, int newID);
 
         IBatchAction CreateBatchAction();

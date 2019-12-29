@@ -20,8 +20,8 @@ namespace SpiceEngineCore.Rendering.Meshes
         void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale);
         void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale, int offset, int count);
 
-        void Update(Func<IVertex3D, IVertex3D> vertexUpdate);
-        void Update(Func<IVertex3D, IVertex3D> vertexUpdate, int offset, int count);
+        void Update(Func<IVertex, IVertex> vertexUpdate);
+        void Update(Func<IVertex, IVertex> vertexUpdate, int offset, int count);
 
         IMesh Duplicate();
     }

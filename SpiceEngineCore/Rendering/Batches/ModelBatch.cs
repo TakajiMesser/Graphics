@@ -20,7 +20,7 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public override IBatch Duplicate() => new ModelBatch(_renderable.Duplicate());
 
-        public override void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        public override void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate)
         {
             foreach (var mesh in _renderable.Meshes)
             {

@@ -115,8 +115,8 @@ namespace SpiceEngineCore.Rendering.Meshes
             }
         }
 
-        public void Update(Func<IVertex3D, IVertex3D> vertexUpdate) => Update(vertexUpdate, 0, _vertices.Count);
-        public void Update(Func<IVertex3D, IVertex3D> vertexUpdate, int offset, int count)
+        public void Update(Func<IVertex, IVertex> vertexUpdate) => Update(vertexUpdate, 0, _vertices.Count);
+        public void Update(Func<IVertex, IVertex> vertexUpdate, int offset, int count)
         {
             for (var i = offset; i < count; i++)
             {

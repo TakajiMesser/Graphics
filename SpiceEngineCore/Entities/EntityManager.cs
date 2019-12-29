@@ -2,6 +2,7 @@
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Entities.UserInterfaces;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
@@ -37,7 +38,7 @@ namespace SpiceEngineCore.Entities
         public List<IBrush> Brushes { get; } = new List<IBrush>();
         public List<IVolume> Volumes { get; } = new List<IVolume>();
         public List<ILight> Lights { get; } = new List<ILight>();
-        public List<IUIControl> Controls { get; } = new List<IUIControl>();
+        public List<IUIElement> UIElements { get; } = new List<IUIElement>();
 
         public ILayerProvider LayerProvider { get; } = new LayerManager();
 
@@ -60,7 +61,7 @@ namespace SpiceEngineCore.Entities
             Brushes.Clear();
             Volumes.Clear();
             Lights.Clear();
-            Controls.Clear();
+            UIElements.Clear();
         }
 
         public IEntity GetEntity(int id)
@@ -283,8 +284,8 @@ namespace SpiceEngineCore.Entities
                 case ILight light:
                     Lights.Add(light);
                     break;
-                case IUIControl control:
-                    Controls.Add(control);
+                case IUIElement uiElement:
+                    UIElements.Add(uiElement);
                     break;
             }
         }
@@ -330,8 +331,8 @@ namespace SpiceEngineCore.Entities
                 case ILight light:
                     Lights.Remove(light);
                     break;
-                case IUIControl control:
-                    Controls.Remove(control);
+                case IUIElement uiElement:
+                    UIElements.Remove(uiElement);
                     break;
             }
         }

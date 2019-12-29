@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SpiceEngineCore.Rendering.UserInterfaces.Buttons
+namespace SpiceEngineCore.Rendering.UserInterfaces.Views.Panels
 {
-    public class UIButton : UIControl
+    public class UIPanel : UIView
     {
         
     }
