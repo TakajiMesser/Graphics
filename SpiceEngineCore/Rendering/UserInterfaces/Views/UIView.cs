@@ -10,7 +10,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Rendering.UserInterfaces.Views
 {
-    public class UIView : IUIView
+    public class UIView : UIItem, IUIView
     {
         private List<ViewVertex> _vertices = new List<ViewVertex>();
         private List<int> _triangleIndices = new List<int>();
@@ -18,8 +18,6 @@ namespace SpiceEngineCore.Rendering.UserInterfaces.Views
         private VertexBuffer<ViewVertex> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
         private VertexArray<ViewVertex> _vertexArray;
-
-        private float _alpha = 1.0f;
 
         public UIView() { }
         public UIView(IList<ViewVertex> vertices, List<int> triangleIndices)
@@ -30,48 +28,11 @@ namespace SpiceEngineCore.Rendering.UserInterfaces.Views
             _triangleIndices.AddRange(triangleIndices);
         }
 
-        public IUIView Parent
-        {
-            get => null;
-            set { }
-        }
-
-        public Position Position { get; set; }
-        public Size Size { get; set; }
-
         public UILayer Foreground { get; set; }
         public UILayer Background { get; set; }
 
         public IEnumerable<ViewVertex> Vertices => _vertices;
         public IEnumerable<int> TriangleIndices => _triangleIndices;
-        public float Alpha
-        {
-            get => _alpha;
-            set
-            {
-                if (_alpha != value)
-                {
-                    for (var i = 0; i < _vertices.Count; i++)
-                    {
-                        var vertex = _vertices[i];
-
-                        if (vertex is IColorVertex colorVertex)
-                        {
-                            _vertices[i] = (ViewVertex)colorVertex.Colored(new Color4(colorVertex.Color.R, colorVertex.Color.G, colorVertex.Color.B, value));
-                        }
-                    }
-
-                    var oldValue = _alpha;
-                    _alpha = value;
-                    AlphaChanged?.Invoke(this, new AlphaEventArgs(oldValue, value));
-                }
-            }
-        }
-
-        public bool IsAnimated { get; set; } = false;
-        public bool IsTransparent => Alpha < 1.0f;
-
-        public event EventHandler<AlphaEventArgs> AlphaChanged;
 
         public void AddVertices(IEnumerable<ViewVertex> vertices) => _vertices.AddRange(vertices);
         public void ClearVertices() => _vertices.Clear();
@@ -129,7 +90,7 @@ namespace SpiceEngineCore.Rendering.UserInterfaces.Views
             }
         }
 
-        public virtual void Load()
+        public override void Load()
         {
             _vertexBuffer = new VertexBuffer<ViewVertex>();
             _indexBuffer = new VertexIndexBuffer();
@@ -144,17 +105,17 @@ namespace SpiceEngineCore.Rendering.UserInterfaces.Views
             _vertexBuffer.Unbind();
         }
 
-        public virtual void Measure()
+        public override UIQuadSet Measure()
+        {
+            return new UIQuadSet();
+        }
+
+        public override void Update()
         {
 
         }
 
-        public virtual void Update()
-        {
-
-        }
-
-        public virtual void Draw()
+        public override void Draw()
         {
             _vertexArray.Bind();
             _vertexBuffer.Bind();
@@ -171,5 +132,20 @@ namespace SpiceEngineCore.Rendering.UserInterfaces.Views
         }
 
         public virtual IUIView Duplicate() => new UIView();
+
+        protected override void OnAlphaChanged(float oldValue, float newValue)
+        {
+            base.OnAlphaChanged(oldValue, newValue);
+
+            for (var i = 0; i < _vertices.Count; i++)
+            {
+                var vertex = _vertices[i];
+
+                if (vertex is IColorVertex colorVertex)
+                {
+                    _vertices[i] = (ViewVertex)colorVertex.Colored(new Color4(colorVertex.Color.R, colorVertex.Color.G, colorVertex.Color.B, newValue));
+                }
+            }
+        }
     }
 }

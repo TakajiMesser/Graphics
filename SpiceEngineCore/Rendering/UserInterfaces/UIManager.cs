@@ -16,6 +16,9 @@ namespace SpiceEngineCore.Rendering.UserInterfaces
     {
         private IEntityProvider _entityProvider;
 
+        // TODO - Should UIGroups be derived from UIViews?
+        private IUIView _rootView;
+
         private List<IUIView> _views = new List<IUIView>();
         private Dictionary<int, IUIView> _viewsByID = new Dictionary<int, IUIView>();
 
@@ -24,10 +27,7 @@ namespace SpiceEngineCore.Rendering.UserInterfaces
 
         private bool _isSetup = false;
 
-        public UIManager(IEntityProvider entityProvider)
-        {
-            _entityProvider = entityProvider;
-        }
+        public UIManager(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
         private IUIView _testView;
 

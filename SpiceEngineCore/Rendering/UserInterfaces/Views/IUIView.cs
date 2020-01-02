@@ -5,13 +5,8 @@ using System.Collections.Generic;
 
 namespace SpiceEngineCore.Rendering.UserInterfaces.Views
 {
-    public interface IUIView : IRenderable
+    public interface IUIView : IUIItem
     {
-        IUIView Parent { get; set; }
-
-        Position Position { get; set; }
-        Size Size { get; set; }
-
         UILayer Foreground { get; set; }
         UILayer Background { get; set; }
 
@@ -21,9 +16,6 @@ namespace SpiceEngineCore.Rendering.UserInterfaces.Views
 
         void AddVertices(IEnumerable<ViewVertex> vertices);
         void ClearVertices();
-
-        void Measure();
-        void Update();
 
         IUIView Duplicate();
     }
