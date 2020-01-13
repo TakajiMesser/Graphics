@@ -31,7 +31,7 @@ namespace SpiceEngineCore.Rendering.Meshes
 
         public event EventHandler<ColorEventArgs> ColorChanged;
 
-        public ColoredMesh(List<T> vertices, List<int> triangleIndices) : base(vertices.Select(v => (T)v.Colored(DEFAULT_COLOR)).ToList(), triangleIndices)
+        public ColoredMesh(Vertex3DSet<T> vertexSet) : base(vertexSet.Updated(v => (T)((IColorVertex)v).Colored(DEFAULT_COLOR)))
         {
             Alpha = 0.5f;
             _color = DEFAULT_COLOR;

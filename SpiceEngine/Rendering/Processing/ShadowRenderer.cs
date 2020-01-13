@@ -163,12 +163,14 @@ namespace SpiceEngine.Rendering.Processing
                 .SetCamera(camera, light) // Draw camera from the point light's perspective
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
-                .RenderOpaqueStatic() // Draw all geometry, but only the positions
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render() // Draw all geometry, but only the positions
                 .SetShader(_pointShadowJointProgram)
                 .SetCamera(camera, light)
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
-                .RenderOpaqueAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
                 .Execute();
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
@@ -179,10 +181,12 @@ namespace SpiceEngine.Rendering.Processing
             batcher.CreateBatchAction()
                 .SetShader(_spotShadowProgram)
                 .SetCamera(camera, light) // Draw camera from the point light's perspective
-                .RenderOpaqueStatic() // Draw all geometry, but only the positions
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render() // Draw all geometry, but only the positions
                 .SetShader(_spotShadowJointProgram)
                 .SetCamera(camera, light)
-                .RenderOpaqueAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
                 .Execute();
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);

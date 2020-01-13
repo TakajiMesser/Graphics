@@ -121,6 +121,10 @@ namespace SpiceEngine.Game
                 {
                     entityMapping.AddVolumes(1);
                 }
+                else if (mapEntity is IMapUIElement)
+                {
+                    entityMapping.AddUIElements(1);
+                }
             }
         }
 
@@ -153,6 +157,11 @@ namespace SpiceEngine.Game
                     AddBuilders(map.GetVolumeAt(i));
                 }
 
+                for (var i = 0; i < map.UIElementCount; i++)
+                {
+                    AddBuilders(map.GetUIElementAt(i));
+                }
+
                 if (EntityMapping != null)
                 {
                     EntityMapping.AddCameras(map.CameraCount);
@@ -160,13 +169,13 @@ namespace SpiceEngine.Game
                     EntityMapping.AddActors(map.ActorCount);
                     EntityMapping.AddLights(map.LightCount);
                     EntityMapping.AddVolumes(map.VolumeCount);
+                    EntityMapping.AddUIElements(map.UIElementCount);
                 }
             }
         }
 
         public async Task LoadAsync()
         {
-            var a = 3;
             try {
             //LogWatch logWatch = LogWatch.CreateWithTimeout("GameLoader", 300000, 1000);
             //logWatch.TimedOut += (s, args) => TimedOut?.Invoke(this, args);

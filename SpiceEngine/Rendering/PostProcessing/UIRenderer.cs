@@ -7,7 +7,7 @@ using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.UserInterfaces;
+using StarchUICore;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {
@@ -61,17 +61,10 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         /*public void Render(IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_uiProgram)
-                .RenderOpaqueViews()
-                .Execute();
-        }*/
-
-        public void Render(IBatcher batcher, UIManager uiManager)
-        {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
+            //GL.Enable(EnableCap.DepthTest);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -79,10 +72,52 @@ namespace SpiceEngine.Rendering.PostProcessing
             batcher.CreateBatchAction()
                 .SetShader(_uiProgram)
                 .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
-                .RenderOpaqueViews()
+                .SetRenderType(RenderTypes.OpaqueView)
+                .Render()
                 .Execute();
 
-            uiManager.TestDraw();
+            //uiManager.TestDraw();
+
+            GL.Disable(EnableCap.Blend);
+            //GL.Disable(EnableCap.DepthTest);
+        }
+
+        public void Render(IUIProvider uiProvider)
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            //GL.Enable(EnableCap.DepthTest);
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+            _uiProgram.Use();
+            _uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
+            uiProvider.Draw();
+            //uiManager.TestDraw();
+
+            GL.Disable(EnableCap.Blend);
+        }*/
+
+        public void Render(IBatcher batcher, IUIProvider uiProvider)
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+            // TODO - Contain all rendering logic in batcher as well in view batches
+            batcher.CreateBatchAction()
+                .SetShader(_uiProgram)
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.OpaqueView)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
+
+            //_uiProgram.Use();
+            //_uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
+            //uiProvider.Draw();
 
             GL.Disable(EnableCap.Blend);
         }

@@ -75,6 +75,10 @@
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
       <Name>SpiceEngine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\StarchUICore\StarchUICore.csproj">
+      <Project>{0FE2AFA5-606D-47F1-B267-DAC3936B300F}</Project>
+      <Name>StarchUICore</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

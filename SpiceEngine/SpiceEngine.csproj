@@ -152,6 +152,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Models\EditorModel.cs" />
     <Compile Include="Rendering\Models\AnimatedModel.cs" />
     <Compile Include="Rendering\Models\Model.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Scripting\BehaviorManager.cs" />
     <Compile Include="Scripting\Scripts\ScriptManager.cs" />
+    <Compile Include="UserInterfaces\UIManager.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -287,6 +289,10 @@
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
       <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
       <Name>SpiceEngineCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StarchUICore\StarchUICore.csproj">
+      <Project>{0fe2afa5-606d-47f1-b267-dac3936b300f}</Project>
+      <Name>StarchUICore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -54,7 +54,7 @@ namespace SpiceEngineCore.Maps
                 AddTestColors();
             }
 
-            return new TexturedMesh<Vertex3D>(Vertices, TriangleIndices)
+            return new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices, TriangleIndices))
             {
                 Material = Material
             };

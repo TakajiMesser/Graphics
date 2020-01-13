@@ -114,7 +114,8 @@ namespace SpiceEngine.Rendering.Processing
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f))
-                .RenderOpaqueBillboard()
+                .SetRenderType(RenderTypes.OpaqueBillboard)
+                .Render()
                 .Execute();
 
             //GL.Enable(EnableCap.CullFace);
@@ -127,7 +128,8 @@ namespace SpiceEngine.Rendering.Processing
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f))
-                .RenderOpaqueBillboard()
+                .SetRenderType(RenderTypes.OpaqueBillboard)
+                .Render()
                 .Execute();
 
             //GL.Enable(EnableCap.CullFace);

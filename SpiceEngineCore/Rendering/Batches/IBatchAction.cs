@@ -17,29 +17,19 @@ namespace SpiceEngineCore.Rendering.Batches
         IBatchAction SetCamera(ICamera camera, ILight light);
 
         IBatchAction SetUniform<T>(string name, T value) where T : struct;
+        IBatchAction SetPerIDAction(Action<int> action);
+        IBatchAction SetRenderType(RenderTypes renderType);
+        IBatchAction ClearRenderType();
 
-        IBatchAction SetEntityIDs(IEnumerable<int> ids);
+        IBatchAction SetEntityIDSet(IEnumerable<int> ids);
+        IBatchAction SetEntityIDOrder(IEnumerable<int> ids);
         IBatchAction ClearEntityIDs();
 
         IBatchAction PerformAction(Action action);
 
         IBatchAction SetTexture(ITexture texture, string name, int index);
 
-        IBatchAction RenderEntities();
-
-        IBatchAction RenderOpaqueStatic();
-        IBatchAction RenderOpaqueAnimated();
-        IBatchAction RenderOpaqueBillboard();
-        IBatchAction RenderOpaqueViews();
-        IBatchAction RenderTransparentStatic();
-        IBatchAction RenderTransparentAnimated();
-        IBatchAction RenderTransparentBillboard();
-        IBatchAction RenderTransparentViews();
-
-        IBatchAction RenderOpaqueStaticWithAction(Action<int> action);
-        IBatchAction RenderOpaqueAnimatedWithAction(Action<int> action);
-        IBatchAction RenderTransparentStaticWithAction(Action<int> action);
-        IBatchAction RenderTransparentAnimatedWithAction(Action<int> action);
+        IBatchAction Render();
 
         void Execute();
     }

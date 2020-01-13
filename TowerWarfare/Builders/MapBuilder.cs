@@ -4,10 +4,9 @@ using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Textures;
+using StarchUICore.Maps;
 using System.Collections.Generic;
 using TowerWarfare.Entities.Cameras;
-using TowerWarfare.Helpers;
 using static SpiceEngineCore.Maps.MapLight;
 
 namespace TowerWarfare.Builders
@@ -23,6 +22,7 @@ namespace TowerWarfare.Builders
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
             map.Volumes.AddRange(GenerateVolumes());
+            map.UIElements.AddRange(GenerateUIElements());
 
             /*map.SkyboxTextureFilePaths = new List<string>
             {
@@ -136,6 +136,21 @@ namespace TowerWarfare.Builders
             physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
             physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
             yield return physicsVolume;
+        }
+
+        private static IEnumerable<MapUIElement> GenerateUIElements()
+        {
+            var simpleButton = new MapUIElement()
+            {
+                Name = "Test Button",
+                X = 400,
+                Y = 400,
+                Width = 600,
+                Height = 300,
+                UIType = MapUIElement.UITypes.Button
+            };
+
+            yield return simpleButton;
         }
     }
 }

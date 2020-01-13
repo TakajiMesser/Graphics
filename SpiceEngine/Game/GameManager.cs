@@ -2,6 +2,7 @@
 using SpiceEngine.Maps;
 using SpiceEngine.Physics;
 using SpiceEngine.Scripting;
+using SpiceEngine.UserInterfaces;
 using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
@@ -13,7 +14,6 @@ using SpiceEngineCore.Sounds;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
-using System.Linq;
 
 namespace SpiceEngine.Game
 {
@@ -40,6 +40,7 @@ namespace SpiceEngine.Game
         public PhysicsManager PhysicsManager { get; private set; }
         public BehaviorManager BehaviorManager { get; private set; }
         public AnimationManager AnimationManager { get; private set; }
+        public UIManager UIManager { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
@@ -65,6 +66,7 @@ namespace SpiceEngine.Game
             BehaviorManager.SetInputProvider(InputManager);
 
             AnimationManager = new AnimationManager(EntityManager);
+            UIManager = new UIManager(EntityManager, _resolution);
 
             EntityManager.ClearEntities();
 
@@ -166,6 +168,7 @@ namespace SpiceEngine.Game
             PhysicsManager.Tick();
             BehaviorManager.Tick();
             AnimationManager.Tick();
+            UIManager.Tick();
             InputManager.Tick();
         }
 

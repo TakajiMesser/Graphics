@@ -4,6 +4,18 @@ using System;
 
 namespace SpiceEngineCore.Rendering.Batches
 {
+    public enum RenderTypes
+    {
+        OpaqueStatic,
+        OpaqueAnimated,
+        OpaqueBillboard,
+        OpaqueView,
+        TransparentStatic,
+        TransparentAnimated,
+        TransparentBillboard,
+        TransparentView
+    }
+
     public interface IBatcher
     {
         bool IsLoaded { get; }

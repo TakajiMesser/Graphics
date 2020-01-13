@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceEngineCore.Utilities;
+using System;
 using System.Collections.Generic;
 
 namespace SpiceEngineCore.Entities
@@ -7,6 +8,7 @@ namespace SpiceEngineCore.Entities
     {
         public IEnumerable<int> IDs { get; }
 
+        public IDEventArgs(int id) => IDs = id.Yield();
         public IDEventArgs(IEnumerable<int> ids) => IDs = ids;
     }
 }

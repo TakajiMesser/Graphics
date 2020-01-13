@@ -280,11 +280,13 @@ namespace SpiceEngine.Rendering.Processing
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderOpaqueStatic()
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
                 .SetShader(_jointGeometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderOpaqueAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
                 .Execute();
 
             GL.Enable(EnableCap.CullFace);
@@ -297,11 +299,13 @@ namespace SpiceEngine.Rendering.Processing
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .PerformAction(() => _geometryProgram.UnbindTextures())
-                .RenderTransparentStatic()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
                 .SetShader(_jointGeometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderTransparentAnimated()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
                 .Execute();
 
             //GL.Enable(EnableCap.Blend);

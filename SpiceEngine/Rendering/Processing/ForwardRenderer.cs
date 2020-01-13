@@ -120,7 +120,8 @@ namespace SpiceEngine.Rendering.Processing
             batcher.CreateBatchAction()
                 .SetShader(_program)
                 .SetCamera(camera)
-                .RenderOpaqueStatic();
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render();
         }
 
         private void BindTextures(ITextureProvider textureProvider, TextureMapping textureMapping)

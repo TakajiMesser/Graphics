@@ -13,5 +13,6 @@ void main()
 {
 	//color = texture(textureSampler, fUV);
     //color = vec4(1.0, 0.0, 0.0, 1.0);
+	//color = vec4(1.0, 1.0, 0.0, fColor.w);
 	color = fColor;
 }

@@ -2,7 +2,7 @@
 
 namespace SpiceEngineCore.Entities.UserInterfaces
 {
-    public interface IUIElement : INamedEntity
+    public interface IUIElement : INamedEntity, IParentEntity
     {
         
     }

@@ -11,8 +11,8 @@ namespace SpiceEngineCore.Rendering.Meshes
 {
     public class Mesh<T> : IMesh, IDisposable where T : IVertex3D
     {
-        public IEnumerable<IVertex3D> Vertices => _vertices.Cast<IVertex3D>();
-        public IEnumerable<int> TriangleIndices => _triangleIndices;
+        public IEnumerable<IVertex3D> Vertices => _vertexSet.Vertices.Cast<IVertex3D>();
+        public IEnumerable<int> TriangleIndices => _vertexSet.TriangleIndices;
         public float Alpha
         {
             get => _alpha;
@@ -20,15 +20,9 @@ namespace SpiceEngineCore.Rendering.Meshes
             {
                 if (_alpha != value)
                 {
-                    for (var i = 0; i < _vertices.Count; i++)
-                    {
-                        var vertex = _vertices[i];
-
-                        if (vertex is IColorVertex colorVertex)
-                        {
-                            _vertices[i] = (T)colorVertex.Colored(new Color4(colorVertex.Color.R, colorVertex.Color.G, colorVertex.Color.B, value));
-                        }
-                    }
+                    _vertexSet.Update(v => v is IColorVertex colorVertex
+                        ? (T)colorVertex.Colored(new Color4(colorVertex.Color.R, colorVertex.Color.G, colorVertex.Color.B, value))
+                        : v);
 
                     var oldValue = _alpha;
                     _alpha = value;
@@ -42,8 +36,7 @@ namespace SpiceEngineCore.Rendering.Meshes
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
-        private List<T> _vertices = new List<T>();
-        private List<int> _triangleIndices = new List<int>();
+        private Vertex3DSet<T> _vertexSet;
 
         private VertexBuffer<T> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
@@ -51,92 +44,56 @@ namespace SpiceEngineCore.Rendering.Meshes
 
         private float _alpha = 1.0f;
 
-        public Mesh(List<T> vertices, List<int> triangleIndices)
-        {
-            if (triangleIndices.Count % 3 != 0)
-            {
-                throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
-            }
+        public Mesh(Vertex3DSet<T> vertexSet) => _vertexSet = vertexSet;
 
-            _vertices.AddRange(vertices);
-            _triangleIndices.AddRange(triangleIndices);
-        }
-
-        public IMesh Duplicate() => new Mesh<T>(_vertices.ToList(), _triangleIndices.ToList());
-
-        public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
-        public void ClearVertices() => _vertices.Clear();
+        public IMesh Duplicate() => new Mesh<T>(_vertexSet.Duplicate());
 
         public void Combine(IMesh mesh)
         {
             if (mesh is Mesh<T> castMesh)
             {
-                var offset = _vertices.Count;
-                _vertices.AddRange(castMesh._vertices);
-                _triangleIndices.AddRange(castMesh._triangleIndices.Select(i => i + offset));
+                _vertexSet.Combine(castMesh._vertexSet);
             }
         }
 
-        public void Transform(Transform transform) => Transform(transform, 0, _vertices.Count);
+        public void Transform(Transform transform) => Transform(transform, 0, _vertexSet.VertexCount);
         public void Transform(Transform transform, int offset, int count)
         {
-            for (var i = offset; i < count; i++)
-            {
-                //var originalVertex = _vertices[i];
-                var transformedVertex = (T)_vertices[i].Transformed(transform);
-                _vertices[i] = transformedVertex;
-            }
+            _vertexSet.Update(v => (T)((IVertex3D)v).Transformed(transform), offset, count);
 
             // TODO - This is very redundant to keep two separate lists of vertex (struct) data
             if (_vertexBuffer != null)
             {
                 _vertexBuffer.Clear();
-                _vertexBuffer.AddVertices(_vertices);
+                _vertexBuffer.AddVertices(_vertexSet.Vertices);
             }
         }
 
-        public void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => TransformTexture(center, translation, rotation, scale, 0, _vertices.Count);
+        public void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => TransformTexture(center, translation, rotation, scale, 0, _vertexSet.VertexCount);
         public void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale, int offset, int count)
         {
-            for (var i = offset; i < count; i++)
-            {
-                if (_vertices[i] is ITextureVertex textureVertex)
-                {
-                    var transformedVertex = (T)textureVertex.TextureTransformed(center, translation, rotation, scale);
-                    _vertices[i] = transformedVertex;
-                }
-            }
+            _vertexSet.Update(v => v is ITextureVertex textureVertex
+                ? (T)textureVertex.TextureTransformed(center, translation, rotation, scale)
+                : v, offset, count);
 
             // TODO - This is very redundant to keep two separate lists of vertex (struct) data
             if (_vertexBuffer != null)
             {
                 _vertexBuffer.Clear();
-                _vertexBuffer.AddVertices(_vertices);
+                _vertexBuffer.AddVertices(_vertexSet.Vertices);
             }
         }
 
-        public void Update(Func<IVertex, IVertex> vertexUpdate) => Update(vertexUpdate, 0, _vertices.Count);
+        public void Update(Func<IVertex, IVertex> vertexUpdate) => Update(vertexUpdate, 0, _vertexSet.VertexCount);
         public void Update(Func<IVertex, IVertex> vertexUpdate, int offset, int count)
         {
-            for (var i = offset; i < count; i++)
-            {
-                var updatedVertex = vertexUpdate(_vertices[i]);
-
-                /*if (updatedVertex is EditorVertex3D editorVertex)
-                {
-                    _vertices[i] = (T)editorVertex.Colored(new Color4(1.0f, 0.0f, 0.0f, 1.0f));
-                }
-                else
-                {*/
-                    _vertices[i] = (T)updatedVertex;
-                //}
-            }
+            _vertexSet.Update(vertexUpdate, offset, count);
 
             // TODO - This is very redundant to keep two separate lists of vertex (struct) data
             if (_vertexBuffer != null)
             {
                 _vertexBuffer.Clear();
-                _vertexBuffer.AddVertices(_vertices);
+                _vertexBuffer.AddVertices(_vertexSet.Vertices);
             }
         }
 
@@ -147,8 +104,8 @@ namespace SpiceEngineCore.Rendering.Meshes
             _vertexArray = new VertexArray<T>();
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(_vertices);
-            _indexBuffer.AddIndices(_triangleIndices.ConvertAll(i => (ushort)i));
+            _vertexBuffer.AddVertices(_vertexSet.Vertices);
+            _indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
 
             _vertexBuffer.Bind();
             _vertexArray.Load();

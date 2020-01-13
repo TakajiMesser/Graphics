@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
+using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
@@ -24,9 +25,10 @@ using SpiceEngineCore.Rendering.Billboards;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.UserInterfaces;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
+using StarchUICore;
+using StarchUICore.Views;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -57,11 +59,11 @@ namespace SpiceEngine.Rendering
         public bool IsInEditorMode { get; set; }
 
         private IAnimationProvider _animationProvider;
+        private IUIProvider _uiProvider;
         private ISelectionProvider _selectionProvider;
         private ICamera _camera;
 
         private BatchManager _batchManager;
-        private UIManager _uiManager;
 
         //private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
@@ -106,7 +108,6 @@ namespace SpiceEngine.Rendering
         {
             base.SetEntityProvider(entityProvider);
             _batchManager = new BatchManager(_entityProvider, TextureManager);
-            _uiManager = new UIManager(_entityProvider);
 
             if (_animationProvider != null)
             {
@@ -119,6 +120,8 @@ namespace SpiceEngine.Rendering
             _animationProvider = animationProvider;
             _batchManager?.SetAnimationProvider(_animationProvider);
         }
+
+        public void SetUIProvider(IUIProvider uiProvider) => _uiProvider = uiProvider;
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
 
@@ -244,6 +247,8 @@ namespace SpiceEngine.Rendering
                     try
                     {
                         _batchManager.Load();
+                        _uiProvider.Load();
+
                         Invoker.ForceUpdate();
                     }
                     catch (Exception ex)
@@ -288,6 +293,11 @@ namespace SpiceEngine.Rendering
             else
             {
                 _batchManager.AddEntity(entityID, component);
+
+                if (component is IUIItem uiItem)
+                {
+                    _uiProvider.AddItem(entityID, uiItem);
+                }
             }
         }
 
@@ -295,10 +305,11 @@ namespace SpiceEngine.Rendering
         {
             var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
             var triangleIndices = mesh.TriangleIndices.ToList();
+            var vertexSet = new Vertex3DSet<EditorVertex3D>(mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList(), mesh.TriangleIndices.ToList());
 
             if (mesh is ITexturedMesh texturedMesh)
             {
-                return new TexturedMesh<EditorVertex3D>(vertices, triangleIndices)
+                return new TexturedMesh<EditorVertex3D>(vertexSet)
                 {
                     Material = texturedMesh.Material,
                     TextureMapping = texturedMesh.TextureMapping
@@ -306,14 +317,14 @@ namespace SpiceEngine.Rendering
             }
             else if (mesh is IColoredMesh coloredMesh)
             {
-                return new ColoredMesh<EditorVertex3D>(vertices, triangleIndices)
+                return new ColoredMesh<EditorVertex3D>(vertexSet)
                 {
                     Color = coloredMesh.Color
                 };
             }
             else
             {
-                return new Mesh<EditorVertex3D>(vertices, triangleIndices);
+                return new Mesh<EditorVertex3D>(vertexSet);
             }
         }
 
@@ -765,12 +776,9 @@ namespace SpiceEngine.Rendering
 
         private void RenderUIControls()
         {
-            /*foreach (var control in _entityProvider.Controls)
-            {
-
-            }*/
-
-            _uiRenderer.Render(_batchManager, _uiManager);
+            _uiRenderer.Render(_batchManager, _uiProvider);
+            //_uiRenderer.Render(_batchManager);
+            //_uiRenderer.Render(_uiProvider);
             _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
         }
     }

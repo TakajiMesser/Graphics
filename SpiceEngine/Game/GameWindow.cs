@@ -49,14 +49,23 @@ namespace SpiceEngine.Game
 
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
-            _fpsTimer.Elapsed += (s, e) =>
+            _fpsTimer.Elapsed += FpsTimer_Elapsed;
+        }
+
+        private void FpsTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (_frequencies.Count > 0)
             {
-                if (_frequencies.Count > 0)
+                var total = 0.0;
+
+                for (var i = 0; i < _frequencies.Count; i++)
                 {
-                    _renderManager.Frequency = _frequencies.Average();
-                    _frequencies.Clear();
+                    total += _frequencies[i];
                 }
-            };
+
+                _renderManager.Frequency = total / _frequencies.Count;//_frequencies.Average();
+                _frequencies.Clear();
+            }
         }
 
         public void LoadAndRun()
@@ -151,6 +160,7 @@ namespace SpiceEngine.Game
 
             _renderManager.SetEntityProvider(_gameManager.EntityManager);
             _renderManager.SetAnimationProvider(_gameManager.AnimationManager);
+            _renderManager.SetUIProvider(_gameManager.UIManager);
             
             _renderManager.LoadFromMap(_map);
 

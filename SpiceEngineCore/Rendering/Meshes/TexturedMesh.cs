@@ -11,7 +11,7 @@ namespace SpiceEngineCore.Rendering.Meshes
         public Material Material { get; set; }
         public TextureMapping? TextureMapping { get; set; }
 
-        public TexturedMesh(List<T> vertices, List<int> triangleIndices) : base(vertices, triangleIndices) { }
+        public TexturedMesh(Vertex3DSet<T> vertexSet) : base(vertexSet) { }
 
         /*public virtual void SaveToFile()
         {

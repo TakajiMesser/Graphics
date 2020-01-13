@@ -21,6 +21,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiceEngineCore", "SpiceEng
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TowerWarfare", "TowerWarfare\TowerWarfare.csproj", "{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StarchUICore", "StarchUICore\StarchUICore.csproj", "{0FE2AFA5-606D-47F1-B267-DAC3936B300F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -103,6 +105,18 @@ Global
 		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x64.Build.0 = Release|Any CPU
 		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x86.ActiveCfg = Release|Any CPU
 		{48EBF1B5-C861-4ABA-8897-44F1B2C3E1C6}.Release|x86.Build.0 = Release|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Debug|x64.Build.0 = Debug|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Debug|x86.Build.0 = Debug|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Release|x64.ActiveCfg = Release|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Release|x64.Build.0 = Release|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Release|x86.ActiveCfg = Release|Any CPU
+		{0FE2AFA5-606D-47F1-B267-DAC3936B300F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
