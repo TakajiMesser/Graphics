@@ -31,9 +31,18 @@ namespace SauceEditorCore.Models.Entities
             var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();
 
-            var mesh = meshVertices.Any(v => v.IsAnimated)
-                ? (ITexturedMesh)new TexturedMesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
-                : new TexturedMesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+            ITexturedMesh mesh;
+
+            if (meshVertices.Any(v => v.IsAnimated))
+            {
+                var vertexSet = new Vertex3DSet<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+                mesh = new TexturedMesh<AnimatedVertex3D>(vertexSet);
+            }
+            else
+            {
+                var vertexSet = new Vertex3DSet<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+                mesh = new TexturedMesh<Vertex3D>(vertexSet);
+            }
 
             mesh.Material = _material;
             mesh.TextureMapping = _textureMapping;

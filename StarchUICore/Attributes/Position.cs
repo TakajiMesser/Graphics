@@ -16,5 +16,7 @@
 
         public UIUnitTypes XUnits { get; private set; }
         public UIUnitTypes YUnits { get; private set; }
+
+        public override bool Equals(object obj) => obj is Position position && X == position.X && Y == position.Y && XUnits == position.XUnits && YUnits == position.YUnits;
     }
 }

@@ -34,7 +34,7 @@ namespace SpiceEngineCore.Rendering.Vertices
             for (var i = 0; i < _vertices.Count; i++)
             {
                 var updatedVertex = vertexUpdate(_vertices[i]);
-                updatedVertices[i] = (T)updatedVertex;
+                updatedVertices.Add((T)updatedVertex);
             }
 
             return new Vertex3DSet<T>(updatedVertices, _triangleIndices.ToList());

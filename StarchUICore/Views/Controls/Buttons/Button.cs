@@ -1,5 +1,6 @@
 ﻿using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Builders;
+using StarchUICore.Themes;
 
 namespace StarchUICore.Views.Controls.Buttons
 {
@@ -10,7 +11,7 @@ namespace StarchUICore.Views.Controls.Buttons
 
         public static Button CreateButton(int x, int y, int width, int height)
         {
-            var vertexSet = UIBuilder.Rectangle(width, height);
+            var vertexSet = UIBuilder.Rectangle(width, height, ThemeManager.CurrentTheme.PrimaryBackgroundColor);
             return new Button(vertexSet)
             {
                 Position = new Attributes.Position(x, y),

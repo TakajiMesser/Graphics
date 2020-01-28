@@ -2,6 +2,7 @@
 using StarchUICore.Attributes;
 using StarchUICore.Layers;
 using StarchUICore.Views;
+using System;
 
 namespace StarchUICore
 {
@@ -20,6 +21,8 @@ namespace StarchUICore
         bool IsEnabled { get; set; }
         bool IsVisible { get; set; }
         bool IsGone { get; set; }
+
+        event EventHandler<PositionEventArgs> PositionChanged;
 
         void Measure(Size availableSize);
         void Update();

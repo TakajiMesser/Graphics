@@ -1,6 +1,8 @@
-﻿namespace TowerWarfare.Entities.Actors.Towers
+﻿using SpiceEngineCore.Maps;
+
+namespace TowerWarfare.Entities.Actors.Towers
 {
-    public class Tower
+    public class Tower : MapActor
     {
 
     }

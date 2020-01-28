@@ -15,6 +15,7 @@ using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
+using StarchUICore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -41,6 +42,7 @@ namespace SpiceEngine.Game
         private IEntityProvider _entityProvider;
         private IInputProvider _inputProvider;
         private IAnimationProvider _animationProvider;
+        private IUIProvider _uiProvider;
 
         private Map _map;
 
@@ -222,6 +224,7 @@ namespace SpiceEngine.Game
             _entityProvider = gameManager.EntityManager;
             _inputProvider = gameManager.InputManager;
             _animationProvider = gameManager.AnimationManager;
+            _uiProvider = gameManager.UIManager;
 
             SelectionManager = new SelectionManager(_entityProvider);
 
@@ -294,6 +297,7 @@ namespace SpiceEngine.Game
                 _panelCamera.Load();
 
                 RenderManager.SetAnimationProvider(_animationProvider);
+                RenderManager.SetUIProvider(_uiProvider);
                 RenderManager.SetSelectionProvider(SelectionManager);
                 RenderManager.SetCamera(_panelCamera.Camera);
 

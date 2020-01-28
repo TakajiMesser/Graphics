@@ -14,11 +14,27 @@ namespace StarchUICore
 
     public abstract class UIItem : IUIItem
     {
+        private Position _position;
         private float _alpha = 1.0f;
 
         public IUIItem Parent { get; set; }
 
-        public Position Position { get; set; }
+        public Position Position
+        {
+            get => _position;
+            set
+            {
+                if (!_position.Equals(value))
+                {
+                    var oldValue = _position;
+                    _position = value;
+
+                    OnPositionChanged(oldValue, value);
+                    PositionChanged?.Invoke(this, new PositionEventArgs(oldValue, value));
+                }
+            }
+        }
+
         public Size Size { get; set; }
 
         public Measurement Measurement { get; protected set; } = Measurement.Empty;
@@ -49,6 +65,7 @@ namespace StarchUICore
         public bool IsAnimated { get; set; } = false;
         public bool IsTransparent => Alpha < 1.0f;
 
+        public event EventHandler<PositionEventArgs> PositionChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
         public abstract void Load();
@@ -56,6 +73,7 @@ namespace StarchUICore
         public abstract void Update();
         public abstract void Draw();
 
+        protected virtual void OnPositionChanged(Position oldValue, Position newValue) { }
         protected virtual void OnAlphaChanged(float oldValue, float newValue) { }
     }
 }

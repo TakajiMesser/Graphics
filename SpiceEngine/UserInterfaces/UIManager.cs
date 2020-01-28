@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
@@ -7,6 +8,7 @@ using StarchUICore.Attributes;
 using StarchUICore.Groups;
 using StarchUICore.Views;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngine.UserInterfaces
 {
@@ -62,10 +64,14 @@ namespace SpiceEngine.UserInterfaces
                     }
                 };
             }
-            else if (item is IView view)
-            {
 
-            }
+            item.PositionChanged += (s, args) =>
+            {
+                var entity = _entityProvider.GetEntity(entityID);
+                var position = entity.Position;
+
+                entity.Position = new Vector3(args.NewPosition.X, args.NewPosition.Y, position.Z);
+            };
         }
 
         public IUIItem GetItem(int entityID) => _itemByID[entityID];
@@ -85,8 +91,26 @@ namespace SpiceEngine.UserInterfaces
             }
         }
 
+        private int _tickCounter = 0;
+
         protected override void Update()
         {
+            // TODO - This is test code to move the first root view every 150 ticks
+            _tickCounter++;
+
+            if (_tickCounter == 150)
+            {
+                _tickCounter = 0;
+                var firstRootItem = GetRootItems().FirstOrDefault();
+
+                if (firstRootItem != null)
+                {
+                    var position = firstRootItem.Position;
+                    firstRootItem.Position = new Position(position.X + 100, position.Y + 100);
+                }
+                
+            }
+
             foreach (var rootItem in GetRootItems())
             {
                 rootItem.Measure(new Size(Resolution.Width, Resolution.Height));

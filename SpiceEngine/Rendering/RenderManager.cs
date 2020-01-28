@@ -28,7 +28,7 @@ using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using StarchUICore;
-using StarchUICore.Views;
+using StarchUICore.Text;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -54,6 +54,7 @@ namespace SpiceEngine.Rendering
         public bool RenderGrid { get; set; }
 
         public TextureManager TextureManager { get; } = new TextureManager();
+        public FontManager FontManager { get; }
 
         // TODO - Make this less janky
         public bool IsInEditorMode { get; set; }
@@ -101,6 +102,7 @@ namespace SpiceEngine.Rendering
 
             Resolution.ResolutionChanged += (s, args) => _camera?.UpdateAspectRatio(args.AspectRatio);
 
+            FontManager = new FontManager(TextureManager);
             _logManager = new LogManager(_textRenderer);
         }
 
@@ -223,6 +225,9 @@ namespace SpiceEngine.Rendering
                 _textRenderer.Load(Resolution);
                 _renderToScreen.Load(WindowSize);
                 _uiRenderer.Load(WindowSize);
+
+                var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
+                _logManager.SetFont(font);
 
                 GL.ClearColor(Color4.Black);
                 } catch (Exception ex)
@@ -779,7 +784,9 @@ namespace SpiceEngine.Rendering
             _uiRenderer.Render(_batchManager, _uiProvider);
             //_uiRenderer.Render(_batchManager);
             //_uiRenderer.Render(_uiProvider);
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
+
+            var font = FontManager.GetFont(TextRenderer.FONT_PATH);
+            _textRenderer.RenderText(font, "FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + font.GlyphWidth), Resolution.Height - (10 + font.GlyphHeight), 1.0f);
         }
     }
 }
