@@ -1,14 +1,11 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
 using StarchUICore;
-using StarchUICore.Attributes;
+using StarchUICore.Attributes.Sizes;
 using StarchUICore.Groups;
-using StarchUICore.Views;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.UserInterfaces
 {
@@ -16,9 +13,9 @@ namespace SpiceEngine.UserInterfaces
     public class UIManager : UpdateManager, IUIProvider
     {
         private IEntityProvider _entityProvider;
-        private Dictionary<int, IUIItem> _itemByID = new Dictionary<int, IUIItem>();
+        private Dictionary<int, IElement> _elementByID = new Dictionary<int, IElement>();
 
-        private List<int> _rootIDs = new List<int>();
+        private int _rootID;
         private SetDictionary<int, int> _childIDSetByID = new SetDictionary<int, int>();
 
         public UIManager(IEntityProvider entityProvider, Resolution resolution)
@@ -29,24 +26,18 @@ namespace SpiceEngine.UserInterfaces
 
         public Resolution Resolution { get; }
 
-        private IEnumerable<IUIItem> GetRootItems()
-        {
-            foreach (var id in _rootIDs)
-            {
-                yield return _itemByID[id];
-            }
-        }
+        private IElement GetRoot() => _rootID > 0 ? _elementByID[_rootID] : null;
 
-        public void AddItem(int entityID, IUIItem item)
+        public void AddElement(int entityID, IElement element)
         {
-            if (item.Parent == null)
+            if (element.Parent == null)
             {
-                _rootIDs.Add(entityID);
+                _rootID = entityID;
             }
 
-            _itemByID.Add(entityID, item);
+            _elementByID.Add(entityID, element);
 
-            if (item is IGroup group)
+            if (element is IGroup group)
             {
                 var parentEntity = _entityProvider.GetEntity(entityID) as IParentEntity;
 
@@ -65,79 +56,64 @@ namespace SpiceEngine.UserInterfaces
                 };
             }
 
-            item.PositionChanged += (s, args) =>
+            /*item.PositionChanged += (s, args) =>
             {
                 var entity = _entityProvider.GetEntity(entityID);
                 var position = entity.Position;
 
                 entity.Position = new Vector3(args.NewPosition.X, args.NewPosition.Y, position.Z);
-            };
+            };*/
         }
 
-        public IUIItem GetItem(int entityID) => _itemByID[entityID];
+        public IElement GetElement(int entityID) => _elementByID[entityID];
 
         public void Clear()
         {
-            _itemByID.Clear();
-            _rootIDs.Clear();
+            _rootID = 0;
+            _elementByID.Clear();
             _childIDSetByID.Clear();
         }
 
-        public void Load()
-        {
-            foreach (var rootItem in GetRootItems())
-            {
-                rootItem.Load();
-            }
-        }
+        public void Load() => GetRoot()?.Load();
 
         private int _tickCounter = 0;
 
         protected override void Update()
         {
-            // TODO - This is test code to move the first root view every 150 ticks
+            var root = GetRoot();
+
+            // TODO - This is test code to move the root view every 150 ticks
             _tickCounter++;
 
             if (_tickCounter == 150)
             {
                 _tickCounter = 0;
-                var firstRootItem = GetRootItems().FirstOrDefault();
 
-                if (firstRootItem != null)
+                if (root != null)
                 {
-                    var position = firstRootItem.Position;
-                    firstRootItem.Position = new Position(position.X + 100, position.Y + 100);
+                    var position = root.Position;
+                    //root.Position = new Position(Unit.Pixels(position.X.Constrain( + 100, position.Y + 100);
                 }
                 
             }
 
-            foreach (var rootItem in GetRootItems())
-            {
-                rootItem.Measure(new Size(Resolution.Width, Resolution.Height));
-            }
-
-            foreach (var rootItem in GetRootItems())
-            {
-                rootItem.Update();
-            }
+            root?.Measure(new MeasuredSize(Resolution.Width, Resolution.Height));
+            root?.Update();
         }
 
         public IEnumerable<int> GetDrawOrder()
         {
-            foreach (var rootID in _rootIDs)
-            {
-                var rootItem = _itemByID[rootID];
+            var root = GetRoot();
 
-                foreach (var id in GetDrawOrder(rootID, rootItem))
-                {
-                    yield return id;
-                }
+            foreach (var id in GetDrawOrder(_rootID, root))
+            {
+                yield return id;
             }
         }
 
-        private IEnumerable<int> GetDrawOrder(int id, IUIItem item)
+        private IEnumerable<int> GetDrawOrder(int id, IElement element)
         {
-            if (item.IsVisible)
+            if (element != null && element.IsVisible)
             {
                 yield return id;
 
@@ -145,9 +121,9 @@ namespace SpiceEngine.UserInterfaces
                 {
                     foreach (var childID in childIDs)
                     {
-                        var childItem = _itemByID[childID];
+                        var childElement = _elementByID[childID];
 
-                        foreach (var grandChildID in GetDrawOrder(childID, childItem))
+                        foreach (var grandChildID in GetDrawOrder(childID, childElement))
                         {
                             yield return grandChildID;
                         }
@@ -156,15 +132,9 @@ namespace SpiceEngine.UserInterfaces
             }
         }
 
-        public void Draw()
-        {
-            foreach (var rootItem in GetRootItems())
-            {
-                rootItem.Draw();
-            }
-        }
+        public void Draw() => GetRoot()?.Draw();
 
-        private void DrawRecursively(IUIItem item)
+        /*private void DrawRecursively(IUIItem item)
         {
             item.Draw();
 
@@ -179,6 +149,6 @@ namespace SpiceEngine.UserInterfaces
             {
                 view.Draw();
             }
-        }
+        }*/
     }
 }

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace StarchUICore.Attributes
+namespace StarchUICore.Attributes.Positions
 {
     public class PositionEventArgs : EventArgs
     {

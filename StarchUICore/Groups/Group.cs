@@ -1,66 +1,74 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Utilities;
-using StarchUICore.Attributes;
-using StarchUICore.Helpers;
-using StarchUICore.Layers;
-using System;
+﻿using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Units;
 using System.Collections.Generic;
 
 namespace StarchUICore.Groups
 {
-    public enum UILayoutTypes
+    public abstract class Group : Element, IGroup
     {
-        Wrap,
-        Fill
-    }
+        private List<IElement> _children = new List<IElement>();
 
-    public class Group : UIItem, IGroup
-    {
-        private List<IUIItem> _children = new List<IUIItem>();
+        public IEnumerable<IElement> Children => _children;
+        public IUnits Spacing { get; set; }
 
-        public UILayoutTypes LayoutType { get; set; }
-
-        public IEnumerable<IUIItem> GetChildren() => _children;
-
-        public void AddChild(IUIItem item)
+        public void AddChild(IElement element)
         {
-            _children.Add(item);
-            item.Parent = this;
+            _children.Add(element);
+            element.Parent = this;
         }
 
         public override void Load()
         {
-            foreach (var child in GetChildren())
+            foreach (var child in Children)
             {
                 child.Load();
             }
         }
 
-        public override void Measure(Size availableSize)
+        protected int ConstrainWidth(MeasuredSize availableSize)
         {
-            if (!IsMeasured)
+            var width = Size.Width.Constrain(availableSize.Width);
+            var paddingWidth = Padding.GetWidth(availableSize.Width);
+
+            return width - paddingWidth;
+        }
+
+        protected int ConstrainHeight(MeasuredSize availableSize)
+        {
+            var height = Size.Height.Constrain(availableSize.Height);
+            var paddingHeight = Padding.GetHeight(availableSize.Height);
+
+            return height - paddingHeight;
+        }
+
+        /*protected override ISize GetMeasurement(ISize availableSize)
+        {
+            var width = 0;
+            var height = 0;
+
+            if (!IsGone)
             {
-                var width = 0;
-                var height = 0;
-
-                if (!IsGone)
+                if (availableSize is UnitSize availableUnitSize)
                 {
-                    var availableWidth = availableSize.Width;
-                    var availableHeight = availableSize.Height;
+                    var availableWidth = availableUnitSize.Width;
+                    var availableHeight = availableUnitSize.Height;
 
-                    if (Size.WidthUnits.IsAbsolute() && Size.Width < availableWidth)
+                    if (Size is UnitSize unitSize)
                     {
-                        availableWidth = Size.Width;
-                    }
-
-                    if (Size.HeightUnits.IsAbsolute() && Size.Height < availableHeight)
-                    {
-                        availableHeight = Size.Height;
+                        if (unitSize.Width < availableWidth)
+                        {
+                            availableWidth = unitSize.Width;
+                        }
+                        
+                        if (unitSize.Height < availableHeight)
+                        {
+                            availableHeight = unitSize.Height;
+                        }
                     }
 
                     foreach (var child in GetChildren())
                     {
-                        child.Measure(new Size(availableWidth, availableHeight));
+                        child.Measure(new UnitSize(availableWidth, availableHeight));
 
                         availableWidth -= child.Measurement.Width;
                         availableHeight -= child.Measurement.Height;
@@ -69,23 +77,36 @@ namespace StarchUICore.Groups
                         height += child.Measurement.Height;
                     }
 
-                    if (LayoutType == UILayoutTypes.Fill)
+                    if (LayoutMode == LayoutModes.Fill)
                     {
-                        width = availableSize.Width;
-                        height = availableSize.Height;
+                        width = availableUnitSize.Width;
+                        height = availableUnitSize.Height;
                     }
                 }
-
-                Measurement = new Measurement(width, height);
-                IsMeasured = true;
             }
+
+            return new UnitSize(width, height);
         }
+
+        protected override IPosition GetLocation(IPosition position)
+        {
+            var x = 0;
+            var y = 0;
+
+            if (position is UnitPosition unitPosition)
+            {
+                x = unitPosition.X;
+                y = unitPosition.Y;
+            }
+
+            return new UnitPosition(x, y);
+        }*/
 
         public override void Update()
         {
             if (IsEnabled)
             {
-                foreach (var child in GetChildren())
+                foreach (var child in Children)
                 {
                     child.Update();
                 }
@@ -96,7 +117,7 @@ namespace StarchUICore.Groups
         {
             if (IsVisible && Measurement.Width > 0 && Measurement.Height > 0)
             {
-                foreach (var child in GetChildren())
+                foreach (var child in Children)
                 {
                     child.Draw();
                 }
@@ -105,6 +126,6 @@ namespace StarchUICore.Groups
             // Then, go through children and draw each one based on their previously measured sizes
         }
 
-        public virtual IGroup Duplicate() => new Group();
+        public abstract IGroup Duplicate();
     }
 }

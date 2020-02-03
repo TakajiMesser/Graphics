@@ -299,9 +299,9 @@ namespace SpiceEngine.Rendering
             {
                 _batchManager.AddEntity(entityID, component);
 
-                if (component is IUIItem uiItem)
+                if (component is IElement element)
                 {
-                    _uiProvider.AddItem(entityID, uiItem);
+                    _uiProvider.AddElement(entityID, element);
                 }
             }
         }
@@ -744,8 +744,8 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(texture);
 
-            RenderUIControls();
-            _logManager.RenderToScreen();
+            //RenderUIControls();
+            //_logManager.RenderToScreen();
         }
 
         private void RenderLights()

@@ -38,7 +38,7 @@ namespace SpiceEngineCore.Entities
         public List<IBrush> Brushes { get; } = new List<IBrush>();
         public List<IVolume> Volumes { get; } = new List<IVolume>();
         public List<ILight> Lights { get; } = new List<ILight>();
-        public List<IUIElement> UIElements { get; } = new List<IUIElement>();
+        public List<IUIItem> UIItems { get; } = new List<IUIItem>();
 
         public ILayerProvider LayerProvider { get; } = new LayerManager();
 
@@ -61,7 +61,7 @@ namespace SpiceEngineCore.Entities
             Brushes.Clear();
             Volumes.Clear();
             Lights.Clear();
-            UIElements.Clear();
+            UIItems.Clear();
         }
 
         public IEntity GetEntity(int id)
@@ -284,8 +284,8 @@ namespace SpiceEngineCore.Entities
                 case ILight light:
                     Lights.Add(light);
                     break;
-                case IUIElement uiElement:
-                    UIElements.Add(uiElement);
+                case IUIItem uiItem:
+                    UIItems.Add(uiItem);
                     break;
             }
         }
@@ -331,8 +331,8 @@ namespace SpiceEngineCore.Entities
                 case ILight light:
                     Lights.Remove(light);
                     break;
-                case IUIElement uiElement:
-                    UIElements.Remove(uiElement);
+                case IUIItem uiItem:
+                    UIItems.Remove(uiItem);
                     break;
             }
         }

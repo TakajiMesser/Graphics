@@ -1,10 +1,10 @@
-﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering.Textures;
+﻿using SpiceEngineCore.Rendering.Textures;
+//using System.Drawing;
+//using System.Drawing.Imaging;
+using StarchUICore.Text;
 using System.Collections.Generic;
-using System.Drawing;
-using System.Drawing.Imaging;
 
-namespace StarchUICore.Text
+namespace SpiceEngine.Rendering
 {
     public class FontManager : IFontProvider
     {
@@ -24,11 +24,14 @@ namespace StarchUICore.Text
         {
             // TODO - Save bitmap to file, then check for its location on subsequent attempts to add this font file (i.e. cache after restart)
             var font = new Font(filePath, fontSize);
-            var bitmap = font.ToBitmap();
+            /*var bitmap = font.ToBitmap();
             var texture = LoadFromBitmap(bitmap, false, false);
 
             var textureIndex = _textureProvider.AddTexture(texture);
-            font.Texture = _textureProvider.RetrieveTexture(textureIndex);
+            font.Texture = _textureProvider.RetrieveTexture(textureIndex);*/
+
+            font.LoadTexture();
+            _textureProvider.AddTexture(font.Texture);
 
             _fontByPath.Add(filePath, font);
             return font;
@@ -36,9 +39,9 @@ namespace StarchUICore.Text
 
         public IFont GetFont(string filePath) => _fontByPath[filePath];
 
-        private Texture LoadFromBitmap(Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        /*private Texture LoadFromBitmap(System.Drawing.Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
-            var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
+            var data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
             var texture = new Texture(bitmap.Width, bitmap.Height, 1)
             {
@@ -76,6 +79,6 @@ namespace StarchUICore.Text
             bitmap.Dispose();
 
             return texture;
-        }
+        }*/
     }
 }

@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Views.Controls
 {
-    public class Slider : Control
+    public abstract class Slider : Control
     {
 
     }

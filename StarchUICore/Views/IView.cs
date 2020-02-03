@@ -4,14 +4,13 @@ using System.Collections.Generic;
 
 namespace StarchUICore.Views
 {
-    public interface IView : IUIItem
+    public interface IView : IElement
     {
         Layer Foreground { get; set; }
         Layer Background { get; set; }
 
         IEnumerable<ViewVertex> Vertices { get; }
         IEnumerable<int> TriangleIndices { get; }
-        float Alpha { get; set; }
 
         IView Duplicate();
     }

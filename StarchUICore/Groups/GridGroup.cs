@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Groups
 {
-    public class GridGroup : Group
+    public abstract class GridGroup : Group
     {
         
     }

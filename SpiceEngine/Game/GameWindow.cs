@@ -312,6 +312,7 @@ namespace SpiceEngine.Game
         {
             //if (IsLoaded)
             //{
+            if (_renderManager != null && _renderManager.IsLoaded)
                 _frequencies.Add(RenderFrequency);
                 _renderManager.Tick();
 

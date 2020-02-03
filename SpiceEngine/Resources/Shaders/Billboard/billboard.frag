@@ -9,7 +9,7 @@ out vec4 color;
 
 void main()
 {
-    color = texture2D(mainTexture, fUV);
+    color = texture(mainTexture, fUV);
 
     if (color.r == 1.0 && color.g == 1.0 && color.b == 1.0)
     {

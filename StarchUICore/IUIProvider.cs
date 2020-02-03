@@ -5,8 +5,8 @@ namespace StarchUICore
 {
     public interface IUIProvider
     {
-        void AddItem(int entityID, IUIItem item);
-        IUIItem GetItem(int entityID);
+        void AddElement(int entityID, IElement element);
+        IElement GetElement(int entityID);
 
         void Load();
         IEnumerable<int> GetDrawOrder();

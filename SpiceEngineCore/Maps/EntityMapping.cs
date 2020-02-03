@@ -11,7 +11,7 @@ namespace SpiceEngineCore.Maps
             Actor,
             Light,
             Volume,
-            UIElement
+            UIItem
         }
 
         private int _indexCount = 0;
@@ -23,14 +23,14 @@ namespace SpiceEngineCore.Maps
         private List<int> _actorIDs = new List<int>();
         private List<int> _lightIDs = new List<int>();
         private List<int> _volumeIDs = new List<int>();
-        private List<int> _uiElementIDs = new List<int>();
+        private List<int> _uiItemIDs = new List<int>();
 
         public IEnumerable<int> CameraIDs => _cameraIDs;
         public IEnumerable<int> BrushIDs => _brushIDs;
         public IEnumerable<int> ActorIDs => _actorIDs;
         public IEnumerable<int> LightIDs => _lightIDs;
         public IEnumerable<int> VolumeIDs => _volumeIDs;
-        public IEnumerable<int> UIElementIDs => _uiElementIDs;
+        public IEnumerable<int> UIItemIDs => _uiItemIDs;
 
         public void AddCameras(int nCameras)
         {
@@ -87,14 +87,14 @@ namespace SpiceEngineCore.Maps
             }
         }
 
-        public void AddUIElements(int nUIElements)
+        public void AddUIItems(int nUIItems)
         {
             var startIndex = _indexCount;
-            _indexCount += nUIElements;
+            _indexCount += nUIItems;
 
             for (var i = startIndex; i < _indexCount; i++)
             {
-                _idTypeByIndex.Add(i, IDTypes.UIElement);
+                _idTypeByIndex.Add(i, IDTypes.UIItem);
             }
         }
 
@@ -117,8 +117,8 @@ namespace SpiceEngineCore.Maps
                 case IDTypes.Volume:
                     _volumeIDs.Add(id);
                     break;
-                case IDTypes.UIElement:
-                    _uiElementIDs.Add(id);
+                case IDTypes.UIItem:
+                    _uiItemIDs.Add(id);
                     break;
             }
 

@@ -6,6 +6,7 @@ using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
 using StarchUICore.Maps;
 using System.Collections.Generic;
+using TowerWarfare.Entities.Actors.Towers;
 using TowerWarfare.Entities.Cameras;
 using static SpiceEngineCore.Maps.MapLight;
 
@@ -18,11 +19,11 @@ namespace TowerWarfare.Builders
             var map = new Map3D();
 
             map.Cameras.AddRange(GenerateCameras());
-            //map.Actors.AddRange(GenerateActors());
+            map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
             map.Volumes.AddRange(GenerateVolumes());
-            map.UIElements.AddRange(GenerateUIElements());
+            map.UIItems.AddRange(GenerateUIItems());
 
             /*map.SkyboxTextureFilePaths = new List<string>
             {
@@ -47,11 +48,12 @@ namespace TowerWarfare.Builders
             yield return new Camera();
         }
 
-        /*private static IEnumerable<MapActor> GenerateActors()
+        private static IEnumerable<MapActor> GenerateActors()
         {
-            yield return new Player();
-            yield return new Enemy();
-        }*/
+            //yield return new Player();
+            //yield return new Enemy();
+            yield return new BasicTower(new Vector3(0.0f, 0.0f, 5.0f));
+        }
 
         private static IEnumerable<MapBrush> GenerateBrushes()
         {
@@ -138,16 +140,20 @@ namespace TowerWarfare.Builders
             yield return physicsVolume;
         }
 
-        private static IEnumerable<MapUIElement> GenerateUIElements()
+        private static IEnumerable<MapUIItem> GenerateUIItems()
         {
-            var simpleButton = new MapUIElement()
+            var simpleButton = new MapUIItem()
             {
                 Name = "Test Button",
-                X = 400,
-                Y = 400,
-                Width = 600,
-                Height = 300,
-                UIType = MapUIElement.UITypes.Button
+                XUnitType = MapUIItem.UnitTypes.Pixels,
+                YUnitType = MapUIItem.UnitTypes.Pixels,
+                WidthUnitType = MapUIItem.UnitTypes.Pixels,
+                HeightUnitType = MapUIItem.UnitTypes.Pixels,
+                XUnits = "400",
+                YUnits = "400",
+                WidthUnits = "600",
+                HeightUnits = "300",
+                UIType = MapUIItem.UITypes.Button
             };
 
             yield return simpleButton;

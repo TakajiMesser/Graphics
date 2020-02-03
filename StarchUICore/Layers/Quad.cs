@@ -2,7 +2,7 @@
 
 namespace StarchUICore.Layers
 {
-    public struct Quad
+    /*public struct Quad
     {
         public Quad(Position position, Size size)
         {
@@ -43,5 +43,5 @@ namespace StarchUICore.Layers
 
             return new Quad(minX, minY, maxX - minX, maxY - minY);
         }
-    }
+    }*/
 }

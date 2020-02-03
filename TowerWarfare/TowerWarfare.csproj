@@ -49,6 +49,7 @@
     <Compile Include="Builders\BehaviorBuilder.cs" />
     <Compile Include="Builders\MapBuilder.cs" />
     <Compile Include="Builders\ProjectBuilder.cs" />
+    <Compile Include="Entities\Actors\Towers\BasicTower.cs" />
     <Compile Include="Entities\Actors\Towers\Tower.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />

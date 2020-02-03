@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Views.Controls.Dialogs
 {
-    public class MessageDialog : Dialog
+    public abstract class MessageDialog : Dialog
     {
 
     }

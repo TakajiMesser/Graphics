@@ -16,7 +16,7 @@ namespace SpiceEngine.Maps
         public List<MapActor> Actors { get; set; } = new List<MapActor>();
         public List<MapLight> Lights { get; set; } = new List<MapLight>();
         public List<MapVolume> Volumes { get; set; } = new List<MapVolume>();
-        public List<MapUIElement> UIElements { get; set; } = new List<MapUIElement>();
+        public List<MapUIItem> UIItems { get; set; } = new List<MapUIItem>();
 
         public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();
 
@@ -25,14 +25,14 @@ namespace SpiceEngine.Maps
         public int ActorCount => Actors.Count;
         public int LightCount => Lights.Count;
         public int VolumeCount => Volumes.Count;
-        public int UIElementCount => UIElements.Count;
+        public int UIItemCount => UIItems.Count;
 
         public IMapCamera GetCameraAt(int index) => Cameras[index];
         public IMapBrush GetBrushAt(int index) => Brushes[index];
         public IMapActor GetActorAt(int index) => Actors[index];
         public IMapLight GetLightAt(int index) => Lights[index];
         public IMapVolume GetVolumeAt(int index) => Volumes[index];
-        public IMapUIElement GetUIElementAt(int index) => UIElements[index];
+        public IMapUIItem GetUIItemAt(int index) => UIItems[index];
 
         public int AddCamera(IMapCamera mapCamera)
         {
@@ -89,12 +89,12 @@ namespace SpiceEngine.Maps
             return -1;
         }
 
-        public int AddUIElement(IMapUIElement mapUIElement)
+        public int AddUIItem(IMapUIItem mapUIItem)
         {
-            if (mapUIElement is MapUIElement uiElement)
+            if (mapUIItem is MapUIItem uiItem)
             {
-                UIElements.Add(uiElement);
-                return UIElements.Count - 1;
+                UIItems.Add(uiItem);
+                return UIItems.Count - 1;
             }
 
             return -1;

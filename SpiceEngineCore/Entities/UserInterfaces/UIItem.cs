@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SpiceEngineCore.Entities.UserInterfaces
 {
-    public class UIElement : Entity, IUIElement
+    public class UIItem : Entity, IUIItem
     {
         public string Name { get; set; }
         public ICollection<int> ChildIDs { get; } = new List<int>();

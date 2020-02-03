@@ -121,9 +121,9 @@ namespace SpiceEngine.Game
                 {
                     entityMapping.AddVolumes(1);
                 }
-                else if (mapEntity is IMapUIElement)
+                else if (mapEntity is IMapUIItem)
                 {
-                    entityMapping.AddUIElements(1);
+                    entityMapping.AddUIItems(1);
                 }
             }
         }
@@ -157,9 +157,9 @@ namespace SpiceEngine.Game
                     AddBuilders(map.GetVolumeAt(i));
                 }
 
-                for (var i = 0; i < map.UIElementCount; i++)
+                for (var i = 0; i < map.UIItemCount; i++)
                 {
-                    AddBuilders(map.GetUIElementAt(i));
+                    AddBuilders(map.GetUIItemAt(i));
                 }
 
                 if (EntityMapping != null)
@@ -169,7 +169,7 @@ namespace SpiceEngine.Game
                     EntityMapping.AddActors(map.ActorCount);
                     EntityMapping.AddLights(map.LightCount);
                     EntityMapping.AddVolumes(map.VolumeCount);
-                    EntityMapping.AddUIElements(map.UIElementCount);
+                    EntityMapping.AddUIItems(map.UIItemCount);
                 }
             }
         }

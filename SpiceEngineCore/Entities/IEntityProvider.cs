@@ -19,7 +19,7 @@ namespace SpiceEngineCore.Entities
         List<IBrush> Brushes { get; }
         List<IVolume> Volumes { get; }
         List<ILight> Lights { get; }
-        List<IUIElement> UIElements { get; }
+        List<IUIItem> UIItems { get; }
 
         event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         event EventHandler<IDEventArgs> EntitiesRemoved;

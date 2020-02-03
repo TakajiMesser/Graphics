@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace StarchUICore.Views
 {
-    public class ImageView : View
+    public abstract class ImageView : View
     {
 
     }

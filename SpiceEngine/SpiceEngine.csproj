@@ -153,6 +153,8 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Batches\BatchManager.cs" />
+    <Compile Include="Rendering\Font.cs" />
+    <Compile Include="Rendering\FontManager.cs" />
     <Compile Include="Rendering\Models\EditorModel.cs" />
     <Compile Include="Rendering\Models\AnimatedModel.cs" />
     <Compile Include="Rendering\Models\Model.cs" />

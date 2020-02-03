@@ -1,8 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace StarchUICore.Layers
+﻿namespace StarchUICore.Layers
 {
-    public class QuadSet
+    /*public class QuadSet
     {
         private List<Quad> _quads = new List<Quad>();
         private Quad _totalQuad = new Quad();
@@ -15,5 +13,5 @@ namespace StarchUICore.Layers
         public void Remove(Quad quad) => _quads.Remove(quad);
 
         public void Clear() => _quads.Clear();
-    }
+    }*/
 }

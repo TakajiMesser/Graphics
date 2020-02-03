@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Groups
 {
-    public class LinearGroup : Group
+    public abstract class LinearGroup : Group
     {
 
     }

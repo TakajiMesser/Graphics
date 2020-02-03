@@ -1,5 +1,5 @@
 ﻿using SpiceEngineCore.Rendering.Textures;
-using System.Drawing;
+//using System.Drawing;
 
 namespace StarchUICore.Text
 {
@@ -19,6 +19,8 @@ namespace StarchUICore.Text
 
         ITexture Texture { get; }
 
-        Bitmap ToBitmap();
+        void LoadTexture();
+
+        //System.Drawing.Bitmap ToBitmap();
     }
 }

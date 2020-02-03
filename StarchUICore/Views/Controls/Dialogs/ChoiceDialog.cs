@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Views.Controls.Dialogs
 {
-    public class ChoiceDialog : Dialog
+    public abstract class ChoiceDialog : Dialog
     {
 
     }

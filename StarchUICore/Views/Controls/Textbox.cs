@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Views.Controls
 {
-    public class Textbox : Control
+    public abstract class Textbox : Control
     {
 
     }

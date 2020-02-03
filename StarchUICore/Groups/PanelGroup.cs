@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Groups
 {
-    public class PanelGroup : Group
+    public abstract class PanelGroup : Group
     {
 
     }

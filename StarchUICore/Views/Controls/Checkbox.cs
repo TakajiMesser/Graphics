@@ -1,6 +1,6 @@
 ﻿namespace StarchUICore.Views.Controls
 {
-    public class Checkbox : Control
+    public abstract class Checkbox : Control
     {
 
     }

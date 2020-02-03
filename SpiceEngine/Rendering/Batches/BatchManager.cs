@@ -70,12 +70,12 @@ namespace SpiceEngine.Rendering.Batches
                 case IBillboard billboard:
                     AddEntity(newID, billboard.Duplicate());
                     break;
-                case IUIItem item:
-                    if (item is IView view)
+                case IElement element:
+                    if (element is IView view)
                     {
                         AddEntity(newID, view.Duplicate());
                     }
-                    else if (item is IGroup group)
+                    else if (element is IGroup group)
                     {
                         AddEntity(newID, group.Duplicate());
                     }
@@ -258,8 +258,8 @@ namespace SpiceEngine.Rendering.Batches
                     return new ModelBatch(model);
                 case IBillboard billboard:
                     return new BillboardBatch(billboard);
-                case IUIItem item:
-                    return new UIBatch(item);
+                case IElement element:
+                    return new UIBatch(element);
             }
 
             throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());

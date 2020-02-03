@@ -2,16 +2,16 @@
 using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
-using SpiceEngineCore.Utilities;
-using StarchUICore.Attributes;
-using StarchUICore.Helpers;
+using StarchUICore.Attributes.Positions;
+using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Units;
 using StarchUICore.Layers;
 using System;
 using System.Collections.Generic;
 
 namespace StarchUICore.Views
 {
-    public class View : UIItem, IView
+    public abstract class View : Element, IView
     {
         private Vertex3DSet<ViewVertex> _vertexSet = new Vertex3DSet<ViewVertex>();
 
@@ -77,53 +77,24 @@ namespace StarchUICore.Views
             _vertexBuffer.Unbind();
         }
 
-        public override void Measure(Size availableSize)
+        protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            if (!IsMeasured)
-            {
-                var width = 0;
-                var height = 0;
+            if (Size.Width is AutoUnits || Size.Height is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
 
-                if (!IsGone)
-                {
-                    if (Size.WidthUnits.IsAbsolute() && availableSize.WidthUnits.IsAbsolute())
-                    {
-                        width = Size.Width.Clamp(0, availableSize.Width);
-                    }
-                    else if (!Size.WidthUnits.IsAbsolute() && availableSize.WidthUnits.IsAbsolute())
-                    {
-                        width = (int)(Size.Width * 0.01f * availableSize.Width);
-                    }
-                    else if (Size.WidthUnits.IsAbsolute() && !availableSize.WidthUnits.IsAbsolute())
-                    {
-                        // TODO - This shouldn't happen, the parent MUST be measured absolutely before the child
-                    }
-                    else if (!Size.WidthUnits.IsAbsolute() && !availableSize.WidthUnits.IsAbsolute())
-                    {
-                        // TODO - This means that we are taking a percent of a percent?
-                    }
+            var width = Size.Width.Constrain(availableSize.Width);
+            var height = Size.Height.Constrain(availableSize.Height);
 
-                    if (Size.HeightUnits.IsAbsolute() && availableSize.HeightUnits.IsAbsolute())
-                    {
-                        height = Size.Height.Clamp(0, availableSize.Height);
-                    }
-                    else if (!Size.HeightUnits.IsAbsolute() && availableSize.HeightUnits.IsAbsolute())
-                    {
-                        height = (int)(Size.Height * 0.01f * availableSize.Height);
-                    }
-                    else if (Size.HeightUnits.IsAbsolute() && !availableSize.HeightUnits.IsAbsolute())
-                    {
-                        // TODO - This shouldn't happen, the parent MUST be measured absolutely before the child
-                    }
-                    else if (!Size.HeightUnits.IsAbsolute() && !availableSize.HeightUnits.IsAbsolute())
-                    {
-                        // TODO - This means that we are taking a percent of a percent?
-                    }
-                }
+            return new MeasuredSize(width, height);
+        }
 
-                Measurement = new Measurement(width, height);
-                IsMeasured = true;
-            }
+        protected override LocatedPosition OnLocate(LocatedPosition availablePosition)
+        {
+            if (Position.X is AutoUnits || Position.Y is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
+
+            var x = Position.X.Constrain(availablePosition.X);
+            var y = Position.Y.Constrain(availablePosition.Y);
+
+            return new LocatedPosition(x, y);
         }
 
         public override void Update()
@@ -153,7 +124,7 @@ namespace StarchUICore.Views
             }
         }
 
-        public virtual IView Duplicate() => new View();
+        public abstract IView Duplicate();
 
         protected override void OnAlphaChanged(float oldValue, float newValue)
         {

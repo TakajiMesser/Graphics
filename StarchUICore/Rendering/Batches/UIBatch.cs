@@ -13,12 +13,12 @@ using System.Linq;
 
 namespace StarchUICore.Rendering.Batches
 {
-    public class UIBatch : Batch<IUIItem>
+    public class UIBatch : Batch<IElement>
     {
         private Dictionary<int, int> _offsetByID = new Dictionary<int, int>();
         private Dictionary<int, int> _countByID = new Dictionary<int, int>();
 
-        public UIBatch(IUIItem item) : base(item) { }
+        public UIBatch(IElement item) : base(item) { }
 
         public override IBatch Duplicate()
         {
@@ -43,7 +43,7 @@ namespace StarchUICore.Rendering.Batches
             else if (renderable is IGroup group)
             {
                 // TODO - Handle adding groups
-                foreach (var item in group.GetChildren())
+                foreach (var item in group.Children)
                 {
 
                 }
