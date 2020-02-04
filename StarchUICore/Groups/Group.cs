@@ -27,16 +27,16 @@ namespace StarchUICore.Groups
 
         protected int ConstrainWidth(MeasuredSize availableSize)
         {
-            var width = Size.Width.Constrain(availableSize.Width);
-            var paddingWidth = Padding.GetWidth(availableSize.Width);
+            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
+            var paddingWidth = Padding.GetWidth(availableSize.Width, availableSize.ContainingWidth);
 
             return width - paddingWidth;
         }
 
         protected int ConstrainHeight(MeasuredSize availableSize)
         {
-            var height = Size.Height.Constrain(availableSize.Height);
-            var paddingHeight = Padding.GetHeight(availableSize.Height);
+            var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
+            var paddingHeight = Padding.GetHeight(availableSize.Height, availableSize.ContainingHeight);
 
             return height - paddingHeight;
         }

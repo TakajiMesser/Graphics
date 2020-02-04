@@ -2,6 +2,7 @@
 {
     public interface IUnits
     {
-        int Constrain(int value);
+        //int Constrain(int value);
+        int Constrain(int value, int containingValue);
     }
 }

@@ -18,18 +18,18 @@ namespace StarchUICore.Attributes.Positions
         public IUnits Right { get; }
         public IUnits Bottom { get; }
 
-        public int GetWidth(int availableWidth)
+        public int GetWidth(int availableWidth, int containingWidth)
         {
-            var paddingLeft = Left.Constrain(availableWidth);
-            var paddingRight = Right.Constrain(availableWidth);
+            var paddingLeft = Left is AutoUnits ? 0 : Left.Constrain(availableWidth, containingWidth);
+            var paddingRight = Right is AutoUnits ? 0 : Right.Constrain(availableWidth, containingWidth);
 
             return paddingLeft + paddingRight;
         }
 
-        public int GetHeight(int availableHeight)
+        public int GetHeight(int availableHeight, int containingHeight)
         {
-            var paddingTop = Top.Constrain(availableHeight);
-            var paddingBottom = Bottom.Constrain(availableHeight);
+            var paddingTop = Top is AutoUnits ? 0 : Top.Constrain(availableHeight, containingHeight);
+            var paddingBottom = Bottom is AutoUnits ? 0 : Bottom.Constrain(availableHeight, containingHeight);
 
             return paddingTop + paddingBottom;
         }

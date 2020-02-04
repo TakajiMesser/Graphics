@@ -4,6 +4,7 @@
     {
         internal AutoUnits() { }
 
-        public int Constrain(int value) => value;
+        //public int Constrain(int value) => value;
+        public int Constrain(int value, int containingValue) => value;
     }
 }

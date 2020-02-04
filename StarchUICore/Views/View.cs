@@ -79,10 +79,10 @@ namespace StarchUICore.Views
 
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            if (Size.Width is AutoUnits || Size.Height is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
+            //if (Size.Width is AutoUnits || Size.Height is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
 
-            var width = Size.Width.Constrain(availableSize.Width);
-            var height = Size.Height.Constrain(availableSize.Height);
+            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
+            var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
 
             return new MeasuredSize(width, height);
         }
@@ -91,8 +91,8 @@ namespace StarchUICore.Views
         {
             if (Position.X is AutoUnits || Position.Y is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
 
-            var x = Position.X.Constrain(availablePosition.X);
-            var y = Position.Y.Constrain(availablePosition.Y);
+            var x = 0;// Position.X.Constrain(availablePosition.X);
+            var y = 0;// Position.Y.Constrain(availablePosition.Y);
 
             return new LocatedPosition(x, y);
         }

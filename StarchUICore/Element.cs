@@ -48,8 +48,8 @@ namespace StarchUICore
 
         public Size MinimumSize { get; set; } = Size.Auto();
         public Size MaximumSize { get; set; } = Size.Auto();
-        
-        public Padding Padding { get; set; }
+
+        public Padding Padding { get; set; } = Padding.Empty();
         public Anchor Anchor { get; set; } = Anchor.Default();
 
         public Border Border { get; set; }

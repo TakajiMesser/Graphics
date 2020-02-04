@@ -8,16 +8,16 @@ namespace StarchUICore.Groups
     {
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            var width = Size.Width.Constrain(availableSize.Width);
-            var height = Size.Height.Constrain(availableSize.Height);
+            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
+            var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
 
-            var remainingWidth = width - Padding.GetWidth(availableSize.Width);
-            var remainingHeight = height - Padding.GetHeight(availableSize.Height);
+            var remainingWidth = width - Padding.GetWidth(availableSize.Width, availableSize.ContainingWidth);
+            var remainingHeight = height - Padding.GetHeight(availableSize.Height, availableSize.ContainingHeight);
 
             foreach (var child in Children)
             {
-                var remainingsize = new MeasuredSize(remainingWidth, remainingHeight);
-                child.Measure(remainingsize);
+                var remainingSize = new MeasuredSize(remainingWidth, remainingHeight, width, height);
+                child.Measure(remainingSize);
 
                 var measurement = child.Measurement;
                 remainingWidth -= measurement.Width;
