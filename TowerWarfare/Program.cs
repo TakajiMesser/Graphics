@@ -35,40 +35,46 @@ namespace TowerWarfare
         private static void PerformUITest()
         {
             var root = GetRootElement();
-            
-            root.Measure(new MeasuredSize(1000, 1000));
-            LogMeasurements(root);
 
-            //root.Locate(new LocatedPosition(0, 0));
-            //LogLocations(root);
+            var windowSize = new MeasuredSize(1000, 1000);
+            var windowPosition = new LocatedPosition(0, 0);
+
+            root.Layout(new LayoutInfo(windowSize, windowPosition));
+            //root.Measure(windowSize);
+            //root.Locate(windowPosition);
+
+            LogMeasurements(root);
+            LogLocations(root);
         }
 
         private static IElement GetRootElement()
         {
             var rowGroup1A = new RowGroup()
             {
+                Position = new Position(Unit.Pixels(0), Unit.Pixels(0)),
                 Size = new Size(Unit.Pixels(800), Unit.Auto())
             };
 
-            var view2A = new TestView(rowGroup1A, Unit.Percents(10), Unit.Percents(10));
+            var view2A = new TestView(rowGroup1A, Unit.Percents(10), Unit.Percents(10), Unit.Pixels(0), Unit.Pixels(0));
             rowGroup1A.AddChild(view2A);
 
-            var view2B = new TestView(rowGroup1A, Unit.Pixels(100), Unit.Pixels(100));
+            var view2B = new TestView(rowGroup1A, Unit.Pixels(100), Unit.Pixels(100), Unit.Pixels(0), Unit.Pixels(0));
             rowGroup1A.AddChild(view2B);
 
             var rowGroup2A = new RowGroup()
             {
+                Position = new Position(Unit.Pixels(0), Unit.Pixels(0)),
                 Size = new Size(Unit.Percents(50), Unit.Pixels(200))
             };
             rowGroup1A.AddChild(rowGroup2A);
 
-            var view2C = new TestView(rowGroup1A, Unit.Percents(100), Unit.Percents(100));
+            var view2C = new TestView(rowGroup1A, Unit.Percents(100), Unit.Percents(100), Unit.Pixels(0), Unit.Pixels(0));
             rowGroup1A.AddChild(view2C);
 
-            var view3A = new TestView(rowGroup2A, Unit.Pixels(200), Unit.Pixels(300));
+            var view3A = new TestView(rowGroup2A, Unit.Pixels(200), Unit.Pixels(300), Unit.Pixels(0), Unit.Pixels(0));
             rowGroup2A.AddChild(view3A);
 
-            var view3B = new TestView(rowGroup2A, Unit.Percents(100), Unit.Auto());
+            var view3B = new TestView(rowGroup2A, Unit.Percents(100), Unit.Auto(), Unit.Pixels(0), Unit.Pixels(0));
             rowGroup2A.AddChild(view3B);
 
             return rowGroup1A;

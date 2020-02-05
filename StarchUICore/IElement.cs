@@ -27,6 +27,7 @@ namespace StarchUICore
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;
 
+        void Layout(LayoutInfo layoutInfo);
         void Measure(MeasuredSize availableSize);
         void Locate(LocatedPosition availablePosition);
         void Update();

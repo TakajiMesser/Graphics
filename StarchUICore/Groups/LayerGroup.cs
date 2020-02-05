@@ -5,6 +5,11 @@ namespace StarchUICore.Groups
 {
     public class LayerGroup : Group
     {
+        protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
+        {
+            throw new System.NotImplementedException();
+        }
+
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
             var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);

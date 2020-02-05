@@ -2,18 +2,18 @@
 {
     public struct LocatedPosition
     {
-        public LocatedPosition(int x, int y) : this(x, y, x, y) { }
-        public LocatedPosition(int x, int y, int containerX, int containerY)
+        public LocatedPosition(int absoluteX, int absoluteY) : this(absoluteX, absoluteY, absoluteX, absoluteY) { }
+        public LocatedPosition(int absoluteX, int absoluteY, int relativeX, int relativeY)
         {
-            X = x;
-            Y = y;
-            ContainerX = containerX;
-            ContainerY = containerY;
+            AbsoluteX = absoluteX;
+            AbsoluteY = absoluteY;
+            RelativeX = relativeX;
+            RelativeY = relativeY;
         }
 
-        public int X { get; }
-        public int Y { get; }
-        public int ContainerX { get; }
-        public int ContainerY { get; }
+        public int AbsoluteX { get; }
+        public int AbsoluteY { get; }
+        public int RelativeX { get; }
+        public int RelativeY { get; }
     }
 }

@@ -4,5 +4,6 @@
     {
         //int Constrain(int value);
         int Constrain(int value, int containingValue);
+        int GetValue(int containingValue);
     }
 }

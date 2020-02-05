@@ -98,6 +98,21 @@ namespace StarchUICore
 
         public virtual void InvalidateLocation() => Location.Invalidate();
 
+        public void Layout(LayoutInfo layoutInfo)
+        {
+            var layoutResult = OnLayout(layoutInfo);
+
+            if (Measurement.NeedsMeasuring)
+            {
+                Measurement.SetValue(layoutResult.Width, layoutResult.Height);
+            }
+
+            if (Location.NeedsLocating)
+            {
+                Location.SetValue(layoutResult.X, layoutResult.Y);
+            }
+        }
+
         public void Measure(MeasuredSize availableSize)
         {
             if (Measurement.NeedsMeasuring)
@@ -112,11 +127,13 @@ namespace StarchUICore
             if (Location.NeedsLocating)
             {
                 var locatedPosition = OnLocate(availablePosition);
-                Location.SetValue(locatedPosition.X, locatedPosition.Y);
+                Location.SetValue(locatedPosition.AbsoluteX, locatedPosition.AbsoluteY);
             }
         }
 
+        protected abstract LayoutResult OnLayout(LayoutInfo layoutInfo);
         protected abstract MeasuredSize OnMeasure(MeasuredSize availableSize);
+        //protected abstract LocatedPosition OnLocate(LayoutInfo layoutInfo);
         protected abstract LocatedPosition OnLocate(LocatedPosition availablePosition);
 
         protected virtual void OnPositionChanged(Position oldValue, Position newValue) { }

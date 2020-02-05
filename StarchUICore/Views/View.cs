@@ -4,7 +4,6 @@ using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
-using StarchUICore.Attributes.Units;
 using StarchUICore.Layers;
 using System;
 using System.Collections.Generic;
@@ -77,10 +76,26 @@ namespace StarchUICore.Views
             _vertexBuffer.Unbind();
         }
 
+        protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
+        {
+            var width = Size.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth);
+            var height = Size.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight);
+
+            var relativeX = Position.X.GetValue(layoutInfo.Size.ContainingWidth);
+            var relativeY = Position.Y.GetValue(layoutInfo.Size.ContainingHeight);
+
+            var absoluteX = layoutInfo.Position.AbsoluteX + relativeX;
+            var absoluteY = layoutInfo.Position.AbsoluteY + relativeY;
+
+            return new LayoutResult(width, height, absoluteX, absoluteY);
+            /*var measuredSize = OnMeasure(layoutInfo.Size);
+            var locatedPosition = OnLocate(layoutInfo.Position);
+
+            return new LayoutResult(measuredSize.Width, measuredSize.Height, locatedPosition.AbsoluteX, locatedPosition.AbsoluteY);*/
+        }
+
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            //if (Size.Width is AutoUnits || Size.Height is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
-
             var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
             var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
 
@@ -89,13 +104,19 @@ namespace StarchUICore.Views
 
         protected override LocatedPosition OnLocate(LocatedPosition availablePosition)
         {
-            if (Position.X is AutoUnits || Position.Y is AutoUnits) throw new NotImplementedException("Could not handle Auto units");
-
-            var x = 0;// Position.X.Constrain(availablePosition.X);
-            var y = 0;// Position.Y.Constrain(availablePosition.Y);
-
-            return new LocatedPosition(x, y);
+            throw new NotImplementedException();
         }
+
+        /*protected override LocatedPosition OnLocate(LayoutInfo layoutInfo)
+        {
+            var relativeX = Position.X.GetValue(layoutInfo.Size.ContainingWidth);
+            var relativeY = Position.Y.GetValue(layoutInfo.Size.ContainingHeight);
+
+            var absoluteX = layoutInfo.Position.AbsoluteX + relativeX;
+            var absoluteY = layoutInfo.Position.AbsoluteY + relativeY;
+
+            return new LocatedPosition(absoluteX, absoluteY);
+        }*/
 
         public override void Update()
         {
