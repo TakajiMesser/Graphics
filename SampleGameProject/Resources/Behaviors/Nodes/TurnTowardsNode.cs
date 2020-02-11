@@ -1,10 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Physics.Bodies;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
 using System;
+using UmamiPhysicsCore.Bodies;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {

@@ -1,10 +1,8 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Physics.Bodies;
-using SpiceEngineCore.Physics.Collisions;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,8 +19,8 @@ namespace SpiceEngineCore.Scripting
 
         public Vector3 Position
         {
-            get => ((Body3D)_collisionProvider.GetBody(Entity.ID)).Position;
-            set => ((Body3D)_collisionProvider.GetBody(Entity.ID)).Position = value;
+            get => _collisionProvider.GetBody(Entity.ID).Position;
+            set => _collisionProvider.GetBody(Entity.ID).Position = value;
         }
 
         public IBody Body => _collisionProvider.GetBody(Entity.ID);

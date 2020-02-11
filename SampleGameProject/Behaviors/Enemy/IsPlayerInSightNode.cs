@@ -1,12 +1,12 @@
 ﻿using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Physics.Bodies;
-using SpiceEngineCore.Physics.Raycasting;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Scripting.Nodes.Decorators;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Runtime.Serialization;
+using UmamiPhysicsCore.Bodies;
+using UmamiPhysicsCore.Raycasting;
 
 namespace SampleGameProject.Behaviors.Enemy
 {

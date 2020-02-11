@@ -95,8 +95,8 @@
     <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
+    <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -146,6 +146,8 @@
     <Compile Include="Maps\Map2D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\MapActor.cs" />
+    <Compile Include="Maps\MapBrush.cs" />
+    <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -295,6 +297,10 @@
     <ProjectReference Include="..\StarchUICore\StarchUICore.csproj">
       <Project>{0fe2afa5-606d-47f1-b267-dac3936b300f}</Project>
       <Name>StarchUICore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiPhysicsCore\UmamiPhysicsCore.csproj">
+      <Project>{38042cd2-2eb5-43cf-8973-6da5dcd16aaa}</Project>
+      <Name>UmamiPhysicsCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

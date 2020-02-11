@@ -1,4 +1,6 @@
-﻿namespace StarchUICore.Attributes.Sizes
+﻿using System;
+
+namespace StarchUICore.Attributes.Sizes
 {
     public class Measurement
     {
@@ -18,6 +20,12 @@
             Width = width;
             Height = height;
             NeedsMeasuring = false;
+        }
+
+        public void Scale(float width, float height)
+        {
+            Width = (int)Math.Floor(Width * width);
+            Height = (int)Math.Floor(Height * height);
         }
 
         public void Invalidate() => NeedsMeasuring = true;

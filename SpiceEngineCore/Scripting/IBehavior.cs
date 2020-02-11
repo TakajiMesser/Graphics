@@ -2,7 +2,7 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Physics.Collisions;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting.StimResponse;
 using SpiceEngineCore.Utilities;
 

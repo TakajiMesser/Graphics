@@ -4,13 +4,12 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Physics.Collisions;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Scripting.Properties;
 using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SpiceEngine.Scripting
 {

@@ -56,6 +56,11 @@ namespace SpiceEngineCore.Utilities
             }
         }
 
+        public static int ClampBottom(this int value, int minValue) => value < minValue ? minValue : value;
+        public static float ClampBottom(this float value, float minValue) => value < minValue ? minValue : value;
+        public static int ClampTop(this int value, int maxValue) => value > maxValue ? maxValue : value;
+        public static float ClampTop(this float value, float maxValue) => value > maxValue ? maxValue : value;
+
         public static int Round(this int value, int min, int max)
         {
             if (value <= min)

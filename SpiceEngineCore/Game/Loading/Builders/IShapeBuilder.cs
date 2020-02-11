@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Physics;
 
 namespace SpiceEngineCore.Game.Loading.Builders
 {

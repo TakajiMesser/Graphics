@@ -20,6 +20,12 @@
             NeedsLocating = false;
         }
 
+        public void Translate(int x, int y)
+        {
+            X += x;
+            Y += y;
+        }
+
         public void Invalidate() => NeedsLocating = true;
 
         public static Location Empty => new Location(0, 0)

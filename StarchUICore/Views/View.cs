@@ -118,7 +118,7 @@ namespace StarchUICore.Views
             return new LocatedPosition(absoluteX, absoluteY);
         }*/
 
-        public override void Update()
+        public override void Update(int nTicks)
         {
             if (IsEnabled)
             {

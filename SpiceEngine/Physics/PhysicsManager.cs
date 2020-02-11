@@ -5,13 +5,14 @@ using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Physics.Bodies;
-using SpiceEngineCore.Physics.Collisions;
-using SpiceEngineCore.Physics.Constraints;
-using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UmamiPhysicsCore.Bodies;
+using UmamiPhysicsCore.Collisions;
+using UmamiPhysicsCore.Constraints;
+using UmamiPhysicsCore.Shapes;
 
 namespace SpiceEngine.Physics
 {
@@ -52,9 +53,9 @@ namespace SpiceEngine.Physics
             _lightTree = new OctTree(0, worldBoundaries);
         }
 
-        public IEnumerable<Collision3D> GetCollisions() => _collisionManager.NarrowCollisions;
+        public IEnumerable<ICollision> GetCollisions() => _collisionManager.NarrowCollisions;
 
-        public IEnumerable<Collision3D> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
+        public IEnumerable<ICollision> GetCollisions(int entityID) => _collisionManager.GetNarrowCollisions(entityID);
 
         public IEnumerable<int> GetCollisionIDs() => _collisionManager.NarrowCollisionIDs;
 
@@ -326,9 +327,9 @@ namespace SpiceEngine.Physics
                     var entityB = _entityProvider.GetEntity(collisionPair.SecondEntityID);
 
                     var collision = bodyA.GetCollision(bodyB);
-                    if (collision.HasCollision)
+                    if (collision.HasCollision && collision is Collision3D collision3D)
                     {
-                        _collisionManager.AddNarrowCollision(collision);
+                        _collisionManager.AddNarrowCollision(collision3D);
                     }
                 }
             }

@@ -1,6 +1,6 @@
 ﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
@@ -22,6 +22,6 @@ namespace SpiceEngineCore.Maps
 
         public IEnumerable<IEntity> ToEntities() => throw new NotImplementedException();
 
-        public IEnumerable<Shape3D> ToShapes() => throw new NotImplementedException();
+        public IEnumerable<IShape> ToShapes() => throw new NotImplementedException();
     }
 }

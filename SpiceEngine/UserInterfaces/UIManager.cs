@@ -98,7 +98,7 @@ namespace SpiceEngine.UserInterfaces
             }
 
             root?.Measure(new MeasuredSize(Resolution.Width, Resolution.Height));
-            root?.Update();
+            root?.Update(TickRate);
         }
 
         public IEnumerable<int> GetDrawOrder()

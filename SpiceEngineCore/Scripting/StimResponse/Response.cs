@@ -1,10 +1,6 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Physics.Bodies;
-using SpiceEngineCore.Physics.Raycasting;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting.Meters;
-using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -88,7 +84,7 @@ namespace SpiceEngineCore.Scripting.StimResponse
         {
             foreach (var collider in stimuliColliders)
             {
-                var collision = ((Body3D)body).GetCollision((Body3D)collider);
+                var collision = body.GetCollision(collider);
                 if (collision.HasCollision)
                 {
                     return true;
@@ -112,7 +108,7 @@ namespace SpiceEngineCore.Scripting.StimResponse
             return false;
         }
 
-        private bool HasSightStimulus(IEntity entity, Vector3 eulerRotation, IEnumerable<IBody> stimuliColliders, IEnumerable<IBody> colliders, IEntityProvider entityProvider)
+        /*private bool HasSightStimulus(IEntity entity, Vector3 eulerRotation, IEnumerable<IBody> stimuliColliders, IEnumerable<IBody> colliders, IEntityProvider entityProvider)
         {
             foreach (var collider in stimuliColliders)
             {
@@ -144,6 +140,6 @@ namespace SpiceEngineCore.Scripting.StimResponse
             }
 
             return false;
-        }
+        }*/
     }
 }

@@ -6,7 +6,7 @@ using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Animations;
 using SpiceEngineCore.Rendering.Materials;
@@ -20,8 +20,8 @@ using SpiceEngineCore.Scripting.Scripts;
 using SpiceEngineCore.Scripting.StimResponse;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
+using UmamiPhysicsCore.Shapes;
 
 namespace SpiceEngineCore.Maps
 {

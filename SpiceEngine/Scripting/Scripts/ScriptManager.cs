@@ -36,6 +36,8 @@ namespace SpiceEngine.Scripting.Scripts
             //var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
             _compilerParameters.ReferencedAssemblies.Add("netstandard.dll");
             _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("UmamiPhysicsCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("StarchUICore.dll");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
         }

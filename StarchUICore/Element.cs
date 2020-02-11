@@ -1,6 +1,8 @@
 ﻿using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Units;
 using StarchUICore.Views;
 using System;
 
@@ -84,10 +86,31 @@ namespace StarchUICore
         public event EventHandler<SizeEventArgs> SizeChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
+        protected int ApplyMinimumWidthConstraint(int value, LayoutInfo layoutInfo) => MinimumSize.Width is AutoUnits
+            ? value
+            : value.ClampBottom(MinimumSize.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth));
+
+        protected int ApplyMaximumWidthConstraint(int value, LayoutInfo layoutInfo) => MaximumSize.Width is AutoUnits
+            ? value
+            : value.ClampTop(MaximumSize.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth));
+
+        protected int ApplyMinimumHeightConstraint(int value, LayoutInfo layoutInfo) => MinimumSize.Height is AutoUnits
+            ? value
+            : value.ClampBottom(MinimumSize.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight));
+
+        protected int ApplyMaximumHeightConstraint(int value, LayoutInfo layoutInfo) => MaximumSize.Height is AutoUnits
+            ? value
+            : value.ClampTop(MaximumSize.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight));
+
         public abstract void Load();
         //public abstract void Measure(ISize availableSize);
         //public abstract void Locate(IPosition availablePosition);
-        public abstract void Update();
+
+        public virtual void Update(int nTicks)
+        {
+
+        }
+
         public abstract void Draw();
 
         public virtual void InvalidateMeasurement()

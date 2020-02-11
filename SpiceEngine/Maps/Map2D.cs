@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OpenTK;
-using SpiceEngineCore.Physics.Collisions;
 using System.Linq;
+using UmamiPhysicsCore.Collisions;
 
 namespace SpiceEngine.Maps
 {

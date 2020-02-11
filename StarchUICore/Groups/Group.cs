@@ -102,13 +102,13 @@ namespace StarchUICore.Groups
             return new UnitPosition(x, y);
         }*/
 
-        public override void Update()
+        public override void Update(int nTicks)
         {
             if (IsEnabled)
             {
                 foreach (var child in Children)
                 {
-                    child.Update();
+                    child.Update(nTicks);
                 }
             }
         }

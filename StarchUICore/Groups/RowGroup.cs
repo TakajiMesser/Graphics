@@ -1,7 +1,7 @@
-﻿using StarchUICore.Attributes.Positions;
+﻿using SpiceEngineCore.Utilities;
+using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
-using System;
 
 namespace StarchUICore.Groups
 {
@@ -18,6 +18,9 @@ namespace StarchUICore.Groups
             var width = Size.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth);
             var height = Size.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight);
 
+            width = ApplyMinimumWidthConstraint(width, layoutInfo);
+            height = ApplyMinimumHeightConstraint(height, layoutInfo);
+
             var remainingWidth = width - Padding.GetWidth(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth);
             var remainingHeight = height - Padding.GetHeight(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight);
 
@@ -32,28 +35,38 @@ namespace StarchUICore.Groups
                 child.Layout(childLayout);
 
                 // Update our remaining width based on the child's actual width
-                var measurement = child.Measurement;
-                remainingWidth -= measurement.Width;
+                var childMeasurement = child.Measurement;
+                remainingWidth -= childMeasurement.Width;
 
                 // Update our current X by using the child's actual reported X (keep in mind the returned value is ABSOLUTE, not relative)
                 // TODO - If the returned absolute X position of the child differs from what we expected for the absolute X,
                 //        we ALSO need to update the remaining width accordingly
                 var location = child.Location;
-                relativeX = (location.X - absoluteX) + measurement.Width;
+                relativeX = (location.X - absoluteX) + childMeasurement.Width;
 
-                if (remainingWidth < 0)
-                {
-                    remainingWidth = 0;
-                }
+                remainingWidth.ClampBottom(0);
             }
 
             // TODO - Also need to handle AUTO Position units here...
+            // If this RowGroup is meant to fit its content, then we should correct the width here
             if (Size.Width is AutoUnits)
             {
                 width -= remainingWidth;
             }
 
-            return new LayoutResult(width, remainingHeight, absoluteX, absoluteY);
+            // TODO - This is not right at all... we aren't subtracting from remaining height with each child,
+            // but we instead want to "shrink" our size to fit the largest reported child height
+            if (Size.Height is AutoUnits)
+            {
+                height -= remainingHeight;
+            }
+
+            // Now that we have determined the total size we need, apply the maximum constraints
+            width = ApplyMaximumWidthConstraint(width, layoutInfo);
+            height = ApplyMaximumHeightConstraint(height, layoutInfo);
+
+            return new LayoutResult(width, height, absoluteX, absoluteY);
+            //return new LayoutResult(width, remainingHeight, absoluteX, absoluteY);
         }
 
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)

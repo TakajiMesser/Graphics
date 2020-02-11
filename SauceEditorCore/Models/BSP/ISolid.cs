@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Physics.Shapes;
+﻿using UmamiPhysicsCore.Shapes;
 
 namespace SauceEditorCore.Models.BSP
 {

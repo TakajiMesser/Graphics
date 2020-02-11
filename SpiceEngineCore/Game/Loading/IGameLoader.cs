@@ -2,7 +2,7 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Physics.Shapes;
+using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Scripting;
 using System;
