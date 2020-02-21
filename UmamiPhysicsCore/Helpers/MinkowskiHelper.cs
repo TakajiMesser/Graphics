@@ -1,8 +1,8 @@
 ﻿using OpenTK;
-using UmamiPhysicsCore.Bodies;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Shapes;
 
-namespace UmamiPhysicsCore.Helpers
+namespace SavoryPhysicsCore.Helpers
 {
     public static class MinkowskiHelper
     {

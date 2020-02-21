@@ -4,7 +4,12 @@
     {
         internal AutoUnits() { }
 
-        public int GetValue(int containingValue) => 0;
-        public int Constrain(int value, int containingValue) => value;
+        public int ToOffsetPixels(int nRelative = 0) => nRelative;
+
+        public int ToDimensionPixels(int nAvailable, int nRelative = 0)
+        {
+            var nPixels = ToOffsetPixels(nRelative);
+            return nPixels < nAvailable ? nPixels : nAvailable;
+        }
     }
 }

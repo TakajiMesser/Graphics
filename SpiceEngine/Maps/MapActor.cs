@@ -1,5 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SavoryPhysicsCore.Shapes;
+using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Models;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Components.Animations;
@@ -15,18 +17,18 @@ using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Scripting.Properties;
-using SpiceEngineCore.Scripting.Scripts;
-using SpiceEngineCore.Scripting.StimResponse;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiPhysicsCore.Shapes;
+using UmamiScriptingCore.Behaviors.Properties;
+using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace SpiceEngineCore.Maps
 {
     public class MapActor : MapEntity<IActor>, IMapActor, IModelPather, ITexturePather
     {
+        private List<Stimulus> _stimuli = new List<Stimulus>();
+
         public string Name { get; set; }
 
         public Vector3 Orientation { get; set; }
@@ -41,12 +43,14 @@ namespace SpiceEngineCore.Maps
 
         public MapBehavior Behavior { get; set; }
 
-        public IEnumerable<Script> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<Script>();
-        public List<Stimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public List<Property> Properties { get; set; } = new List<Property>();
+        public IEnumerable<IScript> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<IScript>();
+        public IEnumerable<IStimulus> Stimuli => _stimuli;
+        public IEnumerable<IProperty> Properties { get; set; } = new List<Property>();
 
         public bool IsPhysical { get; set; }
         //public ICollider Collider { get; set; }
+
+        public void AddStimulus(Stimulus stimulus) => _stimuli.Add(stimulus);
 
         public override IEntity ToEntity(/*TextureManager textureManager = null*/)
         {

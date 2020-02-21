@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
 using OpenTK;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Scripting.Nodes;
+using SavoryPhysicsCore.Bodies;
 using SpiceEngineCore.Utilities;
-using UmamiPhysicsCore.Bodies;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {

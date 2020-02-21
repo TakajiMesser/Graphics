@@ -1,10 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
 using System;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Behaviors.Player
 {

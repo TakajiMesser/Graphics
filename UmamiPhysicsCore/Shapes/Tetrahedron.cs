@@ -2,7 +2,7 @@
 using SpiceEngineCore.Utilities;
 using System;
 
-namespace UmamiPhysicsCore.Shapes
+namespace SavoryPhysicsCore.Shapes
 {
     public class Tetrahedron : ISimplex
     {

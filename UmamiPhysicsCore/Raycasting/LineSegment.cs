@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using System;
 
-namespace UmamiPhysicsCore.Raycasting
+namespace SavoryPhysicsCore.Raycasting
 {
     public struct LineSegment
     {

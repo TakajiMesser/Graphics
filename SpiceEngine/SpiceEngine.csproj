@@ -146,7 +146,11 @@
     <Compile Include="Maps\Map2D.cs" />
     <Compile Include="Maps\Map3D.cs" />
     <Compile Include="Maps\MapActor.cs" />
+    <Compile Include="Maps\MapBehavior.cs" />
     <Compile Include="Maps\MapBrush.cs" />
+    <Compile Include="Maps\MapCamera.cs" />
+    <Compile Include="Maps\MapLight.cs" />
+    <Compile Include="Maps\MapNode.cs" />
     <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -298,9 +302,17 @@
       <Project>{0fe2afa5-606d-47f1-b267-dac3936b300f}</Project>
       <Name>StarchUICore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UmamiPhysicsCore\UmamiPhysicsCore.csproj">
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
+      <Project>{f6c9b29f-7751-4fd2-88da-cfe8b512c645}</Project>
+      <Name>SweetGraphicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiPhysicsCore\SavoryPhysicsCore.csproj">
       <Project>{38042cd2-2eb5-43cf-8973-6da5dcd16aaa}</Project>
-      <Name>UmamiPhysicsCore</Name>
+      <Name>SavoryPhysicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
+      <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
+      <Name>UmamiScriptingCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

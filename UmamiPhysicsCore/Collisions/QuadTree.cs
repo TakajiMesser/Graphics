@@ -2,7 +2,7 @@
 using SpiceEngineCore.Physics;
 using System.Collections.Generic;
 
-namespace UmamiPhysicsCore.Collisions
+namespace SavoryPhysicsCore.Collisions
 {
     public class QuadTree : IPartitionTree
     {

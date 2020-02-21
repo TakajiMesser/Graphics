@@ -2,10 +2,10 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Physics;
 using System;
-using UmamiPhysicsCore.Collisions;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Collisions;
+using SavoryPhysicsCore.Shapes;
 
-namespace UmamiPhysicsCore.Bodies
+namespace SavoryPhysicsCore.Bodies
 {
     public abstract class Body2D : IBody
     {

@@ -2,9 +2,9 @@
 using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {

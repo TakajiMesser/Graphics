@@ -84,9 +84,17 @@
       <Project>{0FE2AFA5-606D-47F1-B267-DAC3936B300F}</Project>
       <Name>StarchUICore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UmamiPhysicsCore\UmamiPhysicsCore.csproj">
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
+      <Project>{f6c9b29f-7751-4fd2-88da-cfe8b512c645}</Project>
+      <Name>SweetGraphicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiPhysicsCore\SavoryPhysicsCore.csproj">
       <Project>{38042cd2-2eb5-43cf-8973-6da5dcd16aaa}</Project>
-      <Name>UmamiPhysicsCore</Name>
+      <Name>SavoryPhysicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
+      <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
+      <Name>UmamiScriptingCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

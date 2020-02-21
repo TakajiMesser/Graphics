@@ -1,16 +1,28 @@
-﻿using StarchUICore.Attributes.Positions;
-
-namespace StarchUICore.Attributes.Sizes
+﻿namespace StarchUICore.Attributes.Sizes
 {
     public struct LayoutInfo
     {
-        public LayoutInfo(MeasuredSize size, LocatedPosition position)
+        public LayoutInfo(int availableWidth, int availableHeight, int parentWidth, int parentHeight, int relativeX, int relativeY, int parentAbsoluteX, int parentAbsoluteY)
         {
-            Size = size;
-            Position = position;
+            AvailableWidth = availableWidth;
+            AvailableHeight = availableHeight;
+            ParentWidth = parentWidth;
+            ParentHeight = parentHeight;
+
+            RelativeX = relativeX;
+            RelativeY = relativeY;
+            ParentAbsoluteX = parentAbsoluteX;
+            ParentAbsoluteY = parentAbsoluteY;
         }
 
-        public MeasuredSize Size { get; }
-        public LocatedPosition Position { get; }
+        public int AvailableWidth { get; }
+        public int AvailableHeight { get; }
+        public int ParentWidth { get; }
+        public int ParentHeight { get; }
+
+        public int RelativeX { get; }
+        public int RelativeY { get; }
+        public int ParentAbsoluteX { get; }
+        public int ParentAbsoluteY { get; }
     }
 }

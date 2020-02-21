@@ -2,9 +2,9 @@
 using SpiceEngineCore.Physics;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiPhysicsCore.Collisions;
+using SavoryPhysicsCore.Collisions;
 
-namespace UmamiPhysicsCore.Shapes
+namespace SavoryPhysicsCore.Shapes
 {
     public class Polygon : Shape2D
     {

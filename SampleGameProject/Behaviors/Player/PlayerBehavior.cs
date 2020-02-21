@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Scripting;
+﻿using UmamiScriptingCore.Behaviors;
 
 namespace SampleGameProject.Behaviors.Player
 {

@@ -13,6 +13,12 @@ namespace StarchUICore
         Position Position { get; set; }
         Size Size { get; set; }
 
+        Anchor HorizontalAnchor { get; }
+        Anchor VerticalAnchor { get; }
+
+        Dock HorizontalDock { get; }
+        Dock VerticalDock { get; }
+
         Border Border { get; set; }
 
         Measurement Measurement { get; }
@@ -23,6 +29,8 @@ namespace StarchUICore
         bool IsGone { get; set; }
 
         float Alpha { get; set; }
+
+        bool IsLaidOut { get; }
 
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;

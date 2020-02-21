@@ -9,69 +9,104 @@ namespace StarchUICore.Groups
     {
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
-            var relativeX = Position.X.GetValue(layoutInfo.Size.ContainingWidth);
-            var relativeY = Position.Y.GetValue(layoutInfo.Size.ContainingHeight);
+            var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
+            var height = GetMeasuredHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
 
-            var absoluteX = layoutInfo.Position.AbsoluteX + relativeX;
-            var absoluteY = layoutInfo.Position.AbsoluteY + relativeY;
+            var relativeX = GetRelativeX(layoutInfo.RelativeX, layoutInfo.ParentAbsoluteX, layoutInfo.AvailableWidth, layoutInfo.ParentWidth, width);
+            var relativeY = GetRelativeY(layoutInfo.RelativeY, layoutInfo.ParentAbsoluteY, layoutInfo.AvailableHeight, layoutInfo.ParentHeight, height);
 
-            var width = Size.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth);
-            var height = Size.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight);
+            var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
+            var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
 
-            width = ApplyMinimumWidthConstraint(width, layoutInfo);
-            height = ApplyMinimumHeightConstraint(height, layoutInfo);
-
-            var remainingWidth = width - Padding.GetWidth(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth);
-            var remainingHeight = height - Padding.GetHeight(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight);
-
-            foreach (var child in Children)
+            if (width.HasValue && height.HasValue && absoluteX.HasValue && absoluteY.HasValue)
             {
-                // TODO - Take Group Spacing into consideration here...
-                // TODO - I might be double-adding the relative X to the absolute X here...
-                var childSize = new MeasuredSize(remainingWidth, remainingHeight, width, height);
-                var childPosition = new LocatedPosition(absoluteX + relativeX, absoluteY + relativeY, relativeX, relativeY);
+                var remainingWidth = width.Value - Padding.GetWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
+                var remainingHeight = height.Value - Padding.GetHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
 
-                var childLayout = new LayoutInfo(childSize, childPosition);
-                child.Layout(childLayout);
+                var currentRelativeX = relativeX.Value;
+                var currentRelativeY = relativeY.Value;
 
-                // Update our remaining width based on the child's actual width
-                var childMeasurement = child.Measurement;
-                remainingWidth -= childMeasurement.Width;
+                var largestChildHeight = 0;
+                var spacing = Spacing.ToDimensionPixels(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
 
-                // Update our current X by using the child's actual reported X (keep in mind the returned value is ABSOLUTE, not relative)
-                // TODO - If the returned absolute X position of the child differs from what we expected for the absolute X,
-                //        we ALSO need to update the remaining width accordingly
-                var location = child.Location;
-                relativeX = (location.X - absoluteX) + childMeasurement.Width;
+                foreach (var child in Children)
+                {
+                    var childLayout = new LayoutInfo(remainingWidth, remainingHeight, width.Value, height.Value, currentRelativeX, currentRelativeY, absoluteX.Value, absoluteY.Value);
+                    child.Layout(childLayout);
 
-                remainingWidth.ClampBottom(0);
+                    // Was the child successfully laid out?
+                    if (child.IsLaidOut)
+                    {
+                        // Determine how far off our requested width is from the actual width that the child reported back
+                        var xDifference = child.Location.X - absoluteX.Value;
+
+                        // Update our remaining width based on the child's actual width
+                        remainingWidth -= child.Measurement.Width + xDifference;
+
+                        // Update our current X from the child's reported absolute X
+                        currentRelativeX = child.Measurement.Width + xDifference;
+                        currentRelativeX += spacing;
+
+                        remainingWidth.ClampBottom(0);
+
+                        // TODO - What if the child reports a different Y than we expected? What if the child wants to be centered (Auto Y Units)?
+                        // If this group should auto-size by height, we need to keep track of the shortest child height
+                        if (Size.Height is AutoUnits && child.Measurement.Width > 0 && child.Measurement.Height > largestChildHeight)
+                        {
+                            largestChildHeight = child.Measurement.Height;
+                        }
+                    }
+                    else
+                    {
+                        // We need to halt this group's layout, and report back what we can
+                        if (!child.Measurement.NeedsMeasuring && (Size.Height is AutoUnits))
+                        {
+                            return new LayoutResult(null, null, null, height);
+                        }
+                        else
+                        {
+                            return new LayoutResult();
+                        }
+                    }
+                }
+
+                // TODO - Also need to handle AUTO Position units here...
+                // If this RowGroup is meant to fit its content, then we should correct the width here
+                if (Size.Width is AutoUnits)
+                {
+                    width -= remainingWidth;
+                }
+
+                // If the RowGroup is meant to fit its content, we want to determine how much "extra" height we should shave off
+                // due to the smallest child height being less than what we expected (remainingHeight)
+                if (Size.Height is AutoUnits)
+                {
+                    var yDifference = (remainingHeight - largestChildHeight).ClampBottom(0);
+                    height -= yDifference;
+                }
+
+                // Now that we have measured all of the children as well, reapply the necessary size constraints
+                if (!(Size.MaximumWidth is AutoUnits))
+                {
+                    width = width.Value.ClampTop(Size.MaximumWidth.ToDimensionPixels(layoutInfo.AvailableWidth, layoutInfo.ParentWidth));
+                }
+
+                if (!(Size.MinimumHeight is AutoUnits))
+                {
+                    height = height.Value.ClampBottom(Size.MinimumHeight.ToDimensionPixels(layoutInfo.AvailableHeight, layoutInfo.ParentHeight));
+                }
+
+                return new LayoutResult(absoluteX, absoluteY, width, height);
             }
-
-            // TODO - Also need to handle AUTO Position units here...
-            // If this RowGroup is meant to fit its content, then we should correct the width here
-            if (Size.Width is AutoUnits)
+            else
             {
-                width -= remainingWidth;
+                return new LayoutResult();
             }
-
-            // TODO - This is not right at all... we aren't subtracting from remaining height with each child,
-            // but we instead want to "shrink" our size to fit the largest reported child height
-            if (Size.Height is AutoUnits)
-            {
-                height -= remainingHeight;
-            }
-
-            // Now that we have determined the total size we need, apply the maximum constraints
-            width = ApplyMaximumWidthConstraint(width, layoutInfo);
-            height = ApplyMaximumHeightConstraint(height, layoutInfo);
-
-            return new LayoutResult(width, height, absoluteX, absoluteY);
-            //return new LayoutResult(width, remainingHeight, absoluteX, absoluteY);
         }
 
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
+            /*var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
             var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
 
             var remainingWidth = width - Padding.GetWidth(availableSize.Width, availableSize.ContainingWidth);
@@ -96,7 +131,8 @@ namespace StarchUICore.Groups
                 width -= remainingWidth;
             }
 
-            return new MeasuredSize(width, remainingHeight);
+            return new MeasuredSize(width, remainingHeight);*/
+            return new MeasuredSize();
         }
 
         protected override LocatedPosition OnLocate(LocatedPosition availablePosition)

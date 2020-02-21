@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace UmamiPhysicsCore.Collisions
+namespace SavoryPhysicsCore.Collisions
 {
     public class CollisionManager
     {

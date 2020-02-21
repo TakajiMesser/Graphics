@@ -9,10 +9,10 @@ using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiPhysicsCore.Bodies;
-using UmamiPhysicsCore.Collisions;
-using UmamiPhysicsCore.Constraints;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Collisions;
+using SavoryPhysicsCore.Constraints;
+using SavoryPhysicsCore.Shapes;
 
 namespace SpiceEngine.Physics
 {

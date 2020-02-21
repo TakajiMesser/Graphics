@@ -1,4 +1,4 @@
-﻿namespace UmamiPhysicsCore.Shapes
+﻿namespace SavoryPhysicsCore.Shapes
 {
     public interface ISimplex
     {

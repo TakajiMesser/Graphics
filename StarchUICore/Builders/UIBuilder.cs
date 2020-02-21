@@ -48,11 +48,26 @@ namespace StarchUICore.Builders
             var cornerPointB = new Vector2(radius, radius);
             var quadrantBPoints = GetRoundedRectangleQuadrant(cornerPointB, radius, nSides, 1);
 
+            foreach (var point in quadrantBPoints)
+            {
+                vertices.Add(new ViewVertex(new Vector3(point.X, point.Y, 0.0f), color, Color4.PaleVioletRed));
+            }
+
             var cornerPointC = new Vector2(radius, height - radius);
             var quadrantCPoints = GetRoundedRectangleQuadrant(cornerPointC, radius, nSides, 2);
 
+            foreach (var point in quadrantCPoints)
+            {
+                vertices.Add(new ViewVertex(new Vector3(point.X, point.Y, 0.0f), color, Color4.PaleVioletRed));
+            }
+
             var cornerPointD = new Vector2(width - radius, height - radius);
             var quadrantDPoints = GetRoundedRectangleQuadrant(cornerPointD, radius, nSides, 3);
+
+            foreach (var point in quadrantDPoints)
+            {
+                vertices.Add(new ViewVertex(new Vector3(point.X, point.Y, 0.0f), color, Color4.PaleVioletRed));
+            }
 
             return new Vertex3DSet<ViewVertex>(vertices, triangleIndices);
         }

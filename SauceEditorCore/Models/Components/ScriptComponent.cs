@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Scripting.Scripts;
-using System;
+﻿using System;
+using UmamiScriptingCore.Scripts;
 
 namespace SauceEditorCore.Models.Components
 {

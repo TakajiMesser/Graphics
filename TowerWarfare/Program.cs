@@ -36,10 +36,10 @@ namespace TowerWarfare
         {
             var root = GetRootElement();
 
-            var windowSize = new MeasuredSize(1000, 1000);
-            var windowPosition = new LocatedPosition(0, 0);
+            //var windowSize = new MeasuredSize(1000, 1000);
+            //var windowPosition = new LocatedPosition(0, 0);
 
-            root.Layout(new LayoutInfo(windowSize, windowPosition));
+            root.Layout(new LayoutInfo(1000, 1000, 1000, 1000, 0, 0, 0, 0));
             //root.Measure(windowSize);
             //root.Locate(windowPosition);
 
@@ -51,8 +51,8 @@ namespace TowerWarfare
         {
             var rowGroup1A = new RowGroup()
             {
-                Position = new Position(Unit.Pixels(0), Unit.Pixels(0)),
-                Size = new Size(Unit.Pixels(800), Unit.Auto())
+                Position = Position.FromXY(Unit.Pixels(0), Unit.Pixels(0)),
+                Size = Size.FromDimensions(Unit.Pixels(800), Unit.Auto())
             };
 
             var view2A = new TestView(rowGroup1A, Unit.Percents(10), Unit.Percents(10), Unit.Pixels(0), Unit.Pixels(0));
@@ -63,8 +63,8 @@ namespace TowerWarfare
 
             var rowGroup2A = new RowGroup()
             {
-                Position = new Position(Unit.Pixels(0), Unit.Pixels(0)),
-                Size = new Size(Unit.Percents(50), Unit.Pixels(200))
+                Position = Position.FromXY(Unit.Pixels(0), Unit.Pixels(0)),
+                Size = Size.FromDimensions(Unit.Percents(50), Unit.Pixels(200))
             };
             rowGroup1A.AddChild(rowGroup2A);
 

@@ -2,7 +2,7 @@
 using SpiceEngineCore.Physics;
 using System;
 
-namespace UmamiPhysicsCore.Collisions
+namespace SavoryPhysicsCore.Collisions
 {
     public struct Oct : IPartition
     {

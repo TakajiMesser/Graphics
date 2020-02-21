@@ -1,6 +1,6 @@
 ﻿using SpiceEngineCore.Physics;
 
-namespace UmamiPhysicsCore.Collisions
+namespace SavoryPhysicsCore.Collisions
 {
     public interface ICollidable
     {

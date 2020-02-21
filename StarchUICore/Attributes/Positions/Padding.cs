@@ -1,5 +1,4 @@
-﻿using StarchUICore.Attributes.Sizes;
-using StarchUICore.Attributes.Units;
+﻿using StarchUICore.Attributes.Units;
 
 namespace StarchUICore.Attributes.Positions
 {
@@ -18,18 +17,18 @@ namespace StarchUICore.Attributes.Positions
         public IUnits Right { get; }
         public IUnits Bottom { get; }
 
-        public int GetWidth(int availableWidth, int containingWidth)
+        public int GetWidth(int availableWidth, int parentWidth)
         {
-            var paddingLeft = Left is AutoUnits ? 0 : Left.Constrain(availableWidth, containingWidth);
-            var paddingRight = Right is AutoUnits ? 0 : Right.Constrain(availableWidth, containingWidth);
+            var paddingLeft = Left is AutoUnits ? 0 : Left.ToDimensionPixels(availableWidth, parentWidth);
+            var paddingRight = Right is AutoUnits ? 0 : Right.ToDimensionPixels(availableWidth, parentWidth);
 
             return paddingLeft + paddingRight;
         }
 
-        public int GetHeight(int availableHeight, int containingHeight)
+        public int GetHeight(int availableHeight, int parentHeight)
         {
-            var paddingTop = Top is AutoUnits ? 0 : Top.Constrain(availableHeight, containingHeight);
-            var paddingBottom = Bottom is AutoUnits ? 0 : Bottom.Constrain(availableHeight, containingHeight);
+            var paddingTop = Top is AutoUnits ? 0 : Top.ToDimensionPixels(availableHeight, parentHeight);
+            var paddingBottom = Bottom is AutoUnits ? 0 : Bottom.ToDimensionPixels(availableHeight, parentHeight);
 
             return paddingTop + paddingBottom;
         }

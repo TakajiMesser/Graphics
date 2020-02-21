@@ -1,9 +1,9 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Maps;
-using SpiceEngineCore.Scripting.Meters;
-using SpiceEngineCore.Scripting.Scripts;
-using SpiceEngineCore.Scripting.StimResponse;
+using SpiceEngine.Maps;
 using System.Collections.Generic;
+using UmamiScriptingCore.Behaviors.Meters;
+using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore.Scripts;
 
 namespace SampleGameProject.Helpers.Builders
 {

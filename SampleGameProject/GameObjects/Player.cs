@@ -3,6 +3,7 @@ using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Textures;
+using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace SampleGameProject.GameObjects
 {
@@ -37,7 +38,7 @@ namespace SampleGameProject.GameObjects
             Behavior = MapBehavior.Load(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
             IsPhysical = true;
 
-            Stimuli.Add(SpiceEngineCore.Scripting.StimResponse.Stimulus.Player);
+            AddStimulus(Stimulus.Player);
         }
     }
 }

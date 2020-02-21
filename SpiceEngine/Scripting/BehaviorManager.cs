@@ -6,10 +6,10 @@ using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Scripting.Properties;
-using SpiceEngineCore.Scripting.StimResponse;
 using System.Collections.Generic;
 using System.Linq;
+using UmamiScriptingCore.Behaviors.Properties;
+using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace SpiceEngine.Scripting
 {
@@ -64,7 +64,7 @@ namespace SpiceEngine.Scripting
             }
         }
 
-        public void AddProperties(int entityID, IEnumerable<Property> properties)
+        public void AddProperties(int entityID, IEnumerable<IProperty> properties)
         {
             var propertyCollection = new PropertyCollection();
             propertyCollection.AddProperties(properties);
@@ -72,7 +72,7 @@ namespace SpiceEngine.Scripting
             _propertiesByEntityID.Add(entityID, propertyCollection);
         }
 
-        public void AddStimuli(int entityID, IEnumerable<Stimulus> stimuli)
+        public void AddStimuli(int entityID, IEnumerable<IStimulus> stimuli)
         {
             var stimulusCollection = new StimulusCollection();
             stimulusCollection.AddStimuli(stimuli);
@@ -80,9 +80,9 @@ namespace SpiceEngine.Scripting
             _stimuliByEntityID.Add(entityID, stimulusCollection);
         }
 
-        public IEnumerable<Stimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
+        public IEnumerable<IStimulus> GetStimuli(int entityID) => _stimuliByEntityID.ContainsKey(entityID)
             ? _stimuliByEntityID[entityID].Stimuli
-            : Enumerable.Empty<Stimulus>();
+            : Enumerable.Empty<IStimulus>();
 
         public override void LoadBuilderSync(int entityID, IBehaviorBuilder builder)
         {

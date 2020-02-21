@@ -1,11 +1,11 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Utilities;
 using System;
-using UmamiPhysicsCore.Bodies;
-using UmamiPhysicsCore.Collisions;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Collisions;
+using SavoryPhysicsCore.Shapes;
 
-namespace UmamiPhysicsCore.Helpers
+namespace SavoryPhysicsCore.Helpers
 {
     public static class CollisionHelper
     {

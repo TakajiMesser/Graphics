@@ -1,4 +1,4 @@
-﻿namespace UmamiPhysicsCore.Constraints
+﻿namespace SavoryPhysicsCore.Constraints
 {
     public interface IConstraint
     {

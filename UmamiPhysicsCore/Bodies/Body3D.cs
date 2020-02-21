@@ -1,11 +1,11 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Physics;
-using UmamiPhysicsCore.Collisions;
-using UmamiPhysicsCore.Helpers;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Collisions;
+using SavoryPhysicsCore.Helpers;
+using SavoryPhysicsCore.Shapes;
 
-namespace UmamiPhysicsCore.Bodies
+namespace SavoryPhysicsCore.Bodies
 {
     public abstract class Body3D : IBody
     {

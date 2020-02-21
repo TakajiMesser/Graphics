@@ -1,8 +1,8 @@
 ﻿using OpenTK;
-using UmamiPhysicsCore.Bodies;
-using UmamiPhysicsCore.Collisions;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Collisions;
 
-namespace UmamiPhysicsCore.Constraints
+namespace SavoryPhysicsCore.Constraints
 {
     public class PenetrationConstraint// : IConstraint
     {

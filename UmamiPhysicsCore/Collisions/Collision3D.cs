@@ -1,8 +1,8 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Physics;
-using UmamiPhysicsCore.Bodies;
+using SavoryPhysicsCore.Bodies;
 
-namespace UmamiPhysicsCore.Collisions
+namespace SavoryPhysicsCore.Collisions
 {
     public class Collision3D : ICollision
     {

@@ -78,28 +78,25 @@ namespace StarchUICore.Views
 
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
-            var width = Size.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth);
-            var height = Size.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight);
+            var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
+            var height = GetMeasuredHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
 
-            var relativeX = Position.X.GetValue(layoutInfo.Size.ContainingWidth);
-            var relativeY = Position.Y.GetValue(layoutInfo.Size.ContainingHeight);
+            var relativeX = GetRelativeX(layoutInfo.RelativeX, layoutInfo.ParentAbsoluteX, layoutInfo.AvailableWidth, layoutInfo.ParentWidth, width);
+            var relativeY = GetRelativeY(layoutInfo.RelativeY, layoutInfo.ParentAbsoluteY, layoutInfo.AvailableHeight, layoutInfo.ParentHeight, height);
 
-            var absoluteX = layoutInfo.Position.AbsoluteX + relativeX;
-            var absoluteY = layoutInfo.Position.AbsoluteY + relativeY;
+            var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
+            var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
 
-            return new LayoutResult(width, height, absoluteX, absoluteY);
-            /*var measuredSize = OnMeasure(layoutInfo.Size);
-            var locatedPosition = OnLocate(layoutInfo.Position);
-
-            return new LayoutResult(measuredSize.Width, measuredSize.Height, locatedPosition.AbsoluteX, locatedPosition.AbsoluteY);*/
+            return new LayoutResult(absoluteX, absoluteY, width, height);
         }
 
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
+            /*var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
             var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
 
-            return new MeasuredSize(width, height);
+            return new MeasuredSize(width, height);*/
+            return new MeasuredSize();
         }
 
         protected override LocatedPosition OnLocate(LocatedPosition availablePosition)

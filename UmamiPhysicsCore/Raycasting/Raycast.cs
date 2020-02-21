@@ -2,7 +2,7 @@
 using SpiceEngineCore.Physics;
 using System.Collections.Generic;
 
-namespace UmamiPhysicsCore.Raycasting
+namespace SavoryPhysicsCore.Raycasting
 {
     public static class Raycast
     {

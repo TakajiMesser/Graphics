@@ -3,9 +3,9 @@ using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiPhysicsCore.Collisions;
+using SavoryPhysicsCore.Collisions;
 
-namespace UmamiPhysicsCore.Shapes
+namespace SavoryPhysicsCore.Shapes
 {
     public class Sphere : Shape3D
     {

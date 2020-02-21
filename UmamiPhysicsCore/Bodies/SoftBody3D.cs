@@ -1,8 +1,8 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Entities;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Shapes;
 
-namespace UmamiPhysicsCore.Bodies
+namespace SavoryPhysicsCore.Bodies
 {
     public class SoftBody3D : Body3D
     {

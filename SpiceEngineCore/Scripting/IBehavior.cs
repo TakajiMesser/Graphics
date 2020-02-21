@@ -3,7 +3,6 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
-using SpiceEngineCore.Scripting.StimResponse;
 using SpiceEngineCore.Utilities;
 
 namespace SpiceEngineCore.Scripting

@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using System.Collections.Generic;
 
-namespace UmamiPhysicsCore.Shapes
+namespace SavoryPhysicsCore.Shapes
 {
     public class Simplex3D : ISimplex
     {

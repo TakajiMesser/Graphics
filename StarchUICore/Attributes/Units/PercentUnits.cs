@@ -7,11 +7,12 @@ namespace StarchUICore.Attributes.Units
         internal PercentUnits(float value) => Value = value;
         public float Value { get; }
 
-        public int GetValue(int containingValue) => (int)Math.Ceiling(containingValue / 100 * Value);
-        public int Constrain(int value, int containingValue)
+        public int ToOffsetPixels(int nRelative = 0) => (int)Math.Ceiling(nRelative / 100 * Value);
+
+        public int ToDimensionPixels(int nAvailable, int nRelative = 0)
         {
-            var percentValue = GetValue(containingValue);
-            return percentValue < value ? percentValue : value;
+            var nPixels = ToOffsetPixels(nRelative);
+            return nPixels < nAvailable ? nPixels : nAvailable;
         }
     }
 }

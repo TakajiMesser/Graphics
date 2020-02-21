@@ -9,7 +9,9 @@ namespace StarchUICore.Groups
         private List<IElement> _children = new List<IElement>();
 
         public IEnumerable<IElement> Children => _children;
-        public IUnits Spacing { get; set; }
+
+        // TODO - Eventually, Spacing should be inherited either from the parent, or from a set theme/style
+        public IUnits Spacing { get; set; } = Unit.Pixels(10);// Unit.Auto();
 
         public void AddChild(IElement element)
         {
@@ -25,7 +27,7 @@ namespace StarchUICore.Groups
             }
         }
 
-        protected int ConstrainWidth(MeasuredSize availableSize)
+        /*protected int ConstrainWidth(MeasuredSize availableSize)
         {
             var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
             var paddingWidth = Padding.GetWidth(availableSize.Width, availableSize.ContainingWidth);
@@ -39,7 +41,7 @@ namespace StarchUICore.Groups
             var paddingHeight = Padding.GetHeight(availableSize.Height, availableSize.ContainingHeight);
 
             return height - paddingHeight;
-        }
+        }*/
 
         /*protected override ISize GetMeasurement(ISize availableSize)
         {

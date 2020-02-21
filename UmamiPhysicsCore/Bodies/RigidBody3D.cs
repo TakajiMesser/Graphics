@@ -2,9 +2,9 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Utilities;
 using System;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Shapes;
 
-namespace UmamiPhysicsCore.Bodies
+namespace SavoryPhysicsCore.Bodies
 {
     public class RigidBody3D : Body3D
     {

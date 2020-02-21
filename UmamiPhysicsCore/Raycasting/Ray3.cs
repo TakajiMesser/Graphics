@@ -1,8 +1,8 @@
 ﻿using OpenTK;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Shapes;
 using System;
 
-namespace UmamiPhysicsCore.Raycasting
+namespace SavoryPhysicsCore.Raycasting
 {
     public struct Ray3
     {

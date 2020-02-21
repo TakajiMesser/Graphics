@@ -13,8 +13,8 @@ namespace StarchUICore.Groups
 
         protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
         {
-            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
-            var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
+            var width = Size.Width.ToDimensionPixels(availableSize.Width, availableSize.ContainingWidth);
+            var height = Size.Height.ToDimensionPixels(availableSize.Height, availableSize.ContainingHeight);
 
             var remainingWidth = width - Padding.GetWidth(availableSize.Width, availableSize.ContainingWidth);
             var remainingHeight = height - Padding.GetHeight(availableSize.Height, availableSize.ContainingHeight);

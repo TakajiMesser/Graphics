@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 
-namespace UmamiPhysicsCore.Raycasting
+namespace SavoryPhysicsCore.Raycasting
 {
     public class RaycastHit
     {

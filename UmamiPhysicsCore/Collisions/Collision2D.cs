@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Physics;
 using System.Collections.Generic;
-using UmamiPhysicsCore.Bodies;
+using SavoryPhysicsCore.Bodies;
 
-namespace UmamiPhysicsCore.Collisions
+namespace SavoryPhysicsCore.Collisions
 {
     public class Collision2D : ICollision
     {

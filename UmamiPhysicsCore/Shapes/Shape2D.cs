@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Physics;
 
-namespace UmamiPhysicsCore.Shapes
+namespace SavoryPhysicsCore.Shapes
 {
     public abstract class Shape2D : IShape
     {

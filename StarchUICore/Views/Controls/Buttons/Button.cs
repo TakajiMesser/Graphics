@@ -34,8 +34,8 @@ namespace StarchUICore.Views.Controls.Buttons
                 var vertexSet = UIBuilder.Rectangle(pixelWidth.Value, pixelHeight.Value, ThemeManager.CurrentTheme.PrimaryBackgroundColor);
                 return new Button(vertexSet)
                 {
-                    Position = new Position(x, y),
-                    Size = new Size(width, height)
+                    Position = Position.FromXY(x, y),
+                    Size = Size.FromDimensions(width, height)
                 };
             }
 

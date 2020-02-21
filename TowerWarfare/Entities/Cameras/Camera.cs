@@ -1,10 +1,8 @@
 ﻿using OpenTK;
+using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Utilities;
-using System;
-using System.Collections.Generic;
-using System.Text;
 using TowerWarfare.Helpers;
 
 namespace TowerWarfare.Entities.Cameras

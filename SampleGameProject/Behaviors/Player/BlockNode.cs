@@ -1,11 +1,11 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Scripting.Nodes;
 using SpiceEngineCore.Utilities;
 using System;
-using UmamiPhysicsCore.Bodies;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Behaviors.Player
 {

@@ -12,7 +12,7 @@ using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiPhysicsCore.Shapes;
+using SavoryPhysicsCore.Shapes;
 
 namespace SpiceEngine.Maps
 {

@@ -1,4 +1,4 @@
-﻿namespace UmamiPhysicsCore.Collisions
+﻿namespace SavoryPhysicsCore.Collisions
 {
     public struct CollisionPair
     {
