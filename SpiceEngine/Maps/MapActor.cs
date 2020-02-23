@@ -27,8 +27,6 @@ namespace SpiceEngineCore.Maps
 {
     public class MapActor : MapEntity<IActor>, IMapActor, IModelPather, ITexturePather
     {
-        private List<Stimulus> _stimuli = new List<Stimulus>();
-
         public string Name { get; set; }
 
         public Vector3 Orientation { get; set; }
@@ -43,14 +41,17 @@ namespace SpiceEngineCore.Maps
 
         public MapBehavior Behavior { get; set; }
 
-        public IEnumerable<IScript> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<IScript>();
-        public IEnumerable<IStimulus> Stimuli => _stimuli;
-        public IEnumerable<IProperty> Properties { get; set; } = new List<Property>();
+        public List<Stimulus> Stimuli { get; set; } = new List<Stimulus>();
+        public List<Property> Properties { get; set; } = new List<Property>();
 
         public bool IsPhysical { get; set; }
         //public ICollider Collider { get; set; }
 
-        public void AddStimulus(Stimulus stimulus) => _stimuli.Add(stimulus);
+        public IEnumerable<IScript> GetScripts() => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<IScript>();
+
+        public IEnumerable<IStimulus> GetStimuli() => Stimuli;
+
+        public IEnumerable<IProperty> GetProperties() => Properties;
 
         public override IEntity ToEntity(/*TextureManager textureManager = null*/)
         {

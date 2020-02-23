@@ -38,7 +38,7 @@ namespace SampleGameProject.GameObjects
             Behavior = MapBehavior.Load(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
             IsPhysical = true;
 
-            AddStimulus(Stimulus.Player);
+            Stimuli.Add(Stimulus.Player);
         }
     }
 }

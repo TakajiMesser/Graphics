@@ -87,10 +87,10 @@ namespace SpiceEngine.Scripting
         public override void LoadBuilderSync(int entityID, IBehaviorBuilder builder)
         {
             base.LoadBuilderSync(entityID, builder);
-            _scriptManager.AddScripts(builder.Scripts);
+            _scriptManager.AddScripts(builder.GetScripts());
 
-            AddStimuli(entityID, builder.Stimuli);
-            AddProperties(entityID, builder.Properties);
+            AddStimuli(entityID, builder.GetStimuli());
+            AddProperties(entityID, builder.GetProperties());
         }
 
         protected override void LoadComponents()

@@ -39,6 +39,7 @@ namespace SpiceEngine.Scripting.Scripts
             _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("SavoryPhysicsCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("StarchUICore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("UmamiScriptingCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
         }

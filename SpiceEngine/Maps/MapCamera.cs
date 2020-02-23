@@ -32,9 +32,14 @@ namespace SpiceEngineCore.Maps
 
         public MapBehavior Behavior { get; set; }
 
-        public IEnumerable<IScript> Scripts => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<IScript>();
-        public IEnumerable<IStimulus> Stimuli { get; private set; } = new List<Stimulus>();
-        public IEnumerable<IProperty> Properties { get; set; } = new List<Property>();
+        public List<Stimulus> Stimuli { get; set; } = new List<Stimulus>();
+        public List<Property> Properties { get; set; } = new List<Property>();
+
+        public IEnumerable<IScript> GetScripts() => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<IScript>();
+
+        public IEnumerable<IStimulus> GetStimuli() => Stimuli;
+
+        public IEnumerable<IProperty> GetProperties() => Properties;
 
         public override IEntity ToEntity()
         {
