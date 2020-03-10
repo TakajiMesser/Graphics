@@ -194,6 +194,12 @@ namespace SpiceEngineCore.Entities
                     if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
                     if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
 
+                    var a = 3;
+                    if (entity is IUIItem)
+                    {
+                        a = 4;
+                    }
+
                     _namedEntityQueue.Enqueue(namedEntity);
                 }
 
@@ -208,12 +214,18 @@ namespace SpiceEngineCore.Entities
 
         public void Load()
         {
-            if (_namedEntityQueue.TryDequeue(out INamedEntity namedEntity))
+            while (_namedEntityQueue.TryDequeue(out INamedEntity namedEntity))
             {
+                var a = 3;
+                if (namedEntity is IUIItem)
+                {
+                    a = 4;
+                }
+
                 _entitiesByName.Add(namedEntity.Name, namedEntity);
             }
 
-            if (_attachedCameraQueue.TryDequeue(out Tuple<string, ICamera> nameAndCamera))
+            while (_attachedCameraQueue.TryDequeue(out Tuple<string, ICamera> nameAndCamera))
             {
                 var attachedEntity = GetEntity(nameAndCamera.Item1);
                 nameAndCamera.Item2.AttachToEntity(attachedEntity, true, false);

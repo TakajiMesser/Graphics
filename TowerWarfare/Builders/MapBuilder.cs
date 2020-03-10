@@ -4,7 +4,6 @@ using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Meshes;
 using SpiceEngineCore.Rendering.Models;
-using StarchUICore.Maps;
 using System.Collections.Generic;
 using TowerWarfare.Entities.Actors.Towers;
 using TowerWarfare.Entities.Cameras;
@@ -19,7 +18,7 @@ namespace TowerWarfare.Builders
             var map = new Map3D();
 
             map.Cameras.AddRange(GenerateCameras());
-            map.Actors.AddRange(GenerateActors());
+            //map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
             map.Volumes.AddRange(GenerateVolumes());
@@ -142,7 +141,84 @@ namespace TowerWarfare.Builders
 
         private static IEnumerable<MapUIItem> GenerateUIItems()
         {
-            var simpleButton = new MapUIItem()
+            yield return new MapUIItem()
+            {
+                Name = "View 2A",
+                UIType = UITypes.View,
+                X = "0",
+                Y = "0",
+                Width = "10%",
+                Height = "10%",
+                Color = Color4.AliceBlue
+            };
+
+            /*yield return new MapUIItem()
+            {
+                Name = "View 2B",
+                UIType = UITypes.View,
+                X = "0",
+                Y = "0",
+                Width = "10%",
+                Height = "10%",
+                Color = Color4.Cyan
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "View 3A",
+                UIType = UITypes.View,
+                X = "0",
+                Y = "0",
+                Width = "200",
+                Height = "300",
+                Color = Color4.Coral
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "View 3B",
+                UIType = UITypes.View,
+                X = "0",
+                Y = "0",
+                Width = "100%",
+                Height = "Auto",
+                Color = Color4.Beige
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "RowGroup 2C",
+                UIType = UITypes.RowGroup,
+                X = "0",
+                Y = "0",
+                Width = "50%",
+                Height = "200",
+                ChildElementNames = new List<string>() { "View 3A", "View 3B" }
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "View 2D",
+                UIType = UITypes.View,
+                X = "0",
+                Y = "0",
+                Width = "100%",
+                Height = "100%",
+                Color = Color4.Aqua
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "RowGroup 1A",
+                UIType = UITypes.RowGroup,
+                X = "0",
+                Y = "0",
+                Width = "800",
+                Height = "Auto",
+                ChildElementNames = new List<string>() { "View 2A", "View 2B", "RowGroup 2C", "View 2D" }
+            };
+
+            /*var simpleButton = new MapUIItem()
             {
                 Name = "Test Button",
                 XUnitType = MapUIItem.UnitTypes.Pixels,
@@ -156,7 +232,7 @@ namespace TowerWarfare.Builders
                 UIType = MapUIItem.UITypes.Button
             };
 
-            yield return simpleButton;
+            yield return simpleButton;*/
         }
     }
 }

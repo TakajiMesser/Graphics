@@ -3,7 +3,7 @@ using SpiceEngineCore.Game.Loading.Builders;
 
 namespace SpiceEngineCore.Maps
 {
-    public interface IMapUIItem : IMapEntity, IRenderableBuilder
+    public interface IMapUIItem : IMapEntity, IUIElementBuilder, IRenderableBuilder
     {
         void UpdateFrom(IUIItem uiItem);
     }

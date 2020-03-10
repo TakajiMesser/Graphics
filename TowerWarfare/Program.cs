@@ -1,12 +1,10 @@
 ﻿using OpenTK;
 using SpiceEngine.Maps;
 using StarchUICore;
-using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
+using StarchUICore.Builders;
 using StarchUICore.Groups;
-using StarchUICore.Views;
-using StarchUICore.Views.Controls.Buttons;
 using System;
 using System.Text;
 using TowerWarfare.Builders;
@@ -19,7 +17,7 @@ namespace TowerWarfare
     {
         static void Main(string[] args)
         {
-            PerformUITest();
+            //PerformUITest();
 
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
@@ -49,33 +47,42 @@ namespace TowerWarfare
 
         private static IElement GetRootElement()
         {
-            var rowGroup1A = new RowGroup()
-            {
-                Position = Position.FromXY(Unit.Pixels(0), Unit.Pixels(0)),
-                Size = Size.FromDimensions(Unit.Pixels(800), Unit.Auto())
-            };
+            var view2A = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Percents(10), Unit.Percents(10))
+                .CreateView();
 
-            var view2A = new TestView(rowGroup1A, Unit.Percents(10), Unit.Percents(10), Unit.Pixels(0), Unit.Pixels(0));
-            rowGroup1A.AddChild(view2A);
+            var view2B = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Percents(10), Unit.Percents(10))
+                .CreateView();
 
-            var view2B = new TestView(rowGroup1A, Unit.Pixels(100), Unit.Pixels(100), Unit.Pixels(0), Unit.Pixels(0));
-            rowGroup1A.AddChild(view2B);
+            var view3A = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Pixels(200), Unit.Pixels(300))
+                .CreateView();
 
-            var rowGroup2A = new RowGroup()
-            {
-                Position = Position.FromXY(Unit.Pixels(0), Unit.Pixels(0)),
-                Size = Size.FromDimensions(Unit.Percents(50), Unit.Pixels(200))
-            };
-            rowGroup1A.AddChild(rowGroup2A);
+            var view3B = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Percents(100), Unit.Auto())
+                .CreateView();
 
-            var view2C = new TestView(rowGroup1A, Unit.Percents(100), Unit.Percents(100), Unit.Pixels(0), Unit.Pixels(0));
-            rowGroup1A.AddChild(view2C);
+            var rowGroup2C = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Percents(50), Unit.Pixels(200))
+                .WithChildren(view3A, view3B)
+                .CreateRowGroup();
 
-            var view3A = new TestView(rowGroup2A, Unit.Pixels(200), Unit.Pixels(300), Unit.Pixels(0), Unit.Pixels(0));
-            rowGroup2A.AddChild(view3A);
+            var view2D = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Percents(100), Unit.Percents(100))
+                .CreateView();
 
-            var view3B = new TestView(rowGroup2A, Unit.Percents(100), Unit.Auto(), Unit.Pixels(0), Unit.Pixels(0));
-            rowGroup2A.AddChild(view3B);
+            var rowGroup1A = new UIBuilder()
+                .WithPosition(Unit.Pixels(0), Unit.Pixels(0))
+                .WithSize(Unit.Pixels(800), Unit.Auto())
+                .WithChildren(view2A, view2B, rowGroup2C, view2D)
+                .CreateView();
 
             return rowGroup1A;
         }

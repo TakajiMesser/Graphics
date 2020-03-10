@@ -7,6 +7,7 @@ using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Scripting;
+using SpiceEngineCore.UserInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,7 @@ namespace SpiceEngine.Game
         private IComponentLoader<IShape, IShapeBuilder> _physicsLoader;
         private IComponentLoader<IBehavior, IBehaviorBuilder> _behaviorLoader;
         private IComponentLoader<IAnimator, IAnimatorBuilder> _animatorLoader;
+        private IComponentLoader<IUIElement, IUIElementBuilder> _uiLoader;
 
         private IMultiComponentLoader<IRenderable, IRenderableBuilder> _renderableLoader = new MultiComponentLoader<IRenderable, IRenderableBuilder>();
 
@@ -64,6 +66,7 @@ namespace SpiceEngine.Game
         public void SetPhysicsLoader(IComponentLoader<IShape, IShapeBuilder> physicsLoader) => _physicsLoader = physicsLoader;
         public void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader) => _behaviorLoader = behaviorLoader;
         public void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader) => _animatorLoader = animatorLoader;
+        public void SetUILoader(IComponentLoader<IUIElement, IUIElementBuilder> uiLoader) => _uiLoader = uiLoader;
 
         public void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader) => _renderableLoader.AddLoader(renderableLoader);
 
@@ -81,6 +84,7 @@ namespace SpiceEngine.Game
             _physicsLoader.AddBuilder(mapEntity);
             _behaviorLoader.AddBuilder(mapEntity);
             _animatorLoader.AddBuilder(mapEntity);
+            _uiLoader.AddBuilder(mapEntity);
 
             // TODO - Handle this in a cleaner way
             if (!IsInEditorMode && mapEntity is IMapVolume)
@@ -205,6 +209,7 @@ namespace SpiceEngine.Game
             _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
             _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
             _renderableLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
 
             var index = startBuilderIndex;
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
@@ -223,6 +228,7 @@ namespace SpiceEngine.Game
                     _physicsLoader.AddLoadTask(id);
                     _behaviorLoader.AddLoadTask(id);
                     _animatorLoader.AddLoadTask(id);
+                    _uiLoader.AddLoadTask(id);
                     _renderableLoader.AddLoadTask(id);
 
                     /*var id = idIterator.Current;
@@ -273,6 +279,7 @@ namespace SpiceEngine.Game
                 _physicsLoader.LoadAsync(),
                 _behaviorLoader.LoadAsync(),
                 _animatorLoader.LoadAsync(),
+                _uiLoader.LoadAsync(),
                 _renderableLoader.LoadAsync()
             };
         
@@ -311,6 +318,7 @@ namespace SpiceEngine.Game
             _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
             _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
             _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
             _renderableLoader.InitializeLoad(entityCount, startBuilderIndex);
 
             var index = startBuilderIndex;
@@ -331,6 +339,7 @@ namespace SpiceEngine.Game
                     _physicsLoader?.AddLoadTask(id);
                     _behaviorLoader?.AddLoadTask(id);
                     _animatorLoader?.AddLoadTask(id);
+                    _uiLoader?.AddLoadTask(id);
                     _renderableLoader?.AddLoadTask(id);
 
                     EntityMapping?.AddID(id);
@@ -343,6 +352,7 @@ namespace SpiceEngine.Game
             _physicsLoader?.LoadSync();
             _behaviorLoader?.LoadSync();
             _animatorLoader?.LoadSync();
+            _uiLoader?.LoadSync();
             _renderableLoader?.LoadSync();
 
             lock (_builderLock)

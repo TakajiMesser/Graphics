@@ -5,7 +5,7 @@ namespace StarchUICore
 {
     public interface IUIProvider
     {
-        void AddElement(int entityID, IElement element);
+        //void AddElement(int entityID, IElement element);
         IElement GetElement(int entityID);
 
         void Load();

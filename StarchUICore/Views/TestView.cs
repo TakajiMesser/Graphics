@@ -16,7 +16,7 @@ namespace StarchUICore.Views
         {
             Parent = parent;
             Size = Size.FromDimensions(width, height);
-            Position = Position.FromXY(x, y);
+            Position = Position.FromOffsets(x, y);
             Padding = padding;
             //Anchor = anchor;
         }

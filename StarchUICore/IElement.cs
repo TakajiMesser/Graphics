@@ -1,4 +1,5 @@
 ﻿using SpiceEngineCore.Rendering;
+using SpiceEngineCore.UserInterfaces;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Views;
@@ -6,31 +7,24 @@ using System;
 
 namespace StarchUICore
 {
-    public interface IElement : IRenderable
+    public interface IElement : IUIElement, IRenderable
     {
         IElement Parent { get; set; }
 
         Position Position { get; set; }
         Size Size { get; set; }
 
-        Anchor HorizontalAnchor { get; }
-        Anchor VerticalAnchor { get; }
+        Anchor HorizontalAnchor { get; set; }
+        Anchor VerticalAnchor { get; set; }
 
-        Dock HorizontalDock { get; }
-        Dock VerticalDock { get; }
+        Dock HorizontalDock { get; set; }
+        Dock VerticalDock { get; set; }
 
+        Padding Padding { get; set; }
         Border Border { get; set; }
 
         Measurement Measurement { get; }
         Location Location { get; }
-
-        bool IsEnabled { get; set; }
-        bool IsVisible { get; set; }
-        bool IsGone { get; set; }
-
-        float Alpha { get; set; }
-
-        bool IsLaidOut { get; }
 
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;
@@ -38,6 +32,5 @@ namespace StarchUICore
         void Layout(LayoutInfo layoutInfo);
         void Measure(MeasuredSize availableSize);
         void Locate(LocatedPosition availablePosition);
-        void Update(int nTicks);
     }
 }

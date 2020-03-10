@@ -154,6 +154,7 @@ namespace SpiceEngine.Game
             _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
             _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
             _gameLoader.SetAnimatorLoader(_gameManager.AnimationManager);
+            _gameLoader.SetUILoader(_gameManager.UIManager);
             _gameLoader.AddRenderableLoader(_renderManager);
 
             _gameLoader.AddFromMap(_map);

@@ -2,14 +2,17 @@
 {
     public struct Dock
     {
-        public Dock(IElement relativeElement, bool doesRespectChanges = true)
+        public Dock(bool doesRespectChanges = true, IElement relativeElement = null)
         {
             RelativeElement = relativeElement;
             DoesRespectChanges = doesRespectChanges;
         }
 
-        public IElement RelativeElement { get; }
         public bool DoesRespectChanges { get; }
+        public IElement RelativeElement { get; }
+
+        public Dock Attached(IElement relativeElement) => new Dock(DoesRespectChanges, relativeElement);
+        public Dock Detached() => new Dock(DoesRespectChanges, null);
 
         public int? GetReferenceWidth(int parentWidth)
         {

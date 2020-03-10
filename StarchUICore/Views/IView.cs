@@ -9,7 +9,7 @@ namespace StarchUICore.Views
         Layer Foreground { get; set; }
         Layer Background { get; set; }
 
-        IEnumerable<ViewVertex> Vertices { get; }
+        IEnumerable<ViewQuadVertex> Vertices { get; }
         IEnumerable<int> TriangleIndices { get; }
 
         IView Duplicate();

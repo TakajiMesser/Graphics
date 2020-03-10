@@ -72,6 +72,12 @@ namespace StarchUICore.Attributes.Sizes
             }
         }
 
+        public Size Dimension(IUnits width, IUnits height) => new Size(width, height, MinimumWidth, MinimumHeight, MaximumWidth, MaximumHeight);
+
+        public Size DimensionMinimums(IUnits minimumWidth, IUnits minimumHeight) => new Size(Width, Height, minimumWidth, minimumHeight, MaximumWidth, MaximumHeight);
+
+        public Size DimensionMaximums(IUnits maximumWidth, IUnits maximumHeight) => new Size(Width, Height, MinimumWidth, MinimumHeight, maximumWidth, maximumHeight);
+
         //public static Size Auto() => new Size(Unit.Auto(), Unit.Auto());
         public static Size FromDimensions(IUnits width, IUnits height) => new Size(width, height, Unit.Auto(), Unit.Auto(), Unit.Auto(), Unit.Auto());
     }

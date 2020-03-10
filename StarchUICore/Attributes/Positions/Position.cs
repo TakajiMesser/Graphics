@@ -139,6 +139,12 @@ namespace StarchUICore.Attributes.Positions
             return null;
         }
 
-        public static Position FromXY(IUnits x, IUnits y) => new Position(x, y, Unit.Auto(), Unit.Auto(), Unit.Auto(), Unit.Auto());
+        public Position Offset(IUnits x, IUnits y) => new Position(x, y, MinimumX, MinimumY, MaximumX, MaximumY);
+
+        public Position OffsetMinimums(IUnits minimumX, IUnits minimumY) => new Position(X, Y, minimumX, minimumY, MaximumX, MaximumY);
+
+        public Position OffsetMaximums(IUnits maximumX, IUnits maximumY) => new Position(X, Y, MinimumX, MinimumY, maximumX, maximumY);
+
+        public static Position FromOffsets(IUnits x, IUnits y) => new Position(x, y, Unit.Auto(), Unit.Auto(), Unit.Auto(), Unit.Auto());
     }
 }

@@ -135,7 +135,7 @@ namespace SpiceEngine.Properties {
         ///
         ///void main()
         ///{
-        ///    color = texture2D(mainTexture, fUV);
+        ///    color = texture(mainTexture, fUV);
         ///
         ///    if (color.r == 1.0 &amp;&amp; color.g == 1.0 &amp;&amp; color.b == 1.0)
         ///    {
@@ -199,7 +199,7 @@ namespace SpiceEngine.Properties {
         ///
         ///void main()
         ///{
-        ///    vec4 textureColor = texture2D(mainTexture, fUV);
+        ///    vec4 textureColor = texture(mainTexture, fUV);
         ///
         ///    if (textureColor.r == 1.0 &amp;&amp; textureColor.g == 1.0 &amp;&amp; textureColor.b == 1.0)
         ///    {
@@ -1775,6 +1775,7 @@ namespace SpiceEngine.Properties {
         ///   Looks up a localized string similar to #version 440
         ///
         ///uniform mat4 modelMatrix;
+        ///uniform vec2 resolution;
         ///uniform vec2 halfResolution;
         ///
         ///layout(location = 0) in vec3 vPosition;
@@ -1788,15 +1789,41 @@ namespace SpiceEngine.Properties {
         ///
         ///void main()
         ///{
-        ///	vec4 position = vec4(vPosition, 1.0);
+        ///	vec4 position = vec4(vPosition.x, /*resolution.y - */vPosition.y, vPosition.z, 1.0);
         ///	vec4 clipPosition = modelMatrix * position;
         ///
-        ///	gl_Position = vec4((clipPosition.xy - halfResolution) / halfResolution, clipPosition.z, 1.0);
-        ///    //gl_Position = vec4((vPosition.xy - halfR [rest of string was truncated]&quot;;.
+        ///	// TODO - This will convert the position to being relative from the  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string ui_vert {
             get {
                 return ResourceManager.GetString("ui_vert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_frag {
+            get {
+                return ResourceManager.GetString("uiquad_frag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_geom {
+            get {
+                return ResourceManager.GetString("uiquad_geom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_vert {
+            get {
+                return ResourceManager.GetString("uiquad_vert", resourceCulture);
             }
         }
         

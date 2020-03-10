@@ -2,7 +2,6 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -149,20 +148,9 @@ namespace SpiceEngineCore.Game.Loading
 
         protected virtual void LoadComponents()
         {
-            var a = 3;
-            if (this is ComponentLoader<IRenderable, IRenderableBuilder>)
-            {
-                a = 4;
-            }
-
             while (_componentAndIDQueue.TryDequeue(out Tuple<T, int> componentAndID))
             {
                 LoadComponent(componentAndID.Item2, componentAndID.Item1);
-            }
-
-            if (this is ComponentLoader<IRenderable, IRenderableBuilder>)
-            {
-                a = 4;
             }
         }
 

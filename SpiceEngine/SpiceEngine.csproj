@@ -151,6 +151,7 @@
     <Compile Include="Maps\MapCamera.cs" />
     <Compile Include="Maps\MapLight.cs" />
     <Compile Include="Maps\MapNode.cs" />
+    <Compile Include="Maps\MapUIItem.cs" />
     <Compile Include="Maps\MapVolume.cs" />
     <Compile Include="Physics\PhysicsManager.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
@@ -261,6 +262,9 @@
     <None Include="Resources\Shaders\Skybox\skybox2D.vert" />
     <None Include="Resources\Shaders\Text\text.frag" />
     <None Include="Resources\Shaders\Text\text.vert" />
+    <None Include="Resources\Shaders\UserInterfaces\uiquad.frag" />
+    <None Include="Resources\Shaders\UserInterfaces\uiquad.geom" />
+    <None Include="Resources\Shaders\UserInterfaces\uiquad.vert" />
     <None Include="Resources\Shaders\UserInterfaces\ui.frag" />
     <None Include="Resources\Shaders\UserInterfaces\ui.vert" />
     <None Include="Resources\Shaders\Wireframe\grid.frag" />

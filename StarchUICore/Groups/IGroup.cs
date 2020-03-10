@@ -8,6 +8,7 @@ namespace StarchUICore.Groups
         IEnumerable<IElement> Children { get; }
         IUnits Spacing { get; set; }
 
+        void AddChild(IElement element);
         IGroup Duplicate();
     }
 }

@@ -21,8 +21,11 @@ namespace SpiceEngine.Rendering.PostProcessing
         protected override void LoadPrograms()
         {
             _uiProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.ui_vert),
-                new Shader(ShaderType.FragmentShader, Resources.ui_frag)
+                //new Shader(ShaderType.VertexShader, Resources.ui_vert),
+                //new Shader(ShaderType.FragmentShader, Resources.ui_frag)
+                new Shader(ShaderType.VertexShader, Resources.uiquad_vert),
+                new Shader(ShaderType.GeometryShader, Resources.uiquad_geom),
+                new Shader(ShaderType.FragmentShader, Resources.uiquad_frag)
             );
         }
 
@@ -101,14 +104,18 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         public void Render(IBatcher batcher, IUIProvider uiProvider)
         {
-            GL.Enable(EnableCap.Blend);
-            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+            // Clear the depth buffer, since the UI should be rendered above everything else
+            //GL.Clear(ClearBufferMask.DepthBufferBit);
+
+            //GL.Enable(EnableCap.Blend);
+            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
             // TODO - Contain all rendering logic in batcher as well in view batches
             batcher.CreateBatchAction()
                 .SetShader(_uiProgram)
+                .SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height))
                 .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
                 .SetRenderType(RenderTypes.OpaqueView)
                 .SetEntityIDOrder(uiProvider.GetDrawOrder())
@@ -119,7 +126,7 @@ namespace SpiceEngine.Rendering.PostProcessing
             //_uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
             //uiProvider.Draw();
 
-            GL.Disable(EnableCap.Blend);
+            //GL.Disable(EnableCap.Blend);
         }
     }
 }

@@ -5,6 +5,7 @@ using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Scripting;
+using SpiceEngineCore.UserInterfaces;
 using System;
 using System.Threading.Tasks;
 using EntityMappingEventArgs = SpiceEngineCore.Maps.EntityMappingEventArgs;
@@ -27,6 +28,7 @@ namespace SpiceEngineCore.Game.Loading
         void SetPhysicsLoader(IComponentLoader<IShape, IShapeBuilder> physicsLoader);
         void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader);
         void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader);
+        void SetUILoader(IComponentLoader<IUIElement, IUIElementBuilder> uiLoader);
         void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader);
 
         //void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);

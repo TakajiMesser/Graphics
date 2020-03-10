@@ -46,11 +46,11 @@ namespace StarchUICore
             }
         }
 
-        public Anchor HorizontalAnchor { get; private set; }
-        public Anchor VerticalAnchor { get; private set; }
+        public Anchor HorizontalAnchor { get; set; }
+        public Anchor VerticalAnchor { get; set; }
 
-        public Dock HorizontalDock { get; private set; }
-        public Dock VerticalDock { get; private set; }
+        public Dock HorizontalDock { get; set; }
+        public Dock VerticalDock { get; set; }
 
         public Padding Padding { get; set; } = Padding.Empty();
         public Border Border { get; set; }
@@ -125,15 +125,27 @@ namespace StarchUICore
         public void Layout(LayoutInfo layoutInfo)
         {
             var layoutResult = OnLayout(layoutInfo);
+            
+            var wasMeasured = false;
+            var wasLocated = false;
 
             if (Measurement.NeedsMeasuring && layoutResult.Width.HasValue && layoutResult.Height.HasValue)
             {
                 Measurement.SetValue(layoutResult.Width.Value, layoutResult.Height.Value);
+                OnMeasured(layoutInfo);
+                wasMeasured = true;
             }
 
             if (Location.NeedsLocating && layoutResult.X.HasValue && layoutResult.Y.HasValue)
             {
                 Location.SetValue(layoutResult.X.Value, layoutResult.Y.Value);
+                OnLocated(layoutInfo);
+                wasLocated = true;
+            }
+
+            if (wasMeasured || wasLocated)
+            {
+                OnLaidOut(layoutInfo);
             }
         }
 
@@ -225,9 +237,14 @@ namespace StarchUICore
         }
 
         protected abstract LayoutResult OnLayout(LayoutInfo layoutInfo);
+        
+        // TODO - Are these unnecessary now?
         protected abstract MeasuredSize OnMeasure(MeasuredSize availableSize);
-        //protected abstract LocatedPosition OnLocate(LayoutInfo layoutInfo);
         protected abstract LocatedPosition OnLocate(LocatedPosition availablePosition);
+
+        protected virtual void OnMeasured(LayoutInfo layoutInfo) { }
+        protected virtual void OnLocated(LayoutInfo layoutInfo) { }
+        protected virtual void OnLaidOut(LayoutInfo layoutInfo) { }
 
         protected virtual void OnPositionChanged(Position oldValue, Position newValue) { }
         protected virtual void OnSizeChanged(Size oldValue, Size newValue) { }

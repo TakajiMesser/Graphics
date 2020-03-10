@@ -252,7 +252,7 @@ namespace SpiceEngine.Rendering
                     try
                     {
                         _batchManager.Load();
-                        _uiProvider.Load();
+                        //_uiProvider.Load();
 
                         Invoker.ForceUpdate();
                     }
@@ -301,7 +301,7 @@ namespace SpiceEngine.Rendering
 
                 if (component is IElement element)
                 {
-                    _uiProvider.AddElement(entityID, element);
+                    //_uiProvider.AddElement(entityID, element);
                 }
             }
         }
@@ -744,7 +744,7 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(texture);
 
-            //RenderUIControls();
+            RenderUIControls();
             //_logManager.RenderToScreen();
         }
 

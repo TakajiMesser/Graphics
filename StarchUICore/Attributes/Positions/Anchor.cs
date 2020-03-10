@@ -9,7 +9,7 @@
 
     public struct Anchor
     {
-        public Anchor(AnchorTypes anchorType, IElement relativeElement, bool doesRespectChanges = true)
+        public Anchor(AnchorTypes anchorType, bool doesRespectChanges = true, IElement relativeElement = null)
         {
             AnchorType = anchorType;
             RelativeElement = relativeElement;
@@ -17,8 +17,11 @@
         }
 
         public AnchorTypes AnchorType { get; }
-        public IElement RelativeElement { get; }
         public bool DoesRespectChanges { get; }
+        public IElement RelativeElement { get; }
+
+        public Anchor Attached(IElement relativeElement) => new Anchor(AnchorType, DoesRespectChanges, relativeElement);
+        public Anchor Detached() => new Anchor(AnchorType, DoesRespectChanges, null);
 
         // relativeX is where the parent THINKS this View should be placed relative to its left side
         // parentAbsoluteX is the absolute X of the left side of the parent group
