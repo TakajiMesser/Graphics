@@ -145,11 +145,15 @@ namespace TowerWarfare.Builders
             {
                 Name = "View 2A",
                 UIType = UITypes.View,
-                X = "0",
-                Y = "0",
-                Width = "10%",
-                Height = "10%",
-                Color = Color4.AliceBlue
+                X = "300",
+                Y = "200",
+                Width = "600",
+                Height = "400",
+                Color = Color4.White,
+                CornerXRadius = 15,
+                CornerYRadius = 10,
+                BorderThickness = 5,
+                BorderColor = Color4.Black
             };
 
             /*yield return new MapUIItem()

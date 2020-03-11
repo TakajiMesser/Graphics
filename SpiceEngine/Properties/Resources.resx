@@ -376,4 +376,13 @@
   <data name="uiquad_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\UserInterfaces\uiquad.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
+  <data name="uiquad_selection_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad-selection.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_selection_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad-selection.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_selection_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad-selection.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

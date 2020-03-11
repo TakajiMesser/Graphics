@@ -7,6 +7,7 @@ using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Groups;
+using StarchUICore.Views;
 using System.Collections.Generic;
 
 namespace SpiceEngine.UserInterfaces
@@ -109,6 +110,12 @@ namespace SpiceEngine.UserInterfaces
                 {
                     _rootID = componentAndID.Item2;
                 }
+
+                // TODO - This is more of a reason to separate views from their renderables...
+                if (element is View view)
+                {
+                    view.SetSelectionID(SelectionHelper.GetColorFromID(componentAndID.Item2));
+                }
             }
 
             // TODO - Also determine the root ID here...
@@ -131,6 +138,16 @@ namespace SpiceEngine.UserInterfaces
                 return null;
             }
         }
+
+        /*public void SelectEntity(Point coordinates, bool isMultiSelect)
+        {
+            var id = GetEntityIDFromPoint(coordinates);
+
+            if (!SelectionRenderer.IsReservedID(id))
+            {
+
+            }
+        }*/
 
         /*protected override void LoadComponent(int entityID, IUIElement component)
         {

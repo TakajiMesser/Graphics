@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Styling;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Groups;
 using StarchUICore.Views;
@@ -172,10 +173,10 @@ namespace StarchUICore.Builders
         {
             var vertices = new List<ViewQuadVertex>
             {
-                new ViewQuadVertex(new Vector3(0.0f, 0.0f, 0.0f), new Vector2(width, height), new Vector2(), color, Color4.PaleVioletRed),
-                new ViewQuadVertex(new Vector3(0.0f, height, 0.0f), new Vector2(width, height), new Vector2(), color, Color4.PaleVioletRed),
-                new ViewQuadVertex(new Vector3(width, height, 0.0f), new Vector2(width, height), new Vector2(), color, Color4.PaleVioletRed),
-                new ViewQuadVertex(new Vector3(width, 0.0f, 0.0f), new Vector2(width, height), new Vector2(), color, Color4.PaleVioletRed)
+                new ViewQuadVertex(new Vector3(0.0f, 0.0f, 0.0f), 0.0f, new Vector2(width, height), new Vector2(), color, Color4.White, Color4.PaleVioletRed),
+                new ViewQuadVertex(new Vector3(0.0f, height, 0.0f), 0.0f, new Vector2(width, height), new Vector2(), color, Color4.White, Color4.PaleVioletRed),
+                new ViewQuadVertex(new Vector3(width, height, 0.0f), 0.0f, new Vector2(width, height), new Vector2(), color, Color4.White, Color4.PaleVioletRed),
+                new ViewQuadVertex(new Vector3(width, 0.0f, 0.0f), 0.0f, new Vector2(width, height), new Vector2(), color, Color4.White, Color4.PaleVioletRed)
             };
 
             var triangleIndices = new List<int>{ 2, 1, 0, 3, 2, 0 };

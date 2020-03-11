@@ -539,8 +539,8 @@ namespace SpiceEngine.Rendering
                     break;
             }
 
-            if (IsInEditorMode)
-            {
+            //if (IsInEditorMode)
+            //{
                 RenderEntityIDs();
 
                 // TODO - Determine how to handle this
@@ -548,11 +548,12 @@ namespace SpiceEngine.Rendering
                 {
                     _renderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
                 }*/
-            }
+            //}
         }
 
         private void RenderEntityIDs()
         {
+            // TODO - Perform check first to see if ANY selection IDs (via layers) even exist...
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
@@ -560,10 +561,17 @@ namespace SpiceEngine.Rendering
             _selectionRenderer.SelectionPass(_camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
             _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
 
-            var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
-            if (vertexEntities.Any())
+            if (IsInEditorMode)
             {
-                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+                var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
+                if (vertexEntities.Any())
+                {
+                    _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+                }
+            }
+            else
+            {
+                _uiRenderer.RenderSelections(_batchManager, _uiProvider);
             }
         }
 

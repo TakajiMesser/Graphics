@@ -181,6 +181,8 @@ namespace SpiceEngine.Rendering.Processing
                 //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
                 .Execute();
         }
+
+        //public void UIPass(ICamera camera, IBatcher batcher, IEntityProvider entity)
         
         public void RenderTranslationArrows(ICamera camera, Vector3 position) { RenderTranslationArrows(camera, position, Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ); }
         public void RenderTranslationArrows(ICamera camera, Vector3 position, Vector3 xDirection, Vector3 yDirection, Vector3 zDirection)

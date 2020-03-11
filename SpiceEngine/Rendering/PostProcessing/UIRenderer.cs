@@ -14,6 +14,7 @@ namespace SpiceEngine.Rendering.PostProcessing
     public class UIRenderer : Renderer
     {
         private ShaderProgram _uiProgram;
+        private ShaderProgram _uiSelectionProgram;
         private FrameBuffer _frameBuffer = new FrameBuffer();
 
         public Texture FinalTexture { get; protected set; }
@@ -26,6 +27,14 @@ namespace SpiceEngine.Rendering.PostProcessing
                 new Shader(ShaderType.VertexShader, Resources.uiquad_vert),
                 new Shader(ShaderType.GeometryShader, Resources.uiquad_geom),
                 new Shader(ShaderType.FragmentShader, Resources.uiquad_frag)
+            );
+
+            _uiSelectionProgram = new ShaderProgram(
+                //new Shader(ShaderType.VertexShader, Resources.ui_vert),
+                //new Shader(ShaderType.FragmentShader, Resources.ui_frag)
+                new Shader(ShaderType.VertexShader, Resources.uiquad_selection_vert),
+                new Shader(ShaderType.GeometryShader, Resources.uiquad_selection_geom),
+                new Shader(ShaderType.FragmentShader, Resources.uiquad_selection_frag)
             );
         }
 
@@ -101,6 +110,22 @@ namespace SpiceEngine.Rendering.PostProcessing
 
             GL.Disable(EnableCap.Blend);
         }*/
+
+        public void RenderSelections(IBatcher batcher, IUIProvider uiProvider)
+        {
+            //GL.Disable(EnableCap.DepthTest);
+            //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+            // TODO - Contain all rendering logic in batcher as well in view batches
+            batcher.CreateBatchAction()
+                .SetShader(_uiSelectionProgram)
+                .SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height))
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.OpaqueView)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
+        }
 
         public void Render(IBatcher batcher, IUIProvider uiProvider)
         {

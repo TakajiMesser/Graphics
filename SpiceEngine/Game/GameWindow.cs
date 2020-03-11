@@ -307,6 +307,20 @@ namespace SpiceEngine.Game
             //_mouseDevice = Mouse;
             _mouseState = Mouse.GetCursorState();
             _gameManager.Update();
+
+            // TODO - Fix this janky ass shit
+            if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
+            {
+                if (_gameManager.InputManager.MouseCoordinates.HasValue)
+                {
+                    var entityID = _renderManager.GetEntityIDFromPoint(_gameManager.InputManager.MouseCoordinates.Value);
+                    
+                    if (entityID > 0)
+                    {
+
+                    }
+                }
+            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

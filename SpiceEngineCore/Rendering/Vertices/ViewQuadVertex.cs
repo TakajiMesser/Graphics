@@ -9,17 +9,21 @@ namespace SpiceEngineCore.Rendering.Vertices
     public struct ViewQuadVertex : IVertex3D, IColorVertex, ISelectionVertex
     {
         public Vector3 Position { get; private set; }
+        public float BorderThickness { get; private set; }
         public Vector2 Size { get; private set; }
         public Vector2 CornerRadius { get; private set; }
         public Color4 Color { get; private set; }
+        public Color4 BorderColor { get; private set; }
         public Color4 SelectionID { get; private set; }
 
-        public ViewQuadVertex(Vector3 position, Vector2 size, Vector2 cornerRadius, Color4 color, Color4 selectionID)
+        public ViewQuadVertex(Vector3 position, float borderThickness, Vector2 size, Vector2 cornerRadius, Color4 color, Color4 borderColor, Color4 selectionID)
         {
             Position = position;
+            BorderThickness = borderThickness;
             Size = size;
             CornerRadius = cornerRadius;
             Color = color;
+            BorderColor = borderColor;
             SelectionID = selectionID;
         }
 

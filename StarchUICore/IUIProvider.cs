@@ -1,5 +1,4 @@
-﻿using StarchUICore.Views;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace StarchUICore
 {
@@ -13,6 +12,5 @@ namespace StarchUICore
         //void Draw();
 
         void Clear();
-        
     }
 }

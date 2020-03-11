@@ -9,6 +9,7 @@ using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Styling;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Groups;
 using StarchUICore.Views;
@@ -69,6 +70,11 @@ namespace SpiceEngine.Maps
 
         public Color4 Color { get; set; }
         public float Alpha { get; set; } = 1.0f;
+
+        public float BorderThickness { get; set; }
+        public Color4 BorderColor { get; set; }
+        public float CornerXRadius { get; set; }
+        public float CornerYRadius { get; set; }
 
         public UITypes UIType { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
@@ -146,7 +152,7 @@ namespace SpiceEngine.Maps
             element.VerticalDock = new Dock(DoesVerticalDockRespectChanges);
             element.Alpha = Alpha;
             element.Padding = ParsePadding();
-            //element.Border = _border;
+            element.Border = new Border(BorderThickness, BorderColor, CornerXRadius, CornerYRadius);
 
             if (element is View view)
             {

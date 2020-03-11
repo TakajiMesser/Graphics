@@ -262,6 +262,9 @@
     <None Include="Resources\Shaders\Skybox\skybox2D.vert" />
     <None Include="Resources\Shaders\Text\text.frag" />
     <None Include="Resources\Shaders\Text\text.vert" />
+    <None Include="Resources\Shaders\UserInterfaces\uiquad-selection.frag" />
+    <None Include="Resources\Shaders\UserInterfaces\uiquad-selection.geom" />
+    <None Include="Resources\Shaders\UserInterfaces\uiquad-selection.vert" />
     <None Include="Resources\Shaders\UserInterfaces\uiquad.frag" />
     <None Include="Resources\Shaders\UserInterfaces\uiquad.geom" />
     <None Include="Resources\Shaders\UserInterfaces\uiquad.vert" />

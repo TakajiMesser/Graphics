@@ -1,7 +1,7 @@
 ﻿using SpiceEngineCore.Rendering;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
-using StarchUICore.Views;
+using StarchUICore.Attributes.Styling;
 using System;
 
 namespace StarchUICore

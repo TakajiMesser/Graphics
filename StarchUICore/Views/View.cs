@@ -21,10 +21,6 @@ namespace StarchUICore.Views
         private VertexIndexBuffer _indexBuffer;
         private VertexArray<ViewQuadVertex> _vertexArray;
 
-        // TODO - These should also be IUnits...
-        public float CornerXRadius { get; set; } = 100.0f;
-        public float CornerYRadius { get; set; } = 100.0f;
-
         public Layer Foreground { get; set; }
         public Layer Background { get; set; }
 
@@ -141,22 +137,42 @@ namespace StarchUICore.Views
 
         protected override void OnLaidOut(LayoutInfo layoutInfo)
         {
-            _vertexBuffer.Clear();
-
             // Now that we have a new measurement for this view, we can add vertices for its drawable functionality!
-            var vertexSet = UIBuilder.Rectangle(Measurement.Width, Measurement.Height, new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha));
+            //var vertexSet = UIBuilder.Rectangle(Measurement.Width, Measurement.Height, new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha));
 
             // TODO - Begin applying all the desired transformations to the vertex set (such as textures)
-            _vertexSet = vertexSet;
+            //_vertexSet = vertexSet;
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
-            _indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
+            //_indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
 
-            var position = new Vector3(400, 200, 0);//Location.X, Location.Y, 0.0f);
-            var size = new Vector2(500, 400);//Measurement.Width, Measurement.Height);
-            var cornerRadius = new Vector2(10, 10);//CornerXRadius, CornerYRadius);
+            lock (_selectionIDLock)
+            {
+                CreateAndSetVertex();
+            }
+        }
+
+        // TODO - This is ass, but will get the job done for now...
+        private Color4 _selectionID;
+        private object _selectionIDLock = new object();
+
+        public void SetSelectionID(Color4 selectionID)
+        {
+            lock (_selectionIDLock)
+            {
+                _selectionID = selectionID;
+                CreateAndSetVertex();
+            }
+        }
+
+        private void CreateAndSetVertex()
+        {
+            var position = new Vector3(Location.X, Location.Y, 0.0f);
+            var size = new Vector2(Measurement.Width, Measurement.Height);
+            var cornerRadius = new Vector2(Border.CornerXRadius, Border.CornerYRadius);
             var color = new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha);
-            
-            _vertexBuffer.AddVertex(new ViewQuadVertex(position, size, cornerRadius, color, Color4.AliceBlue));
+
+            _vertexBuffer.Clear();
+            _vertexBuffer.AddVertex(new ViewQuadVertex(position, Border.Thickness, size, cornerRadius, color, Border.Color, _selectionID));
         }
 
         public override void Draw()

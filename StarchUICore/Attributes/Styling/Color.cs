@@ -1,8 +1,8 @@
 ﻿using OpenTK.Graphics;
 
-namespace StarchUICore.Attributes
+namespace StarchUICore.Attributes.Styling
 {
-    public class Color
+    public struct Color
     {
         public Color4 ForegroundColor { get; set; }
         public Color4 BackgroundColor { get; set; }

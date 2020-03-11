@@ -1826,7 +1826,40 @@ namespace SpiceEngine.Properties {
                 return ResourceManager.GetString("uiquad_vert", resourceCulture);
             }
         }
-        
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_selection_frag
+        {
+            get
+            {
+                return ResourceManager.GetString("uiquad_selection_frag", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_selection_geom
+        {
+            get
+            {
+                return ResourceManager.GetString("uiquad_selection_geom", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_selection_vert
+        {
+            get
+            {
+                return ResourceManager.GetString("uiquad_selection_vert", resourceCulture);
+            }
+        }
+
         /// <summary>
         ///   Looks up a localized string similar to #version 330 core
         ///
