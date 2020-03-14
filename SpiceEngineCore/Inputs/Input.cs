@@ -3,7 +3,7 @@ using System;
 
 namespace SpiceEngineCore.Inputs
 {
-    public enum InputType
+    public enum InputTypes
     {
         Key,
         Mouse,
@@ -19,7 +19,7 @@ namespace SpiceEngineCore.Inputs
         private GamePad _primaryGamePadButton;
         private GamePadButtons _secondaryGamePadButton;
 
-        public InputType Type { get; set; }
+        public InputTypes Type { get; set; }
 
         public int PrimaryInput
         {
@@ -27,9 +27,9 @@ namespace SpiceEngineCore.Inputs
             {
                 switch (Type)
                 {
-                    case InputType.Key:
+                    case InputTypes.Key:
                         return (int)_primaryKey;
-                    case InputType.Mouse:
+                    case InputTypes.Mouse:
                         return (int)_primaryMouse;
                 }
 
@@ -43,9 +43,9 @@ namespace SpiceEngineCore.Inputs
             {
                 switch (Type)
                 {
-                    case InputType.Key:
+                    case InputTypes.Key:
                         return (int)_secondaryKey;
-                    case InputType.Mouse:
+                    case InputTypes.Mouse:
                         return (int)_secondaryMouse;
                 }
 
@@ -58,13 +58,13 @@ namespace SpiceEngineCore.Inputs
 
         public Input(Key primaryKey)
         {
-            Type = InputType.Key;
+            Type = InputTypes.Key;
             _primaryKey = primaryKey;
         }
 
         public Input(MouseButton primaryMouseButton)
         {
-            Type = InputType.Mouse;
+            Type = InputTypes.Mouse;
             _primaryMouse = primaryMouseButton;
         }
     }

@@ -169,10 +169,14 @@ namespace SpiceEngine.Game
             _gameLoader.TimedOut += (s, args) => RunSync(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
+            // Propogate default camera to all systems that require it
             var defaultCamera = _gameManager.EntityManager.Cameras.First();
             _gameManager.Camera = defaultCamera;
             _gameManager.BehaviorManager.SetCamera(defaultCamera);
             _renderManager.SetCamera(defaultCamera);
+
+            // Set up UIManager to track mouse selections for UI control interactions
+            _gameManager.UIManager.TrackSelections(_renderManager, _gameManager.InputManager);
 
             //_stopWatch.Stop();
             //LogWatch("Total");
@@ -302,25 +306,10 @@ namespace SpiceEngine.Game
         // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            //OpenTK.Input.
             //_mouseDevice = InputDriver.Mouse;
             //_mouseDevice = Mouse;
             _mouseState = Mouse.GetCursorState();
             _gameManager.Update();
-
-            // TODO - Fix this janky ass shit
-            if (_gameManager.InputManager.IsDown(new Input(MouseButton.Left)))
-            {
-                if (_gameManager.InputManager.MouseCoordinates.HasValue)
-                {
-                    var entityID = _renderManager.GetEntityIDFromPoint(_gameManager.InputManager.MouseCoordinates.Value);
-                    
-                    if (entityID > 0)
-                    {
-
-                    }
-                }
-            }
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

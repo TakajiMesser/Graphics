@@ -2,6 +2,7 @@
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
@@ -9,6 +10,7 @@ using StarchUICore.Attributes.Sizes;
 using StarchUICore.Groups;
 using StarchUICore.Views;
 using System.Collections.Generic;
+using StarchUICore.Views.Controls.Buttons;
 
 namespace SpiceEngine.UserInterfaces
 {
@@ -18,11 +20,50 @@ namespace SpiceEngine.UserInterfaces
         private Resolution _resolution;
         private int _rootID;
         private SetDictionary<int, int> _childIDSetByID = new SetDictionary<int, int>();
+        private HashSet<int> _selectedEntityIDs = new HashSet<int>();
 
         public UIManager(IEntityProvider entityProvider, Resolution resolution)
         {
             SetEntityProvider(entityProvider);
             _resolution = resolution;
+        }
+
+        public void TrackSelections(ISelectionTracker selectionTracker, IInputProvider inputProvider)
+        {
+            // TODO - Determine which types of controls depend on which types of selections
+            // e.g. Buttons require Down and Up within borders, and triggers on Up
+            //      Panels get moved to front on Down
+            //      How do we handle Drag + Drop?
+            inputProvider.MouseDownSelected += (s, args) =>
+            {
+                var entityID = selectionTracker.GetEntityIDFromPoint(args.MouseCoordinates);
+
+                if (entityID > 0 && _componentByID.ContainsKey(entityID))
+                {
+                    // TODO - For testing purposes, trigger on DOWN for Views
+                    if (_componentByID[entityID] is View view)
+                    {
+                        
+                    }
+
+                    _selectedEntityIDs.Add(entityID);
+                }
+            };
+
+            inputProvider.MouseUpSelected += (s, args) =>
+            {
+                var entityID = selectionTracker.GetEntityIDFromPoint(args.MouseCoordinates);
+
+                if (entityID > 0 && _componentByID.ContainsKey(entityID) && _selectedEntityIDs.Contains(entityID))
+                {
+                    if (_componentByID[entityID] is Button button)
+                    {
+
+                    }
+
+                    _selectedEntityIDs.Remove(entityID);
+                }
+            };
         }
 
         private IElement GetRoot() => _rootID > 0 ? _componentByID[_rootID] as IElement : null;

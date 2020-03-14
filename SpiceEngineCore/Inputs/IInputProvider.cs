@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Outputs;
+using System;
 
 namespace SpiceEngineCore.Inputs
 {
@@ -14,6 +15,9 @@ namespace SpiceEngineCore.Inputs
 
         Vector2 MouseDelta { get; }
         int MouseWheelDelta { get; }
+
+        event EventHandler<MouseClickEventArgs> MouseDownSelected;
+        event EventHandler<MouseClickEventArgs> MouseUpSelected;
 
         bool IsDown(Input input);
         bool IsUp(Input input);

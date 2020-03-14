@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Input;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Outputs;
 using System;
@@ -58,6 +59,8 @@ namespace SpiceEngineCore.Inputs
                 : _inputStates[_inputStates.Count - 1].MouseWheel
             : 0;
 
+        public event EventHandler<MouseClickEventArgs> MouseDownSelected;
+        public event EventHandler<MouseClickEventArgs> MouseUpSelected;
         public event EventHandler<EventArgs> EscapePressed;
 
         protected override void Update()
@@ -70,16 +73,36 @@ namespace SpiceEngineCore.Inputs
                 _inputStates.RemoveAt(0);
             }
 
+            HandleMouseSelection();
+
             if (EscapePressed != null && inputState.IsDown(new Input(OpenTK.Input.Key.Escape)))
             {
                 EscapePressed.Invoke(this, new EventArgs());
             }
         }
 
-        public void Clear()
+        private void HandleMouseSelection()
         {
-            _inputStates.Clear();
+            if (MouseDownSelected != null || MouseUpSelected != null)
+            {
+                if (MouseCoordinates.HasValue && IsMouseInWindow)
+                {
+                    if (MouseDownSelected != null)
+                    {
+                        if (IsPressed(new Input(MouseButton.Left)))
+                        {
+                            MouseDownSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
+                        }
+                    }
+                    else if (IsReleased(new Input(MouseButton.Left)))
+                    {
+                        MouseUpSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
+                    }
+                }
+            }
         }
+
+        public void Clear() => _inputStates.Clear();
 
         /*public void HandleInputs(Camera camera, IEnumerable<Actor> actors)
         {
@@ -173,13 +196,13 @@ namespace SpiceEngineCore.Inputs
             {
                 switch (input.Type)
                 {
-                    case InputType.Key:
+                    case InputTypes.Key:
                         /*if (_keyState != null)
                         {
                             //_keyState = new KeyboardState();
                         }*/
                         break;
-                    case InputType.Mouse:
+                    case InputTypes.Mouse:
                         break;
                 }
             }

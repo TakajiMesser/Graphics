@@ -22,12 +22,12 @@ namespace SpiceEngineCore.Inputs
         {
             switch (input.Type)
             {
-                case InputType.Key:
+                case InputTypes.Key:
                     return _keyboardState.IsKeyDown((Key)input.PrimaryInput) || _keyboardState.IsKeyDown((Key)input.SecondaryInput);
-                case InputType.Mouse:
+                case InputTypes.Mouse:
                     return input.HasPrimaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.PrimaryInput)
                         || input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput);
-                case InputType.GamePad:
+                case InputTypes.GamePad:
                 default:
                     throw new NotImplementedException("");
             }
@@ -37,12 +37,12 @@ namespace SpiceEngineCore.Inputs
         {
             switch (input.Type)
             {
-                case InputType.Key:
+                case InputTypes.Key:
                     return _keyboardState.IsKeyUp((Key)input.PrimaryInput) && _keyboardState.IsKeyUp((Key)input.SecondaryInput);
-                case InputType.Mouse:
+                case InputTypes.Mouse:
                     return (!input.HasPrimaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.PrimaryInput))
                         && (!input.HasSecondaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.SecondaryInput));
-                case InputType.GamePad:
+                case InputTypes.GamePad:
                 default:
                     throw new NotImplementedException("");
             }

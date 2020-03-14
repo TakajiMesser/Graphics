@@ -4,11 +4,14 @@ using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Builders;
 using StarchUICore.Themes;
+using System;
 
 namespace StarchUICore.Views.Controls.Buttons
 {
     public class Button : Control
     {
+        public event EventHandler OnClicked;
+
         public override IView Duplicate() => throw new System.NotImplementedException();
 
         /*protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
