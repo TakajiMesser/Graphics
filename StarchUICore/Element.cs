@@ -12,6 +12,7 @@ namespace StarchUICore
         private Size _size;
         private float _alpha = 1.0f;
 
+        public string Name { get; set; }
         public IElement Parent { get; set; }
 
         public Position Position
@@ -83,6 +84,7 @@ namespace StarchUICore
         public bool IsAnimated { get; set; } = false;
         public bool IsTransparent => Alpha < 1.0f;
 
+        public event EventHandler LayoutChanged;
         public event EventHandler<PositionEventArgs> PositionChanged;
         public event EventHandler<SizeEventArgs> SizeChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
@@ -146,6 +148,7 @@ namespace StarchUICore
             if (wasMeasured || wasLocated)
             {
                 OnLaidOut(layoutInfo);
+                LayoutChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 

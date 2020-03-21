@@ -3,13 +3,13 @@ using SpiceEngineCore.UserInterfaces;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Styling;
-using StarchUICore.Views;
 using System;
 
 namespace StarchUICore
 {
     public interface IElement : IUIElement, IRenderable
     {
+        string Name { get; set; }
         IElement Parent { get; set; }
 
         Position Position { get; set; }
@@ -27,6 +27,7 @@ namespace StarchUICore
         Measurement Measurement { get; }
         Location Location { get; }
 
+        event EventHandler LayoutChanged;
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;
 

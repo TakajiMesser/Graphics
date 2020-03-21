@@ -1,6 +1,5 @@
 ﻿using OpenTK.Graphics;
 using OpenTK.Graphics.ES20;
-using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
 using System;
@@ -26,6 +25,8 @@ namespace SpiceEngineCore.Rendering.Buffers
         public void AddVertex(T vertex) => _vertices.Add(vertex);
         public void AddVertices(params T[] vertices) => _vertices.AddRange(vertices);
         public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
+
+        public void SetVertex(int index, T vertex) => _vertices[index] = vertex;
 
         public void Clear() => _vertices.Clear();
 

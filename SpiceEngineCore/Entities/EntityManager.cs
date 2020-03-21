@@ -160,7 +160,8 @@ namespace SpiceEngineCore.Entities
                             availableID = _nextAvailableID;
                             _nextAvailableID += entityBuilders.Count() - index;
 
-                            _entities.PadTo(null, _nextAvailableID);
+                            // Subtract 2 because we have already incremented the available ID ahead of what we have, AND because the first ID starts at 1
+                            _entities.PadTo(null, _nextAvailableID - 2);
                         }
                     }
                 }

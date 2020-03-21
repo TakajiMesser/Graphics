@@ -24,9 +24,6 @@ namespace StarchUICore.Views
         public Layer Foreground { get; set; }
         public Layer Background { get; set; }
 
-        public IEnumerable<ViewQuadVertex> Vertices => _vertexSet.Vertices;
-        public IEnumerable<int> TriangleIndices => _vertexSet.TriangleIndices;
-
         public void Combine(IView view)
         {
             if (view is View castView)
@@ -144,24 +141,6 @@ namespace StarchUICore.Views
             //_vertexSet = vertexSet;
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
             //_indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
-
-            lock (_selectionIDLock)
-            {
-                CreateAndSetVertex();
-            }
-        }
-
-        // TODO - This is ass, but will get the job done for now...
-        private Color4 _selectionID;
-        private object _selectionIDLock = new object();
-
-        public void SetSelectionID(Color4 selectionID)
-        {
-            lock (_selectionIDLock)
-            {
-                _selectionID = selectionID;
-                CreateAndSetVertex();
-            }
         }
 
         private void CreateAndSetVertex()
@@ -171,8 +150,8 @@ namespace StarchUICore.Views
             var cornerRadius = new Vector2(Border.CornerXRadius, Border.CornerYRadius);
             var color = new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha);
 
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertex(new ViewQuadVertex(position, Border.Thickness, size, cornerRadius, color, Border.Color, _selectionID));
+            //_vertexBuffer.Clear();
+            //_vertexBuffer.AddVertex(new ViewQuadVertex(position, Border.Thickness, size, cornerRadius, color, Border.Color, _selectionID));
         }
 
         public override void Draw()

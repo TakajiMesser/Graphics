@@ -33,7 +33,7 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public virtual void RemoveEntity(int id) => _entityIDs.Remove(id);
 
-        public void Load()
+        public virtual void Load()
         {
             _renderable.Load();
             IsLoaded = true;

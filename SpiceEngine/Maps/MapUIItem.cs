@@ -144,6 +144,7 @@ namespace SpiceEngine.Maps
 
         private void ApplyValues(Element element)
         {
+            element.Name = Name;
             element.Position = ParsePosition();
             element.Size = ParseSize();
             element.HorizontalAnchor = new Anchor(HorizontalAnchorType, DoesHorizontalAnchorRespectChanges);

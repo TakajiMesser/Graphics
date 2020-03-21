@@ -1,5 +1,6 @@
 ﻿using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Units;
+using System;
 
 namespace StarchUICore.Attributes.Positions
 {
@@ -37,6 +38,13 @@ namespace StarchUICore.Attributes.Positions
             if (anchorRelativeX.HasValue && anchorWidth.HasValue && measuredWidth.HasValue)
             {
                 var constrainedX = X.ToOffsetPixels(anchorWidth.Value);
+
+                if (X is AutoUnits)
+                {
+                    // constrainedX represents the relative X BEFORE being applied to the actual anchor, which could be Left/Right/Center
+                    // But assuming that constrainedX is still relative from the LEFT of the parent, if X is AUTO, then we need to subtract half of this view
+                    constrainedX = (int)Math.Round((constrainedX - measuredWidth.Value) / 2.0f);
+                }
 
                 if (!(MinimumX is AutoUnits))
                 {
@@ -114,6 +122,11 @@ namespace StarchUICore.Attributes.Positions
             if (anchorRelativeY.HasValue && anchorHeight.HasValue && measuredHeight.HasValue)
             {
                 var constrainedY = Y.ToOffsetPixels(anchorHeight.Value);
+
+                if (Y is AutoUnits)
+                {
+                    constrainedY = (int)Math.Round((constrainedY - measuredHeight.Value) / 2.0f);
+                }
 
                 if (!(MinimumY is AutoUnits))
                 {

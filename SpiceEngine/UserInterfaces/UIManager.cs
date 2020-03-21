@@ -11,6 +11,8 @@ using StarchUICore.Groups;
 using StarchUICore.Views;
 using System.Collections.Generic;
 using StarchUICore.Views.Controls.Buttons;
+using StarchUICore.Attributes.Units;
+using StarchUICore.Attributes.Positions;
 
 namespace SpiceEngine.UserInterfaces
 {
@@ -56,13 +58,17 @@ namespace SpiceEngine.UserInterfaces
 
                 if (entityID > 0 && _componentByID.ContainsKey(entityID) && _selectedEntityIDs.Contains(entityID))
                 {
-                    if (_componentByID[entityID] is Button button)
+                    // TODO - For testing purposes, trigger on DOWN for Views
+                    if (_componentByID[entityID] is View view)
                     {
 
                     }
 
-                    _selectedEntityIDs.Remove(entityID);
+                    //_selectedEntityIDs.Remove(entityID);
                 }
+
+                // TODO - This should change later, but for now clear out all selections once we lift up mouse
+                _selectedEntityIDs.Clear();
             };
         }
 
@@ -150,12 +156,6 @@ namespace SpiceEngine.UserInterfaces
                 if (element.Parent == null)
                 {
                     _rootID = componentAndID.Item2;
-                }
-
-                // TODO - This is more of a reason to separate views from their renderables...
-                if (element is View view)
-                {
-                    view.SetSelectionID(SelectionHelper.GetColorFromID(componentAndID.Item2));
                 }
             }
 
@@ -256,20 +256,23 @@ namespace SpiceEngine.UserInterfaces
         {
             var root = GetRoot();
 
-            // TODO - This is test code to move the root view every 150 ticks
-            _tickCounter++;
+            // TODO - This is test code to move the root view
+            /*_tickCounter++;
 
-            if (_tickCounter == 150)
+            if (_tickCounter == 10)
             {
                 _tickCounter = 0;
 
                 if (root != null)
                 {
-                    var position = root.Position;
-                    //root.Position = new Position(Unit.Pixels(position.X.Constrain( + 100, position.Y + 100);
+                    var x = Unit.Pixels(root.Location.X + 1);
+                    var y = Unit.Pixels(root.Location.Y + 1);
+
+                    root.Position = root.Position.Offset(x, y);
+                    root.Location.Invalidate();
                 }
                 
-            }
+            }*/
 
             root?.Layout(new LayoutInfo(_resolution.Width, _resolution.Height, _resolution.Width, _resolution.Height, 0, 0, 0, 0));
             //root?.Measure(new MeasuredSize(_resolution.Width, _resolution.Height));

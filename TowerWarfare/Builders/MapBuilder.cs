@@ -143,17 +143,47 @@ namespace TowerWarfare.Builders
         {
             yield return new MapUIItem()
             {
+                Name = "RowGroup 1A",
+                UIType = UITypes.RowGroup,
+                X = "0",
+                Y = "0",
+                Width = "800",
+                Height = "900",
+                ChildElementNames = new List<string> { "View 2A", "View 2B" }
+            };
+
+            yield return new MapUIItem()
+            {
                 Name = "View 2A",
                 UIType = UITypes.View,
-                X = "300",
-                Y = "200",
-                Width = "600",
-                Height = "400",
+                X = "0",
+                Y = "Auto",
+                Width = "300",
+                Height = "200",
+                HorizontalAnchorType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                DoesHorizontalAnchorRespectChanges = true,
                 Color = Color4.White,
                 CornerXRadius = 15,
                 CornerYRadius = 10,
                 BorderThickness = 5,
                 BorderColor = Color4.Black
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "View 2B",
+                UIType = UITypes.View,
+                X = "0",
+                Y = "Auto",
+                Width = "150",
+                Height = "100",
+                HorizontalAnchorType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                DoesHorizontalAnchorRespectChanges = true,
+                Color = Color4.LightCyan,
+                CornerXRadius = 15,
+                CornerYRadius = 10,
+                BorderThickness = 5,
+                BorderColor = Color4.DarkCyan
             };
 
             /*yield return new MapUIItem()

@@ -87,14 +87,12 @@ namespace SpiceEngineCore.Inputs
             {
                 if (MouseCoordinates.HasValue && IsMouseInWindow)
                 {
-                    if (MouseDownSelected != null)
+                    if (MouseDownSelected != null && IsPressed(new Input(MouseButton.Left)))
                     {
-                        if (IsPressed(new Input(MouseButton.Left)))
-                        {
-                            MouseDownSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
-                        }
+                        MouseDownSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
                     }
-                    else if (IsReleased(new Input(MouseButton.Left)))
+                    
+                    if (MouseUpSelected != null && IsReleased(new Input(MouseButton.Left)))
                     {
                         MouseUpSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
                     }
