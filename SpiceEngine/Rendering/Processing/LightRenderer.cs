@@ -5,10 +5,10 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
 using System;
 
 namespace SpiceEngine.Rendering.Processing
@@ -152,9 +152,9 @@ namespace SpiceEngine.Rendering.Processing
         {
             switch (light)
             {
-                case PointLight p:
+                case PointLight _:
                     return _pointLightMesh;
-                case SpotLight s:
+                case SpotLight _:
                     return _spotLightMesh;
                 default:
                     throw new NotImplementedException("Could not handle light type " + light.GetType());

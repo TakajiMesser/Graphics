@@ -10,14 +10,14 @@ using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Animations;
 using SpiceEngineCore.Rendering.Materials;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Animations;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 using UmamiScriptingCore.Behaviors.Properties;
@@ -180,7 +180,7 @@ namespace SpiceEngineCore.Maps
             return null;
         }
 
-        public IEnumerable<Animation> Animations
+        public IEnumerable<IAnimation> Animations
         {
             get
             {
@@ -288,7 +288,7 @@ namespace SpiceEngineCore.Maps
 
                                 yield return new Animation(sceneAnimation.Name, (float)sceneAnimation.DurationInTicks)
                                 {
-                                    KeyFrames = keyFrames.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).ToList()
+                                    KeyFrames = keyFrames.OrderBy(kvp => kvp.Key).Select(kvp => kvp.Value).Cast<IKeyFrame>().ToList()
                                 };
                             }
                         }

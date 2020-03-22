@@ -7,6 +7,6 @@ namespace SpiceEngineCore.Game.Loading.Builders
     public interface IAnimatorBuilder : IComponentBuilder<IAnimator>
     {
         Vector3 Position { get; set; }
-        IEnumerable<Animation> Animations { get; }
+        IEnumerable<IAnimation> Animations { get; }
     }
 }

@@ -1,7 +1,7 @@
 ﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Models;
 
 namespace SauceEditorCore.Models.Entities
 {

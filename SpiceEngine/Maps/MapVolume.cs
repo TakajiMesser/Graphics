@@ -1,18 +1,18 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
+using SavoryPhysicsCore.Shapes;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
-using SavoryPhysicsCore.Shapes;
 
 namespace SpiceEngine.Maps
 {

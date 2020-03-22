@@ -3,9 +3,9 @@ using OpenTK.Graphics;
 using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 using static SpiceEngineCore.Maps.MapLight;
 

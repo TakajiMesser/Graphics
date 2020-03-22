@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Rendering.Textures;
+﻿using SweetGraphicsCore.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Textures
 {

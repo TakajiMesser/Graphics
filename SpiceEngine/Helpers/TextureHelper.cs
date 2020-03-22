@@ -1,6 +1,6 @@
 ﻿using FreeImageAPI;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;

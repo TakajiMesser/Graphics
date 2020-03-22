@@ -159,6 +159,7 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\Animations\AnimationManager.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Font.cs" />
     <Compile Include="Rendering\FontManager.cs" />

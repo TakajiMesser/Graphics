@@ -3,11 +3,11 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Outputs;
-using SpiceEngineCore.Rendering.Buffers;
-using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.Vertices;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System;
 
 namespace SpiceEngine.Rendering.PostProcessing

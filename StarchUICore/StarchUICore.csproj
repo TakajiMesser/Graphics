@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj" />
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

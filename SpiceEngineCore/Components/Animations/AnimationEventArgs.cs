@@ -1,12 +1,12 @@
-﻿using SpiceEngineCore.Rendering.Animations;
+﻿using SpiceEngineCore.Components.Animations;
 using System;
 
 namespace SpiceEngineCore.Components.Animations
 {
     public class AnimationEventArgs : EventArgs
     {
-        public Animation Animation { get; private set; }
+        public IAnimation Animation { get; private set; }
 
-        public AnimationEventArgs(Animation animation) => Animation = animation;
+        public AnimationEventArgs(IAnimation animation) => Animation = animation;
     }
 }

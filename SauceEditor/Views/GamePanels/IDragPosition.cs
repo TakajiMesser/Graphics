@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Rendering.Models;
-using System.Windows;
+﻿using System.Windows;
 
 namespace SauceEditor.Views.GamePanels
 {

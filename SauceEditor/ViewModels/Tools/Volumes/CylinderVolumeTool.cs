@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Rendering.Models;
+﻿using SweetGraphicsCore.Rendering.Models;
 
 namespace SauceEditor.ViewModels.Tools.Volumes
 {

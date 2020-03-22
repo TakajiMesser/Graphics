@@ -1,5 +1,5 @@
 ﻿using SpiceEngine.Maps;
-using SpiceEngineCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Models;
 using System.ComponentModel;
 
 namespace SauceEditor.ViewModels.Tools.Volumes

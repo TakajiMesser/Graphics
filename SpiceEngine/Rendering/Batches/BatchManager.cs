@@ -5,17 +5,18 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Billboards;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
-using SpiceEngineCore.Utilities;
 using StarchUICore;
 using StarchUICore.Groups;
 using StarchUICore.Rendering.Batches;
 using StarchUICore.Views;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Billboards;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -153,9 +154,9 @@ namespace SpiceEngine.Rendering.Batches
             };
 
             // TODO - Should we hold off on binding this animation model until the model batch has been loaded?
-            if (renderable is IAnimatedModel animatedModel && _animationProvider != null)
+            if (renderable is IAnimate animated && _animationProvider != null)
             {
-                _animationProvider.AddModel(entityID, animatedModel);
+                _animationProvider.AddAnimated(entityID, animated);
             }
 
             var batch = CreateOrGetBatch(entityID, renderable);

@@ -26,36 +26,27 @@ namespace SpiceEngineCore.Rendering.Shaders
             }
         }
 
-        public void Use()
-        {
-            GL.UseProgram(_handle);
-        }
+        public void Use() => GL.UseProgram(_handle);
 
-        public int GetAttributeLocation(string name)
-        {
-            return GL.GetAttribLocation(_handle, name);
-        }
+        public int GetAttributeLocation(string name) => GL.GetAttribLocation(_handle, name);
 
-        public int GetUniformLocation(string name)
-        {
-            return GL.GetUniformLocation(_handle, name);
-        }
+        public int GetUniformLocation(string name) => GL.GetUniformLocation(_handle, name);
 
         public void BindUniformBlock(string name, int binding)
         {
-            int blockIndex = GL.GetUniformBlockIndex(_handle, name);
+            var blockIndex = GL.GetUniformBlockIndex(_handle, name);
             GL.UniformBlockBinding(_handle, blockIndex, binding);
         }
 
         public void BindShaderStorageBlock(string name, int binding)
         {
-            int blockIndex = 0;// GL.ShaderSto;
+            var blockIndex = 0;// GL.ShaderSto;
             GL.ShaderStorageBlockBinding(_handle, blockIndex, binding);
         }
 
         public void BindTexture(ITexture texture, string name, int index)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
 
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.Bind();
@@ -71,7 +62,7 @@ namespace SpiceEngineCore.Rendering.Shaders
 
         public void BindImageTexture(ITexture texture, string name, int index)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
 
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.BindImageTexture(index);
@@ -111,7 +102,7 @@ namespace SpiceEngineCore.Rendering.Shaders
 
         public void SetUniform(string name, Matrix4 matrix)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.UniformMatrix4(location, false, ref matrix);
         }
 
@@ -119,7 +110,7 @@ namespace SpiceEngineCore.Rendering.Shaders
         {
             for (var i = 0; i < matrices.Length; i++)
             {
-                int iLocation = GetUniformLocation(name + "[" + i + "]");
+                var iLocation = GetUniformLocation(name + "[" + i + "]");
                 GL.UniformMatrix4(iLocation, false, ref matrices[i]);
             }
 
@@ -150,43 +141,43 @@ namespace SpiceEngineCore.Rendering.Shaders
 
         public void SetUniform(string name, Vector2 vector)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.Uniform2(location, vector);
         }
 
         public void SetUniform(string name, Vector3 vector)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.Uniform3(location, vector);
         }
 
         public void SetUniform(string name, Vector4 vector)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.Uniform4(location, vector);
         }
 
         public void SetUniform(string name, Color4 color)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.Uniform4(location, color);
         }
 
         public void SetUniform(string name, float value)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.Uniform1(location, value);
         }
 
         public void SetUniform(string name, int value)
         {
-            int location = GetUniformLocation(name);
+            var location = GetUniformLocation(name);
             GL.Uniform1(location, value);
         }
 
         public int GetVertexAttributeLocation(string name)
         {
-            int index = GetAttributeLocation(name);
+            var index = GetAttributeLocation(name);
             if (index == -1)
             {
                 // Note that any attributes not explicitly used in the shaders will be optimized out by the shader compiler, resulting in (index == -1)

@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngineCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Models;
 
 namespace TowerWarfare.Entities.Actors.Towers
 {

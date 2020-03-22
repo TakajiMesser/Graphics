@@ -1,11 +1,10 @@
-﻿using SpiceEngineCore.Rendering.Animations;
-using SpiceEngineCore.Rendering.Models;
-using System;
+﻿using SweetGraphicsCore.Rendering.Models;
 
 namespace SpiceEngineCore.Components.Animations
 {
     public interface IAnimationProvider
     {
-        void AddModel(int entityID, IAnimatedModel model);
+        // TODO - IAnimate, IAnimator, and IAnimation are confusing names
+        void AddAnimated(int entityID, IAnimate animated);
     }
 }

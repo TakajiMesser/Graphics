@@ -553,6 +553,10 @@
       <Project>{0FE2AFA5-606D-47F1-B267-DAC3936B300F}</Project>
       <Name>StarchUICore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
+      <Project>{F6C9B29F-7751-4FD2-88DA-CFE8B512C645}</Project>
+      <Name>SweetGraphicsCore</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

@@ -2,9 +2,9 @@
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Outputs;
-using SpiceEngineCore.Rendering.PostProcessing;
 using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Processing.Post;
+using SweetGraphicsCore.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {

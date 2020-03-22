@@ -1,5 +1,5 @@
 ﻿using OpenTK.Graphics;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Textures;
 
 namespace StarchUICore.Layers
 {

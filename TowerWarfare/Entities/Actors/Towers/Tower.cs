@@ -2,8 +2,8 @@
 using OpenTK.Graphics;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Vertices;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Vertices;
 using System.Linq;
 
 namespace TowerWarfare.Entities.Actors.Towers

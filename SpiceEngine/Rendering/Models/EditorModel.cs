@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
-using SpiceEngineCore.Rendering.Animations;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Animations;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 using System.Linq;
 

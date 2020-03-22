@@ -2,8 +2,8 @@
 using OpenTK.Graphics;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 using TowerWarfare.Entities.Actors.Towers;
 using TowerWarfare.Entities.Cameras;

@@ -8,11 +8,12 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Buffers;
-using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.Vertices;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Processing

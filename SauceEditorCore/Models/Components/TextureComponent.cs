@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Rendering.Textures;
+﻿using SweetGraphicsCore.Rendering.Textures;
 using System;
 
 namespace SauceEditorCore.Models.Components

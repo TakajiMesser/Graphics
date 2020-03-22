@@ -10,12 +10,14 @@ using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Buffers;
-using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -214,13 +216,13 @@ namespace SpiceEngine.Rendering.Processing
 
             switch (light)
             {
-                case PointLight p:
+                case PointLight _:
                     _billboardProgram.BindTexture(_selectedPointLightTexture, "mainTexture", 0);
                     break;
-                case SpotLight s:
+                case SpotLight _:
                     _billboardProgram.BindTexture(_selectedSpotLightTexture, "mainTexture", 0);
                     break;
-                case DirectionalLight d:
+                case DirectionalLight _:
                     _billboardProgram.BindTexture(_selectedDirectionalLightTexture, "mainTexture", 0);
                     break;
             }

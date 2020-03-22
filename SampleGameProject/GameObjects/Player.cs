@@ -2,7 +2,7 @@
 using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Textures;
 using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace SampleGameProject.GameObjects

@@ -5,10 +5,11 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Buffers;
-using SpiceEngineCore.Rendering.Processing;
 using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Processing
 {

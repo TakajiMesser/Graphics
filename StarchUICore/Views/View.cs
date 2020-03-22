@@ -1,15 +1,15 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering.Buffers;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
-using StarchUICore.Builders;
 using StarchUICore.Layers;
+using StarchUICore.Rendering.Vertices;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Vertices;
 using System;
-using System.Collections.Generic;
 
 namespace StarchUICore.Views
 {

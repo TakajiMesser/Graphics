@@ -1,11 +1,11 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Meshes;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System;
 using System.Collections.Generic;
 using System.IO;

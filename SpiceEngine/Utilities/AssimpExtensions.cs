@@ -1,7 +1,7 @@
 ﻿using Assimp;
 using OpenTK;
-using SpiceEngineCore.Rendering.Animations;
-using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Animations;
+using SweetGraphicsCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -49,9 +49,9 @@ namespace SpiceEngine.Utilities
             SpecularMapFilePath = !string.IsNullOrEmpty(material.TextureSpecular.FilePath) ? Path.Combine(directoryPath, material.TextureSpecular.FilePath) : null,
         };
 
-        public static SpiceEngineCore.Rendering.Animations.Bone ToBone(this Node node)
+        public static SweetGraphicsCore.Rendering.Animations.Bone ToBone(this Node node)
         {
-            var bone = new SpiceEngineCore.Rendering.Animations.Bone
+            var bone = new SweetGraphicsCore.Rendering.Animations.Bone
             {
                 Name = node.Name
             };

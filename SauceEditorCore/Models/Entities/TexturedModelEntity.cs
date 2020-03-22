@@ -2,12 +2,10 @@
 using SpiceEngine.Entities.Selection;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Materials;
-using SpiceEngineCore.Rendering.Models;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
 using System;
-using System.Collections.Generic;
 
 namespace SauceEditorCore.Models.Entities
 {

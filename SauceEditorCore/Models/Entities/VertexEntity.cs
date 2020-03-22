@@ -1,7 +1,7 @@
 ﻿using SauceEditorCore.Helpers;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Billboards;
-using SpiceEngineCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Billboards;
+using SweetGraphicsCore.Rendering.Models;
 
 namespace SauceEditorCore.Models.Entities
 {
