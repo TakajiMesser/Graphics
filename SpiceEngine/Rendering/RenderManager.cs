@@ -116,6 +116,11 @@ namespace SpiceEngine.Rendering
             {
                 _batchManager.SetAnimationProvider(_animationProvider);
             }
+
+            if (_uiProvider != null)
+            {
+                _batchManager.SetUIProvider(_uiProvider);
+            }
         }
 
         public void SetAnimationProvider(IAnimationProvider animationProvider)
@@ -124,7 +129,11 @@ namespace SpiceEngine.Rendering
             _batchManager?.SetAnimationProvider(_animationProvider);
         }
 
-        public void SetUIProvider(IUIProvider uiProvider) => _uiProvider = uiProvider;
+        public void SetUIProvider(IUIProvider uiProvider)
+        {
+            _uiProvider = uiProvider;
+            _batchManager?.SetUIProvider(_uiProvider);
+        }
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
 

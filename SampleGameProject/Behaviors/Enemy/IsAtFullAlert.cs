@@ -16,7 +16,7 @@ namespace SampleGameProject.Behaviors.Enemy
             FullAlertTicks = fullAlertTicks;
         }
 
-        public override bool Condition(BehaviorContext context)
+        protected override bool Condition(BehaviorContext context)
         {
             int nAlertTicks = context.GetVariableOrDefault<int>("nAlertTicks");
 

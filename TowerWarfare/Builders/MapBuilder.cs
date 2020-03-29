@@ -37,11 +37,6 @@ namespace TowerWarfare.Builders
             map.Save(filePath);
         }
 
-        /*private static IEnumerable<MapControl> GenerateControls()
-        {
-
-        }*/
-
         private static IEnumerable<MapCamera> GenerateCameras()
         {
             yield return new Camera();
@@ -139,6 +134,29 @@ namespace TowerWarfare.Builders
             yield return physicsVolume;
         }
 
+        /*
+            Units = [Pixels, Percents, Auto]
+            Anchor = Position at [Start, Center, End]
+            Dock = Size
+
+            Position = [X, Y]
+                (Pixels, Start) => Offsets from Anchor by this hardcoded amount
+                (Pixels, Center) => 
+                (Pixels, End) => 
+                (Percents, Start) => Offsets from Anchor by this % of anchor size (or of available space?)
+                (Percents, Center) => 
+                (Percents, End) => 
+                (Auto, Start) => Ignores Anchor, and accepts Group's suggested position. For Groups, 
+                (Auto, Center) => 
+                (Auto, End) => 
+
+            Size = [Width, Height]
+                (Pixels) => Ignores Dock, hardcodes size
+                (Percents) => Set to % of dock size
+                (Auto) => For Groups, sets to size of content. For Views, identical to 100%
+             
+        */
+
         private static IEnumerable<MapUIItem> GenerateUIItems()
         {
             yield return new MapUIItem()
@@ -148,37 +166,50 @@ namespace TowerWarfare.Builders
                 X = "0",
                 Y = "0",
                 Width = "800",
-                Height = "900",
-                ChildElementNames = new List<string> { "View 2A", "View 2B" }
+                Height = "800",
+                HorizontalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                HorizontalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                VerticalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                VerticalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                ChildElementNames = new List<string> { "View 2A", "View 2B" },
+                PaddingLeft = "20"
             };
 
             yield return new MapUIItem()
             {
                 Name = "View 2A",
                 UIType = UITypes.View,
-                X = "0",
+                X = "Auto",
                 Y = "Auto",
-                Width = "300",
+                Width = "100",
                 Height = "200",
-                HorizontalAnchorType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                HorizontalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                HorizontalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                VerticalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
+                VerticalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
                 DoesHorizontalAnchorRespectChanges = true,
-                Color = Color4.White,
+                DoesVerticalAnchorRespectChanges = true,
+                Color = Color4.LightSeaGreen,
                 CornerXRadius = 15,
                 CornerYRadius = 10,
                 BorderThickness = 5,
-                BorderColor = Color4.Black
+                BorderColor = Color4.DarkSeaGreen
             };
 
             yield return new MapUIItem()
             {
                 Name = "View 2B",
                 UIType = UITypes.View,
-                X = "0",
+                X = "Auto",
                 Y = "Auto",
-                Width = "150",
+                Width = "200",
                 Height = "100",
-                HorizontalAnchorType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                HorizontalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                HorizontalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
+                VerticalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
+                VerticalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
                 DoesHorizontalAnchorRespectChanges = true,
+                DoesVerticalAnchorRespectChanges = true,
                 Color = Color4.LightCyan,
                 CornerXRadius = 15,
                 CornerYRadius = 10,

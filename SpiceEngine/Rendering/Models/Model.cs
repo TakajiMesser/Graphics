@@ -66,8 +66,10 @@ namespace SpiceEngine.Rendering.Models
 
                         var triangleIndices = mesh.GetIndices().ToList();
 
-                        var texturedMesh = new TexturedMesh<AnimatedVertex3D>(new Vertex3DSet<AnimatedVertex3D>(vertices, triangleIndices));
-                        texturedMesh.Material = scene.Materials[mesh.MaterialIndex].ToMaterial();
+                        var texturedMesh = new TexturedMesh<AnimatedVertex3D>(new Vertex3DSet<AnimatedVertex3D>(vertices, triangleIndices))
+                        {
+                            Material = scene.Materials[mesh.MaterialIndex].ToMaterial()
+                        };
 
                         Add(texturedMesh);
                     }
@@ -90,8 +92,10 @@ namespace SpiceEngine.Rendering.Models
 
                         var triangleIndices = mesh.GetIndices().ToList();
 
-                        var texturedMesh = new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(vertices, triangleIndices));
-                        texturedMesh.Material = scene.Materials[mesh.MaterialIndex].ToMaterial();
+                        var texturedMesh = new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(vertices, triangleIndices))
+                        {
+                            Material = scene.Materials[mesh.MaterialIndex].ToMaterial()
+                        };
 
                         Add(texturedMesh);
                     }

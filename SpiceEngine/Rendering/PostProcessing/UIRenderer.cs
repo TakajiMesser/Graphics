@@ -132,9 +132,11 @@ namespace SpiceEngine.Rendering.PostProcessing
         {
             // Clear the depth buffer, since the UI should be rendered above everything else
             //GL.Clear(ClearBufferMask.DepthBufferBit);
+            
+            // Enable blending for transparent rendering
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            //GL.Enable(EnableCap.Blend);
-            //GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
@@ -152,7 +154,7 @@ namespace SpiceEngine.Rendering.PostProcessing
             //_uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
             //uiProvider.Draw();
 
-            //GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.Blend);
         }
     }
 }

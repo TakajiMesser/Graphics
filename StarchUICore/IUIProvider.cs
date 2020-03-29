@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace StarchUICore
 {
@@ -12,5 +13,7 @@ namespace StarchUICore
         //void Draw();
 
         void Clear();
+
+        event EventHandler<OrderEventArgs> OrderChanged;
     }
 }

@@ -9,10 +9,9 @@ using StarchUICore;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Groups;
 using StarchUICore.Views;
+using System;
 using System.Collections.Generic;
-using StarchUICore.Views.Controls.Buttons;
-using StarchUICore.Attributes.Units;
-using StarchUICore.Attributes.Positions;
+using System.Linq;
 
 namespace SpiceEngine.UserInterfaces
 {
@@ -23,6 +22,17 @@ namespace SpiceEngine.UserInterfaces
         private int _rootID;
         private SetDictionary<int, int> _childIDSetByID = new SetDictionary<int, int>();
         private HashSet<int> _selectedEntityIDs = new HashSet<int>();
+
+        private Dictionary<int, string> _horizontalAnchorNamesByID = new Dictionary<int, string>();
+        private Dictionary<int, string> _verticalAnchorNamesByID = new Dictionary<int, string>();
+        private Dictionary<int, string> _horizontalDockNamesByID = new Dictionary<int, string>();
+        private Dictionary<int, string> _verticalDockNamesByID = new Dictionary<int, string>();
+        private SetDictionary<int, string> _childNamesByID = new SetDictionary<int, string>();
+
+        private List<int> _idDrawOrder = new List<int>();
+        private HashSet<int> _changedIDs = new HashSet<int>();
+
+        public event EventHandler<OrderEventArgs> OrderChanged;
 
         public UIManager(IEntityProvider entityProvider, Resolution resolution)
         {
@@ -74,12 +84,6 @@ namespace SpiceEngine.UserInterfaces
 
         private IElement GetRoot() => _rootID > 0 ? _componentByID[_rootID] as IElement : null;
 
-        private Dictionary<int, string> _horizontalAnchorNamesByID = new Dictionary<int, string>();
-        private Dictionary<int, string> _verticalAnchorNamesByID = new Dictionary<int, string>();
-        private Dictionary<int, string> _horizontalDockNamesByID = new Dictionary<int, string>();
-        private Dictionary<int, string> _verticalDockNamesByID = new Dictionary<int, string>();
-        private SetDictionary<int, string> _childNamesByID = new SetDictionary<int, string>();
-
         public override void LoadBuilderSync(int entityID, IUIElementBuilder builder)
         {
             base.LoadBuilderSync(entityID, builder);
@@ -99,10 +103,11 @@ namespace SpiceEngine.UserInterfaces
             foreach (var componentAndID in _componentsAndIDs)
             {
                 var element = componentAndID.Item1 as IElement;
+                var id = componentAndID.Item2;
 
                 if (element is IGroup group)
                 {
-                    var childNames = _childNamesByID.GetValues(componentAndID.Item2);
+                    var childNames = _childNamesByID.GetValues(id);
                     
                     foreach (var childName in childNames)
                     {
@@ -113,7 +118,7 @@ namespace SpiceEngine.UserInterfaces
                             var childElement = GetElement(childID);
                             group.AddChild(childElement);
 
-                            _childIDSetByID.Add(componentAndID.Item2, childID);
+                            _childIDSetByID.Add(id, childID);
                         }
                     }
 
@@ -134,16 +139,30 @@ namespace SpiceEngine.UserInterfaces
                     };*/
                 }
 
-                var horizontalAnchorName = _horizontalAnchorNamesByID[componentAndID.Item2];
+                element.LayoutChanged += (s, args) =>
+                {
+                    // TODO - Handle omitting views that are not visible or have measurement dimensions of zero
+                    /*if (element.IsVisible && element.Measurement.Width > 0 && element.Measurement.Height > 0)
+                    {
+                        if (_drawableIDs.Contains(id))
+                        {
+
+                        }
+                    }*/
+
+                    _changedIDs.Add(id);
+                };
+
+                var horizontalAnchorName = _horizontalAnchorNamesByID[id];
                 element.HorizontalAnchor = element.HorizontalAnchor.Attached(GetElementByName(horizontalAnchorName));
 
-                var verticalAnchorName = _verticalAnchorNamesByID[componentAndID.Item2];
+                var verticalAnchorName = _verticalAnchorNamesByID[id];
                 element.VerticalAnchor = element.VerticalAnchor.Attached(GetElementByName(verticalAnchorName));
 
-                var horizontalDockName = _horizontalDockNamesByID[componentAndID.Item2];
+                var horizontalDockName = _horizontalDockNamesByID[id];
                 element.HorizontalDock = element.HorizontalDock.Attached(GetElementByName(horizontalDockName));
 
-                var verticalDockName = _verticalDockNamesByID[componentAndID.Item2];
+                var verticalDockName = _verticalDockNamesByID[id];
                 element.VerticalDock = element.VerticalDock.Attached(GetElementByName(verticalDockName));
             }
 
@@ -159,7 +178,6 @@ namespace SpiceEngine.UserInterfaces
                 }
             }
 
-            // TODO - Also determine the root ID here...
             _horizontalAnchorNamesByID.Clear();
             _verticalAnchorNamesByID.Clear();
             _horizontalDockNamesByID.Clear();
@@ -250,7 +268,7 @@ namespace SpiceEngine.UserInterfaces
 
         public void Load() => GetRoot()?.Load();
 
-        private int _tickCounter = 0;
+        //private int _tickCounter = 0;
 
         protected override void Update()
         {
@@ -275,19 +293,21 @@ namespace SpiceEngine.UserInterfaces
             }*/
 
             root?.Layout(new LayoutInfo(_resolution.Width, _resolution.Height, _resolution.Width, _resolution.Height, 0, 0, 0, 0));
+
+            // We don't want the UIBatches to handle reordering themselves. We'd rather reorder at most ONCE per layout cycle
+            if (_changedIDs.Count > 0)
+            {
+                // We have a layout change! Redetermine the draw order and report it
+                _idDrawOrder = GetDrawOrder(_rootID, root).ToList();
+                OrderChanged?.Invoke(this, new OrderEventArgs(_idDrawOrder));
+                _changedIDs.Clear();
+            }
+
             //root?.Measure(new MeasuredSize(_resolution.Width, _resolution.Height));
             root?.Update(TickRate);
         }
 
-        public IEnumerable<int> GetDrawOrder()
-        {
-            var root = GetRoot();
-
-            foreach (var id in GetDrawOrder(_rootID, root))
-            {
-                yield return id;
-            }
-        }
+        public IEnumerable<int> GetDrawOrder() => _idDrawOrder;
 
         private IEnumerable<int> GetDrawOrder(int id, IElement element)
         {

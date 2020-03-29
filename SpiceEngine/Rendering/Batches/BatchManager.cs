@@ -260,6 +260,8 @@ namespace SpiceEngine.Rendering.Batches
                 case IBillboard billboard:
                     return new BillboardBatch(billboard);
                 case IElement element:
+                    var uiBatch = new UIBatch(element);
+                    _uiProvider.OrderChanged += (s, args) => uiBatch.Reorder(args.IDs);
                     return new UIBatch(element);
             }
 

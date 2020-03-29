@@ -7,6 +7,7 @@ using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 
 namespace SauceEditor.Helpers.Builders
@@ -27,7 +28,7 @@ namespace SauceEditor.Helpers.Builders
             project.ScriptComponents.Add(new ScriptComponent(SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH));
             project.TextureComponents.Add(new TextureComponent(SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH)
             {
-                TexturePaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
+                TexturePaths = new TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                     //NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,

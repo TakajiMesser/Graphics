@@ -27,7 +27,11 @@ namespace SweetGraphicsCore.Buffers
         public void AddVertices(params T[] vertices) => _vertices.AddRange(vertices);
         public void AddVertices(IEnumerable<T> vertices) => _vertices.AddRange(vertices);
 
+        public void InsertVertex(int index, T vertex) => _vertices.Insert(index, vertex);
+
         public void SetVertex(int index, T vertex) => _vertices[index] = vertex;
+
+        public T GetVertex(int index) => _vertices[index];
 
         public void Clear() => _vertices.Clear();
 

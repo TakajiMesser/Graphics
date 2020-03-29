@@ -9,6 +9,7 @@ namespace StarchUICore.Groups
         private List<IElement> _children = new List<IElement>();
 
         public IEnumerable<IElement> Children => _children;
+        public int ChildCount => _children.Count;
 
         // TODO - Eventually, Spacing should be inherited either from the parent, or from a set theme/style
         public IUnits Spacing { get; set; } = Unit.Pixels(10);// Unit.Auto();
@@ -18,6 +19,8 @@ namespace StarchUICore.Groups
             _children.Add(element);
             element.Parent = this;
         }
+
+        public IElement GetChildAt(int index) => _children[index];
 
         public override void Load()
         {

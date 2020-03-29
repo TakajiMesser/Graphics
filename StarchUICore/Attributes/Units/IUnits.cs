@@ -5,6 +5,10 @@
         int ToOffsetPixels(int nReference = 0);
         int ToDimensionPixels(int nAvailable, int nReference = 0);
 
+        int? ToOffsetPixels(int value, int? referenceValue);
+        int? ConstrainAsMinimum(int value, int? referenceValue);
+        int? ConstrainAsMaximum(int value, int? referenceValue);
+
         /* TODO - Determine all of the different ways that we use IUnits
         
         AUTO UNITS

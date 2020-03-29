@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
@@ -65,74 +63,133 @@ namespace StarchUICore.Rendering.Batches
         {
             if (renderable is IElement element)
             {
-                if (renderable is IView view)
+                // TODO - For now, let's also add groups for debugging purposes. This should eventually be a toggle
+                /*if (renderable is IView || renderable is IGroup group)
                 {
-                    AddView(id, view);
-                }
-                else if (renderable is IGroup group)
-                {
-                    // TODO - Handle adding groups
-                    /*foreach (var item in group.Children)
-                    {
+                    
+                }*/
 
-                    }*/
-                }
-
-                var offset = _offsetByID.ContainsKey(id) ? _offsetByID[id] : 0;
-                var count = _countByID.ContainsKey(id) ? _countByID[id] : 1;
-
+                // TODO - This order within the vertex buffer needs to be altered to match the draw order from the UI Provider
                 element.LayoutChanged += (s, args) =>
                 {
-                    var name = element.Name;
-
-                    // TODO - Handle omitting views that are not visible or have measurement dimensions of zero
-                    var position = new Vector3(element.Location.X, element.Location.Y, 0.0f);
-                    var borderThickness = element.Border.Thickness;
-                    var size = new Vector2(element.Measurement.Width, element.Measurement.Height);
-                    var cornerRadius = new Vector2(element.Border.CornerXRadius, element.Border.CornerYRadius);
-                    var color = renderable is IView view2
-                        ? new Color4(view2.Background.Color.R, view2.Background.Color.G, view2.Background.Color.B, element.Alpha)
-                        : new Color4(1.0f, 1.0f, 1.0f, element.Alpha);
-                    var borderColor = element.Border.Color;
                     var selectionID = SelectionHelper.GetColorFromID(id);
+                    var vertex = new ViewQuadVertex(args.Position, args.BorderThickness, args.Size, args.CornerRadius, args.Color, args.BorderColor, selectionID);
 
-                    if (element is IView)
+                    //var count = _countByID[id];
+
+                    if (!_offsetByID.ContainsKey(id))
                     {
-                        var vertex = new ViewQuadVertex(position, borderThickness, size, cornerRadius, color, borderColor, selectionID);
-                        //_vertexBuffer.Clear();
-
-                        if (offset >= _vertexBuffer.Count)
-                        {
-                            _vertexBuffer.AddVertex(vertex);
-                        }
-                        else
-                        {
-                            _vertexBuffer.SetVertex(offset, vertex);
-                        }
+                        _offsetByID.Add(id, _vertexBuffer.Count);
+                        _countByID.Add(id, 1);
+                        _vertexBuffer.AddVertex(vertex);
                     }
+                    else
+                    {
+                        var offset = _offsetByID[id];
+                        _vertexBuffer.SetVertex(offset, vertex);
+                    }
+
+                    /*if (offset >= _vertexBuffer.Count)
+                    {
+                        _vertexBuffer.AddVertex(vertex);
+                    }
+                    else
+                    {
+                        _vertexBuffer.SetVertex(offset, vertex);
+                    }*/
                 };
             }
 
             base.AddEntity(id, renderable);
         }
 
-        private void AddView(int id, IView view)
+        public void Reorder(IList<int> orderedIDs)
         {
-            /*if (EntityIDs.Any())
-            {*/
-                // TODO - For testing purposes, let's assume that each view only has a single vertex
-                var offset = 1;// view.Vertices.Count();
-                _offsetByID.Add(id, offset);
-                _countByID.Add(id, offset + 1);// view.Vertices.Count());
+            if (IsLoaded)
+            {
+                var vertices = new List<ViewQuadVertex>();
 
-                //_renderable.Combine(view);
-            /*}
+                foreach (var id in orderedIDs)
+                {
+                    if (EntityIDs.Contains(id))
+                    {
+                        var offset = _offsetByID[id];
+                        _offsetByID[id] = vertices.Count;
+
+                        var vertex = _vertexBuffer.GetVertex(offset);
+                        vertices.Add(vertex);
+                    }
+                }
+
+                _vertexBuffer.Clear();
+                _vertexBuffer.AddVertices(vertices);
+            }
+        }
+
+        /*private void HandleLayoutChange(int id, IElement element, IRenderable renderable)
+        {
+            // TODO - Handle omitting views that are not visible or have measurement dimensions of zero
+            var position = new Vector3(element.Location.X, element.Location.Y, 0.0f);
+            var borderThickness = element.Border.Thickness;
+            var size = new Vector2(element.Measurement.Width, element.Measurement.Height);
+            var cornerRadius = new Vector2(element.Border.CornerXRadius, element.Border.CornerYRadius);
+            var color = renderable is IView view
+                ? new Color4(view.Background.Color.R, view.Background.Color.G, view.Background.Color.B, element.Alpha)
+                : new Color4(1.0f, 1.0f, 1.0f, element.Alpha);
+            var borderColor = element.Border.Color;
+            var selectionID = SelectionHelper.GetColorFromID(id);
+
+
+            // TODO - Is there any way we can determine the "reordering strategy" in this event handler?
+            // If this view's layout just changed, but it isn't currently 
+
+            // Determine the offset/count of this element's vertices in the instance buffer
+            var offset = _offsetByID.ContainsKey(id) ? _offsetByID[id] : 0;
+            var count = _countByID.ContainsKey(id) ? _countByID[id] : 1;
+
+            // For now, let's assume all views and groups have just a single vertex for rendering
+            // SO, the offset here determines what index in the vertex buffer this element ID starts at
+            if (EntityIDs.Any())
+            {
+                var offset = _vertexBuffer.Count;
+                _offsetByID.Add(id, offset);
+                _countByID.Add(id, offset + 1);
+            }
             else
             {
                 _offsetByID.Add(id, 0);
-                _countByID.Add(id, 1);// view.Vertices.Count());
-            }*/
-        }
+                _countByID.Add(id, mesh.Vertices.Count());
+            }
+
+            if (element is IView)
+            {
+                var vertex = new ViewQuadVertex(position, borderThickness, size, cornerRadius, color, borderColor, selectionID);
+
+                if (offset >= _vertexBuffer.Count)
+                {
+                    _vertexBuffer.AddVertex(vertex);
+                }
+                else
+                {
+                    _vertexBuffer.SetVertex(offset, vertex);
+                }
+            }
+            else if (element is IGroup)
+            {
+                // For now, let's also draw group borders for debugging purposes...
+                var vertex = new ViewQuadVertex(position, 2.0f, size, Vector2.Zero, Color4.Transparent, Color4.White, selectionID);
+
+                if (offset >= _vertexBuffer.Count)
+                {
+                    // Let's insert groups at the start of the buffer to ensure that views get drawn after them
+                    _vertexBuffer.InsertVertex(0, vertex);
+                }
+                else
+                {
+                    _vertexBuffer.SetVertex(offset, vertex);
+                }
+            }
+        }*/
 
         public override void Draw()
         {
@@ -169,7 +226,7 @@ namespace StarchUICore.Rendering.Batches
         public override bool CompareUniforms(IRenderable renderable)
         {
             // TODO - Determine if we do actually want to support batching for UI items
-            if (renderable is IView)
+            if (renderable is IView || renderable is IGroup)
             {
                 return true;
             }

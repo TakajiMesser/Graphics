@@ -8,6 +8,6 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
 
         public InlineConditionNode(Predicate<BehaviorContext> predicate, Node node) : base(node) => Predicate = predicate;
 
-        public override bool Condition(BehaviorContext context) => Predicate(context);
+        protected override bool Condition(BehaviorContext context) => Predicate(context);
     }
 }

@@ -2,6 +2,7 @@
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
+using System;
 
 namespace StarchUICore.Groups
 {
@@ -23,14 +24,16 @@ namespace StarchUICore.Groups
                 var remainingWidth = width.Value - Padding.GetWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
                 var remainingHeight = height.Value - Padding.GetHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
 
-                var currentRelativeX = relativeX.Value;
-                var currentRelativeY = relativeY.Value;
+                var currentRelativeX = relativeX.Value + Padding.Left.ToOffsetPixels(0, layoutInfo.ParentWidth).Value;
+                var currentRelativeY = relativeY.Value + Padding.Top.ToOffsetPixels(0, layoutInfo.ParentHeight).Value;
 
                 var largestChildHeight = 0;
                 var spacing = Spacing.ToDimensionPixels(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
 
-                foreach (var child in Children)
+                for (var i = 0; i < ChildCount; i++)
                 {
+                    var child = GetChildAt(i);
+
                     var childLayout = new LayoutInfo(remainingWidth, remainingHeight, width.Value, height.Value, currentRelativeX, currentRelativeY, absoluteX.Value, absoluteY.Value);
                     child.Layout(childLayout);
 
@@ -38,16 +41,13 @@ namespace StarchUICore.Groups
                     if (child.IsLaidOut)
                     {
                         // Determine how far off our requested width is from the actual width that the child reported back
-                        var xDifference = child.Location.X - absoluteX.Value;
+                        var xDifference = currentRelativeX - child.Location.X - absoluteX.Value; //child.Location.X - absoluteX.Value
 
                         // Update our remaining width based on the child's actual width
-                        remainingWidth -= child.Measurement.Width + xDifference;
+                        remainingWidth = (remainingWidth - child.Measurement.Width + xDifference - (i < ChildCount - 1 ? spacing : 0)).ClampBottom(0);
 
                         // Update our current X from the child's reported absolute X
-                        currentRelativeX = child.Measurement.Width + xDifference;
-                        currentRelativeX += spacing;
-
-                        remainingWidth.ClampBottom(0);
+                        currentRelativeX += child.Measurement.Width + xDifference + spacing;
 
                         // TODO - What if the child reports a different Y than we expected? What if the child wants to be centered (Auto Y Units)?
                         // If this group should auto-size by height, we need to keep track of the shortest child height
@@ -94,6 +94,29 @@ namespace StarchUICore.Groups
                 if (!(Size.MinimumHeight is AutoUnits))
                 {
                     height = height.Value.ClampBottom(Size.MinimumHeight.ToDimensionPixels(layoutInfo.AvailableHeight, layoutInfo.ParentHeight));
+                }
+
+                // Now that we've potentially updated the width and height, we can reapply the anchors
+                if (Size.Width is AutoUnits)
+                {
+                    var anchoredX = HorizontalAnchor.GetAnchorX(relativeX.Value, width.Value, layoutInfo.RelativeX, layoutInfo.RelativeX + layoutInfo.AvailableWidth, layoutInfo.ParentWidth, layoutInfo.ParentAbsoluteX);
+                    absoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
+                    /*var newAbsoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
+                    var absoluteXDifference = newAbsoluteX - absoluteX;
+
+                    // TODO - This is terrible... but for now, REPOSITION all children
+                    foreach (var child in Children)
+                    {
+                        child.Location.SetValue(child.Location.X + absoluteXDifference.Value, child.Location.Y);
+                    }
+
+                    absoluteX = newAbsoluteX;*/
+                }
+
+                if (Size.Height is AutoUnits)
+                {
+                    var anchoredY = VerticalAnchor.GetAnchorY(relativeY.Value, height.Value, layoutInfo.RelativeY, layoutInfo.RelativeY + layoutInfo.AvailableHeight, layoutInfo.ParentHeight, layoutInfo.ParentAbsoluteY);
+                    absoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
                 }
 
                 return new LayoutResult(absoluteX, absoluteY, width, height);

@@ -33,7 +33,7 @@ namespace SpiceEngine.Maps
         public List<MapNode> Children { get; set; } = new List<MapNode>();
 
         public Predicate<BehaviorContext> InlineCondition { get; set; }
-        public Func<BehaviorContext, BehaviorStatus> InlineAction { get; set; }
+        public Action<BehaviorContext> InlineAction { get; set; }
 
         // For more complex custom nodes, we must parse and analyze the node's C# code
         public Script Script { get; set; }

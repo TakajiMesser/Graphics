@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Utilities;
-using StarchUICore.Attributes.Units;
-using System;
+﻿using StarchUICore.Attributes.Units;
 
 namespace StarchUICore.Attributes.Positions
 {
@@ -25,19 +23,72 @@ namespace StarchUICore.Attributes.Positions
         public IUnits MaximumX { get; private set; }
         public IUnits MaximumY { get; private set; }
 
-        public int? ConstrainX(int availableWidth, int? measuredWidth, int? anchorRelativeX, int? anchorWidth)
+        public int? GetConstrainedX(int suggestedX, int? referenceWidth)
         {
-            // What exactly is the parent providing us with?
-            // availableWidth -> the remainingWidth in the Group
-            // measuredWidth -> what this view measured its width to be
+            // First, determine what this element thinks its X should be
+            var desiredX = X.ToOffsetPixels(suggestedX, referenceWidth);
+
+            // TODO - Handle situation where parent then resizes its own width afterwards during this layout cycle...
+            if (desiredX.HasValue)
+            {
+                var minimumConstrainedX = MinimumX.ConstrainAsMinimum(desiredX.Value, referenceWidth);
+
+                if (minimumConstrainedX.HasValue)
+                {
+                    var maximumConstrainedX = MaximumX.ConstrainAsMaximum(minimumConstrainedX.Value, referenceWidth);
+
+                    if (maximumConstrainedX.HasValue)
+                    {
+                        return maximumConstrainedX.Value;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        public int? GetConstrainedY(int suggestedY, int? referenceHeight)
+        {
+            // First, determine what this element thinks its X should be
+            var desiredY = Y.ToOffsetPixels(suggestedY, referenceHeight);
+
+            // TODO - Handle situation where parent then resizes its own width afterwards during this layout cycle...
+            if (desiredY.HasValue)
+            {
+                var minimumConstrainedY = MinimumY.ConstrainAsMinimum(desiredY.Value, referenceHeight);
+
+                if (minimumConstrainedY.HasValue)
+                {
+                    var maximumConstrainedY = MaximumY.ConstrainAsMaximum(minimumConstrainedY.Value, referenceHeight);
+
+                    if (maximumConstrainedY.HasValue)
+                    {
+                        return maximumConstrainedY.Value;
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="availableWidth">The remaining width in the containing Group.</param>
+        /// <param name="measuredWidth">The measured width of this element.</param>
+        /// <param name="anchorRelativeX">This element's relative position, as requested by the containing Group and constrained by the anchor</param>
+        /// <param name="referenceWidth"></param>
+        /// <returns></returns>
+        /*public int? ConstrainX(int availableWidth, int? measuredWidth, int? anchoredX, int? referenceWidth)
+        {
             // anchorWidth -> either the parent width, or the width of the relative anchor element
             // anchorX -> either the absolute X of the parent, or the absolute X of the relative anchor element
             // absoluteX -> where the Group is planning on placing this view
 
             // The ACTUAL issue here is that we can no longer just use availableWidth -> We cannot assume that the available X range is from zero to availableWidth!
-            if (anchorRelativeX.HasValue && anchorWidth.HasValue && measuredWidth.HasValue)
+            if (anchoredX.HasValue && referenceWidth.HasValue && measuredWidth.HasValue)
             {
-                var constrainedX = X.ToOffsetPixels(anchorWidth.Value);
+                var constrainedX = X.ToOffsetPixels(referenceWidth.Value);
 
                 if (X is AutoUnits)
                 {
@@ -48,12 +99,12 @@ namespace StarchUICore.Attributes.Positions
 
                 if (!(MinimumX is AutoUnits))
                 {
-                    constrainedX = constrainedX.ClampBottom(MinimumX.ToOffsetPixels(anchorWidth.Value));
+                    constrainedX = constrainedX.ClampBottom(MinimumX.ToOffsetPixels(referenceWidth.Value));
                 }
 
                 if (!(MaximumX is AutoUnits))
                 {
-                    constrainedX = constrainedX.ClampTop(MaximumX.ToOffsetPixels(anchorWidth.Value));
+                    constrainedX = constrainedX.ClampTop(MaximumX.ToOffsetPixels(referenceWidth.Value));
                 }
 
                 // Now we have the "relative" constrained X, but this is relative to the anchor type (i.e. could be from the right-side)
@@ -114,7 +165,7 @@ namespace StarchUICore.Attributes.Positions
                 constrainedX = constrainedX.ClampTop(MaximumX.ToDimensionPixels(availableWidth, referenceWidth));
             }
 
-            return constrainedX;*/
+            return constrainedX;*
         }
 
         public int? ConstrainY(int availableHeight, int? measuredHeight, int? anchorRelativeY, int? anchorHeight)
@@ -150,7 +201,7 @@ namespace StarchUICore.Attributes.Positions
             }
 
             return null;
-        }
+        }*/
 
         public Position Offset(IUnits x, IUnits y) => new Position(x, y, MinimumX, MinimumY, MaximumX, MaximumY);
 

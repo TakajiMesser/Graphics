@@ -1,77 +1,20 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.Helpers;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Layers;
-using StarchUICore.Rendering.Vertices;
-using SweetGraphicsCore.Buffers;
-using SweetGraphicsCore.Vertices;
 using System;
 
 namespace StarchUICore.Views
 {
     public class View : Element, IView
     {
-        private Vertex3DSet<ViewQuadVertex> _vertexSet = new Vertex3DSet<ViewQuadVertex>();
-
-        private VertexBuffer<ViewQuadVertex> _vertexBuffer;
-        private VertexIndexBuffer _indexBuffer;
-        private VertexArray<ViewQuadVertex> _vertexArray;
-
         public Layer Foreground { get; set; }
         public Layer Background { get; set; }
 
-        public void Combine(IView view)
-        {
-            if (view is View castView)
-            {
-                _vertexSet.Combine(castView._vertexSet);
-            }
-        }
-
-        public void Transform(Transform transform) => Transform(transform, 0, _vertexSet.VertexCount);
-        public void Transform(Transform transform, int offset, int count)
-        {
-            _vertexSet.Update(v => (ViewVertex)((IVertex3D)v).Transformed(transform), offset, count);
-
-            // TODO - This is very redundant to keep two separate lists of vertex (struct) data
-            if (_vertexBuffer != null)
-            {
-                _vertexBuffer.Clear();
-                _vertexBuffer.AddVertices(_vertexSet.Vertices);
-            }
-        }
-
-        public void Update(Func<IVertex, IVertex> vertexUpdate) => Update(vertexUpdate, 0, _vertexSet.VertexCount);
-        public void Update(Func<IVertex, IVertex> vertexUpdate, int offset, int count)
-        {
-            _vertexSet.Update(v => (ViewVertex)vertexUpdate(v), offset, count);
-
-            // TODO - This is very redundant to keep two separate lists of vertex (struct) data
-            if (_vertexBuffer != null)
-            {
-                _vertexBuffer.Clear();
-                _vertexBuffer.AddVertices(_vertexSet.Vertices);
-            }
-        }
-
-        public override void Load()
-        {
-            _vertexBuffer = new VertexBuffer<ViewQuadVertex>();
-            _indexBuffer = new VertexIndexBuffer();
-            _vertexArray = new VertexArray<ViewQuadVertex>();
-
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(_vertexSet.Vertices);
-            _indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
-
-            _vertexBuffer.Bind();
-            _vertexArray.Load();
-            _vertexBuffer.Unbind();
-        }
+        public override void Load() { }
+        public override void Draw() { }
 
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
@@ -134,6 +77,13 @@ namespace StarchUICore.Views
 
         protected override void OnLaidOut(LayoutInfo layoutInfo)
         {
+            /*var position = new Vector3(Location.X, Location.Y, 0.0f);
+            var borderThickness = Border.Thickness;
+            var size = new Vector2(Measurement.Width, Measurement.Height);
+            var cornerRadius = new Vector2(Border.CornerXRadius, Border.CornerYRadius);
+            var color = new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha);
+            var borderColor = Border.Color;
+            var selectionID = SelectionHelper.GetColorFromID(id);*/
             // Now that we have a new measurement for this view, we can add vertices for its drawable functionality!
             //var vertexSet = UIBuilder.Rectangle(Measurement.Width, Measurement.Height, new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha));
 
@@ -143,46 +93,15 @@ namespace StarchUICore.Views
             //_indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
         }
 
-        private void CreateAndSetVertex()
-        {
-            var position = new Vector3(Location.X, Location.Y, 0.0f);
-            var size = new Vector2(Measurement.Width, Measurement.Height);
-            var cornerRadius = new Vector2(Border.CornerXRadius, Border.CornerYRadius);
-            var color = new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha);
-
-            //_vertexBuffer.Clear();
-            //_vertexBuffer.AddVertex(new ViewQuadVertex(position, Border.Thickness, size, cornerRadius, color, Border.Color, _selectionID));
-        }
-
-        public override void Draw()
-        {
-            if (IsVisible && Measurement.Width > 0 && Measurement.Height > 0)
-            {
-                _vertexArray.Bind();
-                _vertexBuffer.Bind();
-                //_indexBuffer.Bind();
-
-                _vertexBuffer.Buffer();
-                //_indexBuffer.Buffer();
-
-                //_indexBuffer.Draw();
-                GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
-
-                _vertexArray.Unbind();
-                _vertexBuffer.Unbind();
-                //_indexBuffer.Unbind();
-            }
-        }
-
         public virtual IView Duplicate() => throw new NotImplementedException();
 
-        protected override void OnAlphaChanged(float oldValue, float newValue)
+        /*protected override void OnAlphaChanged(float oldValue, float newValue)
         {
             base.OnAlphaChanged(oldValue, newValue);
 
             _vertexSet.Update(v => v is IColorVertex colorVertex
                 ? (ViewVertex)colorVertex.Colored(new Color4(colorVertex.Color.R, colorVertex.Color.G, colorVertex.Color.B, newValue))
                 : v);
-        }
+        }*/
     }
 }

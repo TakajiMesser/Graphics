@@ -27,7 +27,8 @@ namespace StarchUICore
         Measurement Measurement { get; }
         Location Location { get; }
 
-        event EventHandler LayoutChanged;
+        event EventHandler<LayoutEventArgs> LayoutChanged;
+        //event EventHandler<EventArgs> Draw;
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;
 

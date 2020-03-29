@@ -49,11 +49,13 @@ namespace SpiceEngine.Maps
         public string MaximumWidth { get; set; }
         public string MaximumHeight { get; set; }
 
-        public AnchorTypes HorizontalAnchorType { get; set; }
+        public AnchorTypes HorizontalAnchorSelfType { get; set; }
+        public AnchorTypes HorizontalAnchorRelativeType { get; set; }
         public string RelativeHorizontalAnchorElementName { get; set; }
         public bool DoesHorizontalAnchorRespectChanges { get; set; }
 
-        public AnchorTypes VerticalAnchorType { get; set; }
+        public AnchorTypes VerticalAnchorSelfType { get; set; }
+        public AnchorTypes VerticalAnchorRelativeType { get; set; }
         public string RelativeVerticalAnchorElementName { get; set; }
         public bool DoesVerticalAnchorRespectChanges { get; set; }
 
@@ -147,8 +149,8 @@ namespace SpiceEngine.Maps
             element.Name = Name;
             element.Position = ParsePosition();
             element.Size = ParseSize();
-            element.HorizontalAnchor = new Anchor(HorizontalAnchorType, DoesHorizontalAnchorRespectChanges);
-            element.VerticalAnchor = new Anchor(VerticalAnchorType, DoesVerticalAnchorRespectChanges);
+            element.HorizontalAnchor = new Anchor(HorizontalAnchorSelfType, HorizontalAnchorRelativeType, DoesHorizontalAnchorRespectChanges);
+            element.VerticalAnchor = new Anchor(VerticalAnchorSelfType, VerticalAnchorRelativeType, DoesVerticalAnchorRespectChanges);
             element.HorizontalDock = new Dock(DoesHorizontalDockRespectChanges);
             element.VerticalDock = new Dock(DoesVerticalDockRespectChanges);
             element.Alpha = Alpha;

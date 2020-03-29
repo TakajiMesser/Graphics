@@ -165,9 +165,9 @@ namespace SpiceEngine.Rendering.Processing
         {
             switch (light)
             {
-                case PointLight p:
+                case PointLight _:
                     return _pointLightProgram;
-                case SpotLight s:
+                case SpotLight _:
                     return _spotLightProgram;
                 default:
                     throw new NotImplementedException("Could not handle light type " + light.GetType());

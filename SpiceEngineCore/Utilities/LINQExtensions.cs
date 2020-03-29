@@ -24,7 +24,7 @@ namespace SpiceEngineCore.Utilities
 
         public static IEnumerable<T> YieldOrDefault<T>(this T item)
         {
-            yield return (item != null) ? item : default(T);
+            yield return (item != null) ? item : default;
         }
 
         public static IEnumerable<IEnumerable<T>> ChunkBy<T>(this IEnumerable<T> source, int size)

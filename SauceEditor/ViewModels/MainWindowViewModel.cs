@@ -14,6 +14,7 @@ using SauceEditor.Views.Custom;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Textures;
 using System.IO;
 using System.Windows;
 using System.Windows.Input;
@@ -280,7 +281,7 @@ namespace SauceEditor.ViewModels
         {
             var textureComponent = new TextureComponent(filePath)
             {
-                TexturePaths = new SpiceEngineCore.Rendering.Textures.TexturePaths()
+                TexturePaths = new TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                     NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,

@@ -25,7 +25,7 @@ namespace SampleGameProject.Behaviors.Enemy
             ViewDistance = viewDistance;
         }
 
-        public override bool Condition(BehaviorContext context)
+        protected override bool Condition(BehaviorContext context)
         {
             var player = context.GetEntity("Player");
 

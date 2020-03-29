@@ -84,7 +84,7 @@ namespace StarchUICore
         public bool IsAnimated { get; set; } = false;
         public bool IsTransparent => Alpha < 1.0f;
 
-        public event EventHandler LayoutChanged;
+        public event EventHandler<LayoutEventArgs> LayoutChanged;
         public event EventHandler<PositionEventArgs> PositionChanged;
         public event EventHandler<SizeEventArgs> SizeChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
@@ -148,7 +148,7 @@ namespace StarchUICore
             if (wasMeasured || wasLocated)
             {
                 OnLaidOut(layoutInfo);
-                LayoutChanged?.Invoke(this, EventArgs.Empty);
+                LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
             }
         }
 
@@ -182,18 +182,70 @@ namespace StarchUICore
             return Size.ConstrainHeight(availableHeight, dockHeight);
         }
 
-        protected int? GetRelativeX(int relativeX, int parentAbsoluteX, int availableWidth, int parentWidth, int? measuredX)
+        /* The parent has very clearly outlined for us the following:
+            - Here is my absolute X
+            - Here is the X, RELATIVE TO MY LEFT SIDE, that I think this element should be placed at
+            - If you should disagree, here is how much remaining width I have that you can work with
+            - If you need my width as reference, or your own measured width, here they are
+
+            This Element is now tasked with reporting back what actual Relative X it is going with
+            It will do this by performing the following:
+            - Determine if the suggested relative X is acceptable
+        */
+        protected int? GetRelativeX(int suggestedRelativeX, int parentAbsoluteX, int availableWidth, int parentWidth, int? measuredWidth)
         {
-            var anchorX = HorizontalAnchor.GetReferenceX(relativeX, parentAbsoluteX, measuredX);
-            var anchorWidth = HorizontalAnchor.GetReferenceWidth(parentWidth);
-            return Position.ConstrainX(availableWidth, measuredX, anchorX, anchorWidth);
+            var referenceWidth = HorizontalAnchor.GetAnchoredWidth(parentWidth);
+
+            // TODO - Parent should suggest X, but give availability bounds in BOTH directions for this Element to use as needed
+            var minParentX = suggestedRelativeX;
+            var maxParentX = suggestedRelativeX + availableWidth;
+
+            // First, determine what this element thinks its X should be
+            var constrainedX = Position.GetConstrainedX(suggestedRelativeX, referenceWidth);
+
+            if (constrainedX.HasValue && measuredWidth.HasValue)
+            {
+                var anchoredX = HorizontalAnchor.GetAnchorX(constrainedX.Value, measuredWidth.Value, minParentX, maxParentX, parentWidth, parentAbsoluteX);
+
+                if (anchoredX.HasValue)
+                {
+                    return anchoredX;
+                }
+            }
+
+            return null;
+            
+            /*var anchoredX = HorizontalAnchor.GetAnchoredX(relativeX, parentAbsoluteX, availableWidth, measuredWidth);
+            var anchorWidth = HorizontalAnchor.GetAnchoredWidth(parentWidth);
+            return Position.ConstrainX(availableWidth, measuredWidth, anchoredX, anchorWidth);*/
         }
 
-        protected int? GetRelativeY(int relativeY, int parentAbsoluteY, int availableHeight, int parentHeight, int? measuredY)
+        protected int? GetRelativeY(int suggestedRelativeY, int parentAbsoluteY, int availableHeight, int parentHeight, int? measuredHeight)
         {
-            var anchorY = VerticalAnchor.GetReferenceY(relativeY, parentAbsoluteY, measuredY);
-            var anchorHeight = VerticalAnchor.GetReferenceHeight(parentHeight);
-            return Position.ConstrainY(availableHeight, measuredY, anchorY, anchorHeight);
+            var referenceHeight = VerticalAnchor.GetAnchoredWidth(parentHeight);
+
+            // TODO - Parent should suggest X, but give availability bounds in BOTH directions for this Element to use as needed
+            var minParentX = suggestedRelativeY;
+            var maxParentX = suggestedRelativeY + availableHeight;
+
+            // First, determine what this element thinks its X should be
+            var constrainedY = Position.GetConstrainedY(suggestedRelativeY, referenceHeight);
+
+            if (constrainedY.HasValue && measuredHeight.HasValue)
+            {
+                var anchoredY = VerticalAnchor.GetAnchorY(constrainedY.Value, measuredHeight.Value, minParentX, maxParentX, parentHeight, parentAbsoluteY);
+
+                if (anchoredY.HasValue)
+                {
+                    return anchoredY;
+                }
+            }
+
+            return null;
+
+            /*var anchorY = VerticalAnchor.GetAnchoredY(relativeY, parentAbsoluteY, measuredHeight);
+            var anchorHeight = VerticalAnchor.GetAnchoredHeight(parentHeight);
+            return Position.ConstrainY(availableHeight, measuredHeight, anchorY, anchorHeight);*/
         }
 
         protected int? GetAbsoluteX(int parentAbsoluteX, int? relativeX, int? measuredWidth)
@@ -201,8 +253,9 @@ namespace StarchUICore
             // relativeX is what this view reported its internal X should be, but we ALSO need to consider the relative X that the parent passed us
             if (relativeX.HasValue)
             {
+                return parentAbsoluteX + relativeX.Value;
                 // TODO - Handle Centered Horizontal Anchor
-                if (HorizontalAnchor.AnchorType == AnchorTypes.Start)
+                /*if (HorizontalAnchor.AnchorType == AnchorTypes.Start)
                 {
                     return parentAbsoluteX + relativeX.Value;
                 }
@@ -212,7 +265,7 @@ namespace StarchUICore
                     {
                         return parentAbsoluteX + measuredWidth.Value - relativeX.Value;
                     }
-                }
+                }*/
             }
 
             return null;
@@ -222,8 +275,9 @@ namespace StarchUICore
         {
             if (relativeY.HasValue)
             {
+                return parentAbsoluteY + relativeY.Value;
                 // TODO - Handle Centered Vertical Anchor
-                if (VerticalAnchor.AnchorType == AnchorTypes.Start)
+                /*if (VerticalAnchor.AnchorType == AnchorTypes.Start)
                 {
                     return parentAbsoluteY + relativeY.Value;
                 }
@@ -233,7 +287,7 @@ namespace StarchUICore
                     {
                         return parentAbsoluteY + measuredHeight.Value - relativeY.Value;
                     }
-                }
+                }*/
             }
 
             return null;
