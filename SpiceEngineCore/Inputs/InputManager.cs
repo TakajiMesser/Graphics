@@ -44,7 +44,8 @@ namespace SpiceEngineCore.Inputs
             : (Vector2?)null;*/
 
         public bool IsMouseInWindow => _mouseTracker.IsMouseInWindow;
-        public Vector2? MouseCoordinates => _mouseTracker.MouseCoordinates;
+        public Vector2? MouseCoordinates => _mouseTracker?.MouseCoordinates;
+        public Vector2? RelativeCoordinates => _mouseTracker?.RelativeCoordinates;
         public Resolution WindowSize => _mouseTracker.WindowSize;
 
         public int TrackedStates { get; set; } = DEFAULT_NUMBER_OF_TRACKED_STATES;

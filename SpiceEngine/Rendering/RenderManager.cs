@@ -402,10 +402,19 @@ namespace SpiceEngine.Rendering
             }
         }
 
-        public int GetEntityIDFromPoint(Vector2 point)
+        public int GetEntityIDFromSelection(Vector2 coordinates)
         {
+            // Mouse coordinates are from top-left
+            var mouseCoordinates = coordinates;
+
+            // We need to convert these to instead be from bottom-left
+            var windowCoordinates = new Vector2(mouseCoordinates.X, WindowSize.Height - mouseCoordinates.Y);
+
+            // We now need to convert these coordinates from window-size to resolution-size
+            var resolutionCoordinates = new Vector2(Resolution.Width * windowCoordinates.X / WindowSize.Width, Resolution.Height * windowCoordinates.Y / WindowSize.Height);
+
             _selectionRenderer.BindForReading();
-            return _selectionRenderer.GetEntityIDFromPoint(point);
+            return _selectionRenderer.GetEntityIDFromPoint(resolutionCoordinates);
         }
 
         public void RenderSelection(IEnumerable<IEntity> entities, TransformModes transformMode)

@@ -69,12 +69,11 @@ namespace UmamiScriptingCore.Behaviors
             }
         }
 
-        public int GetEntityIDFromMousePosition()
+        public int GetEntityIDFromMouseCoordinates()
         {
-            if (InputProvider != null && _selectionTracker != null && InputProvider.IsMouseInWindow && InputProvider.MouseCoordinates.HasValue)
+            if (InputProvider != null && _selectionTracker != null && InputProvider.IsMouseInWindow && InputProvider.RelativeCoordinates.HasValue)
             {
-                var coordinates = new Vector2(InputProvider.MouseCoordinates.Value.X, InputProvider.WindowSize.Height - InputProvider.MouseCoordinates.Value.Y);
-                return _selectionTracker.GetEntityIDFromPoint(coordinates);
+                return _selectionTracker.GetEntityIDFromSelection(InputProvider.RelativeCoordinates.Value);
             }
 
             return 0;

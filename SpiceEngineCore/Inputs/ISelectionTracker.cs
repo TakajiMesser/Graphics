@@ -4,6 +4,6 @@ namespace SpiceEngineCore.Inputs
 {
     public interface ISelectionTracker
     {
-        int GetEntityIDFromPoint(Vector2 point);
+        int GetEntityIDFromSelection(Vector2 coordinates);
     }
 }

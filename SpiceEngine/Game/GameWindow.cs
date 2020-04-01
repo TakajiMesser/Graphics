@@ -211,6 +211,10 @@ namespace SpiceEngine.Game
             ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
             : (Vector2?)null;
 
+        public Vector2? RelativeCoordinates => _mouseState.HasValue
+            ? PointToClient(new Point(_mouseState.Value.X, _mouseState.Value.Y)).ToVector2()
+            : (Vector2?)null;
+
         public bool IsMouseInWindow => _mouseState != null
             ? (_mouseState.Value.X.IsBetween(0, WindowSize.Width) && _mouseState.Value.Y.IsBetween(0, WindowSize.Height))
             : false;

@@ -8,7 +8,7 @@
 
         protected override bool Condition(BehaviorContext context)
         {
-            var entityID = context.GetEntityIDFromMousePosition();
+            var entityID = context.GetEntityIDFromMouseCoordinates();
 
             if (EntityID == 0)
             {

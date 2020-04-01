@@ -164,6 +164,7 @@ namespace SpiceEngine.Game
         }
 
         public Vector2? MouseCoordinates { get; private set; }
+        public Vector2? RelativeCoordinates { get; private set; }
         public bool IsMouseInWindow { get; private set; }
 
         public bool IsLoaded { get; private set; }
@@ -552,10 +553,8 @@ namespace SpiceEngine.Game
 
         public int GetEntityIDFromPoint(Point coordinates)
         {
-            var mouseCoordinates = new Vector2((float)coordinates.X - Location.X, Height - (float)coordinates.Y - Location.Y);
-
             RenderFrame();
-            return RenderManager.GetEntityIDFromPoint(mouseCoordinates);
+            return RenderManager.GetEntityIDFromSelection(new Vector2(coordinates.X - Location.X, coordinates.Y - Location.Y));
         }
 
         public void SelectEntity(Point coordinates, bool isMultiSelect)
@@ -614,7 +613,7 @@ namespace SpiceEngine.Game
         {
             Invoke(new Action(() =>
             {
-                var id = RenderManager.GetEntityIDFromPoint(new Vector2(_currentMouseLocation.X, Height - _currentMouseLocation.Y));
+                var id = RenderManager.GetEntityIDFromSelection(_currentMouseLocation.ToVector2());
                 SelectionManager.SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
             }));
         }

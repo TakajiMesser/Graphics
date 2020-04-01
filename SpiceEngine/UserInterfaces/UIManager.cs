@@ -49,7 +49,7 @@ namespace SpiceEngine.UserInterfaces
             //      How do we handle Drag + Drop?
             inputProvider.MouseDownSelected += (s, args) =>
             {
-                var entityID = selectionTracker.GetEntityIDFromPoint(new Vector2(args.MouseCoordinates.X, _resolution.Height - args.MouseCoordinates.Y));
+                var entityID = selectionTracker.GetEntityIDFromSelection(args.MouseCoordinates);
 
                 if (entityID > 0 && _componentByID.ContainsKey(entityID))
                 {
@@ -65,7 +65,7 @@ namespace SpiceEngine.UserInterfaces
 
             inputProvider.MouseUpSelected += (s, args) =>
             {
-                var entityID = selectionTracker.GetEntityIDFromPoint(new Vector2(args.MouseCoordinates.X, _resolution.Height - args.MouseCoordinates.Y));
+                var entityID = selectionTracker.GetEntityIDFromSelection(args.MouseCoordinates);
 
                 if (entityID > 0 && _componentByID.ContainsKey(entityID) && _selectedEntityIDs.Contains(entityID))
                 {

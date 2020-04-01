@@ -11,6 +11,7 @@ namespace SpiceEngineCore.Inputs
 
         bool IsMouseInWindow { get; }
         Vector2? MouseCoordinates { get; }
+        Vector2? RelativeCoordinates { get; }
         Resolution WindowSize { get; }
 
         Vector2 MouseDelta { get; }
