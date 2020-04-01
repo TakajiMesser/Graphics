@@ -5,8 +5,9 @@ namespace SpiceEngineCore.Rendering
 {
     public interface IRenderable : IComponent
     {
-        bool IsAnimated { get; }
         bool IsTransparent { get; }
+        bool IsAnimated { get; }
+        bool IsSelectable { get; }
 
         void Load();
         void Draw();

@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
@@ -48,7 +49,7 @@ namespace SpiceEngine.UserInterfaces
             //      How do we handle Drag + Drop?
             inputProvider.MouseDownSelected += (s, args) =>
             {
-                var entityID = selectionTracker.GetEntityIDFromPoint(args.MouseCoordinates);
+                var entityID = selectionTracker.GetEntityIDFromPoint(new Vector2(args.MouseCoordinates.X, _resolution.Height - args.MouseCoordinates.Y));
 
                 if (entityID > 0 && _componentByID.ContainsKey(entityID))
                 {
@@ -64,7 +65,7 @@ namespace SpiceEngine.UserInterfaces
 
             inputProvider.MouseUpSelected += (s, args) =>
             {
-                var entityID = selectionTracker.GetEntityIDFromPoint(args.MouseCoordinates);
+                var entityID = selectionTracker.GetEntityIDFromPoint(new Vector2(args.MouseCoordinates.X, _resolution.Height - args.MouseCoordinates.Y));
 
                 if (entityID > 0 && _componentByID.ContainsKey(entityID) && _selectedEntityIDs.Contains(entityID))
                 {
@@ -257,7 +258,8 @@ namespace SpiceEngine.UserInterfaces
             };*
         }*/
 
-        public IElement GetElement(int entityID) => _componentByID[entityID] as IElement;
+        public IUIElement GetUIElement(int entityID) => _componentByID[entityID];
+        public IElement GetElement(int entityID) => GetUIElement(entityID) as IElement;
 
         public void Clear()
         {

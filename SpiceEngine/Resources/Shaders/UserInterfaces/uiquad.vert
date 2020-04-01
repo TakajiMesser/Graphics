@@ -19,11 +19,6 @@ out vec4 gBorderColor;
 
 void main()
 {
-	//gl_Position = vec4(vPosition, 1.0);
-	//vec4 position = vec4(vPosition, 1.0);
-	//vec4 clipPosition = position; //modelMatrix * position;
-	//gl_Position = vec4((clipPosition.xy - halfResolution) / halfResolution, 0.0, 1.0);
-
 	float x = (vPosition.x - halfResolution.x) / halfResolution.x;
 	float y = (halfResolution.y - vPosition.y) / halfResolution.y;
 
@@ -32,7 +27,7 @@ void main()
 	gRight = vec3(vSize.x / halfResolution.x, 0.0, 0.0);
 	gUp = vec3(0.0, vSize.y / halfResolution.y, 0.0);
 	gCornerRadius = vCornerRadius / vSize;
-	gBorderThickness = vec2((/*vCornerRadius.x - */vBorderThickness) / vSize.x, (/*vCornerRadius.y - */vBorderThickness) / vSize.y);
+	gBorderThickness = vec2(vBorderThickness / vSize.x, vBorderThickness / vSize.y);
 	gColor = vColor;
 	gBorderColor = vBorderColor;
 }

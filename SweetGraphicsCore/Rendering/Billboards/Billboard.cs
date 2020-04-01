@@ -45,8 +45,9 @@ namespace SweetGraphicsCore.Rendering.Billboards
             }
         }
 
-        public bool IsAnimated => false;
         public bool IsTransparent => Alpha < 1.0f;
+        public bool IsAnimated => false;
+        public bool IsSelectable { get; set; } = true;
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 

@@ -21,6 +21,7 @@ using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
 using StarchUICore;
 using SweetGraphicsCore.Rendering.Batches;
@@ -804,7 +805,7 @@ namespace SpiceEngine.Rendering
             //_uiRenderer.Render(_uiProvider);
 
             var font = FontManager.GetFont(TextRenderer.FONT_PATH);
-            _textRenderer.RenderText(font, "FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + font.GlyphWidth), Resolution.Height - (10 + font.GlyphHeight), 1.0f);
+            _textRenderer.RenderText(font, "FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + font.GlyphWidth), Resolution.Height - (10 + font.GlyphHeight));
         }
     }
 }

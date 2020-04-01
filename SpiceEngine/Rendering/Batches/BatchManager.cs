@@ -8,6 +8,7 @@ using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
 using StarchUICore.Groups;
 using StarchUICore.Rendering.Batches;
@@ -465,7 +466,7 @@ namespace SpiceEngine.Rendering.Batches
 
         private RenderTypes GetRenderTypeForRenderable(IRenderable renderable)
         {
-            if (renderable is IView)
+            if (renderable is IElement)
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentView : RenderTypes.OpaqueView;
             }

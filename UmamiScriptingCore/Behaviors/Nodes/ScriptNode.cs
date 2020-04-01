@@ -17,12 +17,9 @@ namespace UmamiScriptingCore.Behaviors.Nodes
 
         public event EventHandler<NodeEventArgs> Compiled;
 
-        public ScriptNode(IScript script, IEnumerable<ValueType> arguments, IEnumerable<Node> children)
+        public ScriptNode(IScript script)
         {
             _script = script;
-            _arguments.AddRange(arguments);
-            _children.AddRange(children);
-
             _script.Compiled += (s, args) =>
             {
                 var compiledNode = ToCompiledNode();
@@ -30,7 +27,18 @@ namespace UmamiScriptingCore.Behaviors.Nodes
             };
         }
 
-        public bool IsNodeWeGiveAShitAbout() => _script.Name == "MoveToNode";
+        public ScriptNode(IScript script, IEnumerable<ValueType> arguments, IEnumerable<Node> children)
+        {
+            _script = script;
+            _script.Compiled += (s, args) =>
+            {
+                var compiledNode = ToCompiledNode();
+                Compiled?.Invoke(this, new NodeEventArgs(compiledNode));
+            };
+
+            _arguments.AddRange(arguments);
+            _children.AddRange(children);
+        }
 
         // TODO - Because this is event-based at the moment, Tick() should just be a no-op since it can happen if the node hasn't been replaced yet
         //public override BehaviorStatus Tick(BehaviorContext context) => throw new InvalidOperationException("");

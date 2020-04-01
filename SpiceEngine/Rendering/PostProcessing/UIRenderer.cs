@@ -4,7 +4,7 @@ using SpiceEngine.Properties;
 using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
-using StarchUICore;
+using SpiceEngineCore.UserInterfaces;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Processing;
@@ -116,6 +116,10 @@ namespace SpiceEngine.Rendering.PostProcessing
         {
             //GL.Disable(EnableCap.DepthTest);
             //GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+            //GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
+            //GL.Viewport(0, 0, FinalTexture.Width, FinalTexture.Height);
+            //GL.Disable(EnableCap.DepthTest);
 
             // TODO - Contain all rendering logic in batcher as well in view batches
             batcher.CreateBatchAction()

@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace StarchUICore
+namespace SpiceEngineCore.UserInterfaces
 {
     public interface IUIProvider
     {
         //void AddElement(int entityID, IElement element);
-        IElement GetElement(int entityID);
+        IUIElement GetUIElement(int entityID);
 
         void Load();
         IEnumerable<int> GetDrawOrder();

@@ -2,6 +2,7 @@
 
 in vec4 fId;
 in vec2 fCornerRadius;
+in vec2 fBorderThickness;
 in vec2 fUV;
 
 out vec4 color;

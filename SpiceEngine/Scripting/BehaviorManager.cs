@@ -6,6 +6,7 @@ using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting;
+using SpiceEngineCore.UserInterfaces;
 using System.Collections.Generic;
 using System.Linq;
 using UmamiScriptingCore.Behaviors.Properties;
@@ -20,6 +21,8 @@ namespace SpiceEngine.Scripting
         private ICamera _camera;
         private ICollisionProvider _collisionProvider;
         private IInputProvider _inputProvider;
+        private ISelectionTracker _selectionTracker;
+        private IUIProvider _uiProvider;
 
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
@@ -47,6 +50,32 @@ namespace SpiceEngine.Scripting
             }
         }
 
+        public void SetSelectionTracker(ISelectionTracker selectionTracker)
+        {
+            _selectionTracker = selectionTracker;
+
+            if (IsLoaded)
+            {
+                foreach (var actor in _entityProvider.Actors)
+                {
+                    if (_componentByID.ContainsKey(actor.ID))
+                    {
+                        var behavior = _componentByID[actor.ID];
+                        behavior.SetSelectionTracker(_selectionTracker);
+                    }
+                }
+
+                foreach (var uiItem in _entityProvider.UIItems)
+                {
+                    if (_componentByID.ContainsKey(uiItem.ID))
+                    {
+                        var behavior = _componentByID[uiItem.ID];
+                        behavior.SetSelectionTracker(_selectionTracker);
+                    }
+                }
+            }
+        }
+
         public void SetInputProvider(IInputProvider inputProvider)
         {
             _inputProvider = inputProvider;
@@ -59,6 +88,32 @@ namespace SpiceEngine.Scripting
                     {
                         var behavior = _componentByID[actor.ID];
                         behavior.SetInputProvider(inputProvider);
+                    }
+                }
+            }
+        }
+
+        public void SetUIProvider(IUIProvider uiProvider)
+        {
+            _uiProvider = uiProvider;
+
+            if (IsLoaded)
+            {
+                foreach (var actor in _entityProvider.Actors)
+                {
+                    if (_componentByID.ContainsKey(actor.ID))
+                    {
+                        var behavior = _componentByID[actor.ID];
+                        behavior.SetUIProvider(_uiProvider);
+                    }
+                }
+
+                foreach (var uiItem in _entityProvider.UIItems)
+                {
+                    if (_componentByID.ContainsKey(uiItem.ID))
+                    {
+                        var behavior = _componentByID[uiItem.ID];
+                        behavior.SetUIProvider(_uiProvider);
                     }
                 }
             }
@@ -109,6 +164,8 @@ namespace SpiceEngine.Scripting
                 behavior.SetCollisionProvider(_collisionProvider);
                 behavior.SetInputProvider(_inputProvider);
                 behavior.SetStimulusProvider(this);
+                behavior.SetSelectionTracker(_selectionTracker);
+                behavior.SetUIProvider(_uiProvider);
 
                 /*foreach (var property in Properties)
                 {

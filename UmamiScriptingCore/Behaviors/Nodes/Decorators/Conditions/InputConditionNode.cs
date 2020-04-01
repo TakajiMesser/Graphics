@@ -12,7 +12,7 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
         Held
     }
 
-    public abstract class InputConditionNode : ConditionNode
+    public class InputConditionNode : ConditionNode
     {
         public Input[] Inputs { get; }
         public InputTypes InputType { get; }

@@ -3,6 +3,7 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting;
+using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using UmamiScriptingCore.Behaviors.Nodes;
@@ -23,6 +24,8 @@ namespace UmamiScriptingCore.Behaviors
         public void SetCollisionProvider(ICollisionProvider collisionProvider) => Context.SetCollisionProvider(collisionProvider);
         public void SetInputProvider(IInputProvider inputProvider) => Context.SetInputProvider(inputProvider);
         public void SetStimulusProvider(IStimulusProvider stimulusProvider) => Context.SetStimulusProvider(stimulusProvider);
+        public void SetSelectionTracker(ISelectionTracker selectionTracker) => Context.SetSelectionTracker(selectionTracker);
+        public void SetUIProvider(IUIProvider uiProvider) => Context.SetUIProvider(uiProvider);
         public void SetProperty(string name, object value) => Context.SetProperty(name, value);
 
         public void PushRootNode(Node node)
@@ -46,15 +49,20 @@ namespace UmamiScriptingCore.Behaviors
                 response.Tick(Context);
             }
 
-            var root = _rootStack.Peek();
-            var rootStatus = root.Tick(Context);
-
-            if (rootStatus.IsComplete())
+            if (_rootStack.Count > 0)
             {
-                _rootStack.Pop();
+                var root = _rootStack.Peek();
+                var rootStatus = root.Tick(Context);
+
+                if (rootStatus.IsComplete())
+                {
+                    _rootStack.Pop();
+                }
+
+                return rootStatus;
             }
 
-            return rootStatus;
+            return BehaviorStatus.Dormant;   
         }
     }
 }

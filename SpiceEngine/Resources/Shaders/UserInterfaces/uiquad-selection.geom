@@ -8,10 +8,12 @@ layout(triangle_strip, max_vertices = 4) out;
 in vec3 gRight[];
 in vec3 gUp[];
 in vec2 gCornerRadius[];
+in vec2 gBorderThickness[];
 in vec4 gId[];
 
 out vec4 fId;
 out vec2 fCornerRadius;
+out vec2 fBorderThickness;
 out vec2 fUV;
 
 void main()
@@ -20,6 +22,7 @@ void main()
 
     fId = gId[0];
     fCornerRadius = gCornerRadius[0];
+    fBorderThickness = gBorderThickness[0];
 
     vec3 right = gRight[0];
     vec3 up = gUp[0];

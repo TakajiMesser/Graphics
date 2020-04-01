@@ -16,6 +16,31 @@ namespace StarchUICore.Views
         public override void Load() { }
         public override void Draw() { }
 
+        /*
+            For this View, we have a number of considerations...
+            
+            Location
+
+                Position    - Desired XY relative to Anchor (Auto: IGNORE Anchor and accept parent's suggestion)
+                MinPosition - HARD minimum XY relative to Anchor (Auto: No Minimum)
+                MaxPosition - HARD maximum XY relative to Anchor (Auto: No Maximum)
+
+            Measurement
+
+                Size        - Desired Size relative to Dock (Auto: IGNORE Dock and size to fit content)
+                MinSize     - HARD minimum size relative to Dock (Auto: No Minimum)
+                MaxSize     - HARD maximum size relative to Dock (Auto: No Maximum)
+             
+            The parent Group will attempt to honor the Position/Size that the child desires, but makes no guarantees
+            HOWEVER, the MinMax constraints are HARD requirements
+
+            RowGroup
+
+                - Because RowGroup could have size dependent on its own parent OR sized to fit its children, 
+                  we aren't positive that we have 
+             
+        */
+
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
             var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);

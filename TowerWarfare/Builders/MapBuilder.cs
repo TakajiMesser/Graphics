@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
+using StarchUICore.Attributes.Positions;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
@@ -18,7 +19,7 @@ namespace TowerWarfare.Builders
             var map = new Map3D();
 
             map.Cameras.AddRange(GenerateCameras());
-            //map.Actors.AddRange(GenerateActors());
+            map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
             map.Volumes.AddRange(GenerateVolumes());
@@ -47,11 +48,13 @@ namespace TowerWarfare.Builders
             //yield return new Player();
             //yield return new Enemy();
             yield return new BasicTower(new Vector3(0.0f, 0.0f, 5.0f));
+
+            //yield return new BasicEnemy(new Vector3(10.0f, 10.0f, 5.0f));
         }
 
         private static IEnumerable<MapBrush> GenerateBrushes()
         {
-            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 50.0f, 50.0f);
+            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 500.0f, 500.0f);
             floor.IsPhysical = true;
             //floor = MapBrush.Box(new Vector3(0.0f, 0.0f, -2.5f), 50.0f, 50.0f, 1.0f);
             //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
@@ -99,10 +102,10 @@ namespace TowerWarfare.Builders
             yield return new MapLight()
             {
                 LightType = LightTypes.Point,
-                Position = new Vector3(0.0f, 0.0f, 5.0f),
-                Radius = 20.0f,
+                Position = new Vector3(0.0f, 0.0f, 30.0f),
+                Radius = 50.0f,
                 Color = new Color4(1.0f, 1.0f, 1.0f, 1.0f),
-                Intensity = 0.5f
+                Intensity = 0.7f
             };
 
             yield return new MapLight()
@@ -165,14 +168,17 @@ namespace TowerWarfare.Builders
                 UIType = UITypes.RowGroup,
                 X = "0",
                 Y = "0",
-                Width = "800",
-                Height = "800",
-                HorizontalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                HorizontalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                VerticalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                VerticalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                ChildElementNames = new List<string> { "View 2A", "View 2B" },
-                PaddingLeft = "20"
+                Width = "100%",
+                Height = "Auto",
+                HorizontalAnchorSelfType = AnchorTypes.Start,
+                HorizontalAnchorRelativeType = AnchorTypes.Start,
+                VerticalAnchorSelfType = AnchorTypes.Start,
+                VerticalAnchorRelativeType = AnchorTypes.Start,
+                ChildElementNames = new List<string> { "View 2A", "Button 2B" },
+                PaddingLeft = "20",
+                PaddingTop = "20",
+                PaddingRight = "20",
+                PaddingBottom = "20",
             };
 
             yield return new MapUIItem()
@@ -183,10 +189,10 @@ namespace TowerWarfare.Builders
                 Y = "Auto",
                 Width = "100",
                 Height = "200",
-                HorizontalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                HorizontalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                VerticalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
-                VerticalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
+                HorizontalAnchorSelfType = AnchorTypes.Start,
+                HorizontalAnchorRelativeType = AnchorTypes.Start,
+                VerticalAnchorSelfType = AnchorTypes.Center,
+                VerticalAnchorRelativeType = AnchorTypes.Center,
                 DoesHorizontalAnchorRespectChanges = true,
                 DoesVerticalAnchorRespectChanges = true,
                 Color = Color4.LightSeaGreen,
@@ -198,23 +204,28 @@ namespace TowerWarfare.Builders
 
             yield return new MapUIItem()
             {
-                Name = "View 2B",
-                UIType = UITypes.View,
+                Name = "Button 2B",
+                UIType = UITypes.Button,
                 X = "Auto",
                 Y = "Auto",
                 Width = "200",
                 Height = "100",
-                HorizontalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                HorizontalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Start,
-                VerticalAnchorSelfType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
-                VerticalAnchorRelativeType = StarchUICore.Attributes.Positions.AnchorTypes.Center,
+                HorizontalAnchorSelfType = AnchorTypes.Start,
+                HorizontalAnchorRelativeType = AnchorTypes.Start,
+                VerticalAnchorSelfType = AnchorTypes.Center,
+                VerticalAnchorRelativeType = AnchorTypes.Center,
                 DoesHorizontalAnchorRespectChanges = true,
                 DoesVerticalAnchorRespectChanges = true,
                 Color = Color4.LightCyan,
                 CornerXRadius = 15,
                 CornerYRadius = 10,
                 BorderThickness = 5,
-                BorderColor = Color4.DarkCyan
+                BorderColor = Color4.DarkCyan,
+                PushScript = new UmamiScriptingCore.Scripts.Script()
+                {
+                    Name = "ButtonPushNode",
+                    SourcePath = Helpers.FilePathHelper.BUTTON_PUSH_NODE_PATH
+                }
             };
 
             /*yield return new MapUIItem()

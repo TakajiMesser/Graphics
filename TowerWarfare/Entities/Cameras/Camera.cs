@@ -15,7 +15,7 @@ namespace TowerWarfare.Entities.Cameras
         {
             Name = NAME;
             //AttachedEntityName = "Player";
-            Position = new Vector3(0.0f, 0.0f, 20.0f);
+            Position = new Vector3(0.0f, 0.0f, 50.0f);
             Rotation = new Vector3();
             Type = ProjectionTypes.Perspective;
             ZNear = 0.1f;

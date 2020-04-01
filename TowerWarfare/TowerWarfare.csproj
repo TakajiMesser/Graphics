@@ -37,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AssimpNet, Version=3.3.2.0, Culture=neutral, PublicKeyToken=3edc10cb77b1bca2, processorArchitecture=MSIL">
+      <HintPath>..\packages\AssimpNet.3.3.2\lib\net45\AssimpNet.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
@@ -60,22 +63,31 @@
     <Compile Include="Builders\MapBuilder.cs" />
     <Compile Include="Builders\ProjectBuilder.cs" />
     <Compile Include="Entities\Actors\Towers\BasicTower.cs" />
+    <Compile Include="Entities\Actors\Towers\BasicEnemy.cs" />
+    <Compile Include="Entities\Actors\Towers\Enemy.cs" />
     <Compile Include="Entities\Actors\Towers\Tower.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\Behaviors\Nodes\CameraNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\ButtonPushNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\MoveToNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\PerspectiveCameraNode.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\TurnTowardsNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="OpenTK.dll.config" />
     <None Include="packages.config" />
+    <None Include="Resources\Animations\boblampclean.md5anim" />
+    <None Include="Resources\Animations\boblampclean.md5mesh" />
     <None Include="Resources\Behaviors\Camera.btt" />
     <None Include="Resources\Maps\TestMap.map" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Entities\Controls\" />
+    <Folder Include="Resources\Behaviors\Scripts\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
@@ -109,5 +121,7 @@
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
+    <Error Condition="!Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.3.3.2\build\AssimpNet.targets'))" />
   </Target>
+  <Import Project="..\packages\AssimpNet.3.3.2\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.3.3.2\build\AssimpNet.targets')" />
 </Project>

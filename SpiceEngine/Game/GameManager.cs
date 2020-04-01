@@ -67,6 +67,7 @@ namespace SpiceEngine.Game
 
             AnimationManager = new AnimationManager(EntityManager);
             UIManager = new UIManager(EntityManager, _resolution);
+            BehaviorManager.SetUIProvider(UIManager);
 
             EntityManager.ClearEntities();
 

@@ -35,5 +35,7 @@ namespace StarchUICore
         void Layout(LayoutInfo layoutInfo);
         void Measure(MeasuredSize availableSize);
         void Locate(LocatedPosition availablePosition);
+
+        void InvokeLayoutChange();
     }
 }

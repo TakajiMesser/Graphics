@@ -2,7 +2,6 @@
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
-using System;
 
 namespace StarchUICore.Groups
 {
@@ -24,8 +23,8 @@ namespace StarchUICore.Groups
                 var remainingWidth = width.Value - Padding.GetWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
                 var remainingHeight = height.Value - Padding.GetHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
 
-                var currentRelativeX = relativeX.Value + Padding.Left.ToOffsetPixels(0, layoutInfo.ParentWidth).Value;
-                var currentRelativeY = relativeY.Value + Padding.Top.ToOffsetPixels(0, layoutInfo.ParentHeight).Value;
+                var currentRelativeX = Padding.Left.ToOffsetPixels(0, layoutInfo.ParentWidth).Value;
+                var currentRelativeY = Padding.Top.ToOffsetPixels(0, layoutInfo.ParentHeight).Value;
 
                 var largestChildHeight = 0;
                 var spacing = Spacing.ToDimensionPixels(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
@@ -59,14 +58,9 @@ namespace StarchUICore.Groups
                     else
                     {
                         // We need to halt this group's layout, and report back what we can
-                        if (!child.Measurement.NeedsMeasuring && (Size.Height is AutoUnits))
-                        {
-                            return new LayoutResult(null, null, null, height);
-                        }
-                        else
-                        {
-                            return new LayoutResult();
-                        }
+                        return !child.Measurement.NeedsMeasuring && Size.Height is AutoUnits
+                            ? new LayoutResult(null, null, null, height)
+                            : new LayoutResult();
                     }
                 }
 
@@ -100,23 +94,41 @@ namespace StarchUICore.Groups
                 if (Size.Width is AutoUnits)
                 {
                     var anchoredX = HorizontalAnchor.GetAnchorX(relativeX.Value, width.Value, layoutInfo.RelativeX, layoutInfo.RelativeX + layoutInfo.AvailableWidth, layoutInfo.ParentWidth, layoutInfo.ParentAbsoluteX);
-                    absoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
-                    /*var newAbsoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
+                    //absoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
+                    var newAbsoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
                     var absoluteXDifference = newAbsoluteX - absoluteX;
 
-                    // TODO - This is terrible... but for now, REPOSITION all children
+                    // TODO - This is terrible... but for now, REPOSITION all children (Maybe this should be done via child event subscribing?
                     foreach (var child in Children)
                     {
                         child.Location.SetValue(child.Location.X + absoluteXDifference.Value, child.Location.Y);
+                        child.InvokeLayoutChange();
                     }
 
-                    absoluteX = newAbsoluteX;*/
+                    absoluteX = newAbsoluteX;
                 }
 
                 if (Size.Height is AutoUnits)
                 {
                     var anchoredY = VerticalAnchor.GetAnchorY(relativeY.Value, height.Value, layoutInfo.RelativeY, layoutInfo.RelativeY + layoutInfo.AvailableHeight, layoutInfo.ParentHeight, layoutInfo.ParentAbsoluteY);
-                    absoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
+                    //absoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
+                    var newAbsoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
+                    var absoluteYDifference = newAbsoluteY - absoluteY;
+
+                    // TODO - This is terrible... but for now, REPOSITION all children (Maybe this should be done via child event subscribing?
+                    foreach (var child in Children)
+                    {
+                        // TODO - Refactor layout process so that child reports RELATIVE position to parent, who then assigns the child its absolute position
+                        // If this child based its position off of the size of its parent, then we need to reanchor its Y position now
+                        var newChildY = /*!(child.Position.Y is AutoUnits) && */child.VerticalAnchor.RelativeElement == null
+                            ? newAbsoluteY + child.VerticalAnchor.GetAnchorY(0, child.Measurement.Height, 0, height.Value, height.Value, newAbsoluteY.Value).Value
+                            : child.Location.Y + absoluteYDifference.Value;
+
+                        child.Location.SetValue(child.Location.X, newChildY.Value);
+                        child.InvokeLayoutChange();
+                    }
+
+                    absoluteY = newAbsoluteY;
                 }
 
                 return new LayoutResult(absoluteX, absoluteY, width, height);
@@ -158,14 +170,8 @@ namespace StarchUICore.Groups
             return new MeasuredSize();
         }
 
-        protected override LocatedPosition OnLocate(LocatedPosition availablePosition)
-        {
-            throw new System.NotImplementedException();
-        }
+        protected override LocatedPosition OnLocate(LocatedPosition availablePosition) => throw new System.NotImplementedException();
 
-        public override IGroup Duplicate()
-        {
-            throw new System.NotImplementedException();
-        }
+        public override IGroup Duplicate() => throw new System.NotImplementedException();
     }
 }

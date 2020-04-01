@@ -2,9 +2,12 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.UserInterfaces;
 using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Scripting;
 using SpiceEngineCore.UserInterfaces;
+using SpiceEngineCore.Utilities;
 using StarchUICore;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
@@ -12,10 +15,16 @@ using StarchUICore.Attributes.Styling;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Groups;
 using StarchUICore.Views;
+using StarchUICore.Views.Controls.Buttons;
 using SweetGraphicsCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
+using UmamiScriptingCore.Behaviors.Nodes.Decorators;
+using UmamiScriptingCore.Scripts;
+using InputTypes = UmamiScriptingCore.Behaviors.Nodes.Decorators.InputTypes;
 
 namespace SpiceEngine.Maps
 {
@@ -81,6 +90,8 @@ namespace SpiceEngine.Maps
         public UITypes UIType { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
+        public Script PushScript { get; set; }
+
         public override IEntity ToEntity() => new UIItem()
         {
             Name = Name,
@@ -121,6 +132,34 @@ namespace SpiceEngine.Maps
             }
         }
 
+        public IEnumerable<IScript> GetScripts() => PushScript.Yield();///*Behavior != null ? Behavior.GetScripts() : */Enumerable.Empty<IScript>();
+        public IEnumerable<IStimulus> GetStimuli() => Enumerable.Empty<IStimulus>();
+        public IEnumerable<IProperty> GetProperties() => Enumerable.Empty<IProperty>();
+
+        IBehavior IComponentBuilder<IBehavior>.ToComponent()
+        {
+            if (UIType == UITypes.Button && PushScript != null)
+            {
+                var behavior = new Behavior();
+
+                // TODO - Check to see if this button was both pressed and released
+                var rootNode = new RepeaterNode(new InputConditionNode(
+                    new SelectionConditionNode(
+                        new ScriptNode(PushScript)
+                    ),
+                    InputTypes.Released, new Input(OpenTK.Input.MouseButton.Left)
+                ));
+
+                /*var pushNode = new ScriptNode(PushScript);
+                var rootNode = new InputConditionNode(pushNode, InputTypes.Released, new Input(OpenTK.Input.MouseButton.Left));*/
+                behavior.PushRootNode(rootNode);
+
+                return behavior;
+            }
+
+            return null;
+        }
+
         private IElement CreateComponent()
         {
             if (TexturesPaths.Any()) throw new NotImplementedException();
@@ -139,6 +178,10 @@ namespace SpiceEngine.Maps
                     var columnGroup = new ColumnGroup();
                     ApplyValues(columnGroup);
                     return columnGroup;
+                case UITypes.Button:
+                    var button = new Button();
+                    ApplyValues(button);
+                    return button;
             }
 
             throw new NotImplementedException();
@@ -163,6 +206,11 @@ namespace SpiceEngine.Maps
                 {
                     Color = Color
                 };
+            }
+
+            if (element is Button button)
+            {
+                
             }
 
             if (element is Group group)

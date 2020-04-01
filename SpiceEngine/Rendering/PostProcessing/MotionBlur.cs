@@ -93,7 +93,7 @@ namespace SpiceEngine.Rendering.PostProcessing
             _dilateProgram.Use();
 
             int blurLocation = _dilateProgram.GetUniformLocation("blur_amount");
-            GL.Uniform1(blurLocation, 150);
+            GL.Uniform1(blurLocation, 50/*150*/);
 
             int sizeLocation = _dilateProgram.GetUniformLocation("texture_size");
             GL.Uniform2(sizeLocation, new Vector2(_velocityTextureA.Width, _velocityTextureA.Height));

@@ -11,7 +11,10 @@
             // Insert the script-node as a placeholder, to be overwritten upon compilation
             if (child is ScriptNode scriptNode)
             {
-                scriptNode.Compiled += (s, args) => Child = args.Node;
+                scriptNode.Compiled += (s, args) =>
+                {
+                    Child = args.Node;
+                };
             }
         }
 

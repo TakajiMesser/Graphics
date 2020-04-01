@@ -81,38 +81,20 @@ namespace StarchUICore
 
         public bool IsLaidOut => !Measurement.NeedsMeasuring && !Location.NeedsLocating;
 
-        public bool IsAnimated { get; set; } = false;
         public bool IsTransparent => Alpha < 1.0f;
+        public bool IsAnimated { get; set; } = false;
+        public bool IsSelectable { get; set; } = true;
 
         public event EventHandler<LayoutEventArgs> LayoutChanged;
         public event EventHandler<PositionEventArgs> PositionChanged;
         public event EventHandler<SizeEventArgs> SizeChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
-        /*protected int ApplyMinimumWidthConstraint(int value, LayoutInfo layoutInfo) => MinimumSize.Width is AutoUnits
-            ? value
-            : value.ClampBottom(MinimumSize.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth));
-
-        protected int ApplyMaximumWidthConstraint(int value, LayoutInfo layoutInfo) => MaximumSize.Width is AutoUnits
-            ? value
-            : value.ClampTop(MaximumSize.Width.Constrain(layoutInfo.Size.Width, layoutInfo.Size.ContainingWidth));
-
-        protected int ApplyMinimumHeightConstraint(int value, LayoutInfo layoutInfo) => MinimumSize.Height is AutoUnits
-            ? value
-            : value.ClampBottom(MinimumSize.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight));
-
-        protected int ApplyMaximumHeightConstraint(int value, LayoutInfo layoutInfo) => MaximumSize.Height is AutoUnits
-            ? value
-            : value.ClampTop(MaximumSize.Height.Constrain(layoutInfo.Size.Height, layoutInfo.Size.ContainingHeight));*/
-
         public abstract void Load();
         //public abstract void Measure(ISize availableSize);
         //public abstract void Locate(IPosition availablePosition);
 
-        public virtual void Update(int nTicks)
-        {
-
-        }
+        public virtual void Update(int nTicks) { }
 
         public abstract void Draw();
 
@@ -126,30 +108,30 @@ namespace StarchUICore
 
         public void Layout(LayoutInfo layoutInfo)
         {
-            var layoutResult = OnLayout(layoutInfo);
-            
-            var wasMeasured = false;
-            var wasLocated = false;
-
-            if (Measurement.NeedsMeasuring && layoutResult.Width.HasValue && layoutResult.Height.HasValue)
+            if (Measurement.NeedsMeasuring || Location.NeedsLocating)
             {
-                Measurement.SetValue(layoutResult.Width.Value, layoutResult.Height.Value);
-                OnMeasured(layoutInfo);
-                wasMeasured = true;
-            }
+                var layoutResult = OnLayout(layoutInfo);
 
-            if (Location.NeedsLocating && layoutResult.X.HasValue && layoutResult.Y.HasValue)
-            {
-                Location.SetValue(layoutResult.X.Value, layoutResult.Y.Value);
-                OnLocated(layoutInfo);
-                wasLocated = true;
-            }
+                if (Measurement.NeedsMeasuring && layoutResult.Width.HasValue && layoutResult.Height.HasValue)
+                {
+                    Measurement.SetValue(layoutResult.Width.Value, layoutResult.Height.Value);
+                    OnMeasured(layoutInfo);
+                }
 
-            if (wasMeasured || wasLocated)
-            {
+                if (Location.NeedsLocating && layoutResult.X.HasValue && layoutResult.Y.HasValue)
+                {
+                    Location.SetValue(layoutResult.X.Value, layoutResult.Y.Value);
+                    OnLocated(layoutInfo);
+                }
+
                 OnLaidOut(layoutInfo);
                 LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
             }
+        }
+
+        public void InvokeLayoutChange()
+        {
+            LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
         }
 
         public void Measure(MeasuredSize availableSize)

@@ -18,6 +18,8 @@ namespace TowerWarfare.Helpers
         #endregion
 
         #region Animations
+        public static string BOB_LAMP_MESH_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Animations\boblampclean.md5mesh";
+        public static string BOB_LAMP_ANIMATION_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Animations\boblampclean.md5anim";
         #endregion
 
         #region Meshes
@@ -48,6 +50,14 @@ namespace TowerWarfare.Helpers
         #region Behaviors
         public static string CAMERA_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\Camera.btt";
         public static string CAMERA_NODE_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\Nodes\CameraNode.cs";
+
+        public static string ENEMY_PATROL_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\EnemyPatrol.btt";
+        public static string ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\SearchForPlayer.btt";
+        public static string ENEMY_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\EnemyTurn.btt";
+
+        public static string MOVE_TO_NODE_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\Nodes\MoveToNode.cs";
+        public static string TURN_TOWARDS_NODE_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\Nodes\TurnTowardsNode.cs";
+        public static string BUTTON_PUSH_NODE_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Behaviors\Nodes\ButtonPushNode.cs";
         #endregion
     }
 }

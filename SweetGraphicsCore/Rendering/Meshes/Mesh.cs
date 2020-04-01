@@ -33,8 +33,9 @@ namespace SweetGraphicsCore.Rendering.Meshes
             }
         }
 
-        public bool IsAnimated => typeof(T) == typeof(AnimatedVertex3D);
         public bool IsTransparent => Alpha < 1.0f;
+        public bool IsAnimated => typeof(T) == typeof(AnimatedVertex3D);
+        public bool IsSelectable { get; set; } = true;
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 

@@ -16,11 +16,10 @@ namespace TowerWarfare.Entities.Actors.Towers
             Scale = Vector3.One;
             Rotation = Vector3.Zero;
             Orientation = Vector3.Zero;
-
             IsPhysical = true;
+            Color = GetColor();
 
             BuildShape();
-            Color = GetColor();
         }
 
         protected abstract ModelMesh GetShape();// => ModelMesh.Box(2.0f, 2.0f, 2.0f);
@@ -31,7 +30,7 @@ namespace TowerWarfare.Entities.Actors.Towers
             var modelMesh = GetShape();
             var modelBuilder = new ModelBuilder(modelMesh);
 
-            Vertices.AddRange(modelBuilder.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)));
+            Vertices.AddRange(modelBuilder.GetVertices().Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV, Color)));
             TriangleIndices.AddRange(modelBuilder.TriangleIndices);
             Material = SpiceEngineCore.Rendering.Materials.Material.LoadFromFile(FilePathHelper.GENERIC_MATERIAL_PATH).First().Item2;
         }

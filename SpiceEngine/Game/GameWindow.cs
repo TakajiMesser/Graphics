@@ -176,6 +176,7 @@ namespace SpiceEngine.Game
             _renderManager.SetCamera(defaultCamera);
 
             // Set up UIManager to track mouse selections for UI control interactions
+            _gameManager.BehaviorManager.SetSelectionTracker(_renderManager);
             _gameManager.UIManager.TrackSelections(_renderManager, _gameManager.InputManager);
 
             //_stopWatch.Stop();

@@ -16,8 +16,10 @@ namespace SpiceEngine.Rendering.Models
     public class Model : IModel
     {
         public List<IMesh> Meshes { get; } = new List<IMesh>();
-        public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
+        
         public bool IsTransparent => Meshes.Any(m => m.Alpha < 1.0f);
+        public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
+        public bool IsSelectable { get; set; } = true;
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 

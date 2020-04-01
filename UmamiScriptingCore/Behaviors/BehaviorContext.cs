@@ -3,10 +3,10 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
-using UmamiScriptingCore.Behaviors.StimResponse;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.UserInterfaces;
 using System.Collections.Generic;
 using System.Linq;
-using SpiceEngineCore.Scripting;
 
 namespace UmamiScriptingCore.Behaviors
 {
@@ -15,6 +15,8 @@ namespace UmamiScriptingCore.Behaviors
         private IEntityProvider _entityProvider;
         private ICollisionProvider _collisionProvider;
         private IStimulusProvider _stimulusProvider;
+        private ISelectionTracker _selectionTracker;
+        private IUIProvider _uiProvider;
 
         public IEntity Entity { get; internal set; }
 
@@ -35,6 +37,8 @@ namespace UmamiScriptingCore.Behaviors
         public IBody GetBody(int entityID) => _collisionProvider.GetBody(entityID);
         public IEnumerable<IBody> GetBodies() => _collisionProvider.GetCollisionIDs().Select(c => _collisionProvider.GetBody(c));
         public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Entity.ID).Select(c => _collisionProvider.GetBody(c));
+
+        public IUIElement GetUIElement(int entityID) => _uiProvider.GetUIElement(entityID);
 
         public ICamera Camera { get; internal set; }
         public IInputProvider InputProvider { get; internal set; }
@@ -65,9 +69,22 @@ namespace UmamiScriptingCore.Behaviors
             }
         }
 
+        public int GetEntityIDFromMousePosition()
+        {
+            if (InputProvider != null && _selectionTracker != null && InputProvider.IsMouseInWindow && InputProvider.MouseCoordinates.HasValue)
+            {
+                var coordinates = new Vector2(InputProvider.MouseCoordinates.Value.X, InputProvider.WindowSize.Height - InputProvider.MouseCoordinates.Value.Y);
+                return _selectionTracker.GetEntityIDFromPoint(coordinates);
+            }
+
+            return 0;
+        }
+
         public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
         public void SetCollisionProvider(ICollisionProvider collisionProvider) => _collisionProvider = collisionProvider;
         public void SetInputProvider(IInputProvider inputProvider) => InputProvider = inputProvider;
         public void SetStimulusProvider(IStimulusProvider stimulusProvider) => _stimulusProvider = stimulusProvider;
+        public void SetSelectionTracker(ISelectionTracker selectionTracker) => _selectionTracker = selectionTracker;
+        public void SetUIProvider(IUIProvider uiProvider) => _uiProvider = uiProvider;
     }
 }
