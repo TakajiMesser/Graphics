@@ -133,6 +133,7 @@ namespace SpiceEngine.Rendering
         public void SetUIProvider(IUIProvider uiProvider)
         {
             _uiProvider = uiProvider;
+            _uiProvider.SetTextureProvider(TextureManager);
             _batchManager?.SetUIProvider(_uiProvider);
         }
 
@@ -237,8 +238,8 @@ namespace SpiceEngine.Rendering
                 _renderToScreen.Load(WindowSize);
                 _uiRenderer.Load(WindowSize);
 
-                var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
-                _logManager.SetFont(font);
+                //var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
+                //_logManager.SetFont(font);
 
                 GL.ClearColor(Color4.Black);
                 } catch (Exception ex)
@@ -772,7 +773,7 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(texture);
 
-            RenderUIControls();
+            RenderUI();
             //_logManager.RenderToScreen();
         }
 
@@ -807,14 +808,34 @@ namespace SpiceEngine.Rendering
             GL.Disable(EnableCap.Blend);
         }
 
-        private void RenderUIControls()
+        // TODO - Remove this test code and set fonts up more appropriately
+        private bool _isFontSet = false;
+
+        private void RenderUI()
         {
             _uiRenderer.Render(_batchManager, _uiProvider);
-            //_uiRenderer.Render(_batchManager);
-            //_uiRenderer.Render(_uiProvider);
 
-            var font = FontManager.GetFont(TextRenderer.FONT_PATH);
-            _textRenderer.RenderText(font, "FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + font.GlyphWidth), Resolution.Height - (10 + font.GlyphHeight));
+            //var font = FontManager.GetFont(TextRenderer.FONT_PATH);
+
+            /*if (!_isFontSet)
+            {
+                var entityID = _entityProvider.GetEntity("Text 2C").ID;
+                var uiElement = _uiProvider.GetUIElement(entityID);
+                
+                if (uiElement is Label textView)
+                {
+                    textView.Font = font;
+                }
+
+                _isFontSet = true;
+            }*/
+
+            _textRenderer.Render(_batchManager, _uiProvider);
+
+            //var x = Resolution.Width - 9 * (10 + font.GlyphWidth);
+            //var y = /*Resolution.Height - */(10 + font.GlyphHeight);
+            //var y = 100;
+            //_textRenderer.RenderText(font, "FPS: " + Frequency.ToString("0.##"), x, y);
         }
     }
 }

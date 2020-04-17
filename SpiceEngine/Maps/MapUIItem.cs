@@ -87,6 +87,9 @@ namespace SpiceEngine.Maps
         public float CornerXRadius { get; set; }
         public float CornerYRadius { get; set; }
 
+        public string FontFilePath { get; set; }
+        public int FontSize { get; set; } = 12;
+
         public UITypes UIType { get; set; }
         public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
@@ -182,6 +185,10 @@ namespace SpiceEngine.Maps
                     var button = new Button();
                     ApplyValues(button);
                     return button;
+                case UITypes.Label:
+                    var textView = new Label();
+                    ApplyValues(textView);
+                    return textView;
             }
 
             throw new NotImplementedException();
@@ -219,6 +226,12 @@ namespace SpiceEngine.Maps
                 {
                     group.AddChild(child);
                 }*/
+            }
+
+            if (element is Label textView)
+            {
+                textView.Text = "Blarg";
+                //textView.Font = ;
             }
         }
 

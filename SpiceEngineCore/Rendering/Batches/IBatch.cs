@@ -15,10 +15,12 @@ namespace SpiceEngineCore.Rendering.Batches
         OpaqueAnimated,
         OpaqueBillboard,
         OpaqueView,
+        OpaqueText,
         TransparentStatic,
         TransparentAnimated,
         TransparentBillboard,
-        TransparentView
+        TransparentView,
+        TransparentText
     }
 
     public interface IBatch

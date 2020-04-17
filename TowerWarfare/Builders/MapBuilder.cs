@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngine.Maps;
+using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngineCore.Maps;
 using StarchUICore.Attributes.Positions;
 using SweetGraphicsCore.Rendering.Meshes;
@@ -174,7 +175,7 @@ namespace TowerWarfare.Builders
                 HorizontalAnchorRelativeType = AnchorTypes.Start,
                 VerticalAnchorSelfType = AnchorTypes.Start,
                 VerticalAnchorRelativeType = AnchorTypes.Start,
-                ChildElementNames = new List<string> { "View 2A", "Button 2B" },
+                ChildElementNames = new List<string> { "View 2A", "Button 2B", "Label 2C" },
                 PaddingLeft = "20",
                 PaddingTop = "20",
                 PaddingRight = "20",
@@ -226,6 +227,25 @@ namespace TowerWarfare.Builders
                     Name = "ButtonPushNode",
                     SourcePath = Helpers.FilePathHelper.BUTTON_PUSH_NODE_PATH
                 }
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "Label 2C",
+                UIType = UITypes.Label,
+                X = "Auto",
+                Y = "Auto",
+                Width = "Auto",
+                Height = "Auto",
+                HorizontalAnchorSelfType = AnchorTypes.Start,
+                HorizontalAnchorRelativeType = AnchorTypes.Start,
+                VerticalAnchorSelfType = AnchorTypes.Center,
+                VerticalAnchorRelativeType = AnchorTypes.Center,
+                DoesHorizontalAnchorRespectChanges = true,
+                DoesVerticalAnchorRespectChanges = true,
+                Color = Color4.LightCyan,
+                FontFilePath = TextRenderer.FONT_PATH,
+                FontSize = 14
             };
 
             /*yield return new MapUIItem()

@@ -37,6 +37,12 @@ namespace SweetGraphicsCore.Rendering.Textures
         {
             Handle = GL.GenTexture();
 
+            if (Handle == 0)
+            {
+                var errorCode = GL.GetError();
+                throw new GraphicsException("Failed to generate texture: " + errorCode);//GL.GetShaderInfoLog(_handle));
+            }
+
             Width = width;
             Height = height;
             Depth = depth;

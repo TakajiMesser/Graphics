@@ -12,5 +12,8 @@ namespace SpiceEngineCore.Game.Loading.Builders
         string RelativeVerticalAnchorElementName { get; }
         string RelativeHorizontalDockElementName { get; }
         string RelativeVerticalDockElementName { get; }
+
+        string FontFilePath { get; }
+        int FontSize { get; }
     }
 }

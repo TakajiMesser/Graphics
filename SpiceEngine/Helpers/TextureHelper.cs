@@ -1,5 +1,7 @@
 ﻿using FreeImageAPI;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 using System.Drawing;
@@ -264,6 +266,49 @@ namespace SpiceEngine.Helpers
             }
 
             return texture;
+        }
+
+        public static void SaveToFile(string filePath, ITexture texture)
+        {
+            // Create a frame buffer for our texture
+            var frameBuffer = new FrameBuffer();
+            frameBuffer.Add(FramebufferAttachment.ColorAttachment0, texture);
+            frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            frameBuffer.AttachAttachments();
+            frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+
+            // Bind the frame buffer for reading
+            frameBuffer.BindAndRead(ReadBufferMode.ColorAttachment0);
+            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+
+            // Create bitmap to transfer texture pixels over to
+            var bitmap = new Bitmap(texture.Width, texture.Height);
+            BitmapData data = bitmap.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+
+            GL.ReadPixels(0, 0, texture.Width, texture.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.Finish();
+
+            bitmap.UnlockBits(data);
+            bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
+
+            bitmap.Save(filePath, ImageFormat.Png);
+            bitmap.Dispose();
+
+            /*var color = texture.ReadPixelColor((int)point.X, (int)point.Y);
+            var bytes = new byte[4];
+
+            if (x <= Width && y <= Height)
+            {
+                GL.ReadPixels(x, y, 1, 1, PixelFormat, PixelType, bytes);
+            }
+
+            return new Vector4()
+            {
+                X = (int)bytes[0],
+                Y = (int)bytes[1],
+                Z = (int)bytes[2],
+                W = (int)bytes[3]
+            };*/
         }
     }
 }

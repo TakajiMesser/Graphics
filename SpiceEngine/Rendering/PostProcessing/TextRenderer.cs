@@ -2,12 +2,16 @@
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.UserInterfaces;
 using StarchUICore.Text;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Processing;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Vertices;
+using System.Collections.Generic;
 using System.IO;
 
 namespace SpiceEngine.Rendering.PostProcessing
@@ -73,6 +77,25 @@ namespace SpiceEngine.Rendering.PostProcessing
             FinalTexture.ReserveMemory();
         }
 
+        public void Render(IBatcher batcher, IUIProvider uiProvider)
+        {
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
+
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+            batcher.CreateBatchAction()
+                .SetShader(_textProgram)
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.TransparentText)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
+
+            GL.Disable(EnableCap.Blend);
+        }
+
         /// <summary>
         /// Renders text to the screen.
         /// </summary>
@@ -111,10 +134,31 @@ namespace SpiceEngine.Rendering.PostProcessing
                     y += height + font.YSpacing;
                 }
 
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y + height), new Vector2(u + uStep, v)));
+                // SHADER ORDER   - TL, BL, TR, BR
+                // Position Order - TR, TL, BL, BR
+                // Texture Order  - BR, BL, TL, TR
+                var ptr = new Vector2(x + width, y + height);
+                var ptl = new Vector2(x, y + height);
+                var pbl = new Vector2(x, y);
+                var pbr = new Vector2(x + width, y);
+
+                var tbr = new Vector2(u + uStep, v);
+                var tbl = new Vector2(u, v);
+                var ttl = new Vector2(u, v + vStep);
+                var ttr = new Vector2(u + uStep, v + vStep);
+
+                _vertexBuffer.AddVertices(new List<TextureVertex2D>()
+                {
+                    new TextureVertex2D(pbr, tbr),
+                    new TextureVertex2D(pbl, tbl),
+                    new TextureVertex2D(ptl, ttl),
+                    new TextureVertex2D(ptr, ttr)
+                });
+
+                /*_vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y + height), new Vector2(u + uStep, v)));
                 _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y + height), new Vector2(u, v)));
                 _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y), new Vector2(u, v + vStep)));
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y), new Vector2(u + uStep, v + vStep)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y), new Vector2(u + uStep, v + vStep)));*/
 
                 x += font.XSpacing + 20;
             }

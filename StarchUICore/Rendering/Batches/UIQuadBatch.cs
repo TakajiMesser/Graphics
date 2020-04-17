@@ -17,7 +17,7 @@ using System.Linq;
 
 namespace StarchUICore.Rendering.Batches
 {
-    public class UIBatch : Batch<IElement>
+    public class UIQuadBatch : Batch<IElement>
     {
         //private Vertex3DSet<ViewQuadVertex> _vertexSet = new Vertex3DSet<ViewQuadVertex>();
 
@@ -27,7 +27,7 @@ namespace StarchUICore.Rendering.Batches
         private Dictionary<int, int> _offsetByID = new Dictionary<int, int>();
         private Dictionary<int, int> _countByID = new Dictionary<int, int>();
 
-        public UIBatch(IElement item) : base(item) { }
+        public UIQuadBatch(IElement item) : base(item) { }
 
         public override void Load()
         {
@@ -49,11 +49,11 @@ namespace StarchUICore.Rendering.Batches
         {
             if (_renderable is IGroup group)
             {
-                return new UIBatch(group.Duplicate());
+                return new UIQuadBatch(group.Duplicate());
             }
             else if (_renderable is IView view)
             {
-                return new UIBatch(view.Duplicate());
+                return new UIQuadBatch(view.Duplicate());
             }
 
             throw new NotImplementedException("Cannot handle UI renderable of type " + _renderable.GetType());

@@ -19,6 +19,7 @@ namespace SweetGraphicsCore.Rendering.Batches
 
         IBatchAction SetUniform<T>(string name, T value) where T : struct;
         IBatchAction SetPerIDAction(Action<int> action);
+        IBatchAction SetPerBatchAction(Action<IBatch> action);
         IBatchAction SetRenderType(RenderTypes renderType);
         IBatchAction ClearRenderType();
 

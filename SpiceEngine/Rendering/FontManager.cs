@@ -1,4 +1,5 @@
 ﻿using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.UserInterfaces;
 //using System.Drawing;
 //using System.Drawing.Imaging;
 using StarchUICore.Text;
@@ -8,13 +9,6 @@ namespace SpiceEngine.Rendering
 {
     public class FontManager : IFontProvider
     {
-        public const int GLYPHS_PER_LINE = 16;
-        public const int GLYPH_LINE_COUNT = 16;
-        public const int GLYPH_WIDTH = 24;
-        public const int GLYPH_HEIGHT = 32;
-        public const int X_SPACING = 4;
-        public const int Y_SPACING = 5;
-
         ITextureProvider _textureProvider;
         private Dictionary<string, Font> _fontByPath = new Dictionary<string, Font>();
 

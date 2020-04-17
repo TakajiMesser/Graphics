@@ -35,10 +35,12 @@ namespace SpiceEngine.Rendering.Batches
         private HashSet<int> _opaqueAnimatedIDs = new HashSet<int>();
         private HashSet<int> _opaqueBillboardIDs = new HashSet<int>();
         private HashSet<int> _opaqueViewIDs = new HashSet<int>();
+        private HashSet<int> _opaqueTextIDs = new HashSet<int>();
         private HashSet<int> _transparentStaticIDs = new HashSet<int>();
         private HashSet<int> _transparentAnimatedIDs = new HashSet<int>();
         private HashSet<int> _transparentBillboardIDs = new HashSet<int>();
         private HashSet<int> _transparentViewIDs = new HashSet<int>();
+        private HashSet<int> _transparentTextIDs = new HashSet<int>();
 
         private Dictionary<int, RenderTypes> _renderTypeByEntityID = new Dictionary<int, RenderTypes>();
         private Dictionary<int, int> _batchIndexByEntityID = new Dictionary<int, int>();
@@ -261,9 +263,18 @@ namespace SpiceEngine.Rendering.Batches
                 case IBillboard billboard:
                     return new BillboardBatch(billboard);
                 case IElement element:
-                    var uiBatch = new UIBatch(element);
-                    _uiProvider.OrderChanged += (s, args) => uiBatch.Reorder(args.IDs);
-                    return new UIBatch(element);
+                    if (element is Label textView)
+                    {
+                        var textBatch = new LabelBatch(textView);
+                        _uiProvider.OrderChanged += (s, args) => textBatch.Reorder(args.IDs);
+                        return textBatch;
+                    }
+                    else
+                    {
+                        var uiBatch = new UIQuadBatch(element);
+                        _uiProvider.OrderChanged += (s, args) => uiBatch.Reorder(args.IDs);
+                        return uiBatch;
+                    }
             }
 
             throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
@@ -424,7 +435,7 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        private void DrawEntities(ShaderProgram shader, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> action = null)
+        private void DrawEntities(ShaderProgram shader, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> perIdAction = null, Action<IBatch> perBatchAction = null)
         {
             var batchIndices = new HashSet<int>();
 
@@ -434,6 +445,16 @@ namespace SpiceEngine.Rendering.Batches
                 if (!batchIndices.Contains(batchIndex))
                 {
                     batchIndices.Add(batchIndex);
+                    perIdAction?.Invoke(id);
+
+                    perBatchAction?.Invoke(_batches[batchIndex]);
+
+                    var a = 3;
+                    if (renderType.HasValue && (renderType.Value == RenderTypes.TransparentText || renderType.Value == RenderTypes.OpaqueText))
+                    {
+                        a = 4;
+                    }
+
                     _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
                 }
             }
@@ -451,6 +472,8 @@ namespace SpiceEngine.Rendering.Batches
                     return _opaqueBillboardIDs;
                 case RenderTypes.OpaqueView:
                     return _opaqueViewIDs;
+                case RenderTypes.OpaqueText:
+                    return _opaqueTextIDs;
                 case RenderTypes.TransparentStatic:
                     return _transparentStaticIDs;
                 case RenderTypes.TransparentAnimated:
@@ -459,6 +482,8 @@ namespace SpiceEngine.Rendering.Batches
                     return _transparentBillboardIDs;
                 case RenderTypes.TransparentView:
                     return _transparentViewIDs;
+                case RenderTypes.TransparentText:
+                    return _transparentTextIDs;
             }
 
             throw new ArgumentOutOfRangeException("Could not handle render type " + renderType);
@@ -466,7 +491,11 @@ namespace SpiceEngine.Rendering.Batches
 
         private RenderTypes GetRenderTypeForRenderable(IRenderable renderable)
         {
-            if (renderable is IElement)
+            if (renderable is Label)
+            {
+                return RenderTypes.TransparentText;
+            }
+            else if (renderable is IElement)
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentView : RenderTypes.OpaqueView;
             }
@@ -490,8 +519,10 @@ namespace SpiceEngine.Rendering.Batches
             private Queue<Action> _commandQueue = new Queue<Action>();
 
             private ShaderProgram _shader;
-            private Action<int> _idAction;
             private RenderTypes? _renderType;
+
+            private Action<int> _perIDAction;
+            private Action<IBatch> _perBatchAction;
 
             private HashSet<int> _entityIDSet;
             private List<int> _entityIDOrder;
@@ -538,7 +569,13 @@ namespace SpiceEngine.Rendering.Batches
 
             public IBatchAction SetPerIDAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _idAction = action);
+                _commandQueue.Enqueue(() => _perIDAction = action);
+                return this;
+            }
+
+            public IBatchAction SetPerBatchAction(Action<IBatch> action)
+            {
+                _commandQueue.Enqueue(() => _perBatchAction = action);
                 return this;
             }
 
@@ -590,7 +627,7 @@ namespace SpiceEngine.Rendering.Batches
 
             public IBatchAction Render()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(_shader, _renderType, _entityIDSet, _entityIDOrder, _idAction));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(_shader, _renderType, _entityIDSet, _entityIDOrder, _perIDAction, _perBatchAction));
                 return this;
             }
 

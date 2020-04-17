@@ -1,7 +1,7 @@
 ﻿using SpiceEngineCore.Rendering.Textures;
 //using System.Drawing;
 
-namespace StarchUICore.Text
+namespace SpiceEngineCore.UserInterfaces
 {
     public interface IFont
     {

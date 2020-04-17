@@ -1,10 +1,11 @@
-﻿using OpenTK;
+﻿using SpiceEngine.Rendering;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
 using StarchUICore.Attributes.Sizes;
@@ -19,6 +20,8 @@ namespace SpiceEngine.UserInterfaces
     // Stores all UIControls and determines the order that they should be drawn in
     public class UIManager : ComponentLoader<IUIElement, IUIElementBuilder>, IUIProvider
     {
+        private ITextureProvider _textureProvider;
+
         private Resolution _resolution;
         private int _rootID;
         private SetDictionary<int, int> _childIDSetByID = new SetDictionary<int, int>();
@@ -33,6 +36,9 @@ namespace SpiceEngine.UserInterfaces
         private List<int> _idDrawOrder = new List<int>();
         private HashSet<int> _changedIDs = new HashSet<int>();
 
+        private Dictionary<int, string> _fontPathByID = new Dictionary<int, string>();
+        private Dictionary<string, IFont> _fontByPath = new Dictionary<string, IFont>();
+
         public event EventHandler<OrderEventArgs> OrderChanged;
 
         public UIManager(IEntityProvider entityProvider, Resolution resolution)
@@ -40,6 +46,8 @@ namespace SpiceEngine.UserInterfaces
             SetEntityProvider(entityProvider);
             _resolution = resolution;
         }
+
+        public void SetTextureProvider(ITextureProvider textureProvider) => _textureProvider = textureProvider;
 
         public void TrackSelections(ISelectionTracker selectionTracker, IInputProvider inputProvider)
         {
@@ -94,6 +102,19 @@ namespace SpiceEngine.UserInterfaces
             _horizontalDockNamesByID.Add(entityID, builder.RelativeHorizontalDockElementName);
             _verticalDockNamesByID.Add(entityID, builder.RelativeVerticalDockElementName);
             _childNamesByID.AddRange(entityID, builder.ChildElementNames);
+
+            if (!string.IsNullOrEmpty(builder.FontFilePath))
+            {
+                _fontPathByID.Add(entityID, builder.FontFilePath);
+
+                if (!_fontByPath.ContainsKey(builder.FontFilePath))
+                {
+                    var font = new Font(builder.FontFilePath, builder.FontSize);
+                    _textureProvider.AddTexture(font);
+
+                    _fontByPath.Add(builder.FontFilePath, font);
+                }
+            }
         }
 
         protected override void LoadComponents()
@@ -122,35 +143,17 @@ namespace SpiceEngine.UserInterfaces
                             _childIDSetByID.Add(id, childID);
                         }
                     }
+                }
 
-                    /*var parentEntity = _entityProvider.GetEntity(componentAndID.Item2) as IParentEntity;
-
-                    foreach (var childID in parentEntity.ChildIDs)
-                    {
-                        _childIDSetByID.Add(componentAndID.Item2, childID);
-                    }
-
-                    parentEntity.ChildrenAdded += (s, args) => _childIDSetByID.AddRange(componentAndID.Item2, args.IDs);
-                    parentEntity.ChildrenRemoved += (s, args) =>
-                    {
-                        foreach (var id in args.IDs)
-                        {
-                            _childIDSetByID.Remove(componentAndID.Item2, id);
-                        }
-                    };*/
+                if (element is Label label)
+                {
+                    var fontPath = _fontPathByID[id];
+                    label.Font = _fontByPath[fontPath];
                 }
 
                 element.LayoutChanged += (s, args) =>
                 {
                     // TODO - Handle omitting views that are not visible or have measurement dimensions of zero
-                    /*if (element.IsVisible && element.Measurement.Width > 0 && element.Measurement.Height > 0)
-                    {
-                        if (_drawableIDs.Contains(id))
-                        {
-
-                        }
-                    }*/
-
                     _changedIDs.Add(id);
                 };
 
@@ -184,6 +187,7 @@ namespace SpiceEngine.UserInterfaces
             _horizontalDockNamesByID.Clear();
             _verticalDockNamesByID.Clear();
             _childNamesByID.Clear();
+            _fontPathByID.Clear();
         }
 
         private IElement GetElementByName(string entityName)

@@ -129,10 +129,7 @@ namespace StarchUICore
             }
         }
 
-        public void InvokeLayoutChange()
-        {
-            LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
-        }
+        public virtual void InvokeLayoutChange() => LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
 
         public void Measure(MeasuredSize availableSize)
         {

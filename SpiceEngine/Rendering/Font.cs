@@ -1,6 +1,6 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Rendering.Textures;
-using StarchUICore.Text;
+using SpiceEngineCore.UserInterfaces;
 using SweetGraphicsCore.Rendering.Textures;
 using System;
 //using System.Drawing;
@@ -11,6 +11,14 @@ namespace SpiceEngine.Rendering
 {
     public class Font : IFont
     {
+        // For now, we are treating all fonts as monospaced
+        public const int DEFAULT_GLYPHS_PER_LINE = 16;
+        public const int DEFAULT_GLYPH_LINE_COUNT = 16;
+        public const int DEFAULT_GLYPH_WIDTH = 24;
+        public const int DEFAULT_GLYPH_HEIGHT = 32;
+        public const int DEFAULT_X_SPACING = 4;
+        public const int DEFAULT_Y_SPACING = 5;
+
         public Font(string filePath, int size)
         {
             using (var fontCollection = new System.Drawing.Text.PrivateFontCollection())
@@ -31,13 +39,13 @@ namespace SpiceEngine.Rendering
         public string Path { get; }
         public int Size { get; }
 
-        public int GlyphsPerLine { get; set; } = FontManager.GLYPHS_PER_LINE;
-        public int GlyphLineCount { get; set; } = FontManager.GLYPH_LINE_COUNT;
-        public int GlyphWidth { get; set; } = FontManager.GLYPH_WIDTH;
-        public int GlyphHeight { get; set; } = FontManager.GLYPH_HEIGHT;
+        public int GlyphsPerLine { get; set; } = DEFAULT_GLYPHS_PER_LINE;
+        public int GlyphLineCount { get; set; } = DEFAULT_GLYPH_LINE_COUNT;
+        public int GlyphWidth { get; set; } = DEFAULT_GLYPH_WIDTH;
+        public int GlyphHeight { get; set; } = DEFAULT_GLYPH_HEIGHT;
 
-        public int XSpacing { get; set; } = FontManager.X_SPACING;
-        public int YSpacing { get; set; } = FontManager.Y_SPACING;
+        public int XSpacing { get; set; } = DEFAULT_X_SPACING;
+        public int YSpacing { get; set; } = DEFAULT_Y_SPACING;
 
         public ITexture Texture { get; private set; }
 
@@ -80,7 +88,7 @@ namespace SpiceEngine.Rendering
         {
             var data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(bitmap.Width, bitmap.Height, 1)
+            var texture = new Texture(bitmap.Width, bitmap.Height, 0)
             {
                 Target = TextureTarget.Texture2D,
                 MinFilter = minFilter,

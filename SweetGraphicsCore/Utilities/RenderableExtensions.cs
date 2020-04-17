@@ -17,6 +17,8 @@ namespace SweetGraphicsCore.Utilities
                     return RenderTypes.OpaqueBillboard;
                 case RenderTypes.OpaqueView:
                     return RenderTypes.OpaqueView;
+                case RenderTypes.OpaqueText:
+                    return RenderTypes.OpaqueText;
                 case RenderTypes.TransparentStatic:
                     return RenderTypes.OpaqueStatic;
                 case RenderTypes.TransparentAnimated:
@@ -24,7 +26,9 @@ namespace SweetGraphicsCore.Utilities
                 case RenderTypes.TransparentBillboard:
                     return RenderTypes.OpaqueBillboard;
                 case RenderTypes.TransparentView:
-                    return RenderTypes.TransparentView;
+                    return RenderTypes.OpaqueView;
+                case RenderTypes.TransparentText:
+                    return RenderTypes.OpaqueText;
             }
 
             throw new ArgumentOutOfRangeException("Could not handle render type " + renderType);
@@ -42,6 +46,8 @@ namespace SweetGraphicsCore.Utilities
                     return RenderTypes.TransparentBillboard;
                 case RenderTypes.OpaqueView:
                     return RenderTypes.TransparentView;
+                case RenderTypes.OpaqueText:
+                    return RenderTypes.TransparentText;
                 case RenderTypes.TransparentStatic:
                     return RenderTypes.TransparentStatic;
                 case RenderTypes.TransparentAnimated:
@@ -50,6 +56,8 @@ namespace SweetGraphicsCore.Utilities
                     return RenderTypes.TransparentBillboard;
                 case RenderTypes.TransparentView:
                     return RenderTypes.TransparentView;
+                case RenderTypes.TransparentText:
+                    return RenderTypes.TransparentText;
             }
 
             throw new ArgumentOutOfRangeException("Could not handle render type " + renderType);

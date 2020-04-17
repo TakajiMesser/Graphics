@@ -1,7 +1,9 @@
 ﻿using OpenTK.Graphics;
 using SpiceEngine.Helpers;
+using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.UserInterfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -33,8 +35,44 @@ namespace SpiceEngine.Rendering.Textures
             {
                 var index = _textures.Count;
                 _textures.Add(texture);
+
+                Invoker?.RunSync(() =>
+                {
+                    var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
+                        + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
+                        + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
+
+                    TextureHelper.SaveToFile(filePath, texture);
+                });
+
                 return index;
             }
+        }
+
+        public int AddTexture(IFont font)
+        {
+            if (Invoker != null)
+            {
+                Invoker.RunSync(() =>
+                {
+                    font.LoadTexture();
+
+                    var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
+                        + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
+                        + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
+
+                    TextureHelper.SaveToFile(filePath, font.Texture);
+                });
+
+                lock (_textureLock)
+                {
+                    var index = _textures.Count;
+                    _textures.Add(font.Texture);
+                    return index;
+                }
+            }
+
+            return -1;
         }
 
         public int AddTexture(string texturePath)
