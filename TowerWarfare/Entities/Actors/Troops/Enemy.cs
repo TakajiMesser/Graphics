@@ -7,7 +7,7 @@ using SweetGraphicsCore.Rendering.Models;
 using SweetGraphicsCore.Vertices;
 using System.Linq;
 
-namespace TowerWarfare.Entities.Actors.Towers
+namespace TowerWarfare.Entities.Actors.Troops
 {
     public abstract class Enemy : MapActor
     {
@@ -21,10 +21,11 @@ namespace TowerWarfare.Entities.Actors.Towers
             ModelFilePath = Helpers.FilePathHelper.BOB_LAMP_MESH_PATH;
 
             IsPhysical = true;
+            
             Color = GetColor();
 
             Behavior = MapBehavior.Load(Helpers.FilePathHelper.ENEMY_PATROL_BEHAVIOR_PATH);
-            BuildShape();
+            //BuildShape();
         }
 
         protected abstract ModelMesh GetShape();// => ModelMesh.Box(2.0f, 2.0f, 2.0f);

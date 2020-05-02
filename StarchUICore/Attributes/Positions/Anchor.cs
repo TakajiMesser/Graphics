@@ -34,7 +34,11 @@ namespace StarchUICore.Attributes.Positions
 
             if (anchorRelativeX.HasValue)
             {
-                desiredX += anchorRelativeX.Value;
+                if (anchorRelativeX > desiredX)
+                {
+                    desiredX = anchorRelativeX.Value;
+                }
+                //desiredX += anchorRelativeX.Value;
 
                 var leftX = 0;
                 var rightX = 0;
@@ -77,7 +81,11 @@ namespace StarchUICore.Attributes.Positions
 
             if (anchorRelativeY.HasValue)
             {
-                desiredY += anchorRelativeY.Value;
+                if (anchorRelativeY > desiredY)
+                {
+                    desiredY = anchorRelativeY.Value;
+                }
+                //desiredY += anchorRelativeY.Value;
 
                 var topY = 0;
                 var bottomY = 0;

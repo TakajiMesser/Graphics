@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using OpenTK.Graphics;
 using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Positions;
@@ -47,6 +48,8 @@ namespace StarchUICore.Views
             }
         }
 
+        public Color4 Color { get; set; } = Color4.White;
+
         public event EventHandler<TextEventArgs> TextChanged;
 
         protected override void OnLaidOut(LayoutInfo layoutInfo)
@@ -81,6 +84,10 @@ namespace StarchUICore.Views
                 {
                     var charactersPerLine = width.Value / _font.GlyphWidth;
                     width = (charactersPerLine * _font.GlyphWidth).ClampTop(width.Value);
+                }
+                else
+                {
+                    width = textWidth;
                 }
             }
 

@@ -7,6 +7,45 @@ namespace StarchUICore.Groups
 {
     public class RowGroup : Group
     {
+        /*
+            Layout Steps
+                
+                We need to greatly simplify or modularize this layout algorithm for Groups + Views. It is clearly far too unruly at the moment...
+
+            Element
+
+                Calculate self Width/Height
+
+                    First, check the HorizontalDock for our ReferenceWidth
+                        If there is no relative element, this is the parent width
+                        If there is, it is the relative element's width
+                    Second, determine from the Size what Width we want
+                        We MIGHT need to use the ReferenceWidth for this
+                        If there is a MinimumWidth, apply it
+                        If there is a MaximumWidth, apply it
+
+                Calculate self RelativeX/RelativeY
+
+                    First, check the HorizontalAnchor for our AnchoredWidth
+                        If there is no relative element, this is the parent width
+                        If there is, it is the relative element's width
+                    Second, determine from the Position what X we want
+                        We MIGHT need to use the ReferenceWidth for this
+                        If there is a MinimumX, apply it
+                        If there is a MaximumX, apply it
+                
+                Calculate self AbsoluteX/AbsoluteY
+
+                    Just take the RelativeX and offset it by the parent's absolute X
+
+            Now we have [Width, Height, X, Y]
+            HOWEVER, these values might change!
+            Here are the scenarios:
+                
+                
+
+        */
+
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
             var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
@@ -17,6 +56,8 @@ namespace StarchUICore.Groups
 
             var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
             var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
+
+            Log(width, height, relativeX, relativeY, absoluteX, absoluteY);
 
             if (width.HasValue && height.HasValue && absoluteX.HasValue && absoluteY.HasValue)
             {
@@ -32,6 +73,7 @@ namespace StarchUICore.Groups
                 for (var i = 0; i < ChildCount; i++)
                 {
                     var child = GetChildAt(i);
+                    child.TabCount = TabCount + 1;
 
                     var childLayout = new LayoutInfo(remainingWidth, remainingHeight, width.Value, height.Value, currentRelativeX, currentRelativeY, absoluteX.Value, absoluteY.Value);
                     child.Layout(childLayout);
@@ -64,19 +106,25 @@ namespace StarchUICore.Groups
                     }
                 }
 
+                var widthChange = 0;
+                var heightChange = 0;
+                var xChange = 0;
+                var yChange = 0;
+
                 // TODO - Also need to handle AUTO Position units here...
                 // If this RowGroup is meant to fit its content, then we should correct the width here
                 if (Size.Width is AutoUnits)
                 {
-                    width -= remainingWidth;
+                    widthChange = -remainingWidth;
+                    width += widthChange;
                 }
 
                 // If the RowGroup is meant to fit its content, we want to determine how much "extra" height we should shave off
                 // due to the smallest child height being less than what we expected (remainingHeight)
                 if (Size.Height is AutoUnits)
                 {
-                    var yDifference = (remainingHeight - largestChildHeight).ClampBottom(0);
-                    height -= yDifference;
+                    heightChange = -(remainingHeight - largestChildHeight).ClampBottom(0);
+                    height += heightChange;
                 }
 
                 // Now that we have measured all of the children as well, reapply the necessary size constraints
@@ -96,15 +144,7 @@ namespace StarchUICore.Groups
                     var anchoredX = HorizontalAnchor.GetAnchorX(relativeX.Value, width.Value, layoutInfo.RelativeX, layoutInfo.RelativeX + layoutInfo.AvailableWidth, layoutInfo.ParentWidth, layoutInfo.ParentAbsoluteX);
                     //absoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
                     var newAbsoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
-                    var absoluteXDifference = newAbsoluteX - absoluteX;
-
-                    // TODO - This is terrible... but for now, REPOSITION all children (Maybe this should be done via child event subscribing?
-                    foreach (var child in Children)
-                    {
-                        child.Location.SetValue(child.Location.X + absoluteXDifference.Value, child.Location.Y);
-                        child.InvokeLayoutChange();
-                    }
-
+                    xChange = newAbsoluteX.Value - absoluteX.Value;
                     absoluteX = newAbsoluteX;
                 }
 
@@ -113,22 +153,35 @@ namespace StarchUICore.Groups
                     var anchoredY = VerticalAnchor.GetAnchorY(relativeY.Value, height.Value, layoutInfo.RelativeY, layoutInfo.RelativeY + layoutInfo.AvailableHeight, layoutInfo.ParentHeight, layoutInfo.ParentAbsoluteY);
                     //absoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
                     var newAbsoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
-                    var absoluteYDifference = newAbsoluteY - absoluteY;
+                    yChange = newAbsoluteY.Value - absoluteY.Value;
 
                     // TODO - This is terrible... but for now, REPOSITION all children (Maybe this should be done via child event subscribing?
-                    foreach (var child in Children)
+                    /*foreach (var child in Children)
                     {
                         // TODO - Refactor layout process so that child reports RELATIVE position to parent, who then assigns the child its absolute position
                         // If this child based its position off of the size of its parent, then we need to reanchor its Y position now
-                        var newChildY = /*!(child.Position.Y is AutoUnits) && */child.VerticalAnchor.RelativeElement == null
+                        var newChildY = /*!(child.Position.Y is AutoUnits) && *child.VerticalAnchor.RelativeElement == null
                             ? newAbsoluteY + child.VerticalAnchor.GetAnchorY(0, child.Measurement.Height, 0, height.Value, height.Value, newAbsoluteY.Value).Value
                             : child.Location.Y + absoluteYDifference.Value;
 
                         child.Location.SetValue(child.Location.X, newChildY.Value);
                         child.InvokeLayoutChange();
-                    }
+                    }*/
 
                     absoluteY = newAbsoluteY;
+                }
+
+                // TODO - This is terrible... but for now, REPOSITION all children (Maybe this should be done via child event subscribing?
+                foreach (var child in Children)
+                {
+                    if (child is Group)
+                    {
+                        child.ApplyCorrections(widthChange, heightChange, xChange, yChange);
+                    }
+                    else
+                    {
+                        child.ApplyCorrections(widthChange, heightChange, xChange, yChange);
+                    }
                 }
 
                 return new LayoutResult(absoluteX, absoluteY, width, height);

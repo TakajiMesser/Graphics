@@ -91,17 +91,22 @@ namespace SpiceEngineCore.Maps
             }
             else
             {
+                // TODO - Determine if Actor's should always be Models, or if they can also just be singular Meshes...
+                var model = new Model();
+
                 if (TexturesPaths.Any())
                 {
-                    return new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices, TriangleIndices))
+                    model.Add(new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices, TriangleIndices))
                     {
                         Material = Material
-                    };
+                    });
                 }
                 else
                 {
-                    return new ColoredMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices.Select(v => (Vertex3D)v.Colored(Color)).ToList(), TriangleIndices));
+                    model.Add(new ColoredMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices.Select(v => (Vertex3D)v.Colored(Color)).ToList(), TriangleIndices)));
                 }
+
+                return model;
             }
         }
 
@@ -134,7 +139,7 @@ namespace SpiceEngineCore.Maps
                             * Quaternion.FromEulerAngles(Rotation.ToRadians()))
                             * new Vector4(v, 1.0f)).Xyz);
 
-                    if (Name == "Player")
+                    if (Name == "Player"/* || Name == "BasicEnemy"*/)
                     {
                         return new Sphere(vertices);
                     }

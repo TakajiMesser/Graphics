@@ -10,6 +10,7 @@ namespace StarchUICore
     public interface IElement : IUIElement, IRenderable
     {
         string Name { get; set; }
+        int TabCount { get; set; }
         IElement Parent { get; set; }
 
         Position Position { get; set; }
@@ -36,6 +37,7 @@ namespace StarchUICore
         void Measure(MeasuredSize availableSize);
         void Locate(LocatedPosition availablePosition);
 
+        void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange);
         void InvokeLayoutChange();
     }
 }

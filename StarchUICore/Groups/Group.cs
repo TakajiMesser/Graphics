@@ -131,6 +131,16 @@ namespace StarchUICore.Groups
             // Then, go through children and draw each one based on their previously measured sizes
         }
 
+        public override void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange)
+        {
+            foreach (var child in Children)
+            {
+                child.ApplyCorrections(widthChange, heightChange, xChange, yChange);
+            }
+
+            base.ApplyCorrections(widthChange, heightChange, xChange, yChange);
+        }
+
         public abstract IGroup Duplicate();
     }
 }

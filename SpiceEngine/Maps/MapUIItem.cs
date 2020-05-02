@@ -33,6 +33,7 @@ namespace SpiceEngine.Maps
         View,
         RowGroup,
         ColumnGroup,
+        LayerGroup,
         Button,
         Label,
         Panel
@@ -181,6 +182,10 @@ namespace SpiceEngine.Maps
                     var columnGroup = new ColumnGroup();
                     ApplyValues(columnGroup);
                     return columnGroup;
+                case UITypes.LayerGroup:
+                    var layerGroup = new LayerGroup();
+                    ApplyValues(layerGroup);
+                    return layerGroup;
                 case UITypes.Button:
                     var button = new Button();
                     ApplyValues(button);
@@ -231,6 +236,7 @@ namespace SpiceEngine.Maps
             if (element is Label textView)
             {
                 textView.Text = "Blarg";
+                textView.Color = Color4.Black;
                 //textView.Font = ;
             }
         }

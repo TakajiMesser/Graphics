@@ -179,7 +179,7 @@ namespace SpiceEngine.Rendering
                 {
                     if (builder is ITexturePather texturePather)
                     {
-                        if (builder is IModelPather modelPather)
+                        if (builder is IModelPather modelPather && !string.IsNullOrEmpty(modelPather.ModelFilePath))
                         {
                             using (var importer = new Assimp.AssimpContext())
                             {

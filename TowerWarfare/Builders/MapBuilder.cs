@@ -8,6 +8,7 @@ using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 using TowerWarfare.Entities.Actors.Towers;
+using TowerWarfare.Entities.Actors.Troops;
 using TowerWarfare.Entities.Cameras;
 using static SpiceEngineCore.Maps.MapLight;
 
@@ -48,14 +49,23 @@ namespace TowerWarfare.Builders
         {
             //yield return new Player();
             //yield return new Enemy();
-            yield return new BasicTower(new Vector3(0.0f, 0.0f, 5.0f));
+            yield return new BasicTower(new Vector3(0.0f, 5.0f, 5.0f), "BasicTower");
+            yield return new BasicTower(new Vector3(0.0f, -5.0f, 5.0f), "BasicTower");
+            yield return new BasicTower(new Vector3(-5.0f, 0.0f, 5.0f), "BasicTower");
+
+            yield return new BasicEnemy(new Vector3(0.0f, 10.0f, 5.0f));
 
             //yield return new BasicEnemy(new Vector3(10.0f, 10.0f, 5.0f));
         }
 
+        private static MapBrush GenerateTile()
+        {
+
+        }
+
         private static IEnumerable<MapBrush> GenerateBrushes()
         {
-            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 500.0f, 500.0f);
+            var floor = MapBrush.Rectangle(new Vector3(0.0f, 0.0f, -1.5f), 100.0f, 100.0f);
             floor.IsPhysical = true;
             //floor = MapBrush.Box(new Vector3(0.0f, 0.0f, -2.5f), 50.0f, 50.0f, 1.0f);
             //floor.TextureFilePath = FilePathHelper.GRASS_TEXTURE_PATH;
@@ -78,7 +88,6 @@ namespace TowerWarfare.Builders
                 }*/
             };
             yield return wall;
-
 
             var wallShape2 = ModelMesh.Box(5.0f, 10.0f, 5.0f);
             wallShape2.UVMap = UVMap.Standard.Scaled(new Vector2(2.0f, 2.0f));
@@ -132,7 +141,7 @@ namespace TowerWarfare.Builders
 
         private static IEnumerable<MapVolume> GenerateVolumes()
         {
-            var physicsVolume = MapVolume.Box(Vector3.Zero, 20.0f, 20.0f, 20.0f);
+            var physicsVolume = MapVolume.Box(Vector3.Zero, 100.0f, 100.0f, 100.0f);
             physicsVolume.VolumeType = MapVolume.VolumeTypes.Physics;
             physicsVolume.Gravity = -0.3f * Vector3.UnitZ;
             yield return physicsVolume;
@@ -175,7 +184,7 @@ namespace TowerWarfare.Builders
                 HorizontalAnchorRelativeType = AnchorTypes.Start,
                 VerticalAnchorSelfType = AnchorTypes.Start,
                 VerticalAnchorRelativeType = AnchorTypes.Start,
-                ChildElementNames = new List<string> { "View 2A", "Button 2B", "Label 2C" },
+                ChildElementNames = new List<string> { "View 2A", "LayerGroup 2B" },
                 PaddingLeft = "20",
                 PaddingTop = "20",
                 PaddingRight = "20",
@@ -205,7 +214,26 @@ namespace TowerWarfare.Builders
 
             yield return new MapUIItem()
             {
-                Name = "Button 2B",
+                Name = "LayerGroup 2B",
+                UIType = UITypes.LayerGroup,
+                X = "Auto",
+                Y = "Auto",
+                Width = "Auto",
+                Height = "Auto",
+                HorizontalAnchorSelfType = AnchorTypes.Start,
+                HorizontalAnchorRelativeType = AnchorTypes.Start,
+                VerticalAnchorSelfType = AnchorTypes.Center,
+                VerticalAnchorRelativeType = AnchorTypes.Center,
+                ChildElementNames = new List<string> { "Button 3A", "Label 3B" },
+                PaddingLeft = "10",
+                PaddingTop = "10",
+                PaddingRight = "10",
+                PaddingBottom = "10"
+            };
+
+            yield return new MapUIItem()
+            {
+                Name = "Button 3A",
                 UIType = UITypes.Button,
                 X = "Auto",
                 Y = "Auto",
@@ -231,19 +259,19 @@ namespace TowerWarfare.Builders
 
             yield return new MapUIItem()
             {
-                Name = "Label 2C",
+                Name = "Label 3B",
                 UIType = UITypes.Label,
                 X = "Auto",
                 Y = "Auto",
                 Width = "Auto",
                 Height = "Auto",
-                HorizontalAnchorSelfType = AnchorTypes.Start,
-                HorizontalAnchorRelativeType = AnchorTypes.Start,
+                HorizontalAnchorSelfType = AnchorTypes.Center,
+                HorizontalAnchorRelativeType = AnchorTypes.Center,
                 VerticalAnchorSelfType = AnchorTypes.Center,
                 VerticalAnchorRelativeType = AnchorTypes.Center,
                 DoesHorizontalAnchorRespectChanges = true,
                 DoesVerticalAnchorRespectChanges = true,
-                Color = Color4.LightCyan,
+                Color = Color4.Black,
                 FontFilePath = TextRenderer.FONT_PATH,
                 FontSize = 14
             };

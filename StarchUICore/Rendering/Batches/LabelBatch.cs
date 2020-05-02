@@ -139,6 +139,7 @@ namespace StarchUICore.Rendering.Batches
             entity.WorldMatrix.Set(shaderProgram);
 
             shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
+            shaderProgram.SetUniform("color", _renderable.Color);
         }
     }
 }

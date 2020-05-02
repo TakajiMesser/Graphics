@@ -60,12 +60,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Builders\BehaviorBuilder.cs" />
+    <Compile Include="Builders\TileGridBuilder.cs" />
     <Compile Include="Builders\MapBuilder.cs" />
     <Compile Include="Builders\ProjectBuilder.cs" />
     <Compile Include="Entities\Actors\Towers\BasicTower.cs" />
-    <Compile Include="Entities\Actors\Towers\BasicEnemy.cs" />
-    <Compile Include="Entities\Actors\Towers\Enemy.cs" />
+    <Compile Include="Entities\Actors\Troops\BasicEnemy.cs" />
+    <Compile Include="Entities\Actors\Troops\Enemy.cs" />
     <Compile Include="Entities\Actors\Towers\Tower.cs" />
+    <Compile Include="Entities\Brushes\Tile.cs" />
     <Compile Include="Entities\Cameras\Camera.cs" />
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Program.cs" />

@@ -193,13 +193,11 @@ namespace SpiceEngineCore.Entities
                 if (entity is INamedEntity namedEntity)
                 {
                     if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
-                    if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
-
-                    var a = 3;
-                    if (entity is IUIItem)
+                    /*if (_entitiesByName.ContainsKey(namedEntity.Name))
                     {
-                        a = 4;
-                    }
+                        var uniqueName = GetUniqueName(namedEntity.Name);
+                        namedEntity.Name = uniqueName;
+                    }*/
 
                     _namedEntityQueue.Enqueue(namedEntity);
                 }
@@ -217,10 +215,9 @@ namespace SpiceEngineCore.Entities
         {
             while (_namedEntityQueue.TryDequeue(out INamedEntity namedEntity))
             {
-                var a = 3;
-                if (namedEntity is IUIItem)
+                if (_entitiesByName.ContainsKey(namedEntity.Name))
                 {
-                    a = 4;
+                    namedEntity.Name = GetUniqueName(namedEntity.Name);
                 }
 
                 _entitiesByName.Add(namedEntity.Name, namedEntity);
@@ -268,7 +265,11 @@ namespace SpiceEngineCore.Entities
             if (entity is INamedEntity namedEntity)
             {
                 if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
-                if (_entitiesByName.ContainsKey(namedEntity.Name)) throw new ArgumentException("Named entities must have a unique name");
+                if (_entitiesByName.ContainsKey(namedEntity.Name))
+                {
+                    var uniqueName = GetUniqueName(namedEntity.Name);
+                    namedEntity.Name = uniqueName;
+                }
 
                 _namedEntityQueue.Enqueue(namedEntity);
             }

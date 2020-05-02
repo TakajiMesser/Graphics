@@ -18,6 +18,8 @@ namespace StarchUICore.Groups
             var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
             var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
 
+            Log(width, height, relativeX, relativeY, absoluteX, absoluteY);
+
             if (width.HasValue && height.HasValue && absoluteX.HasValue && absoluteY.HasValue)
             {
                 var remainingWidth = width.Value - Padding.GetWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
@@ -32,6 +34,7 @@ namespace StarchUICore.Groups
                 for (var i = 0; i < ChildCount; i++)
                 {
                     var child = GetChildAt(i);
+                    child.TabCount = TabCount + 1;
 
                     var childLayout = new LayoutInfo(remainingWidth, remainingHeight, width.Value, height.Value, currentRelativeX, currentRelativeY, absoluteX.Value, absoluteY.Value);
                     child.Layout(childLayout);
@@ -56,15 +59,21 @@ namespace StarchUICore.Groups
                     }
                 }
 
+                var widthChange = 0;
+                var heightChange = 0;
+                var xChange = 0;
+                var yChange = 0;
+
                 if (Size.Width is AutoUnits)
                 {
-                    var xDifference = (remainingWidth - largestChildWidth).ClampBottom(0);
-                    width -= xDifference;
+                    widthChange = -(remainingWidth - largestChildWidth).ClampBottom(0);
+                    width += widthChange;
                 }
 
                 if (Size.Height is AutoUnits)
                 {
-                    height -= remainingHeight;
+                    heightChange = -remainingHeight;
+                    height += heightChange;
                 }
 
                 if (!(Size.MinimumWidth is AutoUnits))
@@ -81,14 +90,7 @@ namespace StarchUICore.Groups
                 {
                     var anchoredX = HorizontalAnchor.GetAnchorX(relativeX.Value, width.Value, layoutInfo.RelativeX, layoutInfo.RelativeX + layoutInfo.AvailableWidth, layoutInfo.ParentWidth, layoutInfo.ParentAbsoluteX);
                     var newAbsoluteX = anchoredX.HasValue ? layoutInfo.ParentAbsoluteX + anchoredX.Value : absoluteX;
-                    var absoluteXDifference = newAbsoluteX - absoluteX;
-
-                    foreach (var child in Children)
-                    {
-                        child.Location.SetValue(child.Location.X + absoluteXDifference.Value, child.Location.Y);
-                        child.InvokeLayoutChange();
-                    }
-
+                    xChange = newAbsoluteX.Value - absoluteX.Value;
                     absoluteX = newAbsoluteX;
                 }
 
@@ -96,15 +98,14 @@ namespace StarchUICore.Groups
                 {
                     var anchoredY = VerticalAnchor.GetAnchorY(relativeY.Value, height.Value, layoutInfo.RelativeY, layoutInfo.RelativeY + layoutInfo.AvailableHeight, layoutInfo.ParentHeight, layoutInfo.ParentAbsoluteY);
                     var newAbsoluteY = anchoredY.HasValue ? layoutInfo.ParentAbsoluteY + anchoredY.Value : absoluteY;
-                    var absoluteYDifference = newAbsoluteY - absoluteY;
-
-                    foreach (var child in Children)
-                    {
-                        child.Location.SetValue(child.Location.X, child.Location.Y + absoluteYDifference.Value);
-                        child.InvokeLayoutChange();
-                    }
-
+                    yChange = newAbsoluteY.Value - absoluteY.Value;
                     absoluteY = newAbsoluteY;
+                }
+
+                // TODO - This is terrible... but for now, REPOSITION all children (Maybe this should be done via child event subscribing?
+                foreach (var child in Children)
+                {
+                    child.ApplyCorrections(widthChange, heightChange, xChange, yChange);
                 }
 
                 return new LayoutResult(absoluteX, absoluteY, width, height);

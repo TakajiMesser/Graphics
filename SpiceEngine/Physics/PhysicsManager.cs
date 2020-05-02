@@ -1,4 +1,8 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Collisions;
+using SavoryPhysicsCore.Constraints;
+using SavoryPhysicsCore.Shapes;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
@@ -9,10 +13,6 @@ using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SavoryPhysicsCore.Bodies;
-using SavoryPhysicsCore.Collisions;
-using SavoryPhysicsCore.Constraints;
-using SavoryPhysicsCore.Shapes;
 
 namespace SpiceEngine.Physics
 {
@@ -146,13 +146,13 @@ namespace SpiceEngine.Physics
 
             switch (entity)
             {
-                case IActor actor:
+                case IActor _:
                     return _actorTree;
-                case IBrush brush:
+                case IBrush _:
                     return _brushTree;
-                case IVolume volume:
+                case IVolume _:
                     return _volumeTree;
-                case ILight light:
+                case ILight _:
                     return _lightTree;
             }
 
@@ -342,6 +342,15 @@ namespace SpiceEngine.Physics
                 // Only resolve the penetration constraint if both bodies are physical. Resolve by determining and applying impulses to each body
                 if (collision.FirstBody.IsPhysical && collision.SecondBody.IsPhysical)
                 {
+                    var entityA = _entityProvider.GetEntity(collision.FirstBody.EntityID);
+                    var entityB = _entityProvider.GetEntity(collision.SecondBody.EntityID);
+
+                    var a = 3;
+                    if (entityA is Actor actorA && entityB is Actor actorB && (actorA.Name == "BasicTower03" || actorB.Name == "BasicTower03"))
+                    {
+                        a = 4;
+                    }
+
                     PenetrationConstraint.Resolve(collision);
                 }
 
@@ -401,6 +410,14 @@ namespace SpiceEngine.Physics
 
             foreach (var body in _bodiesToUpdate)
             {
+                var a = 3;
+                if (_entityProvider.GetEntity(body.EntityID) is INamedEntity namedEntity
+                    && namedEntity.Name == "BasicTower03"
+                    && namedEntity.Position.Y >= 8.0f)
+                {
+                    a = 4;
+                }
+
                 body.Update(tickRate);
             }
 
