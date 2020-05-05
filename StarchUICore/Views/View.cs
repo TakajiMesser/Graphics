@@ -1,8 +1,5 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using SpiceEngineCore.Helpers;
-using StarchUICore.Attributes.Positions;
-using StarchUICore.Attributes.Sizes;
+﻿using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Units;
 using StarchUICore.Layers;
 using System;
 
@@ -16,35 +13,72 @@ namespace StarchUICore.Views
         public override void Load() { }
         public override void Draw() { }
 
-        /*
-            For this View, we have a number of considerations...
-            
-            Location
+        protected override int GetMeasuredWidth(LayoutInfo layoutInfo)
+        {
+            var dockWidth = HorizontalDock.GetReferenceWidth(layoutInfo);
+            var constrainedWidth = Size.Width.ToDimensionPixels(layoutInfo.AvailableValue, dockWidth);
 
-                Position    - Desired XY relative to Anchor (Auto: IGNORE Anchor and accept parent's suggestion)
-                MinPosition - HARD minimum XY relative to Anchor (Auto: No Minimum)
-                MaxPosition - HARD maximum XY relative to Anchor (Auto: No Maximum)
+            constrainedWidth = Size.MinimumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
+            constrainedWidth = Size.MaximumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
 
-            Measurement
+            return constrainedWidth;
+        }
 
-                Size        - Desired Size relative to Dock (Auto: IGNORE Dock and size to fit content)
-                MinSize     - HARD minimum size relative to Dock (Auto: No Minimum)
-                MaxSize     - HARD maximum size relative to Dock (Auto: No Maximum)
-             
-            The parent Group will attempt to honor the Position/Size that the child desires, but makes no guarantees
-            HOWEVER, the MinMax constraints are HARD requirements
+        protected override int GetMeasuredHeight(LayoutInfo layoutInfo)
+        {
+            var dockHeight = VerticalDock.GetReferenceHeight(layoutInfo);
+            var constrainedHeight = Size.Height.ToDimensionPixels(layoutInfo.AvailableValue, dockHeight);
 
-            RowGroup
+            constrainedHeight = Size.MinimumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
+            constrainedHeight = Size.MaximumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
 
-                - Because RowGroup could have size dependent on its own parent OR sized to fit its children, 
-                  we aren't positive that we have 
-             
-        */
+            return constrainedHeight;
+        }
+
+        protected override int GetRelativeX(LayoutInfo layoutInfo)
+        {
+            var anchorWidth = HorizontalAnchor.GetReferenceWidth(layoutInfo);
+
+            // Apply our Position attribute to achieve this element's desired X
+            var relativeX = Position.X.ToOffsetPixels(layoutInfo.AvailableValue, anchorWidth);
+
+            // Pass this desired relative X back to the Anchor to reposition it appropriately
+            if (!(Position.X is AutoUnits))
+            {
+                relativeX = HorizontalAnchor.GetAnchorX(relativeX, Measurement, layoutInfo);
+            }
+
+            // Apply the Minimum and Maximum constraints last, as these are HARD requirements
+            relativeX = Position.MinimumX.ConstrainAsMinimum(relativeX, anchorWidth);
+            relativeX = Position.MaximumX.ConstrainAsMaximum(relativeX, anchorWidth);
+
+            return relativeX;
+        }
+
+        protected override int GetRelativeY(LayoutInfo layoutInfo)
+        {
+            var anchorHeight = VerticalAnchor.GetReferenceHeight(layoutInfo);
+
+            // Apply our Position attribute to achieve this element's desired Y
+            var relativeY = Position.Y.ToOffsetPixels(layoutInfo.AvailableValue, anchorHeight);
+
+            // Pass this desired relative Y back to the Anchor to reposition it appropriately
+            if (!(Position.Y is AutoUnits))
+            {
+                relativeY = VerticalAnchor.GetAnchorY(relativeY, Measurement, layoutInfo);
+            }
+
+            // Apply the Minimum and Maximum constraints last, as these are HARD requirements
+            relativeY = Position.MinimumY.ConstrainAsMinimum(relativeY, anchorHeight);
+            relativeY = Position.MaximumY.ConstrainAsMaximum(relativeY, anchorHeight);
+
+            return relativeY;
+        }
 
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
-            var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
-            var height = GetMeasuredHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
+            /*var width = GetMeasuredWidth(layoutInfo.AvailableWidth);
+            var height = GetMeasuredHeight(layoutInfo.AvailableHeight);
 
             var relativeX = GetRelativeX(layoutInfo.RelativeX, layoutInfo.ParentAbsoluteX, layoutInfo.AvailableWidth, layoutInfo.ParentWidth, width);
             var relativeY = GetRelativeY(layoutInfo.RelativeY, layoutInfo.ParentAbsoluteY, layoutInfo.AvailableHeight, layoutInfo.ParentHeight, height);
@@ -52,33 +86,9 @@ namespace StarchUICore.Views
             var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
             var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
 
-            return new LayoutResult(absoluteX, absoluteY, width, height);
+            return new LayoutResult(absoluteX, absoluteY, width, height);*/
+            return LayoutResult.Empty();
         }
-
-        protected override MeasuredSize OnMeasure(MeasuredSize availableSize)
-        {
-            /*var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
-            var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
-
-            return new MeasuredSize(width, height);*/
-            return new MeasuredSize();
-        }
-
-        protected override LocatedPosition OnLocate(LocatedPosition availablePosition)
-        {
-            throw new NotImplementedException();
-        }
-
-        /*protected override LocatedPosition OnLocate(LayoutInfo layoutInfo)
-        {
-            var relativeX = Position.X.GetValue(layoutInfo.Size.ContainingWidth);
-            var relativeY = Position.Y.GetValue(layoutInfo.Size.ContainingHeight);
-
-            var absoluteX = layoutInfo.Position.AbsoluteX + relativeX;
-            var absoluteY = layoutInfo.Position.AbsoluteY + relativeY;
-
-            return new LocatedPosition(absoluteX, absoluteY);
-        }*/
 
         public override void Update(int nTicks)
         {
@@ -86,18 +96,6 @@ namespace StarchUICore.Views
             {
 
             }
-        }
-
-        protected override void OnMeasured(LayoutInfo layoutInfo)
-        {
-            /*// Now that we have a new measurement for this view, we can add vertices for its drawable functionality!
-            var vertexSet = UIBuilder.Rectangle(Measurement.Width, Measurement.Height, new Color4(Background.Color.R, Background.Color.G, Background.Color.B, Alpha));
-
-            // TODO - Begin applying all the desired transformations to the vertex set (such as textures)
-            _vertexSet = vertexSet;
-            _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(_vertexSet.Vertices);
-            _indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);*/
         }
 
         protected override void OnLaidOut(LayoutInfo layoutInfo)

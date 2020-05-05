@@ -9,24 +9,16 @@ namespace StarchUICore.Attributes.Units
 
         public float Value { get; }
 
-        public int ToOffsetPixels(int nRelative = 0) => (int)Math.Ceiling(nRelative / 100 * Value);
+        public int ToOffsetPixels(int availableValue, int referenceValue = 0) =>
+            (int)Math.Ceiling(referenceValue / 100 * Value);
 
-        public int? ToOffsetPixels(int value, int? referenceValue) => referenceValue.HasValue
-            ? (int?)Math.Round(referenceValue.Value * Value)
-            : null;
-
-        public int? ConstrainAsMinimum(int value, int? referenceValue) => referenceValue.HasValue
-            ? (int?)value.ClampBottom((int)Math.Round(referenceValue.Value * Value))
-            : null;
-
-        public int? ConstrainAsMaximum(int value, int? referenceValue) => referenceValue.HasValue
-            ? (int?)value.ClampTop((int)Math.Round(referenceValue.Value * Value))
-            : null;
-
-        public int ToDimensionPixels(int nAvailable, int nRelative = 0)
+        public int ToDimensionPixels(int availableValue, int referenceValue = 0)
         {
-            var nPixels = ToOffsetPixels(nRelative);
-            return nPixels < nAvailable ? nPixels : nAvailable;
+            var nPixels = (int)Math.Ceiling(referenceValue / 100 * Value);
+            return nPixels < availableValue ? nPixels : availableValue;
         }
+
+        public int ConstrainAsMinimum(int availableValue, int referenceValue = 0) => availableValue.ClampBottom((int)Math.Round(referenceValue * Value));
+        public int ConstrainAsMaximum(int availableValue, int referenceValue = 0) => availableValue.ClampTop((int)Math.Round(referenceValue * Value));
     }
 }

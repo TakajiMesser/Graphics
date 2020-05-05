@@ -2,12 +2,11 @@
 {
     public interface IUnits
     {
-        int ToOffsetPixels(int nReference = 0);
-        int ToDimensionPixels(int nAvailable, int nReference = 0);
-
-        int? ToOffsetPixels(int value, int? referenceValue);
-        int? ConstrainAsMinimum(int value, int? referenceValue);
-        int? ConstrainAsMaximum(int value, int? referenceValue);
+        int ToOffsetPixels(int availableValue, int referenceValue = 0);
+        int ToDimensionPixels(int availableValue, int referenceValue = 0);
+        
+        int ConstrainAsMinimum(int availableValue, int referenceValue = 0);
+        int ConstrainAsMaximum(int availableValue, int referenceValue = 0);
 
         /* TODO - Determine all of the different ways that we use IUnits
         

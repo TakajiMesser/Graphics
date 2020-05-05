@@ -8,8 +8,8 @@ using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
-using StarchUICore.Attributes.Sizes;
 using StarchUICore.Groups;
+using StarchUICore.Helpers;
 using StarchUICore.Views;
 using System;
 using System.Collections.Generic;
@@ -20,6 +20,7 @@ namespace SpiceEngine.UserInterfaces
     // Stores all UIControls and determines the order that they should be drawn in
     public class UIManager : ComponentLoader<IUIElement, IUIElementBuilder>, IUIProvider
     {
+        private UITraverser _traverser;
         private ITextureProvider _textureProvider;
 
         private Resolution _resolution;
@@ -45,6 +46,7 @@ namespace SpiceEngine.UserInterfaces
         {
             SetEntityProvider(entityProvider);
             _resolution = resolution;
+            _traverser = new UITraverser(_resolution);
         }
 
         public void SetTextureProvider(ITextureProvider textureProvider) => _textureProvider = textureProvider;
@@ -174,6 +176,7 @@ namespace SpiceEngine.UserInterfaces
             foreach (var componentAndID in _componentsAndIDs)
             {
                 var element = componentAndID.Item1 as IElement;
+                element.EntityID = componentAndID.Item2;
 
                 // TODO - Do we want to allow more than one root UI element?
                 if (element.Parent == null)
@@ -298,7 +301,8 @@ namespace SpiceEngine.UserInterfaces
                 
             }*/
 
-            root?.Layout(new LayoutInfo(_resolution.Width, _resolution.Height, _resolution.Width, _resolution.Height, 0, 0, 0, 0));
+            _traverser.Traverse(root);
+            //root?.Layout(new LayoutInfo(_resolution.Width, _resolution.Height, _resolution.Width, _resolution.Height, 0, 0, 0, 0));
 
             // We don't want the UIBatches to handle reordering themselves. We'd rather reorder at most ONCE per layout cycle
             if (_changedIDs.Count > 0)

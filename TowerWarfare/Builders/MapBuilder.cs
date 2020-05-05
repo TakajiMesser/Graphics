@@ -60,7 +60,7 @@ namespace TowerWarfare.Builders
 
         private static MapBrush GenerateTile()
         {
-
+            return new MapBrush();
         }
 
         private static IEnumerable<MapBrush> GenerateBrushes()
@@ -182,8 +182,8 @@ namespace TowerWarfare.Builders
                 Height = "Auto",
                 HorizontalAnchorSelfType = AnchorTypes.Start,
                 HorizontalAnchorRelativeType = AnchorTypes.Start,
-                VerticalAnchorSelfType = AnchorTypes.Start,
-                VerticalAnchorRelativeType = AnchorTypes.Start,
+                VerticalAnchorSelfType = AnchorTypes.End,
+                VerticalAnchorRelativeType = AnchorTypes.End,
                 ChildElementNames = new List<string> { "View 2A", "LayerGroup 2B" },
                 PaddingLeft = "20",
                 PaddingTop = "20",
@@ -195,8 +195,8 @@ namespace TowerWarfare.Builders
             {
                 Name = "View 2A",
                 UIType = UITypes.View,
-                X = "Auto",
-                Y = "Auto",
+                X = "0",
+                Y = "0",
                 Width = "100",
                 Height = "200",
                 HorizontalAnchorSelfType = AnchorTypes.Start,
@@ -216,10 +216,10 @@ namespace TowerWarfare.Builders
             {
                 Name = "LayerGroup 2B",
                 UIType = UITypes.LayerGroup,
-                X = "Auto",
-                Y = "Auto",
-                Width = "Auto",
-                Height = "Auto",
+                X = "0",
+                Y = "0",
+                Width = "220",
+                Height = "220",
                 HorizontalAnchorSelfType = AnchorTypes.Start,
                 HorizontalAnchorRelativeType = AnchorTypes.Start,
                 VerticalAnchorSelfType = AnchorTypes.Center,
@@ -235,8 +235,8 @@ namespace TowerWarfare.Builders
             {
                 Name = "Button 3A",
                 UIType = UITypes.Button,
-                X = "Auto",
-                Y = "Auto",
+                X = "0",
+                Y = "0",
                 Width = "200",
                 Height = "100",
                 HorizontalAnchorSelfType = AnchorTypes.Start,

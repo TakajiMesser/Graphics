@@ -9,6 +9,7 @@ namespace StarchUICore
 {
     public interface IElement : IUIElement, IRenderable
     {
+        int EntityID { get; set; }
         string Name { get; set; }
         int TabCount { get; set; }
         IElement Parent { get; set; }
@@ -26,16 +27,17 @@ namespace StarchUICore
         Border Border { get; set; }
 
         Measurement Measurement { get; }
-        Location Location { get; }
 
         event EventHandler<LayoutEventArgs> LayoutChanged;
         //event EventHandler<EventArgs> Draw;
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;
 
+        void MeasureX(LayoutInfo layoutInfo);
+        void MeasureY(LayoutInfo layoutInfo);
+        void MeasureWidth(LayoutInfo layoutInfo);
+        void MeasureHeight(LayoutInfo layoutInfo);
         void Layout(LayoutInfo layoutInfo);
-        void Measure(MeasuredSize availableSize);
-        void Locate(LocatedPosition availablePosition);
 
         void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange);
         void InvokeLayoutChange();

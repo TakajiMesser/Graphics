@@ -18,5 +18,7 @@
         public bool IsLocated => X.HasValue && Y.HasValue;
         public bool IsMeasured => Width.HasValue && Height.HasValue;
         public bool IsLaidOut => IsLocated && IsMeasured;
+
+        public static LayoutResult Empty() => new LayoutResult(null, null, null, null);
     }
 }

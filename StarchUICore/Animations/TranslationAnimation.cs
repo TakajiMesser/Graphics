@@ -18,7 +18,7 @@ namespace StarchUICore.Animations
             var x = (int)Math.Floor(X * percent);
             var y = (int)Math.Floor(Y * percent);
 
-            _element.Location.Translate(x, y);
+            _element.Measurement.Translate(x, y);
         }
     }
 }

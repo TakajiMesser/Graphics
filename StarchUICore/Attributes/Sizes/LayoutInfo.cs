@@ -1,28 +1,22 @@
 ﻿namespace StarchUICore.Attributes.Sizes
 {
-    public struct LayoutInfo
+    public class LayoutInfo
     {
-        public LayoutInfo(int availableWidth, int availableHeight, int parentWidth, int parentHeight, int relativeX, int relativeY, int parentAbsoluteX, int parentAbsoluteY)
+        public LayoutInfo(int availableValue, int parentX, int parentY, int parentWidth, int parentHeight)
         {
-            AvailableWidth = availableWidth;
-            AvailableHeight = availableHeight;
+            AvailableValue = availableValue;
+
+            ParentX = parentX;
+            ParentY = parentY;
             ParentWidth = parentWidth;
             ParentHeight = parentHeight;
-
-            RelativeX = relativeX;
-            RelativeY = relativeY;
-            ParentAbsoluteX = parentAbsoluteX;
-            ParentAbsoluteY = parentAbsoluteY;
         }
 
-        public int AvailableWidth { get; }
-        public int AvailableHeight { get; }
+        public int AvailableValue { get; }
+
+        public int ParentX { get; }
+        public int ParentY { get; }
         public int ParentWidth { get; }
         public int ParentHeight { get; }
-
-        public int RelativeX { get; }
-        public int RelativeY { get; }
-        public int ParentAbsoluteX { get; }
-        public int ParentAbsoluteY { get; }
     }
 }

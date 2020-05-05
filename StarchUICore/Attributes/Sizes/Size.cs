@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Utilities;
-using StarchUICore.Attributes.Units;
+﻿using StarchUICore.Attributes.Units;
 
 namespace StarchUICore.Attributes.Sizes
 {
@@ -24,52 +23,24 @@ namespace StarchUICore.Attributes.Sizes
         public IUnits MaximumWidth { get; private set; }
         public IUnits MaximumHeight { get; private set; }
 
-        public int? ConstrainWidth(int availableWidth, int? dockWidth)
+        public int GetConstrainedWidth(int availableWidth, int dockWidth)
         {
-            if (dockWidth.HasValue)
-            {
-                var constrainedWidth = Width.ToDimensionPixels(availableWidth, dockWidth.Value);
+            var constrainedWidth = Width.ToDimensionPixels(availableWidth, dockWidth);
 
-                if (!(MinimumWidth is AutoUnits))
-                {
-                    constrainedWidth = constrainedWidth.ClampBottom(MinimumWidth.ToDimensionPixels(availableWidth, dockWidth.Value));
-                }
+            constrainedWidth = MinimumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
+            constrainedWidth = MaximumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
 
-                if (!(MaximumWidth is AutoUnits))
-                {
-                    constrainedWidth = constrainedWidth.ClampTop(MaximumWidth.ToDimensionPixels(availableWidth, dockWidth.Value));
-                }
-
-                return constrainedWidth;
-            }
-            else
-            {
-                return null;
-            }
+            return constrainedWidth;
         }
 
-        public int? ConstrainHeight(int availableHeight, int? dockHeight)
+        public int GetConstrainedHeight(int availableHeight, int dockHeight)
         {
-            if (dockHeight.HasValue)
-            {
-                var constrainedHeight = Height.ToDimensionPixels(availableHeight, dockHeight.Value);
+            var constrainedHeight = Height.ToDimensionPixels(availableHeight, dockHeight);
 
-                if (!(MinimumHeight is AutoUnits))
-                {
-                    constrainedHeight = constrainedHeight.ClampBottom(MinimumWidth.ToDimensionPixels(availableHeight, dockHeight.Value));
-                }
+            constrainedHeight = MinimumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
+            constrainedHeight = MaximumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
 
-                if (!(MaximumHeight is AutoUnits))
-                {
-                    constrainedHeight = constrainedHeight.ClampTop(MaximumWidth.ToDimensionPixels(availableHeight, dockHeight.Value));
-                }
-
-                return constrainedHeight;
-            }
-            else
-            {
-                return null;
-            }
+            return constrainedHeight;
         }
 
         public Size Dimension(IUnits width, IUnits height) => new Size(width, height, MinimumWidth, MinimumHeight, MaximumWidth, MaximumHeight);
@@ -78,7 +49,6 @@ namespace StarchUICore.Attributes.Sizes
 
         public Size DimensionMaximums(IUnits maximumWidth, IUnits maximumHeight) => new Size(Width, Height, MinimumWidth, MinimumHeight, maximumWidth, maximumHeight);
 
-        //public static Size Auto() => new Size(Unit.Auto(), Unit.Auto());
         public static Size FromDimensions(IUnits width, IUnits height) => new Size(width, height, Unit.Auto(), Unit.Auto(), Unit.Auto(), Unit.Auto());
     }
 }

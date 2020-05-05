@@ -17,6 +17,7 @@ namespace StarchUICore
         private Size _size;
         private float _alpha = 1.0f;
 
+        public int EntityID { get; set; }
         public string Name { get; set; }
         public IElement Parent { get; set; }
 
@@ -62,7 +63,6 @@ namespace StarchUICore
         public Border Border { get; set; }
 
         public Measurement Measurement { get; protected set; } = Measurement.Empty;
-        public Location Location { get; protected set; } = Location.Empty;
 
         public bool IsEnabled { get; set; } = true;
         public bool IsVisible { get; set; } = true;
@@ -84,7 +84,7 @@ namespace StarchUICore
             }
         }
 
-        public bool IsLaidOut => !Measurement.NeedsMeasuring && !Location.NeedsLocating;
+        public bool IsLaidOut => !Measurement.NeedsMeasuring;
 
         public bool IsTransparent => Alpha < 1.0f;
         public bool IsAnimated { get; set; } = false;
@@ -103,42 +103,24 @@ namespace StarchUICore
 
         public abstract void Draw();
 
-        public virtual void InvalidateMeasurement()
-        {
-            Measurement.Invalidate();
-            Location.Invalidate();
-        }
-
-        public virtual void InvalidateLocation() => Location.Invalidate();
+        public virtual void InvalidateMeasurement() => Measurement.Invalidate();
 
         public void Layout(LayoutInfo layoutInfo)
         {
-            if (Measurement.NeedsMeasuring || Location.NeedsLocating)
+            if (Measurement.NeedsMeasuring)
             {
                 Log();
                 Log(layoutInfo);
-                _layoutInfo = layoutInfo;
+                //_layoutInfo = layoutInfo;
                 var layoutResult = OnLayout(layoutInfo);
                 Log(layoutResult);
-
-                if (Measurement.NeedsMeasuring && layoutResult.Width.HasValue && layoutResult.Height.HasValue)
-                {
-                    Measurement.SetValue(layoutResult.Width.Value, layoutResult.Height.Value);
-                    OnMeasured(layoutInfo);
-                }
-
-                if (Location.NeedsLocating && layoutResult.X.HasValue && layoutResult.Y.HasValue)
-                {
-                    Location.SetValue(layoutResult.X.Value, layoutResult.Y.Value);
-                    OnLocated(layoutInfo);
-                }
 
                 OnLaidOut(layoutInfo);
                 LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
             }
         }
 
-        private LayoutInfo? _layoutInfo;
+        //private LayoutInfo? _layoutInfo;
 
         public virtual void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange)
         {
@@ -172,8 +154,8 @@ namespace StarchUICore
 
             var width = Measurement.Width;// + widthChange;
             var height = Measurement.Height;// + heightChange;
-            var x = Location.X + xChange;
-            var y = Location.Y + yChange;
+            var x = Measurement.X + xChange;
+            var y = Measurement.Y + yChange;
 
             if (HorizontalDock.RelativeElement == null)
             {
@@ -217,8 +199,7 @@ namespace StarchUICore
                 }
             }
 
-            Measurement.SetValue(width, height);
-            Location.SetValue(x, y);
+            Measurement.SetValue(x, y, width, height);
 
             // TODO - This is truly terrible...
             if (this is Label label)
@@ -231,155 +212,63 @@ namespace StarchUICore
 
         public virtual void InvokeLayoutChange() => LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
 
-        public void Measure(MeasuredSize availableSize)
+        public void PropageShit()
         {
-            if (Measurement.NeedsMeasuring)
+            if (!Measurement.NeedsMeasuring)
             {
-                var measuredSize = OnMeasure(availableSize);
-                Measurement.SetValue(measuredSize.Width, measuredSize.Height);
+                LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
             }
         }
 
-        public void Locate(LocatedPosition availablePosition)
+        public void MeasureWidth(LayoutInfo layoutInfo)
         {
-            if (Location.NeedsLocating)
+            if (Measurement.NeedsWidthMeasuring)
             {
-                var locatedPosition = OnLocate(availablePosition);
-                Location.SetValue(locatedPosition.AbsoluteX, locatedPosition.AbsoluteY);
+                var width = GetMeasuredWidth(layoutInfo);
+                Measurement.SetWidth(width);
+                PropageShit();
             }
         }
 
-        protected int? GetMeasuredWidth(int availableWidth, int parentWidth)
+        public void MeasureHeight(LayoutInfo layoutInfo)
         {
-            var dockWidth = HorizontalDock.GetReferenceWidth(parentWidth);
-            return Size.ConstrainWidth(availableWidth, dockWidth);
-        }
-
-        protected int? GetMeasuredHeight(int availableHeight, int parentHeight)
-        {
-            var dockHeight = VerticalDock.GetReferenceHeight(parentHeight);
-            return Size.ConstrainHeight(availableHeight, dockHeight);
-        }
-
-        /* The parent has very clearly outlined for us the following:
-            - Here is my absolute X
-            - Here is the X, RELATIVE TO MY LEFT SIDE, that I think this element should be placed at
-            - If you should disagree, here is how much remaining width I have that you can work with
-            - If you need my width as reference, or your own measured width, here they are
-
-            This Element is now tasked with reporting back what actual Relative X it is going with
-            It will do this by performing the following:
-            - Determine if the suggested relative X is acceptable
-        */
-        protected int? GetRelativeX(int suggestedRelativeX, int parentAbsoluteX, int availableWidth, int parentWidth, int? measuredWidth)
-        {
-            var referenceWidth = HorizontalAnchor.GetAnchoredWidth(parentWidth);
-
-            // TODO - Parent should suggest X, but give availability bounds in BOTH directions for this Element to use as needed
-            var minParentX = suggestedRelativeX;
-            var maxParentX = suggestedRelativeX + availableWidth;
-
-            // First, determine what this element thinks its X should be
-            var constrainedX = Position.GetConstrainedX(suggestedRelativeX, referenceWidth);
-
-            if (constrainedX.HasValue && measuredWidth.HasValue)
+            if (Measurement.NeedsHeightMeasuring)
             {
-                var anchoredX = HorizontalAnchor.GetAnchorX(constrainedX.Value, measuredWidth.Value, minParentX, maxParentX, parentWidth, parentAbsoluteX);
-
-                if (anchoredX.HasValue)
-                {
-                    return anchoredX;
-                }
+                var height = GetMeasuredHeight(layoutInfo);
+                Measurement.SetHeight(height);
+                PropageShit();
             }
-
-            return null;
-            
-            /*var anchoredX = HorizontalAnchor.GetAnchoredX(relativeX, parentAbsoluteX, availableWidth, measuredWidth);
-            var anchorWidth = HorizontalAnchor.GetAnchoredWidth(parentWidth);
-            return Position.ConstrainX(availableWidth, measuredWidth, anchoredX, anchorWidth);*/
         }
 
-        protected int? GetRelativeY(int suggestedRelativeY, int parentAbsoluteY, int availableHeight, int parentHeight, int? measuredHeight)
+        public void MeasureX(LayoutInfo layoutInfo)
         {
-            var referenceHeight = VerticalAnchor.GetAnchoredWidth(parentHeight);
-
-            // TODO - Parent should suggest Y, but give availability bounds in BOTH directions for this Element to use as needed
-            var minParentY = suggestedRelativeY;
-            var maxParentY = suggestedRelativeY + availableHeight;
-
-            // First, determine what this element thinks its Y should be
-            var constrainedY = Position.GetConstrainedY(suggestedRelativeY, referenceHeight);
-
-            if (constrainedY.HasValue && measuredHeight.HasValue)
+            if (Measurement.NeedsXMeasuring)
             {
-                var anchoredY = VerticalAnchor.GetAnchorY(constrainedY.Value, measuredHeight.Value, minParentY, maxParentY, parentHeight, parentAbsoluteY);
-
-                if (anchoredY.HasValue)
-                {
-                    return anchoredY;
-                }
+                var relativeX = GetRelativeX(layoutInfo);
+                var absoluteX = layoutInfo.ParentX + relativeX;
+                Measurement.SetX(absoluteX);
+                PropageShit();
             }
-
-            return null;
-
-            /*var anchorY = VerticalAnchor.GetAnchoredY(relativeY, parentAbsoluteY, measuredHeight);
-            var anchorHeight = VerticalAnchor.GetAnchoredHeight(parentHeight);
-            return Position.ConstrainY(availableHeight, measuredHeight, anchorY, anchorHeight);*/
         }
 
-        protected int? GetAbsoluteX(int parentAbsoluteX, int? relativeX, int? measuredWidth)
+        public void MeasureY(LayoutInfo layoutInfo)
         {
-            // relativeX is what this view reported its internal X should be, but we ALSO need to consider the relative X that the parent passed us
-            if (relativeX.HasValue)
+            if (Measurement.NeedsYMeasuring)
             {
-                return parentAbsoluteX + relativeX.Value;
-                // TODO - Handle Centered Horizontal Anchor
-                /*if (HorizontalAnchor.AnchorType == AnchorTypes.Start)
-                {
-                    return parentAbsoluteX + relativeX.Value;
-                }
-                else if (HorizontalAnchor.AnchorType == AnchorTypes.End)
-                {
-                    if (measuredWidth.HasValue)
-                    {
-                        return parentAbsoluteX + measuredWidth.Value - relativeX.Value;
-                    }
-                }*/
+                var relativeY = GetRelativeY(layoutInfo);
+                var absoluteY = layoutInfo.ParentY + relativeY;
+                Measurement.SetY(absoluteY);
+                PropageShit();
             }
-
-            return null;
         }
 
-        protected int? GetAbsoluteY(int parentAbsoluteY, int? relativeY, int? measuredHeight)
-        {
-            if (relativeY.HasValue)
-            {
-                return parentAbsoluteY + relativeY.Value;
-                // TODO - Handle Centered Vertical Anchor
-                /*if (VerticalAnchor.AnchorType == AnchorTypes.Start)
-                {
-                    return parentAbsoluteY + relativeY.Value;
-                }
-                else if (VerticalAnchor.AnchorType == AnchorTypes.End)
-                {
-                    if (measuredHeight.HasValue)
-                    {
-                        return parentAbsoluteY + measuredHeight.Value - relativeY.Value;
-                    }
-                }*/
-            }
-
-            return null;
-        }
+        protected abstract int GetMeasuredWidth(LayoutInfo layoutInfo);
+        protected abstract int GetMeasuredHeight(LayoutInfo layoutInfo);
+        protected abstract int GetRelativeX(LayoutInfo layoutInfo);
+        protected abstract int GetRelativeY(LayoutInfo layoutInfo);
 
         protected abstract LayoutResult OnLayout(LayoutInfo layoutInfo);
-        
-        // TODO - Are these unnecessary now?
-        protected abstract MeasuredSize OnMeasure(MeasuredSize availableSize);
-        protected abstract LocatedPosition OnLocate(LocatedPosition availablePosition);
 
-        protected virtual void OnMeasured(LayoutInfo layoutInfo) { }
-        protected virtual void OnLocated(LayoutInfo layoutInfo) { }
         protected virtual void OnLaidOut(LayoutInfo layoutInfo) { }
 
         protected virtual void OnPositionChanged(Position oldValue, Position newValue) { }
@@ -528,14 +417,11 @@ namespace StarchUICore
             var lines = new List<string>
             {
                 GetPhaseLine("On Entry"),
-                GetValueLine("AvailableWidth", layoutInfo.AvailableWidth),
-                GetValueLine("AvailableHeight", layoutInfo.AvailableHeight),
+                GetValueLine("AvailableValue", layoutInfo.AvailableValue),
+                GetValueLine("ParentX", layoutInfo.ParentX),
+                GetValueLine("ParentY", layoutInfo.ParentY),
                 GetValueLine("ParentWidth", layoutInfo.ParentWidth),
                 GetValueLine("ParentHeight", layoutInfo.ParentHeight),
-                GetValueLine("RelativeX", layoutInfo.RelativeX),
-                GetValueLine("RelativeY", layoutInfo.RelativeY),
-                GetValueLine("ParentAbsoluteX", layoutInfo.ParentAbsoluteX),
-                GetValueLine("ParentAbsoluteY", layoutInfo.ParentAbsoluteY)
             };
 
             Log(lines);

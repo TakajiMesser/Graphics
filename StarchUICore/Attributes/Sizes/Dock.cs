@@ -14,41 +14,27 @@
         public Dock Attached(IElement relativeElement) => new Dock(DoesRespectChanges, relativeElement);
         public Dock Detached() => new Dock(DoesRespectChanges, null);
 
-        public int? GetReferenceWidth(int parentWidth)
+        public int GetReferenceWidth(LayoutInfo layoutInfo)
         {
             if (RelativeElement != null)
             {
-                if (RelativeElement.Measurement.NeedsMeasuring)
-                {
-                    return null;
-                }
-                else
-                {
-                    return RelativeElement.Measurement.Width;
-                }
+                return RelativeElement.Measurement.Width;
             }
             else
             {
-                return parentWidth;
+                return layoutInfo.ParentWidth;
             }
         }
 
-        public int? GetReferenceHeight(int parentHeight)
+        public int GetReferenceHeight(LayoutInfo layoutInfo)
         {
             if (RelativeElement != null)
             {
-                if (RelativeElement.Measurement.NeedsMeasuring)
-                {
-                    return null;
-                }
-                else
-                {
-                    return RelativeElement.Measurement.Height;
-                }
+                return RelativeElement.Measurement.Height;
             }
             else
             {
-                return parentHeight;
+                return layoutInfo.ParentHeight;
             }
         }
     }

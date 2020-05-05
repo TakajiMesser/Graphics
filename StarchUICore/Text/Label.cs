@@ -1,10 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngineCore.UserInterfaces;
-using SpiceEngineCore.Utilities;
-using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
-using StarchUICore.Attributes.Units;
 using StarchUICore.Text;
 using SweetGraphicsCore.Vertices;
 using System;
@@ -27,7 +24,7 @@ namespace StarchUICore.Views
             {
                 _font = value;
                 
-                if (_text != null && !Measurement.NeedsMeasuring && !Location.NeedsLocating)
+                if (_text != null && !Measurement.NeedsMeasuring)
                 {
                     CalculateTextVertices();
                 }
@@ -41,7 +38,7 @@ namespace StarchUICore.Views
             {
                 _text = value;
 
-                if (_font != null && !Measurement.NeedsMeasuring && !Location.NeedsLocating)
+                if (_font != null && !Measurement.NeedsMeasuring)
                 {
                     CalculateTextVertices();
                 }
@@ -52,9 +49,14 @@ namespace StarchUICore.Views
 
         public event EventHandler<TextEventArgs> TextChanged;
 
+        protected override int GetRelativeX(LayoutInfo layoutInfo) => 0;
+        protected override int GetRelativeY(LayoutInfo layoutInfo) => 0;
+        protected override int GetMeasuredWidth(LayoutInfo layoutInfo) => 0;
+        protected override int GetMeasuredHeight(LayoutInfo layoutInfo) => 0;
+
         protected override void OnLaidOut(LayoutInfo layoutInfo)
         {
-            if (_font != null && _text != null && !Measurement.NeedsMeasuring && !Location.NeedsLocating)
+            if (_font != null && _text != null && !Measurement.NeedsMeasuring)
             {
                 CalculateTextVertices();
             }
@@ -62,7 +64,7 @@ namespace StarchUICore.Views
 
         public override void InvokeLayoutChange()
         {
-            if (_font != null && _text != null && !Measurement.NeedsMeasuring && !Location.NeedsLocating)
+            if (_font != null && _text != null && !Measurement.NeedsMeasuring)
             {
                 CalculateTextVertices();
             }
@@ -72,7 +74,7 @@ namespace StarchUICore.Views
 
         protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
         {
-            var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
+            /*var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
             var height = GetMeasuredHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
 
             // For AUTO sizing, use the measured dimensions as maximums and shrink to the measured text size
@@ -120,7 +122,8 @@ namespace StarchUICore.Views
             var absoluteX = layoutInfo.ParentAbsoluteX + layoutInfo.RelativeX;
             var absoluteY = layoutInfo.ParentAbsoluteY + layoutInfo.RelativeY;*/
 
-            return new LayoutResult(absoluteX, absoluteY, width, height);
+            //return new LayoutResult(absoluteX, absoluteY, width, height);
+            return LayoutResult.Empty();
         }
 
         /*private int MeasureTextWidth(int maximumWidth)
@@ -150,8 +153,8 @@ namespace StarchUICore.Views
             var width = (int)(_font.GlyphWidth * FontScale);
             var height = (int)(_font.GlyphHeight * FontScale);
 
-            var x = Location.X;
-            var y = Location.Y;
+            var x = Measurement.X;
+            var y = Measurement.Y;
 
             var vertices = new List<TextureVertex2D>();
 
@@ -164,7 +167,7 @@ namespace StarchUICore.Views
 
                 if (WordWrap && width > Measurement.Width)
                 {
-                    x = Location.X;
+                    x = Measurement.X;
                     y += height + _font.YSpacing;
                 }
 
@@ -196,10 +199,6 @@ namespace StarchUICore.Views
 
             TextChanged?.Invoke(this, new TextEventArgs(vertices));
         }
-
-        protected override MeasuredSize OnMeasure(MeasuredSize availableSize) => new MeasuredSize();
-
-        protected override LocatedPosition OnLocate(LocatedPosition availablePosition) => new LocatedPosition();
 
         public override void Load() { }
         public override void Draw() { }

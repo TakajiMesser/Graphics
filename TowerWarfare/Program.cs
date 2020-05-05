@@ -1,7 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngine.Maps;
 using StarchUICore;
-using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Builders;
 using StarchUICore.Groups;
@@ -37,12 +36,11 @@ namespace TowerWarfare
             //var windowSize = new MeasuredSize(1000, 1000);
             //var windowPosition = new LocatedPosition(0, 0);
 
-            root.Layout(new LayoutInfo(1000, 1000, 1000, 1000, 0, 0, 0, 0));
+            //root.Layout(new LayoutInfo(1000, 1000, 1000, 1000, 0, 0, 0, 0));
             //root.Measure(windowSize);
             //root.Locate(windowPosition);
 
             LogMeasurements(root);
-            LogLocations(root);
         }
 
         private static IElement GetRootElement()
@@ -103,7 +101,7 @@ namespace TowerWarfare
             builder.Append(element.GetType().Name);
 
             var measurement = element.Measurement;
-            builder.Append(" - (" + measurement.Width + ", " + measurement.Height + ")");
+            builder.Append(" - (" + measurement.X + ", " + measurement.Y + ", " + measurement.Width + ", " + measurement.Height + ")");
 
             Console.WriteLine(builder.ToString());
 
@@ -112,31 +110,6 @@ namespace TowerWarfare
                 foreach (var child in group.Children)
                 {
                     LogMeasurements(child);
-                }
-            }
-        }
-
-        private static void LogLocations(IElement element)
-        {
-            var builder = new StringBuilder();
-
-            for (var i = 0; i < GetAncestryTier(element); i++)
-            {
-                builder.Append("\t");
-            }
-
-            builder.Append(element.GetType().Name);
-
-            var location = element.Location;
-            builder.Append(" - (" + location.X + ", " + location.Y + ")");
-
-            Console.WriteLine(builder.ToString());
-
-            if (element is IGroup group)
-            {
-                foreach (var child in group.Children)
-                {
-                    LogLocations(child);
                 }
             }
         }

@@ -14,6 +14,8 @@ namespace StarchUICore.Groups
         // TODO - Eventually, Spacing should be inherited either from the parent, or from a set theme/style
         public IUnits Spacing { get; set; } = Unit.Pixels(10);// Unit.Auto();
 
+        public LayoutProgress LayoutProgress { get; set; } = new LayoutProgress();
+
         public void AddChild(IElement element)
         {
             _children.Add(element);
@@ -29,83 +31,6 @@ namespace StarchUICore.Groups
                 child.Load();
             }
         }
-
-        /*protected int ConstrainWidth(MeasuredSize availableSize)
-        {
-            var width = Size.Width.Constrain(availableSize.Width, availableSize.ContainingWidth);
-            var paddingWidth = Padding.GetWidth(availableSize.Width, availableSize.ContainingWidth);
-
-            return width - paddingWidth;
-        }
-
-        protected int ConstrainHeight(MeasuredSize availableSize)
-        {
-            var height = Size.Height.Constrain(availableSize.Height, availableSize.ContainingHeight);
-            var paddingHeight = Padding.GetHeight(availableSize.Height, availableSize.ContainingHeight);
-
-            return height - paddingHeight;
-        }*/
-
-        /*protected override ISize GetMeasurement(ISize availableSize)
-        {
-            var width = 0;
-            var height = 0;
-
-            if (!IsGone)
-            {
-                if (availableSize is UnitSize availableUnitSize)
-                {
-                    var availableWidth = availableUnitSize.Width;
-                    var availableHeight = availableUnitSize.Height;
-
-                    if (Size is UnitSize unitSize)
-                    {
-                        if (unitSize.Width < availableWidth)
-                        {
-                            availableWidth = unitSize.Width;
-                        }
-                        
-                        if (unitSize.Height < availableHeight)
-                        {
-                            availableHeight = unitSize.Height;
-                        }
-                    }
-
-                    foreach (var child in GetChildren())
-                    {
-                        child.Measure(new UnitSize(availableWidth, availableHeight));
-
-                        availableWidth -= child.Measurement.Width;
-                        availableHeight -= child.Measurement.Height;
-
-                        width += child.Measurement.Width;
-                        height += child.Measurement.Height;
-                    }
-
-                    if (LayoutMode == LayoutModes.Fill)
-                    {
-                        width = availableUnitSize.Width;
-                        height = availableUnitSize.Height;
-                    }
-                }
-            }
-
-            return new UnitSize(width, height);
-        }
-
-        protected override IPosition GetLocation(IPosition position)
-        {
-            var x = 0;
-            var y = 0;
-
-            if (position is UnitPosition unitPosition)
-            {
-                x = unitPosition.X;
-                y = unitPosition.Y;
-            }
-
-            return new UnitPosition(x, y);
-        }*/
 
         public override void Update(int nTicks)
         {
@@ -129,6 +54,42 @@ namespace StarchUICore.Groups
             }
             // TODO - First, draw any group stuff (e.g. background, border, etc.)
             // Then, go through children and draw each one based on their previously measured sizes
+        }
+
+        protected override int GetRelativeX(LayoutInfo layoutInfo)
+        {
+            var anchorWidth = HorizontalAnchor.GetReferenceWidth(layoutInfo);
+
+            // Apply our Position attribute to achieve this element's desired X
+            var relativeX = Position.X.ToOffsetPixels(layoutInfo.AvailableValue, anchorWidth);
+
+            // Pass this desired relative X back to the Anchor to reposition it appropriately
+            relativeX = HorizontalAnchor.GetAnchorX(relativeX, Measurement, layoutInfo);
+
+            // Apply the Minimum and Maximum constraints last, as these are HARD requirements
+            relativeX = Position.MinimumX.ConstrainAsMinimum(relativeX, anchorWidth);
+            relativeX = Position.MaximumX.ConstrainAsMaximum(relativeX, anchorWidth);
+
+            LayoutProgress.SetX(Padding.Left.ToOffsetPixels(layoutInfo.AvailableValue, layoutInfo.ParentWidth));
+            return relativeX;
+        }
+
+        protected override int GetRelativeY(LayoutInfo layoutInfo)
+        {
+            var anchorHeight = VerticalAnchor.GetReferenceHeight(layoutInfo);
+
+            // Apply our Position attribute to achieve this element's desired Y
+            var relativeY = Position.Y.ToOffsetPixels(layoutInfo.AvailableValue, anchorHeight);
+
+            // Pass this desired relative Y back to the Anchor to reposition it appropriately
+            relativeY = VerticalAnchor.GetAnchorY(relativeY, Measurement, layoutInfo);
+
+            // Apply the Minimum and Maximum constraints last, as these are HARD requirements
+            relativeY = Position.MinimumY.ConstrainAsMinimum(relativeY, anchorHeight);
+            relativeY = Position.MaximumY.ConstrainAsMaximum(relativeY, anchorHeight);
+
+            LayoutProgress.SetY(Padding.Top.ToOffsetPixels(layoutInfo.AvailableValue, layoutInfo.ParentHeight));
+            return relativeY;
         }
 
         public override void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange)

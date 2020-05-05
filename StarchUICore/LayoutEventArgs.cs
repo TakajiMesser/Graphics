@@ -11,7 +11,7 @@ namespace StarchUICore
         {
             Element = element;
 
-            Position = new Vector3(element.Location.X, element.Location.Y, 0.0f);
+            Position = new Vector3(element.Measurement.X, element.Measurement.Y, 0.0f);
             Size = new Vector2(element.Measurement.Width, element.Measurement.Height);
             
             if (element is IView view)
