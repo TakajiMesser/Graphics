@@ -1,13 +1,11 @@
 ﻿using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Styling;
 using StarchUICore.Attributes.Units;
-using StarchUICore.Views;
+using StarchUICore.Traversal;
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace StarchUICore
 {
@@ -90,14 +88,12 @@ namespace StarchUICore
         public bool IsAnimated { get; set; } = false;
         public bool IsSelectable { get; set; } = true;
 
-        public event EventHandler<LayoutEventArgs> LayoutChanged;
+        public event EventHandler<LayoutEventArgs> MeasurementChanged;
         public event EventHandler<PositionEventArgs> PositionChanged;
         public event EventHandler<SizeEventArgs> SizeChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
         public abstract void Load();
-        //public abstract void Measure(ISize availableSize);
-        //public abstract void Locate(IPosition availablePosition);
 
         public virtual void Update(int nTicks) { }
 
@@ -105,118 +101,12 @@ namespace StarchUICore
 
         public virtual void InvalidateMeasurement() => Measurement.Invalidate();
 
-        public void Layout(LayoutInfo layoutInfo)
-        {
-            if (Measurement.NeedsMeasuring)
-            {
-                Log();
-                Log(layoutInfo);
-                //_layoutInfo = layoutInfo;
-                var layoutResult = OnLayout(layoutInfo);
-                Log(layoutResult);
-
-                OnLaidOut(layoutInfo);
-                LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
-            }
-        }
-
-        //private LayoutInfo? _layoutInfo;
-
-        public virtual void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange)
-        {
-            // We need to redock AND reanchor :/
-            /*if (_layoutInfo.HasValue)
-            {
-                var width = GetMeasuredWidth(_layoutInfo.Value.AvailableWidth, _layoutInfo.Value.ParentWidth);
-                var height = GetMeasuredHeight(_layoutInfo.Value.AvailableHeight, _layoutInfo.Value.ParentHeight);
-
-                if (width.HasValue && height.HasValue)
-                {
-                    Measurement.SetValue(width.Value, height.Value);
-                }
-
-                var relativeX = GetRelativeX(_layoutInfo.Value.RelativeX, _layoutInfo.Value.ParentAbsoluteX, _layoutInfo.Value.AvailableWidth, _layoutInfo.Value.ParentWidth, width);
-                var relativeY = GetRelativeY(_layoutInfo.Value.RelativeY, _layoutInfo.Value.ParentAbsoluteY, _layoutInfo.Value.AvailableHeight, _layoutInfo.Value.ParentHeight, height);
-
-                var absoluteX = GetAbsoluteX(_layoutInfo.Value.ParentAbsoluteX, relativeX, width);
-                var absoluteY = GetAbsoluteY(_layoutInfo.Value.ParentAbsoluteY, relativeY, height);
-
-                if (absoluteX.HasValue && absoluteY.HasValue)
-                {
-                    Location.SetValue(absoluteX.Value, absoluteY.Value);
-                }
-            }
-            else
-            {
-                Measurement.SetValue(Measurement.Width + widthChange, Measurement.Height + heightChange);
-                Location.SetValue(Location.X + xChange, Location.Y + yChange);
-            }*/
-
-            var width = Measurement.Width;// + widthChange;
-            var height = Measurement.Height;// + heightChange;
-            var x = Measurement.X + xChange;
-            var y = Measurement.Y + yChange;
-
-            if (HorizontalDock.RelativeElement == null)
-            {
-                
-            }
-
-            if (VerticalDock.RelativeElement == null)
-            {
-
-            }
-
-            if (HorizontalAnchor.RelativeElement == null)
-            {
-                if (HorizontalAnchor.RelativeAnchorType == AnchorTypes.Start)
-                {
-                    
-                }
-                else if (HorizontalAnchor.RelativeAnchorType == AnchorTypes.Center)
-                {
-                    x += widthChange / 2;
-                }
-                else if (HorizontalAnchor.RelativeAnchorType == AnchorTypes.End)
-                {
-                    x += widthChange;
-                }
-            }
-
-            if (VerticalAnchor.RelativeElement == null)
-            {
-                if (VerticalAnchor.RelativeAnchorType == AnchorTypes.Start)
-                {
-
-                }
-                else if (VerticalAnchor.RelativeAnchorType == AnchorTypes.Center)
-                {
-                    y += heightChange / 2;
-                }
-                else if (VerticalAnchor.RelativeAnchorType == AnchorTypes.End)
-                {
-                    y += heightChange;
-                }
-            }
-
-            Measurement.SetValue(x, y, width, height);
-
-            // TODO - This is truly terrible...
-            if (this is Label label)
-            {
-                label.Text = label.Text;
-            }
-
-            LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
-        }
-
-        public virtual void InvokeLayoutChange() => LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
-
-        public void PropageShit()
+        public virtual void InvokeMeasurementChanged()
         {
             if (!Measurement.NeedsMeasuring)
             {
-                LayoutChanged?.Invoke(this, new LayoutEventArgs(this));
+                OnMeasured();
+                MeasurementChanged?.Invoke(this, new LayoutEventArgs(this));
             }
         }
 
@@ -226,7 +116,7 @@ namespace StarchUICore
             {
                 var width = GetMeasuredWidth(layoutInfo);
                 Measurement.SetWidth(width);
-                PropageShit();
+                InvokeMeasurementChanged();
             }
         }
 
@@ -236,7 +126,7 @@ namespace StarchUICore
             {
                 var height = GetMeasuredHeight(layoutInfo);
                 Measurement.SetHeight(height);
-                PropageShit();
+                InvokeMeasurementChanged();
             }
         }
 
@@ -247,7 +137,7 @@ namespace StarchUICore
                 var relativeX = GetRelativeX(layoutInfo);
                 var absoluteX = layoutInfo.ParentX + relativeX;
                 Measurement.SetX(absoluteX);
-                PropageShit();
+                InvokeMeasurementChanged();
             }
         }
 
@@ -258,7 +148,7 @@ namespace StarchUICore
                 var relativeY = GetRelativeY(layoutInfo);
                 var absoluteY = layoutInfo.ParentY + relativeY;
                 Measurement.SetY(absoluteY);
-                PropageShit();
+                InvokeMeasurementChanged();
             }
         }
 
@@ -267,194 +157,92 @@ namespace StarchUICore
         protected abstract int GetRelativeX(LayoutInfo layoutInfo);
         protected abstract int GetRelativeY(LayoutInfo layoutInfo);
 
-        protected abstract LayoutResult OnLayout(LayoutInfo layoutInfo);
+        public virtual IEnumerable<LayoutDependency> GetXDependencies()
+        {
+            var anchorID = GetReferenceID(HorizontalAnchor.RelativeElement);
 
-        protected virtual void OnLaidOut(LayoutInfo layoutInfo) { }
+            if (!(Position.X is AutoUnits) || !(Position.MinimumX is AutoUnits) || !(Position.MaximumX is AutoUnits))
+            {
+                if (HorizontalAnchor.SelfAnchorType == AnchorTypes.Center || HorizontalAnchor.SelfAnchorType == AnchorTypes.End)
+                {
+                    yield return LayoutDependency.Width(EntityID);
+                }
+
+                if (anchorID.HasValue)
+                {
+                    yield return LayoutDependency.X(anchorID.Value);
+
+                    if (HorizontalAnchor.RelativeAnchorType == AnchorTypes.Center || HorizontalAnchor.RelativeAnchorType == AnchorTypes.End
+                        || Position.X is PercentUnits || Position.MinimumX is PercentUnits || Position.MaximumX is PercentUnits)
+                    {
+                        yield return LayoutDependency.Width(anchorID.Value);
+                    }
+                }
+            }
+        }
+
+        public virtual IEnumerable<LayoutDependency> GetYDependencies()
+        {
+            var anchorID = GetReferenceID(VerticalAnchor.RelativeElement);
+
+            if (!(Position.Y is AutoUnits) || !(Position.MinimumY is AutoUnits) || !(Position.MaximumY is AutoUnits))
+            {
+                if (VerticalAnchor.SelfAnchorType == AnchorTypes.Center || VerticalAnchor.SelfAnchorType == AnchorTypes.End)
+                {
+                    yield return LayoutDependency.Height(EntityID);
+                }
+
+                if (anchorID.HasValue)
+                {
+                    yield return LayoutDependency.Y(anchorID.Value);
+
+                    if (VerticalAnchor.RelativeAnchorType == AnchorTypes.Center || VerticalAnchor.RelativeAnchorType == AnchorTypes.End
+                        || Position.Y is PercentUnits || Position.MinimumY is PercentUnits || Position.MaximumY is PercentUnits)
+                    {
+                        yield return LayoutDependency.Height(anchorID.Value);
+                    }
+                }
+            }
+        }
+
+        public virtual IEnumerable<LayoutDependency> GetWidthDependencies()
+        {
+            var dockID = GetReferenceID(HorizontalDock.RelativeElement);
+
+            if (dockID.HasValue && (Size.Width is PercentUnits || Size.MinimumWidth is PercentUnits || Size.MaximumWidth is PercentUnits))
+            {
+                yield return LayoutDependency.Width(dockID.Value);
+            }
+        }
+
+        public virtual IEnumerable<LayoutDependency> GetHeightDependencies()
+        {
+            var dockID = GetReferenceID(VerticalDock.RelativeElement);
+
+            if (dockID.HasValue && (Size.Height is PercentUnits || Size.MinimumHeight is PercentUnits || Size.MaximumHeight is PercentUnits))
+            {
+                yield return LayoutDependency.Height(dockID.Value);
+            }
+        }
+
+        private int? GetReferenceID(IElement relativeElement)
+        {
+            if (relativeElement != null)
+            {
+                return relativeElement.EntityID;
+            }
+            else if (Parent != null)
+            {
+                return Parent.EntityID;
+            }
+
+            return null;
+        }
+
+        protected virtual void OnMeasured() { }
 
         protected virtual void OnPositionChanged(Position oldValue, Position newValue) { }
         protected virtual void OnSizeChanged(Size oldValue, Size newValue) { }
         protected virtual void OnAlphaChanged(float oldValue, float newValue) { }
-
-        // TODO - For debugging purposes
-        public int TabCount { get; set; } = 0;
-
-        private void PrependTabs(StringBuilder builder, int nTabs)
-        {
-            for (var i = 0; i < nTabs; i++)
-            {
-                builder.Append("\t");
-            }
-        }
-
-        protected void Log(IEnumerable<string> lines)
-        {
-            foreach (var line in lines)
-            {
-                Console.WriteLine(line);
-            }
-
-            Console.WriteLine();
-        }
-
-        protected string GetNameLine()
-        {
-            var builder = new StringBuilder();
-
-            PrependTabs(builder, TabCount);
-            builder.Append("[" + Name + "]");
-
-            return builder.ToString();
-        }
-
-        protected string GetPhaseLine(string phaseName)
-        {
-            var builder = new StringBuilder();
-
-            PrependTabs(builder, TabCount + 1);
-            builder.Append(phaseName);
-
-            return builder.ToString();
-        }
-
-        protected string GetValueLine(string name, string value)
-        {
-            var builder = new StringBuilder();
-
-            PrependTabs(builder, TabCount + 2);
-            builder.Append(name + " = " + value);
-
-            return builder.ToString();
-        }
-
-        protected string GetValueLine(string name, int value)
-        {
-            var builder = new StringBuilder();
-
-            PrependTabs(builder, TabCount + 2);
-            builder.Append(name + " = " + value);
-
-            return builder.ToString();
-        }
-
-        protected string GetValueLine(string name, IUnits value)
-        {
-            var builder = new StringBuilder();
-
-            PrependTabs(builder, TabCount + 2);
-            builder.Append(name + " = ");
-
-            switch (value)
-            {
-                case PixelUnits pixelUnits:
-                    builder.Append(pixelUnits.Value + "px");
-                    break;
-                case PercentUnits percentUnits:
-                    builder.Append(percentUnits.Value + "%");
-                    break;
-                case AutoUnits _:
-                    builder.Append("AUTO");
-                    break;
-            }
-
-            return builder.ToString();
-        }
-
-        protected string GetValueLine(string name, int? value)
-        {
-            var builder = new StringBuilder();
-
-            PrependTabs(builder, TabCount + 2);
-            builder.Append(name + " = " + (value.HasValue ? value.Value.ToString() : "NULL"));
-
-            return builder.ToString();
-        }
-
-        protected void Log()
-        {
-            Log(GetNameLine().Yield());
-
-            Log(new List<string>
-            {
-                GetPhaseLine("Position"),
-                GetValueLine("X", Position.X),
-                GetValueLine("Y", Position.Y),
-                /*GetValueLine("Min X", Position.MinimumX),
-                GetValueLine("Min Y", Position.MinimumY),
-                GetValueLine("Max X", Position.MaximumX),
-                GetValueLine("Max Y", Position.MaximumY)*/
-            });
-
-            Log(new List<string>
-            {
-                GetPhaseLine("Size"),
-                GetValueLine("Width", Size.Width),
-                GetValueLine("Height", Size.Height),
-                /*GetValueLine("Min Width", Size.MinimumWidth),
-                GetValueLine("Min Height", Size.MinimumHeight),
-                GetValueLine("Max Width", Size.MaximumWidth),
-                GetValueLine("Max Height", Size.MaximumHeight)*/
-            });
-
-            Log(new List<string>
-            {
-                GetPhaseLine("Anchor"),
-                GetValueLine("Horizontal Type", HorizontalAnchor.SelfAnchorType.ToString()),
-                //GetValueLine("Horizontal Relative", HorizontalAnchor.RelativeElement != null ? HorizontalAnchor.RelativeElement.Name : "PARENT"),
-                GetValueLine("Vertical Type", VerticalAnchor.SelfAnchorType.ToString()),
-                //GetValueLine("Vertical Relative", VerticalAnchor.RelativeElement != null ? VerticalAnchor.RelativeElement.Name : "PARENT")
-            });
-
-            /*Log(new List<string>
-            {
-                GetPhaseLine("Dock"),
-                GetValueLine("Horizontal Relative", HorizontalDock.RelativeElement != null ? HorizontalDock.RelativeElement.Name : "PARENT"),
-                GetValueLine("Vertical Relative", VerticalDock.RelativeElement != null ? VerticalDock.RelativeElement.Name : "PARENT")
-            });*/
-        }
-
-        protected void Log(LayoutInfo layoutInfo)
-        {
-            var lines = new List<string>
-            {
-                GetPhaseLine("On Entry"),
-                GetValueLine("AvailableValue", layoutInfo.AvailableValue),
-                GetValueLine("ParentX", layoutInfo.ParentX),
-                GetValueLine("ParentY", layoutInfo.ParentY),
-                GetValueLine("ParentWidth", layoutInfo.ParentWidth),
-                GetValueLine("ParentHeight", layoutInfo.ParentHeight),
-            };
-
-            Log(lines);
-        }
-
-        protected void Log(LayoutResult layoutResult)
-        {
-            var lines = new List<string>
-            {
-                GetPhaseLine("On Exit"),
-                GetValueLine("X", layoutResult.X),
-                GetValueLine("Y", layoutResult.Y),
-                GetValueLine("Width", layoutResult.Width),
-                GetValueLine("Height", layoutResult.Height)
-            };
-
-            Log(lines);
-        }
-
-        protected void Log(int? width, int? height, int? relativeX, int? relativeY, int? absoluteX, int? absoluteY)
-        {
-            var lines = new List<string>
-            {
-                GetPhaseLine("On Self"),
-                GetValueLine("width", width),
-                GetValueLine("height", height),
-                GetValueLine("relativeX", relativeX),
-                GetValueLine("relativeY", relativeY),
-                GetValueLine("absoluteX", absoluteX),
-                GetValueLine("absoluteY", absoluteY)
-            };
-
-            Log(lines);
-        }
     }
 }

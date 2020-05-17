@@ -70,7 +70,7 @@ namespace StarchUICore.Rendering.Batches
                 }*/
 
                 // TODO - This order within the vertex buffer needs to be altered to match the draw order from the UI Provider
-                element.LayoutChanged += (s, args) =>
+                element.MeasurementChanged += (s, args) =>
                 {
                     var selectionID = SelectionHelper.GetColorFromID(id);
                     var vertex = new ViewQuadVertex(args.Position, args.BorderThickness, args.Size, args.CornerRadius, args.Color, args.BorderColor, selectionID);

@@ -15,7 +15,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                 {
                     //element.Position = element.Position.Offset(Unit.Pixels(element.Location.X + 10), Unit.Pixels(element.Location.Y + 10));
                     element.Measurement.Translate(element.Measurement.X + 10, element.Measurement.Y + 10);
-                    element.InvokeLayoutChange();
+                    element.InvokeMeasurementChanged();
                     //element.Location.Invalidate();
                     //element.Parent.Location.Invalidate();
                 }

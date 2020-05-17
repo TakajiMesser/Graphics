@@ -153,7 +153,7 @@ namespace SpiceEngine.UserInterfaces
                     label.Font = _fontByPath[fontPath];
                 }
 
-                element.LayoutChanged += (s, args) =>
+                element.MeasurementChanged += (s, args) =>
                 {
                     // TODO - Handle omitting views that are not visible or have measurement dimensions of zero
                     _changedIDs.Add(id);
@@ -302,7 +302,6 @@ namespace SpiceEngine.UserInterfaces
             }*/
 
             _traverser.Traverse(root);
-            //root?.Layout(new LayoutInfo(_resolution.Width, _resolution.Height, _resolution.Width, _resolution.Height, 0, 0, 0, 0));
 
             // We don't want the UIBatches to handle reordering themselves. We'd rather reorder at most ONCE per layout cycle
             if (_changedIDs.Count > 0)

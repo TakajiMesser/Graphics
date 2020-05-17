@@ -1,4 +1,4 @@
-﻿namespace StarchUICore.Attributes.Sizes
+﻿namespace StarchUICore
 {
     public class LayoutInfo
     {

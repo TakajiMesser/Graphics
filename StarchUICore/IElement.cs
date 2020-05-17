@@ -3,7 +3,9 @@ using SpiceEngineCore.UserInterfaces;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Styling;
+using StarchUICore.Traversal;
 using System;
+using System.Collections.Generic;
 
 namespace StarchUICore
 {
@@ -11,7 +13,6 @@ namespace StarchUICore
     {
         int EntityID { get; set; }
         string Name { get; set; }
-        int TabCount { get; set; }
         IElement Parent { get; set; }
 
         Position Position { get; set; }
@@ -28,18 +29,20 @@ namespace StarchUICore
 
         Measurement Measurement { get; }
 
-        event EventHandler<LayoutEventArgs> LayoutChanged;
-        //event EventHandler<EventArgs> Draw;
         event EventHandler<PositionEventArgs> PositionChanged;
         event EventHandler<SizeEventArgs> SizeChanged;
+        event EventHandler<LayoutEventArgs> MeasurementChanged;
+
+        IEnumerable<LayoutDependency> GetXDependencies();
+        IEnumerable<LayoutDependency> GetYDependencies();
+        IEnumerable<LayoutDependency> GetWidthDependencies();
+        IEnumerable<LayoutDependency> GetHeightDependencies();
 
         void MeasureX(LayoutInfo layoutInfo);
         void MeasureY(LayoutInfo layoutInfo);
         void MeasureWidth(LayoutInfo layoutInfo);
         void MeasureHeight(LayoutInfo layoutInfo);
-        void Layout(LayoutInfo layoutInfo);
 
-        void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange);
-        void InvokeLayoutChange();
+        void InvokeMeasurementChanged();
     }
 }

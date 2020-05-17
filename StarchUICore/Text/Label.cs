@@ -1,8 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SpiceEngineCore.UserInterfaces;
+using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Sizes;
+using StarchUICore.Attributes.Units;
 using StarchUICore.Text;
+using StarchUICore.Traversal;
 using SweetGraphicsCore.Vertices;
 using System;
 using System.Collections.Generic;
@@ -49,12 +52,7 @@ namespace StarchUICore.Views
 
         public event EventHandler<TextEventArgs> TextChanged;
 
-        protected override int GetRelativeX(LayoutInfo layoutInfo) => 0;
-        protected override int GetRelativeY(LayoutInfo layoutInfo) => 0;
-        protected override int GetMeasuredWidth(LayoutInfo layoutInfo) => 0;
-        protected override int GetMeasuredHeight(LayoutInfo layoutInfo) => 0;
-
-        protected override void OnLaidOut(LayoutInfo layoutInfo)
+        protected override void OnMeasured()
         {
             if (_font != null && _text != null && !Measurement.NeedsMeasuring)
             {
@@ -62,30 +60,83 @@ namespace StarchUICore.Views
             }
         }
 
-        public override void InvokeLayoutChange()
+        public override void InvokeMeasurementChanged()
         {
             if (_font != null && _text != null && !Measurement.NeedsMeasuring)
             {
                 CalculateTextVertices();
             }
 
-            base.InvokeLayoutChange();
+            base.InvokeMeasurementChanged();
         }
 
-        protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
+        public override IEnumerable<LayoutDependency> GetHeightDependencies()
         {
-            /*var width = GetMeasuredWidth(layoutInfo.AvailableWidth, layoutInfo.ParentWidth);
-            var height = GetMeasuredHeight(layoutInfo.AvailableHeight, layoutInfo.ParentHeight);
+            if (Size.Height is AutoUnits && WordWrap)
+            {
+                yield return LayoutDependency.Width(EntityID);
+            }
+
+            foreach (var dependency in base.GetHeightDependencies())
+            {
+                yield return dependency;
+            }
+        }
+
+        protected override int GetRelativeX(LayoutInfo layoutInfo)
+        {
+            var anchorWidth = HorizontalAnchor.GetReferenceWidth(layoutInfo);
+
+            // Apply our Position attribute to achieve this element's desired X
+            var relativeX = Position.X.ToOffsetPixels(layoutInfo.AvailableValue, anchorWidth);
+
+            // Pass this desired relative X back to the Anchor to reposition it appropriately
+            if (!(Position.X is AutoUnits))
+            {
+                relativeX = HorizontalAnchor.GetAnchorX(relativeX, Measurement, layoutInfo);
+            }
+
+            // Apply the Minimum and Maximum constraints last, as these are HARD requirements
+            relativeX = Position.MinimumX.ConstrainAsMinimum(relativeX, anchorWidth);
+            relativeX = Position.MaximumX.ConstrainAsMaximum(relativeX, anchorWidth);
+
+            return relativeX;
+        }
+
+        protected override int GetRelativeY(LayoutInfo layoutInfo)
+        {
+            var anchorHeight = VerticalAnchor.GetReferenceHeight(layoutInfo);
+
+            // Apply our Position attribute to achieve this element's desired Y
+            var relativeY = Position.Y.ToOffsetPixels(layoutInfo.AvailableValue, anchorHeight);
+
+            // Pass this desired relative Y back to the Anchor to reposition it appropriately
+            if (!(Position.Y is AutoUnits))
+            {
+                relativeY = VerticalAnchor.GetAnchorY(relativeY, Measurement, layoutInfo);
+            }
+
+            // Apply the Minimum and Maximum constraints last, as these are HARD requirements
+            relativeY = Position.MinimumY.ConstrainAsMinimum(relativeY, anchorHeight);
+            relativeY = Position.MaximumY.ConstrainAsMaximum(relativeY, anchorHeight);
+
+            return relativeY;
+        }
+
+        protected override int GetMeasuredWidth(LayoutInfo layoutInfo)
+        {
+            var dockWidth = HorizontalDock.GetReferenceWidth(layoutInfo);
+            var width = Size.Width.ToDimensionPixels(layoutInfo.AvailableValue, dockWidth);
 
             // For AUTO sizing, use the measured dimensions as maximums and shrink to the measured text size
-            if (Size.Width is AutoUnits && width.HasValue)
+            if (Size.Width is AutoUnits)
             {
                 var textWidth = _text.Length * _font.GlyphWidth;
 
-                if (textWidth > width.Value)
+                if (textWidth > width)
                 {
-                    var charactersPerLine = width.Value / _font.GlyphWidth;
-                    width = (charactersPerLine * _font.GlyphWidth).ClampTop(width.Value);
+                    var charactersPerLine = width / _font.GlyphWidth;
+                    width = (charactersPerLine * _font.GlyphWidth).ClampTop(width);
                 }
                 else
                 {
@@ -93,57 +144,39 @@ namespace StarchUICore.Views
                 }
             }
 
-            if (Size.Height is AutoUnits && height.HasValue)
+            width = Size.MinimumWidth.ConstrainAsMinimum(width, dockWidth);
+            width = Size.MaximumWidth.ConstrainAsMinimum(width, dockWidth);
+
+            return width;
+        }
+
+        protected override int GetMeasuredHeight(LayoutInfo layoutInfo)
+        {
+            var dockHeight = VerticalDock.GetReferenceHeight(layoutInfo);
+            var height = Size.Height.ToDimensionPixels(layoutInfo.AvailableValue, dockHeight);
+
+            // For AUTO sizing, use the measured dimensions as maximums and shrink to the measured text size
+            if (Size.Height is AutoUnits)
             {
                 if (WordWrap)
                 {
-                    if (width.HasValue)
-                    {
-                        // How many lines will it take?
-                        var charactersPerLine = width.Value / _font.GlyphWidth;
-                        var nLines = (_text.Length / charactersPerLine).ClampBottom(1);
+                    // How many lines will it take?
+                    var charactersPerLine = Measurement.Width / _font.GlyphWidth;
+                    var nLines = (_text.Length / charactersPerLine).ClampBottom(1);
 
-                        height = (nLines * _font.GlyphHeight).ClampTop(height.Value);
-                    }
+                    height = (nLines * _font.GlyphHeight).ClampTop(height);
                 }
                 else
                 {
-                    height = _font.GlyphHeight.ClampTop(height.Value);
+                    height = _font.GlyphHeight.ClampTop(height);
                 }
             }
 
-            var relativeX = GetRelativeX(layoutInfo.RelativeX, layoutInfo.ParentAbsoluteX, layoutInfo.AvailableWidth, layoutInfo.ParentWidth, width);
-            var relativeY = GetRelativeY(layoutInfo.RelativeY, layoutInfo.ParentAbsoluteY, layoutInfo.AvailableHeight, layoutInfo.ParentHeight, height);
+            height = Size.MinimumHeight.ConstrainAsMinimum(height, dockHeight);
+            height = Size.MaximumHeight.ConstrainAsMinimum(height, dockHeight);
 
-            var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
-            var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
-            /*var width = layoutInfo.AvailableWidth;
-            var height = layoutInfo.AvailableHeight;
-            var absoluteX = layoutInfo.ParentAbsoluteX + layoutInfo.RelativeX;
-            var absoluteY = layoutInfo.ParentAbsoluteY + layoutInfo.RelativeY;*/
-
-            //return new LayoutResult(absoluteX, absoluteY, width, height);
-            return LayoutResult.Empty();
+            return height;
         }
-
-        /*private int MeasureTextWidth(int maximumWidth)
-        {
-            // Let's say the text width is AUTO. We should measure the total width we need
-            var width = _text.Length * _font.GlyphWidth;
-
-            if (width > maximumWidth)
-            {
-                var charactersPerLine = maximumWidth / _font.GlyphWidth;
-                width = charactersPerLine * _font.GlyphWidth;
-
-                for (var i = 0; i < _text.Length; i++)
-                {
-                    _font.GlyphWidth;
-                }
-            }
-
-            return width;
-        }*/
 
         private void CalculateTextVertices()
         {

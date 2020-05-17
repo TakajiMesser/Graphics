@@ -261,8 +261,8 @@ namespace TowerWarfare.Builders
             {
                 Name = "Label 3B",
                 UIType = UITypes.Label,
-                X = "Auto",
-                Y = "Auto",
+                X = "0",
+                Y = "0",
                 Width = "Auto",
                 Height = "Auto",
                 HorizontalAnchorSelfType = AnchorTypes.Center,

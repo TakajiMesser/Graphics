@@ -13,28 +13,6 @@ namespace StarchUICore.Views
         public override void Load() { }
         public override void Draw() { }
 
-        protected override int GetMeasuredWidth(LayoutInfo layoutInfo)
-        {
-            var dockWidth = HorizontalDock.GetReferenceWidth(layoutInfo);
-            var constrainedWidth = Size.Width.ToDimensionPixels(layoutInfo.AvailableValue, dockWidth);
-
-            constrainedWidth = Size.MinimumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
-            constrainedWidth = Size.MaximumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
-
-            return constrainedWidth;
-        }
-
-        protected override int GetMeasuredHeight(LayoutInfo layoutInfo)
-        {
-            var dockHeight = VerticalDock.GetReferenceHeight(layoutInfo);
-            var constrainedHeight = Size.Height.ToDimensionPixels(layoutInfo.AvailableValue, dockHeight);
-
-            constrainedHeight = Size.MinimumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
-            constrainedHeight = Size.MaximumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
-
-            return constrainedHeight;
-        }
-
         protected override int GetRelativeX(LayoutInfo layoutInfo)
         {
             var anchorWidth = HorizontalAnchor.GetReferenceWidth(layoutInfo);
@@ -75,19 +53,26 @@ namespace StarchUICore.Views
             return relativeY;
         }
 
-        protected override LayoutResult OnLayout(LayoutInfo layoutInfo)
+        protected override int GetMeasuredWidth(LayoutInfo layoutInfo)
         {
-            /*var width = GetMeasuredWidth(layoutInfo.AvailableWidth);
-            var height = GetMeasuredHeight(layoutInfo.AvailableHeight);
+            var dockWidth = HorizontalDock.GetReferenceWidth(layoutInfo);
+            var constrainedWidth = Size.Width.ToDimensionPixels(layoutInfo.AvailableValue, dockWidth);
 
-            var relativeX = GetRelativeX(layoutInfo.RelativeX, layoutInfo.ParentAbsoluteX, layoutInfo.AvailableWidth, layoutInfo.ParentWidth, width);
-            var relativeY = GetRelativeY(layoutInfo.RelativeY, layoutInfo.ParentAbsoluteY, layoutInfo.AvailableHeight, layoutInfo.ParentHeight, height);
+            constrainedWidth = Size.MinimumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
+            constrainedWidth = Size.MaximumWidth.ConstrainAsMinimum(constrainedWidth, dockWidth);
 
-            var absoluteX = GetAbsoluteX(layoutInfo.ParentAbsoluteX, relativeX, width);
-            var absoluteY = GetAbsoluteY(layoutInfo.ParentAbsoluteY, relativeY, height);
+            return constrainedWidth;
+        }
 
-            return new LayoutResult(absoluteX, absoluteY, width, height);*/
-            return LayoutResult.Empty();
+        protected override int GetMeasuredHeight(LayoutInfo layoutInfo)
+        {
+            var dockHeight = VerticalDock.GetReferenceHeight(layoutInfo);
+            var constrainedHeight = Size.Height.ToDimensionPixels(layoutInfo.AvailableValue, dockHeight);
+
+            constrainedHeight = Size.MinimumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
+            constrainedHeight = Size.MaximumHeight.ConstrainAsMinimum(constrainedHeight, dockHeight);
+
+            return constrainedHeight;
         }
 
         public override void Update(int nTicks)
@@ -98,7 +83,7 @@ namespace StarchUICore.Views
             }
         }
 
-        protected override void OnLaidOut(LayoutInfo layoutInfo)
+        protected override void OnMeasured()
         {
             /*var position = new Vector3(Location.X, Location.Y, 0.0f);
             var borderThickness = Border.Thickness;

@@ -1,5 +1,6 @@
 ﻿using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
+using StarchUICore.Traversal;
 using System.Collections.Generic;
 
 namespace StarchUICore.Groups
@@ -56,6 +57,40 @@ namespace StarchUICore.Groups
             // Then, go through children and draw each one based on their previously measured sizes
         }
 
+        public override IEnumerable<LayoutDependency> GetWidthDependencies()
+        {
+            if (Size.Width is AutoUnits)
+            {
+                // In this case, this group's width is reliant on the width of all of its children...
+                foreach (var child in Children)
+                {
+                    yield return LayoutDependency.Width(child.EntityID);
+                }
+            }
+
+            foreach (var dependency in base.GetWidthDependencies())
+            {
+                yield return dependency;
+            }
+        }
+
+        public override IEnumerable<LayoutDependency> GetHeightDependencies()
+        {
+            if (Size.Height is AutoUnits)
+            {
+                // In this case, this group's height is reliant on the height of all of its children...
+                foreach (var child in Children)
+                {
+                    yield return LayoutDependency.Height(child.EntityID);
+                }
+            }
+
+            foreach (var dependency in base.GetHeightDependencies())
+            {
+                yield return dependency;
+            }
+        }
+
         protected override int GetRelativeX(LayoutInfo layoutInfo)
         {
             var anchorWidth = HorizontalAnchor.GetReferenceWidth(layoutInfo);
@@ -90,16 +125,6 @@ namespace StarchUICore.Groups
 
             LayoutProgress.SetY(Padding.Top.ToOffsetPixels(layoutInfo.AvailableValue, layoutInfo.ParentHeight));
             return relativeY;
-        }
-
-        public override void ApplyCorrections(int widthChange, int heightChange, int xChange, int yChange)
-        {
-            foreach (var child in Children)
-            {
-                child.ApplyCorrections(widthChange, heightChange, xChange, yChange);
-            }
-
-            base.ApplyCorrections(widthChange, heightChange, xChange, yChange);
         }
 
         public abstract IGroup Duplicate();
