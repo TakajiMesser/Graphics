@@ -128,7 +128,7 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
-    <Compile Include="Game\GameManager.cs" />
+    <Compile Include="Game\SimulationManager.cs" />
     <Compile Include="Game\Controls\GameWindow.cs" />
     <Compile Include="Game\PanelCamera.cs" />
     <Compile Include="Game\PanelLoadedEventArgs.cs" />
@@ -153,13 +153,13 @@
     <Compile Include="Maps\MapNode.cs" />
     <Compile Include="Maps\MapUIItem.cs" />
     <Compile Include="Maps\MapVolume.cs" />
-    <Compile Include="Physics\PhysicsManager.cs" />
+    <Compile Include="Physics\PhysicsSystem.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Animations\AnimationManager.cs" />
+    <Compile Include="Rendering\Animations\AnimationSystem.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Font.cs" />
     <Compile Include="Rendering\FontManager.cs" />
@@ -186,9 +186,9 @@
     <Compile Include="Rendering\RenderManager.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
-    <Compile Include="Scripting\BehaviorManager.cs" />
+    <Compile Include="Scripting\BehaviorSystem.cs" />
     <Compile Include="Scripting\Scripts\ScriptManager.cs" />
-    <Compile Include="UserInterfaces\UIManager.cs" />
+    <Compile Include="UserInterfaces\UISystem.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

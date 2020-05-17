@@ -7,7 +7,7 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics;
 using System;
@@ -16,7 +16,7 @@ using System.Linq;
 
 namespace SpiceEngine.Physics
 {
-    public class PhysicsManager : ComponentLoader<IShape, IShapeBuilder>, ICollisionProvider
+    public class PhysicsSystem : ComponentSystem<IShape, IShapeBuilder>, ICollisionProvider
     {
         private IPartitionTree _actorTree;
         private IPartitionTree _brushTree;
@@ -33,7 +33,7 @@ namespace SpiceEngine.Physics
 
         private HashSet<RigidBody3D> _bodiesToUpdate = new HashSet<RigidBody3D>();
 
-        public PhysicsManager(IEntityProvider entityProvider, Quad worldBoundaries)
+        public PhysicsSystem(IEntityProvider entityProvider, Quad worldBoundaries)
         {
             SetEntityProvider(entityProvider);
 
@@ -43,7 +43,7 @@ namespace SpiceEngine.Physics
             _lightTree = new QuadTree(0, worldBoundaries);
         }
 
-        public PhysicsManager(IEntityProvider entityProvider, Oct worldBoundaries)
+        public PhysicsSystem(IEntityProvider entityProvider, Oct worldBoundaries)
         {
             SetEntityProvider(entityProvider);
 

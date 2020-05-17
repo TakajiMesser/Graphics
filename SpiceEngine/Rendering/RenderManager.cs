@@ -14,7 +14,7 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
@@ -47,7 +47,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : ComponentLoader<IRenderable, IRenderableBuilder>, IGridRenderer, ISelectionTracker
+    public class RenderManager : ComponentSystem<IRenderable, IRenderableBuilder>, IGridRenderer, ISelectionTracker
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }

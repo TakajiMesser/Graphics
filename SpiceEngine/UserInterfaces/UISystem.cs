@@ -1,6 +1,6 @@
 ﻿using SpiceEngine.Rendering;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
@@ -18,7 +18,7 @@ using System.Linq;
 namespace SpiceEngine.UserInterfaces
 {
     // Stores all UIControls and determines the order that they should be drawn in
-    public class UIManager : ComponentLoader<IUIElement, IUIElementBuilder>, IUIProvider
+    public class UISystem : ComponentSystem<IUIElement, IUIElementBuilder>, IUIProvider
     {
         private UITraverser _traverser;
         private ITextureProvider _textureProvider;
@@ -42,7 +42,7 @@ namespace SpiceEngine.UserInterfaces
 
         public event EventHandler<OrderEventArgs> OrderChanged;
 
-        public UIManager(IEntityProvider entityProvider, Resolution resolution)
+        public UISystem(IEntityProvider entityProvider, Resolution resolution)
         {
             SetEntityProvider(entityProvider);
             _resolution = resolution;

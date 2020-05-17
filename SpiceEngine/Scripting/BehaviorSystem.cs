@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.Scripting.Scripts;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
@@ -14,7 +14,7 @@ using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace SpiceEngine.Scripting
 {
-    public class BehaviorManager : ComponentLoader<IBehavior, IBehaviorBuilder>, IStimulusProvider
+    public class BehaviorSystem : ComponentSystem<IBehavior, IBehaviorBuilder>, IStimulusProvider
     {
         private ScriptManager _scriptManager = new ScriptManager();
 
@@ -27,7 +27,7 @@ namespace SpiceEngine.Scripting
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
 
-        public BehaviorManager(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
+        public BehaviorSystem(IEntityProvider entityProvider, ICollisionProvider collisionProvider)
         {
             SetEntityProvider(entityProvider);
             _collisionProvider = collisionProvider;

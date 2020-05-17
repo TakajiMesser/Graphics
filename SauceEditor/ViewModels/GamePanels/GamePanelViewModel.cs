@@ -37,7 +37,7 @@ namespace SauceEditor.ViewModels
         public IDisplayEntities EntityDisplayer { get; set; }
         public IEntityFactory EntityFactory { get; set; }
 
-        public GameManager GameManager { get; set; }
+        public SimulationManager GameManager { get; set; }
         public MapComponent MapComponent { get; set; }
 
         public TransformModes TransformMode { get; set; }
@@ -60,7 +60,7 @@ namespace SauceEditor.ViewModels
         {
             if (GameManager == null)
             {
-                GameManager = new GameManager(Resolution);
+                GameManager = new SimulationManager(Resolution);
             }
         }
 

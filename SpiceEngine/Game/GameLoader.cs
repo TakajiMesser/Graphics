@@ -81,19 +81,22 @@ namespace SpiceEngine.Game
 
         private void AddBuilders(IMapEntity mapEntity)
         {
-            _physicsLoader.AddBuilder(mapEntity);
-            _behaviorLoader.AddBuilder(mapEntity);
-            _animatorLoader.AddBuilder(mapEntity);
-            _uiLoader.AddBuilder(mapEntity);
+            if (mapEntity is IComponentBuilder componentBuilder)
+            {
+                _physicsLoader.AddBuilder(componentBuilder);
+                _behaviorLoader.AddBuilder(componentBuilder);
+                _animatorLoader.AddBuilder(componentBuilder);
+                _uiLoader.AddBuilder(componentBuilder);
 
-            // TODO - Handle this in a cleaner way
-            if (!IsInEditorMode && mapEntity is IMapVolume)
-            {
-                _renderableLoader.AddBuilder(null);
-            }
-            else
-            {
-                _renderableLoader.AddBuilder(mapEntity);
+                // TODO - Handle this in a cleaner way
+                if (!IsInEditorMode && mapEntity is IMapVolume)
+                {
+                    _renderableLoader.AddBuilder(null);
+                }
+                else
+                {
+                    _renderableLoader.AddBuilder(mapEntity);
+                }
             }
             
             _entityBuilders.Add(mapEntity);

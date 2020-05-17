@@ -1,18 +1,19 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game.Loading;
+﻿using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 
-namespace SpiceEngineCore.Components.Animations
+namespace SpiceEngine.Rendering.Animations
 {
     // TODO - This class violates the boundary between game logic and rendering logic
-    public class AnimationManager : ComponentLoader<IAnimator, IAnimatorBuilder>, IAnimationProvider
+    public class AnimationSystem : ComponentSystem<IAnimator, IAnimatorBuilder>, IAnimationProvider
     {
         private List<IAnimation> _animations = new List<IAnimation>();
         private Dictionary<int, IAnimate> _animatedByEntityID = new Dictionary<int, IAnimate>();
 
-        public AnimationManager(IEntityProvider entityProvider) => SetEntityProvider(entityProvider);
+        public AnimationSystem(IEntityProvider entityProvider) => SetEntityProvider(entityProvider);
 
         private readonly object _lock = new object();
 

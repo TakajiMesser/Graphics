@@ -220,7 +220,7 @@ namespace SpiceEngine.Game
             base.OnLoad(e);
         }
 
-        public void LoadGameManager(GameManager gameManager, IMap map)
+        public void LoadGameManager(SimulationManager gameManager, IMap map)
         {
             _entityProvider = gameManager.EntityManager;
             _inputProvider = gameManager.InputManager;

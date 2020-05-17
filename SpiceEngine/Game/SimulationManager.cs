@@ -1,9 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Maps;
 using SpiceEngine.Physics;
+using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Scripting;
 using SpiceEngine.UserInterfaces;
-using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
@@ -17,17 +17,17 @@ using System.Drawing.Imaging;
 
 namespace SpiceEngine.Game
 {
-    public class GameManager
+    public class SimulationManager
     {
         private Resolution _resolution;
 
-        public GameManager(Resolution resolution)
+        public SimulationManager(Resolution resolution)
         {
             _resolution = resolution;
             InputManager = new InputManager();
         }
 
-        public GameManager(Resolution resolution, IMouseTracker mouseTracker)
+        public SimulationManager(Resolution resolution, IMouseTracker mouseTracker)
         {
             _resolution = resolution;
             InputManager = new InputManager(mouseTracker);
@@ -37,10 +37,10 @@ namespace SpiceEngine.Game
 
         public EntityManager EntityManager { get; } = new EntityManager();
         public InputManager InputManager { get; private set; }
-        public PhysicsManager PhysicsManager { get; private set; }
-        public BehaviorManager BehaviorManager { get; private set; }
-        public AnimationManager AnimationManager { get; private set; }
-        public UIManager UIManager { get; private set; }
+        public PhysicsSystem PhysicsSystem { get; private set; }
+        public BehaviorSystem BehaviorSystem { get; private set; }
+        public AnimationSystem AnimationSystem { get; private set; }
+        public UISystem UISystem { get; private set; }
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
@@ -52,22 +52,22 @@ namespace SpiceEngine.Game
             switch (map)
             {
                 case Map2D map2D:
-                    PhysicsManager = new PhysicsManager(EntityManager, map2D.Boundaries);
+                    PhysicsSystem = new PhysicsSystem(EntityManager, map2D.Boundaries);
                     break;
                 case Map3D map3D:
-                    PhysicsManager = new PhysicsManager(EntityManager, map3D.Boundaries);
+                    PhysicsSystem = new PhysicsSystem(EntityManager, map3D.Boundaries);
                     break;
             }
 
             //Camera = map.GetCameraAt(0).ToEntity() as ICamera;
 
-            BehaviorManager = new BehaviorManager(EntityManager, PhysicsManager);
+            BehaviorSystem = new BehaviorSystem(EntityManager, PhysicsSystem);
             //BehaviorManager.SetCamera(Camera);
-            BehaviorManager.SetInputProvider(InputManager);
+            BehaviorSystem.SetInputProvider(InputManager);
 
-            AnimationManager = new AnimationManager(EntityManager);
-            UIManager = new UIManager(EntityManager, _resolution);
-            BehaviorManager.SetUIProvider(UIManager);
+            AnimationSystem = new AnimationSystem(EntityManager);
+            UISystem = new UISystem(EntityManager, _resolution);
+            BehaviorSystem.SetUIProvider(UISystem);
 
             EntityManager.ClearEntities();
 
@@ -166,16 +166,16 @@ namespace SpiceEngine.Game
 
         public void Update()
         {
-            PhysicsManager.Tick();
-            BehaviorManager.Tick();
-            AnimationManager.Tick();
-            UIManager.Tick();
+            PhysicsSystem.Tick();
+            BehaviorSystem.Tick();
+            AnimationSystem.Tick();
+            UISystem.Tick();
             InputManager.Tick();
         }
 
         public void SaveToFile(string path) => throw new NotImplementedException();
 
-        public static GameManager LoadFromFile(string path) => throw new NotImplementedException();
+        public static SimulationManager LoadFromFile(string path) => throw new NotImplementedException();
 
         private void TakeScreenshot()
         {

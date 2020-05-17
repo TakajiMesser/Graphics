@@ -1,7 +1,6 @@
 ﻿using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Maps;
 using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
@@ -12,7 +11,7 @@ namespace SpiceEngineCore.Game.Loading
         bool IsLoaded { get; }
 
         void SetEntityProvider(IEntityProvider entityProvider);
-        void AddBuilder(IMapEntity mapEntity);
+        void AddBuilder(IComponentBuilder builder);
         //void RemoveBuilders(int startIndex, int endIndex);
 
         Task LoadBuilderAsync(int entityID, U builder);

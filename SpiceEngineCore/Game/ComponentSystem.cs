@@ -1,15 +1,15 @@
 ﻿using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Maps;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SpiceEngineCore.Game.Loading
+namespace SpiceEngineCore.Game
 {
-    public abstract class ComponentLoader<T, U> : UpdateManager, IComponentLoader<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
+    public abstract class ComponentSystem<T, U> : ITick, IUpdate, IComponentLoader<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
     {
         private List<U> _componentBuilders = new List<U>();
         protected ConcurrentQueue<Tuple<T, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<T, int>>();
@@ -22,16 +22,21 @@ namespace SpiceEngineCore.Game.Loading
         private int _startBuilderIndex;
         //private int _builderIndex = 0;
         //private readonly object _builderLock = new object();
+        private int _currentTick = 0;
 
         protected IEntityProvider _entityProvider;
         protected List<Tuple<T, int>> _componentsAndIDs = new List<Tuple<T, int>>();
         protected Dictionary<int, T> _componentByID = new Dictionary<int, T>();
 
         public bool IsLoaded { get; private set; }
+        public int TickRate { get; set; } = 1;
+
+        public event EventHandler<EventArgs> Ticked;
+        public event EventHandler<EventArgs> Updated;
 
         public virtual void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public void AddBuilder(IMapEntity mapEntity) => _componentBuilders.Add(mapEntity is U builder ? builder : null);
+        public void AddBuilder(IComponentBuilder builder) => _componentBuilders.Add(builder is U componentBuilder ? componentBuilder : null);
 
         private void RemoveBuilders(int startIndex, int endIndex)
         {
@@ -50,7 +55,7 @@ namespace SpiceEngineCore.Game.Loading
 
             _entityIDs = new int[entityCount];
             _loadTasks = new Task[entityCount];
-            
+
             _startBuilderIndex = startIndex;
         }
 
@@ -159,5 +164,21 @@ namespace SpiceEngineCore.Game.Loading
             _componentsAndIDs.Add(Tuple.Create(component, entityID));
             _componentByID.Add(entityID, component);
         }
+
+        public void Tick()
+        {
+            _currentTick++;
+
+            if (_currentTick >= TickRate)
+            {
+                _currentTick = 0;
+                Update();
+                Updated?.Invoke(this, new EventArgs());
+            }
+
+            Ticked?.Invoke(this, new EventArgs());
+        }
+
+        protected abstract void Update();
     }
 }
