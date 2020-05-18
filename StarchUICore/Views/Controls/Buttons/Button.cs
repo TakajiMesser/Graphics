@@ -1,15 +1,11 @@
-﻿using SpiceEngineCore.Rendering.Vertices;
-using StarchUICore.Attributes.Positions;
-using StarchUICore.Attributes.Sizes;
-using StarchUICore.Attributes.Units;
-using StarchUICore.Builders;
-using StarchUICore.Themes;
-using System;
+﻿using System;
 
 namespace StarchUICore.Views.Controls.Buttons
 {
     public class Button : Control
     {
+        public Button(int entityID) : base(entityID) { }
+
         public event EventHandler OnClicked;
 
         public override IView Duplicate() => throw new System.NotImplementedException();

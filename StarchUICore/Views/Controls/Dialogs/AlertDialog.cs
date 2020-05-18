@@ -2,6 +2,6 @@
 {
     public abstract class AlertDialog : Dialog
     {
-
+        public AlertDialog(int entityID) : base(entityID) { }
     }
 }

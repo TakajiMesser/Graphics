@@ -9,6 +9,8 @@ namespace StarchUICore.Groups
     {
         private List<IElement> _children = new List<IElement>();
 
+        public Group(int entityID) : base(entityID) { }
+
         public IEnumerable<IElement> Children => _children;
         public int ChildCount => _children.Count;
 

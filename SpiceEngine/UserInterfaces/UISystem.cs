@@ -176,7 +176,7 @@ namespace SpiceEngine.UserInterfaces
             foreach (var componentAndID in _componentsAndIDs)
             {
                 var element = componentAndID.Item1 as IElement;
-                element.EntityID = componentAndID.Item2;
+                //element.EntityID = componentAndID.Item2;
 
                 // TODO - Do we want to allow more than one root UI element?
                 if (element.Parent == null)

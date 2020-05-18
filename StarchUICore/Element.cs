@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Rendering;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Styling;
@@ -9,13 +10,14 @@ using System.Collections.Generic;
 
 namespace StarchUICore
 {
-    public abstract class Element : IElement
+    public abstract class Element : Component, IElement
     {
         private Position _position;
         private Size _size;
         private float _alpha = 1.0f;
 
-        public int EntityID { get; set; }
+        public Element(int entityID) : base(entityID) { }
+
         public string Name { get; set; }
         public IElement Parent { get; set; }
 

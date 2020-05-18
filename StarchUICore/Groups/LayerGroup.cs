@@ -6,6 +6,8 @@ namespace StarchUICore.Groups
 {
     public class LayerGroup : Group
     {
+        public LayerGroup(int entityID) : base(entityID) { }
+
         protected override int GetMeasuredWidth(LayoutInfo layoutInfo)
         {
             var dockWidth = HorizontalDock.GetReferenceWidth(layoutInfo);

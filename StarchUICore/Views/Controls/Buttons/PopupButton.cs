@@ -2,6 +2,6 @@
 {
     public class PopupButton : Button
     {
-        
+        public PopupButton(int entityID) : base(entityID) { }
     }
 }

@@ -7,6 +7,8 @@ namespace StarchUICore.Views
 {
     public class View : Element, IView
     {
+        public View(int entityID) : base(entityID) { }
+
         public Layer Foreground { get; set; }
         public Layer Background { get; set; }
 

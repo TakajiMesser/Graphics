@@ -17,6 +17,8 @@ namespace StarchUICore.Views
         private IFont _font;
         private string _text;
 
+        public Label(int entityID) : base(entityID) { }
+
         public bool WordWrap { get; set; } = true;
         public float FontScale { get; set; } = 1.0f;
 

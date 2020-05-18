@@ -1,9 +1,9 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore.Collisions;
 using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SavoryPhysicsCore.Collisions;
 
 namespace SavoryPhysicsCore.Shapes
 {
@@ -12,7 +12,7 @@ namespace SavoryPhysicsCore.Shapes
         public float Width { get; }
         public float Height { get; }
 
-        public Rectangle(IEnumerable<Vector2> vertices)
+        public Rectangle(int entityID, IEnumerable<Vector2> vertices) : base(entityID)
         {
             var minX = vertices.Select(v => v.X).Min();
             var maxX = vertices.Select(v => v.X).Max();
@@ -23,13 +23,13 @@ namespace SavoryPhysicsCore.Shapes
             Height = maxY - minY;
         }
 
-        public Rectangle(float width, float height)
+        public Rectangle(int entityID, float width, float height) : base(entityID)
         {
             Width = width;
             Height = height;
         }
 
-        public override Shape2D Duplicate() => new Rectangle(Width, Height);
+        public override Shape2D Duplicate(int entityID) => new Rectangle(entityID, Width, Height);
 
         public override IPartition ToPartition(Vector3 position)
         {

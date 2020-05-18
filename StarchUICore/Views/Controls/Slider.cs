@@ -2,6 +2,6 @@
 {
     public abstract class Slider : Control
     {
-
+        public Slider(int entityID) : base(entityID) { }
     }
 }

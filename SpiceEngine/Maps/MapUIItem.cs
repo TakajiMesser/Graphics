@@ -116,7 +116,7 @@ namespace SpiceEngine.Maps
             {
                 if (_component == null)
                 {
-                    _component = CreateComponent();
+                    _component = CreateComponent(entityID);
                 }
 
                 return _component;
@@ -129,7 +129,7 @@ namespace SpiceEngine.Maps
             {
                 if (_component == null)
                 {
-                    _component = CreateComponent();
+                    _component = CreateComponent(entityID);
                 }
 
                 return _component;
@@ -144,7 +144,7 @@ namespace SpiceEngine.Maps
         {
             if (UIType == UITypes.Button && PushScript != null)
             {
-                var behavior = new Behavior();
+                var behavior = new Behavior(entityID);
 
                 // TODO - Check to see if this button was both pressed and released
                 var rootNode = new RepeaterNode(new InputConditionNode(
@@ -164,34 +164,34 @@ namespace SpiceEngine.Maps
             return null;
         }
 
-        private IElement CreateComponent()
+        private IElement CreateComponent(int entityID)
         {
             if (TexturesPaths.Any()) throw new NotImplementedException();
 
             switch (UIType)
             {
                 case UITypes.View:
-                    var view = new View();
+                    var view = new View(entityID);
                     ApplyValues(view);
                     return view;
                 case UITypes.RowGroup:
-                    var rowGroup = new RowGroup();
+                    var rowGroup = new RowGroup(entityID);
                     ApplyValues(rowGroup);
                     return rowGroup;
                 case UITypes.ColumnGroup:
-                    var columnGroup = new ColumnGroup();
+                    var columnGroup = new ColumnGroup(entityID);
                     ApplyValues(columnGroup);
                     return columnGroup;
                 case UITypes.LayerGroup:
-                    var layerGroup = new LayerGroup();
+                    var layerGroup = new LayerGroup(entityID);
                     ApplyValues(layerGroup);
                     return layerGroup;
                 case UITypes.Button:
-                    var button = new Button();
+                    var button = new Button(entityID);
                     ApplyValues(button);
                     return button;
                 case UITypes.Label:
-                    var textView = new Label();
+                    var textView = new Label(entityID);
                     ApplyValues(textView);
                     return textView;
             }

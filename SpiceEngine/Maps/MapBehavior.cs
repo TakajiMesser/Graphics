@@ -17,9 +17,9 @@ namespace SpiceEngine.Maps
 
         public IEnumerable<Script> GetScripts() => RootNode?.GetScripts();
 
-        public IBehavior ToBehavior()
+        public IBehavior ToBehavior(int entityID)
         {
-            var behavior = new Behavior();
+            var behavior = new Behavior(entityID);
 
             if (RootNode != null)
             {

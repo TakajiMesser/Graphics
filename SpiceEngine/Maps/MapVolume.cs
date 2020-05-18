@@ -83,7 +83,7 @@ namespace SpiceEngine.Maps
             };
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(Vertices);
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(entityID, Vertices);
 
         IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID) =>
             new ColoredMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices

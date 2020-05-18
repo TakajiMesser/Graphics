@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
@@ -11,10 +12,12 @@ using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace UmamiScriptingCore.Behaviors
 {
-    public class Behavior : IBehavior
+    public class Behavior : Component, IBehavior
     {
         private Stack<Node> _rootStack = new Stack<Node>();
         private List<IResponse> _responses = new List<IResponse>();
+
+        public Behavior(int entityID) : base(entityID) { }
 
         public BehaviorContext Context { get; private set; } = new BehaviorContext();
 

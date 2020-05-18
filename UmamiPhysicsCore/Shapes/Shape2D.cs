@@ -1,14 +1,17 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Physics;
 
 namespace SavoryPhysicsCore.Shapes
 {
-    public abstract class Shape2D : IShape
+    public abstract class Shape2D : Component, IShape
     {
+        public Shape2D(int entityID) : base(entityID) { }
+
         public abstract IPartition ToPartition(Vector3 position);
         public abstract Vector2 GetFurthestPointInDirection(Vector2 direction);
         //public abstract bool CollidesWith(Vector2 position, Vector2 point);
-        public abstract Shape2D Duplicate();
+        public abstract Shape2D Duplicate(int entityID);
         public abstract float CalculateInertia(float mass);
 
         /*public static Collision2D GetCollision(Vector2 positionA, Shape2D shapeA, Vector2 positionB, Shape2D shapeB)

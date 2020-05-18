@@ -141,11 +141,11 @@ namespace SpiceEngineCore.Maps
 
                     if (Name == "Player"/* || Name == "BasicEnemy"*/)
                     {
-                        return new Sphere(vertices);
+                        return new Sphere(entityID, vertices);
                     }
                     else
                     {
-                        return new Box(vertices);
+                        return new Box(entityID, vertices);
                     }
                 }
 
@@ -156,11 +156,11 @@ namespace SpiceEngineCore.Maps
             }
             else
             {
-                return new Box(Vertices.Select(v => v.Position));
+                return new Box(entityID, Vertices.Select(v => v.Position));
             }
         }
 
-        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior();
+        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior(entityID);
 
         IAnimator IComponentBuilder<IAnimator>.ToComponent(int entityID)
         {
@@ -177,7 +177,7 @@ namespace SpiceEngineCore.Maps
 
                     if (scene.HasAnimations)
                     {
-                        return new Animator();
+                        return new Animator(entityID);
                     }
                 }
             }

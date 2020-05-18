@@ -1,11 +1,14 @@
-﻿using SpiceEngineCore.Components.Animations;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Components.Animations;
 using System;
 using System.Linq;
 
 namespace SweetGraphicsCore.Rendering.Animations
 {
-    public class Animator : IAnimator
+    public class Animator : Component, IAnimator
     {
+        public Animator(int entityID) : base(entityID) { }
+
         public IAnimation DefaultAnimation { get; set; }
         public IAnimation CurrentAnimation { get; set; }
         public float AnimationTick { get; private set; }

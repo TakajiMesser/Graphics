@@ -1,9 +1,9 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore.Collisions;
 using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SavoryPhysicsCore.Collisions;
 
 namespace SavoryPhysicsCore.Shapes
 {
@@ -11,18 +11,15 @@ namespace SavoryPhysicsCore.Shapes
     {
         public float Radius { get; }
 
-        public Circle(IEnumerable<Vector2> vertices)
+        public Circle(int entityID, IEnumerable<Vector2> vertices) : base(entityID)
         {
             var maxDistanceSquared = vertices.Select(v => v.LengthSquared).Max();
             Radius = (float)Math.Sqrt(maxDistanceSquared);
         }
 
-        public Circle(float radius)
-        {
-            Radius = radius;
-        }
+        public Circle(int entityID, float radius) : base(entityID) => Radius = radius;
 
-        public override Shape2D Duplicate() => new Circle(Radius);
+        public override Shape2D Duplicate(int entityID) => new Circle(entityID, Radius);
 
         public override IPartition ToPartition(Vector3 position)
         {

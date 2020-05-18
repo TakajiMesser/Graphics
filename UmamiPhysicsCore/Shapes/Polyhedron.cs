@@ -1,8 +1,8 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore.Collisions;
 using SpiceEngineCore.Physics;
 using System.Collections.Generic;
 using System.Linq;
-using SavoryPhysicsCore.Collisions;
 
 namespace SavoryPhysicsCore.Shapes
 {
@@ -10,9 +10,9 @@ namespace SavoryPhysicsCore.Shapes
     {
         public List<Vector3> Vertices { get; } = new List<Vector3>();
 
-        public Polyhedron(IEnumerable<Vector3> vertices) => Vertices.AddRange(vertices);
+        public Polyhedron(int entityID, IEnumerable<Vector3> vertices) : base(entityID) => Vertices.AddRange(vertices);
 
-        public override Shape3D Duplicate() => new Polyhedron(Vertices);
+        public override Shape3D Duplicate(int entityID) => new Polyhedron(entityID, Vertices);
 
         public override IPartition ToPartition(Vector3 position)
         {

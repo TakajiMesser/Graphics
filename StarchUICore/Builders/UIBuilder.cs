@@ -113,7 +113,7 @@ namespace StarchUICore.Builders
         {
             // TODO - Views should NOT require an explicit vertex set!
             // They should manage their own vertices as their position, size, color, etc. change
-            var view = new View();
+            var view = new View(0);
             ApplyValues(view);
 
             return view;
@@ -121,7 +121,7 @@ namespace StarchUICore.Builders
 
         public RowGroup CreateRowGroup()
         {
-            var rowGroup = new RowGroup();
+            var rowGroup = new RowGroup(0);
             ApplyValues(rowGroup);
 
             return rowGroup;

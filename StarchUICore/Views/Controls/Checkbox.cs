@@ -2,6 +2,6 @@
 {
     public abstract class Checkbox : Control
     {
-
+        public Checkbox(int entityID) : base(entityID) { }
     }
 }

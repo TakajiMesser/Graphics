@@ -2,6 +2,6 @@
 {
     public class ToggleButton : Button
     {
-
+        public ToggleButton(int entityID) : base(entityID) { }
     }
 }

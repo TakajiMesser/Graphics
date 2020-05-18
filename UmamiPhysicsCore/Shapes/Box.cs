@@ -1,9 +1,9 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore.Collisions;
 using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SavoryPhysicsCore.Collisions;
 
 namespace SavoryPhysicsCore.Shapes
 {
@@ -13,7 +13,7 @@ namespace SavoryPhysicsCore.Shapes
         public float Height { get; private set; }
         public float Depth { get; private set; }
 
-        public Box(IEnumerable<Vector3> vertices)
+        public Box(int entityID, IEnumerable<Vector3> vertices) : base(entityID)
         {
             var minX = vertices.Select(v => v.X).Min();
             var maxX = vertices.Select(v => v.X).Max();
@@ -28,14 +28,14 @@ namespace SavoryPhysicsCore.Shapes
             Depth = maxZ - minZ;
         }
 
-        public Box(float width, float height, float depth)
+        public Box(int entityID, float width, float height, float depth) : base(entityID)
         {
             Width = width;
             Height = height;
             Depth = depth;
         }
 
-        public override Shape3D Duplicate() => new Box(Width, Height, Depth);
+        public override Shape3D Duplicate(int entityID) => new Box(entityID, Width, Height, Depth);
 
         public override IPartition ToPartition(Vector3 position)
         {

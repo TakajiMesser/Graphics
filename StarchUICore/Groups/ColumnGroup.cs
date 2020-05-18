@@ -6,6 +6,8 @@ namespace StarchUICore.Groups
 {
     public class ColumnGroup : Group
     {
+        public ColumnGroup(int entityID) : base(entityID) { }
+
         protected override int GetMeasuredWidth(LayoutInfo layoutInfo)
         {
             var dockWidth = HorizontalDock.GetReferenceWidth(layoutInfo);

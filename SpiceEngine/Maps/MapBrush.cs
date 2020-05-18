@@ -62,7 +62,7 @@ namespace SpiceEngine.Maps
             };
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(Vertices.Select(v => v.Position));
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(entityID, Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

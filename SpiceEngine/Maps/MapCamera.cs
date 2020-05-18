@@ -55,6 +55,6 @@ namespace SpiceEngineCore.Maps
             return camera;
         }
 
-        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior();
+        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior(entityID);
     }
 }
