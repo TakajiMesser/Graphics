@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Components;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
 {
-    /*public class MultiRenderLoader : IMultiRenderLoader
+    public class MultiRenderLoader : IMultiRenderLoader
     {
         private List<IRenderableLoader> _loaders = new List<IRenderableLoader>();
 
@@ -67,7 +67,7 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        public void AddBuilder(IComponentBuilder builder)
+        public void AddBuilder(IMapEntity mapEntity)
         {
             int loaderCount;
 
@@ -85,8 +85,8 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[loaderIndex].AddBuilder(mapEntity);
                 }
                 else
-                {*
-                    _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddBuilder(builder));
+                {*/
+                _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddBuilder(mapEntity));
                 //}
             }
         }
@@ -112,11 +112,11 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
                 }
                 else
-                {*
-                    _loadActions[loaderIndex].Add(() =>
-                    {
-                        _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
-                    });
+                {*/
+                _loadActions[loaderIndex].Add(() =>
+                {
+                    _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
+                });
                 //}
             }
         }
@@ -139,8 +139,8 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[i].AddLoadTask(entityID);
                 }
                 else
-                {*
-                    _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddLoadTask(entityID));
+                {*/
+                _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddLoadTask(entityID));
                 //}
             }
         }
@@ -173,28 +173,28 @@ namespace SpiceEngineCore.Game.Loading
                     });
                 }
                 else
-                {*
-                    multiLoaderTasks[loaderIndex] = Task.Run(async () =>
+                {*/
+                multiLoaderTasks[loaderIndex] = Task.Run(async () =>
+                {
+                    var result = await _loaderAddedTasks[loaderIndex].Task;
+
+                    if (result)
                     {
-                        var result = await _loaderAddedTasks[loaderIndex].Task;
-
-                        if (result)
+                        foreach (var loadAction in _loadActions[loaderIndex])
                         {
-                            foreach (var loadAction in _loadActions[loaderIndex])
-                            {
-                                loadAction();
-                            }
-
-                            IRenderableLoader loader;
-
-                            lock (_loaderLock)
-                            {
-                                loader = _loaders[loaderIndex];
-                            }
-
-                            await loader.LoadAsync();
+                            loadAction();
                         }
-                    });
+
+                        IRenderableLoader loader;
+
+                        lock (_loaderLock)
+                        {
+                            loader = _loaders[loaderIndex];
+                        }
+
+                        await loader.LoadAsync();
+                    }
+                });
                 //}
             }
 
@@ -214,7 +214,7 @@ namespace SpiceEngineCore.Game.Loading
             {
                 LoadComponents();
             }
-        }*
+        }*/
 
         public void LoadSync()
         {
@@ -247,7 +247,23 @@ namespace SpiceEngineCore.Game.Loading
             {
                 RemoveBuilders(_startBuilderIndex, _startBuilderIndex + _loadTasks.Length);
                 _isProcessing = false;
-            });*
+            });*/
         }
-    }*/
+
+        /*protected async Task LoadBuildersAsync(int loaderIndex) => await Task.WhenAll(_loadTasks[loaderIndex]);
+
+        protected virtual void LoadBuildersSync(int loaderIndex)
+        {
+            for (var i = 0; i < _loadTasks[loaderIndex].Length; i++)
+            {
+                var entityID = _entityIDs[i];
+                var builder = _componentBuilders[i + _startBuilderIndex];
+
+                if (builder != null)
+                {
+                    _loaders[loaderIndex].LoadBuilderSync(entityID, builder);
+                }
+            }
+        }*/
+    }
 }

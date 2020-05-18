@@ -1,9 +1,8 @@
-﻿using SpiceEngineCore.Components;
-using System;
+﻿using System;
 
 namespace SpiceEngineCore.Rendering
 {
-    public interface IRenderable : IComponent
+    public interface IRenderable
     {
         bool IsTransparent { get; }
         bool IsAnimated { get; }

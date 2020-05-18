@@ -14,7 +14,6 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
@@ -47,7 +46,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : ComponentSystem<IRenderable, IRenderableBuilder>, IGridRenderer, ISelectionTracker
+    public class RenderManager : RenderableLoader, IGridRenderer, ISelectionTracker
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
@@ -155,7 +154,7 @@ namespace SpiceEngine.Rendering
 
         public override Task LoadBuilderAsync(int entityID, IRenderableBuilder builder) => Task.Run(() =>
         {
-            var component = builder.ToComponent(entityID);
+            var component = builder.ToRenderable();
 
             if (component != null)
             {

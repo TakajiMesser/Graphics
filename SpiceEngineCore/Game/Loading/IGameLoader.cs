@@ -1,7 +1,6 @@
 ﻿using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Components.Builders;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
@@ -30,7 +29,7 @@ namespace SpiceEngineCore.Game.Loading
         void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader);
         void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader);
         void SetUILoader(IComponentLoader<IUIElement, IUIElementBuilder> uiLoader);
-        void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader);
+        void AddRenderableLoader(IRenderableLoader renderableLoader);
 
         //void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder);
         void Add(IMapEntity mapEntity);

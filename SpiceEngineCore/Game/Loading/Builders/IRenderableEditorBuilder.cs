@@ -1,13 +1,12 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Components;
 using SpiceEngineCore.Rendering;
 
 namespace SpiceEngineCore.Game.Loading.Builders
 {
-    public interface IRenderableEditorBuilder : IComponentBuilder<IRenderable>
+    public interface IRenderableEditorBuilder
     {
         Vector3 Position { get; set; }
 
-        IRenderable ToComponent(bool isInEditorMode);
+        IRenderable ToRenderable(bool isInEditorMode);
     }
 }

@@ -68,7 +68,7 @@ namespace SpiceEngineCore.Maps
             return actor;
         }
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID)
+        public IRenderable ToRenderable()
         {
             //if (string.IsNullOrEmpty(ModelFilePath))
             if (!string.IsNullOrEmpty(ModelFilePath))

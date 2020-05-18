@@ -109,6 +109,7 @@ namespace SpiceEngine.Maps
 
         private IElement _component;
         private object _componentLock = new object();
+        private int _entityID;
 
         IUIElement IComponentBuilder<IUIElement>.ToComponent(int entityID)
         {
@@ -117,19 +118,20 @@ namespace SpiceEngine.Maps
                 if (_component == null)
                 {
                     _component = CreateComponent(entityID);
+                    _entityID = entityID;
                 }
 
                 return _component;
             }
         }
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID)
+        public IRenderable ToRenderable()
         {
             lock (_componentLock)
             {
                 if (_component == null)
                 {
-                    _component = CreateComponent(entityID);
+                    _component = CreateComponent(_entityID);
                 }
 
                 return _component;

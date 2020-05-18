@@ -6,26 +6,21 @@ using System.Threading.Tasks;
 namespace SpiceEngineCore.Game.Loading
 {
     public interface IComponentLoader { }
-    public interface IComponentLoader<T, U> : IComponentLoader where T : IComponent where U : IComponentBuilder<T>
+    public interface IComponentLoader<TComponent, TBuilder> : IComponentLoader where TComponent : IComponent where TBuilder : IComponentBuilder<TComponent>
     {
         bool IsLoaded { get; }
 
         void SetEntityProvider(IEntityProvider entityProvider);
         void AddBuilder(IMapEntity builder);
-        //void RemoveBuilders(int startIndex, int endIndex);
 
-        Task LoadBuilderAsync(int entityID, U builder);
-        void LoadBuilderSync(int entityID, U builder);
-
-        //void AddComponent(int entityID, IComponentBuilder<T> builder);
+        Task LoadBuilderAsync(int entityID, TBuilder builder);
+        void LoadBuilderSync(int entityID, TBuilder builder);
 
         void InitializeLoad(int entityCount, int startIndex);
         void AddLoadTask(int entityID);
 
         Task LoadAsync();
         void LoadSync();
-        
-        //Task LoadAsync2();
 
         Task InitializeComponents();
     }

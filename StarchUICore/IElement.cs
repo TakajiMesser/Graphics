@@ -11,7 +11,6 @@ namespace StarchUICore
 {
     public interface IElement : IUIElement, IRenderable
     {
-        int EntityID { get; }
         string Name { get; set; }
         IElement Parent { get; set; }
 

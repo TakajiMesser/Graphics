@@ -1,6 +1,6 @@
-﻿using SpiceEngineCore.Components;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Maps;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -35,7 +35,7 @@ namespace SpiceEngineCore.Rendering
 
         public virtual void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public void AddBuilder(IComponentBuilder builder) => _componentBuilders.Add(builder is IRenderableBuilder componentBuilder ? componentBuilder : null);
+        public void AddBuilder(IMapEntity builder) => _componentBuilders.Add(builder is IRenderableBuilder componentBuilder ? componentBuilder : null);
 
         private void RemoveBuilders(int startIndex, int endIndex)
         {
@@ -124,7 +124,7 @@ namespace SpiceEngineCore.Rendering
 
         public virtual Task LoadBuilderAsync(int entityID, IRenderableBuilder builder) => Task.Run(() =>
         {
-            var component = builder.ToComponent(entityID);
+            var component = builder.ToRenderable();
 
             if (component != null)
             {

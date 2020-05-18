@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Components;
-using SpiceEngineCore.Components.Animations;
+﻿using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Components.Builders;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
@@ -29,7 +28,7 @@ namespace SpiceEngine.Game
         private IComponentLoader<IAnimator, IAnimatorBuilder> _animatorLoader;
         private IComponentLoader<IUIElement, IUIElementBuilder> _uiLoader;
 
-        private IMultiComponentLoader<IRenderable, IRenderableBuilder> _renderableLoader = new MultiComponentLoader<IRenderable, IRenderableBuilder>();
+        private MultiRenderLoader _multiRenderLoader = new MultiRenderLoader();
 
         private int _loadIndex = 0;
 
@@ -48,8 +47,8 @@ namespace SpiceEngine.Game
 
         public int RendererWaitCount
         {
-            get => _renderableLoader.LoaderWaitCount;
-            set => _renderableLoader.LoaderWaitCount = value;
+            get => _multiRenderLoader.LoaderWaitCount;
+            set => _multiRenderLoader.LoaderWaitCount = value;
         }
 
         public bool IsLoading { get; private set; }
@@ -70,7 +69,7 @@ namespace SpiceEngine.Game
         public void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader) => _animatorLoader = animatorLoader;
         public void SetUILoader(IComponentLoader<IUIElement, IUIElementBuilder> uiLoader) => _uiLoader = uiLoader;
 
-        public void AddRenderableLoader(IComponentLoader<IRenderable, IRenderableBuilder> renderableLoader) => _renderableLoader.AddLoader(renderableLoader);
+        public void AddRenderableLoader(IRenderableLoader renderableLoader) => _multiRenderLoader.AddLoader(renderableLoader);
 
         public void Add(IMapEntity mapEntity)
         {
@@ -91,11 +90,11 @@ namespace SpiceEngine.Game
             // TODO - Handle this in a cleaner way
             if (!IsInEditorMode && mapEntity is IMapVolume)
             {
-                _renderableLoader.AddBuilder(null);
+                _multiRenderLoader.AddBuilder(null);
             }
             else
             {
-                _renderableLoader.AddBuilder(mapEntity);
+                _multiRenderLoader.AddBuilder(mapEntity);
             }
 
             _entityBuilders.Add(mapEntity);
@@ -210,7 +209,7 @@ namespace SpiceEngine.Game
             _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
             _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
             _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _renderableLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
             _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
 
             var index = startBuilderIndex;
@@ -231,7 +230,7 @@ namespace SpiceEngine.Game
                     _behaviorLoader.AddLoadTask(id);
                     _animatorLoader.AddLoadTask(id);
                     _uiLoader.AddLoadTask(id);
-                    _renderableLoader.AddLoadTask(id);
+                    _multiRenderLoader.AddLoadTask(id);
 
                     /*var id = idIterator.Current;
                     var currentBuilderIndex = index;
@@ -282,7 +281,7 @@ namespace SpiceEngine.Game
                 _behaviorLoader.LoadAsync(),
                 _animatorLoader.LoadAsync(),
                 _uiLoader.LoadAsync(),
-                _renderableLoader.LoadAsync()
+                _multiRenderLoader.LoadAsync()
             };
         
             await Task.WhenAll(loadTasks);
@@ -321,7 +320,7 @@ namespace SpiceEngine.Game
             _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
             _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
             _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _renderableLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
 
             var index = startBuilderIndex;
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
@@ -342,7 +341,7 @@ namespace SpiceEngine.Game
                     _behaviorLoader?.AddLoadTask(id);
                     _animatorLoader?.AddLoadTask(id);
                     _uiLoader?.AddLoadTask(id);
-                    _renderableLoader?.AddLoadTask(id);
+                    _multiRenderLoader?.AddLoadTask(id);
 
                     EntityMapping?.AddID(id);
                     index++;
@@ -355,7 +354,7 @@ namespace SpiceEngine.Game
             _behaviorLoader?.LoadSync();
             _animatorLoader?.LoadSync();
             _uiLoader?.LoadSync();
-            _renderableLoader?.LoadSync();
+            _multiRenderLoader?.LoadSync();
 
             lock (_builderLock)
             {

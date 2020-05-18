@@ -49,7 +49,7 @@ namespace SpiceEngine.Maps
             return brush;
         }
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID)
+        public IRenderable ToRenderable()
         {
             if (!TexturesPaths.Any())
             {
