@@ -1,15 +1,15 @@
 ﻿using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Maps;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
 {
-    public class MultiComponentLoader<T, U> : IMultiComponentLoader<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
+    /*public class MultiRenderLoader : IMultiRenderLoader
     {
-        private List<IComponentLoader<T, U>> _loaders = new List<IComponentLoader<T, U>>();
+        private List<IRenderableLoader> _loaders = new List<IRenderableLoader>();
 
         private bool _isProcessing = false;
         private int _loaderWaitCount = 0;
@@ -54,7 +54,7 @@ namespace SpiceEngineCore.Game.Loading
 
         public virtual void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public void AddLoader(IComponentLoader<T, U> loader)
+        public void AddLoader(IRenderableLoader loader)
         {
             lock (_loaderLock)
             {
@@ -67,7 +67,7 @@ namespace SpiceEngineCore.Game.Loading
             }
         }
 
-        public void AddBuilder(IMapEntity mapEntity)
+        public void AddBuilder(IComponentBuilder builder)
         {
             int loaderCount;
 
@@ -85,8 +85,8 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[loaderIndex].AddBuilder(mapEntity);
                 }
                 else
-                {*/
-                    _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddBuilder(mapEntity));
+                {*
+                    _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddBuilder(builder));
                 //}
             }
         }
@@ -112,7 +112,7 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
                 }
                 else
-                {*/
+                {*
                     _loadActions[loaderIndex].Add(() =>
                     {
                         _loaders[loaderIndex].InitializeLoad(entityCount, startIndex);
@@ -139,7 +139,7 @@ namespace SpiceEngineCore.Game.Loading
                     _loaders[i].AddLoadTask(entityID);
                 }
                 else
-                {*/
+                {*
                     _loadActions[loaderIndex].Add(() => _loaders[loaderIndex].AddLoadTask(entityID));
                 //}
             }
@@ -173,7 +173,7 @@ namespace SpiceEngineCore.Game.Loading
                     });
                 }
                 else
-                {*/
+                {*
                     multiLoaderTasks[loaderIndex] = Task.Run(async () =>
                     {
                         var result = await _loaderAddedTasks[loaderIndex].Task;
@@ -185,7 +185,7 @@ namespace SpiceEngineCore.Game.Loading
                                 loadAction();
                             }
 
-                            IComponentLoader<T, U> loader;
+                            IRenderableLoader loader;
 
                             lock (_loaderLock)
                             {
@@ -214,7 +214,7 @@ namespace SpiceEngineCore.Game.Loading
             {
                 LoadComponents();
             }
-        }*/
+        }*
 
         public void LoadSync()
         {
@@ -247,23 +247,7 @@ namespace SpiceEngineCore.Game.Loading
             {
                 RemoveBuilders(_startBuilderIndex, _startBuilderIndex + _loadTasks.Length);
                 _isProcessing = false;
-            });*/
+            });*
         }
-
-        /*protected async Task LoadBuildersAsync(int loaderIndex) => await Task.WhenAll(_loadTasks[loaderIndex]);
-
-        protected virtual void LoadBuildersSync(int loaderIndex)
-        {
-            for (var i = 0; i < _loadTasks[loaderIndex].Length; i++)
-            {
-                var entityID = _entityIDs[i];
-                var builder = _componentBuilders[i + _startBuilderIndex];
-
-                if (builder != null)
-                {
-                    _loaders[loaderIndex].LoadBuilderSync(entityID, builder);
-                }
-            }
-        }*/
-    }
+    }*/
 }

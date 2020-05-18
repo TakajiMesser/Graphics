@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Rendering;
 
 namespace SpiceEngineCore.Game.Loading.Builders

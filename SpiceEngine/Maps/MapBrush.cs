@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SavoryPhysicsCore.Shapes;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics;
@@ -49,7 +49,7 @@ namespace SpiceEngine.Maps
             return brush;
         }
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent()
+        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID)
         {
             if (!TexturesPaths.Any())
             {
@@ -62,7 +62,7 @@ namespace SpiceEngine.Maps
             };
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent() => new Box(Vertices.Select(v => v.Position));
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

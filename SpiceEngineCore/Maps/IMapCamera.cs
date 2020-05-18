@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Game.Loading.Builders;
+﻿using SpiceEngineCore.Components.Builders;
+using SpiceEngineCore.Entities.Cameras;
 
 namespace SpiceEngineCore.Maps
 {

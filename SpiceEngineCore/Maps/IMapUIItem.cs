@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities.UserInterfaces;
+﻿using SpiceEngineCore.Components.Builders;
+using SpiceEngineCore.Entities.UserInterfaces;
 using SpiceEngineCore.Game.Loading.Builders;
 
 namespace SpiceEngineCore.Maps

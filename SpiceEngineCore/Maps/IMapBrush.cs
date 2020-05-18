@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities.Brushes;
+﻿using SpiceEngineCore.Components.Builders;
+using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Game.Loading.Builders;
 
 namespace SpiceEngineCore.Maps

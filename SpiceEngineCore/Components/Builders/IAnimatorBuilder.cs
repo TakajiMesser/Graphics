@@ -2,7 +2,7 @@
 using SpiceEngineCore.Components.Animations;
 using System.Collections.Generic;
 
-namespace SpiceEngineCore.Game.Loading.Builders
+namespace SpiceEngineCore.Components.Builders
 {
     public interface IAnimatorBuilder : IComponentBuilder<IAnimator>
     {

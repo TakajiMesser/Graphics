@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using SavoryPhysicsCore.Shapes;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
@@ -83,9 +83,9 @@ namespace SpiceEngine.Maps
             };
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent() => new Box(Vertices);
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(Vertices);
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent() =>
+        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID) =>
             new ColoredMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices
                 .Select(v => new Vertex3D(v, Vector3.Zero, Vector3.Zero, Vector2.Zero, new Color4(0.2f, 0.2f, 0.2f, 0.5f))).ToList(), TriangleIndices));
 

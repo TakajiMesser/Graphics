@@ -1,4 +1,6 @@
-﻿using SpiceEngineCore.Components.Animations;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Components.Builders;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
@@ -81,24 +83,21 @@ namespace SpiceEngine.Game
 
         private void AddBuilders(IMapEntity mapEntity)
         {
-            if (mapEntity is IComponentBuilder componentBuilder)
-            {
-                _physicsLoader.AddBuilder(componentBuilder);
-                _behaviorLoader.AddBuilder(componentBuilder);
-                _animatorLoader.AddBuilder(componentBuilder);
-                _uiLoader.AddBuilder(componentBuilder);
+            _physicsLoader.AddBuilder(mapEntity);
+            _behaviorLoader.AddBuilder(mapEntity);
+            _animatorLoader.AddBuilder(mapEntity);
+            _uiLoader.AddBuilder(mapEntity);
 
-                // TODO - Handle this in a cleaner way
-                if (!IsInEditorMode && mapEntity is IMapVolume)
-                {
-                    _renderableLoader.AddBuilder(null);
-                }
-                else
-                {
-                    _renderableLoader.AddBuilder(mapEntity);
-                }
+            // TODO - Handle this in a cleaner way
+            if (!IsInEditorMode && mapEntity is IMapVolume)
+            {
+                _renderableLoader.AddBuilder(null);
             }
-            
+            else
+            {
+                _renderableLoader.AddBuilder(mapEntity);
+            }
+
             _entityBuilders.Add(mapEntity);
         }
 

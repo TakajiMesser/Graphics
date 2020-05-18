@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.Rendering;
+using SpiceEngineCore.Components.Builders;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Outputs;

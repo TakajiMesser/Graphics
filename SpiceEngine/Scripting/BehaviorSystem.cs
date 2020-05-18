@@ -1,8 +1,8 @@
 ﻿using SpiceEngine.Scripting.Scripts;
+using SpiceEngineCore.Components.Builders;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Scripting;

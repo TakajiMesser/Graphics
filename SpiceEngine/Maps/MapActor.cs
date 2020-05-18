@@ -4,10 +4,10 @@ using SavoryPhysicsCore.Shapes;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Models;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
@@ -68,7 +68,7 @@ namespace SpiceEngineCore.Maps
             return actor;
         }
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent()
+        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID)
         {
             //if (string.IsNullOrEmpty(ModelFilePath))
             if (!string.IsNullOrEmpty(ModelFilePath))
@@ -110,7 +110,7 @@ namespace SpiceEngineCore.Maps
             }
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent()
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID)
         {
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
@@ -160,9 +160,9 @@ namespace SpiceEngineCore.Maps
             }
         }
 
-        IBehavior IComponentBuilder<IBehavior>.ToComponent() => Behavior?.ToBehavior();
+        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior();
 
-        IAnimator IComponentBuilder<IAnimator>.ToComponent()
+        IAnimator IComponentBuilder<IAnimator>.ToComponent(int entityID)
         {
             if (!string.IsNullOrEmpty(ModelFilePath))
             {

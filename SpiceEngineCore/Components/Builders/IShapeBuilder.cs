@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Physics;
 
-namespace SpiceEngineCore.Game.Loading.Builders
+namespace SpiceEngineCore.Components.Builders
 {
     public interface IShapeBuilder : IComponentBuilder<IShape>
     {

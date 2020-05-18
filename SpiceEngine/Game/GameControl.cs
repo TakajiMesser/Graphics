@@ -213,19 +213,19 @@ namespace SpiceEngine.Game
 
                 if (_entityProvider != null && _inputProvider != null)
                 {
-                    LoadFromGameManager();
+                    LoadFromSimulation();
                 }
             }
 
             base.OnLoad(e);
         }
 
-        public void LoadGameManager(SimulationManager gameManager, IMap map)
+        public void LoadSimulation(SimulationManager simulationManager, IMap map)
         {
-            _entityProvider = gameManager.EntityManager;
-            _inputProvider = gameManager.InputManager;
-            _animationProvider = gameManager.AnimationManager;
-            _uiProvider = gameManager.UIManager;
+            _entityProvider = simulationManager.EntityManager;
+            _inputProvider = simulationManager.InputManager;
+            _animationProvider = simulationManager.AnimationSystem;
+            _uiProvider = simulationManager.UISystem;
 
             SelectionManager = new SelectionManager(_entityProvider);
 
@@ -236,7 +236,7 @@ namespace SpiceEngine.Game
             {
                 if (_isLoaded)
                 {
-                    LoadFromGameManager();
+                    LoadFromSimulation();
                 }
             }
         }
@@ -276,7 +276,7 @@ namespace SpiceEngine.Game
             return func();
         }));
 
-        private void LoadFromGameManager()
+        private void LoadFromSimulation()
         {
             // TODO - Should we run this all on the UI thread?
             RunSync(() =>

@@ -155,7 +155,7 @@ namespace SpiceEngine.Rendering
 
         public override Task LoadBuilderAsync(int entityID, IRenderableBuilder builder) => Task.Run(() =>
         {
-            var component = builder.ToComponent();
+            var component = builder.ToComponent(entityID);
 
             if (component != null)
             {

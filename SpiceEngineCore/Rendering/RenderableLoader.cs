@@ -1,18 +1,17 @@
 ﻿using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game.Loading;
-using SpiceEngineCore.Maps;
+using SpiceEngineCore.Game.Loading.Builders;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace SpiceEngineCore.Game
+namespace SpiceEngineCore.Rendering
 {
-    public abstract class ComponentSystem<T, U> : ITick, IUpdate, IComponentLoader<T, U> where T : class, IComponent where U : class, IComponentBuilder<T>
+    public abstract class RenderableLoader : IRenderableLoader
     {
-        private List<U> _componentBuilders = new List<U>();
-        protected ConcurrentQueue<Tuple<T, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<T, int>>();
+        private List<IRenderableBuilder> _componentBuilders = new List<IRenderableBuilder>();
+        protected ConcurrentQueue<Tuple<IRenderable, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<IRenderable, int>>();
 
         private bool _isProcessing = false;
         private int[] _entityIDs;
@@ -25,8 +24,8 @@ namespace SpiceEngineCore.Game
         private int _currentTick = 0;
 
         protected IEntityProvider _entityProvider;
-        protected List<Tuple<T, int>> _componentsAndIDs = new List<Tuple<T, int>>();
-        protected Dictionary<int, T> _componentByID = new Dictionary<int, T>();
+        protected List<Tuple<IRenderable, int>> _componentsAndIDs = new List<Tuple<IRenderable, int>>();
+        protected Dictionary<int, IRenderable> _componentByID = new Dictionary<int, IRenderable>();
 
         public bool IsLoaded { get; private set; }
         public int TickRate { get; set; } = 1;
@@ -36,7 +35,7 @@ namespace SpiceEngineCore.Game
 
         public virtual void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
 
-        public void AddBuilder(IMapEntity builder) => _componentBuilders.Add(builder is U componentBuilder ? componentBuilder : null);
+        public void AddBuilder(IComponentBuilder builder) => _componentBuilders.Add(builder is IRenderableBuilder componentBuilder ? componentBuilder : null);
 
         private void RemoveBuilders(int startIndex, int endIndex)
         {
@@ -123,7 +122,7 @@ namespace SpiceEngineCore.Game
             }
         }
 
-        public virtual Task LoadBuilderAsync(int entityID, U builder) => Task.Run(() =>
+        public virtual Task LoadBuilderAsync(int entityID, IRenderableBuilder builder) => Task.Run(() =>
         {
             var component = builder.ToComponent(entityID);
 
@@ -133,7 +132,7 @@ namespace SpiceEngineCore.Game
             }
         });
 
-        public virtual void LoadBuilderSync(int entityID, U builder) { }
+        public virtual void LoadBuilderSync(int entityID, IRenderableBuilder builder) { }
 
         public async Task InitializeComponents()
         {
@@ -153,13 +152,13 @@ namespace SpiceEngineCore.Game
 
         protected virtual void LoadComponents()
         {
-            while (_componentAndIDQueue.TryDequeue(out Tuple<T, int> componentAndID))
+            while (_componentAndIDQueue.TryDequeue(out Tuple<IRenderable, int> componentAndID))
             {
                 LoadComponent(componentAndID.Item2, componentAndID.Item1);
             }
         }
 
-        protected virtual void LoadComponent(int entityID, T component)
+        protected virtual void LoadComponent(int entityID, IRenderable component)
         {
             _componentsAndIDs.Add(Tuple.Create(component, entityID));
             _componentByID.Add(entityID, component);

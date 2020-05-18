@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.Maps;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Scripting;
 using System.Collections.Generic;
@@ -55,6 +55,6 @@ namespace SpiceEngineCore.Maps
             return camera;
         }
 
-        IBehavior IComponentBuilder<IBehavior>.ToComponent() => Behavior?.ToBehavior();
+        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior();
     }
 }

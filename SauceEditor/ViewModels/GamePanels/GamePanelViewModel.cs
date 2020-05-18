@@ -37,7 +37,7 @@ namespace SauceEditor.ViewModels
         public IDisplayEntities EntityDisplayer { get; set; }
         public IEntityFactory EntityFactory { get; set; }
 
-        public SimulationManager GameManager { get; set; }
+        public SimulationManager SimulationManager { get; set; }
         public MapComponent MapComponent { get; set; }
 
         public TransformModes TransformMode { get; set; }
@@ -58,9 +58,9 @@ namespace SauceEditor.ViewModels
 
         public void OnResolutionChanged()
         {
-            if (GameManager == null)
+            if (SimulationManager == null)
             {
-                GameManager = new SimulationManager(Resolution);
+                SimulationManager = new SimulationManager(Resolution);
             }
         }
 
@@ -122,7 +122,7 @@ namespace SauceEditor.ViewModels
         private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
-            panelViewModel.EntityProvider = GameManager.EntityManager;
+            panelViewModel.EntityProvider = SimulationManager.EntityManager;
             panelViewModel.GameLoader = _gameLoader;
             panelViewModel.Mapper = this;
             panelViewModel.Control.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
@@ -130,7 +130,7 @@ namespace SauceEditor.ViewModels
             {
                 // Because this panel has finished loading in, we can now safely notify the GameLoader that we are ready to load in some RenderBuilders
                 //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
-                panelViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
+                panelViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
                 //LoadPanels();
                 _gameLoader.AddRenderableLoader(panelViewModel.Control.RenderManager);
             };
@@ -144,29 +144,29 @@ namespace SauceEditor.ViewModels
         public void EnableLayer(string layerName)
         {
             // If the layer is enabled, it means that these IDs will get included regardless if they show up in other layers
-            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Enabled);
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Enabled);
         }
 
         public void DisableLayer(string layerName)
         {
             // If the layer is disabled, it means that these IDs will get excluded regardless if they show up in other layers
-            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
         }
 
         public void NeutralizeLayer(string layerName)
         {
             // If the layer is neutralized, it means that these IDs will be included UNLESS they are excluded in another layer
-            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Neutral);
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Neutral);
         }
 
         public void ClearLayer(string layerName)
         {
             // TODO - Remove entities from EntityManager tracking as well
             // Disable the layer and delay removing the entities
-            var entityIDs = GameManager.EntityManager.LayerProvider.GetLayerEntityIDs(layerName).ToList();
+            var entityIDs = SimulationManager.EntityManager.LayerProvider.GetLayerEntityIDs(layerName).ToList();
 
-            GameManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
-            GameManager.EntityManager.ClearLayer(layerName);
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
+            SimulationManager.EntityManager.ClearLayer(layerName);
             //PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
 
             foreach (var entityID in entityIDs)
@@ -209,15 +209,15 @@ namespace SauceEditor.ViewModels
                 entity.ID = id;
             }*/
             //GameManager.EntityManager.AddEntities(modelEntities);
-            GameManager.EntityManager.EntitiesAdded += (s, args) =>
+            SimulationManager.EntityManager.EntitiesAdded += (s, args) =>
             {
                 foreach (var builder in args.Builders)
                 {
-                    GameManager.EntityManager.LayerProvider.AddToLayer(layerName, builder.Item1);
+                    SimulationManager.EntityManager.LayerProvider.AddToLayer(layerName, builder.Item1);
 
                     if (builder.Item2 is IRenderableBuilder renderableBuilder)
                     {
-                        var renderable = renderableBuilder.ToComponent();
+                        var renderable = renderableBuilder.ToComponent(builder.Item1);
 
                         PerspectiveViewModel.Control.AddEntity(builder.Item1, renderable);
                         XViewModel.Control.AddEntity(builder.Item1, renderable);
@@ -233,12 +233,12 @@ namespace SauceEditor.ViewModels
             };
 
             // Add these entities to a new layer, enable it, and disable all other layers
-            if (!GameManager.EntityManager.LayerProvider.ContainsLayer(layerName))
+            if (!SimulationManager.EntityManager.LayerProvider.ContainsLayer(layerName))
             {
-                GameManager.EntityManager.LayerProvider.AddLayer(layerName);
+                SimulationManager.EntityManager.LayerProvider.AddLayer(layerName);
             }
 
-            GameManager.EntityManager.AddEntities(entityBuilders);
+            SimulationManager.EntityManager.AddEntities(entityBuilders);
 
             //GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
 
@@ -371,16 +371,16 @@ namespace SauceEditor.ViewModels
         private async void LoadAsync()
         {
             //GameManager = new GameManager(Resolution);
-            GameManager.LoadFromMap(MapComponent.Map);
+            SimulationManager.LoadFromMap(MapComponent.Map);
 
             // TODO - Make these less janky...
             _gameLoader.RendererWaitCount = 4;
             _gameLoader.TrackEntityMapping = true;
-            _gameLoader.SetEntityProvider(GameManager.EntityManager);
-            _gameLoader.SetPhysicsLoader(GameManager.PhysicsManager);
-            _gameLoader.SetBehaviorLoader(GameManager.BehaviorManager);
-            _gameLoader.SetAnimatorLoader(GameManager.AnimationManager);
-            _gameLoader.SetUILoader(GameManager.UIManager);
+            _gameLoader.SetEntityProvider(SimulationManager.EntityManager);
+            _gameLoader.SetPhysicsLoader(SimulationManager.PhysicsSystem);
+            _gameLoader.SetBehaviorLoader(SimulationManager.BehaviorSystem);
+            _gameLoader.SetAnimatorLoader(SimulationManager.AnimationSystem);
+            _gameLoader.SetUILoader(SimulationManager.UISystem);
             //_gameLoader.AddRenderManager(_renderManager);
 
             _gameLoader.AddFromMap(MapComponent.Map);
@@ -415,10 +415,10 @@ namespace SauceEditor.ViewModels
                     if (!_isMapLoadedInPanels && MapComponent != null)
                     {
                         // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                        PerspectiveViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
-                        XViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
-                        YViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
-                        ZViewModel.Control.LoadGameManager(GameManager, MapComponent.Map);
+                        PerspectiveViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        XViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        YViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        ZViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
 
                         _isMapLoadedInPanels = true;
                     }

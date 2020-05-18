@@ -1,7 +1,7 @@
 ﻿using OpenTK.Graphics;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.UserInterfaces;
-using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
@@ -110,7 +110,7 @@ namespace SpiceEngine.Maps
         private IElement _component;
         private object _componentLock = new object();
 
-        IUIElement IComponentBuilder<IUIElement>.ToComponent()
+        IUIElement IComponentBuilder<IUIElement>.ToComponent(int entityID)
         {
             lock (_componentLock)
             {
@@ -123,7 +123,7 @@ namespace SpiceEngine.Maps
             }
         }
 
-        IRenderable IComponentBuilder<IRenderable>.ToComponent()
+        IRenderable IComponentBuilder<IRenderable>.ToComponent(int entityID)
         {
             lock (_componentLock)
             {
@@ -140,7 +140,7 @@ namespace SpiceEngine.Maps
         public IEnumerable<IStimulus> GetStimuli() => Enumerable.Empty<IStimulus>();
         public IEnumerable<IProperty> GetProperties() => Enumerable.Empty<IProperty>();
 
-        IBehavior IComponentBuilder<IBehavior>.ToComponent()
+        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID)
         {
             if (UIType == UITypes.Button && PushScript != null)
             {
