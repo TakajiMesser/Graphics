@@ -1,7 +1,6 @@
-﻿using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Scripting.StimResponse;
-using SpiceEngine.Scripting;
+﻿using SpiceEngineCore.Scripting;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Meters;
 
 namespace SampleGameProject.Behaviors.Enemy
 {

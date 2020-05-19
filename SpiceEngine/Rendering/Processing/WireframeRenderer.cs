@@ -1,17 +1,19 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Helpers;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Processing
@@ -134,7 +136,7 @@ namespace SpiceEngine.Rendering.Processing
             GL.Disable(EnableCap.CullFace);
         }
 
-        /*public void VolumeWireframePass(Camera camera, BatchManager batchManager)
+        /*public void VolumeWireframePass(Camera camera, IBatcher batcher)
         {
             _wireframeProgram.Use();
 
@@ -142,51 +144,59 @@ namespace SpiceEngine.Rendering.Processing
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", LineColor);
 
-            batchManager.DrawVolumes(_wireframeProgram);
+            batcher.DrawVolumes(_wireframeProgram);
         }*/
 
-        public void WireframePass(ICamera camera, BatchManager batchManager)
+        public void WireframePass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
                 .SetUniform("lineColor", LineColor)
                 .SetUniform("selectedLineThickness", SelectedLineThickness)
                 .SetUniform("selectedLineColor", SelectedLineColor)
-                .RenderOpaqueStatic()
-                .RenderTransparentStatic()
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
                 .SetShader(_jointWireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", LineThickness)
                 .SetUniform("lineColor", LineColor)
                 .SetUniform("selectedLineThickness", SelectedLineThickness)
                 .SetUniform("selectedLineColor", SelectedLineColor)
-                .RenderOpaqueAnimated()
-                .RenderTransparentAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
                 .Execute();
         }
 
-        public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, BatchManager batchManager)
+        public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
-                .SetEntityIDs(entityIDs)
+            batcher.CreateBatchAction()
+                .SetEntityIDSet(entityIDs)
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", 0.0f)
                 .SetUniform("lineColor", Vector4.Zero)
                 .SetUniform("selectedLineThickness", SelectedLineThickness)
                 .SetUniform("selectedLineColor", SelectedLineColor)
-                .RenderOpaqueStatic()
-                .RenderTransparentStatic()
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
                 .SetShader(_jointWireframeProgram)
                 .SetCamera(camera)
                 .SetUniform("lineThickness", 0.0f)
                 .SetUniform("lineColor", Vector4.Zero)
                 .SetUniform("selectedLineThickness", SelectedLineThickness)
                 .SetUniform("selectedLineColor", SelectedLineColor)
-                .RenderOpaqueAnimated()
-                .RenderTransparentAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
                 .Execute();
         }
 
@@ -210,17 +220,40 @@ namespace SpiceEngine.Rendering.Processing
             _gridSquare.Draw();
         }
 
-        public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, BatchManager batchManager)
+        // TODO - Pass multiple entity ID's to this method to render all selections at once
+        public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, IBatcher batcher)
         {
-            var program = entity is AnimatedActor ? _jointWireframeProgram : _wireframeProgram;
+            batcher.CreateBatchAction()
+                .SetShader(_wireframeProgram)
+                .SetCamera(camera)
+                .SetEntityIDSet(entity.ID.Yield())
+                .SetUniform("lineThickness", SelectedLightLineThickness)
+                .SetUniform("lineColor", SelectedLineColor)
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetShader(_jointWireframeProgram)
+                .SetCamera(camera)
+                .SetEntityIDSet(entity.ID.Yield())
+                .SetUniform("lineThickness", SelectedLightLineThickness)
+                .SetUniform("lineColor", SelectedLineColor)
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .Execute();
+
+            /*var batch = batchManager.GetBatch(entity.ID);
+
+            //var program = entity is AnimatedActor ? _jointWireframeProgram : _wireframeProgram;
+            var program = batch is ModelBatch modelBatch && modelBatch.Model is IAnimatedModel animatedModel
+                ? _jointWireframeProgram
+                : _wireframeProgram;
+
             program.Use();
 
             camera.SetUniforms(program);
             program.SetUniform("lineThickness", SelectedLineThickness);
             program.SetUniform("lineColor", SelectedLineColor);
-
-            var batch = batchManager.GetBatch(entity.ID);
-            batch.Draw(entityProvider, program);
+            
+            batch.Draw(entityProvider, program);*/
         }
 
         public void SelectionPass(ICamera camera, ILight light, SimpleMesh mesh)

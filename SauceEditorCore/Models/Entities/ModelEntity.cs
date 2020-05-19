@@ -1,10 +1,7 @@
-﻿using OpenTK;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Rendering;
+using SweetGraphicsCore.Rendering.Models;
 
 namespace SauceEditorCore.Models.Entities
 {
@@ -26,14 +23,14 @@ namespace SauceEditorCore.Models.Entities
             };
         }
 
-        public override void SetUniforms(ShaderProgram program)
+        /*public override void SetUniforms(ShaderProgram program)
         {
             program.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
             program.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
-        }
+        }*/
 
         //public override bool CompareUniforms(IEntity entity) => entity is ModelEntity;// modelEntity && _modelMatrix.Equals(modelEntity._modelMatrix);
         public virtual IEntity ToEntity() => this;
-        public abstract IRenderable ToRenderable();
+        public abstract IRenderable ToComponent();
     }
 }

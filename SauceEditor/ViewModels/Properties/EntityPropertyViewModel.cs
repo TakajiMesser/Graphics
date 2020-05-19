@@ -1,85 +1,85 @@
 using OpenTK;
-using SauceEditor.Models;
+using PropertyChanged;
 using SauceEditor.Utilities;
+using SauceEditor.Views.Custom;
 using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities;
 using SpiceEngine.Maps;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Utilities;
 using System.ComponentModel;
 using System.Windows.Media;
 using Xceed.Wpf.Toolkit.PropertyGrid.Attributes;
 
 namespace SauceEditor.ViewModels.Properties
 {
-    public class EntityPropertyViewModel : ViewModel, IPropertyViewModel<EditorEntity>
+    public class EntityPropertyViewModel : PropertyViewModel<EditorEntity>, IPropertyViewModel
     {
         public string ID { get; private set; }
+
+        [HideIfNullProperty]
         public string Name { get; set; }
 
         [Category("Transforms")]
         [ExpandableObject]
+        [PropagateChanges]
+        [DoNotCheckEquality]
         public VectorProperty Position { get; set; }
 
         [Category("Transforms")]
         [ExpandableObject]
+        [PropagateChanges]
+        [DoNotCheckEquality]
+        [HideIfNullProperty]
         public VectorProperty Rotation { get; set; }
 
         [Category("Transforms")]
         [ExpandableObject]
+        [PropagateChanges]
+        [DoNotCheckEquality]
+        [HideIfNullProperty]
         public VectorProperty Scale { get; set; }
 
-        public Color Color { get; set; }
-
-        private EditorEntity _editorEntity;
+        [HideIfNullProperty]
+        public Color? Color { get; set; }
 
         public void OnPositionChanged()
         {
-            AddChild(Position, (s, args) =>
+            if (Model != null)
             {
-                if (_editorEntity != null)
-                {
-                    _editorEntity.Entity.Position = Position.ToVector3();
-                    _editorEntity.MapEntity.Position = Position.ToVector3();
-                    InvokePropertyChanged(nameof(Position));
-                }
-            });
+                Model.Entity.Position = Position.ToVector3();
+                Model.MapEntity.Position = Position.ToVector3();
+            }
         }
 
         public void OnRotationChanged()
         {
-            AddChild(Rotation, (s, args) =>
+            if (Model != null && Model.Entity is IRotate rotator)
             {
-                if (_editorEntity != null && _editorEntity.Entity is IRotate rotator)
+                rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
+
+                if (Model.MapEntity is IMapEntity mapEntity)
                 {
-                    rotator.Rotation = Quaternion.FromEulerAngles(Rotation.ToVector3().ToRadians());
-                    if (_editorEntity.MapEntity is IMapEntity3D mapEntity)
-                    {
-                        mapEntity.Rotation = Rotation.ToVector3();
-                    }
-                    InvokePropertyChanged(nameof(Rotation));
+                    mapEntity.Rotation = Rotation.ToVector3();
                 }
-            });
+            }
         }
 
         public void OnScaleChanged()
         {
-            AddChild(Scale, (s, args) =>
+            if (Model != null && Model.Entity is IScale scaler)
             {
-                if (_editorEntity != null && _editorEntity.Entity is IScale scaler)
+                scaler.Scale = Scale.ToVector3();
+
+                if (Model.MapEntity is IMapEntity mapEntity)
                 {
-                    scaler.Scale = Scale.ToVector3();
-                    if (_editorEntity.MapEntity is IMapEntity3D mapEntity)
-                    {
-                        mapEntity.Scale = Scale.ToVector3();
-                    }
-                    InvokePropertyChanged(nameof(Scale));
+                    mapEntity.Scale = Scale.ToVector3();
                 }
-            });
+            }
         }
 
-        public void UpdateFromModel(EditorEntity editorEntity)
+        protected override void UpdatePropertiesFromModel(EditorEntity editorEntity)
         {
-            _editorEntity = editorEntity;
             if (editorEntity == null) return; // Yikes
 
             ID = editorEntity.Entity.ID.ToString();
@@ -95,7 +95,7 @@ namespace SauceEditor.ViewModels.Properties
 
             Position = new VectorProperty(editorEntity.MapEntity.Position);
 
-            if (editorEntity.MapEntity is IMapEntity3D mapEntity)
+            if (editorEntity.MapEntity is IMapEntity mapEntity)
             {
                 if (editorEntity.Entity is IRotate)
                 {
@@ -111,6 +111,10 @@ namespace SauceEditor.ViewModels.Properties
             if (editorEntity.MapEntity is MapLight mapLight)
             {
                 Color = mapLight.Color.ToMediaColor();
+            }
+            else
+            {
+                Color = null;
             }
         }
     }

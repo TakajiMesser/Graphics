@@ -1,0 +1,29 @@
+﻿<xcad:LayoutAnchorable x:Class="SauceEditor.Views.Libraries.LibraryPanel"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SauceEditor.Views"
+        xmlns:custom="clr-namespace:SauceEditor.Views.Custom"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels.Libraries"
+        xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        mc:Ignorable="d"
+        Title="Library">
+    <StackPanel Name="Panel" Orientation="Vertical">
+        <StackPanel.DataContext>
+            <vm:LibraryPanelViewModel x:Name="ViewModel"/>
+        </StackPanel.DataContext>
+
+        <Label Name="ProjectType" FontSize="14"/>
+        <Button Command="{Binding BackCommand}">BACK</Button>
+
+        <Label FontSize="14">View Type</Label>
+        <btns:ToggleEnumButton x:Name="ViewTypeButton" Orientation="Horizontal" Value="{Binding Path=ViewType, Mode=TwoWay}" />
+
+        <Label FontSize="14">Sort Style</Label>
+        <btns:ToggleEnumButton x:Name="SortStyleButton" Orientation="Horizontal" Value="{Binding Path=SortStyle, Mode=TwoWay}" />
+
+        <custom:ImageButtonList ItemsSource="{Binding Children}" />
+    </StackPanel>
+</xcad:LayoutAnchorable>

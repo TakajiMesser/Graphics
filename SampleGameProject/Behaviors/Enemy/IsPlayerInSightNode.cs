@@ -1,12 +1,12 @@
-﻿using SpiceEngine.Entities.Actors;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Physics.Raycasting;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Nodes.Decorators;
-using SpiceEngine.Utilities;
+﻿using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Raycasting;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Runtime.Serialization;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
+using UmamiScriptingCore.Behaviors.Nodes.Decorators;
 
 namespace SampleGameProject.Behaviors.Enemy
 {
@@ -25,9 +25,9 @@ namespace SampleGameProject.Behaviors.Enemy
             ViewDistance = viewDistance;
         }
 
-        public override bool Condition(BehaviorContext context)
+        protected override bool Condition(BehaviorContext context)
         {
-            var player = context.GetActor("Player");
+            var player = context.GetEntity("Player");
 
             if (player != null)
             {
@@ -51,9 +51,7 @@ namespace SampleGameProject.Behaviors.Enemy
 
                     if (Raycast.TryRaycast(new Ray3(context.Position, playerDirection, ViewDistance), colliders, context.GetEntityProvider(), out RaycastHit hit))
                     {
-                        var hitEntity = context.GetEntity(hit.EntityID);
-
-                        if (hitEntity.GetType() == typeof(Actor) && ((Actor)hitEntity).Name == "Player")
+                        if (context.GetEntity(hit.EntityID) is IActor actor && actor.Name == "Player")
                         {
                             return true;
                         }

@@ -19,7 +19,7 @@ namespace SpiceEngine.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "16.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -91,15 +91,15 @@ namespace SpiceEngine.Properties {
         ///uniform mat4 viewMatrix;
         ///uniform mat4 projectionMatrix;
         ///uniform vec3 cameraPosition;
+        ///uniform vec3 xDirection;
+        ///uniform vec3 yDirection;
+        ///uniform vec3 zDirection;
         ///
         ///out vec4 fColor;
         ///
         ///void drawArrow(mat4 viewProjectionMatrix, vec3 position, vec4 color, vec3 direction, vec3 perpendicular)
         ///{
-        ///    fColor = color;
-        ///	//vec4 screenPosition;
-        ///
-        ///	//vec4 initialScreenPosition = viewMatrix * vec4 [rest of string was truncated]&quot;;.
+        ///    fColor = color; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string arrow_geom {
             get {
@@ -126,7 +126,8 @@ namespace SpiceEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #version 440
         ///
-        ///uniform sampler2D mainTexture;
+        ///uniform vec4 overrideColor;
+        ///uniform sampler2D mainTexture; 
         ///
         ///in vec2 fUV;
         ///
@@ -134,12 +135,20 @@ namespace SpiceEngine.Properties {
         ///
         ///void main()
         ///{
-        ///    color = texture2D(mainTexture, fUV);
+        ///    color = texture(mainTexture, fUV);
         ///
         ///    if (color.r == 1.0 &amp;&amp; color.g == 1.0 &amp;&amp; color.b == 1.0)
         ///    {
         ///        discard;
         ///    }
+        ///	else if (overrideColor.a &gt; 0.0)
+        ///	{
+        ///		color = overrideColor;
+        ///	}
+        ///	/*else
+        ///	{
+        ///		discard;
+        ///	}*/
         ///}.
         /// </summary>
         internal static string billboard_frag {
@@ -190,7 +199,7 @@ namespace SpiceEngine.Properties {
         ///
         ///void main()
         ///{
-        ///    vec4 textureColor = texture2D(mainTexture, fUV);
+        ///    vec4 textureColor = texture(mainTexture, fUV);
         ///
         ///    if (textureColor.r == 1.0 &amp;&amp; textureColor.g == 1.0 &amp;&amp; textureColor.b == 1.0)
         ///    {
@@ -1335,13 +1344,13 @@ namespace SpiceEngine.Properties {
         /// <summary>
         ///   Looks up a localized string similar to #version 440
         ///
-        ///uniform vec4 id;
+        ///in vec4 fId;
         ///
         ///layout(location = 0) out vec4 color;
         ///
         ///void main()
         ///{
-        ///    color = id;
+        ///    color = vec4(fId.xyz, 1.0);
         ///    //color = vec4(0, 1, 0, 1);
         ///}.
         /// </summary>
@@ -1366,6 +1375,9 @@ namespace SpiceEngine.Properties {
         ///layout(location = 0) in vec3 vPosition;
         ///layout(location = 5) in vec4 vBoneIDs;
         ///layout(location = 6) in vec4 vBoneWeights;
+        ///layout(location = 7) in vec4 vId;
+        ///
+        ///out vec4 fId;
         ///
         ///void main()
         ///{
@@ -1373,8 +1385,7 @@ namespace SpiceEngine.Properties {
         ///
         ///    vec4 position = vec4(vPosition, 1.0);
         ///
-        ///    mat4 jointTransform = mat4(0.0);
-        ///    for (int i = [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string selection_skinning_vert {
             get {
@@ -1390,10 +1401,14 @@ namespace SpiceEngine.Properties {
         ///uniform mat4 projectionMatrix;
         ///
         ///layout(location = 0) in vec3 vPosition;
+        ///layout(location = 7) in vec4 vId;
+        ///
+        ///out vec4 fId;
         ///
         ///void main()
         ///{
         ///    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+        ///	fId = vId;
         ///}.
         /// </summary>
         internal static string selection_vert {
@@ -1731,6 +1746,121 @@ namespace SpiceEngine.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to #version 440
+        ///
+        /////uniform sampler2D textureSampler;
+        ///
+        /////in vec3 fPosition;
+        ///in vec4 fColor;
+        ///in vec4 fId;
+        /////in vec2 fUV;
+        ///
+        ///out vec4 color;
+        ///
+        ///void main()
+        ///{
+        ///	//color = texture(textureSampler, fUV);
+        ///    //color = vec4(1.0, 0.0, 0.0, 1.0);
+        ///	//color = vec4(1.0, 1.0, 0.0, fColor.w);
+        ///	color = fColor;
+        ///}.
+        /// </summary>
+        internal static string ui_frag {
+            get {
+                return ResourceManager.GetString("ui_frag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 440
+        ///
+        ///uniform mat4 modelMatrix;
+        ///uniform vec2 resolution;
+        ///uniform vec2 halfResolution;
+        ///
+        ///layout(location = 0) in vec3 vPosition;
+        ///layout(location = 1) in vec4 vColor;
+        ///layout(location = 2) in vec4 vId;
+        ///
+        /////out vec3 fPosition;
+        ///out vec4 fColor;
+        ///out vec4 fId;
+        /////out vec2 fUV;
+        ///
+        ///void main()
+        ///{
+        ///	vec4 position = vec4(vPosition.x, /*resolution.y - */vPosition.y, vPosition.z, 1.0);
+        ///	vec4 clipPosition = modelMatrix * position;
+        ///
+        ///	// TODO - This will convert the position to being relative from the  [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string ui_vert {
+            get {
+                return ResourceManager.GetString("ui_vert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_frag {
+            get {
+                return ResourceManager.GetString("uiquad_frag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_geom {
+            get {
+                return ResourceManager.GetString("uiquad_geom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_vert {
+            get {
+                return ResourceManager.GetString("uiquad_vert", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_selection_frag
+        {
+            get
+            {
+                return ResourceManager.GetString("uiquad_selection_frag", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_selection_geom
+        {
+            get
+            {
+                return ResourceManager.GetString("uiquad_selection_geom", resourceCulture);
+            }
+        }
+
+        /// <summary>
+        ///   Looks up a localized resource of type System.Byte[].
+        /// </summary>
+        internal static string uiquad_selection_vert
+        {
+            get
+            {
+                return ResourceManager.GetString("uiquad_selection_vert", resourceCulture);
+            }
+        }
+
+        /// <summary>
         ///   Looks up a localized string similar to #version 330 core
         ///
         ///// Interpolated values from the vertex shaders
@@ -1795,8 +1925,11 @@ namespace SpiceEngine.Properties {
         ///
         ///uniform float lineThickness;
         ///uniform vec4 lineColor;
+        ///uniform float selectedLineThickness;
+        ///uniform vec4 selectedLineColor;
         ///
         ///smooth in vec3 gEdgeDistance;
+        ///in vec4 fId;
         ///
         ///layout(location = 0) out vec4 color;
         ///
@@ -1806,13 +1939,8 @@ namespace SpiceEngine.Properties {
         ///    float distance = min(gEdgeDistance[0], min(gEdgeDistance[1], gEdgeDistance[2]));
         ///
         ///    // Discard any fragments that are not close to the edge
-        ///    if (distance &gt; lineThickness)
-        ///    {
-        ///        discard;
-        ///    }
-        ///    else
-        ///    {
-        ///		float innerEdgeIntensity = exp2(-1 [rest of string was truncated]&quot;;.
+        ///	float thickness = fId.w &lt; 1.0
+        ///		? [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string wireframe_frag {
             get {
@@ -1830,7 +1958,10 @@ namespace SpiceEngine.Properties {
         ///uniform mat4 viewMatrix;
         ///uniform mat4 projectionMatrix;
         ///
+        ///in vec4 gId[];
+        ///
         ///smooth out vec3 gEdgeDistance;
+        ///out vec4 fId;
         ///
         ///void main()
         ///{
@@ -1838,7 +1969,7 @@ namespace SpiceEngine.Properties {
         ///    float b = length(gl_in[2].gl_Position.xyz - gl_in[0].gl_Position.xyz);
         ///    float c = length(gl_in[1].gl_Position.xyz - gl_in[0].gl_Position.xyz);
         ///
-        ///    float alpha = acos((b * b + c * c - a * a) / (2.0 * b [rest of string was truncated]&quot;;.
+        ///    float alpha = acos(( [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string wireframe_geom {
             get {
@@ -1861,6 +1992,9 @@ namespace SpiceEngine.Properties {
         ///layout(location = 0) in vec3 vPosition;
         ///layout(location = 5) in vec4 vBoneIDs;
         ///layout(location = 6) in vec4 vBoneWeights;
+        ///layout(location = 7) in vec4 vId;
+        ///
+        ///out vec4 gId;
         ///
         ///void main()
         ///{
@@ -1868,8 +2002,7 @@ namespace SpiceEngine.Properties {
         ///
         ///    vec4 position = vec4(vPosition, 1.0);
         ///
-        ///    mat4 jointTransform = mat4(0.0);
-        ///    for (int i = [rest of string was truncated]&quot;;.
+        ///   [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string wireframe_skinning_vert {
             get {
@@ -1885,10 +2018,14 @@ namespace SpiceEngine.Properties {
         ///uniform mat4 projectionMatrix;
         ///
         ///layout(location = 0) in vec3 vPosition;
+        ///layout(location = 7) in vec4 vId;
+        ///
+        ///out vec4 gId;
         ///
         ///void main()
         ///{
         ///    gl_Position = projectionMatrix * viewMatrix * modelMatrix * vec4(vPosition, 1.0);
+        ///	gId = vId;
         ///}.
         /// </summary>
         internal static string wireframe_vert {

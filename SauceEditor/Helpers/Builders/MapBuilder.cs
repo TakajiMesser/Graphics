@@ -2,16 +2,13 @@
 using OpenTK.Graphics;
 using SauceEditor.Models.Components;
 using SauceEditorCore.Models.Components;
-using SauceEditorCore.Models.Entities;
-using SpiceEngine.Entities;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Utilities;
-using System;
-using System.IO;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Textures;
+using System.Collections.Generic;
 
 namespace SauceEditor.Helpers.Builders
 {
@@ -31,7 +28,7 @@ namespace SauceEditor.Helpers.Builders
             project.ScriptComponents.Add(new ScriptComponent(SampleGameProject.Helpers.FilePathHelper.BLOCK_NODE_PATH));
             project.TextureComponents.Add(new TextureComponent(SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH)
             {
-                TexturePaths = new SpiceEngine.Rendering.Textures.TexturePaths()
+                TexturePaths = new TexturePaths()
                 {
                     DiffuseMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_D_TEXTURE_PATH,
                     //NormalMapFilePath = SampleGameProject.Helpers.FilePathHelper.BRICK_01_N_NORMAL_PATH,
@@ -49,21 +46,20 @@ namespace SauceEditor.Helpers.Builders
 
         public static MapComponent GenerateModelMap(ModelComponent model)
         {
-            var map = new Map3D()
-            {
-                Camera = new MapCamera()
-                {
-                    Name = "MainCamera",
-                    AttachedActorName = "Player",
-                    Position = new Vector3(10.0f, 0.0f, 0.0f),
-                    Type = ProjectionTypes.Perspective,
-                    ZNear = 0.1f,
-                    ZFar = 1000.0f,
-                    FieldOfViewY = UnitConversions.ToRadians(45.0f)
-                }
-            };
+            var map = new Map3D();
 
-            var mapActor = new MapActor()
+            map.Cameras.Add(new MapCamera()
+            {
+                Name = "MainCamera",
+                AttachedEntityName = "Player",
+                Position = new Vector3(10.0f, 0.0f, 0.0f),
+                Type = ProjectionTypes.Perspective,
+                ZNear = 0.1f,
+                ZFar = 1000.0f,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            });
+
+            map.Actors.Add(new MapActor()
             {
                 Name = "Player",
                 Position = Vector3.Zero,
@@ -71,9 +67,7 @@ namespace SauceEditor.Helpers.Builders
                 Orientation = Vector3.Zero,
                 Scale = Vector3.One,
                 ModelFilePath = model.Path
-            };
-
-            map.Actors.Add(mapActor);
+            });
 
             return new MapComponent()
             {
@@ -84,27 +78,29 @@ namespace SauceEditor.Helpers.Builders
 
         public static MapComponent GenerateTextureMap(TextureComponent texture)
         {
-            var map = new Map3D()
+            var map = new Map3D();
+
+            map.Cameras.Add(new MapCamera()
             {
-                Camera = new MapCamera()
-                {
-                    Name = "MainCamera",
-                    //AttachedActorName = "Player",
-                    Position = new Vector3(0.0f, -20.0f, -20.0f),
-                    Type = ProjectionTypes.Perspective,
-                    ZNear = 0.1f,
-                    ZFar = 1000.0f,
-                    FieldOfViewY = UnitConversions.ToRadians(45.0f)
-                }
-            };
+                Name = "MainCamera",
+                //AttachedActorName = "Player",
+                Position = new Vector3(0.0f, -20.0f, -20.0f),
+                Type = ProjectionTypes.Perspective,
+                ZNear = 0.1f,
+                ZFar = 1000.0f,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            });
 
             var mapBrush = MapBrush.Box(Vector3.Zero, 10.0f, 10.0f, 10.0f);
-            mapBrush.TexturesPaths = new SpiceEngine.Rendering.Textures.TexturePaths()
+            mapBrush.TexturesPaths = new List<TexturePaths>
             {
-                DiffuseMapFilePath = texture.TexturePaths.DiffuseMapFilePath,
-                NormalMapFilePath = texture.TexturePaths.NormalMapFilePath,
-                //SpecularMapFilePath = texture.TexturePaths.SpecularMapFilePath,
-                //ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
+                new TexturePaths()
+                {
+                    DiffuseMapFilePath = texture.TexturePaths.DiffuseMapFilePath,
+                    NormalMapFilePath = texture.TexturePaths.NormalMapFilePath,
+                    //SpecularMapFilePath = texture.TexturePaths.SpecularMapFilePath,
+                    //ParallaxMapFilePath = texture.TexturePaths.ParallaxMapFilePath
+                }
             };
 
             map.Brushes.Add(mapBrush);
@@ -127,19 +123,18 @@ namespace SauceEditor.Helpers.Builders
 
         public static MapComponent GenerateMaterialMap(MaterialComponent material)
         {
-            var map = new Map3D()
+            var map = new Map3D();
+
+            map.Cameras.Add(new MapCamera()
             {
-                Camera = new MapCamera()
-                {
-                    Name = "MainCamera",
-                    AttachedActorName = "Player",
-                    Position = new Vector3(10.0f, 0.0f, 0.0f),
-                    Type = ProjectionTypes.Perspective,
-                    ZNear = 0.1f,
-                    ZFar = 1000.0f,
-                    FieldOfViewY = UnitConversions.ToRadians(45.0f)
-                }
-            };
+                Name = "MainCamera",
+                AttachedEntityName = "Player",
+                Position = new Vector3(10.0f, 0.0f, 0.0f),
+                Type = ProjectionTypes.Perspective,
+                ZNear = 0.1f,
+                ZFar = 1000.0f,
+                FieldOfViewY = UnitConversions.ToRadians(45.0f)
+            });
 
             //var mapBrush = MapBrush.Sphere(Vector3.Zero, 5.0f);
             //mapBrush.Material = SpiceEngine.Rendering.Materials.Material.LoadFromFile();

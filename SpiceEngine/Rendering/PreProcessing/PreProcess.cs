@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Outputs;
+﻿using SpiceEngineCore.Outputs;
 
 namespace SpiceEngine.Rendering.PreProcessing
 {

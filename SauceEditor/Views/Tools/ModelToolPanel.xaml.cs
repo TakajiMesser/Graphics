@@ -1,18 +1,15 @@
-﻿using SauceEditor.ViewModels.Docks;
-using Xceed.Wpf.AvalonDock.Layout;
+﻿using Xceed.Wpf.AvalonDock.Layout;
 
 namespace SauceEditor.Views.Tools
 {
     /// <summary>
     /// Interaction logic for ModelToolPanel.xaml
     /// </summary>
-    public partial class ModelToolPanel : LayoutAnchorable, IHaveDockViewModel
+    public partial class ModelToolPanel : LayoutAnchorable
     {
         public ModelToolPanel()
         {
             InitializeComponent();
         }
-
-        public DockViewModel GetViewModel() => ViewModel;
     }
 }

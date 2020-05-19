@@ -1,39 +1,32 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Processing;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using System;
-using System.Drawing;
-using System.Drawing.Text;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.UserInterfaces;
+using StarchUICore.Text;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
+using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {
     public class TextRenderer : Renderer
     {
-        public const int GLYPHS_PER_LINE = 16;
-        public const int GLYPH_LINE_COUNT = 16;
-        public const int GLYPH_WIDTH = 24;
-        public const int GLYPH_HEIGHT = 32;
-        public const int X_SPACING = 4;
-        public const int Y_SPACING = 5;
-
         public static string FONT_PATH = Directory.GetCurrentDirectory() + @"\..\..\.." + @"\SampleGameProject\Resources\Fonts\Roboto-Regular.ttf";
-
-        public Texture FontTexture { get; protected set; }
-        public Texture FinalTexture { get; protected set; }
 
         private ShaderProgram _textProgram;
 
         private VertexBuffer<TextureVertex2D> _vertexBuffer = new VertexBuffer<TextureVertex2D>();
         private VertexArray<TextureVertex2D> _vertexArray = new VertexArray<TextureVertex2D>();
         private FrameBuffer _frameBuffer = new FrameBuffer();
+
+        public Texture FinalTexture { get; protected set; }
 
         protected override void LoadPrograms()
         {
@@ -60,9 +53,9 @@ namespace SpiceEngine.Rendering.PostProcessing
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
 
-            var bitmapPath = Path.GetDirectoryName(FONT_PATH) + "\\" + Path.GetFileNameWithoutExtension(FONT_PATH) + ".png";
+            /*var bitmapPath = Path.GetDirectoryName(FONT_PATH) + "\\" + Path.GetFileNameWithoutExtension(FONT_PATH) + ".png";
             SaveFontBitmap(FONT_PATH, bitmapPath, 14);
-            FontTexture = Texture.LoadFromBitmap(bitmapPath, false, false);
+            FontTexture = TextureHelper.LoadFromBitmap(bitmapPath, false, false);*/
         }
 
         protected override void LoadBuffers()
@@ -84,35 +77,23 @@ namespace SpiceEngine.Rendering.PostProcessing
             FinalTexture.ReserveMemory();
         }
 
-        public void SaveFontBitmap(string fontPath, string bitmapPath, int fontSize)
+        public void Render(IBatcher batcher, IUIProvider uiProvider)
         {
-            var fontCollection = new PrivateFontCollection();
-            fontCollection.AddFontFile(fontPath);
-            var font = new Font(fontCollection.Families.First(), fontSize);
+            GL.Enable(EnableCap.Blend);
+            GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
-            int bitmapWidth = GLYPHS_PER_LINE * GLYPH_WIDTH;
-            int bitmapHeight = GLYPH_LINE_COUNT * GLYPH_HEIGHT;
-            int maxDimension = Math.Max(bitmapWidth, bitmapHeight);
+            GL.Disable(EnableCap.DepthTest);
+            GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            using (var bitmap = new Bitmap(maxDimension, maxDimension, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-            {
-                using (var graphics = Graphics.FromImage(bitmap))
-                {
-                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-                    graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            batcher.CreateBatchAction()
+                .SetShader(_textProgram)
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.TransparentText)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
 
-                    for (var i = 0; i < GLYPH_LINE_COUNT; i++)
-                    {
-                        for (var j = 0; j < GLYPHS_PER_LINE; j++)
-                        {
-                            var character = (char)(i * GLYPHS_PER_LINE + j);
-                            graphics.DrawString(character.ToString(), font, Brushes.White, j * GLYPH_WIDTH, i * GLYPH_HEIGHT);
-                        }
-                    }
-                }
-
-                bitmap.Save(bitmapPath);
-            }
+            GL.Disable(EnableCap.Blend);
         }
 
         /// <summary>
@@ -123,7 +104,7 @@ namespace SpiceEngine.Rendering.PostProcessing
         /// <param name="y"></param>
         /// <param name="fontScale"></param>
         /// <returns>Height of the rendered text.</returns>
-        public int RenderText(string text, int x, int y, float fontScale, bool wordWrap = false)
+        public int RenderText(IFont font, string text, int x, int y, float fontScale = 1.0f, bool wordWrap = false)
         {
             GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
@@ -131,11 +112,11 @@ namespace SpiceEngine.Rendering.PostProcessing
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            var uStep = (float)GLYPH_WIDTH / FontTexture.Width;
-            var vStep = (float)GLYPH_HEIGHT / FontTexture.Height;
+            var uStep = (float)font.GlyphWidth / font.Texture.Width;
+            var vStep = (float)font.GlyphHeight / font.Texture.Height;
 
-            var width = (int)(GLYPH_WIDTH * fontScale);
-            var height = (int)(GLYPH_HEIGHT * fontScale);
+            var width = (int)(font.GlyphWidth * fontScale);
+            var height = (int)(font.GlyphHeight * fontScale);
 
             var initialX = x;
 
@@ -144,25 +125,46 @@ namespace SpiceEngine.Rendering.PostProcessing
             {
                 char character = text[i];
 
-                var u = (character % GLYPHS_PER_LINE) * uStep;
-                var v = (character / GLYPHS_PER_LINE) * vStep;
+                var u = (character % font.GlyphsPerLine) * uStep;
+                var v = (character / font.GlyphsPerLine) * vStep;
 
                 if (wordWrap && x + width > FinalTexture.Width)
                 {
                     x = initialX;
-                    y += height + Y_SPACING;
+                    y += height + font.YSpacing;
                 }
 
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y + height), new Vector2(u + uStep, v)));
+                // SHADER ORDER   - TL, BL, TR, BR
+                // Position Order - TR, TL, BL, BR
+                // Texture Order  - BR, BL, TL, TR
+                var ptr = new Vector2(x + width, y + height);
+                var ptl = new Vector2(x, y + height);
+                var pbl = new Vector2(x, y);
+                var pbr = new Vector2(x + width, y);
+
+                var tbr = new Vector2(u + uStep, v);
+                var tbl = new Vector2(u, v);
+                var ttl = new Vector2(u, v + vStep);
+                var ttr = new Vector2(u + uStep, v + vStep);
+
+                _vertexBuffer.AddVertices(new List<TextureVertex2D>()
+                {
+                    new TextureVertex2D(pbr, tbr),
+                    new TextureVertex2D(pbl, tbl),
+                    new TextureVertex2D(ptl, ttl),
+                    new TextureVertex2D(ptr, ttr)
+                });
+
+                /*_vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y + height), new Vector2(u + uStep, v)));
                 _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y + height), new Vector2(u, v)));
                 _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x, y), new Vector2(u, v + vStep)));
-                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y), new Vector2(u + uStep, v + vStep)));
+                _vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y), new Vector2(u + uStep, v + vStep)));*/
 
-                x += X_SPACING + 20;
+                x += font.XSpacing + 20;
             }
 
             _textProgram.Use();
-            _textProgram.BindTexture(FontTexture, "textureSampler", 0);
+            _textProgram.BindTexture(font.Texture, "textureSampler", 0);
             _textProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
 
             _vertexArray.Bind();

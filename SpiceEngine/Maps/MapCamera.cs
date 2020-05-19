@@ -1,15 +1,21 @@
-﻿using OpenTK;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering.Matrices;
+﻿using SpiceEngine.Maps;
+using SpiceEngineCore.Components;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Scripting;
+using System.Collections.Generic;
+using System.Linq;
+using UmamiScriptingCore.Behaviors.Properties;
+using UmamiScriptingCore.Behaviors.StimResponse;
 
-namespace SpiceEngine.Maps
+namespace SpiceEngineCore.Maps
 {
-    public class MapCamera
+    public class MapCamera : MapEntity<ICamera>, IMapCamera
     {
         public string Name { get; set; }
-        public Vector3 Position { get; set; }
-        public string AttachedActorName { get; set; }
+
+        public string AttachedEntityName { get; set; }
         public ProjectionTypes Type { get; set; }
         public float ZNear { get; set; }
         public float ZFar { get; set; }
@@ -24,11 +30,22 @@ namespace SpiceEngine.Maps
         /// </summary>
         public float FieldOfViewY { get; set; }
 
-        public Camera ToCamera(Resolution resolution)
+        public MapBehavior Behavior { get; set; }
+
+        public List<Stimulus> Stimuli { get; set; } = new List<Stimulus>();
+        public List<Property> Properties { get; set; } = new List<Property>();
+
+        public IEnumerable<IScript> GetScripts() => Behavior != null ? Behavior.GetScripts() : Enumerable.Empty<IScript>();
+
+        public IEnumerable<IStimulus> GetStimuli() => Stimuli;
+
+        public IEnumerable<IProperty> GetProperties() => Properties;
+
+        public override IEntity ToEntity()
         {
             var camera = Type == ProjectionTypes.Orthographic
-                ? (Camera)new OrthographicCamera(Name, resolution, ZNear, ZFar, StartingWidth)
-                : new PerspectiveCamera(Name, resolution, ZNear, ZFar, FieldOfViewY);
+                ? (ICamera)new OrthographicCamera(Name, ZNear, ZFar, StartingWidth)
+                : new PerspectiveCamera(Name, ZNear, ZFar, FieldOfViewY);
 
             if (Position != null)
             {
@@ -37,5 +54,7 @@ namespace SpiceEngine.Maps
 
             return camera;
         }
+
+        IBehavior IComponentBuilder<IBehavior>.ToComponent(int entityID) => Behavior?.ToBehavior(entityID);
     }
 }

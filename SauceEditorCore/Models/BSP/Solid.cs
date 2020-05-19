@@ -1,10 +1,7 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Meshes;
-using System;
+using SavoryPhysicsCore.Shapes;
+using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
-using System.Text;
 
 namespace SauceEditorCore.Models.BSP
 {

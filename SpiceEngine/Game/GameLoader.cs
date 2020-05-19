@@ -1,427 +1,371 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Maps;
+﻿using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Components.Builders;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Physics;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Scripting;
+using SpiceEngineCore.UserInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using EntityMappingEventArgs = SpiceEngineCore.Maps.EntityMappingEventArgs;
 
 namespace SpiceEngine.Game
 {
-    public class GameLoader
+    public class GameLoader : IGameLoader
     {
         private IEntityProvider _entityProvider;
-        private IEntityLoader<IShapeBuilder> _physicsLoader;
-        private IEntityLoader<IBehaviorBuilder> _behaviorLoader;
-        private List<IEntityLoader<IRenderableBuilder>> _renderableLoaders = new List<IEntityLoader<IRenderableBuilder>>();
 
         private List<IEntityBuilder> _entityBuilders = new List<IEntityBuilder>();
-        private List<IShapeBuilder> _shapeBuilders = new List<IShapeBuilder>();
-        private List<IBehaviorBuilder> _behaviorBuilders = new List<IBehaviorBuilder>();
-        private List<IRenderableBuilder> _renderableBuilders = new List<IRenderableBuilder>();
 
-        private int _rendererWaitCount;
-        private TaskCompletionSource<bool>[] _rendererAddedTasks;
+        private IComponentLoader<IShape, IShapeBuilder> _physicsLoader;
+        private IComponentLoader<IBehavior, IBehaviorBuilder> _behaviorLoader;
+        private IComponentLoader<IAnimator, IAnimatorBuilder> _animatorLoader;
+        private IComponentLoader<IUIElement, IUIElementBuilder> _uiLoader;
 
-        private readonly object _lock = new object();
+        private MultiRenderLoader _multiRenderLoader = new MultiRenderLoader();
 
-        private int _brushStartIndex;
-        private int _actorStartIndex;
-        private int _volumeStartIndex;
+        private int _loadIndex = 0;
 
-        public event EventHandler<EntityIDEventArgs> EntitiesMapped;
+        private readonly object _builderLock = new object();
+        private readonly object _loadLock = new object();
+
+        public bool IsInEditorMode { get; set; } = false;
+
+        public EntityMapping EntityMapping { get; private set; } = null;
+
+        public bool TrackEntityMapping
+        {
+            get => EntityMapping != null;
+            set => EntityMapping = value ? new EntityMapping() : null;
+        }
 
         public int RendererWaitCount
         {
-            get => _rendererWaitCount;
-            set
-            {
-                lock (_lock)
-                {
-                    _rendererWaitCount = value;
-
-                    //_rendererAddedTasks = ArrayExtensions.Initialize(value, new TaskCompletionSource<bool>());
-                    _rendererAddedTasks = new TaskCompletionSource<bool>[value];
-
-                    for (var i = 0; i < value; i++)
-                    {
-                        _rendererAddedTasks[i] = new TaskCompletionSource<bool>();
-                    }
-                }
-            }
+            get => _multiRenderLoader.LoaderWaitCount;
+            set => _multiRenderLoader.LoaderWaitCount = value;
         }
+
+        public bool IsLoading { get; private set; }
+
+        public event EventHandler<EventArgs> TimedOut;
+        public event EventHandler<EntityMappingEventArgs> EntitiesMapped;
 
         public void SetEntityProvider(IEntityProvider entityProvider)
         {
-            lock (_lock)
+            lock (_builderLock)
             {
                 _entityProvider = entityProvider;
             }
         }
 
-        public void SetPhysicsLoader(IEntityLoader<IShapeBuilder> physicsLoader)
+        public void SetPhysicsLoader(IComponentLoader<IShape, IShapeBuilder> physicsLoader) => _physicsLoader = physicsLoader;
+        public void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader) => _behaviorLoader = behaviorLoader;
+        public void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader) => _animatorLoader = animatorLoader;
+        public void SetUILoader(IComponentLoader<IUIElement, IUIElementBuilder> uiLoader) => _uiLoader = uiLoader;
+
+        public void AddRenderableLoader(IRenderableLoader renderableLoader) => _multiRenderLoader.AddLoader(renderableLoader);
+
+        public void Add(IMapEntity mapEntity)
         {
-            lock (_lock)
+            lock (_builderLock)
             {
-                _physicsLoader = physicsLoader;
+                AddBuilders(mapEntity);
+                AddToEntityMapping(mapEntity);
             }
         }
 
-        public void SetBehaviorLoader(IEntityLoader<IBehaviorBuilder> behaviorLoader)
+        private void AddBuilders(IMapEntity mapEntity)
         {
-            lock (_lock)
+            _physicsLoader.AddBuilder(mapEntity);
+            _behaviorLoader.AddBuilder(mapEntity);
+            _animatorLoader.AddBuilder(mapEntity);
+            _uiLoader.AddBuilder(mapEntity);
+
+            // TODO - Handle this in a cleaner way
+            if (!IsInEditorMode && mapEntity is IMapVolume)
             {
-                _behaviorLoader = behaviorLoader;
+                _multiRenderLoader.AddBuilder(null);
+            }
+            else
+            {
+                _multiRenderLoader.AddBuilder(mapEntity);
+            }
+
+            _entityBuilders.Add(mapEntity);
+        }
+
+        private void AddToEntityMapping(IMapEntity mapEntity)
+        {
+            var entityMapping = EntityMapping;
+
+            if (entityMapping != null)
+            {
+                if (mapEntity is IMapCamera)
+                {
+                    entityMapping.AddCameras(1);
+                }
+                else if (mapEntity is IMapBrush)
+                {
+                    entityMapping.AddBrushes(1);
+                }
+                else if (mapEntity is IMapActor)
+                {
+                    entityMapping.AddActors(1);
+                }
+                else if (mapEntity is IMapLight)
+                {
+                    entityMapping.AddLights(1);
+                }
+                else if (mapEntity is IMapVolume)
+                {
+                    entityMapping.AddVolumes(1);
+                }
+                else if (mapEntity is IMapUIItem)
+                {
+                    entityMapping.AddUIItems(1);
+                }
             }
         }
 
-        public void AddRenderableLoader(IEntityLoader<IRenderableBuilder> renderableLoader)
+        public void AddFromMap(IMap map)
         {
-            lock (_lock)
+            lock (_builderLock)
             {
-                _renderableLoaders.Add(renderableLoader);
-
-                if (_renderableLoaders.Count <= _rendererAddedTasks.Length)
+                for (var i = 0; i < map.CameraCount; i++)
                 {
-                    _rendererAddedTasks[_renderableLoaders.Count - 1].TrySetResult(true);
-                }
-            }
-        }
-
-        public void Add(IEntityBuilder entityBuilder, IShapeBuilder shapeBuilder, IBehaviorBuilder behaviorBuilder, IRenderableBuilder renderableBuilder)
-        {
-            lock (_lock)
-            {
-                _entityBuilders.Add(entityBuilder);
-                _shapeBuilders.Add(shapeBuilder);
-                _behaviorBuilders.Add(behaviorBuilder);
-                _renderableBuilders.Add(renderableBuilder);
-            }
-        }
-
-        public void AddFromMap(Map map)
-        {
-            lock (_lock)
-            {
-                foreach (var light in map.Lights)
-                {
-                    _entityBuilders.Add(light);
-                    _shapeBuilders.Add(null);
-                    _behaviorBuilders.Add(null);
-                    _renderableBuilders.Add(null);
+                    AddBuilders(map.GetCameraAt(i));
                 }
 
-                foreach (var brush in map.Brushes)
+                for (var i = 0; i < map.BrushCount; i++)
                 {
-                    _entityBuilders.Add(brush);
-                    _shapeBuilders.Add(brush);
-                    _behaviorBuilders.Add(null);
-                    _renderableBuilders.Add(brush);
+                    AddBuilders(map.GetBrushAt(i));
                 }
 
-                foreach (var actor in map.Actors)
+                for (var i = 0; i < map.ActorCount; i++)
                 {
-                    _entityBuilders.Add(actor);
-                    _shapeBuilders.Add(actor);
-                    _behaviorBuilders.Add(actor);
-                    _renderableBuilders.Add(actor);
+                    AddBuilders(map.GetActorAt(i));
                 }
 
-                foreach (var volume in map.Volumes)
+                for (var i = 0; i < map.LightCount; i++)
                 {
-                    _entityBuilders.Add(volume);
-                    _shapeBuilders.Add(volume);
-                    _behaviorBuilders.Add(null);
-                    _renderableBuilders.Add(null);
+                    AddBuilders(map.GetLightAt(i));
                 }
 
-                if (EntitiesMapped != null)
+                for (var i = 0; i < map.VolumeCount; i++)
                 {
-                    _brushStartIndex = map.Lights.Count;
-                    _actorStartIndex = _brushStartIndex + map.Brushes.Count;
-                    _volumeStartIndex = _actorStartIndex + map.Actors.Count;
+                    AddBuilders(map.GetVolumeAt(i));
+                }
+
+                for (var i = 0; i < map.UIItemCount; i++)
+                {
+                    AddBuilders(map.GetUIItemAt(i));
+                }
+
+                if (EntityMapping != null)
+                {
+                    EntityMapping.AddCameras(map.CameraCount);
+                    EntityMapping.AddBrushes(map.BrushCount);
+                    EntityMapping.AddActors(map.ActorCount);
+                    EntityMapping.AddLights(map.LightCount);
+                    EntityMapping.AddVolumes(map.VolumeCount);
+                    EntityMapping.AddUIItems(map.UIItemCount);
                 }
             }
         }
 
         public async Task LoadAsync()
         {
+            try {
+            //LogWatch logWatch = LogWatch.CreateWithTimeout("GameLoader", 300000, 1000);
+            //logWatch.TimedOut += (s, args) => TimedOut?.Invoke(this, args);
+            LogWatch logWatch = LogWatch.CreateAndStart("GameLoader");
+
             // Only process for builders added by the time we begin loading
             var entityCount = 0;
-            IEntityLoader<IShapeBuilder> physicsLoader = null;
-            IEntityLoader<IBehaviorBuilder> behaviorLoader = null;
-            IEntityLoader<IRenderableBuilder>[] renderableLoaders = null;
-            var rendererWaitCount = 0;
 
-            lock (_lock)
+            lock (_builderLock)
             {
                 entityCount = _entityBuilders.Count;
-                physicsLoader = _physicsLoader;
-                behaviorLoader = _behaviorLoader;
-                renderableLoaders = _renderableLoaders.ToArray();
-                rendererWaitCount = _rendererWaitCount;
             }
+
+            var startBuilderIndex = 0;
+
+            lock (_loadLock)
+            {
+                startBuilderIndex = _loadIndex;
+                _loadIndex = entityCount;
+            }
+
+            entityCount -= startBuilderIndex;
 
             var loadEntityTasks = new Task[entityCount];
-            var loadShapeTasks = new Task[entityCount];
-            var loadBehaviorTasks = new Task[entityCount];
-            var loadRenderTasks = new Task[rendererWaitCount][];
 
-            for (var i = 0; i < rendererWaitCount; i++)
-            {
-                loadRenderTasks[i] = new Task[entityCount];
-            }
+            _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
 
-            var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Take(entityCount));
-            var index = 0;
+            var index = startBuilderIndex;
+            var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
 
-            List<int> lightIDs = null;
-            List<int> brushIDs = null;
-            List<int> actorIDs = null;
-            List<int> volumeIDs = null;
-
-            if (EntitiesMapped != null)
-            {
-                lightIDs = new List<int>();
-                brushIDs = new List<int>();
-                actorIDs = new List<int>();
-                volumeIDs = new List<int>();
-            }
+            //logWatch.Log("Loop Start");
 
             using (var idIterator = ids.GetEnumerator())
             {
                 while (idIterator.MoveNext())
                 {
                     var id = idIterator.Current;
-                    var currentIndex = index;
+                    var taskIndex = index - startBuilderIndex;
 
-                    loadEntityTasks[currentIndex] = Task.Run(() =>
+                    loadEntityTasks[taskIndex] = Task.Run(() => _entityProvider.LoadEntity(id));
+
+                    _physicsLoader.AddLoadTask(id);
+                    _behaviorLoader.AddLoadTask(id);
+                    _animatorLoader.AddLoadTask(id);
+                    _uiLoader.AddLoadTask(id);
+                    _multiRenderLoader.AddLoadTask(id);
+
+                    /*var id = idIterator.Current;
+                    var currentBuilderIndex = index;
+                    var taskIndex = index - startBuilderIndex;
+                    
+                    loadEntityTasks[taskIndex] = Task.Run(() =>
                     {
                         // We need to ensure that the entity builder has been loaded before loading ANYTHING else
                         _entityProvider.LoadEntity(id);
 
                         // Load the renderable data (which we do NOT need to wait for completion on, but which we do need to track)
-                        /*var renderableBuilder = _renderableBuilders[currentIndex];
-
-                        if (renderableBuilder != null)
-                        {
-                            for (var i = 0; i < rendererWaitCount; i++)
-                            {
-                                loadRenderTasks[i][currentIndex] = LoadRenderableBuilder(id, renderableBuilder, i, renderableLoaders);
-                            }
-                        }*/
-
                         // TODO - Pretty gross to perform the same null check repeatedly in this loop...
                         for (var i = 0; i < rendererWaitCount; i++)
                         {
-                            loadRenderTasks[i][currentIndex] = LoadRenderableBuilder(id, currentIndex, i, renderableLoaders);
+                            loadRenderTasks[i][taskIndex] = LoadRenderableBuilder(id, currentBuilderIndex, i, renderableLoaders);
                         }
 
                         // Load the game data (which we NEED to wait for completion on)
-                        loadShapeTasks[currentIndex] = Task.Run(() => LoadShapeBuilder(id, currentIndex, physicsLoader));
-                        loadBehaviorTasks[currentIndex] = Task.Run(() => LoadBehaviorBuilder(id, currentIndex, behaviorLoader));
-                    });
+                        _physicsLoader.AddLoadTask(id);
+                        _behaviorLoader.AddLoadTask(id);
+                        _animatorLoader.AddLoadTask(id);
+                    });*/
 
-                    if (EntitiesMapped != null)
-                    {
-                        if (currentIndex >= _volumeStartIndex)
-                        {
-                            volumeIDs.Add(id);
-                        }
-                        else if (currentIndex >= _actorStartIndex)
-                        {
-                            actorIDs.Add(id);
-                        }
-                        else if (currentIndex >= _brushStartIndex)
-                        {
-                            brushIDs.Add(id);
-                        }
-                        else
-                        {
-                            lightIDs.Add(id);
-                        }
-                    }
-
+                    EntityMapping?.AddID(id);
                     index++;
                 }
             }
 
-            EntitiesMapped?.Invoke(this, new EntityIDEventArgs(actorIDs, brushIDs, volumeIDs, lightIDs));
+            EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
+            //logWatch.Log("Loop End");
 
             await Task.WhenAll(loadEntityTasks);
 
+            _entityProvider.Load();
+
+            lock (_builderLock)
+            {
+                // TODO - If we're just setting the value in the list to null, we can do this after each task
+                for (var i = startBuilderIndex; i < index; i++)
+                {
+                    _entityBuilders[i] = null;
+                }
+            }
+
             var loadTasks = new List<Task>
             {
-                Task.Run(async () =>
-                {
-                    await Task.WhenAll(loadShapeTasks);
-                    await physicsLoader.Load();
-                }),
-                Task.Run(async () =>
-                {
-                    await Task.WhenAll(loadBehaviorTasks);
-                    await behaviorLoader.Load();
-                }),
-                //Task.WhenAll(loadShapeTasks).ContinueWith(async t => await physicsLoader.Load()),
-                //Task.WhenAll(loadBehaviorTasks).ContinueWith(async t => await behaviorLoader.Load())
+                _physicsLoader.LoadAsync(),
+                _behaviorLoader.LoadAsync(),
+                _animatorLoader.LoadAsync(),
+                _uiLoader.LoadAsync(),
+                _multiRenderLoader.LoadAsync()
             };
-
-            // Hook up renderable loaders to fire events when all renderable builders have been added for each available render loader
-            for (var i = 0; i < rendererWaitCount; i++)
-            {
-                var rendererIndex = i;
-
-                loadTasks.Add(Task.Run(async () =>
-                {
-                    await Task.WhenAll(loadRenderTasks[rendererIndex]);
-
-                    IEntityLoader<IRenderableBuilder> renderableLoader;
-
-                    lock (_lock)
-                    {
-                        renderableLoader = _renderableLoaders[rendererIndex];
-                    }
-
-                    await renderableLoader.Load();
-                }));
-
-                /*loadTasks.Add(Task.WhenAll(loadRenderTasks[rendererIndex]).ContinueWith(async t =>
-                {
-                    IEntityLoader<IRenderableBuilder> renderableLoader;
-
-                    lock (_lock)
-                    {
-                        renderableLoader = _renderableLoaders[rendererIndex];
-                    }
-
-                    await renderableLoader.Load();
-                }));*/
-            }
-
+        
             await Task.WhenAll(loadTasks);
 
-            // TODO - For now, just clear out builders when we're done with them. 
-            // Later, we might want to allow some additional loading even while this task is running...
-            lock (_lock)
+            //logWatch.Log("Load Tasks End");
+            logWatch.Stop();
+            } catch (Exception ex)
             {
-                _entityBuilders.Clear();
-                _shapeBuilders.Clear();
-                _behaviorBuilders.Clear();
-                _renderableBuilders.Clear();
+                Console.WriteLine(ex);
             }
         }
 
-        private async Task LoadRenderableBuilder(int id, int builderIndex, int rendererIndex, IEntityLoader<IRenderableBuilder>[] renderableLoaders)
+        public void LoadSync()
         {
-            IRenderableBuilder renderableBuilder = _renderableBuilders[builderIndex];
+            IsLoading = true;
 
-            if (renderableBuilder != null)
-            {
-                if (rendererIndex < renderableLoaders.Length)
-                {
-                    renderableLoaders[rendererIndex].AddEntity(id, renderableBuilder);
-                }
-                else
-                {
-                    var result = await _rendererAddedTasks[rendererIndex].Task;
-
-                    if (result)
-                    {
-                        IEntityLoader<IRenderableBuilder> renderableLoader;
-
-                        lock (_lock)
-                        {
-                            renderableLoader = _renderableLoaders[rendererIndex];
-                        }
-
-                        renderableLoader.AddEntity(id, renderableBuilder);
-                    }
-                }
-            }
-        }
-
-        private void LoadShapeBuilder(int id, int builderIndex, IEntityLoader<IShapeBuilder> physicsLoader)
-        {
-            if (physicsLoader != null)
-            {
-                var shapeBuilder = _shapeBuilders[builderIndex];
-
-                if (shapeBuilder != null)
-                {
-                    physicsLoader.AddEntity(id, shapeBuilder);
-                }
-            }
-        }
-
-        private void LoadBehaviorBuilder(int id, int builderIndex, IEntityLoader<IBehaviorBuilder> behaviorLoader)
-        {
-            if (behaviorLoader != null)
-            {
-                var behaviorBuilder = _behaviorBuilders[builderIndex];
-
-                if (behaviorBuilder != null)
-                {
-                    behaviorLoader.AddEntity(id, behaviorBuilder);
-                }
-            }
-        }
-
-        public void Load()
-        {
             // Only process for builders added by the time we begin loading
             var entityCount = 0;
-            IEntityLoader<IShapeBuilder> physicsLoader = null;
-            IEntityLoader<IBehaviorBuilder> behaviorLoader = null;
-            IEntityLoader<IRenderableBuilder>[] renderableLoaders;
 
-            lock (_lock)
+            lock (_builderLock)
             {
                 entityCount = _entityBuilders.Count;
-                physicsLoader = _physicsLoader;
-                behaviorLoader = _behaviorLoader;
-                renderableLoaders = _renderableLoaders.ToArray();
             }
 
-            for (var i = 0; i < entityCount; i++)
+            var startBuilderIndex = 0;
+
+            lock (_loadLock)
             {
-                var index = i;
+                startBuilderIndex = _loadIndex;
+                _loadIndex = entityCount;
+            }
 
-                var entityBuilder = _entityBuilders[index];
-                var id = _entityProvider.AddEntity(entityBuilder);
+            entityCount -= startBuilderIndex;
 
-                if (physicsLoader != null)
+            _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
+            _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
+
+            var index = startBuilderIndex;
+            var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
+
+            using (var idIterator = ids.GetEnumerator())
+            {
+                while (idIterator.MoveNext())
                 {
-                    var shapeBuilder = _shapeBuilders[index];
+                    var id = idIterator.Current;
+                    var currentBuilderIndex = index;
+                    var taskIndex = currentBuilderIndex - startBuilderIndex;
 
-                    if (shapeBuilder != null)
-                    {
-                        physicsLoader.AddEntity(id, shapeBuilder);
-                    }
-                }
+                    // We need to ensure that the entity builder has been loaded before loading ANYTHING else
+                    _entityProvider.LoadEntity(id);
 
-                if (behaviorLoader != null)
-                {
-                    var behaviorBuilder = _behaviorBuilders[index];
+                    // Load the game data (which we NEED to wait for completion on)
+                    _physicsLoader?.AddLoadTask(id);
+                    _behaviorLoader?.AddLoadTask(id);
+                    _animatorLoader?.AddLoadTask(id);
+                    _uiLoader?.AddLoadTask(id);
+                    _multiRenderLoader?.AddLoadTask(id);
 
-                    if (behaviorBuilder != null)
-                    {
-                        behaviorLoader.AddEntity(id, behaviorBuilder);
-                    }
-                }
-
-                if (renderableLoaders.Length > 0)
-                {
-                    var renderableBuilder = _renderableBuilders[index];
-
-                    if (renderableBuilder != null)
-                    {
-                        foreach (var renderableLoader in renderableLoaders)
-                        {
-                            renderableLoader.AddEntity(id, renderableBuilder);
-                        }
-                    }
+                    EntityMapping?.AddID(id);
+                    index++;
                 }
             }
+
+            EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
+
+            _physicsLoader?.LoadSync();
+            _behaviorLoader?.LoadSync();
+            _animatorLoader?.LoadSync();
+            _uiLoader?.LoadSync();
+            _multiRenderLoader?.LoadSync();
+
+            lock (_builderLock)
+            {
+                // TODO - If we're just setting the value in the list to null, we can do this after each task
+                for (var i = startBuilderIndex; i < index; i++)
+                {
+                    _entityBuilders[i] = null;
+                }
+            }
+
+            IsLoading = false;
         }
     }
 }

@@ -1,18 +1,18 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Animations;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SpiceEngine.Rendering.Meshes
+namespace SpiceEngine.Rendering.Models
 {
     public class EditorModel
     {
         public EditorModel() { }
-        public EditorModel(ModelMesh mesh)
-        {
-            Meshes.Add(mesh);
-        }
+        public EditorModel(ModelMesh mesh) => Meshes.Add(mesh);
 
         public List<ModelMesh> Meshes { get; set; } = new List<ModelMesh>();
         public Skeleton Skeleton { get; set; }
@@ -56,7 +56,7 @@ namespace SpiceEngine.Rendering.Meshes
                     {
                         Name = "",
                     };
-                    modelShape.Skeleton.Root = new Bone(scene.RootNode);
+                    modelShape.Skeleton.Root = scene.RootNode.ToBone();
                 }
 
                 foreach (var mesh in scene.Meshes)

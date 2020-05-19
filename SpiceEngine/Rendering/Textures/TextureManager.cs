@@ -1,5 +1,9 @@
 ﻿using OpenTK.Graphics;
-using SpiceEngine.Game;
+using SpiceEngine.Helpers;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.UserInterfaces;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -9,7 +13,7 @@ namespace SpiceEngine.Rendering.Textures
     public class TextureManager : ITextureProvider, IDisposable
     {
         private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
-        private List<Texture> _textures = new List<Texture>();
+        private List<ITexture> _textures = new List<ITexture>();
 
         private object _textureLock = new object();
 
@@ -25,14 +29,50 @@ namespace SpiceEngine.Rendering.Textures
         /// </summary>
         /// <param name="texture"></param>
         /// <returns>Returns a lookup index for this texture</returns>
-        public int AddTexture(Texture texture)
+        public int AddTexture(ITexture texture)
         {
             lock (_textureLock)
             {
                 var index = _textures.Count;
                 _textures.Add(texture);
+
+                Invoker?.RunSync(() =>
+                {
+                    var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
+                        + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
+                        + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
+
+                    TextureHelper.SaveToFile(filePath, texture);
+                });
+
                 return index;
             }
+        }
+
+        public int AddTexture(IFont font)
+        {
+            if (Invoker != null)
+            {
+                Invoker.RunSync(() =>
+                {
+                    font.LoadTexture();
+
+                    var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
+                        + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
+                        + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
+
+                    TextureHelper.SaveToFile(filePath, font.Texture);
+                });
+
+                lock (_textureLock)
+                {
+                    var index = _textures.Count;
+                    _textures.Add(font.Texture);
+                    return index;
+                }
+            }
+
+            return -1;
         }
 
         public int AddTexture(string texturePath)
@@ -48,9 +88,9 @@ namespace SpiceEngine.Rendering.Textures
                 }
 
                 // TODO - If Invoker is null, queue this action up
-                Invoker?.Run(() =>
+                Invoker?.RunSync(() =>
                 {
-                    var texture = Texture.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
+                    var texture = TextureHelper.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
                     _textures[index] = texture;
                 });
 
@@ -85,7 +125,7 @@ namespace SpiceEngine.Rendering.Textures
             _textures.Clear();
         }
 
-        public Texture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
+        public ITexture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
 
         #region IDisposable Support
         private bool disposedValue = false;

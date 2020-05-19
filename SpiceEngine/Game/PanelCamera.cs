@@ -1,13 +1,9 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Outputs;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.PostProcessing;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Processing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace SpiceEngine.Game
 {
@@ -53,6 +49,19 @@ namespace SpiceEngine.Game
             switch (ViewType)
             {
                 case ViewTypes.Perspective:
+                    // Determine new yaw and pitch
+                    var lookDirection = (position - Camera.Position).Normalized();
+                    _pitch = (float)Math.Asin(lookDirection.Z);
+                    _yaw = ((float)Math.Atan2(lookDirection.Y, lookDirection.X) + MAX_YAW) % MAX_YAW;
+
+                    /*if (mouseWheelDelta != 0.0f)
+                    {
+                        var translation = lookDirection * mouseWheelDelta * 1.0f;
+                        Camera.Position -= translation;
+                    }*/
+
+                    CalculateTranslation(position);
+                    CalculateUp();
                     break;
                 case ViewTypes.X:
                     var translationX = new Vector3()
@@ -111,7 +120,7 @@ namespace SpiceEngine.Game
             switch (ViewType)
             {
                 case ViewTypes.Perspective:
-                    Camera = new PerspectiveCamera("", _resolution, 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
+                    Camera = new PerspectiveCamera("", 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
                     Camera.DetachFromEntity();
                     Camera.Position = new Vector3(0.0f, -10.0f, 10.0f);
                     Camera._viewMatrix.Up = Vector3.UnitZ;
@@ -120,7 +129,7 @@ namespace SpiceEngine.Game
                     _pitch = 0.0f;
                     break;
                 case ViewTypes.X:
-                    Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
+                    Camera = new OrthographicCamera("", -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
                     };
@@ -131,18 +140,18 @@ namespace SpiceEngine.Game
                     _pitch = 0.0f;
                     break;
                 case ViewTypes.Y:
-                    Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
+                    Camera = new OrthographicCamera("", -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
                     };
                     Camera._viewMatrix.Up = Vector3.UnitZ;
                     Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
-                    _gridRenderer.RotateGrid(0.0f, 0.0f, MathExtensions.HALF_PI);
+                    _gridRenderer.RotateGrid(MathExtensions.HALF_PI, 0.0f, 0.0f);
                     _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;
                 case ViewTypes.Z:
-                    Camera = new OrthographicCamera("", _resolution, -1000.0f, 1000.0f, 20.0f)
+                    Camera = new OrthographicCamera("", -1000.0f, 1000.0f, 20.0f)
                     {
                         Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
                     };

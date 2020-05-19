@@ -32,9 +32,10 @@ namespace SauceEditor.ViewModels.AttachedBehaviors
 
         private static void OnMouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            Control control = sender as Control;
-            ICommand command = (ICommand)control.GetValue(CommandProperty);
-            object commandParameter = control.GetValue(CommandParameterProperty);
+            var dependencyObject = sender as DependencyObject;
+
+            var command = (ICommand)dependencyObject.GetValue(CommandProperty);
+            var commandParameter = dependencyObject.GetValue(CommandParameterProperty);
             command.Execute(commandParameter);
         }
     }

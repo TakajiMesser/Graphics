@@ -13,6 +13,7 @@ namespace SauceEditor.ViewModels
         //public IMainViewFactory MainViewFactory { get; set; }
         public IWindowFactory WindowFactory { get; set; }
         public IComponentFactory ComponentFactory { get; set; }
+        public IPanelFactory PanelFactory { get; set; }
 
         private RelayCommand _newProjectCommand;
         public RelayCommand NewProjectCommand
@@ -312,6 +313,126 @@ namespace SauceEditor.ViewModels
             {
                 return _settingsCommand ?? (_settingsCommand = new RelayCommand(
                     p => WindowFactory.CreateSettingsWindow(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openModelToolPanelCommand;
+        public RelayCommand OpenModelToolPanelCommand
+        {
+            get
+            {
+                return _openModelToolPanelCommand ?? (_openModelToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenModelToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openCameraToolPanelCommand;
+        public RelayCommand OpenCameraToolPanelCommand
+        {
+            get
+            {
+                return _openCameraToolPanelCommand ?? (_openCameraToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenCameraToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openBrushToolPanelCommand;
+        public RelayCommand OpenBrushToolPanelCommand
+        {
+            get
+            {
+                return _openBrushToolPanelCommand ?? (_openBrushToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenBrushToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openActorToolPanelCommand;
+        public RelayCommand OpenActorToolPanelCommand
+        {
+            get
+            {
+                return _openActorToolPanelCommand ?? (_openActorToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenActorToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openLightToolPanelCommand;
+        public RelayCommand OpenLightToolPanelCommand
+        {
+            get
+            {
+                return _openLightToolPanelCommand ?? (_openLightToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenLightToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openVolumeToolPanelCommand;
+        public RelayCommand OpenVolumeToolPanelCommand
+        {
+            get
+            {
+                return _openVolumeToolPanelCommand ?? (_openVolumeToolPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenVolumeToolPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openprojectTreePanelCommand;
+        public RelayCommand OpenProjectTreePanelCommand
+        {
+            get
+            {
+                return _openprojectTreePanelCommand ?? (_openprojectTreePanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenProjectTreePanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openLibraryPanelCommand;
+        public RelayCommand OpenLibraryPanelCommand
+        {
+            get
+            {
+                return _openLibraryPanelCommand ?? (_openLibraryPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenLibraryPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openPropertyPanelCommand;
+        public RelayCommand OpenPropertyPanelCommand
+        {
+            get
+            {
+                return _openPropertyPanelCommand ?? (_openPropertyPanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenPropertyPanel(),
+                    p => true
+                ));
+            }
+        }
+
+        private RelayCommand _openEntityTreePanelCommand;
+        public RelayCommand OpenEntityTreePanelCommand
+        {
+            get
+            {
+                return _openEntityTreePanelCommand ?? (_openEntityTreePanelCommand = new RelayCommand(
+                    p => PanelFactory.OpenEntityTreePanel(),
                     p => true
                 ));
             }

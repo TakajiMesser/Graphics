@@ -1,13 +1,15 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Processing
@@ -273,34 +275,38 @@ namespace SpiceEngine.Rendering.Processing
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
         }
 
-        public void GeometryPass(ICamera camera, BatchManager batchManager)
+        public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderOpaqueStatic()
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
                 .SetShader(_jointGeometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderOpaqueAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
                 .Execute();
 
             GL.Enable(EnableCap.CullFace);
         }
 
-        public void TransparentGeometryPass(ICamera camera, BatchManager batchManager)
+        public void TransparentGeometryPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_geometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .PerformAction(() => _geometryProgram.UnbindTextures())
-                .RenderTransparentStatic()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
                 .SetShader(_jointGeometryProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
-                .RenderTransparentAnimated()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
                 .Execute();
 
             //GL.Enable(EnableCap.Blend);
@@ -312,7 +318,7 @@ namespace SpiceEngine.Rendering.Processing
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)
         {
-            // Don't render meshes that are not in the camera's view
+            // TODO - Don't render meshes that are not in the camera's view
 
             // Using the position of the actor, determine if we should render the mesh
             // We will also need a bounding sphere or bounding box from the mesh to determine this
@@ -326,7 +332,7 @@ namespace SpiceEngine.Rendering.Processing
 
         private IEnumerable<Actor> PerformOcclusionCulling(IEnumerable<Actor> actors)
         {
-            // Don't render meshes that are obscured by closer meshes
+            // TODO - Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
                 Vector3 position = actor.Position;

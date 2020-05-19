@@ -1,7 +1,5 @@
-﻿using SpiceEngine.Scripting.Scripts;
-using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System;
+using UmamiScriptingCore.Scripts;
 
 namespace SauceEditorCore.Models.Components
 {
@@ -13,5 +11,7 @@ namespace SauceEditorCore.Models.Components
 
         public override void Save() => throw new NotImplementedException();
         public override void Load() => throw new NotImplementedException();
+
+        public static bool IsValidExtension(string extension) => extension == ".cs";
     }
 }

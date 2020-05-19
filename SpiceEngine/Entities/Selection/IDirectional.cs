@@ -1,8 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Entities.Selection
 {

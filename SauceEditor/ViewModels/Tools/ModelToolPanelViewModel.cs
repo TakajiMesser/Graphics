@@ -1,8 +1,8 @@
 using SauceEditor.ViewModels.Docks;
 using SauceEditorCore.Models.Components;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Entities.Layers;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Game.Loading.Builders;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,7 +16,7 @@ namespace SauceEditor.ViewModels.Tools
         Vertex
     }
 
-    public class ModelToolPanelViewModel : DockViewModel
+    public class ModelToolPanelViewModel : DockableViewModel
     {
         private const string MESH_LAYER_NAME = "Mesh";
         private const string FACE_LAYER_NAME = "Face";
@@ -25,8 +25,6 @@ namespace SauceEditor.ViewModels.Tools
 
         private List<ITexturedEntity> _texturedEntities = new List<ITexturedEntity>();
         private object _entityLock = new object();
-
-        public ModelToolPanelViewModel() : base(DockTypes.Tool) { }
 
         public ILayerSetter LayerSetter { get; set; }
         public ModelComponent ModelComponent { get; set; }

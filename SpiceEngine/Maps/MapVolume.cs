@@ -1,23 +1,35 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Utilities;
+using SavoryPhysicsCore.Shapes;
+using SpiceEngineCore.Components;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Volumes;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Physics;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapVolume : MapEntity3D<Volume>, IShapeBuilder
+    public class MapVolume : MapEntity<IVolume>, IMapVolume
     {
         public enum VolumeTypes
         {
             Blocking,
             Physics,
             Trigger
+        }
+
+        public MapVolume() { }
+        public MapVolume(ModelBuilder meshBuild)
+        {
+            Vertices.AddRange(meshBuild.GetVertices().Select(v => v.Position));
+            TriangleIndices.AddRange(meshBuild.TriangleIndices);
         }
 
         public VolumeTypes VolumeType { get; set; }
@@ -71,7 +83,11 @@ namespace SpiceEngine.Maps
             };
         }
 
-        public Shape3D ToShape() => new Box(Vertices);
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(entityID, Vertices);
+
+        public IRenderable ToRenderable() =>
+            new ColoredMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices
+                .Select(v => new Vertex3D(v, Vector3.Zero, Vector3.Zero, Vector2.Zero, new Color4(0.2f, 0.2f, 0.2f, 0.5f))).ToList(), TriangleIndices));
 
         public static MapVolume Rectangle(Vector3 center, float width, float height)
         {

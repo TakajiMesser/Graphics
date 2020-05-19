@@ -2,19 +2,17 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Inputs;
-using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using Timer = System.Timers.Timer;
 
@@ -22,7 +20,7 @@ namespace SpiceEngine.Game
 {
     public class GameWindow : OpenTK.GameWindow, IMouseTracker, IInvoker
     {
-        private GameManager _gameManager;
+        private SimulationManager _simulationManager;
         private RenderManager _renderManager;
 
         private GameLoader _gameLoader;
@@ -37,12 +35,12 @@ namespace SpiceEngine.Game
 
         private bool _isClosing = false;
 
-        private Map _map;
+        private IMap _map;
         private object _loadLock = new object();
 
         public event EventHandler<EventArgs> GameLoaded;
 
-        public GameWindow(Map map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public GameWindow(IMap map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             _map = map;
 
@@ -51,23 +49,27 @@ namespace SpiceEngine.Game
 
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
-            _fpsTimer.Elapsed += (s, e) =>
-            {
-                if (_frequencies.Count > 0)
-                {
-                    _renderManager.Frequency = _frequencies.Average();
-                    _frequencies.Clear();
-                }
-            };
+            _fpsTimer.Elapsed += FpsTimer_Elapsed;
         }
 
-        private Stopwatch _loadWatch = new Stopwatch();
-        private int _loadTimeout = 300000;
+        private void FpsTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
+        {
+            if (_frequencies.Count > 0)
+            {
+                var total = 0.0;
+
+                for (var i = 0; i < _frequencies.Count; i++)
+                {
+                    total += _frequencies[i];
+                }
+
+                _renderManager.Frequency = total / _frequencies.Count;//_frequencies.Average();
+                _frequencies.Clear();
+            }
+        }
 
         public void LoadAndRun()
         {
-            _loadWatch.Start();
-
             // "Register" the calling thread as the graphics context thread before we start async loading
             MakeCurrent();
             //_mainDispatcher = Dispatcher.CurrentDispatcher;
@@ -94,22 +96,23 @@ namespace SpiceEngine.Game
                 Run(60.0f, 0.0f);
                 _isClosing = true;
             }
-            else if (_loadWatch.ElapsedMilliseconds > _loadTimeout)
-            {
-                throw new TimeoutException();
-            }
             else
             {
-                if (_mainActionQueue.TryDequeue(out Action action))
-                {
-                    action();
-                }
-
+                // Check the queue every second. Once we find items in the queue, handle all of them before waiting again
+                CheckAndHandleQueue();
                 Task.Delay(1000).Wait();
             }
         }
 
-        public void Run(Action action) => _mainActionQueue.Enqueue(action);
+        private void CheckAndHandleQueue()
+        {
+            while (_mainActionQueue.TryDequeue(out Action action))
+            {
+                //LogWatch("Popped item off queue");
+                action();
+                //LogWatch("Completed queue item");
+            }
+        }
 
         public async Task RunAsync(Action action)
         {
@@ -124,10 +127,15 @@ namespace SpiceEngine.Game
             await taskCompletionSource.Task;
         }
 
+        public void RunSync(Action action) => _mainActionQueue.Enqueue(action);
+
+        // TODO - No-op...
+        public void ForceUpdate() { }
+
         private async void LoadAsync()
         {
-            _gameManager = new GameManager(Resolution, this);
-            _gameManager.InputManager.EscapePressed += (s, args) => Close();
+            _simulationManager = new SimulationManager(Resolution, this);
+            _simulationManager.InputManager.EscapePressed += (s, args) => Close();
 
             _renderManager = new RenderManager(Resolution, WindowSize)
             {
@@ -136,31 +144,43 @@ namespace SpiceEngine.Game
             };
             _fpsTimer.Start();
 
-            _gameManager.LoadFromMap(_map);
+            _simulationManager.LoadFromMap(_map);
 
             _gameLoader = new GameLoader()
             {
                 RendererWaitCount = 1
             };
-            _gameLoader.SetEntityProvider(_gameManager.EntityManager);
-            _gameLoader.SetPhysicsLoader(_gameManager.PhysicsManager);
-            _gameLoader.SetBehaviorLoader(_gameManager.BehaviorManager);
+            _gameLoader.SetEntityProvider(_simulationManager.EntityManager);
+            _gameLoader.SetPhysicsLoader(_simulationManager.PhysicsSystem);
+            _gameLoader.SetBehaviorLoader(_simulationManager.BehaviorSystem);
+            _gameLoader.SetAnimatorLoader(_simulationManager.AnimationSystem);
+            _gameLoader.SetUILoader(_simulationManager.UISystem);
             _gameLoader.AddRenderableLoader(_renderManager);
 
             _gameLoader.AddFromMap(_map);
 
-            _renderManager.SetEntityProvider(_gameManager.EntityManager);
-            _renderManager.SetCamera(_gameManager.Camera);
+            _renderManager.SetEntityProvider(_simulationManager.EntityManager);
+            _renderManager.SetAnimationProvider(_simulationManager.AnimationSystem);
+            _renderManager.SetUIProvider(_simulationManager.UISystem);
+            
             _renderManager.LoadFromMap(_map);
 
             //_gameLoader.Load();
+            _gameLoader.TimedOut += (s, args) => RunSync(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
-            if (!string.IsNullOrEmpty(_map.Camera.AttachedActorName))
-            {
-                var actor = _gameManager.EntityManager.GetActor(_map.Camera.AttachedActorName);
-                _gameManager.Camera.AttachToEntity(actor, true, false);
-            }
+            // Propogate default camera to all systems that require it
+            var defaultCamera = _simulationManager.EntityManager.Cameras.First();
+            _simulationManager.Camera = defaultCamera;
+            _simulationManager.BehaviorSystem.SetCamera(defaultCamera);
+            _renderManager.SetCamera(defaultCamera);
+
+            // Set up UIManager to track mouse selections for UI control interactions
+            _simulationManager.BehaviorSystem.SetSelectionTracker(_renderManager);
+            _simulationManager.UISystem.TrackSelections(_renderManager, _simulationManager.InputManager);
+
+            //_stopWatch.Stop();
+            //LogWatch("Total");
 
             IsLoaded = true;
 
@@ -189,6 +209,10 @@ namespace SpiceEngine.Game
 
         public Vector2? MouseCoordinates => _mouseState.HasValue
             ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
+            : (Vector2?)null;
+
+        public Vector2? RelativeCoordinates => _mouseState.HasValue
+            ? PointToClient(new Point(_mouseState.Value.X, _mouseState.Value.Y)).ToVector2()
             : (Vector2?)null;
 
         public bool IsMouseInWindow => _mouseState != null
@@ -287,17 +311,17 @@ namespace SpiceEngine.Game
         // Handle game logic, guaranteed to run at a fixed rate, regardless of FPS
         protected override void OnUpdateFrame(FrameEventArgs e)
         {
-            //OpenTK.Input.
             //_mouseDevice = InputDriver.Mouse;
             //_mouseDevice = Mouse;
             _mouseState = Mouse.GetCursorState();
-            _gameManager.Update();
+            _simulationManager.Update();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)
         {
             //if (IsLoaded)
             //{
+            if (_renderManager != null && _renderManager.IsLoaded)
                 _frequencies.Add(RenderFrequency);
                 _renderManager.Tick();
 

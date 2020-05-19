@@ -28,13 +28,13 @@
         </ToolBarTray>
         <Grid>
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="6*"/>
                 <ColumnDefinition Width="2*"/>
+                <ColumnDefinition Width="8*"/>
+                <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
-            <xcad:DockingManager Name ="ToolDockingManager" Grid.Column="0"/>
-            <xcad:DockingManager Name ="MainDockingManager" Grid.Column="1"/>
-            <xcad:DockingManager Name ="PropertyDockingManager" Grid.Column="2"/>
+            <xcad:DockingManager Name ="LeftDockingManager" Grid.Column="0"/>
+            <xcad:DockingManager Name ="CenterDockingManager" Grid.Column="1"/>
+            <xcad:DockingManager Name ="RightDockingManager" Grid.Column="2"/>
         </Grid>
     </DockPanel>
 </Window>

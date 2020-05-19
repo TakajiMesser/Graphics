@@ -1,19 +1,15 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Helpers;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using System;
+using SpiceEngineCore.Rendering;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Linq;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public class MeshEntity : TexturedModelEntity<ModelMesh>, ITextureBinder, ITexturePath, IDirectional
+    public class MeshEntity : TexturedModelEntity<ModelMesh>, /*ITextureBinder, ITexturePath, */IDirectional
     {
         public override Vector3 XDirection => Vector3.UnitX;
         public override Vector3 YDirection => Vector3.UnitY;
@@ -21,46 +17,32 @@ namespace SauceEditorCore.Models.Entities
 
         public MeshEntity(ModelMesh modelMesh, TexturePaths texturePaths) : base(modelMesh, texturePaths) { }
 
-        public override void SetUniforms(ShaderProgram program)
-        {
-            //base.SetUniforms(program);
-            base.SetUniforms(program);
-            //_modelMatrix.Set(program);
-            Material.SetUniforms(program);
-        }
+        /*public override bool CompareUniforms(IEntity entity) => entity is MeshEntity
+            && base.CompareUniforms(entity);*/
 
-        public override bool CompareUniforms(IEntity entity) => entity is MeshEntity shapeEntity
-            && Material.Equals(shapeEntity.Material)
-            && TextureMapping.Equals(shapeEntity.TextureMapping);
-
-        public override IRenderable ToRenderable()
+        public override IRenderable ToComponent()
         {
             var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();
 
-            /*if (meshVertices.Any(v => v.IsAnimated))
+            ITexturedMesh mesh;
+
+            if (meshVertices.Any(v => v.IsAnimated))
             {
-                var vertices = meshBuild.GetVertices().Select(v => v.ToJointVertex3D());
-                return new Mesh<JointVertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
+                var vertexSet = new Vertex3DSet<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+                mesh = new TexturedMesh<AnimatedVertex3D>(vertexSet);
             }
             else
             {
-                var vertices = meshBuild.GetVertices().Select(v => v.ToVertex3D());
-                return new Mesh<Vertex3D>(vertices.ToList(), meshBuild.TriangleIndices);
-            }*/
+                var vertexSet = new Vertex3DSet<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+                mesh = new TexturedMesh<Vertex3D>(vertexSet);
+            }
 
-            var mesh = meshVertices.Any(v => v.IsAnimated)
-                ? (IMesh)new Mesh<AnimatedVertex3D>(meshBuild.GetVertices().Select(v => v.ToJointVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList())
-                : new Mesh<Vertex3D>(meshBuild.GetVertices().Select(v => v.ToVertex3D()).ToList(), meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList());
+            mesh.Material = _material;
+            mesh.TextureMapping = _textureMapping;
 
             mesh.Transform(_modelMatrix.WorldTransform);
             return mesh;
-
-            /*var vertices = meshVertices.Select(v => new Vertex3D(v.Position, v.Normal, v.Tangent, v.UV)).ToList();
-            var triangleIndices = meshBuild.TriangleIndices.AsEnumerable().Reverse().ToList();
-
-            mesh.Transform(_modelMatrix.Matrix);
-            return new Mesh<Vertex3D>(vertices, triangleIndices);*/
         }
     }
 }

@@ -1,10 +1,9 @@
-﻿using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Scripts;
-using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngineCore.Scripting;
+using SpiceEngineCore.Serialization.Converters;
 using System.Collections.Generic;
-using System.Runtime.Serialization;
-using System.Xml;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore.Scripts;
 
 namespace SpiceEngine.Maps
 {
@@ -18,9 +17,9 @@ namespace SpiceEngine.Maps
 
         public IEnumerable<Script> GetScripts() => RootNode?.GetScripts();
 
-        public Behavior ToBehavior()
+        public IBehavior ToBehavior(int entityID)
         {
-            var behavior = new Behavior();
+            var behavior = new Behavior(entityID);
 
             if (RootNode != null)
             {
@@ -36,22 +35,8 @@ namespace SpiceEngine.Maps
             return behavior;
         }
 
-        public void Save(string path)
-        {
-            using (var writer = XmlWriter.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                serializer.WriteObject(writer, this);
-            }
-        }
+        public void Save(string filePath) => Serializer.Save(filePath, this as MapBehavior);
 
-        public static MapBehavior Load(string path)
-        {
-            using (var reader = XmlReader.Create(path))
-            {
-                var serializer = new NetDataContractSerializer();
-                return serializer.ReadObject(reader, true) as MapBehavior;
-            }
-        }
+        public static MapBehavior Load(string filePath) => Serializer.Load<MapBehavior>(filePath);
     }
 }

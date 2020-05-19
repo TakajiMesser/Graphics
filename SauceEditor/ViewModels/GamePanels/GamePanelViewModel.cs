@@ -1,176 +1,426 @@
+using SauceEditor.ViewModels.Docks;
+using SauceEditor.ViewModels.Properties;
+using SauceEditor.ViewModels.Trees.Entities;
+using SauceEditor.Views.Factories;
+using SauceEditorCore.Models.Components;
+using SauceEditorCore.Models.Entities;
 using SpiceEngine.Game;
-using SpiceEngine.Rendering;
-using System;
-using System.Timers;
-using System.Windows;
+using SpiceEngine.Rendering.Processing;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Utilities;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
 using System.Windows.Input;
-using ViewTypes = SpiceEngine.Game.ViewTypes;
+using ViewTypes = SauceEditor.Models.ViewTypes;
 
 namespace SauceEditor.ViewModels
 {
-    public class GamePanelViewModel : ViewModel
+    public class GamePanelViewModel : DockableViewModel, ILayerSetter, IMapper
     {
-        public const double MOUSE_HOLD_MILLISECONDS = 200;
+        private GameLoader _gameLoader = new GameLoader();
 
-        private System.Drawing.Point _cursorLocation;
-        private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
+        private readonly object _panelLock = new object();
+        private bool _isGLContextLoaded = false;
+        private bool _isMapLoadedInPanels = false;
 
-        public GamePanel Panel { get; set; }
+        private Stopwatch _loadWatch = new Stopwatch();
+        private int _loadTimeout = 300000;
+
+        public GamePanelViewModel() => _gameLoader.IsInEditorMode = true;
+
+        public IDisplayProperties PropertyDisplayer { get; set; }
+        public IDisplayEntities EntityDisplayer { get; set; }
+        public IEntityFactory EntityFactory { get; set; }
+
+        public SimulationManager SimulationManager { get; set; }
+        public MapComponent MapComponent { get; set; }
+
+        public TransformModes TransformMode { get; set; }
         public ViewTypes ViewType { get; set; }
-        public string Title { get; set; }
-        public float WireframeThickness { get; set; }
-        public float SelectedWireframeThickness { get; set; }
-        public float SelecteLightdWireframeThickness { get; set; }
-        public float GridThickness { get; set; }
-        public float GridUnit { get; set; }
-        public bool ShowGrid { get; set; }
-        //public List<IEntity> SelectedEntities { get; set; }
 
-        public GamePanelViewModel()
-        {
-            _mouseHoldTimer.Elapsed += MouseHoldTimer_Elapsed;
-        }
+        public GamePaneViewModel PerspectiveViewModel { get; set; }
+        public GamePaneViewModel XViewModel { get; set; }
+        public GamePaneViewModel YViewModel { get; set; }
+        public GamePaneViewModel ZViewModel { get; set; }
 
-        public void OnShowGridChanged()
+        //public SelectionManager SelectionManager { get; set; }
+        //public List<EditorEntity> SelectedEntities { get; set; }
+
+        public Resolution Resolution { get; set; }
+
+        //public event EventHandler<EntitiesEventArgs> EntitySelectionChanged;
+        //public event EventHandler<CommandEventArgs> CommandExecuted;
+
+        public void OnResolutionChanged()
         {
-            if (Panel != null)
+            if (SimulationManager == null)
             {
-                Panel.RenderGrid = ShowGrid;
+                SimulationManager = new SimulationManager(Resolution);
             }
         }
 
-        public void OnSelectedEntitiesChanged()
+        public void OnTransformModeChanged()
         {
+            PerspectiveViewModel.Control.TransformMode = TransformMode;
+            XViewModel.Control.TransformMode = TransformMode;
+            YViewModel.Control.TransformMode = TransformMode;
+            ZViewModel.Control.TransformMode = TransformMode;
 
+            CommandManager.InvalidateRequerySuggested();
         }
 
-        public void OnPanelChanged()
-        {
-            Panel.MouseWheel += (s, args) => Panel.Zoom(args.Delta);
-            Panel.MouseDown += Panel_MouseDown;
-            Panel.MouseUp += Panel_MouseUp;
-            Panel.PanelLoaded += (s, args) => ShowGrid = true;
-            //Panel.EntitySelectionChanged += (s, args) => SelectedEntities = args.Entities;
+        public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange(PerspectiveViewModel);
+        public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
+        public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
+        public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);
 
-            // Default to wireframe rendering
-            Panel.RenderMode = RenderModes.Wireframe;
-            //CommandManager.InvalidateRequerySuggested();
+        public void AddMapCamera(IMapCamera mapCamera)
+        {
+            MapComponent.Map.AddCamera(mapCamera);
+
+            _gameLoader.Add(mapCamera);
+            _gameLoader.LoadSync();
         }
 
-        public void OnViewTypeChanged()
+        public void AddMapBrush(IMapBrush mapBrush)
         {
-            Panel.ViewType = ViewType;
+            MapComponent.Map.AddBrush(mapBrush);
 
-            switch (ViewType)
+            _gameLoader.Add(mapBrush);
+            _gameLoader.LoadSync();
+        }
+
+        public void AddMapActor(IMapActor mapActor)
+        {
+            MapComponent.Map.AddActor(mapActor);
+
+            _gameLoader.Add(mapActor);
+            _gameLoader.LoadSync();
+        }
+
+        public void AddMapLight(IMapLight mapLight)
+        {
+            MapComponent.Map.AddLight(mapLight);
+
+            _gameLoader.Add(mapLight);
+            _gameLoader.LoadSync();
+        }
+
+        public void AddMapVolume(IMapVolume mapVolume)
+        {
+            MapComponent.Map.AddVolume(mapVolume);
+
+            _gameLoader.Add(mapVolume);
+            _gameLoader.LoadSync();
+        }
+
+        private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
+        {
+            //SelectionManager = panelViewModel.Panel.SelectionManager;
+            panelViewModel.EntityProvider = SimulationManager.EntityManager;
+            panelViewModel.GameLoader = _gameLoader;
+            panelViewModel.Mapper = this;
+            panelViewModel.Control.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
+            panelViewModel.Control.Load += (s, args) =>
             {
-                case ViewTypes.Perspective:
-                    Title = "Perspective";
-                    break;
-                case ViewTypes.X:
-                    Title = "X";
-                    break;
-                case ViewTypes.Y:
-                    Title = "Y";
-                    break;
-                case ViewTypes.Z:
-                    Title = "Z";
-                    break;
-                default:
-                    throw new ArgumentException("Could not handle ViewType " + ViewType);
+                // Because this panel has finished loading in, we can now safely notify the GameLoader that we are ready to load in some RenderBuilders
+                //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
+                panelViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                //LoadPanels();
+                _gameLoader.AddRenderableLoader(panelViewModel.Control.RenderManager);
+            };
+            panelViewModel.Control.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
+            /*panelViewModel.Panel.PanelLoaded += (s, args) =>
+            {
+                //_gameLoader.AddRenderManager(panelViewModel.Panel.RenderManager);
+            };*/
+        }
+
+        public void EnableLayer(string layerName)
+        {
+            // If the layer is enabled, it means that these IDs will get included regardless if they show up in other layers
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Enabled);
+        }
+
+        public void DisableLayer(string layerName)
+        {
+            // If the layer is disabled, it means that these IDs will get excluded regardless if they show up in other layers
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
+        }
+
+        public void NeutralizeLayer(string layerName)
+        {
+            // If the layer is neutralized, it means that these IDs will be included UNLESS they are excluded in another layer
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Neutral);
+        }
+
+        public void ClearLayer(string layerName)
+        {
+            // TODO - Remove entities from EntityManager tracking as well
+            // Disable the layer and delay removing the entities
+            var entityIDs = SimulationManager.EntityManager.LayerProvider.GetLayerEntityIDs(layerName).ToList();
+
+            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
+            SimulationManager.EntityManager.ClearLayer(layerName);
+            //PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
+
+            foreach (var entityID in entityIDs)
+            {
+                PerspectiveViewModel.Control.RemoveEntity(entityID);
+                XViewModel.Control.RemoveEntity(entityID);
+                YViewModel.Control.RemoveEntity(entityID);
+                ZViewModel.Control.RemoveEntity(entityID);
             }
         }
 
-        private void BeginDrag()
+        // e.g.
+        // Root     - 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
+        // Face     - 2, 3, 4, 5
+        // Triangle - 6, 7, 8
+        // Vertex   - 9, 10
+        // 
+        // By default, Root is NEUTRAL
+        // Face ->
+        //      Leave Root NEUTRAL for Render
+        //      Set Face ENABLED
+        //      Set Triangle DISABLED
+        //      Set Vertex DISABLED
+        // Triangle ->
+        //      
+
+        public void AddToLayer(string layerName, IEnumerable<IEntityBuilder> entityBuilders)
         {
-            if (Panel.IsLoaded)
+            // TODO - Correct and reorganize this method
+            // First, we need to ensure that this layer exists in the LayerManager
+            // We then need to add all of these entities to it, then enable the layer
+            // In subsequent calls, we just need to disable the root layer, then enable the requested layers
+            // An issue is that we want to ONLY render the Root layer for diffuse/lit. The new layer should just be for selection/wireframe
+            //var modelEntities = entities.ToList();
+
+            // Assign entity ID's
+            /*foreach (var entity in modelEntities)
             {
-                _cursorLocation = System.Windows.Forms.Cursor.Position;
-                System.Windows.Forms.Cursor.Hide();
-                Panel.Capture = true;
-                //Mouse.Capture(PanelHost);
-                Panel.StartDrag(_cursorLocation);
-            }
-        }
-
-        private void EndDrag()
-        {
-            Panel.Capture = false; //PanelHost.ReleaseMouseCapture();
-            System.Windows.Forms.Cursor.Show();
-            System.Windows.Forms.Cursor.Position = _cursorLocation;
-            Panel.EndDrag();
-        }
-
-        private void MouseHoldTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            _mouseHoldTimer.Stop();
-
-            Application.Current.Dispatcher.Invoke(() =>
+                var id = GameManager.EntityManager.AddEntity(entity);
+                entity.ID = id;
+            }*/
+            //GameManager.EntityManager.AddEntities(modelEntities);
+            SimulationManager.EntityManager.EntitiesAdded += (s, args) =>
             {
-                if (!Panel.IsDragging)
+                foreach (var builder in args.Builders)
                 {
-                    Panel.SetSelectionType();
-                    BeginDrag();
+                    SimulationManager.EntityManager.LayerProvider.AddToLayer(layerName, builder.Item1);
+
+                    if (builder.Item2 is IRenderableBuilder renderableBuilder)
+                    {
+                        var renderable = renderableBuilder.ToComponent(builder.Item1);
+
+                        PerspectiveViewModel.Control.AddEntity(builder.Item1, renderable);
+                        XViewModel.Control.AddEntity(builder.Item1, renderable);
+                        YViewModel.Control.AddEntity(builder.Item1, renderable);
+                        ZViewModel.Control.AddEntity(builder.Item1, renderable);
+                    }
                 }
-            });
-        }
 
-        private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            //Panel.Capture = true;//.Capture(PanelHost);
+                PerspectiveViewModel.Control.DoLoad();
+                XViewModel.Control.DoLoad();
+                YViewModel.Control.DoLoad();
+                ZViewModel.Control.DoLoad();
+            };
 
-            switch (e.Button)
+            // Add these entities to a new layer, enable it, and disable all other layers
+            if (!SimulationManager.EntityManager.LayerProvider.ContainsLayer(layerName))
             {
-                case System.Windows.Forms.MouseButtons.Left:
-                    if (Mouse.RightButton == MouseButtonState.Pressed)
-                    {
-                        if (!Panel.IsDragging)
-                        {
-                            BeginDrag();
-                        }
-                    }
-                    else
-                    {
-                        _mouseHoldTimer.Start();
-                    }
-                    break;
-                case System.Windows.Forms.MouseButtons.Right:
-                    _mouseHoldTimer.Stop();
-
-                    if (!Panel.IsDragging)
-                    {
-                        BeginDrag();
-                    }
-                    break;
-                case System.Windows.Forms.MouseButtons.XButton1:
-                    _mouseHoldTimer.Stop();
-
-                    if (!Panel.IsDragging)
-                    {
-                        BeginDrag();
-                    }
-                    break;
+                SimulationManager.EntityManager.LayerProvider.AddLayer(layerName);
             }
+
+            SimulationManager.EntityManager.AddEntities(entityBuilders);
+
+            //GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
+
+            //GameManager.EntityManager.SetLayerState(layerName, LayerStates.Enabled);
+            //GameManager.EntityManager.SetRenderLayerState(layerName, LayerStates.Enabled);
+
+            /*foreach (var entity in modelEntities)
+            {
+                var renderable = entity.ToRenderable();
+
+                PerspectiveViewModel.Panel.AddEntity(entity.ID, renderable);
+                XViewModel.Panel.AddEntity(entity.ID, renderable);
+                YViewModel.Panel.AddEntity(entity.ID, renderable);
+                ZViewModel.Panel.AddEntity(entity.ID, renderable);
+            }*/
+
+            /*PerspectiveViewModel.Panel.DoLoad();
+            XViewModel.Panel.DoLoad();
+            YViewModel.Panel.DoLoad();
+            ZViewModel.Panel.DoLoad();*/
+
+            //SelectionManager.SetSelectableEntities(entities);
         }
 
-        private void Panel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
+        public void SelectEntities(IEnumerable<int> ids)
         {
-            //System.Windows.Forms.Cursor.Position = _cursorLocation;
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(ids);
+            if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(ids);
+            if (ViewType != ViewTypes.Y) YViewModel.Control.SelectEntities(ids);
+            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(ids);
 
-            if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released && Mouse.XButton1 == MouseButtonState.Released)
+            CenterView();
+        }
+
+        private void UpdatedSelection(IEnumerable<IEntity> entities)
+        {
+            //SelectedEntities = MapManager.GetEditorEntities(entities).ToList();
+            //PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
+
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Y) YViewModel.Control.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(entities.Select(e => e.ID));
+
+            if (entities.Any())
             {
-                // Double-check with Panel, since its input tracking is more reliable
-                if (!Panel.IsHeld())
-                {
-                    _mouseHoldTimer.Stop();
+                if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.UpdateEntities(entities);
+                if (ViewType != ViewTypes.X) XViewModel.Control.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Y) YViewModel.Control.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Z) ZViewModel.Control.UpdateEntities(entities);
 
-                    if (Panel.IsDragging)
+                MapComponent.UpdateEntities(entities);
+            }
+
+            PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
+
+            //var editorEntities = MapManager.GetEditorEntities(entities);
+            //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(editorEntities));
+            //EntitySelectionChanged?.Invoke(this, new EntitiesEventArgs(_mapManager.GetMapEntities(args.Entities)));
+        }
+
+        public void RequestUpdate()
+        {
+            PerspectiveViewModel.Control.Invalidate();
+            XViewModel.Control.Invalidate();
+            YViewModel.Control.Invalidate();
+            ZViewModel.Control.Invalidate();
+        }
+
+        public void SetSelectedTool(SpiceEngine.Game.Tools tool)
+        {
+            PerspectiveViewModel.Control.SelectedTool = tool;
+            XViewModel.Control.SelectedTool = tool;
+            YViewModel.Control.SelectedTool = tool;
+            ZViewModel.Control.SelectedTool = tool;
+        }
+
+        public void UpdateEntity(EditorEntity entity)
+        {
+            PerspectiveViewModel.Control.UpdateEntities(entity.Entity.Yield());
+            XViewModel.Control.UpdateEntities(entity.Entity.Yield());
+            YViewModel.Control.UpdateEntities(entity.Entity.Yield());
+            ZViewModel.Control.UpdateEntities(entity.Entity.Yield());
+        }
+
+        public void UpdateEntities(IEnumerable<IEntity> entities)
+        {
+            PerspectiveViewModel.Control.UpdateEntities(entities);
+            XViewModel.Control.UpdateEntities(entities);
+            YViewModel.Control.UpdateEntities(entities);
+            ZViewModel.Control.UpdateEntities(entities);
+        }
+
+        public void DuplicateEntity(int entityID, int duplicateEntityID)
+        {
+            PerspectiveViewModel.Control.Duplicate(entityID, duplicateEntityID);
+            XViewModel.Control.Duplicate(entityID, duplicateEntityID);
+            YViewModel.Control.Duplicate(entityID, duplicateEntityID);
+            ZViewModel.Control.Duplicate(entityID, duplicateEntityID);
+        }
+
+        public void CenterView()
+        {
+            PerspectiveViewModel?.Control.CenterView();
+            XViewModel?.Control.CenterView();
+            YViewModel?.Control.CenterView();
+            ZViewModel?.Control.CenterView();
+        }
+
+        /*public void LoadAndRun()
+        {
+            _loadWatch.Start();
+
+            // Begin the background Task for loading the game world
+            LoadAsync();
+
+            // Begin a loop that blocks until the game world is loaded (to prevent the window from being disposed)
+            while (true)
+            {
+                ProcessLoadEvents();
+            }
+        }*/
+
+        public void UpdateFromModel(MapComponent mapComponent)
+        {
+            MapComponent = mapComponent;
+            LoadAsync();
+        }
+
+        private async void LoadAsync()
+        {
+            //GameManager = new GameManager(Resolution);
+            SimulationManager.LoadFromMap(MapComponent.Map);
+
+            // TODO - Make these less janky...
+            _gameLoader.RendererWaitCount = 4;
+            _gameLoader.TrackEntityMapping = true;
+            _gameLoader.SetEntityProvider(SimulationManager.EntityManager);
+            _gameLoader.SetPhysicsLoader(SimulationManager.PhysicsSystem);
+            _gameLoader.SetBehaviorLoader(SimulationManager.BehaviorSystem);
+            _gameLoader.SetAnimatorLoader(SimulationManager.AnimationSystem);
+            _gameLoader.SetUILoader(SimulationManager.UISystem);
+            //_gameLoader.AddRenderManager(_renderManager);
+
+            _gameLoader.AddFromMap(MapComponent.Map);
+            _gameLoader.EntitiesMapped += (s, args) =>
+            {
+                MapComponent.ClearEntityMapping();
+                MapComponent.SetEntityMapping(_gameLoader.EntityMapping);
+                EntityDisplayer.UpdateFromModel(MapComponent, EntityFactory);
+            };
+
+            //_renderManager.SetEntityProvider(_gameManager.EntityManager);
+            //_renderManager.SetCamera(_gameManager.Camera);
+
+            //_gameLoader.Load();
+            await _gameLoader.LoadAsync();
+
+            //_renderManager.LoadFromMap(_map);
+            //GameManager.BehaviorManager.Load();
+        }
+
+        private void LoadPanels()
+        {
+            // Wait for at least one panel to finish loading so that we can be sure the GLContext is properly loaded
+            if (!_isGLContextLoaded)
+            {
+                lock (_panelLock)
+                {
+                    // Lock and check to ensure that this only happens once
+                    _isGLContextLoaded = true;
+
+                    // TODO - I'm not entirely sure why I needed to have this only happen once when the FIRST panel gets loaded...
+                    if (!_isMapLoadedInPanels && MapComponent != null)
                     {
-                        EndDrag();
-                    }
-                    else if (Panel.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
-                    {
-                        var point = e.Location;
-                        Panel.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
+                        // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
+                        PerspectiveViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        XViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        YViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        ZViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+
+                        _isMapLoadedInPanels = true;
                     }
                 }
             }

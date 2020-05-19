@@ -1,28 +1,31 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Helpers;
-using SpiceEngine.Physics.Shapes;
-using SpiceEngine.Rendering;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+using SavoryPhysicsCore.Shapes;
+using SpiceEngineCore.Components;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Physics;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Materials;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapBrush : MapEntity3D<Brush>, IRenderableBuilder, IShapeBuilder
+    public class MapBrush : MapEntity<IBrush>, IMapBrush, ITexturePather
     {
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
         public List<int> TriangleIndices { get; set; } = new List<int>();
         public bool IsPhysical { get; set; }
-        public TexturePaths TexturesPaths { get; set; } = new TexturePaths();
+        public List<TexturePaths> TexturesPaths { get; set; } = new List<TexturePaths>();
 
         public MapBrush() { }
         public MapBrush(ModelBuilder meshBuild)
@@ -42,21 +45,24 @@ namespace SpiceEngine.Maps
                 //HasCollision = HasCollision
             };
 
-            brush.AddMaterial(Material);
+            //brush.AddMaterial(Material);
             return brush;
         }
 
         public IRenderable ToRenderable()
         {
-            if (TexturesPaths.IsEmpty)
+            if (!TexturesPaths.Any())
             {
                 AddTestColors();
             }
-            
-            return new Mesh<Vertex3D>(Vertices, TriangleIndices);
+
+            return new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices, TriangleIndices))
+            {
+                Material = Material
+            };
         }
 
-        public Shape3D ToShape() => new Box(Vertices.Select(v => v.Position));
+        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(entityID, Vertices.Select(v => v.Position));
 
         public void AddTestColors()
         {

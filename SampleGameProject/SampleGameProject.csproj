@@ -113,6 +113,7 @@
     <Compile Include="Helpers\FilePathHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resources\Behaviors\Nodes\CameraNode.cs" />
     <Compile Include="Resources\Behaviors\Nodes\MoveToNode.cs" />
     <Compile Include="Resources\Behaviors\Nodes\TurnNode.cs" />
     <Compile Include="Resources\Behaviors\Nodes\MoveNode.cs" />
@@ -240,6 +241,22 @@
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
       <Name>SpiceEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StarchUICore\StarchUICore.csproj">
+      <Project>{0fe2afa5-606d-47f1-b267-dac3936b300f}</Project>
+      <Name>StarchUICore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
+      <Project>{f6c9b29f-7751-4fd2-88da-cfe8b512c645}</Project>
+      <Name>SweetGraphicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiPhysicsCore\SavoryPhysicsCore.csproj">
+      <Project>{38042CD2-2EB5-43CF-8973-6DA5DCD16AAA}</Project>
+      <Name>SavoryPhysicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
+      <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
+      <Name>UmamiScriptingCore</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

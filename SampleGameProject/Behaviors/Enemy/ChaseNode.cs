@@ -1,9 +1,10 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Utilities;
+using SavoryPhysicsCore.Bodies;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Utilities;
 using System;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Behaviors.Enemy
 {
@@ -24,9 +25,9 @@ namespace SampleGameProject.Behaviors.Enemy
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var player = context.GetActor("Player");
+            var player = context.GetEntity("Player");
 
-            if (player != null)
+            if (context.Entity is IActor actor && player != null)
             {
                 var playerBody = context.GetBody(player.ID) as RigidBody3D;
                 var playerPosition = playerBody.Position;
@@ -50,7 +51,7 @@ namespace SampleGameProject.Behaviors.Enemy
                 {
                     float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 
-                    context.Actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
                     context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
                 }
 

@@ -1,13 +1,11 @@
 ﻿using OpenTK;
-using OpenTK.Graphics;
-using SpiceEngine.Game;
-using SpiceEngine.Rendering.Animations;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Animations;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Serialization;
-using System.Xml;
 
 namespace SauceEditor.Models
 {
@@ -61,7 +59,7 @@ namespace SauceEditor.Models
                     {
                         Name = "",
                     };
-                    modelShape.Skeleton.Root = new Bone(scene.RootNode);
+                    modelShape.Skeleton.Root = scene.RootNode.ToBone();
                 }
 
                 foreach (var mesh in scene.Meshes)

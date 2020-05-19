@@ -1,4 +1,6 @@
-﻿using System.Collections.Concurrent;
+﻿using SpiceEngineCore.UserInterfaces;
+using SweetGraphicsCore.Rendering.Processing.Post;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.PostProcessing
@@ -11,12 +13,15 @@ namespace SpiceEngine.Rendering.PostProcessing
         private static ConcurrentQueue<LogLine> _lineQueue = new ConcurrentQueue<LogLine>();
         
         private TextRenderer _textRenderer;
+        private IFont _font;
         private LinkedList<LogLine> _screenLines = new LinkedList<LogLine>();
 
         public LogManager(TextRenderer renderer) => _textRenderer = renderer;
 
         public bool LineWrap { get; set; } = false;
         public float FontScale { get; set; } = 1.0f;
+
+        public void SetFont(IFont font) => _font = font;
 
         public void RenderToScreen()
         {
@@ -32,7 +37,7 @@ namespace SpiceEngine.Rendering.PostProcessing
                     break;
                 }
 
-                y += _textRenderer.RenderText(logLine.Value.Text, 10, 10 + y, FontScale, LineWrap);
+                y += _textRenderer.RenderText(_font, logLine.Value.Text, 10, 10 + y, FontScale, LineWrap);
                 logLine.Value.Increment();
 
                 var previous = logLine.Previous;
@@ -61,7 +66,7 @@ namespace SpiceEngine.Rendering.PostProcessing
         {
             var line = new LogLine(text)
             {
-                ClearFrameDelay = 1
+                ClearFrameDelay = 10
             };
 
             _lineQueue.Enqueue(line);

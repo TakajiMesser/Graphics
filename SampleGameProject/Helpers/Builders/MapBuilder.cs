@@ -2,13 +2,12 @@
 using OpenTK.Graphics;
 using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Maps;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
-using System.Linq;
-using static SpiceEngine.Maps.MapLight;
+using static SpiceEngineCore.Maps.MapLight;
 
 namespace SampleGameProject.Helpers.Builders
 {
@@ -16,11 +15,9 @@ namespace SampleGameProject.Helpers.Builders
     {
         public static void GenerateTestMap(string filePath)
         {
-            var map = new Map3D()
-            {
-                Camera = new Camera()
-            };
+            var map = new Map3D();
 
+            map.Cameras.AddRange(GenerateCameras());
             map.Actors.AddRange(GenerateActors());
             map.Brushes.AddRange(GenerateBrushes());
             map.Lights.AddRange(GenerateLights());
@@ -37,6 +34,11 @@ namespace SampleGameProject.Helpers.Builders
             };
 
             map.Save(filePath);
+        }
+
+        private static IEnumerable<MapCamera> GenerateCameras()
+        {
+            yield return new SampleGameProject.GameObjects.Camera();
         }
 
         private static IEnumerable<MapActor> GenerateActors()
@@ -60,10 +62,13 @@ namespace SampleGameProject.Helpers.Builders
             {
                 Position = new Vector3(10.0f, 0.0f, 0.0f),
                 IsPhysical = true,
-                TexturesPaths = new TexturePaths()
+                TexturesPaths = new List<TexturePaths>
                 {
-                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    new TexturePaths()
+                    {
+                        DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                        NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    }
                 }
             };
             yield return wall;
@@ -75,10 +80,13 @@ namespace SampleGameProject.Helpers.Builders
             {
                 Position = new Vector3(-10.0f, 0.0f, 0.0f),
                 IsPhysical = true,
-                TexturesPaths = new TexturePaths()
+                TexturesPaths = new List<TexturePaths>
                 {
-                    DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
-                    NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    new TexturePaths()
+                    {
+                        DiffuseMapFilePath = FilePathHelper.BRICK_01_D_TEXTURE_PATH,
+                        NormalMapFilePath = FilePathHelper.BRICK_01_N_NORMAL_PATH
+                    }
                 }
             };
             yield return wall2;

@@ -71,6 +71,8 @@ namespace SampleGameProject.Helpers
         #endregion
 
         #region Behaviors
+        public static string CAMERA_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\Camera.btt";
+
         public static string ENEMY_PATROL_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\EnemyPatrol.btt";
         public static string ENEMY_SEARCH_PLAYER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\SearchForPlayer.btt";
         public static string ENEMY_TURN_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\EnemyTurn.btt";
@@ -81,6 +83,7 @@ namespace SampleGameProject.Helpers
         public static string PLAYER_EVADE_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\PlayerEvade.btt";
         public static string PLAYER_COVER_BEHAVIOR_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\PlayerCover.btt";
 
+        public static string CAMERA_NODE_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\Nodes\CameraNode.cs";
         public static string BLOCK_NODE_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\Nodes\BlockNode.cs";
         public static string MOVE_NODE_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\Nodes\MoveNode.cs";
         public static string MOVE_TO_NODE_PATH = SOLUTION_DIRECTORY + @"\SampleGameProject\Resources\Behaviors\Nodes\MoveToNode.cs";

@@ -361,4 +361,28 @@
   <data name="vertex" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Textures\vertex.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ui_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\ui.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="ui_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\ui.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_selection_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad-selection.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_selection_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad-selection.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
+  <data name="uiquad_selection_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\Shaders\UserInterfaces\uiquad-selection.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
+  </data>
 </root>

@@ -1,9 +1,10 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Utilities;
+using SavoryPhysicsCore.Bodies;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Utilities;
 using System;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {
@@ -11,11 +12,12 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
     {
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
+
+            if (context.Entity is IActor actor && ((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
             {
                 float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
 
-                context.Actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
             }
 

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Entities.Selection

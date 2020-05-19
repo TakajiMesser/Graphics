@@ -1,13 +1,13 @@
-﻿using OpenTK;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Nodes.Composites;
-using SpiceEngine.Scripting.Nodes.Decorators;
-using SpiceEngine.Scripting.Nodes.Leaves;
-using SpiceEngine.Scripting.Scripts;
+﻿using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
+using UmamiScriptingCore.Behaviors.Nodes.Composites;
+using UmamiScriptingCore.Behaviors.Nodes.Decorators;
+using UmamiScriptingCore.Behaviors.Nodes.Leaves;
+using UmamiScriptingCore.Scripts;
 using ValueType = SpiceEngineCore.Serialization.ValueType;
 
 namespace SpiceEngine.Maps
@@ -28,29 +28,12 @@ namespace SpiceEngine.Maps
         public MapNode() { }
         public MapNode(params object[] args) => Arguments.AddRange(args.Select(a => ValueType.Create(a)));
 
-        /*public MapNode(params object[] args)
-        {
-            foreach (var arg in args)
-            {
-                int a = 3;
-                if (arg is Vector3)
-                {
-                    a = 4;
-                }
-
-                var valueType = ValueType.Create(arg);
-                Arguments.Add(valueType);
-            }
-        }*/
-
-        //public MapNode(params ValueType[] args) => Arguments.AddRange(args);
-        //public List<object> Arguments { get; set; } = new List<object>();
         public List<ValueType> Arguments{ get; set; } = new List<ValueType>();
         public NodeTypes NodeType { get; set; }
         public List<MapNode> Children { get; set; } = new List<MapNode>();
 
         public Predicate<BehaviorContext> InlineCondition { get; set; }
-        public Func<BehaviorContext, BehaviorStatus> InlineAction { get; set; }
+        public Action<BehaviorContext> InlineAction { get; set; }
 
         // For more complex custom nodes, we must parse and analyze the node's C# code
         public Script Script { get; set; }

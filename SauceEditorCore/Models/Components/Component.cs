@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace SauceEditorCore.Models.Components
+﻿namespace SauceEditorCore.Models.Components
 {
     public abstract class Component : IComponent
     {

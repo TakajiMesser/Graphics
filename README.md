@@ -4,7 +4,7 @@ The Spice Engine is a work-in-progress game engine, written in C# and GLSL throu
 The intent is to produce a library that can act as a base game library for both 2D and 3D games, with the ability to parse the associated common file formats for game assets (OBJ for meshes, DAE for animations, etc.).
 It will, however, contain its own file formats for Maps that act as a way to store the "game world" that the engine will then load up.
 
-This project is mostly meant to be a fun learning tool for myself, with pipe dream aspirations of eventually having a functional, competent, and open-source game engine.
+This project is mostly meant to be a fun learning tool for myself, with pipe dream aspirations of eventually having a functional and competent game engine with which to make personal game projects.
 
 ## SpiceEngine
 

@@ -1,18 +1,23 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Outputs;
+using SpiceEngine.Helpers;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Entities.Volumes;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -79,6 +84,16 @@ namespace SpiceEngine.Rendering.Processing
             };
             FinalTexture.Bind();
             FinalTexture.ReserveMemory();
+
+            _vertexTexture = TextureHelper.Load(Resources.vertex, false, false);
+
+            _pointLightTexture = TextureHelper.Load(Resources.point_light_billboard, false, false);
+            _spotLightTexture = TextureHelper.Load(Resources.spot_light_billboard, false, false);
+            _directionalLightTexture = TextureHelper.Load(Resources.directional_light_billboard, false, false);
+
+            _selectedPointLightTexture = TextureHelper.Load(Resources.selected_point_light, false, false);
+            _selectedSpotLightTexture = TextureHelper.Load(Resources.selected_spot_light, false, false);
+            _selectedDirectionalLightTexture = TextureHelper.Load(Resources.selected_directional_light, false, false);
         }
 
         protected override void LoadBuffers()
@@ -86,45 +101,43 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
-
-            _vertexTexture = Texture.Load(Resources.vertex, false, false);
-
-            _pointLightTexture = Texture.Load(Resources.point_light_billboard, false, false);
-            _spotLightTexture = Texture.Load(Resources.spot_light_billboard, false, false);
-            _directionalLightTexture = Texture.Load(Resources.directional_light_billboard, false, false);
-
-            _selectedPointLightTexture = Texture.Load(Resources.selected_point_light, false, false);
-            _selectedSpotLightTexture = Texture.Load(Resources.selected_spot_light, false, false);
-            _selectedDirectionalLightTexture = Texture.Load(Resources.selected_directional_light, false, false);
         }
 
-        public void GeometryPass(ICamera camera, BatchManager batchManager)
+        // TODO - Only load these textures in if we're in editor-mode
+        /*public void LoadBillboardTextures(ITextureProvider textureProvider)
         {
-            batchManager.CreateBatchAction()
+            textureProvider.AddTexture
+        }*/
+
+        public void GeometryPass(ICamera camera, IBatcher batcher)
+        {
+            batcher.CreateBatchAction()
                 .SetShader(_billboardProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f))
-                .RenderOpaqueBillboard()
+                .SetRenderType(RenderTypes.OpaqueBillboard)
+                .Render()
                 .Execute();
 
             //GL.Enable(EnableCap.CullFace);
         }
 
-        public void SelectionPass(ICamera camera, BatchManager batchManager)
+        public void SelectionPass(ICamera camera, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_billboardProgram)
                 .SetCamera(camera)
                 .SetUniform("cameraPosition", camera.Position)
                 .SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f))
-                .RenderOpaqueBillboard()
+                .SetRenderType(RenderTypes.OpaqueBillboard)
+                .Render()
                 .Execute();
 
             //GL.Enable(EnableCap.CullFace);
         }
 
-        public void RenderEntities(Camera camera, IEnumerable<IEntity> entities, Texture texture)
+        public void RenderEntities(ICamera camera, IEnumerable<IEntity> entities, ITexture texture)
         {
             _billboardProgram.Use();
             _billboardProgram.BindTexture(texture, "mainTexture", 0);
@@ -135,7 +148,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var entity in entities)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(entity.ID)));
+                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionHelper.GetColorFromID(entity.ID)));
             }
 
             _vertexArray.Bind();
@@ -154,6 +167,7 @@ namespace SpiceEngine.Rendering.Processing
 
             camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
+            _billboardProgram.SetUniform("overrideColor", Vector4.Zero);
 
             _billboardProgram.BindTexture(_pointLightTexture, "mainTexture", 0);
             DrawLights(lights.Where(l => l is PointLight));
@@ -165,7 +179,7 @@ namespace SpiceEngine.Rendering.Processing
             DrawLights(lights.Where(l => l is DirectionalLight));
         }
 
-        public void RenderSelection(ICamera camera, Volume volume, BatchManager batchManager)
+        public void RenderSelection(ICamera camera, Volume volume, IBatcher batcher)
         {
             _billboardProgram.Use();
 
@@ -177,7 +191,7 @@ namespace SpiceEngine.Rendering.Processing
 
             _vertexBuffer.Clear();
 
-            var batch = batchManager.GetBatch(volume.ID);
+            var batch = batcher.GetBatch(volume.ID);
             /*foreach (var vertex in batch.Vertices)
             {
                 _vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
@@ -202,13 +216,13 @@ namespace SpiceEngine.Rendering.Processing
 
             switch (light)
             {
-                case PointLight p:
+                case PointLight _:
                     _billboardProgram.BindTexture(_selectedPointLightTexture, "mainTexture", 0);
                     break;
-                case SpotLight s:
+                case SpotLight _:
                     _billboardProgram.BindTexture(_selectedSpotLightTexture, "mainTexture", 0);
                     break;
-                case DirectionalLight d:
+                case DirectionalLight _:
                     _billboardProgram.BindTexture(_selectedDirectionalLightTexture, "mainTexture", 0);
                     break;
             }
@@ -260,7 +274,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var entity in entities)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionRenderer.GetColorFromID(entity.ID)));
+                _vertexBuffer.AddVertex(new ColorVertex3D(entity.Position, SelectionHelper.GetColorFromID(entity.ID)));
             }
 
             _vertexArray.Bind();
@@ -278,7 +292,7 @@ namespace SpiceEngine.Rendering.Processing
             _vertexBuffer.Clear();
             foreach (var light in lights)
             {
-                _vertexBuffer.AddVertex(new ColorVertex3D(light.Position, SelectionRenderer.GetColorFromID(light.ID)));
+                _vertexBuffer.AddVertex(new ColorVertex3D(light.Position, SelectionHelper.GetColorFromID(light.ID)));
             }
 
             _vertexArray.Bind();

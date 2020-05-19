@@ -1,12 +1,15 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -111,17 +114,17 @@ namespace SpiceEngine.Rendering.Processing
             _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public void Render(ICamera camera, ILight light, BatchManager batchManager)
+        public void Render(ICamera camera, ILight light, IBatcher batcher)
         {
             switch (light)
             {
                 case PointLight pLight:
                     BindForPointShadowDrawing();
-                    PointLightPass(camera, pLight, batchManager);
+                    PointLightPass(camera, pLight, batcher);
                     break;
                 case SpotLight sLight:
                     BindForSpotShadowDrawing();
-                    SpotLightPass(camera, sLight, batchManager);
+                    SpotLightPass(camera, sLight, batcher);
                     break;
             }
         }
@@ -154,33 +157,37 @@ namespace SpiceEngine.Rendering.Processing
             GL.Clear(ClearBufferMask.DepthBufferBit);
         }
 
-        private void PointLightPass(ICamera camera, PointLight light, BatchManager batchManager)
+        private void PointLightPass(ICamera camera, PointLight light, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_pointShadowProgram)
                 .SetCamera(camera, light) // Draw camera from the point light's perspective
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
-                .RenderOpaqueStatic() // Draw all geometry, but only the positions
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render() // Draw all geometry, but only the positions
                 .SetShader(_pointShadowJointProgram)
                 .SetCamera(camera, light)
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
-                .RenderOpaqueAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
                 .Execute();
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
-        private void SpotLightPass(ICamera camera, SpotLight light, BatchManager batchManager)
+        private void SpotLightPass(ICamera camera, SpotLight light, IBatcher batcher)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_spotShadowProgram)
                 .SetCamera(camera, light) // Draw camera from the point light's perspective
-                .RenderOpaqueStatic() // Draw all geometry, but only the positions
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render() // Draw all geometry, but only the positions
                 .SetShader(_spotShadowJointProgram)
                 .SetCamera(camera, light)
-                .RenderOpaqueAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
                 .Execute();
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);

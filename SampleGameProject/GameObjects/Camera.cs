@@ -1,7 +1,9 @@
 ﻿using OpenTK;
+using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Matrices;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Utilities;
 
 namespace SampleGameProject.GameObjects
 {
@@ -12,12 +14,13 @@ namespace SampleGameProject.GameObjects
         public Camera()
         {
             Name = NAME;
-            AttachedActorName = "Player";
+            AttachedEntityName = "Player";
             Position = new Vector3(0.0f, 0.0f, 20.0f);
             Type = ProjectionTypes.Perspective;
             ZNear = 0.1f;
             ZFar = 1000.0f;
             FieldOfViewY = UnitConversions.ToRadians(45.0f);
+            Behavior = MapBehavior.Load(FilePathHelper.CAMERA_BEHAVIOR_PATH);
         }
     }
 }

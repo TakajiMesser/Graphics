@@ -1,12 +1,14 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Helpers;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Shaders;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
 using System;
 
 namespace SpiceEngine.Rendering.Processing
@@ -150,9 +152,9 @@ namespace SpiceEngine.Rendering.Processing
         {
             switch (light)
             {
-                case PointLight p:
+                case PointLight _:
                     return _pointLightMesh;
-                case SpotLight s:
+                case SpotLight _:
                     return _spotLightMesh;
                 default:
                     throw new NotImplementedException("Could not handle light type " + light.GetType());
@@ -163,9 +165,9 @@ namespace SpiceEngine.Rendering.Processing
         {
             switch (light)
             {
-                case PointLight p:
+                case PointLight _:
                     return _pointLightProgram;
-                case SpotLight s:
+                case SpotLight _:
                     return _spotLightProgram;
                 default:
                     throw new NotImplementedException("Could not handle light type " + light.GetType());

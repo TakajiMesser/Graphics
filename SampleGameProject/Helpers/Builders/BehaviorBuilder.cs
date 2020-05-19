@@ -1,16 +1,18 @@
 ﻿using OpenTK;
 using SpiceEngine.Maps;
-using SpiceEngine.Scripting.Meters;
-using SpiceEngine.Scripting.Scripts;
-using SpiceEngine.Scripting.StimResponse;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using UmamiScriptingCore.Behaviors.Meters;
+using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore.Scripts;
 
 namespace SampleGameProject.Helpers.Builders
 {
     public static class BehaviorBuilder
     {
+        public const float CAMERA_MOVE_SPEED = 0.02f;
+        public const float CAMERA_TURN_SPEED = 0.001f;
+        public const float CAMERA_ZOOM_SPEED = 1.0f;
+
         public const float PLAYER_WALK_SPEED = 0.1f;
         public const float PLAYER_RUN_SPEED = 0.15f;
         public const float PLAYER_CREEP_SPEED = 0.04f;
@@ -25,6 +27,33 @@ namespace SampleGameProject.Helpers.Builders
         public const float ENEMY_VIEW_ANGLE = 1.0472f;
         public const float ENEMY_VIEW_DISTANCE = 5.0f;
         public const int ENEMY_FULL_ALERT_TICKS = 120;
+
+        public static void GenerateCameraBehavior(string filePath)
+        {
+            var behavior = new MapBehavior
+            {
+                RootNode = GenerateCameraRootNode()
+            };
+
+            behavior.Save(filePath);
+        }
+
+        private static MapNode GenerateCameraRootNode() => new MapNode()
+        {
+            NodeType = MapNode.NodeTypes.Repeater,
+            Children = new List<MapNode>()
+            {
+                new MapNode(CAMERA_MOVE_SPEED, CAMERA_TURN_SPEED, CAMERA_ZOOM_SPEED)
+                {
+                    NodeType = MapNode.NodeTypes.Node,
+                    Script = new Script()
+                    {
+                        Name = "CameraNode",
+                        SourcePath = FilePathHelper.CAMERA_NODE_PATH
+                    }
+                }
+            }
+        };
 
         public static void GeneratePlayerBehavior(string filePath)
         {

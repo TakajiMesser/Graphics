@@ -6,9 +6,6 @@ namespace SpiceEngine.Game
     {
         public bool ShowCursor { get; private set; }
 
-        public CursorEventArgs(bool showCursor)
-        {
-            ShowCursor = showCursor;
-        }
+        public CursorEventArgs(bool showCursor) => ShowCursor = showCursor;
     }
 }

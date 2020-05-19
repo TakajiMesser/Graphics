@@ -1,5 +1,5 @@
 ﻿using SauceEditorCore.Models.Entities;
-using SpiceEngine.Rendering.Meshes;
+using SpiceEngine.Rendering.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -85,5 +85,7 @@ namespace SauceEditorCore.Models.Components
 
         public override void Save() => throw new NotImplementedException();
         public override void Load() => Model = new Model(Path);
+
+        public static bool IsValidExtension(string extension) => extension == ".obj";
     }
 }

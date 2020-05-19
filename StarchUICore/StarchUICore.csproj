@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj" />
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Colors\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="OpenTK" Version="3.0.1" />
+  </ItemGroup>
+
+</Project>

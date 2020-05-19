@@ -1,7 +1,9 @@
 ﻿using OpenTK;
 using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
-using SpiceEngine.Rendering.Textures;
+using SpiceEngineCore.Maps;
+using SweetGraphicsCore.Rendering.Textures;
+using UmamiScriptingCore.Behaviors.StimResponse;
 
 namespace SampleGameProject.GameObjects
 {
@@ -36,7 +38,7 @@ namespace SampleGameProject.GameObjects
             Behavior = MapBehavior.Load(FilePathHelper.PLAYER_INPUT_BEHAVIOR_PATH);
             IsPhysical = true;
 
-            Stimuli.Add(SpiceEngine.Scripting.StimResponse.Stimulus.Player);
+            Stimuli.Add(Stimulus.Player);
         }
     }
 }

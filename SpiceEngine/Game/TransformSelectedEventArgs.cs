@@ -7,9 +7,6 @@ namespace SpiceEngine.Game
     {
         public SelectionTypes SelectionType { get; private set; }
 
-        public TransformSelectedEventArgs(SelectionTypes selectionType)
-        {
-            SelectionType = selectionType;
-        }
+        public TransformSelectedEventArgs(SelectionTypes selectionType) => SelectionType = selectionType;
     }
 }

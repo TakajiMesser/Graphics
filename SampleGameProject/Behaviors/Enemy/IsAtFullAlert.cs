@@ -1,7 +1,7 @@
-﻿using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Nodes.Decorators;
-using System.Runtime.Serialization;
+﻿using System.Runtime.Serialization;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
+using UmamiScriptingCore.Behaviors.Nodes.Decorators;
 
 namespace SampleGameProject.Behaviors.Enemy
 {
@@ -16,7 +16,7 @@ namespace SampleGameProject.Behaviors.Enemy
             FullAlertTicks = fullAlertTicks;
         }
 
-        public override bool Condition(BehaviorContext context)
+        protected override bool Condition(BehaviorContext context)
         {
             int nAlertTicks = context.GetVariableOrDefault<int>("nAlertTicks");
 

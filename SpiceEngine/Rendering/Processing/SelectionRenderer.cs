@@ -1,19 +1,20 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Cameras;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Game;
-using SpiceEngine.Outputs;
 using SpiceEngine.Properties;
-using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Buffers;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
+using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace SpiceEngine.Rendering.Processing
 {
@@ -155,28 +156,34 @@ namespace SpiceEngine.Rendering.Processing
         public int GetEntityIDFromPoint(Vector2 point)
         {
             var color = FinalTexture.ReadPixelColor((int)point.X, (int)point.Y);
-            return (int)(color.X + color.Y * 256 + color.Z * 256 * 256);
+            return SelectionHelper.GetIDFromColorVector(color);
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
-        public void SelectionPass(ICamera camera, BatchManager batchManager, IEnumerable<int> ids)
+        public void SelectionPass(ICamera camera, IBatcher batcher, IEnumerable<int> ids)
         {
-            batchManager.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetShader(_selectionProgram)
                 .SetCamera(camera)
-                .SetEntityIDs(ids)
-                .RenderOpaqueStatic()
-                .RenderTransparentStatic()
+                .SetEntityIDSet(ids)
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
                 //.RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
                 //.RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
                 .SetShader(_jointSelectionProgram)
                 .SetCamera(camera)
-                .RenderOpaqueAnimated()
-                .RenderTransparentAnimated()
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
                 //.RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
                 //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
                 .Execute();
         }
+
+        //public void UIPass(ICamera camera, IBatcher batcher, IEntityProvider entity)
         
         public void RenderTranslationArrows(ICamera camera, Vector3 position) { RenderTranslationArrows(camera, position, Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ); }
         public void RenderTranslationArrows(ICamera camera, Vector3 position, Vector3 xDirection, Vector3 yDirection, Vector3 zDirection)
@@ -241,14 +248,6 @@ namespace SpiceEngine.Rendering.Processing
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
         }
-
-        public static Color4 GetColorFromID(int id) => new Color4()
-        {
-            R = ((id & 0x000000FF) >> 0) / 255.0f,
-            G = ((id & 0x0000FF00) >> 8) / 255.0f,
-            B = ((id & 0x00FF0000) >> 16) / 255.0f,
-            A = 1.0f
-        };
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)
         {

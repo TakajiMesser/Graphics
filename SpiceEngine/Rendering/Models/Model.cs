@@ -1,19 +1,25 @@
 ﻿using OpenTK;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Utilities;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace SpiceEngine.Rendering.Meshes
+namespace SpiceEngine.Rendering.Models
 {
-    public class Model : IRenderable
+    public class Model : IModel
     {
         public List<IMesh> Meshes { get; } = new List<IMesh>();
-        public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
+        
         public bool IsTransparent => Meshes.Any(m => m.Alpha < 1.0f);
+        public bool IsAnimated => Meshes.Any(m => m.IsAnimated);
+        public bool IsSelectable { get; set; } = true;
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
@@ -60,7 +66,14 @@ namespace SpiceEngine.Rendering.Meshes
                             vertices.Add(new AnimatedVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                         }
 
-                        Add(new Mesh<AnimatedVertex3D>(vertices, mesh.GetIndices().ToList()));
+                        var triangleIndices = mesh.GetIndices().ToList();
+
+                        var texturedMesh = new TexturedMesh<AnimatedVertex3D>(new Vertex3DSet<AnimatedVertex3D>(vertices, triangleIndices))
+                        {
+                            Material = scene.Materials[mesh.MaterialIndex].ToMaterial()
+                        };
+
+                        Add(texturedMesh);
                     }
                 }
                 else
@@ -79,7 +92,14 @@ namespace SpiceEngine.Rendering.Meshes
                             vertices.Add(new Vertex3D(position, normals, tangents, textureCoords));
                         }
 
-                        Add(new Mesh<Vertex3D>(vertices, mesh.GetIndices().ToList()));
+                        var triangleIndices = mesh.GetIndices().ToList();
+
+                        var texturedMesh = new TexturedMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(vertices, triangleIndices))
+                        {
+                            Material = scene.Materials[mesh.MaterialIndex].ToMaterial()
+                        };
+
+                        Add(texturedMesh);
                     }
                 }
             }
@@ -99,7 +119,15 @@ namespace SpiceEngine.Rendering.Meshes
             }
         }
 
-        public Model Duplicate()
+        public void Draw()
+        {
+            foreach (var mesh in Meshes)
+            {
+                mesh.Draw();
+            }
+        }
+
+        public IModel Duplicate()
         {
             var model = new Model();
 
@@ -119,7 +147,7 @@ namespace SpiceEngine.Rendering.Meshes
 
                 for (var i = 0; i < scene.Meshes.Count; i++)
                 {
-                    yield return new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(filePath));
+                    yield return scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(filePath));
                 }
             }
         }

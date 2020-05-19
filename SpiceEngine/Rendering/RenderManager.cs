@@ -1,23 +1,36 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Builders;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Entities.Volumes;
 using SpiceEngine.Maps;
-using SpiceEngine.Outputs;
 using SpiceEngine.Rendering.Batches;
-using SpiceEngine.Rendering.Meshes;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Entities.Volumes;
+using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Helpers;
+using SpiceEngineCore.Inputs;
+using SpiceEngineCore.Maps;
+using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.UserInterfaces;
+using SpiceEngineCore.Utilities;
+using StarchUICore;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Billboards;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Vertices;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -33,7 +46,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : EntityLoader<IRenderableBuilder>, IGridRenderer
+    public class RenderManager : RenderableLoader, IGridRenderer, ISelectionTracker
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
@@ -41,17 +54,20 @@ namespace SpiceEngine.Rendering
         public double Frequency { get; internal set; }
         public bool RenderGrid { get; set; }
 
-        public BatchManager BatchManager { get; private set; }
         public TextureManager TextureManager { get; } = new TextureManager();
+        public FontManager FontManager { get; }
 
         // TODO - Make this less janky
         public bool IsInEditorMode { get; set; }
 
-        private IEntityProvider _entityProvider;
+        private IAnimationProvider _animationProvider;
+        private IUIProvider _uiProvider;
         private ISelectionProvider _selectionProvider;
         private ICamera _camera;
 
-        private ForwardRenderer _forwardRenderer = new ForwardRenderer();
+        private BatchManager _batchManager;
+
+        //private ForwardRenderer _forwardRenderer = new ForwardRenderer();
         private DeferredRenderer _deferredRenderer = new DeferredRenderer();
         private WireframeRenderer _wireframeRenderer = new WireframeRenderer();
         private ShadowRenderer _shadowRenderer = new ShadowRenderer();
@@ -65,6 +81,7 @@ namespace SpiceEngine.Rendering
         private InvertColors _invertRenderer = new InvertColors();
         private TextRenderer _textRenderer = new TextRenderer();
         private RenderToScreen _renderToScreen = new RenderToScreen();
+        private UIRenderer _uiRenderer = new UIRenderer();
 
         private LogManager _logManager;
 
@@ -84,68 +101,128 @@ namespace SpiceEngine.Rendering
             Resolution = resolution;
             WindowSize = windowSize;
 
+            Resolution.ResolutionChanged += (s, args) => _camera?.UpdateAspectRatio(args.AspectRatio);
+
+            FontManager = new FontManager(TextureManager);
             _logManager = new LogManager(_textRenderer);
         }
 
-        public void SetEntityProvider(IEntityProvider entityProvider)
+        public override void SetEntityProvider(IEntityProvider entityProvider)
         {
-            _entityProvider = entityProvider;
-            BatchManager = new BatchManager(_entityProvider, TextureManager);
+            base.SetEntityProvider(entityProvider);
+            _batchManager = new BatchManager(_entityProvider, TextureManager);
+
+            if (_animationProvider != null)
+            {
+                _batchManager.SetAnimationProvider(_animationProvider);
+            }
+
+            if (_uiProvider != null)
+            {
+                _batchManager.SetUIProvider(_uiProvider);
+            }
+        }
+
+        public void SetAnimationProvider(IAnimationProvider animationProvider)
+        {
+            _animationProvider = animationProvider;
+            _batchManager?.SetAnimationProvider(_animationProvider);
+        }
+
+        public void SetUIProvider(IUIProvider uiProvider)
+        {
+            _uiProvider = uiProvider;
+            _uiProvider.SetTextureProvider(TextureManager);
+            _batchManager?.SetUIProvider(_uiProvider);
         }
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
-        public void SetCamera(ICamera camera) => _camera = camera;
 
-        public void LoadFromMap(Map map) => _skyboxRenderer.SetTextures(map.SkyboxTextureFilePaths);
-
-        public override void AddEntity(int entityID, IRenderableBuilder builder)
+        public void SetCamera(ICamera camera)
         {
-            var renderable = builder.ToRenderable();
+            _camera = camera;
+            camera.UpdateAspectRatio(Resolution.AspectRatio);
+        }
 
-            if (builder is MapBrush mapBrush)
+        public void LoadFromMap(IMap map)
+        {
+            if (map is Map castMap)
             {
-                var textureMapping = mapBrush.TexturesPaths.ToTextureMapping(TextureManager);
-                var brush = _entityProvider.GetEntity(entityID) as Brush;
-                brush.AddTextureMapping(textureMapping);
+                _skyboxRenderer.SetTextures(castMap.SkyboxTextureFilePaths);
             }
-            else if (builder is MapActor mapActor)
+        }
+
+        public override Task LoadBuilderAsync(int entityID, IRenderableBuilder builder) => Task.Run(() =>
+        {
+            var component = builder.ToRenderable();
+
+            if (component != null)
             {
-                var actor = _entityProvider.GetEntity(entityID) as Actor;
-
-                if (mapActor.HasAnimations)
+                if (component is IBillboard billboard)
                 {
-                    using (var importer = new Assimp.AssimpContext())
+                    billboard.LoadTexture(TextureManager);
+                }
+                else if (component is ITexturedMesh texturedMesh)
+                {
+                    if (builder is ITexturePather texturePather)
                     {
-                        var scene = importer.ImportFile(mapActor.ModelFilePath);
+                        var texturePaths = texturePather.TexturesPaths.FirstOrDefault();
 
-                        for (var i = 0; i < scene.Meshes.Count; i++)
+                        if (texturePaths != null && !texturePaths.IsEmpty)
                         {
-                            var textureMapping = i < mapActor.TexturesPaths.Count
-                                ? mapActor.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                : new TexturePaths(scene.Materials[scene.Meshes[i].MaterialIndex], Path.GetDirectoryName(mapActor.ModelFilePath)).ToTextureMapping(TextureManager);
-
-                            actor.AddTextureMapping(textureMapping);
+                            texturedMesh.TextureMapping = texturePaths.ToTextureMapping(TextureManager);
                         }
                     }
                 }
-                else
+                else if (component is IModel model)
                 {
-                    foreach (var textureMapping in mapActor.TexturesPaths.Select(t => (TextureMapping?)t.ToTextureMapping(TextureManager)))
+                    if (builder is ITexturePather texturePather)
                     {
-                        actor.AddTextureMapping(textureMapping);
+                        if (builder is IModelPather modelPather && !string.IsNullOrEmpty(modelPather.ModelFilePath))
+                        {
+                            using (var importer = new Assimp.AssimpContext())
+                            {
+                                var scene = importer.ImportFile(modelPather.ModelFilePath);
+
+                                for (var i = 0; i < model.Meshes.Count; i++)
+                                {
+                                    if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
+                                    {
+                                        var textureMapping = i < texturePather.TexturesPaths.Count
+                                            ? texturePather.TexturesPaths[i].ToTextureMapping(TextureManager)
+                                            : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(modelPather.ModelFilePath)).ToTextureMapping(TextureManager);
+
+                                        modelTexturedMesh.TextureMapping = textureMapping;
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            for (var i = 0; i < model.Meshes.Count; i++)
+                            {
+                                if (model.Meshes[i] is ITexturedMesh modelTexturedMesh && i < texturePather.TexturesPaths.Count)
+                                {
+                                    modelTexturedMesh.TextureMapping = texturePather.TexturesPaths[i].ToTextureMapping(TextureManager);
+                                }
+                            }
+                        }
                     }
                 }
+
+                _componentAndIDQueue.Enqueue(Tuple.Create(component, entityID));
             }
+        });
 
-            AddEntity(entityID, renderable);
-        }
-
-        protected override Task LoadInternal()
+        protected override Task LoadInitial()
         {
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
-                _forwardRenderer.Load(Resolution);
+                // TODO - For now, just use the first available camera
+                //_camera = _entityProvider.Cameras.First();
+                try {
+                //_forwardRenderer.Load(Resolution);
                 _deferredRenderer.Load(Resolution);
                 _wireframeRenderer.Load(Resolution);
                 _shadowRenderer.Load(Resolution);
@@ -158,75 +235,124 @@ namespace SpiceEngine.Rendering
                 _invertRenderer.Load(Resolution);
                 _textRenderer.Load(Resolution);
                 _renderToScreen.Load(WindowSize);
+                _uiRenderer.Load(WindowSize);
+
+                //var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
+                //_logManager.SetFont(font);
 
                 GL.ClearColor(Color4.Black);
-            });
-        }
-
-        protected override void LoadEntities()
-        {
-            // TODO - If Invoker is null, queue up this action
-            Invoker.RunAsync(() =>
-            {
-                BatchManager.Load();
-            });
-        }
-
-        public void AddEntity(int entityID, IRenderable renderable)
-        {
-            if (renderable is TextureID textureID)
-            {
-                textureID.Index = TextureManager.AddTexture(textureID.FilePath);
-            }
-
-            if (IsInEditorMode && renderable is IMesh mesh)
-            {
-                var entity = _entityProvider.GetEntity(entityID);
-
-                if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
+                } catch (Exception ex)
                 {
-                    var textureMapping = texturePath.TexturePaths.ToTextureMapping(TextureManager);
-                    textureBinder.AddTextureMapping(textureMapping);
+                    Console.WriteLine(ex);
                 }
+            });
+        }
 
-                var colorID = SelectionRenderer.GetColorFromID(entityID);
-                var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
-
-                BatchManager.AddEntity(entityID, new Mesh<EditorVertex3D>(vertices, mesh.TriangleIndices.ToList()));
-            }
-            else if (IsInEditorMode && renderable is Model model)
+        protected override void LoadComponents()
+        {
+            try
             {
-                var entity = _entityProvider.GetEntity(entityID);
+                base.LoadComponents();
 
-                // TODO - Do I not need to do this for IModels?
-                /*if (entity is ITexturePath texturePath && entity is ITextureBinder textureBinder)
+                // TODO - If Invoker is null, queue up this action
+                //Invoker.RunSync(() => _batchManager.Load());
+                //Invoker.ForceUpdate();
+                //Invoker.RunAsync(() => _batchManager.Load()).ContinueWith(t => Invoker.ForceUpdate());
+                Invoker.RunAsync(() =>
                 {
-                    var textureMapping = texturePath.TexturePaths.ToTextureMapping(TextureManager);
-                    textureBinder.AddTextureMapping(textureMapping);
-                }*/
+                    try
+                    {
+                        _batchManager.Load();
+                        //_uiProvider.Load();
 
-                var colorID = SelectionRenderer.GetColorFromID(entityID);
+                        Invoker.ForceUpdate();
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine(ex);
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
+        }
+
+        // TODO - Can we remove this call?
+        public void LoadBatcher() => _batchManager.Load();
+
+        protected override void LoadComponent(int entityID, IRenderable component)
+        {
+            base.LoadComponent(entityID, component);
+
+            if (IsInEditorMode && component is IMesh mesh)
+            {
+                var colorID = SelectionHelper.GetColorFromID(entityID);
+                _batchManager.AddEntity(entityID, TransformToEditorMesh(mesh, colorID));
+            }
+            else if (IsInEditorMode && component is IModel model)
+            {
+                var colorID = SelectionHelper.GetColorFromID(entityID);
+
                 for (var i = 0; i < model.Meshes.Count; i++)
                 {
-                    var vertices = model.Meshes[i].Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
-                    model.Meshes[i] = new Mesh<EditorVertex3D>(vertices, model.Meshes[i].TriangleIndices.ToList());
+                    model.Meshes[i] = TransformToEditorMesh(model.Meshes[i], colorID);
                 }
 
-                BatchManager.AddEntity(entityID, renderable);
+                _batchManager.AddEntity(entityID, component);
+            }
+            else if (IsInEditorMode && component is IBillboard billboard)
+            {
+                billboard.SetColor(SelectionHelper.GetColorFromID(entityID));
             }
             else
             {
-                BatchManager.AddEntity(entityID, renderable);
+                _batchManager.AddEntity(entityID, component);
+
+                if (component is IElement element)
+                {
+                    //_uiProvider.AddElement(entityID, element);
+                }
             }
         }
 
-        public void RemoveEntity(int entityID) => BatchManager.RemoveByEntityID(entityID);
+        private IMesh TransformToEditorMesh(IMesh mesh, Color4 colorID)
+        {
+            var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
+            var triangleIndices = mesh.TriangleIndices.ToList();
+            var vertexSet = new Vertex3DSet<EditorVertex3D>(mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList(), mesh.TriangleIndices.ToList());
+
+            if (mesh is ITexturedMesh texturedMesh)
+            {
+                return new TexturedMesh<EditorVertex3D>(vertexSet)
+                {
+                    Material = texturedMesh.Material,
+                    TextureMapping = texturedMesh.TextureMapping
+                };
+            }
+            else if (mesh is IColoredMesh coloredMesh)
+            {
+                return new ColoredMesh<EditorVertex3D>(vertexSet)
+                {
+                    Color = coloredMesh.Color
+                };
+            }
+            else
+            {
+                return new Mesh<EditorVertex3D>(vertexSet);
+            }
+        }
+
+        public void RemoveEntity(int entityID) => _batchManager.RemoveByEntityID(entityID);
+
+        public void Duplicate(int entityID, int duplicateID) => _batchManager.DuplicateBatch(entityID, duplicateID);
 
         public void ResizeResolution()
         {
             if (IsLoaded)
             {
-                _forwardRenderer.ResizeTextures(Resolution);
+                //_forwardRenderer.ResizeTextures(Resolution);
                 _deferredRenderer.ResizeTextures(Resolution);
                 _wireframeRenderer.ResizeTextures(Resolution);
                 _shadowRenderer.ResizeTextures(Resolution);
@@ -238,6 +364,7 @@ namespace SpiceEngine.Rendering
                 _blurRenderer.ResizeTextures(Resolution);
                 _invertRenderer.ResizeTextures(Resolution);
                 _textRenderer.ResizeTextures(Resolution);
+                _uiRenderer.ResizeTextures(Resolution);
             }
         }
 
@@ -262,7 +389,8 @@ namespace SpiceEngine.Rendering
         {
             foreach (var entityID in entityIDs)
             {
-                BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Selected());
+                // TODO - Handle light selection differently, since lights are not stored in the BatchManager
+                _batchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Selected());
             }
         }
 
@@ -270,14 +398,23 @@ namespace SpiceEngine.Rendering
         {
             foreach (var entityID in entityIDs)
             {
-                BatchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Deselected());
+                _batchManager.UpdateVertices(entityID, v => ((EditorVertex3D)v).Deselected());
             }
         }
 
-        public int GetEntityIDFromPoint(Vector2 point)
+        public int GetEntityIDFromSelection(Vector2 coordinates)
         {
+            // Mouse coordinates are from top-left
+            var mouseCoordinates = coordinates;
+
+            // We need to convert these to instead be from bottom-left
+            var windowCoordinates = new Vector2(mouseCoordinates.X, WindowSize.Height - mouseCoordinates.Y);
+
+            // We now need to convert these coordinates from window-size to resolution-size
+            var resolutionCoordinates = new Vector2(Resolution.Width * windowCoordinates.X / WindowSize.Width, Resolution.Height * windowCoordinates.Y / WindowSize.Height);
+
             _selectionRenderer.BindForReading();
-            return _selectionRenderer.GetEntityIDFromPoint(point);
+            return _selectionRenderer.GetEntityIDFromPoint(resolutionCoordinates);
         }
 
         public void RenderSelection(IEnumerable<IEntity> entities, TransformModes transformMode)
@@ -384,6 +521,22 @@ namespace SpiceEngine.Rendering
         public void SetGrid5Color(Color4 color) => _wireframeRenderer.GridLine5Color = color.ToVector4();
         public void SetGrid10Color(Color4 color) => _wireframeRenderer.GridLine10Color = color.ToVector4();
 
+        public void SetPhysicsVolumeColor(Color4 color)
+        {
+            var entityIDs = _entityProvider.Volumes.Where(v => v is PhysicsVolume).Select(v => v.ID);
+
+            foreach (var entityID in entityIDs)
+            {
+                var batch = _batchManager.GetBatchOrDefault(entityID);
+                if (batch is MeshBatch meshBatch)
+                {
+                    meshBatch.UpdateVertices(entityID, v => v is IColorVertex colorVertex
+                        ? (IVertex3D)colorVertex.Colored(color)
+                        : v);
+                }
+            }
+        }
+
         //public bool RenderWireframe { get; set; }
         public bool LogToScreen { get; set; }
 
@@ -406,8 +559,8 @@ namespace SpiceEngine.Rendering
                     break;
             }
 
-            if (IsInEditorMode)
-            {
+            //if (IsInEditorMode)
+            //{
                 RenderEntityIDs();
 
                 // TODO - Determine how to handle this
@@ -415,22 +568,30 @@ namespace SpiceEngine.Rendering
                 {
                     _renderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);
                 }*/
-            }
+            //}
         }
 
         private void RenderEntityIDs()
         {
+            // TODO - Perform check first to see if ANY selection IDs (via layers) even exist...
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(_camera, BatchManager, _entityProvider.EntitySelectIDs);
-            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.EntitySelectIDs.Contains(l.ID)));
+            _selectionRenderer.SelectionPass(_camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
+            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
 
-            var vertexEntities = _entityProvider.GetLayerEntityIDs("Vertices");
-            if (vertexEntities.Any())
+            if (IsInEditorMode)
             {
-                _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+                var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
+                if (vertexEntities.Any())
+                {
+                    _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+                }
+            }
+            else
+            {
+                _uiRenderer.RenderSelections(_batchManager, _uiProvider);
             }
         }
 
@@ -444,14 +605,14 @@ namespace SpiceEngine.Rendering
                 _wireframeRenderer.RenderGridLines(_camera);
             }
 
-            _wireframeRenderer.WireframePass(_camera, BatchManager);
+            _wireframeRenderer.WireframePass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
+            //_billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -465,7 +626,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager);
+            _deferredRenderer.GeometryPass(_camera, _batchManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
@@ -477,17 +638,17 @@ namespace SpiceEngine.Rendering
             }
 
             _skyboxRenderer.Render(_camera);
-            _billboardRenderer.GeometryPass(_camera, BatchManager);
+            _billboardRenderer.GeometryPass(_camera, _batchManager);
             _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
 
-            _deferredRenderer.BindForLitTransparentWriting();
+            _deferredRenderer.BindForTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -506,7 +667,7 @@ namespace SpiceEngine.Rendering
                 GL.Disable(EnableCap.Blend);
                 GL.DepthFunc(DepthFunction.Always);
 
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, _batchManager);
             }
         }
 
@@ -515,7 +676,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager);
+            _deferredRenderer.GeometryPass(_camera, _batchManager);
 
             RenderLights();
 
@@ -538,20 +699,27 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
 
             GL.Disable(EnableCap.DepthTest);
 
-            if (IsInEditorMode && _selectionProvider != null)
-            {
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
-            }
-
             _renderToScreen.Render(_deferredRenderer.FinalTexture);
             _logManager.RenderToScreen();
+
+            if (IsInEditorMode && _selectionProvider != null && _selectionProvider.SelectionCount > 0)
+            {
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+                GL.DepthFunc(DepthFunction.Always);
+
+                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, _batchManager);
+            }
         }
 
         public void RenderFullFrame()
@@ -559,7 +727,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _deferredRenderer.GeometryPass(_camera, BatchManager);
+            _deferredRenderer.GeometryPass(_camera, _batchManager);
 
             RenderLights();
 
@@ -574,15 +742,22 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, BatchManager);
+            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
 
-            if (IsInEditorMode && _selectionProvider != null)
+            /*if (IsInEditorMode && _selectionProvider != null && _selectionProvider.SelectionCount > 0)
             {
+                GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+                GL.Disable(EnableCap.CullFace);
+                GL.Enable(EnableCap.DepthTest);
+                GL.Disable(EnableCap.Blend);
+                GL.DepthFunc(DepthFunction.Always);
+
                 _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, BatchManager);
-            }
+            }*/
 
             // Read from GBuffer's final texture, so that we can post-process it
             //GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, _deferredRenderer.GBuffer._handle);
@@ -597,8 +772,8 @@ namespace SpiceEngine.Rendering
 
             _renderToScreen.Render(texture);
 
-            _textRenderer.RenderText("FPS: " + Frequency.ToString("0.##"), Resolution.Width - 9 * (10 + TextRenderer.GLYPH_WIDTH), Resolution.Height - (10 + TextRenderer.GLYPH_HEIGHT), 1.0f);
-            _logManager.RenderToScreen();
+            RenderUI();
+            //_logManager.RenderToScreen();
         }
 
         private void RenderLights()
@@ -614,7 +789,7 @@ namespace SpiceEngine.Rendering
                 _lightRenderer.StencilPass(light, _camera, lightMesh);
 
                 GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(_camera, light, BatchManager);
+                _shadowRenderer.Render(_camera, light, _batchManager);
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();
@@ -630,6 +805,36 @@ namespace SpiceEngine.Rendering
 
             GL.Disable(EnableCap.StencilTest);
             GL.Disable(EnableCap.Blend);
+        }
+
+        // TODO - Remove this test code and set fonts up more appropriately
+        private bool _isFontSet = false;
+
+        private void RenderUI()
+        {
+            _uiRenderer.Render(_batchManager, _uiProvider);
+
+            //var font = FontManager.GetFont(TextRenderer.FONT_PATH);
+
+            /*if (!_isFontSet)
+            {
+                var entityID = _entityProvider.GetEntity("Text 2C").ID;
+                var uiElement = _uiProvider.GetUIElement(entityID);
+                
+                if (uiElement is Label textView)
+                {
+                    textView.Font = font;
+                }
+
+                _isFontSet = true;
+            }*/
+
+            _textRenderer.Render(_batchManager, _uiProvider);
+
+            //var x = Resolution.Width - 9 * (10 + font.GlyphWidth);
+            //var y = /*Resolution.Height - */(10 + font.GlyphHeight);
+            //var y = 100;
+            //_textRenderer.RenderText(font, "FPS: " + Frequency.ToString("0.##"), x, y);
         }
     }
 }

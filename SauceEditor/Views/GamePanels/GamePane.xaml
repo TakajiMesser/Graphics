@@ -1,0 +1,96 @@
+﻿<xcad:LayoutAnchorablePane x:Class="SauceEditor.Views.GamePanels.GamePane"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:SauceEditor.Views.GamePanels"
+        xmlns:btns="clr-namespace:SauceEditor.Views.Buttons"
+        xmlns:vm="clr-namespace:SauceEditor.ViewModels"
+        xmlns:updowns="clr-namespace:SauceEditor.Views.UpDowns"
+        xmlns:cb="clr-namespace:SauceEditor.ViewModels.AttachedBehaviors"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:spice="clr-namespace:SpiceEngine.Game;assembly=SpiceEngine"
+        mc:Ignorable="d">
+    <!--<DockPanel.Resources>
+            <Style x:Key="FocusBorder" TargetType="{x:Type Border}">
+                <Setter Property="BorderBrush" Value="Transparent" />
+                <Style.Triggers>
+                    <Trigger Property="IsFocused" Value="True">
+                        <Setter Property="BorderBrush" Value="Yellow" />
+                        <Setter Property="BorderThickness" Value="1" />
+                    </Trigger>
+                </Style.Triggers>
+            </Style>
+        </DockPanel.Resources>-->
+    <xcad:LayoutAnchorable x:Name="Anchorable">
+        <DockPanel Name="GameDockPanel" Loaded="OnLoaded" cb:MouseDrop.Command="{Binding Path=DropCommand}">
+            <DockPanel.DataContext>
+                <vm:GamePaneViewModel x:Name="ViewModel"></vm:GamePaneViewModel>
+            </DockPanel.DataContext>
+            <ToolBar DockPanel.Dock="Top">
+                <Expander x:Name="SettingsExpander" ExpandDirection="Down" Margin="0" VerticalAlignment="Top" Height="22">
+                    <Popup x:Name="SettingsPopup" Placement="Bottom">
+                        <StackPanel Orientation="Vertical" Margin="10, 4, 0, 0" Background="White">
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="WireframeThicknessLabel" Content="Wireframe Thickness"/>
+                                <updowns:NumericUpDown x:Name="WireframeThicknessUpDown" DefaultValue="{Binding WireframeThickness}" Margin="4, 2, 2, 4"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="WireframeColorLabel" Content="Wireframe Color"/>
+                                <xctk:ColorPicker x:Name="WireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="SelectedWireframeThicknessLabel" Content="Selected Wireframe Thickness"/>
+                                <updowns:NumericUpDown x:Name="SelectedWireframeThicknessUpDown" DefaultValue="{Binding SelectedWireframeThickness}" Margin="4, 2, 2, 4"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="SelectedWireframeColorLabel" Content="Selected Wireframe Color"/>
+                                <xctk:ColorPicker x:Name="SelectedWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="SelectedLightWireframeThicknessLabel" Content="Selected Light Wireframe Thickness"/>
+                                <updowns:NumericUpDown x:Name="SelectedLightWireframeThicknessUpDown" DefaultValue="{Binding SelectedLightWireframeThickness}" Margin="4, 2, 2, 4"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="SelectedLightWireframeColorLabel" Content="Selected Light Wireframe Color"/>
+                                <xctk:ColorPicker x:Name="SelectedLightWireframeColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="GridThicknessLabel" Content="Grid Thickness"/>
+                                <updowns:NumericUpDown x:Name="GridThicknessUpDown" DefaultValue="{Binding GridThickness}" Margin="4, 2, 2, 4"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="GridUnitColorLabel" Content="Grid Unit Color"/>
+                                <xctk:ColorPicker x:Name="GridUnitColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="GridAxisColorLabel" Content="Grid Axis Color"/>
+                                <xctk:ColorPicker x:Name="GridAxisColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="Grid5ColorLabel" Content="Grid 5 Color"/>
+                                <xctk:ColorPicker x:Name="Grid5ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="Grid10ColorLabel" Content="Grid 10 Color"/>
+                                <xctk:ColorPicker x:Name="Grid10ColorPick" Width="25" Height="25" ShowDropDownButton="False" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <Label Name="GridUnitLabel" Content="Grid Scale Unit"/>
+                                <updowns:NumericUpDown x:Name="GridUnitUpDown" DefaultValue="{Binding GridUnit}" Margin="4, 2, 2, 4"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </Popup>
+                </Expander>
+                <Separator/>
+                <btns:ToggleEnumButton x:Name="ViewModeButton" Orientation="Horizontal" Value="{Binding Path=Control.RenderMode, Mode=TwoWay}" />
+                <Separator/>
+                <ToggleButton Name="GridButton" Content="Grid" IsChecked="{Binding ShowGrid}"/>
+            </ToolBar>
+            <WindowsFormsHost x:Name="PanelHost">
+                <spice:GameControl x:Name="GameControl" Dock="Fill"></spice:GameControl>
+            </WindowsFormsHost>
+        </DockPanel>
+    </xcad:LayoutAnchorable>
+</xcad:LayoutAnchorablePane>

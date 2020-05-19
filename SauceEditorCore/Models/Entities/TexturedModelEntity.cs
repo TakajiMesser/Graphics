@@ -1,17 +1,15 @@
 ﻿using OpenTK;
-using SpiceEngine.Entities;
 using SpiceEngine.Entities.Selection;
-using SpiceEngine.Rendering.Materials;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.PostProcessing;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Utilities;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Rendering.Materials;
+using SpiceEngineCore.Rendering.Textures;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Rendering.Textures;
 using System;
 
 namespace SauceEditorCore.Models.Entities
 {
-    public abstract class TexturedModelEntity<T> : ModelEntity<T>, IRotate, IScale, ITextureBinder, ITexturePath, ITexturedEntity, IDirectional where T : IModelShape, ITexturedShape
+    public abstract class TexturedModelEntity<T> : ModelEntity<T>, IRotate, IScale, /*ITextureBinder, ITexturePath,*/ ITexturedEntity, IDirectional where T : IModelShape, ITexturedShape
     {
         private Vector2 _texturePosition;
         private float _textureRotation;
@@ -34,9 +32,15 @@ namespace SauceEditorCore.Models.Entities
             set => _modelMatrix.Scale = value;
         }
 
-        public TexturePaths TexturePaths { get; }
-        public Material Material { get; private set; }
-        public TextureMapping? TextureMapping { get; private set; }
+        protected TexturePaths _texturePaths;
+        protected Material _material;
+        protected TextureMapping _textureMapping;
+
+        /*public IEnumerable<Material> Materials => CurrentMaterial.Yield();
+        public IEnumerable<TextureMapping?> TextureMappings => CurrentTextureMapping.Yield();
+
+        public Material CurrentMaterial { get; private set; }
+        public TextureMapping? CurrentTextureMapping { get; private set; }*/
 
         public abstract Vector3 XDirection { get; }
         public abstract Vector3 YDirection { get; }
@@ -45,7 +49,7 @@ namespace SauceEditorCore.Models.Entities
         //public override event EventHandler<EntityTransformEventArgs> Transformed;
         public event EventHandler<TextureTransformEventArgs> TextureTransformed;
 
-        public TexturedModelEntity(T modelShape, TexturePaths texturePaths) : base(modelShape) => TexturePaths = texturePaths;
+        public TexturedModelEntity(T modelShape, TexturePaths texturePaths) : base(modelShape) => _texturePaths = texturePaths;
 
         public void TranslateTexture(float x, float y)
         {
@@ -65,15 +69,15 @@ namespace SauceEditorCore.Models.Entities
             TextureTransformed?.Invoke(this, new TextureTransformEventArgs(ID, Vector2.Zero, 0.0f, new Vector2(x, y)));
         }
 
-        public void AddMaterial(Material material) => Material = material;
+        /*public void AddMaterial(Material material) => CurrentMaterial = material;
 
-        public void AddTextureMapping(TextureMapping? textureMapping) => TextureMapping = textureMapping;
+        public void AddTextureMapping(TextureMapping? textureMapping) => CurrentTextureMapping = textureMapping;
 
         public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
         {
-            if (TextureMapping.HasValue)
+            if (CurrentTextureMapping.HasValue)
             {
-                program.BindTextures(textureProvider, TextureMapping.Value);
+                program.BindTextures(textureProvider, CurrentTextureMapping.Value);
             }
             else
             {
@@ -84,11 +88,11 @@ namespace SauceEditorCore.Models.Entities
         public override void SetUniforms(ShaderProgram program)
         {
             base.SetUniforms(program);
-            Material.SetUniforms(program);
+            CurrentMaterial.SetUniforms(program);
         }
 
         public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
-            && Material.Equals(textureBinder.Material)
-            && TextureMapping.Equals(textureBinder.TextureMapping);
+            && CurrentMaterial.Equals(textureBinder.CurrentMaterial)
+            && CurrentTextureMapping.Equals(textureBinder.CurrentTextureMapping);*/
     }
 }

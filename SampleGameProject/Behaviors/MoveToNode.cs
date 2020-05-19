@@ -1,7 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngine.Physics.Bodies;
-using SpiceEngine.Scripting;
-using SpiceEngine.Scripting.Nodes;
+using SavoryPhysicsCore.Bodies;
+using SpiceEngineCore.Utilities;
+using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace SampleGameProject.Behaviors
 {

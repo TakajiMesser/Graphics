@@ -1,17 +1,11 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Game;
-using SpiceEngine.Inputs;
-using SpiceEngine.Physics;
-using SpiceEngine.Scripting.Nodes;
-using SpiceEngine.Scripting.Properties;
-using SpiceEngine.Scripting.StimResponse;
+﻿using SpiceEngineCore.Scripting;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using UmamiScriptingCore.Scripts;
 
 namespace SpiceEngine.Scripting.Scripts
 {
@@ -21,7 +15,7 @@ namespace SpiceEngine.Scripting.Scripts
         private Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider _provider = new Microsoft.CodeDom.Providers.DotNetCompilerPlatform.CSharpCodeProvider();
         private CompilerParameters _compilerParameters;
 
-        private Dictionary<string, List<Script>> _scriptsByName = new Dictionary<string, List<Script>>();
+        private Dictionary<string, List<IScript>> _scriptsByName = new Dictionary<string, List<IScript>>();
 
         private object _compilerLock = new object();
 
@@ -41,19 +35,25 @@ namespace SpiceEngine.Scripting.Scripts
 
             //var assemblyNames = executingAssembly.GetReferencedAssemblies();
             //var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
+            _compilerParameters.ReferencedAssemblies.Add("netstandard.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SavoryPhysicsCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("StarchUICore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("UmamiScriptingCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
         }
 
-        public void AddScript(Script script)
+        public void AddScript(IScript script)
         {
             lock (_compilerLock)
             {
+                throw new NotImplementedException();
                 //_scriptsByName.Add(script.Name, script);
             }
         }
 
-        public void AddScripts(IEnumerable<Script> scripts)
+        public void AddScripts(IEnumerable<IScript> scripts)
         {
             lock (_compilerLock)
             {
@@ -62,7 +62,7 @@ namespace SpiceEngine.Scripting.Scripts
                     // TODO - This won't work, as the duplicate scripts won't fire the necessary compilation event
                     if (!_scriptsByName.ContainsKey(script.Name))
                     {
-                        _scriptsByName.Add(script.Name, new List<Script>());
+                        _scriptsByName.Add(script.Name, new List<IScript>());
                     }
 
                     _scriptsByName[script.Name].Add(script);
@@ -86,7 +86,7 @@ namespace SpiceEngine.Scripting.Scripts
                         var script = _scriptsByName.Values.FirstOrDefault(v => Path.GetFileName(v.First().SourcePath) == error.FileName);
                         if (script != null)
                         {
-                            script.First().Errors.Add(error);
+                            script.First().Errors.Add(error.ToString());
                         }
                     }
                 }

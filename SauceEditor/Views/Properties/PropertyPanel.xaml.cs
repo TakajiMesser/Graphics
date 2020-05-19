@@ -1,14 +1,18 @@
-﻿using SauceEditor.ViewModels.Commands;
-using SauceEditor.ViewModels.Docks;
+﻿using SauceEditor.ViewModels.Properties;
+using SauceEditorCore.Models.Entities;
 using System;
+using System.Reflection;
+using System.Windows;
 using Xceed.Wpf.AvalonDock.Layout;
+using Xceed.Wpf.Toolkit.PropertyGrid;
+using System.Linq;
 
 namespace SauceEditor.Views.Properties
 {
     /// <summary>
     /// Interaction logic for PropertyPanel.xaml
     /// </summary>
-    public partial class PropertyPanel : LayoutAnchorable, IHaveDockViewModel
+    public partial class PropertyPanel : LayoutAnchorable, IDisplayProperties
     {
         /*private EditorEntity _entity;
         public EditorEntity Entity
@@ -36,6 +40,8 @@ namespace SauceEditor.Views.Properties
         public PropertyPanel()
         {
             InitializeComponent();
+
+            ViewModel.PropertyDisplayer = this;
             ViewModel.UpdateFromModel(null);
 
             /*ViewModel.PositionViewModel = PositionTransform.ViewModel;
@@ -104,7 +110,30 @@ namespace SauceEditor.Views.Properties
             };*/
         }
 
-        public DockViewModel GetViewModel() => ViewModel;
+        public void UpdateFromEntity(EditorEntity entity)
+        {
+            if (ViewModel.Properties is EntityPropertyViewModel entityPropertyViewModel)
+            {
+                entityPropertyViewModel.UpdateFromModel(entity);
+                ViewModel.IsVisible = entity != null;
+
+                if (entity != null)
+                {
+                    ViewModel.IsActive = true;
+                }
+            }
+        }
+
+        public void SetPropertyVisibility(string propertyName, Visibility visibility)
+        {
+            foreach (var property in PropertyGrid.Properties)
+            {
+                if (property is PropertyItem propertyItem && propertyItem.PropertyName == propertyName)
+                {
+                    propertyItem.Visibility = visibility;
+                }
+            }
+        }
 
         /*private void ScriptButton_Click(object sender, RoutedEventArgs e)
         {

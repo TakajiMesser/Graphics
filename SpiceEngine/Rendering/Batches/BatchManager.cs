@@ -1,41 +1,46 @@
-﻿using SpiceEngine.Entities;
-using SpiceEngine.Entities.Actors;
-using SpiceEngine.Entities.Brushes;
-using SpiceEngine.Entities.Cameras;
-using SpiceEngine.Entities.Lights;
-using SpiceEngine.Entities.Volumes;
-using SpiceEngine.Rendering.Meshes;
-using SpiceEngine.Rendering.Shaders;
-using SpiceEngine.Rendering.Textures;
-using SpiceEngine.Rendering.Vertices;
-using SpiceEngine.Utilities;
+﻿using SpiceEngineCore.Components.Animations;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Vertices;
+using SpiceEngineCore.UserInterfaces;
+using StarchUICore;
+using StarchUICore.Groups;
+using StarchUICore.Rendering.Batches;
+using StarchUICore.Views;
+using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Rendering.Billboards;
+using SweetGraphicsCore.Rendering.Meshes;
+using SweetGraphicsCore.Rendering.Models;
+using SweetGraphicsCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngine.Rendering.Batches
 {
-    public enum RenderTypes
-    {
-        OpaqueStatic,
-        OpaqueAnimated,
-        OpaqueBillboard,
-        TransparentStatic,
-        TransparentAnimated,
-        TransparentBillboard
-    }
-
-    public class BatchManager
+    public class BatchManager : IBatcher
     {
         private IEntityProvider _entityProvider;
         private ITextureProvider _textureProvider;
+        private IAnimationProvider _animationProvider;
+        private IUIProvider _uiProvider;
 
         private HashSet<int> _opaqueStaticIDs = new HashSet<int>();
         private HashSet<int> _opaqueAnimatedIDs = new HashSet<int>();
         private HashSet<int> _opaqueBillboardIDs = new HashSet<int>();
+        private HashSet<int> _opaqueViewIDs = new HashSet<int>();
+        private HashSet<int> _opaqueTextIDs = new HashSet<int>();
         private HashSet<int> _transparentStaticIDs = new HashSet<int>();
         private HashSet<int> _transparentAnimatedIDs = new HashSet<int>();
         private HashSet<int> _transparentBillboardIDs = new HashSet<int>();
+        private HashSet<int> _transparentViewIDs = new HashSet<int>();
+        private HashSet<int> _transparentTextIDs = new HashSet<int>();
 
         private Dictionary<int, RenderTypes> _renderTypeByEntityID = new Dictionary<int, RenderTypes>();
         private Dictionary<int, int> _batchIndexByEntityID = new Dictionary<int, int>();
@@ -49,21 +54,35 @@ namespace SpiceEngine.Rendering.Batches
             _textureProvider = textureProvider;
         }
 
+        public void SetAnimationProvider(IAnimationProvider animationProvider) => _animationProvider = animationProvider;
+
+        public void SetUIProvider(IUIProvider uiProvider) => _uiProvider = uiProvider;
+
         public void DuplicateBatch(int entityID, int newID)
         {
             var batch = GetBatch(entityID);
-            
+
             // TODO = Handle texture mapping duplication outside of here (in RenderManager?)
             switch (batch)
             {
                 case IMesh mesh:
                     AddEntity(newID, mesh.Duplicate());
                     break;
-                case Model model:
+                case IModel model:
                     AddEntity(newID, model.Duplicate());
                     break;
-                case TextureID textureID:
-                    AddEntity(newID, textureID.Duplicate());
+                case IBillboard billboard:
+                    AddEntity(newID, billboard.Duplicate());
+                    break;
+                case IElement element:
+                    if (element is IView view)
+                    {
+                        AddEntity(newID, view.Duplicate());
+                    }
+                    else if (element is IGroup group)
+                    {
+                        AddEntity(newID, group.Duplicate());
+                    }
                     break;
             }
         }
@@ -137,6 +156,12 @@ namespace SpiceEngine.Rendering.Batches
                 }
             };
 
+            // TODO - Should we hold off on binding this animation model until the model batch has been loaded?
+            if (renderable is IAnimate animated && _animationProvider != null)
+            {
+                _animationProvider.AddAnimated(entityID, animated);
+            }
+
             var batch = CreateOrGetBatch(entityID, renderable);
             batch.AddEntity(entityID, renderable);
 
@@ -146,7 +171,7 @@ namespace SpiceEngine.Rendering.Batches
 
             if (batch.EntityCount == 1)
             {
-                if (entity is Brush)
+                if (entity is IBrush)
                 {
                     // Unfortunately, we have to wait for batch.AddEntity() here, since that is what sets up the offset and count in the batch...
                     entity.Transformed += (s, args) =>
@@ -192,13 +217,13 @@ namespace SpiceEngine.Rendering.Batches
             //AddBatch(entityID, batch);
         }
 
-        public void UpdateVertices(int entityID, Func<IVertex3D, IVertex3D> vertexUpdate)
+        public void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate)
         {
-            var batch = GetBatch(entityID);
-            batch.UpdateVertices(entityID, vertexUpdate);
+            var batch = GetBatchOrDefault(entityID);
+            batch?.UpdateVertices(entityID, vertexUpdate);
         }
 
-        private Batch CreateOrGetBatch(int entityID, IRenderable renderable)
+        private IBatch CreateOrGetBatch(int entityID, IRenderable renderable)
         {
             var match = FindAppropriateBatch(entityID, renderable);
 
@@ -227,85 +252,56 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        private Batch CreateBatch(IRenderable renderable)
+        private IBatch CreateBatch(IRenderable renderable)
         {
             switch (renderable)
             {
                 case IMesh mesh:
                     return new MeshBatch(mesh);
-                case Model model:
+                case IModel model:
                     return new ModelBatch(model);
-                case TextureID textureID:
-                    return new BillboardBatch(textureID);
+                case IBillboard billboard:
+                    return new BillboardBatch(billboard);
+                case IElement element:
+                    if (element is Label textView)
+                    {
+                        var textBatch = new LabelBatch(textView);
+                        _uiProvider.OrderChanged += (s, args) => textBatch.Reorder(args.IDs);
+                        return textBatch;
+                    }
+                    else
+                    {
+                        var uiBatch = new UIQuadBatch(element);
+                        _uiProvider.OrderChanged += (s, args) => uiBatch.Reorder(args.IDs);
+                        return uiBatch;
+                    }
             }
 
             throw new ArgumentOutOfRangeException("Could not handle renderable of type " + renderable.GetType());
         }
 
-        private Batch FindAppropriateBatch(int entityID, IRenderable renderable)
+        private IBatch FindAppropriateBatch(int entityID, IRenderable renderable)
         {
-            if (renderable is IMesh || renderable is TextureID)
+            for (var i = 0; i < _batches.Count; i++)
             {
-                var entityA = _entityProvider.GetEntity(entityID);
+                var batch = _batches[i];
 
-                for (var i = 0; i < _batches.Count; i++)
+                if (batch.CompareUniforms(renderable))
                 {
-                    if (_batches[i] is MeshBatch meshBatch)
+                    //var entity = _entityProvider.GetEntity(entityID);
+
+                    // Any additional entities in the batch are responsible for transforming their vertices if their model matrix changes...
+                    // TODO - Don't recalculate matrix here (store in event args)
+                    /*entity.Transformed += (s, args) => batch.Transform(args.ID, args.Transform);
+
+                    if (entity is ITexturedEntity texturedEntity)
                     {
-                        var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
+                        texturedEntity.TextureTransformed += (s, args) => batch.TransformTexture(args.ID, entity.Position, args.Translation, args.Rotation, args.Scale);
+                    }*/
 
-                        if (entityA.CompareUniforms(entityB))
-                        {
-                            /*// Any additional entities in the batch is responsible for transforming their vertices if their model matrix changes...
-                            entityA.Transformed += (s, args) =>
-                            {
-                                // TODO - Don't recalculate matrix here (store in event args)
-                                meshBatch.Transform(args.ID, args.Transform);
-                            };
-
-                            if (entityA is ITexturedEntity texturedEntity)
-                            {
-                                texturedEntity.TextureTransformed += (s, args) =>
-                                {
-                                    meshBatch.TransformTexture(args.ID, entityA.Position, args.Translation, args.Rotation, args.Scale);
-                                };
-                            }*/
-
-                            _batchIndexByEntityID.Add(entityID, i);
-                            return meshBatch;
-                        }
-                    }
-                    else if (_batches[i] is BillboardBatch billboardBatch)
-                    {
-                        var entityB = _entityProvider.GetEntity(billboardBatch.EntityIDs.First());
-
-                        if (entityA.CompareUniforms(entityB))
-                        {
-                            entityA.Transformed += (s, args) =>
-                            {
-                                billboardBatch.Transform(args.ID, args.Transform);
-                            };
-
-                            _batchIndexByEntityID.Add(entityID, i);
-                            return billboardBatch;
-                        }
-                    }
+                    _batchIndexByEntityID.Add(entityID, i);
+                    return batch;
                 }
-
-                /*foreach (var meshBatch in _batches.OfType<MeshBatch>())
-                {
-                    var entityB = _entityProvider.GetEntity(meshBatch.EntityIDs.First());
-
-                    if (entityA.CompareUniforms(entityB))
-                    {
-                        entityA.Transformed += (s, args) =>
-                        {
-                            meshBatch.Transform(args.ID, args.Transform);
-                        };
-
-                        return meshBatch;
-                    }
-                }*/
             }
 
             return null;
@@ -324,25 +320,37 @@ namespace SpiceEngine.Rendering.Batches
             }
         }*/
 
-        public void Load(int entityID) => GetBatch(entityID).Load();
+        public void Load(int entityID)
+        {
+            var batch = GetBatch(entityID);
+
+            if (!batch.IsLoaded)
+            {
+                Load();
+            }
+        }
 
         public void Load()
         {
+            // TODO - Instead of checking every time, have a load queue
             foreach (var batch in _batches)
             {
-                batch.Load();
+                if (!batch.IsLoaded)
+                {
+                    batch.Load();
+                }
             }
 
             IsLoaded = true;
         }
 
-        public BatchAction CreateBatchAction() => new BatchAction(this);
+        public IBatchAction CreateBatchAction() => new BatchAction(this);
 
-        private void DrawEntities(ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
+        /*private void DrawEntities(ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
             var batchIndices = new HashSet<int>();
 
-            foreach (var id in _entityProvider.EntityRenderIDs)
+            foreach (var id in _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render))
             {
                 // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
                 if ((ids == null || ids.Contains(id)))
@@ -359,11 +367,33 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
+        private void DrawEntities(RenderTypes renderType, ShaderProgram shader, List<int> ids, Action<int> action = null)
+        {
+            var batchIndices = new HashSet<int>();
+            var idSet = _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render).Union(GetEntityIDSet(renderType));
+
+            foreach (var id in ids)
+            {
+                if (idSet.Contains(id))
+                {
+                    action?.Invoke(id);
+
+                    var batchIndex = _batchIndexByEntityID[id];
+
+                    if (!batchIndices.Contains(batchIndex))
+                    {
+                        batchIndices.Add(batchIndex);
+                        _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+                    }
+                }
+            }
+        }
+
         private void DrawEntities(RenderTypes renderType, ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
             var batchIndices = new HashSet<int>();
 
-            foreach (var id in _entityProvider.EntityRenderIDs)
+            foreach (var id in _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render))
             {
                 // TODO - Handle case where ids is NOT null, and we only want to render some of the entities within a single batch
                 if ((ids == null || ids.Contains(id)) && GetEntityIDSet(renderType).Contains(id))
@@ -379,6 +409,55 @@ namespace SpiceEngine.Rendering.Batches
                     }
                 }
             }
+        }*/
+
+        private IEnumerable<int> GetEntityIDs(RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder)
+        {
+            var entityIDOrder = idOrder ?? _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render);
+            var entityIDFilter = new HashSet<int>(_entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render));
+            
+            if (idSet != null)
+            {
+                entityIDFilter.IntersectWith(idSet);
+            }
+
+            if (renderType.HasValue)
+            {
+                entityIDFilter.IntersectWith(GetEntityIDSet(renderType.Value));
+            }
+
+            foreach (var entityID in entityIDOrder)
+            {
+                if (entityIDFilter.Contains(entityID))
+                {
+                    yield return entityID;
+                }
+            }
+        }
+
+        private void DrawEntities(ShaderProgram shader, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> perIdAction = null, Action<IBatch> perBatchAction = null)
+        {
+            var batchIndices = new HashSet<int>();
+
+            foreach (var id in GetEntityIDs(renderType, idSet, idOrder))
+            {
+                var batchIndex = _batchIndexByEntityID[id];
+                if (!batchIndices.Contains(batchIndex))
+                {
+                    batchIndices.Add(batchIndex);
+                    perIdAction?.Invoke(id);
+
+                    perBatchAction?.Invoke(_batches[batchIndex]);
+
+                    var a = 3;
+                    if (renderType.HasValue && (renderType.Value == RenderTypes.TransparentText || renderType.Value == RenderTypes.OpaqueText))
+                    {
+                        a = 4;
+                    }
+
+                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+                }
+            }
         }
 
         private HashSet<int> GetEntityIDSet(RenderTypes renderType)
@@ -391,12 +470,20 @@ namespace SpiceEngine.Rendering.Batches
                     return _opaqueAnimatedIDs;
                 case RenderTypes.OpaqueBillboard:
                     return _opaqueBillboardIDs;
+                case RenderTypes.OpaqueView:
+                    return _opaqueViewIDs;
+                case RenderTypes.OpaqueText:
+                    return _opaqueTextIDs;
                 case RenderTypes.TransparentStatic:
                     return _transparentStaticIDs;
                 case RenderTypes.TransparentAnimated:
                     return _transparentAnimatedIDs;
                 case RenderTypes.TransparentBillboard:
                     return _transparentBillboardIDs;
+                case RenderTypes.TransparentView:
+                    return _transparentViewIDs;
+                case RenderTypes.TransparentText:
+                    return _transparentTextIDs;
             }
 
             throw new ArgumentOutOfRangeException("Could not handle render type " + renderType);
@@ -404,11 +491,19 @@ namespace SpiceEngine.Rendering.Batches
 
         private RenderTypes GetRenderTypeForRenderable(IRenderable renderable)
         {
-            if (renderable.IsAnimated)
+            if (renderable is Label)
+            {
+                return RenderTypes.TransparentText;
+            }
+            else if (renderable is IElement)
+            {
+                return renderable.IsTransparent ? RenderTypes.TransparentView : RenderTypes.OpaqueView;
+            }
+            else if (renderable.IsAnimated)
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentAnimated : RenderTypes.OpaqueAnimated;
             }
-            else if (renderable is TextureID)
+            else if (renderable is IBillboard)
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentBillboard : RenderTypes.OpaqueBillboard;
             }
@@ -418,150 +513,121 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        public class BatchAction
+        public class BatchAction : IBatchAction
         {
             private BatchManager _batchManager;
             private Queue<Action> _commandQueue = new Queue<Action>();
-            private HashSet<int> _entityIDs;
+
+            private ShaderProgram _shader;
+            private RenderTypes? _renderType;
+
+            private Action<int> _perIDAction;
+            private Action<IBatch> _perBatchAction;
+
+            private HashSet<int> _entityIDSet;
+            private List<int> _entityIDOrder;
 
             public BatchAction(BatchManager batchManager) => _batchManager = batchManager;
 
-            public ShaderProgram Shader { get; set; }
             public ICamera Camera { get; set; }
 
-            public BatchAction SetShader(ShaderProgram shader)
+            public IBatchAction SetShader(ShaderProgram shader)
             {
                 _commandQueue.Enqueue(() =>
                 {
-                    Shader = shader;
-                    Shader.Use();
+                    _shader = shader;
+                    _shader.Use();
                 });
                 return this;
             }
 
-            public BatchAction SetCamera(ICamera camera)
-            {
-                _commandQueue.Enqueue(() =>
-                {
-                    Camera = camera;
-                    Camera.SetUniforms(Shader);
-                });
-                return this;
-            }
-
-            public BatchAction SetCamera(ICamera camera, PointLight pointLight)
+            public IBatchAction SetCamera(ICamera camera)
             {
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    Camera.SetUniforms(Shader, pointLight);
+                    Camera.SetUniforms(_shader);
                 });
                 return this;
             }
 
-            public BatchAction SetCamera(ICamera camera, SpotLight spotLight)
+            public IBatchAction SetCamera(ICamera camera, ILight light)
             {
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    Camera.SetUniforms(Shader, spotLight);
+                    Camera.SetUniforms(_shader, light);
                 });
                 return this;
             }
 
-            public BatchAction SetUniform<T>(string name, T value) where T : struct
+            public IBatchAction SetUniform<T>(string name, T value) where T : struct
             {
-                _commandQueue.Enqueue(() => Shader.SetUniform<T>(name, value));
+                _commandQueue.Enqueue(() => _shader.SetUniform<T>(name, value));
                 return this;
             }
 
-            public BatchAction SetEntityIDs(IEnumerable<int> ids)
+            public IBatchAction SetPerIDAction(Action<int> action)
             {
-                _commandQueue.Enqueue(() => _entityIDs = new HashSet<int>(ids));
+                _commandQueue.Enqueue(() => _perIDAction = action);
                 return this;
             }
 
-            public BatchAction ClearEntityIDs()
+            public IBatchAction SetPerBatchAction(Action<IBatch> action)
             {
-                _commandQueue.Enqueue(() => _entityIDs = null);
+                _commandQueue.Enqueue(() => _perBatchAction = action);
                 return this;
             }
 
-            public BatchAction PerformAction(Action action)
+            public IBatchAction SetRenderType(RenderTypes renderType)
+            {
+                _commandQueue.Enqueue(() => _renderType = renderType);
+                return this;
+            }
+
+            public IBatchAction ClearRenderType()
+            {
+                _commandQueue.Enqueue(() => _renderType = null);
+                return this;
+            }
+
+            public IBatchAction SetEntityIDSet(IEnumerable<int> ids)
+            {
+                _commandQueue.Enqueue(() => _entityIDSet = new HashSet<int>(ids));
+                return this;
+            }
+
+            public IBatchAction SetEntityIDOrder(IEnumerable<int> ids)
+            {
+                _commandQueue.Enqueue(() => _entityIDOrder = new List<int>(ids));
+                return this;
+            }
+
+            public IBatchAction ClearEntityIDs()
+            {
+                _commandQueue.Enqueue(() =>
+                {
+                    _entityIDSet = null;
+                    _entityIDOrder = null;
+                });
+                return this;
+            }
+
+            public IBatchAction PerformAction(Action action)
             {
                 _commandQueue.Enqueue(action);
                 return this;
             }
 
-            public BatchAction SetTexture(Texture texture, string name, int index)
+            public IBatchAction SetTexture(ITexture texture, string name, int index)
             {
-                _commandQueue.Enqueue(() => Shader.BindTexture(texture, name, index));
+                _commandQueue.Enqueue(() => _shader.BindTexture(texture, name, index));
                 return this;
             }
 
-            public BatchAction RenderEntities()
+            public IBatchAction Render()
             {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderOpaqueStatic()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderOpaqueAnimated()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderOpaqueBillboard()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueBillboard, Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderTransparentStatic()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderTransparentAnimated()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderTransparentBillboard()
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentBillboard, Shader, _entityIDs));
-                return this;
-            }
-
-            public BatchAction RenderOpaqueStaticWithAction(Action<int> action)
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueStatic, Shader, _entityIDs, action));
-                return this;
-            }
-
-            public BatchAction RenderOpaqueAnimatedWithAction(Action<int> action)
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.OpaqueAnimated, Shader, _entityIDs, action));
-                return this;
-            }
-
-            public BatchAction RenderTransparentStaticWithAction(Action<int> action)
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentStatic, Shader, _entityIDs, action));
-                return this;
-            }
-
-            public BatchAction RenderTransparentAnimatedWithAction(Action<int> action)
-            {
-                _commandQueue.Enqueue(() => _batchManager.DrawEntities(RenderTypes.TransparentAnimated, Shader, _entityIDs, action));
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(_shader, _renderType, _entityIDSet, _entityIDOrder, _perIDAction, _perBatchAction));
                 return this;
             }
 

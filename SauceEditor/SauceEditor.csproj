@@ -99,8 +99,8 @@
     <Reference Include="OpenTK, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.3.0.1\lib\net20\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="OpenTK.GLControl, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
-      <HintPath>..\packages\OpenTK.GLControl.3.0.0-pre\lib\net20\OpenTK.GLControl.dll</HintPath>
+    <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+      <HintPath>..\packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
     <Reference Include="PresentationFramework.Aero" />
     <Reference Include="PropertyChanged, Version=2.6.1.0, Culture=neutral, PublicKeyToken=ee3ee20bcf148ddd, processorArchitecture=MSIL">
@@ -205,6 +205,9 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Helpers\Builders\MapBuilder.cs" />
+    <Compile Include="Helpers\ViewHelper.cs" />
+    <Compile Include="Helpers\DragHelper.cs" />
+    <Compile Include="Helpers\LibraryHelper.cs" />
     <Compile Include="Helpers\DockHelper.cs" />
     <Compile Include="Models\Components\IGameViewable.cs" />
     <Compile Include="Models\Components\Library.cs" />
@@ -213,6 +216,10 @@
     <Compile Include="Models\EditorModel.cs" />
     <Compile Include="Models\IAnchor.cs" />
     <Compile Include="Models\MapManager.cs" />
+    <Compile Include="Utilities\ReflectionExtensions.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseClick.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseDrop.cs" />
+    <Compile Include="ViewModels\AttachedBehaviors\MouseDrag.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseRightButtonDown.cs" />
     <Compile Include="ViewModels\AttachedBehaviors\MouseDoubleClick.cs" />
     <Compile Include="ViewModels\Behaviors\BehaviorNetworkViewModel.cs" />
@@ -222,18 +229,24 @@
     <Compile Include="ViewModels\Commands\CommandStack.cs" />
     <Compile Include="ViewModels\Commands\Command.cs" />
     <Compile Include="ViewModels\Commands\SauceCommands.cs" />
-    <Compile Include="ViewModels\Docks\IHaveDockViewModel.cs" />
+    <Compile Include="ViewModels\GamePanels\IMapper.cs" />
+    <Compile Include="ViewModels\GamePanels\GamePaneViewModel.cs" />
     <Compile Include="ViewModels\GamePanels\GamePanelViewModel.cs" />
-    <Compile Include="ViewModels\GamePanels\GamePanelManagerViewModel.cs" />
     <Compile Include="ViewModels\ILayerSetter.cs" />
-    <Compile Include="ViewModels\Docks\ISideDockViewModel.cs" />
-    <Compile Include="ViewModels\Docks\DockViewModel.cs" />
-    <Compile Include="ViewModels\Docks\MainDockViewModel.cs" />
+    <Compile Include="ViewModels\Docks\DockableViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\ILibraryTracker.cs" />
+    <Compile Include="ViewModels\Libraries\PathInfoEventArgs.cs" />
+    <Compile Include="ViewModels\Libraries\PathInfoViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\ComponentInfoViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\LibraryInfoViewModel.cs" />
+    <Compile Include="ViewModels\Libraries\LibraryPanelViewModel.cs" />
     <Compile Include="ViewModels\MainMenuViewModel.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
-    <Compile Include="ViewModels\Behaviors\BehaviorViewModel.cs" />
+    <Compile Include="ViewModels\Behaviors\BehaviorPanelViewModel.cs" />
     <Compile Include="ViewModels\Properties\IDisplayProperties.cs" />
+    <Compile Include="ViewModels\Properties\BooleanVisibilityConverter.cs" />
     <Compile Include="ViewModels\Properties\PropertyViewModel.cs" />
+    <Compile Include="ViewModels\Properties\PropertyPanelViewModel.cs" />
     <Compile Include="ViewModels\Properties\IPropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\TexturePropertyViewModel.cs" />
     <Compile Include="ViewModels\Properties\MaterialPropertyViewModel.cs" />
@@ -241,22 +254,53 @@
     <Compile Include="ViewModels\Properties\VectorProperty.cs" />
     <Compile Include="ViewModels\Properties\EntityPropertyViewModel.cs" />
     <Compile Include="ViewModels\SettingsWindowViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Actors\ActorTool.cs" />
+    <Compile Include="ViewModels\Tools\Cameras\OrthographicCameraTool.cs" />
+    <Compile Include="ViewModels\Tools\Cameras\PerspectiveCameraTool.cs" />
+    <Compile Include="ViewModels\Tools\Cameras\CameraTool.cs" />
+    <Compile Include="ViewModels\Tools\ActorToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\BoxVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\ConeVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\CylinderVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\SphereVolumeTool.cs" />
+    <Compile Include="ViewModels\Tools\VolumeToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Lights\DirectionalLightTool.cs" />
+    <Compile Include="ViewModels\Tools\Lights\SpotLightTool.cs" />
+    <Compile Include="ViewModels\Tools\Lights\PointLightTool.cs" />
+    <Compile Include="ViewModels\Tools\Lights\LightTool.cs" />
+    <Compile Include="ViewModels\Tools\CameraToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\LightToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\LibraryPageViewModel.cs" />
     <Compile Include="ViewModels\Tools\LibraryPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\BrushToolPanelViewModel.cs" />
     <Compile Include="ViewModels\Tools\ModelToolPanelViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Tool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\CylinderBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\ConeBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\SphereBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\BoxBrushTool.cs" />
+    <Compile Include="ViewModels\Tools\Brushes\BrushTool.cs" />
     <Compile Include="ViewModels\Tools\ToolsPanelViewModel.cs" />
-    <Compile Include="ViewModels\Trees\IComponentListViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ComponentListViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ComponentViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ProjectViewModel.cs" />
-    <Compile Include="ViewModels\Trees\ProjectTreePanelViewModel.cs" />
-    <Compile Include="ViewModels\ScriptViewModel.cs" />
+    <Compile Include="ViewModels\Tools\Volumes\VolumeTool.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityTypeViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityTreePanelViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\EntityRootViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\IDisplayEntities.cs" />
+    <Compile Include="ViewModels\Trees\Entities\Layers\LayerRootViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Entities\Layers\LayerViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\IComponentListViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ComponentListViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ComponentViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ProjectViewModel.cs" />
+    <Compile Include="ViewModels\Trees\Projects\ProjectTreePanelViewModel.cs" />
+    <Compile Include="ViewModels\Scripts\ScriptPanelViewModel.cs" />
     <Compile Include="ViewModels\NumericUpDownViewModel.cs" />
     <Compile Include="ViewModels\RelayCommand.cs" />
     <Compile Include="ViewModels\TransformPanelViewModel.cs" />
     <Compile Include="ViewModels\ViewModel.cs" />
-    <Compile Include="Views\Behaviors\BehaviorView.xaml.cs">
-      <DependentUpon>BehaviorView.xaml</DependentUpon>
+    <Compile Include="Views\Behaviors\BehaviorPanel.xaml.cs">
+      <DependentUpon>BehaviorPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Buttons\InverseBooleanConverter.cs" />
     <Compile Include="Views\Buttons\EnumToStringConverter.cs" />
@@ -264,34 +308,60 @@
     <Compile Include="Views\Buttons\ToggleEnumButton.xaml.cs">
       <DependentUpon>ToggleEnumButton.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Docks\ITrackDocks.cs" />
+    <Compile Include="Views\Custom\PropagateChangesAttribute.cs" />
+    <Compile Include="Views\Custom\HideIfNullPropertyAttribute.cs" />
+    <Compile Include="Views\Custom\PropertyGrid.cs" />
+    <Compile Include="Views\Docks\IDockTracker.cs" />
     <Compile Include="Views\Docks\DockTracker.cs" />
+    <Compile Include="Views\Factories\IEntityFactory.cs" />
     <Compile Include="Views\Factories\IMainView.cs" />
     <Compile Include="Views\Factories\IComponentFactory.cs" />
-    <Compile Include="Views\Factories\IHaveViewModel.cs" />
-    <Compile Include="Views\Factories\IGameDockFactory.cs" />
-    <Compile Include="Views\Factories\IMainViewFactory.cs" />
     <Compile Include="Views\Factories\IFile.cs" />
     <Compile Include="Views\Factories\IWindow.cs" />
     <Compile Include="Views\Factories\IWindowFactory.cs" />
-    <Compile Include="Views\GamePanels\GamePanelManager.xaml.cs">
-      <DependentUpon>GamePanelManager.xaml</DependentUpon>
+    <Compile Include="Views\GamePanels\GamePanel.xaml.cs">
+      <DependentUpon>GamePanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\GamePanels\GamePanelView.xaml.cs">
-      <DependentUpon>GamePanelView.xaml</DependentUpon>
+    <Compile Include="Views\GamePanels\GamePane.xaml.cs">
+      <DependentUpon>GamePane.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\GamePanels\EntitiesEventArgs.cs" />
-    <Compile Include="Views\MainDockManager.cs" />
+    <Compile Include="Views\Custom\ImageButtonList.cs" />
+    <Compile Include="Views\GamePanels\IDragPosition.cs" />
+    <Compile Include="Views\Libraries\LibraryPanel.xaml.cs">
+      <DependentUpon>LibraryPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Factories\IPanelFactory.cs" />
+    <Compile Include="Views\PanelManager.cs" />
     <Compile Include="Views\MainMenu.xaml.cs">
       <DependentUpon>MainMenu.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectTree\FileNameDialog.xaml.cs">
+    <Compile Include="Views\Tools\VolumeToolPanel.xaml.cs">
+      <DependentUpon>VolumeToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\ActorToolPanel.xaml.cs">
+      <DependentUpon>ActorToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\CameraToolPanel.xaml.cs">
+      <DependentUpon>CameraToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\LightToolPanel.xaml.cs">
+      <DependentUpon>LightToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Tools\BrushToolPanel.xaml.cs">
+      <DependentUpon>BrushToolPanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Trees\Entities\EntityTreePanel.xaml.cs">
+      <DependentUpon>EntityTreePanel.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Trees\Entities\IRearrange.cs" />
+    <Compile Include="Views\Trees\Projects\FileNameDialog.xaml.cs">
       <DependentUpon>FileNameDialog.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectTree\ItemSelectedEventArgs.cs" />
+    <Compile Include="Views\Trees\Projects\ItemSelectedEventArgs.cs" />
     <Compile Include="Views\Scripts\ScriptEventArgs.cs" />
-    <Compile Include="Views\Scripts\ScriptView.xaml.cs">
-      <DependentUpon>ScriptView.xaml</DependentUpon>
+    <Compile Include="Views\Scripts\ScriptPanel.xaml.cs">
+      <DependentUpon>ScriptPanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Settings\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
@@ -309,7 +379,7 @@
     <Compile Include="Views\Properties\PropertyPanel.xaml.cs">
       <DependentUpon>PropertyPanel.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\ProjectTree\ProjectTreePanel.xaml.cs">
+    <Compile Include="Views\Trees\Projects\ProjectTreePanel.xaml.cs">
       <DependentUpon>ProjectTreePanel.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Transform\TransformPanel.xaml.cs">
@@ -330,7 +400,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\Behaviors\BehaviorView.xaml">
+    <Page Include="Views\Behaviors\BehaviorPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -338,23 +408,51 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\GamePanels\GamePanelManager.xaml">
+    <Page Include="Views\GamePanels\GamePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\GamePanels\GamePanelView.xaml">
+    <Page Include="Views\GamePanels\GamePane.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Libraries\LibraryPanel.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainMenu.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ProjectTree\FileNameDialog.xaml">
+    <Page Include="Views\Tools\VolumeToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\ActorToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\CameraToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\LightToolPanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Tools\BrushToolPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Scripts\ScriptView.xaml">
+    <Page Include="Views\Trees\Entities\EntityTreePanel.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Trees\Projects\FileNameDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Scripts\ScriptPanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -378,7 +476,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
-    <Page Include="Views\ProjectTree\ProjectTreePanel.xaml">
+    <Page Include="Views\Trees\Projects\ProjectTreePanel.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -450,6 +548,14 @@
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
       <Name>SpiceEngine</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\StarchUICore\StarchUICore.csproj">
+      <Project>{0FE2AFA5-606D-47F1-B267-DAC3936B300F}</Project>
+      <Name>StarchUICore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
+      <Project>{F6C9B29F-7751-4FD2-88DA-CFE8B512C645}</Project>
+      <Name>SweetGraphicsCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />
