@@ -153,10 +153,9 @@ namespace SpiceEngine.Scripting
             base.LoadComponents();
             _scriptManager.CompileScripts();
 
-            foreach (var componentAndID in _componentsAndIDs)
+            foreach (var behavior in _components)
             {
-                var behavior = componentAndID.Item1;
-                var entity = _entityProvider.GetEntity(componentAndID.Item2);
+                var entity = _entityProvider.GetEntity(behavior.EntityID);
 
                 behavior.SetEntity(entity);
                 behavior.SetCamera(_camera);
@@ -203,11 +202,9 @@ namespace SpiceEngine.Scripting
 
         protected override void Update()
         {
-            foreach (var componentAndID in _componentsAndIDs)
+            foreach (var behavior in _components)
             {
-                var behavior = componentAndID.Item1;
-
-                foreach (var property in _propertiesByEntityID[componentAndID.Item2].VariableProperties)
+                foreach (var property in _propertiesByEntityID[behavior.EntityID].VariableProperties)
                 {
                     behavior.SetProperty(property.Name, property);
                 }

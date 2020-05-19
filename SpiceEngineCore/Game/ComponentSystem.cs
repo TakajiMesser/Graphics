@@ -12,7 +12,7 @@ namespace SpiceEngineCore.Game
     public abstract class ComponentSystem<TComponent, TBuilder> : ITick, IUpdate, IComponentLoader<TComponent, TBuilder> where TComponent : class, IComponent where TBuilder : class, IComponentBuilder<TComponent>
     {
         private List<TBuilder> _componentBuilders = new List<TBuilder>();
-        protected ConcurrentQueue<Tuple<TComponent, int>> _componentAndIDQueue = new ConcurrentQueue<Tuple<TComponent, int>>();
+        protected ConcurrentQueue<TComponent> _componentQueue = new ConcurrentQueue<TComponent>();
 
         private bool _isProcessing = false;
         private int[] _entityIDs;
@@ -25,7 +25,7 @@ namespace SpiceEngineCore.Game
         private int _currentTick = 0;
 
         protected IEntityProvider _entityProvider;
-        protected List<Tuple<TComponent, int>> _componentsAndIDs = new List<Tuple<TComponent, int>>();
+        protected List<TComponent> _components = new List<TComponent>();
         protected Dictionary<int, TComponent> _componentByID = new Dictionary<int, TComponent>();
 
         public bool IsLoaded { get; private set; }
@@ -129,7 +129,7 @@ namespace SpiceEngineCore.Game
 
             if (component != null)
             {
-                _componentAndIDQueue.Enqueue(Tuple.Create(component, entityID));
+                _componentQueue.Enqueue(component);
             }
         });
 
@@ -153,16 +153,16 @@ namespace SpiceEngineCore.Game
 
         protected virtual void LoadComponents()
         {
-            while (_componentAndIDQueue.TryDequeue(out Tuple<TComponent, int> componentAndID))
+            while (_componentQueue.TryDequeue(out TComponent component))
             {
-                LoadComponent(componentAndID.Item2, componentAndID.Item1);
+                LoadComponent(component);
             }
         }
 
-        protected virtual void LoadComponent(int entityID, TComponent component)
+        protected virtual void LoadComponent(TComponent component)
         {
-            _componentsAndIDs.Add(Tuple.Create(component, entityID));
-            _componentByID.Add(entityID, component);
+            _components.Add(component);
+            _componentByID.Add(component.EntityID, component);
         }
 
         public void Tick()

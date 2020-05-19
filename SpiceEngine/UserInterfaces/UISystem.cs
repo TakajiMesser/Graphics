@@ -124,14 +124,13 @@ namespace SpiceEngine.UserInterfaces
             base.LoadComponents();
 
             // Now that all elements have at least been constructed, we can freely assign parents and children
-            foreach (var componentAndID in _componentsAndIDs)
+            foreach (var component in _components)
             {
-                var element = componentAndID.Item1 as IElement;
-                var id = componentAndID.Item2;
+                var element = component as IElement;
 
                 if (element is IGroup group)
                 {
-                    var childNames = _childNamesByID.GetValues(id);
+                    var childNames = _childNamesByID.GetValues(component.EntityID);
                     
                     foreach (var childName in childNames)
                     {
@@ -142,46 +141,45 @@ namespace SpiceEngine.UserInterfaces
                             var childElement = GetElement(childID);
                             group.AddChild(childElement);
 
-                            _childIDSetByID.Add(id, childID);
+                            _childIDSetByID.Add(component.EntityID, childID);
                         }
                     }
                 }
 
                 if (element is Label label)
                 {
-                    var fontPath = _fontPathByID[id];
+                    var fontPath = _fontPathByID[component.EntityID];
                     label.Font = _fontByPath[fontPath];
                 }
 
                 element.MeasurementChanged += (s, args) =>
                 {
                     // TODO - Handle omitting views that are not visible or have measurement dimensions of zero
-                    _changedIDs.Add(id);
+                    _changedIDs.Add(component.EntityID);
                 };
 
-                var horizontalAnchorName = _horizontalAnchorNamesByID[id];
+                var horizontalAnchorName = _horizontalAnchorNamesByID[component.EntityID];
                 element.HorizontalAnchor = element.HorizontalAnchor.Attached(GetElementByName(horizontalAnchorName));
 
-                var verticalAnchorName = _verticalAnchorNamesByID[id];
+                var verticalAnchorName = _verticalAnchorNamesByID[component.EntityID];
                 element.VerticalAnchor = element.VerticalAnchor.Attached(GetElementByName(verticalAnchorName));
 
-                var horizontalDockName = _horizontalDockNamesByID[id];
+                var horizontalDockName = _horizontalDockNamesByID[component.EntityID];
                 element.HorizontalDock = element.HorizontalDock.Attached(GetElementByName(horizontalDockName));
 
-                var verticalDockName = _verticalDockNamesByID[id];
+                var verticalDockName = _verticalDockNamesByID[component.EntityID];
                 element.VerticalDock = element.VerticalDock.Attached(GetElementByName(verticalDockName));
             }
 
             // TODO - Iterating twice here is pretty shit
-            foreach (var componentAndID in _componentsAndIDs)
+            foreach (var component in _components)
             {
-                var element = componentAndID.Item1 as IElement;
-                //element.EntityID = componentAndID.Item2;
+                var element = component as IElement;
 
                 // TODO - Do we want to allow more than one root UI element?
                 if (element.Parent == null)
                 {
-                    _rootID = componentAndID.Item2;
+                    _rootID = component.EntityID;
                 }
             }
 

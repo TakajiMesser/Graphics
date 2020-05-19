@@ -103,23 +103,23 @@ namespace SpiceEngine.Physics
         }
 
         // TODO - Set up component loaders to rely on this entity being loaded in the EntityProvider by the time this method is invoked (not currently guaranteed)
-        protected override void LoadComponent(int entityID, IShape component)
+        protected override void LoadComponent(IShape component)
         {
-            base.LoadComponent(entityID, component);
+            base.LoadComponent(component);
 
-            var partition = component.ToPartition(_initialPositionByID[entityID]);
-            var bounds = new Bounds(entityID, partition);
+            var partition = component.ToPartition(_initialPositionByID[component.EntityID]);
+            var bounds = new Bounds(component.EntityID, partition);
 
             // TODO - This incorrectly relies on the entity provider to have already inserted this entity
-            var partitionTree = GetPartitionTree(entityID);
+            var partitionTree = GetPartitionTree(component.EntityID);
             partitionTree.Insert(bounds);
 
             // TODO - So does this :/
-            var body = GetBody(entityID, component);
+            var body = GetBody(component.EntityID, component);
             if (body != null)
             {
-                body.IsPhysical = _isPhysicalByID[entityID];
-                _bodyByEntityID.Add(entityID, body);
+                body.IsPhysical = _isPhysicalByID[component.EntityID];
+                _bodyByEntityID.Add(component.EntityID, body);
             }
         }
 

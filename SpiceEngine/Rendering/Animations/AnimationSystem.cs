@@ -58,16 +58,14 @@ namespace SpiceEngine.Rendering.Animations
         {
             base.LoadComponents();
 
-            foreach (var componentAndID in _componentsAndIDs)
+            foreach (var animator in _components)
             {
-                var animator = componentAndID.Item1;
-
-                var animationIndex = _defaultAnimationIndexByID[componentAndID.Item2];
+                var animationIndex = _defaultAnimationIndexByID[animator.EntityID];
                 animator.DefaultAnimation = _animations[animationIndex];
 
-                if (_animatedByEntityID.ContainsKey(componentAndID.Item2))
+                if (_animatedByEntityID.ContainsKey(animator.EntityID))
                 {
-                    var animated = _animatedByEntityID[componentAndID.Item2];
+                    var animated = _animatedByEntityID[animator.EntityID];
                     animator.Animate += (s, args) => animated.SetKeyFrame(args.KeyFrame);
                 }
             }
@@ -75,10 +73,8 @@ namespace SpiceEngine.Rendering.Animations
 
         protected override void Update()
         {
-            foreach (var componentAndID in _componentsAndIDs)
+            foreach (var animator in _components)
             {
-                var animator = componentAndID.Item1;
-
                 // TODO - Remove this -> setting to first animation by default
                 animator.CurrentAnimation = animator.DefaultAnimation;
                 animator.Tick(TickRate);
