@@ -8,6 +8,7 @@ using SpiceEngine.Game;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Layers;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;
@@ -217,7 +218,7 @@ namespace SauceEditor.ViewModels
 
                     if (builder.Item2 is IRenderableBuilder renderableBuilder)
                     {
-                        var renderable = renderableBuilder.ToComponent(builder.Item1);
+                        var renderable = renderableBuilder.ToRenderable();
 
                         PerspectiveViewModel.Control.AddEntity(builder.Item1, renderable);
                         XViewModel.Control.AddEntity(builder.Item1, renderable);

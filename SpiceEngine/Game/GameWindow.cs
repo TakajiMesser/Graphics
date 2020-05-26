@@ -3,6 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Rendering;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Outputs;

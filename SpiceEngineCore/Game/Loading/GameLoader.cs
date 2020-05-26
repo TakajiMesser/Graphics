@@ -15,7 +15,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using EntityMappingEventArgs = SpiceEngineCore.Maps.EntityMappingEventArgs;
 
-namespace SpiceEngine.Game
+namespace SpiceEngineCore.Game
 {
     public class GameLoader : IGameLoader
     {
@@ -181,101 +181,102 @@ namespace SpiceEngine.Game
 
         public async Task LoadAsync()
         {
-            try {
-            //LogWatch logWatch = LogWatch.CreateWithTimeout("GameLoader", 300000, 1000);
-            //logWatch.TimedOut += (s, args) => TimedOut?.Invoke(this, args);
-            LogWatch logWatch = LogWatch.CreateAndStart("GameLoader");
-
-            // Only process for builders added by the time we begin loading
-            var entityCount = 0;
-
-            lock (_builderLock)
+            try
             {
-                entityCount = _entityBuilders.Count;
-            }
+                //LogWatch logWatch = LogWatch.CreateWithTimeout("GameLoader", 300000, 1000);
+                //logWatch.TimedOut += (s, args) => TimedOut?.Invoke(this, args);
+                LogWatch logWatch = LogWatch.CreateAndStart("GameLoader");
 
-            var startBuilderIndex = 0;
+                // Only process for builders added by the time we begin loading
+                var entityCount = 0;
 
-            lock (_loadLock)
-            {
-                startBuilderIndex = _loadIndex;
-                _loadIndex = entityCount;
-            }
-
-            entityCount -= startBuilderIndex;
-
-            var loadEntityTasks = new Task[entityCount];
-
-            _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
-
-            var index = startBuilderIndex;
-            var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
-
-            //logWatch.Log("Loop Start");
-
-            using (var idIterator = ids.GetEnumerator())
-            {
-                while (idIterator.MoveNext())
+                lock (_builderLock)
                 {
-                    var id = idIterator.Current;
-                    var taskIndex = index - startBuilderIndex;
+                    entityCount = _entityBuilders.Count;
+                }
 
-                    loadEntityTasks[taskIndex] = Task.Run(() => _entityProvider.LoadEntity(id));
+                var startBuilderIndex = 0;
 
-                    _physicsLoader.AddLoadTask(id);
-                    _behaviorLoader.AddLoadTask(id);
-                    _animatorLoader.AddLoadTask(id);
-                    _uiLoader.AddLoadTask(id);
-                    _multiRenderLoader.AddLoadTask(id);
+                lock (_loadLock)
+                {
+                    startBuilderIndex = _loadIndex;
+                    _loadIndex = entityCount;
+                }
 
-                    /*var id = idIterator.Current;
-                    var currentBuilderIndex = index;
-                    var taskIndex = index - startBuilderIndex;
-                    
-                    loadEntityTasks[taskIndex] = Task.Run(() =>
+                entityCount -= startBuilderIndex;
+
+                var loadEntityTasks = new Task[entityCount];
+
+                _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
+                _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
+                _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
+                _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
+                _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
+
+                var index = startBuilderIndex;
+                var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
+
+                //logWatch.Log("Loop Start");
+
+                using (var idIterator = ids.GetEnumerator())
+                {
+                    while (idIterator.MoveNext())
                     {
-                        // We need to ensure that the entity builder has been loaded before loading ANYTHING else
-                        _entityProvider.LoadEntity(id);
+                        var id = idIterator.Current;
+                        var taskIndex = index - startBuilderIndex;
 
-                        // Load the renderable data (which we do NOT need to wait for completion on, but which we do need to track)
-                        // TODO - Pretty gross to perform the same null check repeatedly in this loop...
-                        for (var i = 0; i < rendererWaitCount; i++)
-                        {
-                            loadRenderTasks[i][taskIndex] = LoadRenderableBuilder(id, currentBuilderIndex, i, renderableLoaders);
-                        }
+                        loadEntityTasks[taskIndex] = Task.Run(() => _entityProvider.LoadEntity(id));
 
-                        // Load the game data (which we NEED to wait for completion on)
                         _physicsLoader.AddLoadTask(id);
                         _behaviorLoader.AddLoadTask(id);
                         _animatorLoader.AddLoadTask(id);
-                    });*/
+                        _uiLoader.AddLoadTask(id);
+                        _multiRenderLoader.AddLoadTask(id);
 
-                    EntityMapping?.AddID(id);
-                    index++;
+                        /*var id = idIterator.Current;
+                        var currentBuilderIndex = index;
+                        var taskIndex = index - startBuilderIndex;
+
+                        loadEntityTasks[taskIndex] = Task.Run(() =>
+                        {
+                            // We need to ensure that the entity builder has been loaded before loading ANYTHING else
+                            _entityProvider.LoadEntity(id);
+
+                            // Load the renderable data (which we do NOT need to wait for completion on, but which we do need to track)
+                            // TODO - Pretty gross to perform the same null check repeatedly in this loop...
+                            for (var i = 0; i < rendererWaitCount; i++)
+                            {
+                                loadRenderTasks[i][taskIndex] = LoadRenderableBuilder(id, currentBuilderIndex, i, renderableLoaders);
+                            }
+
+                            // Load the game data (which we NEED to wait for completion on)
+                            _physicsLoader.AddLoadTask(id);
+                            _behaviorLoader.AddLoadTask(id);
+                            _animatorLoader.AddLoadTask(id);
+                        });*/
+
+                        EntityMapping?.AddID(id);
+                        index++;
+                    }
                 }
-            }
 
-            EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
-            //logWatch.Log("Loop End");
+                EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
+                //logWatch.Log("Loop End");
 
-            await Task.WhenAll(loadEntityTasks);
+                await Task.WhenAll(loadEntityTasks);
 
-            _entityProvider.Load();
+                _entityProvider.Load();
 
-            lock (_builderLock)
-            {
-                // TODO - If we're just setting the value in the list to null, we can do this after each task
-                for (var i = startBuilderIndex; i < index; i++)
+                lock (_builderLock)
                 {
-                    _entityBuilders[i] = null;
+                    // TODO - If we're just setting the value in the list to null, we can do this after each task
+                    for (var i = startBuilderIndex; i < index; i++)
+                    {
+                        _entityBuilders[i] = null;
+                    }
                 }
-            }
 
-            var loadTasks = new List<Task>
+                var loadTasks = new List<Task>
             {
                 _physicsLoader.LoadAsync(),
                 _behaviorLoader.LoadAsync(),
@@ -283,12 +284,13 @@ namespace SpiceEngine.Game
                 _uiLoader.LoadAsync(),
                 _multiRenderLoader.LoadAsync()
             };
-        
-            await Task.WhenAll(loadTasks);
 
-            //logWatch.Log("Load Tasks End");
-            logWatch.Stop();
-            } catch (Exception ex)
+                await Task.WhenAll(loadTasks);
+
+                //logWatch.Log("Load Tasks End");
+                logWatch.Stop();
+            }
+            catch (Exception ex)
             {
                 Console.WriteLine(ex);
             }

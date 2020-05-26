@@ -31,6 +31,6 @@ namespace SauceEditorCore.Models.Entities
 
         //public override bool CompareUniforms(IEntity entity) => entity is ModelEntity;// modelEntity && _modelMatrix.Equals(modelEntity._modelMatrix);
         public virtual IEntity ToEntity() => this;
-        public abstract IRenderable ToComponent();
+        public abstract IRenderable ToRenderable();
     }
 }

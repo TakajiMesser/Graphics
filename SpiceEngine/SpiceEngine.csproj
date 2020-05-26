@@ -122,7 +122,6 @@
     <Compile Include="Entities\Selection\ISelectionProvider.cs" />
     <Compile Include="Entities\Selection\SelectionManager.cs" />
     <Compile Include="Game\DelayedUpdate.cs" />
-    <Compile Include="Game\GameLoader.cs" />
     <Compile Include="Game\GameSettings\GameplaySettings.cs" />
     <Compile Include="Game\GameSettings\ControlSettings.cs" />
     <Compile Include="Game\GameSettings\AudioSettings.cs" />

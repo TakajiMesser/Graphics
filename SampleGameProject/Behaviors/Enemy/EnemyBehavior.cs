@@ -14,7 +14,7 @@ namespace SampleGameProject.Behaviors.Enemy
         
         private Meter _alertMeter = new Meter();
 
-        public EnemyBehavior() : base()
+        public EnemyBehavior(int entityID) : base(entityID)
         {
             _alertMeter.AddTrigger(new Trigger("Alert", 120)
             {

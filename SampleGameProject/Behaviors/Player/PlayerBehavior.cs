@@ -13,7 +13,7 @@ namespace SampleGameProject.Behaviors.Player
         public const float COVER_DISTANCE = 5.0f;
         public const int EVADE_TICK_COUNT = 20;
 
-        public PlayerBehavior() : base() { }
+        public PlayerBehavior(int entityID) : base(entityID) { }
 
         /*protected override void SetRootNodes()
         {

@@ -20,7 +20,7 @@ namespace SauceEditorCore.Models.Entities
         /*public override bool CompareUniforms(IEntity entity) => entity is TriangleEntity
             && base.CompareUniforms(entity);*/
 
-        public override IRenderable ToComponent()
+        public override IRenderable ToRenderable()
         {
             var meshBuild = new ModelBuilder(ModelShape);
             var meshVertices = meshBuild.GetVertices();
