@@ -250,7 +250,7 @@
       <Project>{f6c9b29f-7751-4fd2-88da-cfe8b512c645}</Project>
       <Name>SweetGraphicsCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\UmamiPhysicsCore\SavoryPhysicsCore.csproj">
+    <ProjectReference Include="..\SavoryPhysicsCore\SavoryPhysicsCore.csproj">
       <Project>{38042CD2-2EB5-43CF-8973-6DA5DCD16AAA}</Project>
       <Name>SavoryPhysicsCore</Name>
     </ProjectReference>
