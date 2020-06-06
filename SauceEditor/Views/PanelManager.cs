@@ -165,7 +165,7 @@ namespace SauceEditor.Views
 
             if (_mainWindowViewModel.EntityTreePanelViewModel != null)
             {
-                _mainWindowViewModel.EntityTreePanelViewModel.LayerProvider = gamePanel.ViewModel.GameManager.EntityManager.LayerProvider;
+                _mainWindowViewModel.EntityTreePanelViewModel.LayerProvider = gamePanel.ViewModel.SimulationManager.EntityManager.LayerProvider;
                 gamePanel.ViewModel.EntityDisplayer = _mainWindowViewModel.EntityTreePanelViewModel;
             }
 

@@ -38,11 +38,11 @@ namespace SpiceEngine.Rendering.Textures
 
                 Invoker?.RunSync(() =>
                 {
-                    var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
+                    /*var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
                         + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
                         + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
 
-                    TextureHelper.SaveToFile(filePath, texture);
+                    TextureHelper.SaveToFile(filePath, texture);*/
                 });
 
                 return index;
@@ -57,11 +57,11 @@ namespace SpiceEngine.Rendering.Textures
                 {
                     font.LoadTexture();
 
-                    var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
+                    /*var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
                         + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
                         + DateTime.Now.Hour.ToString("00") + DateTime.Now.Minute.ToString("00") + DateTime.Now.Second.ToString("00") + ".png";
 
-                    TextureHelper.SaveToFile(filePath, font.Texture);
+                    TextureHelper.SaveToFile(filePath, font.Texture);*/
                 });
 
                 lock (_textureLock)
