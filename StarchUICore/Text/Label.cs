@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
@@ -133,7 +132,7 @@ namespace StarchUICore.Views
             // For AUTO sizing, use the measured dimensions as maximums and shrink to the measured text size
             if (Size.Width is AutoUnits)
             {
-                var textWidth = _text.Length * _font.GlyphWidth;
+                /*var textWidth = _text.Length * _font.GlyphWidth;
 
                 if (textWidth > width)
                 {
@@ -143,7 +142,7 @@ namespace StarchUICore.Views
                 else
                 {
                     width = textWidth;
-                }
+                }*/
             }
 
             width = Size.MinimumWidth.ConstrainAsMinimum(width, dockWidth);
@@ -160,7 +159,7 @@ namespace StarchUICore.Views
             // For AUTO sizing, use the measured dimensions as maximums and shrink to the measured text size
             if (Size.Height is AutoUnits)
             {
-                if (WordWrap)
+                /*if (WordWrap)
                 {
                     // How many lines will it take?
                     var charactersPerLine = Measurement.Width / _font.GlyphWidth;
@@ -171,7 +170,7 @@ namespace StarchUICore.Views
                 else
                 {
                     height = _font.GlyphHeight.ClampTop(height);
-                }
+                }*/
             }
 
             height = Size.MinimumHeight.ConstrainAsMinimum(height, dockHeight);

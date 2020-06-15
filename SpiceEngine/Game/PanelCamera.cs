@@ -1,6 +1,6 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Rendering.Processing;
 using System;

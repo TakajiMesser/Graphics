@@ -1,12 +1,12 @@
 ﻿using OpenTK;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using System;
 using TangyHIDCore.Inputs;
 
 namespace TangyHIDCore
 {
-    public interface IInputProvider : ITick
+    public interface IInputProvider : IGameSystem
     {
         InputBinding InputMapping { get; set; }
 

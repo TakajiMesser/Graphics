@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Outputs;
+﻿using SpiceEngineCore.Rendering;
 
 namespace SweetGraphicsCore.Rendering.Processing
 {

@@ -1,9 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Utilities;
 using System;
+using TangyHIDCore;
+using TangyHIDCore.Inputs;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -35,19 +37,21 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is PerspectiveCamera camera)
+            if (context.GetEntity() is PerspectiveCamera camera)
             {
-                if (context.InputProvider.IsDown(new Input(MouseButton.Button1)) && context.InputProvider.IsDown(new Input(MouseButton.Button2)))
+                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+
+                if (inputProvider.IsDown(new Input(MouseButton.Button1)) && inputProvider.IsDown(new Input(MouseButton.Button2)))
                 {
-                    Strafe(camera, context.InputProvider.MouseDelta);
+                    Strafe(camera, inputProvider.MouseDelta);
                 }
-                else if (context.InputProvider.IsDown(new Input(MouseButton.Button1)))
+                else if (inputProvider.IsDown(new Input(MouseButton.Button1)))
                 {
-                    Travel(camera, context.InputProvider.MouseDelta);
+                    Travel(camera, inputProvider.MouseDelta);
                 }
-                else if (context.InputProvider.IsDown(new Input(MouseButton.Button2)))
+                else if (inputProvider.IsDown(new Input(MouseButton.Button2)))
                 {
-                    Turn(camera, context.InputProvider.MouseDelta);
+                    Turn(camera, inputProvider.MouseDelta);
                 }
             }
 

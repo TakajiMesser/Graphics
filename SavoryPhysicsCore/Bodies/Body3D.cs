@@ -1,30 +1,16 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Physics;
-using SavoryPhysicsCore.Collisions;
-using SavoryPhysicsCore.Helpers;
-using SavoryPhysicsCore.Shapes;
-
-namespace SavoryPhysicsCore.Bodies
+﻿namespace SavoryPhysicsCore.Bodies
 {
-    public abstract class Body3D : IBody
+    /*public abstract class Body3D : Component, IBody
     {
-        public int EntityID { get; }
-        public BodyStates State { get; set; }
         public Shape3D Shape { get; }
+        public BodyStates State { get; set; }
 
-        public Vector3 Position { get; set; }
         public float Restitution { get; set; }
 
-        public bool IsMovable => this is RigidBody3D || this is SoftBody3D;
+        public bool IsMovable => this is RigidBody || this is SoftBody3D;
         public bool IsPhysical { get; set; }
 
-        public Body3D(IEntity entity, Shape3D shape)
-        {
-            EntityID = entity.ID;
-            Shape = shape;
-            Position = entity.Position;
-        }
+        public Body3D(int entityID, Shape3D shape) : base(entityID) => Shape = shape;
 
         public ICollision GetCollision(IBody body)
         {
@@ -207,5 +193,5 @@ namespace SavoryPhysicsCore.Bodies
             // TODO - Maybe throw NotImplementedException?
             return false;
         }
-    }
+    }*/
 }

@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.UserInterfaces;
-
-namespace StarchUICore.Text
+﻿namespace StarchUICore.Text
 {
     public interface IFontProvider
     {

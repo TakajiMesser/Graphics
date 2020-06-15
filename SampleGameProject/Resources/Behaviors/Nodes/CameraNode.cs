@@ -1,8 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Utilities;
+using TangyHIDCore;
+using TangyHIDCore.Inputs;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -23,9 +24,11 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is PerspectiveCamera perspectiveCamera)
+            var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+
+            if (context.GetEntity() is PerspectiveCamera perspectiveCamera)
             {
-                var amount = context.InputProvider.MouseWheelDelta * ZoomSpeed;
+                var amount = inputProvider.MouseWheelDelta * ZoomSpeed;
 
                 if (amount > 0.0f || amount < 0.0f)
                 {
@@ -37,9 +40,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                 var currentAngles = perspectiveCamera.CurrentAngles;
 
-                if (context.InputProvider.IsDown(new Input(MouseButton.Right)))
+                if (inputProvider.IsDown(new Input(MouseButton.Right)))
                 {
-                    var mouseDelta = context.InputProvider.MouseDelta * TurnSpeed;
+                    var mouseDelta = inputProvider.MouseDelta * TurnSpeed;
 
                     if (mouseDelta != Vector2.Zero)
                     {
@@ -54,22 +57,22 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 }
                 else
                 {
-                    if (context.InputProvider.IsDown(new Input(Key.Up)))
+                    if (inputProvider.IsDown(new Input(Key.Up)))
                     {
                         currentAngles.Y += MoveSpeed;
                     }
 
-                    if (context.InputProvider.IsDown(new Input(Key.Down)))
+                    if (inputProvider.IsDown(new Input(Key.Down)))
                     {
                         currentAngles.Y -= MoveSpeed;
                     }
 
-                    if (context.InputProvider.IsDown(new Input(Key.Right)))
+                    if (inputProvider.IsDown(new Input(Key.Right)))
                     {
                         currentAngles.X -= MoveSpeed;
                     }
 
-                    if (context.InputProvider.IsDown(new Input(Key.Left)))
+                    if (inputProvider.IsDown(new Input(Key.Left)))
                     {
                         currentAngles.X += MoveSpeed;
                     }
@@ -81,9 +84,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                     perspectiveCamera.CalculateUp();
                 }
             }
-            else if (context.Entity is OrthographicCamera orthographicCamera)
+            else if (context.GetEntity() is OrthographicCamera orthographicCamera)
             {
-                var amount = context.InputProvider.MouseWheelDelta * ZoomSpeed;
+                var amount = inputProvider.MouseWheelDelta * ZoomSpeed;
 
                 if (amount > 0.0f || amount < 0.0f)
                 {

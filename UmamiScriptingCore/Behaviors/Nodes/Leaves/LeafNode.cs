@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Utilities;
-
-namespace UmamiScriptingCore.Behaviors.Nodes.Leaves
+﻿namespace UmamiScriptingCore.Behaviors.Nodes.Leaves
 {
     public abstract class LeafNode : Node
     {

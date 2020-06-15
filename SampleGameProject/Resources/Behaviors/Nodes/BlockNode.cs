@@ -1,9 +1,12 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using TangyHIDCore;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -23,8 +26,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is IActor actor)
+            if (context.GetEntity() is IActor actor)
             {
+                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
                 var nEvadeTicks = context.GetVariableOrDefault<int>("nEvadeTicks");
 
                 if (nEvadeTicks > 0 && nEvadeTicks <= TickCount)
@@ -42,7 +46,8 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     context.EulerRotation = new Vector3(context.EulerRotation.X, MathExtensions.TWO_PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
 
-                    ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);
+                    var body = context.GetComponent<IBody>() as RigidBody;
+                    body.ApplyVelocity(evadeTranslation);
 
                     return BehaviorStatus.Success;
                 }
@@ -56,21 +61,21 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     return BehaviorStatus.Failure;
                 }
-                else if (context.InputProvider.IsPressed(context.InputProvider.InputMapping.Block))
+                else if (inputProvider.IsPressed(inputProvider.InputMapping.Block))
                 {
                     context.SetVariable("nBlockTicks", 1);
 
                     // Swallow any directional movement inputs
                     //context.InputState.SwallowInputs(context.InputProvider.InputMapping.Forward, context.InputProvider.InputMapping.Backward, context.InputProvider.InputMapping.Left, context.InputProvider.InputMapping.Right);
                 }
-                else if (context.InputProvider.IsDown(context.InputProvider.InputMapping.Block))
+                else if (inputProvider.IsDown(inputProvider.InputMapping.Block))
                 {
                     var nBlockTicks = context.GetVariableOrDefault<int>("nBlockTicks");
                     nBlockTicks++;
 
                     context.SetVariable("nBlockTicks", nBlockTicks);
 
-                    var evadeTranslation = GeometryHelper.GetPressedTranslation(context.Camera, EvadeSpeed, context.InputProvider, context.InputProvider.InputMapping);
+                    var evadeTranslation = GeometryHelper.GetPressedTranslation(context.Camera, EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {
@@ -80,7 +85,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                         actor.Rotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
                         context.EulerRotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), context.EulerRotation.Y, context.EulerRotation.Z);
-                        ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);
+
+                        var body = context.GetComponent<IBody>() as RigidBody;
+                        body.ApplyVelocity(evadeTranslation);
 
                         context.SetVariable("evadeTranslation", evadeTranslation);
                         context.SetVariable("nEvadeTicks", nEvadeTicks);

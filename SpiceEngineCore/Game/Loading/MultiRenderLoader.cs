@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SpiceEngineCore.Game.Loading
 {
-    public class MultiRenderLoader : IMultiRenderLoader
+    public class MultiRenderLoader
     {
         private List<IRenderableLoader> _loaders = new List<IRenderableLoader>();
 

@@ -1,7 +1,7 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;

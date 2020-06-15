@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
-using SpiceEngineCore.Utilities;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -29,7 +30,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Position;
+            var difference = Destination - context.GetPosition();
 
             var reachedDestination = difference.X < XTolerance && difference.X > -XTolerance
                 && difference.Y < YTolerance && difference.Y > -YTolerance
@@ -39,16 +40,17 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
             {
                 return BehaviorStatus.Success;
             }
-            else if (difference.Length < Speed)
-            {
-                ((RigidBody3D)context.Body).ApplyVelocity(difference);
-            }
             else
             {
-                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
-            }
+                var body = context.GetComponent<IBody>() as RigidBody;
+                var velocity = difference.Length < Speed
+                    ? difference
+                    : difference.Normalized() * Speed;
 
-            return BehaviorStatus.Running;
+                body.ApplyVelocity(velocity);
+
+                return BehaviorStatus.Running;
+            }
         }
 
         public override void Reset() { }

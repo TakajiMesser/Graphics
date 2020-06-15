@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Utilities;
-
-namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
+﻿namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
 {
     public abstract class ConditionNode : DecoratorNode
     {

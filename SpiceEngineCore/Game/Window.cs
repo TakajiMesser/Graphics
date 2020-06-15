@@ -72,7 +72,7 @@ namespace SpiceEngineCore.Game
         {
             _msSinceUpdate += _updateWatch.Elapsed.TotalMilliseconds;
             _updateWatch.Restart();
-            
+
             // How many updates, if any, should take place?
             if (_msSinceUpdate >= _msPerUpdate)
             {

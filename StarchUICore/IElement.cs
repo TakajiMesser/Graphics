@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Rendering;
-using SpiceEngineCore.UserInterfaces;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Rendering;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Styling;
@@ -9,8 +9,16 @@ using System.Collections.Generic;
 
 namespace StarchUICore
 {
-    public interface IElement : IUIElement, IRenderable
+    public interface IElement : IComponent, IRenderable
     {
+        bool IsEnabled { get; set; }
+        bool IsVisible { get; set; }
+        bool IsGone { get; set; }
+
+        float Alpha { get; set; }
+
+        bool IsLaidOut { get; }
+
         string Name { get; set; }
         IElement Parent { get; set; }
 
@@ -43,5 +51,7 @@ namespace StarchUICore
         void MeasureHeight(LayoutInfo layoutInfo);
 
         void InvokeMeasurementChanged();
+
+        void Update(int nTicks);
     }
 }

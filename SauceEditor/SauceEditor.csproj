@@ -533,6 +533,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CitrusAnimationCore\CitrusAnimationCore.csproj">
+      <Project>{5b932efa-d59b-43c5-9281-a1a171b8e45f}</Project>
+      <Name>CitrusAnimationCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SampleGameProject\SampleGameProject.csproj">
       <Project>{b1232132-96a3-402a-9fe3-06856466dcd4}</Project>
       <Name>SampleGameProject</Name>
@@ -540,6 +544,14 @@
     <ProjectReference Include="..\SauceEditorCore\SauceEditorCore.csproj">
       <Project>{277CCF06-76D9-45D3-BC92-25DCCA43E426}</Project>
       <Name>SauceEditorCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SavoryPhysicsCore\SavoryPhysicsCore.csproj">
+      <Project>{38042cd2-2eb5-43cf-8973-6da5dcd16aaa}</Project>
+      <Name>SavoryPhysicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmokyAudioCore\SmokyAudioCore.csproj">
+      <Project>{eb22b876-fb30-45ee-8168-17a6d3295d03}</Project>
+      <Name>SmokyAudioCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
       <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
@@ -556,6 +568,14 @@
     <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
       <Project>{F6C9B29F-7751-4FD2-88DA-CFE8B512C645}</Project>
       <Name>SweetGraphicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TangyHIDCore\TangyHIDCore.csproj">
+      <Project>{48b39aa2-df70-45fe-b7f5-196a388e68ab}</Project>
+      <Name>TangyHIDCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
+      <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
+      <Name>UmamiScriptingCore</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup />

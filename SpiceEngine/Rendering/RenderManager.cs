@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using CitrusAnimationCore.Animations;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Selection;
@@ -8,7 +9,6 @@ using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
-using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
@@ -16,11 +16,8 @@ using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
 using StarchUICore;
 using SweetGraphicsCore.Rendering.Batches;
@@ -46,7 +43,7 @@ namespace SpiceEngine.Rendering
         Full
     }
 
-    public class RenderManager : RenderableLoader, IGridRenderer, ISelectionTracker
+    public class RenderManager : RenderableLoader, IRenderProvider, IGridRenderer
     {
         public RenderModes RenderMode { get; set; }
         public Resolution Resolution { get; private set; }
@@ -106,6 +103,11 @@ namespace SpiceEngine.Rendering
             FontManager = new FontManager(TextureManager);
             _logManager = new LogManager(_textRenderer);
         }
+
+        public IRenderable GetRenderable(int entityID) => _componentByID[entityID];
+        public IRenderable GetRenderableOrDefault(int entityID) => HasRenderable(entityID) ? GetRenderable(entityID) : default;
+
+        public bool HasRenderable(int entityID) => _componentByID.ContainsKey(entityID);
 
         public override void SetEntityProvider(IEntityProvider entityProvider)
         {

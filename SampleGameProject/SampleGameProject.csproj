@@ -94,14 +94,9 @@
     <Compile Include="Behaviors\Enemy\EnemyBehavior.cs" />
     <Compile Include="Behaviors\Enemy\IsAtFullAlert.cs" />
     <Compile Include="Behaviors\Enemy\ChaseNode.cs" />
-    <Compile Include="Behaviors\Enemy\TurnTowardsNode.cs" />
     <Compile Include="Behaviors\Enemy\IsPlayerInSightNode.cs" />
-    <Compile Include="Behaviors\MoveToNode.cs" />
-    <Compile Include="Behaviors\Player\BlockNode.cs" />
     <Compile Include="Behaviors\Player\TakeCoverNode.cs" />
     <Compile Include="Behaviors\Player\PlayerBehavior.cs" />
-    <Compile Include="Behaviors\Player\TurnNode.cs" />
-    <Compile Include="Behaviors\Player\MoveNode.cs" />
     <Compile Include="Behaviors\Player\EvadeNode.cs" />
     <Compile Include="Behaviors\Player\CoverNode.cs" />
     <Compile Include="GameObjects\Camera.cs" />
@@ -253,6 +248,10 @@
     <ProjectReference Include="..\SavoryPhysicsCore\SavoryPhysicsCore.csproj">
       <Project>{38042CD2-2EB5-43CF-8973-6DA5DCD16AAA}</Project>
       <Name>SavoryPhysicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TangyHIDCore\TangyHIDCore.csproj">
+      <Project>{48B39AA2-DF70-45FE-B7F5-196A388E68AB}</Project>
+      <Name>TangyHIDCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
       <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>

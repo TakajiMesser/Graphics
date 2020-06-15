@@ -1,8 +1,10 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -25,14 +27,13 @@ namespace SampleGameProject.Behaviors.Enemy
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
+            // TODO - This will throw if Player doesn't exist
             var player = context.GetEntity("Player");
 
-            if (context.Entity is IActor actor && player != null)
+            if (context.GetEntity() is IActor actor && player != null)
             {
-                var playerBody = context.GetBody(player.ID) as RigidBody3D;
-                var playerPosition = playerBody.Position;
-
-                var difference = playerPosition - context.Position;
+                var body = context.GetComponent<IBody>() as RigidBody;
+                var difference = player.Position - actor.Position;
 
                 if (difference.Length < 3.0f)// == Vector3.Zero)
                 {
@@ -40,16 +41,16 @@ namespace SampleGameProject.Behaviors.Enemy
                 }
                 else if (difference.Length < Speed)
                 {
-                    ((RigidBody3D)context.Body).ApplyVelocity(difference);
+                    body.ApplyVelocity(difference);
                 }
                 else
                 {
-                    ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
+                    body.ApplyVelocity(difference.Normalized() * Speed);
                 }
 
-                if (((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
+                if (body.LinearVelocity.IsSignificant())
                 {
-                    float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
+                    float turnAngle = (float)Math.Atan2(body.LinearVelocity.Y, body.LinearVelocity.X);
 
                     actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
                     context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);

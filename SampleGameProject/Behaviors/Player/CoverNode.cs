@@ -1,9 +1,12 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Utilities;
 using System.Linq;
+using TangyHIDCore;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -33,21 +36,24 @@ namespace SampleGameProject.Behaviors.Player
                         context.SetVariable("coverDistance", context.GetVariable<float>("coverDistance") - EnterCoverSpeed);
 
                         var coverDirection = context.GetVariable<Vector2>("coverDirection");
-                        ((RigidBody3D)context.Body).ApplyVelocity(new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed);
+
+                        var body = context.GetComponent<IBody>() as RigidBody;
+                        body.ApplyVelocity(new Vector3(coverDirection.X, coverDirection.Y, 0) * EnterCoverSpeed);
                     }
 
                     if (context.GetVariable<float>("coverDistance") < 0.1f)
                     {
                         // Handle movement while in cover here
-                        var translation = GeometryHelper.GetHeldTranslation(context.Camera, CoverSpeed, context.InputProvider, context.InputProvider.InputMapping);
+                        var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+                        var translation = GeometryHelper.GetHeldTranslation(context.Camera, CoverSpeed, inputProvider);
 
                         if (translation.IsSignificant())
                         {
-                            var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is IBrush);
+                            var filteredColliders = context.Provider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID).Where(b => context.GetEntity(b.EntityID) is IBrush);
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
-                            var shape = ((Body3D)context.Body).Shape;
-                            /*var borderPoint = shape.GetFurthestPoint(context.Position, translation);
+                            var shape = context.GetComponent<IBody>().Shape;
+                            /*var borderPoint = shape.GetFurthestPoint(context.Entity.Position, translation);
                             
                             // TODO - Dynamically determine how far the raycast should be
                             var boundWidth = 2.0f;

@@ -1,14 +1,11 @@
 ﻿using SpiceEngineCore.Components;
-using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Inputs;
-using SpiceEngineCore.Physics;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.UserInterfaces;
-using SpiceEngineCore.Utilities;
+using SpiceEngineCore.Game;
 using System.Collections.Generic;
+using System.Data;
 using UmamiScriptingCore.Behaviors.Nodes;
-using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore.StimResponse;
+using UmamiScriptingCore.Utilities;
 
 namespace UmamiScriptingCore.Behaviors
 {
@@ -16,20 +13,22 @@ namespace UmamiScriptingCore.Behaviors
     {
         private Stack<Node> _rootStack = new Stack<Node>();
         private List<IResponse> _responses = new List<IResponse>();
+        private List<IStimulus> _stimuli = new List<IStimulus>();
+        private PropertyCollection _properties = new PropertyCollection();
 
         public Behavior(int entityID) : base(entityID) { }
 
-        public BehaviorContext Context { get; private set; } = new BehaviorContext();
+        public BehaviorContext Context { get; private set; }
 
-        public void SetEntity(IEntity entity) => Context.Entity = entity;
+        public void SetSystemProvider(ISystemProvider systemProvider) => Context = new BehaviorContext(this, systemProvider);
         public void SetCamera(ICamera camera) => Context.Camera = camera;
-        public void SetEntityProvider(IEntityProvider entityProvider) => Context.SetEntityProvider(entityProvider);
-        public void SetCollisionProvider(ICollisionProvider collisionProvider) => Context.SetCollisionProvider(collisionProvider);
+        public void SetProperty(string name, object value) => Context.SetProperty(name, value);
+
+        /*public void SetCollisionProvider(ICollisionProvider collisionProvider) => Context.SetCollisionProvider(collisionProvider);
         public void SetInputProvider(IInputProvider inputProvider) => Context.SetInputProvider(inputProvider);
         public void SetStimulusProvider(IStimulusProvider stimulusProvider) => Context.SetStimulusProvider(stimulusProvider);
         public void SetSelectionTracker(ISelectionTracker selectionTracker) => Context.SetSelectionTracker(selectionTracker);
-        public void SetUIProvider(IUIProvider uiProvider) => Context.SetUIProvider(uiProvider);
-        public void SetProperty(string name, object value) => Context.SetProperty(name, value);
+        public void SetUIProvider(IUIProvider uiProvider) => Context.SetUIProvider(uiProvider);*/
 
         public void PushRootNode(Node node)
         {
@@ -65,7 +64,7 @@ namespace UmamiScriptingCore.Behaviors
                 return rootStatus;
             }
 
-            return BehaviorStatus.Dormant;   
+            return BehaviorStatus.Dormant;
         }
     }
 }

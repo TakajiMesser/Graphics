@@ -4,7 +4,7 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Helpers;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Processing;

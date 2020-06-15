@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Utilities;
-using System;
+﻿using System;
 
 namespace UmamiScriptingCore.Behaviors
 {

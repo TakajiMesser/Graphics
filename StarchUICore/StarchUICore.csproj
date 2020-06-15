@@ -5,12 +5,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj" />
-    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj" />
+    <Compile Remove="Colors\**" />
+    <EmbeddedResource Remove="Colors\**" />
+    <None Remove="Colors\**" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Colors\" />
+    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj" />
+    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj" />
   </ItemGroup>
 
   <ItemGroup>

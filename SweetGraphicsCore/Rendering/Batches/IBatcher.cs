@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Components.Animations;
-using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
@@ -12,8 +11,6 @@ namespace SweetGraphicsCore.Rendering.Batches
 
         IBatch GetBatch(int entityID);
         IBatch GetBatchOrDefault(int entityID);
-
-        void SetAnimationProvider(IAnimationProvider animationProvider);
 
         void AddEntity(int entityID, IRenderable renderable);
         void RemoveByEntityID(int entityID);

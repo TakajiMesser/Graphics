@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 
 namespace TangyHIDCore
 {

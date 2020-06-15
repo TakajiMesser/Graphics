@@ -2,11 +2,8 @@
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.UserInterfaces;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
 using StarchUICore;
 using StarchUICore.Attributes.Positions;
@@ -20,10 +17,14 @@ using SweetGraphicsCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TangyHIDCore.Inputs;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 using UmamiScriptingCore.Behaviors.Nodes.Decorators;
+using UmamiScriptingCore.Props;
 using UmamiScriptingCore.Scripts;
+using UmamiScriptingCore.StimResponse;
 using InputTypes = UmamiScriptingCore.Behaviors.Nodes.Decorators.InputTypes;
 
 namespace SpiceEngine.Maps
@@ -39,7 +40,7 @@ namespace SpiceEngine.Maps
         Panel
     }
 
-    public class MapUIItem : MapEntity<UIItem>, IMapUIItem, ITexturePather
+    public class MapUIItem : MapEntity<UIItem>, IMapUIItem, ITexturePather, IBehaviorBuilder, IElementBuilder
     {
         public string Name { get; set; }
         public List<string> ChildElementNames { get; set; } = new List<string>();
@@ -111,7 +112,7 @@ namespace SpiceEngine.Maps
         private object _componentLock = new object();
         private int _entityID;
 
-        IUIElement IComponentBuilder<IUIElement>.ToComponent(int entityID)
+        IElement IComponentBuilder<IElement>.ToComponent(int entityID)
         {
             lock (_componentLock)
             {

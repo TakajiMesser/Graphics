@@ -1,24 +1,21 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace TangyHIDCore.Inputs
 {
-    public class InputManager : UpdateManager, IInputProvider
+    public class InputManager : GameSystem, IInputProvider
     {
         public const int DEFAULT_NUMBER_OF_TRACKED_STATES = 2;
 
         private List<InputState> _inputStates = new List<InputState>();
-        private IMouseTracker _mouseTracker;
-
-        public InputManager() { }
-        public InputManager(IMouseTracker mouseTracker) => _mouseTracker = mouseTracker;
 
         public InputBinding InputMapping { get; set; } = new InputBinding();
+        public IMouseTracker MouseTracker { get; set; }
 
         /*public bool IsMouseInWindow
         {
@@ -43,10 +40,10 @@ namespace TangyHIDCore.Inputs
             ? _inputStates[_inputStates.Count - 1].MousePosition
             : (Vector2?)null;*/
 
-        public bool IsMouseInWindow => _mouseTracker.IsMouseInWindow;
-        public Vector2? MouseCoordinates => _mouseTracker?.MouseCoordinates;
-        public Vector2? RelativeCoordinates => _mouseTracker?.RelativeCoordinates;
-        public Resolution WindowSize => _mouseTracker.WindowSize;
+        public bool IsMouseInWindow => MouseTracker.IsMouseInWindow;
+        public Vector2? MouseCoordinates => MouseTracker?.MouseCoordinates;
+        public Vector2? RelativeCoordinates => MouseTracker?.RelativeCoordinates;
+        public Resolution WindowSize => MouseTracker.WindowSize;
 
         public int TrackedStates { get; set; } = DEFAULT_NUMBER_OF_TRACKED_STATES;
 
@@ -116,19 +113,13 @@ namespace TangyHIDCore.Inputs
         public bool IsDown(Input input)
         {
             var inputState = _inputStates.LastOrDefault();
-
-            return inputState != null
-                ? inputState.IsDown(input)
-                : false;
+            return inputState != null && inputState.IsDown(input);
         }
 
         public bool IsUp(Input input)
         {
             var inputState = _inputStates.LastOrDefault();
-
-            return inputState != null
-                ? inputState.IsUp(input)
-                : true;
+            return inputState != null && inputState.IsUp(input);
         }
 
         /// <summary>

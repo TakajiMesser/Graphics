@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Maps\" />
+    <Compile Remove="Maps\**" />
+    <EmbeddedResource Remove="Maps\**" />
+    <None Remove="Maps\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -15,6 +17,10 @@
 
   <ItemGroup>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Partitioning\" />
   </ItemGroup>
 
 </Project>

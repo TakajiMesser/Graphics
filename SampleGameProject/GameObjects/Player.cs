@@ -3,7 +3,7 @@ using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SweetGraphicsCore.Rendering.Textures;
-using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore.StimResponse;
 
 namespace SampleGameProject.GameObjects
 {

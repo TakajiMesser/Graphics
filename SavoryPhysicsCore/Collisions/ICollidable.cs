@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Physics;
+﻿using SavoryPhysicsCore.Partitioning;
 
 namespace SavoryPhysicsCore.Collisions
 {

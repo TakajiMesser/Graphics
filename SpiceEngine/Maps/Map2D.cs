@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 using OpenTK;
+using SavoryPhysicsCore.Partitioning;
 using System.Linq;
-using SavoryPhysicsCore.Collisions;
 
 namespace SpiceEngine.Maps
 {

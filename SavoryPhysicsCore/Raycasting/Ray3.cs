@@ -1,5 +1,6 @@
 ﻿using OpenTK;
-using SavoryPhysicsCore.Shapes;
+using SavoryPhysicsCore.Shapes.ThreeDimensional;
+using SavoryPhysicsCore.Shapes.TwoDimensional;
 using System;
 
 namespace SavoryPhysicsCore.Raycasting

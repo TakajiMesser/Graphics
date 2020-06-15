@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.UserInterfaces;
-
-namespace SpiceEngineCore.Rendering.Textures
+﻿namespace SpiceEngineCore.Rendering.Textures
 {
     public interface ITextureProvider
     {
@@ -8,7 +6,7 @@ namespace SpiceEngineCore.Rendering.Textures
         bool EnableAnisotropy { get; set; }
 
         int AddTexture(ITexture texture);
-        int AddTexture(IFont font);
+        //int AddTexture(IFont font);
         int AddTexture(string texturePath);
 
         ITexture RetrieveTexture(int index);

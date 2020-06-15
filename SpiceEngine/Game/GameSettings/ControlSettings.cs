@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Inputs;
+﻿using TangyHIDCore.Inputs;
 
 namespace SpiceEngine.Game.GameSettings
 {

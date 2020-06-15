@@ -1,10 +1,12 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Raycasting;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Linq;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -25,14 +27,14 @@ namespace SampleGameProject.Behaviors.Player
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is IActor actor)
+            if (context.GetEntity() is IActor actor)
             {
                 // TODO - Filter gameobjects and brushes based on "coverable" property
-                var filteredColliders = context.GetColliderBodies().Where(c => context.GetEntity(c.EntityID) is IBrush);
+                var filteredColliders = context.Provider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID).Where(b => context.GetEntity(b.EntityID) is IBrush);
 
-                if (Raycast.TryCircleCast(new RayCircle(context.Position, CoverDistance), filteredColliders, context.GetEntityProvider(), out RaycastHit hit))
+                if (Raycast.TryCircleCast(new RayCircle(context.GetPosition(), CoverDistance), filteredColliders, context.Provider.GetEntityProvider(), out RaycastHit hit))
                 {
-                    var vectorBetween = hit.Intersection - context.Position;
+                    var vectorBetween = hit.Intersection - context.GetPosition();
                     context.SetVariable("coverDirection", vectorBetween.Xy);
                     context.SetVariable("coverDistance", vectorBetween.Length);
 

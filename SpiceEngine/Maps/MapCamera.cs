@@ -3,15 +3,16 @@ using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Scripting;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiScriptingCore.Behaviors.Properties;
-using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore;
+using UmamiScriptingCore.Props;
+using UmamiScriptingCore.Scripts;
+using UmamiScriptingCore.StimResponse;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapCamera : MapEntity<ICamera>, IMapCamera
+    public class MapCamera : MapEntity<ICamera>, IMapCamera, IBehaviorBuilder
     {
         public string Name { get; set; }
 

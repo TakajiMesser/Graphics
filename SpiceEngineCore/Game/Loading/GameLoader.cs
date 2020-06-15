@@ -1,14 +1,9 @@
-﻿using SpiceEngineCore.Components.Animations;
-using SpiceEngineCore.Components.Builders;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Scripting;
-using SpiceEngineCore.UserInterfaces;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,11 +18,7 @@ namespace SpiceEngineCore.Game
 
         private List<IEntityBuilder> _entityBuilders = new List<IEntityBuilder>();
 
-        private IComponentLoader<IShape, IShapeBuilder> _physicsLoader;
-        private IComponentLoader<IBehavior, IBehaviorBuilder> _behaviorLoader;
-        private IComponentLoader<IAnimator, IAnimatorBuilder> _animatorLoader;
-        private IComponentLoader<IUIElement, IUIElementBuilder> _uiLoader;
-
+        private List<IComponentLoader> _componentLoaders = new List<IComponentLoader>();
         private MultiRenderLoader _multiRenderLoader = new MultiRenderLoader();
 
         private int _loadIndex = 0;
@@ -64,11 +55,7 @@ namespace SpiceEngineCore.Game
             }
         }
 
-        public void SetPhysicsLoader(IComponentLoader<IShape, IShapeBuilder> physicsLoader) => _physicsLoader = physicsLoader;
-        public void SetBehaviorLoader(IComponentLoader<IBehavior, IBehaviorBuilder> behaviorLoader) => _behaviorLoader = behaviorLoader;
-        public void SetAnimatorLoader(IComponentLoader<IAnimator, IAnimatorBuilder> animatorLoader) => _animatorLoader = animatorLoader;
-        public void SetUILoader(IComponentLoader<IUIElement, IUIElementBuilder> uiLoader) => _uiLoader = uiLoader;
-
+        public void AddComponentLoader(IComponentLoader componentLoader) => _componentLoaders.Add(componentLoader);
         public void AddRenderableLoader(IRenderableLoader renderableLoader) => _multiRenderLoader.AddLoader(renderableLoader);
 
         public void Add(IMapEntity mapEntity)
@@ -82,10 +69,10 @@ namespace SpiceEngineCore.Game
 
         private void AddBuilders(IMapEntity mapEntity)
         {
-            _physicsLoader.AddBuilder(mapEntity);
-            _behaviorLoader.AddBuilder(mapEntity);
-            _animatorLoader.AddBuilder(mapEntity);
-            _uiLoader.AddBuilder(mapEntity);
+            foreach (var componentLoader in _componentLoaders)
+            {
+                componentLoader.AddBuilder(mapEntity);
+            }
 
             // TODO - Handle this in a cleaner way
             if (!IsInEditorMode && mapEntity is IMapVolume)
@@ -207,11 +194,12 @@ namespace SpiceEngineCore.Game
 
                 var loadEntityTasks = new Task[entityCount];
 
-                _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
-                _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
-                _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
+                foreach (var componentLoader in _componentLoaders)
+                {
+                    componentLoader.InitializeLoad(entityCount, startBuilderIndex);
+                }
+
                 _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
-                _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
 
                 var index = startBuilderIndex;
                 var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
@@ -227,33 +215,12 @@ namespace SpiceEngineCore.Game
 
                         loadEntityTasks[taskIndex] = Task.Run(() => _entityProvider.LoadEntity(id));
 
-                        _physicsLoader.AddLoadTask(id);
-                        _behaviorLoader.AddLoadTask(id);
-                        _animatorLoader.AddLoadTask(id);
-                        _uiLoader.AddLoadTask(id);
-                        _multiRenderLoader.AddLoadTask(id);
-
-                        /*var id = idIterator.Current;
-                        var currentBuilderIndex = index;
-                        var taskIndex = index - startBuilderIndex;
-
-                        loadEntityTasks[taskIndex] = Task.Run(() =>
+                        foreach (var componentLoader in _componentLoaders)
                         {
-                            // We need to ensure that the entity builder has been loaded before loading ANYTHING else
-                            _entityProvider.LoadEntity(id);
+                            componentLoader.AddLoadTask(id);
+                        }
 
-                            // Load the renderable data (which we do NOT need to wait for completion on, but which we do need to track)
-                            // TODO - Pretty gross to perform the same null check repeatedly in this loop...
-                            for (var i = 0; i < rendererWaitCount; i++)
-                            {
-                                loadRenderTasks[i][taskIndex] = LoadRenderableBuilder(id, currentBuilderIndex, i, renderableLoaders);
-                            }
-
-                            // Load the game data (which we NEED to wait for completion on)
-                            _physicsLoader.AddLoadTask(id);
-                            _behaviorLoader.AddLoadTask(id);
-                            _animatorLoader.AddLoadTask(id);
-                        });*/
+                        _multiRenderLoader.AddLoadTask(id);
 
                         EntityMapping?.AddID(id);
                         index++;
@@ -277,13 +244,14 @@ namespace SpiceEngineCore.Game
                 }
 
                 var loadTasks = new List<Task>
-            {
-                _physicsLoader.LoadAsync(),
-                _behaviorLoader.LoadAsync(),
-                _animatorLoader.LoadAsync(),
-                _uiLoader.LoadAsync(),
-                _multiRenderLoader.LoadAsync()
-            };
+                {
+                    _multiRenderLoader.LoadAsync()
+                };
+
+                foreach (var componentLoader in _componentLoaders)
+                {
+                    loadTasks.Add(componentLoader.LoadAsync());
+                }
 
                 await Task.WhenAll(loadTasks);
 
@@ -318,11 +286,12 @@ namespace SpiceEngineCore.Game
 
             entityCount -= startBuilderIndex;
 
-            _physicsLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _behaviorLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _animatorLoader.InitializeLoad(entityCount, startBuilderIndex);
-            _uiLoader.InitializeLoad(entityCount, startBuilderIndex);
             _multiRenderLoader.InitializeLoad(entityCount, startBuilderIndex);
+
+            foreach (var componentLoader in _componentLoaders)
+            {
+                componentLoader.InitializeLoad(entityCount, startBuilderIndex);
+            }
 
             var index = startBuilderIndex;
             var ids = _entityProvider.AssignEntityIDs(_entityBuilders.Skip(startBuilderIndex).Take(entityCount));
@@ -339,11 +308,12 @@ namespace SpiceEngineCore.Game
                     _entityProvider.LoadEntity(id);
 
                     // Load the game data (which we NEED to wait for completion on)
-                    _physicsLoader?.AddLoadTask(id);
-                    _behaviorLoader?.AddLoadTask(id);
-                    _animatorLoader?.AddLoadTask(id);
-                    _uiLoader?.AddLoadTask(id);
                     _multiRenderLoader?.AddLoadTask(id);
+
+                    foreach (var componentLoader in _componentLoaders)
+                    {
+                        componentLoader.AddLoadTask(id);
+                    }
 
                     EntityMapping?.AddID(id);
                     index++;
@@ -352,11 +322,12 @@ namespace SpiceEngineCore.Game
 
             EntitiesMapped?.Invoke(this, new EntityMappingEventArgs(EntityMapping));
 
-            _physicsLoader?.LoadSync();
-            _behaviorLoader?.LoadSync();
-            _animatorLoader?.LoadSync();
-            _uiLoader?.LoadSync();
             _multiRenderLoader?.LoadSync();
+
+            foreach (var componentLoader in _componentLoaders)
+            {
+                componentLoader.LoadSync();
+            }
 
             lock (_builderLock)
             {

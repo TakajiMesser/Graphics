@@ -127,6 +127,7 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
+    <Compile Include="Game\GameSystemProvider.cs" />
     <Compile Include="Game\SimulationManager.cs" />
     <Compile Include="Game\Controls\GameWindow.cs" />
     <Compile Include="Game\PanelCamera.cs" />
@@ -152,13 +153,11 @@
     <Compile Include="Maps\MapNode.cs" />
     <Compile Include="Maps\MapUIItem.cs" />
     <Compile Include="Maps\MapVolume.cs" />
-    <Compile Include="Physics\PhysicsSystem.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Rendering\Animations\AnimationSystem.cs" />
     <Compile Include="Rendering\Batches\BatchManager.cs" />
     <Compile Include="Rendering\Font.cs" />
     <Compile Include="Rendering\FontManager.cs" />
@@ -185,9 +184,12 @@
     <Compile Include="Rendering\RenderManager.cs" />
     <Compile Include="Rendering\Textures\Image.cs" />
     <Compile Include="Rendering\Textures\TextureManager.cs" />
-    <Compile Include="Scripting\BehaviorSystem.cs" />
-    <Compile Include="Scripting\Scripts\ScriptManager.cs" />
-    <Compile Include="UserInterfaces\UISystem.cs" />
+    <Compile Include="Scripting\Nodes\CameraNode.cs" />
+    <Compile Include="Scripting\Nodes\InputConditionNode.cs" />
+    <Compile Include="Scripting\Nodes\BaseNode.cs" />
+    <Compile Include="Scripting\Nodes\SelectionConditionNode.cs" />
+    <Compile Include="Scripting\Response.cs" />
+    <Compile Include="Scripting\ScriptManager.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -301,6 +303,14 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CitrusAnimationCore\CitrusAnimationCore.csproj">
+      <Project>{5b932efa-d59b-43c5-9281-a1a171b8e45f}</Project>
+      <Name>CitrusAnimationCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SmokyAudioCore\SmokyAudioCore.csproj">
+      <Project>{eb22b876-fb30-45ee-8168-17a6d3295d03}</Project>
+      <Name>SmokyAudioCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
       <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
       <Name>SpiceEngineCore</Name>
@@ -316,6 +326,10 @@
     <ProjectReference Include="..\SavoryPhysicsCore\SavoryPhysicsCore.csproj">
       <Project>{38042cd2-2eb5-43cf-8973-6da5dcd16aaa}</Project>
       <Name>SavoryPhysicsCore</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TangyHIDCore\TangyHIDCore.csproj">
+      <Project>{48b39aa2-df70-45fe-b7f5-196a388e68ab}</Project>
+      <Name>TangyHIDCore</Name>
     </ProjectReference>
     <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
       <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>

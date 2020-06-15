@@ -4,7 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;

@@ -1,7 +1,9 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
-using SpiceEngineCore.Utilities;
+using TangyHIDCore;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -22,52 +24,54 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var speed = context.InputProvider.IsDown(context.InputProvider.InputMapping.Run)
+            var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+            var speed = inputProvider.IsDown(inputProvider.InputMapping.Run)
                 ? RunSpeed
-                : context.InputProvider.IsDown(context.InputProvider.InputMapping.Crawl)
+                : inputProvider.IsDown(inputProvider.InputMapping.Crawl)
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, context.InputProvider, context.InputProvider.InputMapping);
+            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, inputProvider);
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.In))
+            if (inputProvider.IsDown(inputProvider.InputMapping.In))
             {
                 translation.Z += speed;
             }
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.Out))
+            if (inputProvider.IsDown(inputProvider.InputMapping.Out))
             {
                 translation.Z -= speed;
             }
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.Evade))
+            if (inputProvider.IsDown(inputProvider.InputMapping.Evade))
             {
                 translation.Z += 0.6f;
             }
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot1))
+            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot1))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y + 0.1f, context.EulerRotation.Z);
             }
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot2))
+            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot2))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y - 0.1f, context.EulerRotation.Z);
             }
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot3))
+            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot3))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z + 0.1f);
             }
 
-            if (context.InputProvider.IsDown(context.InputProvider.InputMapping.ItemSlot4))
+            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot4))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }
 
             //if (translation.IsSignificant())
             //{
-                ((RigidBody3D)context.Body).ApplyVelocity(translation);
+                var body = context.GetComponent<IBody>() as RigidBody;
+                body.ApplyVelocity(translation);
             //}
 
             return BehaviorStatus.Success;

@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using CitrusAnimationCore.Animations;
+using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
@@ -6,22 +7,21 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.UserInterfaces;
 using SpiceEngineCore.Utilities;
+using StarchUICore;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using TangyHIDCore;
+using TangyHIDCore.Inputs;
 using Timer = System.Timers.Timer;
 
 namespace SpiceEngine.Game

@@ -1,9 +1,8 @@
-﻿using SpiceEngineCore.Components.Builders;
-using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngineCore.Entities.Cameras;
 
 namespace SpiceEngineCore.Maps
 {
-    public interface IMapCamera : IMapEntity, IBehaviorBuilder
+    public interface IMapCamera : IMapEntity//, IBehaviorBuilder
     {
         string AttachedEntityName { get; }
 

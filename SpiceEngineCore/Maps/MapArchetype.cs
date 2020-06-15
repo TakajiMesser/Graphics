@@ -1,6 +1,5 @@
 ﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Physics;
 using System;
 using System.Collections.Generic;
 
@@ -20,6 +19,6 @@ namespace SpiceEngineCore.Maps
 
         public IEnumerable<IEntity> ToEntities() => throw new NotImplementedException();
 
-        public IEnumerable<IShape> ToShapes() => throw new NotImplementedException();
+        //public IEnumerable<IShape> ToShapes() => throw new NotImplementedException();
     }
 }

@@ -1,5 +1,5 @@
-﻿using UmamiScriptingCore.Behaviors.Nodes;
-using System;
+﻿using System;
+using UmamiScriptingCore.Behaviors.Nodes;
 
 namespace UmamiScriptingCore.Behaviors
 {

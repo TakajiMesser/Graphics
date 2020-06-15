@@ -1,7 +1,7 @@
-﻿using OpenTK;
+﻿using CitrusAnimationCore.Bones;
+using OpenTK;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Utilities;
-using SweetGraphicsCore.Rendering.Animations;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;

@@ -1,5 +1,4 @@
-﻿using SavoryPhysicsCore.Shapes;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Maps;
 
 namespace TowerWarfare.Builders
 {
@@ -10,9 +9,9 @@ namespace TowerWarfare.Builders
             return null;
         }
 
-        private static Shape3D GetShape()
+        /*private static Shape GetShape()
         {
             return null;
-        }
+        }*/
     }
 }

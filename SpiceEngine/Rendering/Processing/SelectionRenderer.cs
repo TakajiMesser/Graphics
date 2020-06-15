@@ -6,7 +6,7 @@ using SpiceEngine.Properties;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Buffers;

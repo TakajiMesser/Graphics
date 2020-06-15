@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace SmokyAudioCore.Sounds
 {
-    public class SoundManager : UpdateManager, IDisposable
+    public class SoundManager : GameSystem, IDisposable
     {
         private IntPtr _device = IntPtr.Zero;
         private ContextHandle _context;

@@ -112,6 +112,10 @@
       <Project>{38042cd2-2eb5-43cf-8973-6da5dcd16aaa}</Project>
       <Name>SavoryPhysicsCore</Name>
     </ProjectReference>
+    <ProjectReference Include="..\TangyHIDCore\TangyHIDCore.csproj">
+      <Project>{48B39AA2-DF70-45FE-B7F5-196A388E68AB}</Project>
+      <Name>TangyHIDCore</Name>
+    </ProjectReference>
     <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
       <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
       <Name>UmamiScriptingCore</Name>

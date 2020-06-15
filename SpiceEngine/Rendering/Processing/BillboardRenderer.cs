@@ -8,7 +8,7 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Helpers;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;

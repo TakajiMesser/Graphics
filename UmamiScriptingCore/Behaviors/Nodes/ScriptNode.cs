@@ -1,10 +1,9 @@
-﻿using SpiceEngineCore.Scripting;
-using SpiceEngineCore.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UmamiScriptingCore.Behaviors.Nodes.Composites;
 using UmamiScriptingCore.Behaviors.Nodes.Decorators;
+using UmamiScriptingCore.Scripts;
 using ValueType = SpiceEngineCore.Serialization.ValueType;
 
 namespace UmamiScriptingCore.Behaviors.Nodes

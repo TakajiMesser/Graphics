@@ -6,7 +6,6 @@ using OpenTK;
 using SpiceEngine.Maps;
 using System.Collections.Generic;
 using TowerWarfare.Helpers;
-using UmamiScriptingCore.Behaviors.StimResponse;
 using UmamiScriptingCore.Scripts;
 
 namespace TowerWarfare.Builders

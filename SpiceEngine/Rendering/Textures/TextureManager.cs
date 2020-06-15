@@ -1,9 +1,8 @@
 ﻿using OpenTK.Graphics;
 using SpiceEngine.Helpers;
-using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.UserInterfaces;
+using StarchUICore;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;

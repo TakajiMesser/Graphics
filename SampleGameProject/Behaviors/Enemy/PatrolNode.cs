@@ -1,8 +1,10 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -21,30 +23,31 @@ namespace SampleGameProject.Behaviors.Enemy
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Position;
+            var difference = Destination - context.GetPosition();
 
-            if (!difference.IsSignificant())
+            if (difference.IsSignificant())
             {
-                return BehaviorStatus.Success;
-            }
-            else if (difference.Length < Speed)
-            {
-                ((RigidBody3D)context.Body).ApplyVelocity(difference);
+                var velocity = difference.Length < Speed
+                    ? difference
+                    : difference.Normalized() * Speed;
+
+                var body = context.GetComponent<IBody>() as RigidBody;
+                body.ApplyVelocity(velocity);
+
+                if (context.GetEntity() is IActor actor && velocity.IsSignificant())
+                {
+                    float turnAngle = (float)Math.Atan2(velocity.Y, velocity.X);
+
+                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                    context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
+                }
+
+                return BehaviorStatus.Running;
             }
             else
             {
-                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
+                return BehaviorStatus.Success;
             }
-
-            if (context.Entity is IActor actor && ((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
-            {
-                float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
-
-                actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
-                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
-            }
-
-            return BehaviorStatus.Running;
         }
 
         public override void Reset() { }

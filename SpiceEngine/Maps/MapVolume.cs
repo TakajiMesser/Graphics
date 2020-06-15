@@ -1,11 +1,12 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SavoryPhysicsCore.Shapes;
+using SavoryPhysicsCore;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Shapes.ThreeDimensional;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Rendering.Meshes;
@@ -16,7 +17,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapVolume : MapEntity<IVolume>, IMapVolume
+    public class MapVolume : MapEntity<IVolume>, IMapVolume, IBodyBuilder
     {
         public enum VolumeTypes
         {
@@ -83,7 +84,7 @@ namespace SpiceEngine.Maps
             };
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(entityID, Vertices);
+        IBody IComponentBuilder<IBody>.ToComponent(int entityID) => new StaticBody(entityID, new Box(Vertices));
 
         public IRenderable ToRenderable() =>
             new ColoredMesh<Vertex3D>(new Vertex3DSet<Vertex3D>(Vertices

@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Collisions;
 using SavoryPhysicsCore.Shapes;
 
 namespace SavoryPhysicsCore.Helpers
@@ -9,14 +9,14 @@ namespace SavoryPhysicsCore.Helpers
         public const int MAX_ITERATIONS = 16;
 
         // GJK
-        public static bool GenerateSimplex(Body3D bodyA, Body3D bodyB)
+        public static bool GenerateSimplex(CollisionInfo collisionInfo)
         {
             var simplex = new Tetrahedron();
 
             // Choose an initial search direction
             var direction = Vector3.Zero;
 
-            simplex.Add(GetMinkowskiVertex(bodyA, bodyB, -direction));
+            simplex.Add(GetMinkowskiVertex(collisionInfo, -direction));
 
             for (var i = 0; i < MAX_ITERATIONS; i++)
             {
@@ -27,7 +27,7 @@ namespace SavoryPhysicsCore.Helpers
                 }
                 else
                 {
-                    var vertex = GetMinkowskiVertex(bodyA, bodyB, direction);
+                    var vertex = GetMinkowskiVertex(collisionInfo, direction);
 
                     if (Vector3.Dot(vertex, closestPoint.Value) > 0)
                     {
@@ -43,10 +43,10 @@ namespace SavoryPhysicsCore.Helpers
             return false;
         }
 
-        private static Vector3 GetMinkowskiVertex(Body3D bodyA, Body3D bodyB, Vector3 direction)
+        private static Vector3 GetMinkowskiVertex(CollisionInfo collisionInfo, Vector3 direction)
         {
-            var vertexA = bodyA.Position + bodyA.Shape.GetFurthestPointInDirection(direction);
-            var vertexB = bodyB.Position + bodyB.Shape.GetFurthestPointInDirection(-direction);
+            var vertexA = collisionInfo.EntityA.Position + collisionInfo.BodyA.Shape.GetFurthestPointInDirection(direction);
+            var vertexB = collisionInfo.EntityB.Position + collisionInfo.BodyB.Shape.GetFurthestPointInDirection(-direction);
 
             return vertexA - vertexB;
         }

@@ -1,8 +1,8 @@
-﻿using SpiceEngineCore.Scripting;
+﻿using SpiceEngine.Scripting;
 using SpiceEngineCore.Serialization.Converters;
 using System.Collections.Generic;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
-using UmamiScriptingCore.Behaviors.StimResponse;
 using UmamiScriptingCore.Scripts;
 
 namespace SpiceEngine.Maps

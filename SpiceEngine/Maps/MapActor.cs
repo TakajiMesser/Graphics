@@ -1,31 +1,34 @@
-﻿using OpenTK;
+﻿using CitrusAnimationCore;
+using CitrusAnimationCore.Animations;
+using CitrusAnimationCore.Bones;
+using OpenTK;
 using OpenTK.Graphics;
-using SavoryPhysicsCore.Shapes;
+using SavoryPhysicsCore;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Shapes.ThreeDimensional;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Models;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Components;
-using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
-using SpiceEngineCore.Scripting;
 using SpiceEngineCore.Utilities;
-using SweetGraphicsCore.Rendering.Animations;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
-using UmamiScriptingCore.Behaviors.Properties;
-using UmamiScriptingCore.Behaviors.StimResponse;
+using UmamiScriptingCore;
+using UmamiScriptingCore.Props;
+using UmamiScriptingCore.Scripts;
+using UmamiScriptingCore.StimResponse;
 
 namespace SpiceEngineCore.Maps
 {
-    public class MapActor : MapEntity<IActor>, IMapActor, IModelPather, ITexturePather
+    public class MapActor : MapEntity<IActor>, IMapActor, IModelPather, ITexturePather, IBodyBuilder, IAnimatorBuilder, IBehaviorBuilder
     {
         public string Name { get; set; }
 
@@ -110,7 +113,7 @@ namespace SpiceEngineCore.Maps
             }
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent(int entityID)
+        IBody IComponentBuilder<IBody>.ToComponent(int entityID)
         {
             if (!string.IsNullOrEmpty(ModelFilePath))
             {
@@ -141,11 +144,11 @@ namespace SpiceEngineCore.Maps
 
                     if (Name == "Player"/* || Name == "BasicEnemy"*/)
                     {
-                        return new Sphere(entityID, vertices);
+                        return new RigidBody(entityID, new Sphere(vertices));
                     }
                     else
                     {
-                        return new Box(entityID, vertices);
+                        return new RigidBody(entityID, new Box(vertices));
                     }
                 }
 
@@ -156,7 +159,7 @@ namespace SpiceEngineCore.Maps
             }
             else
             {
-                return new Box(entityID, Vertices.Select(v => v.Position));
+                return new RigidBody(entityID, new Box(Vertices.Select(v => v.Position)));
             }
         }
 

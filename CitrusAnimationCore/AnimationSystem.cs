@@ -14,7 +14,7 @@ namespace CitrusAnimationCore
 
         private readonly object _lock = new object();
 
-        public AnimationSystem(IEntityProvider entityProvider) => SetEntityProvider(entityProvider);
+        public AnimationSystem(IEntityProvider entityProvider) : base(entityProvider) { }
 
         // TODO - Unfortunately, we have a race condition between the Renderer loaders and the Animator loaders here... when do we want to bind the event handler?
         public void AddAnimated(int entityID, IAnimate animated)
@@ -66,11 +66,6 @@ namespace CitrusAnimationCore
                     animator.Animate += (s, args) => animated.SetKeyFrame(args.KeyFrame);
                 }
             }
-        }
-
-        protected override void LoadComponent()
-        {
-
         }
 
         protected override void Update()

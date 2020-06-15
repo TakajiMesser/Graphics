@@ -1,9 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Utilities;
 using System;
+using TangyHIDCore;
+using TangyHIDCore.Inputs;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -38,26 +40,28 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is PerspectiveCamera camera)
+            if (context.GetEntity() is PerspectiveCamera camera)
             {
-                if (context.InputProvider.IsDown(new Input(MouseButton.Right)))
+                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+
+                if (inputProvider.IsDown(new Input(MouseButton.Right)))
                 {
-                    Strafe(camera, context.InputProvider.MouseDelta);
+                    Strafe(camera, inputProvider.MouseDelta);
                 }
                 
-                if (context.InputProvider.IsMouseInWindow && context.InputProvider.MouseWheelDelta != 0)
+                if (inputProvider.IsMouseInWindow && inputProvider.MouseWheelDelta != 0)
                 {
-                    Zoom(camera, context.InputProvider.MouseWheelDelta);
+                    Zoom(camera, inputProvider.MouseWheelDelta);
                 }
 
-                if (context.InputProvider.IsDown(new Input(MouseButton.Button1)))
+                if (inputProvider.IsDown(new Input(MouseButton.Button1)))
                 {
-                    Travel(camera, context.InputProvider.MouseDelta);
+                    Travel(camera, inputProvider.MouseDelta);
                 }
 
-                if (context.InputProvider.IsDown(new Input(MouseButton.Button2)))
+                if (inputProvider.IsDown(new Input(MouseButton.Button2)))
                 {
-                    Turn(camera, context.InputProvider.MouseDelta);
+                    Turn(camera, inputProvider.MouseDelta);
                 }
             }
 

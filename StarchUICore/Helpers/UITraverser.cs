@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Outputs;
-using StarchUICore.Attributes.Sizes;
+﻿using SpiceEngineCore.Rendering;
 using StarchUICore.Groups;
 using StarchUICore.Traversal;
 using System;
@@ -10,20 +9,19 @@ namespace StarchUICore.Helpers
 {
     public class UITraverser
     {
-        public UITraverser(Resolution resolution) => _resolution = resolution;
-
         // ANOTHER OPTION
         // The Group sends the available bounds to the child, and the child reports back its min-max location and measurement
         // The Group then takes these min-maxs of ALL of its children into account and assigns them each their final values
-        private Resolution _resolution;
-
         private Dictionary<LayoutDependency, DependencyNode> _nodeByDependency = new Dictionary<LayoutDependency, DependencyNode>();
         private List<LayoutDependency> _dependencyOrder = new List<LayoutDependency>();
 
         private HashSet<LayoutDependency> _resolvedDependencies = new HashSet<LayoutDependency>();
         private HashSet<LayoutDependency> _pendingDependencies = new HashSet<LayoutDependency>();
 
+        private Resolution _resolution;
         private bool _needsLayout = true;
+
+        public UITraverser(Resolution resolution) => _resolution = resolution;
 
         private void AddNode(DependencyNode node)
         {

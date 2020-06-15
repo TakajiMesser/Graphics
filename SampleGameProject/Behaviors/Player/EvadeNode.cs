@@ -1,9 +1,11 @@
 ﻿using OpenTK;
-using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using TangyHIDCore;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -22,13 +24,14 @@ namespace SampleGameProject.Behaviors.Player
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is IActor actor)
+            if (context.GetEntity() is IActor actor)
             {
+                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
                 var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
-                if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && context.InputProvider.IsPressed(context.InputProvider.InputMapping.Evade))
+                if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
                 {
-                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputProvider, context.InputProvider.InputMapping);
+                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {
@@ -48,9 +51,9 @@ namespace SampleGameProject.Behaviors.Player
                     }
                 }
 
-                if (nEvadeTicks == 0 && context.InputProvider.IsPressed(context.InputProvider.InputMapping.Evade))
+                if (nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
                 {
-                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, context.InputProvider, context.InputProvider.InputMapping);
+                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {
@@ -60,7 +63,9 @@ namespace SampleGameProject.Behaviors.Player
 
                         actor.Rotation = new Quaternion(0.0f, 0.0f, (float)Math.Sin(angle / 2), (float)Math.Cos(angle / 2));
                         context.EulerRotation = new Vector3((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), context.EulerRotation.Y, context.EulerRotation.Z);
-                        ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);
+
+                        var body = context.GetComponent<IBody>();
+                        body.ApplyVelocity(evadeTranslation);
 
                         context.SetVariable("evadeTranslation", evadeTranslation);
                         context.SetVariable("nEvadeTicks", nEvadeTicks);
@@ -76,9 +81,12 @@ namespace SampleGameProject.Behaviors.Player
                     actor.Rotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);
                     actor.Rotation *= new Quaternion(0.0f, 0.0f, (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X));
                     context.EulerRotation = new Vector3(context.EulerRotation.X, MathExtensions.TWO_PI / TickCount * nEvadeTicks, context.EulerRotation.Z);
+
                     nEvadeTicks++;
                     context.SetVariable("nEvadeTicks", nEvadeTicks);
-                    ((RigidBody3D)context.Body).ApplyVelocity(evadeTranslation);
+
+                    var body = context.GetComponent<IBody>();
+                    body.ApplyVelocity(evadeTranslation);
 
                     return BehaviorStatus.Success;
                 }

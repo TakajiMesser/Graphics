@@ -11,7 +11,7 @@ using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -378,10 +378,10 @@ namespace SauceEditor.ViewModels
             _gameLoader.RendererWaitCount = 4;
             _gameLoader.TrackEntityMapping = true;
             _gameLoader.SetEntityProvider(SimulationManager.EntityManager);
-            _gameLoader.SetPhysicsLoader(SimulationManager.PhysicsSystem);
-            _gameLoader.SetBehaviorLoader(SimulationManager.BehaviorSystem);
-            _gameLoader.SetAnimatorLoader(SimulationManager.AnimationSystem);
-            _gameLoader.SetUILoader(SimulationManager.UISystem);
+            _gameLoader.AddComponentLoader(SimulationManager.PhysicsSystem);
+            _gameLoader.AddComponentLoader(SimulationManager.BehaviorSystem);
+            _gameLoader.AddComponentLoader(SimulationManager.AnimationSystem);
+            _gameLoader.AddComponentLoader(SimulationManager.UISystem);
             //_gameLoader.AddRenderManager(_renderManager);
 
             _gameLoader.AddFromMap(MapComponent.Map);

@@ -4,9 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Outputs;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using System;
@@ -15,6 +13,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
+using TangyHIDCore;
 using Timer = System.Timers.Timer;
 
 namespace SpiceEngine.Game
@@ -135,7 +134,8 @@ namespace SpiceEngine.Game
 
         private async void LoadAsync()
         {
-            _simulationManager = new SimulationManager(Resolution, this);
+            _simulationManager = new SimulationManager(Resolution);
+            _simulationManager.SetMouseTracker(this);
             _simulationManager.InputManager.EscapePressed += (s, args) => Close();
 
             _renderManager = new RenderManager(Resolution, WindowSize)
@@ -152,10 +152,10 @@ namespace SpiceEngine.Game
                 RendererWaitCount = 1
             };
             _gameLoader.SetEntityProvider(_simulationManager.EntityManager);
-            _gameLoader.SetPhysicsLoader(_simulationManager.PhysicsSystem);
-            _gameLoader.SetBehaviorLoader(_simulationManager.BehaviorSystem);
-            _gameLoader.SetAnimatorLoader(_simulationManager.AnimationSystem);
-            _gameLoader.SetUILoader(_simulationManager.UISystem);
+            _gameLoader.AddComponentLoader(_simulationManager.PhysicsSystem);
+            _gameLoader.AddComponentLoader(_simulationManager.BehaviorSystem);
+            _gameLoader.AddComponentLoader(_simulationManager.AnimationSystem);
+            _gameLoader.AddComponentLoader(_simulationManager.UISystem);
             _gameLoader.AddRenderableLoader(_renderManager);
 
             _gameLoader.AddFromMap(_map);
@@ -177,8 +177,9 @@ namespace SpiceEngine.Game
             _renderManager.SetCamera(defaultCamera);
 
             // Set up UIManager to track mouse selections for UI control interactions
-            _simulationManager.BehaviorSystem.SetSelectionTracker(_renderManager);
-            _simulationManager.UISystem.TrackSelections(_renderManager, _simulationManager.InputManager);
+            _simulationManager.InputManager.MouseDownSelected += (s, args) => _simulationManager.UISystem.RegisterSelection(_renderManager.GetEntityIDFromSelection(args.MouseCoordinates));
+            _simulationManager.InputManager.MouseUpSelected += (s, args) => _simulationManager.UISystem.RegisterDeselection(_renderManager.GetEntityIDFromSelection(args.MouseCoordinates));
+            //_simulationManager.BehaviorSystem.SetSelectionTracker(_renderManager);
 
             //_stopWatch.Stop();
             //LogWatch("Total");

@@ -1,7 +1,8 @@
 ﻿using Newtonsoft.Json;
 using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
-using SpiceEngineCore.Utilities;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -29,7 +30,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var difference = Destination - context.Position;
+            var difference = Destination - context.GetPosition();
 
             var reachedDestination = difference.X < XTolerance && difference.X > -XTolerance
                 && difference.Y < YTolerance && difference.Y > -YTolerance
@@ -41,11 +42,13 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
             }
             else if (difference.Length < Speed)
             {
-                ((RigidBody3D)context.Body).ApplyVelocity(difference);
+                var body = context.GetComponent<IBody>() as RigidBody;
+                body.ApplyVelocity(difference);
             }
             else
             {
-                ((RigidBody3D)context.Body).ApplyVelocity(difference.Normalized() * Speed);
+                var body = context.GetComponent<IBody>() as RigidBody;
+                body.ApplyVelocity(difference.Normalized() * Speed);
             }
 
             return BehaviorStatus.Running;

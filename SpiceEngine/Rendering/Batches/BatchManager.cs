@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Components.Animations;
+﻿using CitrusAnimationCore.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
@@ -8,7 +8,6 @@ using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
-using SpiceEngineCore.UserInterfaces;
 using StarchUICore;
 using StarchUICore.Groups;
 using StarchUICore.Rendering.Batches;

@@ -1,5 +1,4 @@
 ﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Physics;
 using System.Collections.Generic;
 
 namespace SavoryPhysicsCore.Raycasting

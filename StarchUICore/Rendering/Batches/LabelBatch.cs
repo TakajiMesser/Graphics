@@ -138,7 +138,7 @@ namespace StarchUICore.Rendering.Batches
             var entity = entityProvider.GetEntity(EntityIDs.First());
             entity.WorldMatrix.Set(shaderProgram);
 
-            shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
+            //shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
             shaderProgram.SetUniform("color", _renderable.Color);
         }
     }

@@ -9,7 +9,7 @@ namespace SauceEditorCore.Models.BSP
     {
         public int ID { get; set; }
         public Vector3 Position { get; set; }
-        public Shape3D Shape { get; set; }
+        public IShape Shape { get; set; }
         public ModelMesh Mesh { get; set; }
 
         /*
@@ -29,7 +29,7 @@ namespace SauceEditorCore.Models.BSP
 
             Body3D
                 Contains Shape3D with Position & Restitution
-                Can be RigidBody3D, SoftBody3D, or StaticBody3D
+                Can be RigidBody, SoftBody3D, or StaticBody3D
 
         ModelBuilder
             Contains Positions, Normals, Tangents, UVs, BoneIDs, BoneWeights, and TriangleIndices

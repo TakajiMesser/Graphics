@@ -1,12 +1,13 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
-using SavoryPhysicsCore.Shapes;
+using SavoryPhysicsCore;
+using SavoryPhysicsCore.Bodies;
+using SavoryPhysicsCore.Shapes.ThreeDimensional;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Physics;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Utilities;
@@ -19,7 +20,7 @@ using System.Linq;
 
 namespace SpiceEngine.Maps
 {
-    public class MapBrush : MapEntity<IBrush>, IMapBrush, ITexturePather
+    public class MapBrush : MapEntity<IBrush>, IMapBrush, ITexturePather, IBodyBuilder
     {
         public List<Vertex3D> Vertices { get; set; } = new List<Vertex3D>();
         public Material Material { get; set; }
@@ -62,7 +63,7 @@ namespace SpiceEngine.Maps
             };
         }
 
-        IShape IComponentBuilder<IShape>.ToComponent(int entityID) => new Box(entityID, Vertices.Select(v => v.Position));
+        IBody IComponentBuilder<IBody>.ToComponent(int entityID) => new StaticBody(entityID, new Box(Vertices.Select(v => v.Position)));
 
         public void AddTestColors()
         {

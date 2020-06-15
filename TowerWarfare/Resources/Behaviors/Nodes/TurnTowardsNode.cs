@@ -1,8 +1,10 @@
 ﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
 
@@ -12,12 +14,17 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
     {
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            if (context.Entity is IActor actor && ((RigidBody3D)context.Body).LinearVelocity.IsSignificant())
+            if (context.GetEntity() is IActor actor)
             {
-                float turnAngle = (float)Math.Atan2(((RigidBody3D)context.Body).LinearVelocity.Y, ((RigidBody3D)context.Body).LinearVelocity.X);
+                var body = context.GetComponent<IBody>() as RigidBody;
 
-                actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
-                context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
+                if (body.LinearVelocity.IsSignificant())
+                {
+                    float turnAngle = (float)Math.Atan2(body.LinearVelocity.Y, body.LinearVelocity.X);
+
+                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                    context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
+                }
             }
 
             return BehaviorStatus.Success;

@@ -1,30 +1,16 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Physics;
-using System;
-using SavoryPhysicsCore.Collisions;
-using SavoryPhysicsCore.Shapes;
-
-namespace SavoryPhysicsCore.Bodies
+﻿namespace SavoryPhysicsCore.Bodies
 {
-    public abstract class Body2D : IBody
+    /*public abstract class Body2D : Component, IBody
     {
-        public int EntityID { get; }
-        public BodyStates State { get; set; }
         public Shape2D Shape { get; }
+        public BodyStates State { get; set; }
 
-        public Vector3 Position { get; set; }
         public float Restitution { get; set; }
 
         public bool IsMovable => false;
         public bool IsPhysical { get; set; } = false;
 
-        public Body2D(IEntity entity, Shape2D shape)
-        {
-            EntityID = entity.ID;
-            Shape = shape;
-            Position = entity.Position;
-        }
+        public Body2D(int entityID, Shape2D shape) : base(entityID) => Shape = shape;
 
         public ICollision GetCollision(IBody body)
         {
@@ -107,7 +93,7 @@ namespace SavoryPhysicsCore.Bodies
             return collision;
         }
 
-        private Collision2D GetRectangleRectangleCollision(Body2D body)
+        /*private Collision2D GetRectangleRectangleCollision(Body2D body)
         {
             var collision = new Collision2D(this, body);
 
@@ -117,7 +103,7 @@ namespace SavoryPhysicsCore.Bodies
             /*var doesCollide = positionA.X - rectangleA.Width / 2.0f < positionB.X + rectangleB.Width / 2.0f
                 && positionA.X + rectangleA.Width / 2.0f > positionB.X - rectangleB.Width / 2.0f
                 && positionA.Y - rectangleA.Height / 2.0f < positionB.Y + rectangleB.Height / 2.0f
-                && positionA.Y + rectangleA.Height / 2.0f > positionB.Y - rectangleB.Height / 2.0f;*/
+                && positionA.Y + rectangleA.Height / 2.0f > positionB.Y - rectangleB.Height / 2.0f;*
 
             return collision;
         }
@@ -184,6 +170,6 @@ namespace SavoryPhysicsCore.Bodies
             var polygon = (Polygon)body.Shape;
 
             return collision;
-        }
-    }
+        }*/
+    //}
 }

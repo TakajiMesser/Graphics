@@ -1,7 +1,6 @@
 ﻿using SauceEditor.Helpers;
-using SauceEditor.Models;
 using SpiceEngine.Rendering.Processing;
-using SpiceEngineCore.Outputs;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Windows.Controls;
 using System.Windows.Input;

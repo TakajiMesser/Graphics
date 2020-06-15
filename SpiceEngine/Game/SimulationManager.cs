@@ -1,19 +1,21 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using CitrusAnimationCore;
+using OpenTK.Graphics.OpenGL;
+using SavoryPhysicsCore;
+using SmokyAudioCore.Sounds;
 using SpiceEngine.Maps;
-using SpiceEngine.Physics;
-using SpiceEngine.Rendering.Animations;
 using SpiceEngine.Scripting;
-using SpiceEngine.UserInterfaces;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
-using SpiceEngineCore.Inputs;
 using SpiceEngineCore.Maps;
-using SpiceEngineCore.Outputs;
-using SpiceEngineCore.Sounds;
+using SpiceEngineCore.Rendering;
+using StarchUICore;
 using System;
 using System.Drawing;
 using System.Drawing.Imaging;
+using TangyHIDCore;
+using TangyHIDCore.Inputs;
+using UmamiScriptingCore;
 
 namespace SpiceEngine.Game
 {
@@ -27,12 +29,6 @@ namespace SpiceEngine.Game
             InputManager = new InputManager();
         }
 
-        public SimulationManager(Resolution resolution, IMouseTracker mouseTracker)
-        {
-            _resolution = resolution;
-            InputManager = new InputManager(mouseTracker);
-        }
-
         public ICamera Camera { get; set; }
 
         public EntityManager EntityManager { get; } = new EntityManager();
@@ -44,6 +40,8 @@ namespace SpiceEngine.Game
         public SoundManager SoundManager { get; private set; }
 
         public bool IsLoaded { get; private set; }
+
+        public void SetMouseTracker(IMouseTracker mouseTracker) => InputManager.MouseTracker = mouseTracker;
 
         public void LoadFromMap(IMap map)
         {
@@ -59,15 +57,16 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            //Camera = map.GetCameraAt(0).ToEntity() as ICamera;
-
-            BehaviorSystem = new BehaviorSystem(EntityManager, PhysicsSystem);
-            //BehaviorManager.SetCamera(Camera);
-            BehaviorSystem.SetInputProvider(InputManager);
-
             AnimationSystem = new AnimationSystem(EntityManager);
             UISystem = new UISystem(EntityManager, _resolution);
-            BehaviorSystem.SetUIProvider(UISystem);
+
+            var systemProvider = new GameSystemProvider()
+            {
+                EntityProvider = EntityManager,
+                InputProvider = InputManager,
+                UIProvider = UISystem
+            };
+            BehaviorSystem = new BehaviorSystem(systemProvider, new ScriptManager());
 
             EntityManager.ClearEntities();
 

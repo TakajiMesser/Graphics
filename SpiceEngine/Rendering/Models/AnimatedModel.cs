@@ -1,9 +1,9 @@
-﻿using OpenTK;
+﻿using CitrusAnimationCore.Animations;
+using CitrusAnimationCore.Bones;
+using CitrusAnimationCore.Rendering;
+using OpenTK;
 using SpiceEngine.Utilities;
-using SpiceEngineCore.Components.Animations;
 using SpiceEngineCore.Utilities;
-using SweetGraphicsCore.Rendering.Animations;
-using SweetGraphicsCore.Rendering.Models;
 using System.Collections.Generic;
 
 namespace SpiceEngine.Rendering.Models
