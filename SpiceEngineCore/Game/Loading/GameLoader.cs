@@ -26,6 +26,8 @@ namespace SpiceEngineCore.Game
         private readonly object _builderLock = new object();
         private readonly object _loadLock = new object();
 
+        public GameLoader(int rendererWaitCount = 1) => _multiRenderLoader.LoaderWaitCount = rendererWaitCount;
+
         public bool IsInEditorMode { get; set; } = false;
 
         public EntityMapping EntityMapping { get; private set; } = null;
@@ -34,12 +36,6 @@ namespace SpiceEngineCore.Game
         {
             get => EntityMapping != null;
             set => EntityMapping = value ? new EntityMapping() : null;
-        }
-
-        public int RendererWaitCount
-        {
-            get => _multiRenderLoader.LoaderWaitCount;
-            set => _multiRenderLoader.LoaderWaitCount = value;
         }
 
         public bool IsLoading { get; private set; }

@@ -13,7 +13,6 @@ namespace SpiceEngineCore.Game.Loading
 
         EntityMapping EntityMapping { get; }
         bool TrackEntityMapping { get; set; }
-        int RendererWaitCount { get; set; }
         bool IsLoading { get; }
 
         event EventHandler<EventArgs> TimedOut;

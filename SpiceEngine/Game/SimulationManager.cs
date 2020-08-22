@@ -6,6 +6,7 @@ using SpiceEngine.Maps;
 using SpiceEngine.Scripting;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
@@ -22,6 +23,7 @@ namespace SpiceEngine.Game
     public class SimulationManager
     {
         private Resolution _resolution;
+        private SystemProvider _systemProvider;
 
         public SimulationManager(Resolution resolution)
         {
@@ -30,6 +32,7 @@ namespace SpiceEngine.Game
         }
 
         public ICamera Camera { get; set; }
+        public SystemProvider SystemProvider => _systemProvider;
 
         public EntityManager EntityManager { get; } = new EntityManager();
         public InputManager InputManager { get; private set; }
@@ -60,13 +63,15 @@ namespace SpiceEngine.Game
             AnimationSystem = new AnimationSystem(EntityManager);
             UISystem = new UISystem(EntityManager, _resolution);
 
-            var systemProvider = new GameSystemProvider()
+            _systemProvider = new GameSystemProvider()
             {
                 EntityProvider = EntityManager,
                 InputProvider = InputManager,
-                UIProvider = UISystem
+                UIProvider = UISystem,
+                PhysicsProvider = PhysicsSystem
             };
-            BehaviorSystem = new BehaviorSystem(systemProvider, new ScriptManager());
+
+            BehaviorSystem = new BehaviorSystem(_systemProvider, new ScriptManager());
 
             EntityManager.ClearEntities();
 

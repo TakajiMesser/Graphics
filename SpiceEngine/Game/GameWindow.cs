@@ -23,7 +23,8 @@ namespace SpiceEngine.Game
         private SimulationManager _simulationManager;
         private RenderManager _renderManager;
 
-        private GameLoader _gameLoader;
+        private GameLoader _gameLoader = new GameLoader();
+        private GameSystemProvider _systemProvider = new GameSystemProvider();
 
         //private Dispatcher _mainDispatcher;
         private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
@@ -146,11 +147,9 @@ namespace SpiceEngine.Game
             _fpsTimer.Start();
 
             _simulationManager.LoadFromMap(_map);
+            _simulationManager.SystemProvider.SetRenderProvider(_renderManager);
+            
 
-            _gameLoader = new GameLoader()
-            {
-                RendererWaitCount = 1
-            };
             _gameLoader.SetEntityProvider(_simulationManager.EntityManager);
             _gameLoader.AddComponentLoader(_simulationManager.PhysicsSystem);
             _gameLoader.AddComponentLoader(_simulationManager.BehaviorSystem);

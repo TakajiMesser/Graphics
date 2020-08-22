@@ -1,4 +1,4 @@
-﻿using SavoryPhysicsCore.Collisions;
+﻿using SavoryPhysicsCore;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering;
@@ -37,8 +37,14 @@ namespace SpiceEngine.Game
             }
         }
 
-        public ICollisionProvider CollisionProvider { get; set; }
-        public ISelectionTracker SelectionTracker { get; set; }
-        //public void SetSelectionTracker(ISelectionTracker selectionTracker) => _selectionTracker = selectionTracker;
+        public IPhysicsProvider PhysicsProvider
+        {
+            get => GetGameSystem<IPhysicsProvider>();
+            set
+            {
+                AddGameSystem(value);
+                AddComponentProvider<IBody>(value);
+            }
+        }
     }
 }

@@ -23,7 +23,7 @@ namespace SauceEditor.ViewModels
 {
     public class GamePanelViewModel : DockableViewModel, ILayerSetter, IMapper
     {
-        private GameLoader _gameLoader = new GameLoader();
+        private GameLoader _gameLoader = new GameLoader(4);
 
         private readonly object _panelLock = new object();
         private bool _isGLContextLoaded = false;
@@ -375,7 +375,6 @@ namespace SauceEditor.ViewModels
             SimulationManager.LoadFromMap(MapComponent.Map);
 
             // TODO - Make these less janky...
-            _gameLoader.RendererWaitCount = 4;
             _gameLoader.TrackEntityMapping = true;
             _gameLoader.SetEntityProvider(SimulationManager.EntityManager);
             _gameLoader.AddComponentLoader(SimulationManager.PhysicsSystem);

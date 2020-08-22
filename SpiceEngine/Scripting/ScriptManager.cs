@@ -35,12 +35,16 @@ namespace SpiceEngine.Scripting
             //var assemblyNames = executingAssembly.GetReferencedAssemblies();
             //var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
             _compilerParameters.ReferencedAssemblies.Add("netstandard.dll");
-            _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
-            _compilerParameters.ReferencedAssemblies.Add("SavoryPhysicsCore.dll");
-            _compilerParameters.ReferencedAssemblies.Add("StarchUICore.dll");
-            _compilerParameters.ReferencedAssemblies.Add("UmamiScriptingCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("CitrusAnimationCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SavoryPhysicsCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SmokyAudioCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("StarchUICore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SweetGraphicsCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("TangyHIDCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("UmamiScriptingCore.dll");
         }
 
         public void AddScript(IScript script)
