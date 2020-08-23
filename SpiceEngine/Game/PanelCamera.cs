@@ -2,7 +2,7 @@
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
-using SweetGraphicsCore.Rendering.Processing;
+using SweetGraphicsCore.Renderers;
 using System;
 
 namespace SpiceEngine.Game

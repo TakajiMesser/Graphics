@@ -12,8 +12,8 @@ namespace SpiceEngineCore.Rendering.Shaders
 
         public Shader(ShaderType type, string code)
         {
-            ShaderType = type;
             _handle = GL.CreateShader(type);
+            ShaderType = type;
 
             GL.ShaderSource(_handle, code);
             GL.CompileShader(_handle);

@@ -6,7 +6,6 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
-using SpiceEngine.Rendering.Processing;
 using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
@@ -20,12 +19,15 @@ using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using StarchUICore;
+using SweetGraphicsCore.Renderers;
+using SweetGraphicsCore.Renderers.PostProcessing;
+using SweetGraphicsCore.Renderers.Processing;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Billboards;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
-using SweetGraphicsCore.Rendering.Processing;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Selection;
 using SweetGraphicsCore.Vertices;
 using System;
 using System.Collections.Generic;
@@ -223,7 +225,7 @@ namespace SpiceEngine.Rendering
             {
                 // TODO - For now, just use the first available camera
                 //_camera = _entityProvider.Cameras.First();
-                try {
+                //try {
                 //_forwardRenderer.Load(Resolution);
                 _deferredRenderer.Load(Resolution);
                 _wireframeRenderer.Load(Resolution);
@@ -243,10 +245,10 @@ namespace SpiceEngine.Rendering
                 //_logManager.SetFont(font);
 
                 GL.ClearColor(Color4.Black);
-                } catch (Exception ex)
+                /*} catch (Exception ex)
                 {
                     Console.WriteLine(ex);
-                }
+                }*/
             });
         }
 
@@ -355,18 +357,18 @@ namespace SpiceEngine.Rendering
             if (IsLoaded)
             {
                 //_forwardRenderer.ResizeTextures(Resolution);
-                _deferredRenderer.ResizeTextures(Resolution);
-                _wireframeRenderer.ResizeTextures(Resolution);
-                _shadowRenderer.ResizeTextures(Resolution);
-                _skyboxRenderer.ResizeTextures(Resolution);
-                _lightRenderer.ResizeTextures(Resolution);
-                _selectionRenderer.ResizeTextures(Resolution);
-                _billboardRenderer.ResizeTextures(Resolution);
-                _fxaaRenderer.ResizeTextures(Resolution);
-                _blurRenderer.ResizeTextures(Resolution);
-                _invertRenderer.ResizeTextures(Resolution);
-                _textRenderer.ResizeTextures(Resolution);
-                _uiRenderer.ResizeTextures(Resolution);
+                _deferredRenderer.Resize(Resolution);
+                _wireframeRenderer.Resize(Resolution);
+                _shadowRenderer.Resize(Resolution);
+                _skyboxRenderer.Resize(Resolution);
+                _lightRenderer.Resize(Resolution);
+                _selectionRenderer.Resize(Resolution);
+                _billboardRenderer.Resize(Resolution);
+                _fxaaRenderer.Resize(Resolution);
+                _blurRenderer.Resize(Resolution);
+                _invertRenderer.Resize(Resolution);
+                _textRenderer.Resize(Resolution);
+                _uiRenderer.Resize(Resolution);
             }
         }
 
@@ -374,7 +376,7 @@ namespace SpiceEngine.Rendering
         {
             if (IsLoaded)
             {
-                _renderToScreen.ResizeTextures(WindowSize);
+                _renderToScreen.Resize(WindowSize);
             }
         }
 

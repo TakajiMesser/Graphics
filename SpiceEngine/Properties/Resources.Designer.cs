@@ -308,9 +308,7 @@ namespace SpiceEngine.Properties {
         ///float cone(vec2 X, vec2 Y, vec2 V)
         ///{
         ///	return clamp(1.0 - length(X-Y)/length(V), 0.0, 1.0);
-        ///}
-        ///
-        ///float cylinder(vec2 [rest of string was truncated]&quot;;.
+        ///} [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string blur_frag {
             get {
@@ -544,8 +542,7 @@ namespace SpiceEngine.Properties {
         ///void gaussian() 
         ///{
         ///	uint id = gl_LocalInvocationID.x;
-        ///	uint fragmentation = gl_NumWorkGroups.y;
-        ///	u [rest of string was truncated]&quot;;.
+        ///	uint fragmentation = gl [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string dilate_frag {
             get {
@@ -1706,14 +1703,25 @@ namespace SpiceEngine.Properties {
         ///   Looks up a localized string similar to #version 440
         ///
         ///uniform sampler2D textureSampler;
+        ///uniform vec4 color;
         ///
         ///in vec2 fUV;
-        ///out vec4 color;
+        ///out vec4 finalColor;
         ///
         ///void main()
         ///{
-        ///	color = texture(textureSampler, fUV);
-        ///    //color = vec4(1.0, 0.0, 0.0, 1.0);
+        ///	//color = texture(textureSampler, fUV);
+        ///    
+        ///	vec4 textureColor = texture(textureSampler, fUV);
+        ///
+        ///	if (textureColor.w == 1.0 &amp;&amp; (textureColor.x &gt; 0.0 || textureColor.y &gt; 0.0 || textureColor.z &gt; 0.0)) {
+        ///		finalColor = color;
+        ///	}
+        ///	else {
+        ///		finalColor = vec4(0.0, 0.0, 0.0, 0.0);
+        ///	}
+        ///
+        ///	//color = vec4(1.0, 0.0, 0.0, 1.0);
         ///}.
         /// </summary>
         internal static string text_frag {
@@ -1734,10 +1742,15 @@ namespace SpiceEngine.Properties {
         ///
         ///void main()
         ///{
+        ///    float x = (vPosition.x - halfResolution.x) / halfResolution.x;
+        ///	float y = (halfResolution.y - vPosition.y) / halfResolution.y;
+        ///    //float y = (vPosition.y - halfResolution.y) / halfResolution.y;
+        ///
+        ///	gl_Position = vec4(x, y, 0.0, 1.0);
+        ///
         ///    //vec2 clipSpacePosition = vPosition - vec2();
-        ///    gl_Position = vec4((vPosition - halfResolution) / halfResolution, 0.0, 1.0);
-        ///    fUV = vUV;
-        ///}.
+        ///    //gl_Position = vec4((vPosition - halfResolution) / halfResolution, 0.0, 1.0);
+        ///    fUV = vUV; [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string text_vert {
             get {
@@ -1801,7 +1814,29 @@ namespace SpiceEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to #version 440
+        ///
+        ///#define PI 3.14159274
+        ///#define HALF_PI = 1.57079637;
+        ///
+        /////uniform sampler2D textureSampler;
+        ///
+        ///in vec4 fColor;
+        ///in vec2 fCornerRadius;
+        ///in vec2 fBorderThickness;
+        ///in vec4 fBorderColor;
+        ///in vec2 fUV;
+        ///
+        ///out vec4 color;
+        ///
+        ///void main()
+        ///{
+        ///	//float maxY = fCornerRadius.y * sin(acos(fUV.x / fCornerRadius.x));
+        ///
+        ///	if (fUV.x &lt; fCornerRadius.x &amp;&amp; fUV.y &lt; fCornerRadius.y) {
+        ///		// Bottom Left -&gt; X and Y are BOTH flipped
+        ///		float x = fCornerRadius.x - fUV.x;
+        ///		float minY = fCornerRadius.y - fCornerRa [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string uiquad_frag {
             get {
@@ -1810,7 +1845,33 @@ namespace SpiceEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to #version 400
+        ///
+        ///uniform vec2 halfResolution;
+        ///
+        ///layout(points) in;
+        ///layout(triangle_strip, max_vertices = 4) out;
+        ///
+        ///in vec3 gRight[];
+        ///in vec3 gUp[];
+        ///in vec2 gCornerRadius[];
+        ///in vec2 gBorderThickness[];
+        ///in vec4 gColor[];
+        ///in vec4 gBorderColor[];
+        ///
+        ///out vec4 fColor;
+        ///out vec2 fCornerRadius;
+        ///out vec2 fBorderThickness;
+        ///out vec4 fBorderColor;
+        ///out vec2 fUV;
+        ///
+        ///void main()
+        ///{
+        ///    vec3 position = gl_in[0].gl_Position.xyz;
+        ///
+        ///    fColor = gColor[0];
+        ///    fCornerRadius = gCornerRadius[0];
+        ///    fBorderThickne [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string uiquad_geom {
             get {
@@ -1819,47 +1880,131 @@ namespace SpiceEngine.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
+        ///   Looks up a localized string similar to #version 440
+        ///
+        ///in vec4 fId;
+        ///in vec2 fCornerRadius;
+        ///in vec2 fBorderThickness;
+        ///in vec2 fUV;
+        ///
+        ///out vec4 color;
+        ///
+        ///void main()
+        ///{
+        ///	if (fUV.x &lt; fCornerRadius.x &amp;&amp; fUV.y &lt; fCornerRadius.y) {
+        ///		// Bottom Left -&gt; X and Y are BOTH flipped
+        ///		float x = fCornerRadius.x - fUV.x;
+        ///		float minY = fCornerRadius.y - fCornerRadius.y * sin(acos(x / fCornerRadius.x));
+        ///
+        ///		if (fUV.y &lt; minY) {
+        ///			discard;
+        ///		}
+        ///	}
+        ///	else if (fUV.x &lt; fCornerRadius.x &amp;&amp; fUV.y &gt; 1.0 - fCornerRadius.y) {
+        ///		// Top Left -&gt; X is flipped
+        ///		f [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string uiquad_selection_frag {
+            get {
+                return ResourceManager.GetString("uiquad_selection_frag", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 400
+        ///
+        ///uniform vec2 halfResolution;
+        ///
+        ///layout(points) in;
+        ///layout(triangle_strip, max_vertices = 4) out;
+        ///
+        ///in vec3 gRight[];
+        ///in vec3 gUp[];
+        ///in vec2 gCornerRadius[];
+        ///in vec2 gBorderThickness[];
+        ///in vec4 gId[];
+        ///
+        ///out vec4 fId;
+        ///out vec2 fCornerRadius;
+        ///out vec2 fBorderThickness;
+        ///out vec2 fUV;
+        ///
+        ///void main()
+        ///{
+        ///    vec3 position = gl_in[0].gl_Position.xyz;
+        ///
+        ///    fId = gId[0];
+        ///    fCornerRadius = gCornerRadius[0];
+        ///    fBorderThickness = gBorderThickness[0];
+        ///
+        ///    vec3 right = gRight[0];
+        ///    [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string uiquad_selection_geom {
+            get {
+                return ResourceManager.GetString("uiquad_selection_geom", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 440
+        ///
+        ///uniform vec2 resolution;
+        ///uniform vec2 halfResolution;
+        ///
+        ///layout(location = 0) in vec3 vPosition;
+        ///layout(location = 1) in float vBorderThickness;
+        ///layout(location = 2) in vec2 vSize;
+        ///layout(location = 3) in vec2 vCornerRadius;
+        ///layout(location = 6) in vec4 vId;
+        ///
+        ///out vec3 gRight;
+        ///out vec3 gUp;
+        ///out vec2 gCornerRadius;
+        ///out vec2 gBorderThickness;
+        ///out vec4 gId;
+        ///
+        ///void main()
+        ///{
+        ///	float x = (vPosition.x - halfResolution.x) / halfResolution.x;
+        ///	float y = (halfResolution.y - vPosition.y) / [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string uiquad_selection_vert {
+            get {
+                return ResourceManager.GetString("uiquad_selection_vert", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #version 440
+        ///
+        ///uniform vec2 resolution;
+        ///uniform vec2 halfResolution;
+        ///
+        ///layout(location = 0) in vec3 vPosition;
+        ///layout(location = 1) in float vBorderThickness;
+        ///layout(location = 2) in vec2 vSize;
+        ///layout(location = 3) in vec2 vCornerRadius;
+        ///layout(location = 4) in vec4 vColor;
+        ///layout(location = 5) in vec4 vBorderColor;
+        ///
+        ///out vec3 gRight;
+        ///out vec3 gUp;
+        ///out vec2 gCornerRadius;
+        ///out vec2 gBorderThickness;
+        ///out vec4 gColor;
+        ///out vec4 gBorderColor;
+        ///
+        ///void main()
+        ///{
+        ///	float x = (vPosition.x - halfResolu [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string uiquad_vert {
             get {
                 return ResourceManager.GetString("uiquad_vert", resourceCulture);
             }
         }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static string uiquad_selection_frag
-        {
-            get
-            {
-                return ResourceManager.GetString("uiquad_selection_frag", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static string uiquad_selection_geom
-        {
-            get
-            {
-                return ResourceManager.GetString("uiquad_selection_geom", resourceCulture);
-            }
-        }
-
-        /// <summary>
-        ///   Looks up a localized resource of type System.Byte[].
-        /// </summary>
-        internal static string uiquad_selection_vert
-        {
-            get
-            {
-                return ResourceManager.GetString("uiquad_selection_vert", resourceCulture);
-            }
-        }
-
+        
         /// <summary>
         ///   Looks up a localized string similar to #version 330 core
         ///

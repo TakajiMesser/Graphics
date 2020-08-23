@@ -1,5 +1,4 @@
 ﻿using StarchUICore;
-using SweetGraphicsCore.Rendering.Processing.Post;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 

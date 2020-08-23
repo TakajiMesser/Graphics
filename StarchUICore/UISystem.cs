@@ -282,7 +282,10 @@ namespace StarchUICore
                 
             }*/
 
-            _traverser.Traverse(root);
+            if (root != null)
+            {
+                _traverser.Traverse(root);
+            }
 
             // We don't want the UIBatches to handle reordering themselves. We'd rather reorder at most ONCE per layout cycle
             if (_changedIDs.Count > 0)

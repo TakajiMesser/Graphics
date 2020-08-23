@@ -1,4 +1,4 @@
-﻿using SpiceEngine.Entities.Selection;
+﻿using SweetGraphicsCore.Selection;
 using System;
 
 namespace SpiceEngine.Game

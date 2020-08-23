@@ -6,8 +6,8 @@ using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Rendering.Batches;
-using SweetGraphicsCore.Rendering.Processing;
 using SweetGraphicsCore.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.PostProcessing
@@ -65,7 +65,7 @@ namespace SpiceEngine.Rendering.PostProcessing
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
-        public override void ResizeTextures(Resolution resolution)
+        public override void Resize(Resolution resolution)
         {
             FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();
