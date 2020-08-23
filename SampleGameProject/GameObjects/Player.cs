@@ -14,7 +14,7 @@ namespace SampleGameProject.GameObjects
         public Player()
         {
             Name = NAME;
-            Position = new Vector3(0.0f, 0.0f, 5.0f);
+            Position = new Vector3(0.0f, 0.0f, 2.0f);
             Scale = Vector3.One;
             Rotation = Vector3.Zero;
             Orientation = Vector3.Zero;

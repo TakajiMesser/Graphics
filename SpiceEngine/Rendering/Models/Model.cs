@@ -1,6 +1,7 @@
 ﻿using OpenTK;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
@@ -126,6 +127,8 @@ namespace SpiceEngine.Rendering.Models
                 mesh.Draw();
             }
         }
+
+        public virtual void SetUniforms(ShaderProgram shaderProgram, int meshIndex) { }
 
         public IModel Duplicate()
         {

@@ -41,11 +41,7 @@ namespace SweetGraphicsCore.Rendering.Batches
                 texturedMesh.Material.SetUniforms(shaderProgram);
             }
 
-            // TODO - FIX ME
-            /*if (_renderable is IAnimatedModel animatedModel)
-            {
-                shaderProgram.SetUniform("jointTransforms", animatedModel.GetJointTransforms(_drawIndex));
-            }*/
+            _renderable.SetUniforms(shaderProgram, _drawIndex);
         }
 
         public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)

@@ -90,23 +90,26 @@ namespace SavoryPhysicsCore
             partitionTree.Insert(bounds);
 
             var entity = _entityProvider.GetEntity(component.EntityID);
-            if (entity is Actor actor)
+            if (component is RigidBody rigidBody)
             {
-                /*component.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
-                component.Updated += (s, args) => actor.Position = args.Body.Position;
+                rigidBody.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
+                //rigidBody.Updated += (s, args) => entity.Position = args.Body.;
 
                 if (component.State == BodyStates.Awake)
                 {
-                    _awakeBodyByEntityID.Add(entityID, body);
-                }*/
+                    _awakeBodyIDs.Add(component.EntityID);
+                }
             }
 
-            /*var body = GetBody(component.EntityID, component);
+            /*var body = GetComponentOrDefault(component.EntityID, component);
             if (body != null)
             {
                 body.IsPhysical = _isPhysicalByID[component.EntityID];
                 _bodyByEntityID.Add(component.EntityID, body);
             }*/
+
+            component.IsPhysical = _isPhysicalByID[component.EntityID];
+            //_componentByID.Add(component.EntityID, component);
         }
 
         /*public void AddComponent(int entityID, IShapeBuilder builder)

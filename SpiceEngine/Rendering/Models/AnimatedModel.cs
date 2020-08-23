@@ -3,6 +3,7 @@ using CitrusAnimationCore.Bones;
 using CitrusAnimationCore.Rendering;
 using OpenTK;
 using SpiceEngine.Utilities;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 
@@ -13,6 +14,30 @@ namespace SpiceEngine.Rendering.Models
         public const int MAX_JOINTS = 100;
 
         private Dictionary<int, Matrix4[]> _jointTransformsByMeshIndex = new Dictionary<int, Matrix4[]>();
+
+        public AnimatedModel() : base() { }
+        public AnimatedModel(string filePath) : base(filePath)
+        {
+            using (var importer = new Assimp.AssimpContext())
+            {
+                var scene = importer.ImportFile(filePath, Assimp.PostProcessSteps.JoinIdenticalVertices
+                    | Assimp.PostProcessSteps.CalculateTangentSpace
+                    | Assimp.PostProcessSteps.LimitBoneWeights
+                    | Assimp.PostProcessSteps.Triangulate
+                    | Assimp.PostProcessSteps.GenerateSmoothNormals
+                    | Assimp.PostProcessSteps.FlipUVs);
+
+                // Every bone has an offset matrix, which converts it from model-space to bone-space (animation transforms are done in bone-space)
+                RootJoint = scene.RootNode.ToJoint(scene.Meshes);
+
+                for (var i = 0; i < scene.Meshes.Count; i++)
+                {
+                    RootJoint.CalculateInverseBindTransforms(i, Matrix4.Identity);
+                }
+                
+                GlobalInverseTransform = scene.RootNode.Children[1].Transform.ToMatrix4().Inverted();
+            }
+        }
 
         public Joint RootJoint { get; private set; }
         public Matrix4 GlobalInverseTransform { get; private set; }
@@ -51,28 +76,6 @@ namespace SpiceEngine.Rendering.Models
             }
         }
 
-        public AnimatedModel() : base() { }
-        public AnimatedModel(string filePath) : base(filePath)
-        {
-            using (var importer = new Assimp.AssimpContext())
-            {
-                var scene = importer.ImportFile(filePath, Assimp.PostProcessSteps.JoinIdenticalVertices
-                    | Assimp.PostProcessSteps.CalculateTangentSpace
-                    | Assimp.PostProcessSteps.LimitBoneWeights
-                    | Assimp.PostProcessSteps.Triangulate
-                    | Assimp.PostProcessSteps.GenerateSmoothNormals
-                    | Assimp.PostProcessSteps.FlipUVs);
-
-                // Every bone has an offset matrix, which converts it from model-space to bone-space (animation transforms are done in bone-space)
-                RootJoint = scene.RootNode.ToJoint(scene.Meshes);
-
-                for (var i = 0; i < scene.Meshes.Count; i++)
-                {
-                    RootJoint.CalculateInverseBindTransforms(i, Matrix4.Identity);
-                }
-                
-                GlobalInverseTransform = scene.RootNode.Children[1].Transform.ToMatrix4().Inverted();
-            }
-        }
+        public override void SetUniforms(ShaderProgram shaderProgram, int meshIndex) => shaderProgram.SetUniform("jointTransforms", GetJointTransforms(meshIndex));
     }
 }
