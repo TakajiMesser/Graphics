@@ -1,14 +1,11 @@
 ﻿using CitrusAnimationCore;
+using CitrusAnimationCore.Animations;
 using OpenTK.Graphics.OpenGL;
 using SavoryPhysicsCore;
 using SmokyAudioCore.Sounds;
-using SpiceEngine.Maps;
 using SpiceEngine.Scripting;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Helpers;
-using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;
 using StarchUICore;
 using System;
@@ -17,24 +14,16 @@ using System.Drawing.Imaging;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
+using UmamiScriptingCore.StimResponse;
 
 namespace SpiceEngine.Game
 {
-    public class SimulationManager
+    public class SimulationManager : GameManager
     {
         private Resolution _resolution;
-        private SystemProvider _systemProvider;
 
-        public SimulationManager(Resolution resolution)
-        {
-            _resolution = resolution;
-            InputManager = new InputManager();
-        }
+        public SimulationManager(Resolution resolution) => _resolution = resolution;
 
-        public ICamera Camera { get; set; }
-        public SystemProvider SystemProvider => _systemProvider;
-
-        public EntityManager EntityManager { get; } = new EntityManager();
         public InputManager InputManager { get; private set; }
         public PhysicsSystem PhysicsSystem { get; private set; }
         public BehaviorSystem BehaviorSystem { get; private set; }
@@ -46,135 +35,33 @@ namespace SpiceEngine.Game
 
         public void SetMouseTracker(IMouseTracker mouseTracker) => InputManager.MouseTracker = mouseTracker;
 
-        public void LoadFromMap(IMap map)
+        public override void Load()
         {
             IsLoaded = false;
 
-            switch (map)
-            {
-                case Map2D map2D:
-                    PhysicsSystem = new PhysicsSystem(EntityManager, map2D.Boundaries);
-                    break;
-                case Map3D map3D:
-                    PhysicsSystem = new PhysicsSystem(EntityManager, map3D.Boundaries);
-                    break;
-            }
+            base.Load();
+            //EntityManager.ClearEntities();
 
-            AnimationSystem = new AnimationSystem(EntityManager);
-            UISystem = new UISystem(EntityManager, _resolution);
+            PhysicsSystem = new PhysicsSystem();
+            AddGameSystem<IPhysicsProvider>(PhysicsSystem);
+            AddComponentProvider<IBody>(PhysicsSystem);
 
-            _systemProvider = new GameSystemProvider()
-            {
-                EntityProvider = EntityManager,
-                InputProvider = InputManager,
-                UIProvider = UISystem,
-                PhysicsProvider = PhysicsSystem
-            };
+            BehaviorSystem = new BehaviorSystem(new ScriptManager());
+            AddGameSystem(BehaviorSystem);
+            AddComponentProvider<IBehavior>(BehaviorSystem);
 
-            BehaviorSystem = new BehaviorSystem(_systemProvider, new ScriptManager());
+            AnimationSystem = new AnimationSystem();
+            AddGameSystem<IAnimationProvider>(AnimationSystem);
+            AddComponentProvider<IAnimator>(AnimationSystem);
 
-            EntityManager.ClearEntities();
+            UISystem = new UISystem(_resolution);
+            AddGameSystem<IUIProvider>(UISystem);
+            AddComponentProvider<IElement>(UISystem);
+
+            InputManager = new InputManager();
+            AddGameSystem<IInputProvider>(InputManager);
 
             IsLoaded = true;
-        }
-
-        /*public int AddLight(MapLight mapLight)
-        {
-            var light = mapLight.ToEntity();
-            return EntityManager.AddEntity(light);
-        }
-
-        public int AddBrush(MapBrush mapBrush)
-        {
-            var brush = mapBrush.ToEntity();
-            int entityID = EntityManager.AddEntity(brush);
-
-            if (mapBrush.IsPhysical)
-            {
-                var shape = mapBrush.ToShape();
-                PhysicsManager.AddBrush((Entities.Brushes.Brush)brush, shape, mapBrush.IsPhysical);
-            }
-
-            return entityID;
-        }
-
-        public int AddActor(MapActor mapActor)
-        {
-            var actor = mapActor.ToEntity(/*_gameManager.TextureManager*);
-            int entityID = EntityManager.AddEntity(actor);
-
-            //var meshes = mapActor.ToMeshes();
-
-            var shape = mapActor.ToShape();
-            PhysicsManager.AddActor((Actor)actor, shape, mapActor.IsPhysical);
-
-            /*actor.HasCollision = mapActor.HasCollision;
-            actor.Bounds = actor.Name == "Player"
-                ? (Bounds)new BoundingCircle(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)))
-                : new BoundingBox(actor, meshes.SelectMany(m => m.Vertices.Select(v => v.Position)));*
-            
-            if (mapActor.Behavior != null)
-            {
-                var behavior = mapActor.Behavior.ToBehavior(ScriptManager);
-                BehaviorManager.AddBehavior(entityID, behavior);
-            }
-
-            BehaviorManager.AddProperties(entityID, mapActor.Properties);
-            BehaviorManager.AddStimuli(entityID, mapActor.Stimuli);
-
-            return entityID;
-        }
-
-        public int AddVolume(MapVolume mapVolume)
-        {
-            var volume = mapVolume.ToEntity();
-            int entityID = EntityManager.AddEntity(volume);
-
-            var shape = mapVolume.ToShape();
-            PhysicsManager.AddVolume((Volume)volume, shape);
-
-            return entityID;
-        }
-
-        private IEnumerable<int> LoadLights(IEnumerable<MapLight> mapLights)
-        {
-            foreach (var mapLight in mapLights)
-            {
-                yield return AddLight(mapLight);
-            }
-        }
-
-        private IEnumerable<int> LoadBrushes(IEnumerable<MapBrush> mapBrushes)
-        {
-            foreach (var mapBrush in mapBrushes)
-            {
-                yield return AddBrush(mapBrush);
-            }
-        }
-
-        private IEnumerable<int> LoadVolumes(IEnumerable<MapVolume> mapVolumes)
-        {
-            foreach (var mapVolume in mapVolumes)
-            {
-                yield return AddVolume(mapVolume);
-            }
-        }
-
-        private IEnumerable<int> LoadActors(IList<MapActor> mapActors)
-        {
-            foreach (var mapActor in mapActors)
-            {
-                yield return AddActor(mapActor);
-            }
-        }*/
-
-        public void Update()
-        {
-            PhysicsSystem.Tick();
-            BehaviorSystem.Tick();
-            AnimationSystem.Tick();
-            UISystem.Tick();
-            InputManager.Tick();
         }
 
         public void SaveToFile(string path) => throw new NotImplementedException();

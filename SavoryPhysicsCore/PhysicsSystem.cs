@@ -3,11 +3,11 @@ using SavoryPhysicsCore.Bodies;
 using SavoryPhysicsCore.Collisions;
 using SavoryPhysicsCore.Constraints;
 using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Volumes;
-using SpiceEngineCore.Game;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,20 +35,12 @@ namespace SavoryPhysicsCore
         private Dictionary<int, Vector3> _initialPositionByID = new Dictionary<int, Vector3>();
         private Dictionary<int, bool> _isPhysicalByID = new Dictionary<int, bool>();
 
-        public PhysicsSystem(IEntityProvider entityProvider, Quad worldBoundaries) : base(entityProvider)
+        public void SetBoundaries(Oct boundaries)
         {
-            _actorTree = new QuadTree(0, worldBoundaries);
-            _brushTree = new QuadTree(0, worldBoundaries);
-            _volumeTree = new QuadTree(0, worldBoundaries);
-            _lightTree = new QuadTree(0, worldBoundaries);
-        }
-
-        public PhysicsSystem(IEntityProvider entityProvider, Oct worldBoundaries) : base(entityProvider)
-        {
-            _actorTree = new OctTree(0, worldBoundaries);
-            _brushTree = new OctTree(0, worldBoundaries);
-            _volumeTree = new OctTree(0, worldBoundaries);
-            _lightTree = new OctTree(0, worldBoundaries);
+            _actorTree = new OctTree(0, boundaries);
+            _brushTree = new OctTree(0, boundaries);
+            _volumeTree = new OctTree(0, boundaries);
+            _lightTree = new OctTree(0, boundaries);
         }
 
         public IEnumerable<CollisionResult> GetCollisions() => _collisionManager.NarrowCollisions;
@@ -89,7 +81,7 @@ namespace SavoryPhysicsCore
             var partitionTree = GetPartitionTree(component.EntityID);
             partitionTree.Insert(bounds);
 
-            var entity = _entityProvider.GetEntity(component.EntityID);
+            var entity = _systemProvider.GetEntity(component.EntityID);
             if (component is RigidBody rigidBody)
             {
                 rigidBody.Influenced += (s, args) => _bodiesToUpdate.Add(args.Body);
@@ -131,7 +123,7 @@ namespace SavoryPhysicsCore
 
         private IPartitionTree GetPartitionTree(int entityID)
         {
-            var entity = _entityProvider.GetEntity(entityID);
+            var entity = _systemProvider.GetEntity(entityID);
 
             switch (entity)
             {
@@ -231,7 +223,7 @@ namespace SavoryPhysicsCore
 
             // TODO - ONLY move the actor colliders that reported movement in the last frame (including physics)
             // Update the actor colliders every frame, since they could have moved
-            foreach (var actor in _entityProvider.Actors)
+            foreach (var actor in _systemProvider.EntityProvider.Actors)
             {
                 if (_componentByID.ContainsKey(actor.ID))
                 {
@@ -245,7 +237,7 @@ namespace SavoryPhysicsCore
             }
 
             // Now, for each actor, check for broad collisions against other actors, brushes, and volumes
-            foreach (var actor in _entityProvider.Actors)
+            foreach (var actor in _systemProvider.EntityProvider.Actors)
             {
                 var bounds = boundsByEntityID[actor.ID];
 
@@ -268,8 +260,8 @@ namespace SavoryPhysicsCore
                 var bodyA = _componentByID[collisionPair.FirstEntityID];
                 var bodyB = _componentByID[collisionPair.SecondEntityID];
 
-                var entityA = _entityProvider.GetEntity(collisionPair.FirstEntityID);
-                var entityB = _entityProvider.GetEntity(collisionPair.SecondEntityID);
+                var entityA = _systemProvider.GetEntity(collisionPair.FirstEntityID);
+                var entityB = _systemProvider.GetEntity(collisionPair.SecondEntityID);
 
                 var collisionInfo = new CollisionInfo(entityA, entityB, bodyA, bodyB);
                 var collisionResult = _collisionManager.PerformCollisionCheck(collisionInfo);
@@ -301,8 +293,8 @@ namespace SavoryPhysicsCore
 
         private void ResolvePhysicsVolume(IBody bodyA, IBody bodyB)
         {
-            var entityA = _entityProvider.GetEntity(bodyA.EntityID);
-            var entityB = _entityProvider.GetEntity(bodyB.EntityID);
+            var entityA = _systemProvider.GetEntity(bodyA.EntityID);
+            var entityB = _systemProvider.GetEntity(bodyB.EntityID);
 
             if (entityA is PhysicsVolume)
             {
@@ -326,8 +318,8 @@ namespace SavoryPhysicsCore
 
         private void ResolveTriggerVolume(IBody bodyA, IBody bodyB)
         {
-            var entityA = _entityProvider.GetEntity(bodyA.EntityID);
-            var entityB = _entityProvider.GetEntity(bodyB.EntityID);
+            var entityA = _systemProvider.GetEntity(bodyA.EntityID);
+            var entityB = _systemProvider.GetEntity(bodyB.EntityID);
 
             if (entityA is TriggerVolume)
             {
@@ -347,7 +339,7 @@ namespace SavoryPhysicsCore
 
             foreach (var body in _bodiesToUpdate)
             {
-                var entity = _entityProvider.GetEntity(body.EntityID);
+                var entity = _systemProvider.GetEntity(body.EntityID);
                 entity.Position = body.UpdatePosition(entity.Position, tickRate);
 
                 if (entity is IRotate rotator)

@@ -6,6 +6,8 @@ namespace SpiceEngineCore.Entities.Cameras
     public interface ICamera : IEntity
     {
         string Name { get; }
+        bool IsActive { get; set; }
+
         IEntity AttachedEntity { get; }
         Vector3 AttachedTranslation { get; }
 

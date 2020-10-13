@@ -24,7 +24,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+            var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
 
             if (context.GetEntity() is PerspectiveCamera perspectiveCamera)
             {

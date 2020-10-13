@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Xceed.Wpf.AvalonDock;
 using Xceed.Wpf.AvalonDock.Layout;
 
-namespace SauceEditor.Views
+namespace SauceEditor.Views.Docks
 {
     public class DockTracker : IDockTracker
     {

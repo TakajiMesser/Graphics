@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Game;
+﻿using SpiceEngineCore.Components;
 using System.Collections.Generic;
 using System.Linq;
 using UmamiScriptingCore.Props;
@@ -10,35 +9,12 @@ namespace UmamiScriptingCore
 {
     public class BehaviorSystem : ComponentSystem<IBehavior, IBehaviorBuilder>, IStimulusProvider
     {
-        private ISystemProvider _systemProvider;
         private IScriptCompiler _scriptCompiler;
-        private ICamera _camera;
 
         private Dictionary<int, PropertyCollection> _propertiesByEntityID = new Dictionary<int, PropertyCollection>();
         private Dictionary<int, StimulusCollection> _stimuliByEntityID = new Dictionary<int, StimulusCollection>();
 
-        public BehaviorSystem(ISystemProvider systemProvider, IScriptCompiler scriptCompiler) : base(systemProvider.GetEntityProvider())
-        {
-            _systemProvider = systemProvider;
-            _scriptCompiler = scriptCompiler;
-        }
-
-        public void SetCamera(ICamera camera)
-        {
-            _camera = camera;
-
-            if (IsLoaded)
-            {
-                foreach (var actor in _entityProvider.Actors)
-                {
-                    if (_componentByID.ContainsKey(actor.ID))
-                    {
-                        var behavior = _componentByID[actor.ID];
-                        behavior.Context.Camera = _camera;
-                    }
-                }
-            }
-        }
+        public BehaviorSystem(IScriptCompiler scriptCompiler) => _scriptCompiler = scriptCompiler;
 
         public void AddProperties(int entityID, IEnumerable<IProperty> properties)
         {
@@ -77,16 +53,13 @@ namespace UmamiScriptingCore
             foreach (var behavior in _components)
             {
                 behavior.SetSystemProvider(_systemProvider);
-                behavior.Context.Camera = _camera;
-                behavior.Context.SetStimulusProvider(this);
+                behavior.SetCommander(_commander);
+                behavior.SetStimulusProvider(this);
 
-                /*foreach (var property in Properties)
+                foreach (var property in _propertiesByEntityID[behavior.EntityID].ConstantProperties)
                 {
-                    if (property.Value.IsConstant)
-                    {
-                        Behaviors.Context.AddProperty(property.Key, property.Value.Value);
-                    }
-                }*/
+                    behavior.Context.AddProperty(property.Name, property);
+                }
             }
         }
 

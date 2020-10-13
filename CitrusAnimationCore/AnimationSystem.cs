@@ -1,6 +1,5 @@
 ﻿using CitrusAnimationCore.Animations;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game;
+using SpiceEngineCore.Components;
 using System.Collections.Generic;
 
 namespace CitrusAnimationCore
@@ -13,8 +12,6 @@ namespace CitrusAnimationCore
         private Dictionary<int, int> _defaultAnimationIndexByID = new Dictionary<int, int>();
 
         private readonly object _lock = new object();
-
-        public AnimationSystem(IEntityProvider entityProvider) : base(entityProvider) { }
 
         // TODO - Unfortunately, we have a race condition between the Renderer loaders and the Animator loaders here... when do we want to bind the event handler?
         public void AddAnimated(int entityID, IAnimate animated)

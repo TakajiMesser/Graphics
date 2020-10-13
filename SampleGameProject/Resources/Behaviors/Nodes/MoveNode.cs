@@ -2,6 +2,7 @@
 using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
+using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
@@ -24,14 +25,14 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
         public override BehaviorStatus Tick(BehaviorContext context)
         {
-            var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+            var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
             var speed = inputProvider.IsDown(inputProvider.InputMapping.Run)
                 ? RunSpeed
                 : inputProvider.IsDown(inputProvider.InputMapping.Crawl)
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = GeometryHelper.GetHeldTranslation(context.Camera, speed, inputProvider);
+            var translation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), speed, inputProvider);
 
             if (inputProvider.IsDown(inputProvider.InputMapping.In))
             {

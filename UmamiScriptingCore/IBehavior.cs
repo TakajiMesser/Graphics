@@ -1,7 +1,8 @@
-﻿using SpiceEngineCore.Components;
-using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngineCore.Commands;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Game;
 using UmamiScriptingCore.Behaviors;
+using UmamiScriptingCore.StimResponse;
 
 namespace UmamiScriptingCore
 {
@@ -20,7 +21,9 @@ namespace UmamiScriptingCore
         BehaviorStatus Tick();
 
         void SetSystemProvider(ISystemProvider systemProvider);
-        void SetCamera(ICamera camera);
+        void SetCommander(ICommander commander);
+        void SetStimulusProvider(IStimulusProvider stimulusProvider);
+
         void SetProperty(string name, object value);
     }
 }

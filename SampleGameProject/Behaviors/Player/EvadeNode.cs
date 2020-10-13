@@ -4,6 +4,7 @@ using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
@@ -26,12 +27,12 @@ namespace SampleGameProject.Behaviors.Player
         {
             if (context.GetEntity() is IActor actor)
             {
-                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+                var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
                 var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
                 if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
                 {
-                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, inputProvider);
+                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {
@@ -53,7 +54,7 @@ namespace SampleGameProject.Behaviors.Player
 
                 if (nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
                 {
-                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.Camera, EvadeSpeed, inputProvider);
+                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {

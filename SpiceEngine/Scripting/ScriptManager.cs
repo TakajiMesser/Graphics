@@ -32,8 +32,20 @@ namespace SpiceEngine.Scripting
             var assemblyPath = new Uri(executingAssembly.EscapedCodeBase).LocalPath;
             _compilerParameters.ReferencedAssemblies.Add(assemblyPath);
 
+            var domainDLLs = AppDomain.CurrentDomain.GetAssemblies()
+                .SelectMany(a => a.GetModules())
+                .Select(m => m.Name)
+                .Where(n => n.EndsWith(".dll"));
+
+            foreach (var dll in domainDLLs)
+            {
+                _compilerParameters.ReferencedAssemblies.Add(dll);
+            }
+
             //var assemblyNames = executingAssembly.GetReferencedAssemblies();
             //var openTKAssembly = assemblyNames.First(n => n.Name == "OpenTK");
+            //_compilerParameters.ReferencedAssemblies.Add("");
+            /*_compilerParameters.ReferencedAssemblies.Add("System.Core.dll");
             _compilerParameters.ReferencedAssemblies.Add("netstandard.dll");
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
@@ -44,7 +56,7 @@ namespace SpiceEngine.Scripting
             _compilerParameters.ReferencedAssemblies.Add("StarchUICore.dll");
             _compilerParameters.ReferencedAssemblies.Add("SweetGraphicsCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("TangyHIDCore.dll");
-            _compilerParameters.ReferencedAssemblies.Add("UmamiScriptingCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("UmamiScriptingCore.dll");*/
         }
 
         public void AddScript(IScript script)

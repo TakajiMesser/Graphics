@@ -30,9 +30,9 @@ namespace SampleGameProject.Behaviors.Player
             if (context.GetEntity() is IActor actor)
             {
                 // TODO - Filter gameobjects and brushes based on "coverable" property
-                var filteredColliders = context.Provider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID).Where(b => context.GetEntity(b.EntityID) is IBrush);
+                var filteredColliders = context.SystemProvider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID).Where(b => context.GetEntity(b.EntityID) is IBrush);
 
-                if (Raycast.TryCircleCast(new RayCircle(context.GetPosition(), CoverDistance), filteredColliders, context.Provider.GetEntityProvider(), out RaycastHit hit))
+                if (Raycast.TryCircleCast(new RayCircle(context.GetPosition(), CoverDistance), filteredColliders, context.SystemProvider.EntityProvider, out RaycastHit hit))
                 {
                     var vectorBetween = hit.Intersection - context.GetPosition();
                     context.SetVariable("coverDirection", vectorBetween.Xy);

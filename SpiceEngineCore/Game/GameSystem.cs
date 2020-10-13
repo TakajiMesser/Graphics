@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpiceEngineCore.Commands;
+using System;
 
 namespace SpiceEngineCore.Game
 {
@@ -6,10 +7,16 @@ namespace SpiceEngineCore.Game
     {
         private int _currentTick = 0;
 
+        protected ISystemProvider _systemProvider;
+        protected ICommander _commander;
+
         public int TickRate { get; set; } = 1;
 
         public event EventHandler<EventArgs> Ticked;
         public event EventHandler<EventArgs> Updated;
+
+        public void SetSystemProvider(ISystemProvider systemProvider) => _systemProvider = systemProvider;
+        public void SetCommander(ICommander commander) => _commander = commander;
 
         public void Tick()
         {

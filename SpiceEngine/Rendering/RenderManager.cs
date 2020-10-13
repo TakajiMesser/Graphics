@@ -6,10 +6,8 @@ using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
-using SpiceEngine.Rendering.Textures;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Entities.Volumes;
@@ -22,6 +20,7 @@ using StarchUICore;
 using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Renderers.PostProcessing;
 using SweetGraphicsCore.Renderers.Processing;
+using SweetGraphicsCore.Rendering;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Billboards;
 using SweetGraphicsCore.Rendering.Meshes;
@@ -62,7 +61,6 @@ namespace SpiceEngine.Rendering
         private IAnimationProvider _animationProvider;
         private IUIProvider _uiProvider;
         private ISelectionProvider _selectionProvider;
-        private ICamera _camera;
 
         private BatchManager _batchManager;
 
@@ -100,7 +98,14 @@ namespace SpiceEngine.Rendering
             Resolution = resolution;
             WindowSize = windowSize;
 
-            Resolution.ResolutionChanged += (s, args) => _camera?.UpdateAspectRatio(args.AspectRatio);
+            // TODO - We likely want to split the resolution by nCameras for splitscreen support
+            Resolution.ResolutionChanged += (s, args) =>
+            {
+                foreach (var camera in _entityProvider.Cameras.Where(c => c.IsActive))
+                {
+                    camera.UpdateAspectRatio(args.AspectRatio);
+                }
+            };
 
             FontManager = new FontManager(TextureManager);
             _logManager = new LogManager(_textRenderer);
@@ -114,6 +119,19 @@ namespace SpiceEngine.Rendering
         public override void SetEntityProvider(IEntityProvider entityProvider)
         {
             base.SetEntityProvider(entityProvider);
+
+            /*_entityProvider.EntitiesAdded += (s, args) =>
+            {
+                foreach (var builder in args.Builders)
+                {
+                    builder.Item2.
+                }
+            };*/
+            /*foreach (var camera in _entityProvider.Cameras.Where(c => c.IsActive))
+            {
+                camera.UpdateAspectRatio(Resolution.AspectRatio);
+            }*/
+
             _batchManager = new BatchManager(_entityProvider, TextureManager);
 
             if (_animationProvider != null)
@@ -141,12 +159,6 @@ namespace SpiceEngine.Rendering
         }
 
         public void SetSelectionProvider(ISelectionProvider selectionProvider) => _selectionProvider = selectionProvider;
-
-        public void SetCamera(ICamera camera)
-        {
-            _camera = camera;
-            camera.UpdateAspectRatio(Resolution.AspectRatio);
-        }
 
         public void LoadFromMap(IMap map)
         {
@@ -435,8 +447,10 @@ namespace SpiceEngine.Rendering
                 if (entity is ILight light)
                 {
                     var lightMesh = _lightRenderer.GetMeshForLight(light);
-                    _wireframeRenderer.SelectionPass(_camera, light, lightMesh);
-                    _billboardRenderer.RenderSelection(_camera, light);
+                    var camera = _entityProvider.Cameras.First(c => c.IsActive);
+
+                    _wireframeRenderer.SelectionPass(camera, light, lightMesh);
+                    _billboardRenderer.RenderSelection(camera, light);
                 }
                 else if (entity is Volume volume)
                 {
@@ -474,16 +488,18 @@ namespace SpiceEngine.Rendering
 
         private void RenderTransform(IEntity entity, TransformModes transformMode)
         {
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
+
             switch (transformMode)
             {
                 case TransformModes.Translate:
                     if (entity is IDirectional directional)
                     {
-                        _selectionRenderer.RenderTranslationArrows(_camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
+                        _selectionRenderer.RenderTranslationArrows(camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
                     }
                     else
                     {
-                        _selectionRenderer.RenderTranslationArrows(_camera, entity.Position);
+                        _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
                     }
                     break;
                 case TransformModes.Rotate:
@@ -493,7 +509,7 @@ namespace SpiceEngine.Rendering
                     }
                     else
                     {*/
-                        _selectionRenderer.RenderRotationRings(_camera, entity.Position);
+                        _selectionRenderer.RenderRotationRings(camera, entity.Position);
                     //}
                     break;
                 case TransformModes.Scale:
@@ -503,7 +519,7 @@ namespace SpiceEngine.Rendering
                     }
                     else
                     {*/
-                        _selectionRenderer.RenderScaleLines(_camera, entity.Position);
+                        _selectionRenderer.RenderScaleLines(camera, entity.Position);
                     //}
                     break;
             }
@@ -582,15 +598,16 @@ namespace SpiceEngine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
 
-            _selectionRenderer.SelectionPass(_camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
-            _billboardRenderer.RenderLightSelectIDs(_camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
+            _selectionRenderer.SelectionPass(camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
+            _billboardRenderer.RenderLightSelectIDs(camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
 
             if (IsInEditorMode)
             {
                 var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
                 if (vertexEntities.Any())
                 {
-                    _billboardRenderer.RenderVertexSelectIDs(_camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
+                    _billboardRenderer.RenderVertexSelectIDs(camera, vertexEntities.Select(v => _entityProvider.GetEntity(v)));
                 }
             }
             else
@@ -603,13 +620,14 @@ namespace SpiceEngine.Rendering
         {
             _wireframeRenderer.BindForWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
 
             if (RenderGrid)
             {
-                _wireframeRenderer.RenderGridLines(_camera);
+                _wireframeRenderer.RenderGridLines(camera);
             }
 
-            _wireframeRenderer.WireframePass(_camera, _batchManager);
+            _wireframeRenderer.WireframePass(camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.DepthMask(true);
@@ -629,21 +647,22 @@ namespace SpiceEngine.Rendering
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
 
-            _deferredRenderer.GeometryPass(_camera, _batchManager);
+            _deferredRenderer.GeometryPass(camera, _batchManager);
 
             _deferredRenderer.BindForDiffuseWriting();
 
             if (RenderGrid)
             {
                 GL.Disable(EnableCap.CullFace);
-                _wireframeRenderer.RenderGridLines(_camera);
+                _wireframeRenderer.RenderGridLines(camera);
                 GL.Enable(EnableCap.CullFace);
             }
 
-            _skyboxRenderer.Render(_camera);
-            _billboardRenderer.GeometryPass(_camera, _batchManager);
-            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
+            _skyboxRenderer.Render(camera);
+            _billboardRenderer.GeometryPass(camera, _batchManager);
+            _billboardRenderer.RenderLights(camera, _entityProvider.Lights);
 
             _deferredRenderer.BindForTransparentWriting();
 
@@ -652,7 +671,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
+            _deferredRenderer.TransparentGeometryPass(camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -671,7 +690,7 @@ namespace SpiceEngine.Rendering
                 GL.Disable(EnableCap.Blend);
                 GL.DepthFunc(DepthFunction.Always);
 
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, _batchManager);
+                _wireframeRenderer.SelectionPass(camera, _selectionProvider.SelectedIDs, _batchManager);
             }
         }
 
@@ -679,20 +698,21 @@ namespace SpiceEngine.Rendering
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
 
-            _deferredRenderer.GeometryPass(_camera, _batchManager);
+            _deferredRenderer.GeometryPass(camera, _batchManager);
 
             RenderLights();
 
             _deferredRenderer.BindForLitWriting();
 
-            _skyboxRenderer.Render(_camera);
-            _billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
+            _skyboxRenderer.Render(camera);
+            _billboardRenderer.RenderLights(camera, _entityProvider.Lights);
 
             if (RenderGrid)
             {
                 GL.Disable(EnableCap.CullFace);
-                _wireframeRenderer.RenderGridLines(_camera);
+                _wireframeRenderer.RenderGridLines(camera);
                 GL.Enable(EnableCap.CullFace);
             }
 
@@ -703,7 +723,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
+            _deferredRenderer.TransparentGeometryPass(camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -722,7 +742,7 @@ namespace SpiceEngine.Rendering
                 GL.Disable(EnableCap.Blend);
                 GL.DepthFunc(DepthFunction.Always);
 
-                _wireframeRenderer.SelectionPass(_camera, _selectionProvider.SelectedIDs, _batchManager);
+                _wireframeRenderer.SelectionPass(camera, _selectionProvider.SelectedIDs, _batchManager);
             }
         }
 
@@ -730,14 +750,15 @@ namespace SpiceEngine.Rendering
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
 
-            _deferredRenderer.GeometryPass(_camera, _batchManager);
+            _deferredRenderer.GeometryPass(camera, _batchManager);
 
             RenderLights();
 
             _deferredRenderer.BindForLitWriting();
             GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
-            _skyboxRenderer.Render(_camera);
+            _skyboxRenderer.Render(camera);
 
             _deferredRenderer.BindForLitTransparentWriting();
 
@@ -746,7 +767,7 @@ namespace SpiceEngine.Rendering
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
-            _deferredRenderer.TransparentGeometryPass(_camera, _batchManager);
+            _deferredRenderer.TransparentGeometryPass(camera, _batchManager);
 
             GL.Enable(EnableCap.CullFace);
             GL.Disable(EnableCap.Blend);
@@ -787,13 +808,15 @@ namespace SpiceEngine.Rendering
             GL.BlendEquation(BlendEquationMode.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
+            var camera = _entityProvider.Cameras.First(c => c.IsActive);
+
             foreach (var light in _entityProvider.Lights)
             {
                 var lightMesh = _lightRenderer.GetMeshForLight(light);
-                _lightRenderer.StencilPass(light, _camera, lightMesh);
+                _lightRenderer.StencilPass(light, camera, lightMesh);
 
                 GL.Disable(EnableCap.Blend);
-                _shadowRenderer.Render(_camera, light, _batchManager);
+                _shadowRenderer.Render(camera, light, _batchManager);
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();
@@ -801,7 +824,7 @@ namespace SpiceEngine.Rendering
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);
                 var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;
-                _lightRenderer.LightPass(_deferredRenderer, light, _camera, lightMesh, shadowMap, lightProgram);
+                _lightRenderer.LightPass(_deferredRenderer, light, camera, lightMesh, shadowMap, lightProgram);
             }
 
             GL.Enable(EnableCap.CullFace);

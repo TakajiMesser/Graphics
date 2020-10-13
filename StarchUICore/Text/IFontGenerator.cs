@@ -1,4 +1,6 @@
-﻿namespace StarchUICore.Text
+﻿using SpiceEngineCore.Rendering.Textures;
+
+namespace StarchUICore.Text
 {
     public interface IFontGenerator
     {

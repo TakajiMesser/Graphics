@@ -1,5 +1,4 @@
 ﻿using SavoryPhysicsCore;
-using SavoryPhysicsCore.Bodies;
 using SavoryPhysicsCore.Raycasting;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
@@ -47,9 +46,9 @@ namespace SampleGameProject.Behaviors.Enemy
                 {
                     // Perform a raycast to see if any other colliders obstruct our view of the player
                     // TODO - Filter colliders by their ability to obstruct vision
-                    var colliders = context.Provider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID);
+                    var colliders = context.SystemProvider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID);
 
-                    if (Raycast.TryRaycast(new Ray3(context.GetPosition(), playerDirection, ViewDistance), colliders, context.Provider.GetEntityProvider(), out RaycastHit hit))
+                    if (Raycast.TryRaycast(new Ray3(context.GetPosition(), playerDirection, ViewDistance), colliders, context.SystemProvider.EntityProvider, out RaycastHit hit))
                     {
                         if (context.GetEntity(hit.EntityID) is IActor actor && actor.Name == "Player")
                         {

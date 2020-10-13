@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Components;
-using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngineCore.Commands;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Game;
 using System.Collections.Generic;
 using System.Data;
@@ -16,12 +16,13 @@ namespace UmamiScriptingCore.Behaviors
         private List<IStimulus> _stimuli = new List<IStimulus>();
         private PropertyCollection _properties = new PropertyCollection();
 
-        public Behavior(int entityID) : base(entityID) { }
+        public Behavior(int entityID) : base(entityID) => Context = new BehaviorContext(this);
 
         public BehaviorContext Context { get; private set; }
 
-        public void SetSystemProvider(ISystemProvider systemProvider) => Context = new BehaviorContext(this, systemProvider);
-        public void SetCamera(ICamera camera) => Context.Camera = camera;
+        public void SetSystemProvider(ISystemProvider systemProvider) => Context.SystemProvider = systemProvider;
+        public void SetCommander(ICommander commander) => Context.Commander = commander;
+        public void SetStimulusProvider(IStimulusProvider stimulusProvider) => Context.SetStimulusProvider(stimulusProvider);
         public void SetProperty(string name, object value) => Context.SetProperty(name, value);
 
         /*public void SetCollisionProvider(ICollisionProvider collisionProvider) => Context.SetCollisionProvider(collisionProvider);

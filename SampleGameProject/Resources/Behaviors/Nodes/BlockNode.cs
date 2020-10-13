@@ -5,6 +5,7 @@ using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Utilities;
 using System;
+using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
@@ -28,7 +29,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
         {
             if (context.GetEntity() is IActor actor)
             {
-                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+                var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
                 var nEvadeTicks = context.GetVariableOrDefault<int>("nEvadeTicks");
 
                 if (nEvadeTicks > 0 && nEvadeTicks <= TickCount)
@@ -75,7 +76,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     context.SetVariable("nBlockTicks", nBlockTicks);
 
-                    var evadeTranslation = GeometryHelper.GetPressedTranslation(context.Camera, EvadeSpeed, inputProvider);
+                    var evadeTranslation = GeometryHelper.GetPressedTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {

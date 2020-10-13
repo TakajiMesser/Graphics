@@ -4,6 +4,7 @@ using SpiceEngine.Properties;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Renderers;

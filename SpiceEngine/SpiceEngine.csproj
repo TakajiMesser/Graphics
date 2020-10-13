@@ -237,7 +237,7 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
-    <Compile Include="Game\GameSystemProvider.cs" />
+    <Compile Include="Game\Window.cs" />
     <Compile Include="Game\SimulationManager.cs" />
     <Compile Include="Game\Controls\GameWindow.cs" />
     <Compile Include="Game\PanelCamera.cs" />
@@ -250,7 +250,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Game\GameWindow.cs" />
-    <Compile Include="Helpers\TextureHelper.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Maps\Map2D.cs" />
@@ -269,8 +268,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Batches\BatchManager.cs" />
-    <Compile Include="Rendering\Font.cs" />
-    <Compile Include="Rendering\FontManager.cs" />
     <Compile Include="Rendering\Models\EditorModel.cs" />
     <Compile Include="Rendering\Models\AnimatedModel.cs" />
     <Compile Include="Rendering\Models\Model.cs" />
@@ -279,8 +276,6 @@
     <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\UIRenderer.cs" />
     <Compile Include="Rendering\RenderManager.cs" />
-    <Compile Include="Rendering\Textures\Image.cs" />
-    <Compile Include="Rendering\Textures\TextureManager.cs" />
     <Compile Include="Scripting\Nodes\CameraNode.cs" />
     <Compile Include="Scripting\Nodes\InputConditionNode.cs" />
     <Compile Include="Scripting\Nodes\BaseNode.cs" />
@@ -299,41 +294,10 @@
     <None Include="Resources\Meshes\GenericMaterial.mtl" />
     <None Include="Resources\Meshes\Sphere.obj" />
     <None Include="Resources\Meshes\Square.obj" />
-    <None Include="Resources\Shaders\Billboard\billboard-selection.frag" />
-    <None Include="Resources\Shaders\Billboard\billboard-selection.geom" />
-    <None Include="Resources\Shaders\Billboard\billboard-selection.vert" />
-    <None Include="Resources\Shaders\Billboard\billboard.frag" />
-    <None Include="Resources\Shaders\Billboard\billboard.geom" />
-    <None Include="Resources\Shaders\Billboard\billboard.vert" />
-    <None Include="Resources\Shaders\Deferred\deferred-skinning.vert" />
-    <None Include="Resources\Shaders\Deferred\deferred.frag" />
-    <None Include="Resources\Shaders\Deferred\deferred.geom" />
-    <None Include="Resources\Shaders\Deferred\deferred.tesc" />
-    <None Include="Resources\Shaders\Deferred\deferred.tese" />
-    <None Include="Resources\Shaders\Deferred\deferred.vert" />
-    <None Include="Resources\Shaders\Deferred\uv-fragment-shader.glsl" />
-    <None Include="Resources\Shaders\Deferred\uv-vertex-shader.glsl" />
-    <None Include="Resources\Shaders\Forward\forward.frag" />
-    <None Include="Resources\Shaders\Forward\forward.vert" />
-    <None Include="Resources\Shaders\FXAA\fxaa-skinning.vert" />
-    <None Include="Resources\Shaders\FXAA\fxaa.frag" />
-    <None Include="Resources\Shaders\FXAA\fxaa.vert" />
     <None Include="Resources\Shaders\Lighting\light.vert" />
     <None Include="Resources\Shaders\Lighting\point-light.frag" />
     <None Include="Resources\Shaders\Lighting\spot-light.frag" />
     <None Include="Resources\Shaders\Lighting\stencil.vert" />
-    <None Include="Resources\Shaders\Miscellaneous\invert.frag" />
-    <None Include="Resources\Shaders\MotionBlur\blur.frag" />
-    <None Include="Resources\Shaders\MotionBlur\dilate.frag" />
-    <None Include="Resources\Shaders\MotionBlur\myBlur.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-1D.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-2D-array.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-2D.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-2D.vert" />
-    <None Include="Resources\Shaders\RenderToScreen\render-3D.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-cube-array.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-cube.frag" />
-    <None Include="Resources\Shaders\RenderToScreen\render-cube.vert" />
     <None Include="Resources\Shaders\Selection\arrow.frag" />
     <None Include="Resources\Shaders\Selection\arrow.geom" />
     <None Include="Resources\Shaders\Selection\arrow.vert" />
@@ -353,12 +317,6 @@
     <None Include="Resources\Shaders\Shadows\spot-shadow-skinning.vert" />
     <None Include="Resources\Shaders\Shadows\spot-shadow.frag" />
     <None Include="Resources\Shaders\Shadows\spot-shadow.vert" />
-    <None Include="Resources\Shaders\Simple\simple.frag" />
-    <None Include="Resources\Shaders\Simple\simple.vert" />
-    <None Include="Resources\Shaders\Skybox\skybox.frag" />
-    <None Include="Resources\Shaders\Skybox\skybox.vert" />
-    <None Include="Resources\Shaders\Skybox\skybox2D.frag" />
-    <None Include="Resources\Shaders\Skybox\skybox2D.vert" />
     <None Include="Resources\Shaders\Text\text.frag" />
     <None Include="Resources\Shaders\Text\text.vert" />
     <None Include="Resources\Shaders\UserInterfaces\uiquad-selection.frag" />

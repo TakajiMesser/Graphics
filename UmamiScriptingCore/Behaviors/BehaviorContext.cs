@@ -1,7 +1,7 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Commands;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Game;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,20 +16,17 @@ namespace UmamiScriptingCore.Behaviors
         private Dictionary<string, object> _propertiesByName = new Dictionary<string, object>();
         private Dictionary<string, object> _variablesByName = new Dictionary<string, object>();
 
-        public BehaviorContext(IBehavior behavior, ISystemProvider systemProvider)
-        {
-            _behavior = behavior;
-            Provider = systemProvider;
-        }
+        public BehaviorContext(IBehavior behavior) => _behavior = behavior;
 
-        public ISystemProvider Provider { get; }
+        public ISystemProvider SystemProvider { get; internal set; }
+        public ICommander Commander { get; internal set; }
 
-        public IEntity GetEntity() => Provider.GetEntityProvider().GetEntity(_behavior.EntityID);
-        public IEntity GetEntity(int id) => Provider.GetEntityProvider().GetEntity(id);
-        public IEntity GetEntity(string name) => Provider.GetEntityProvider().GetEntity(name);
+        public IEntity GetEntity() => SystemProvider.EntityProvider.GetEntity(_behavior.EntityID);
+        public IEntity GetEntity(int id) => SystemProvider.EntityProvider.GetEntity(id);
+        public IEntity GetEntity(string name) => SystemProvider.EntityProvider.GetEntity(name);
 
-        public T GetComponent<T>() where T : IComponent => Provider.GetComponent<T>(_behavior.EntityID);
-        public T GetComponent<T>(int id) where T : IComponent => Provider.GetComponent<T>(id);
+        public T GetComponent<T>() where T : IComponent => SystemProvider.GetComponent<T>(_behavior.EntityID);
+        public T GetComponent<T>(int id) where T : IComponent => SystemProvider.GetComponent<T>(id);
 
         public Vector3 GetPosition() => GetEntity().Position;
 
@@ -50,8 +47,6 @@ namespace UmamiScriptingCore.Behaviors
         public IEnumerable<IBody> GetColliderBodies() => _collisionProvider.GetCollisionIDs(Entity.ID).Select(c => _collisionProvider.GetBody(c));*/
 
         //public IUIElement GetUIElement(int entityID) => _uiProvider.GetUIElement(entityID);
-
-        public ICamera Camera { get; internal set; }
         //public IInputProvider InputProvider { get; internal set; }
 
         public Vector3 EulerRotation { get; set; }

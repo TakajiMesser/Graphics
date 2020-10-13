@@ -44,12 +44,12 @@ namespace SampleGameProject.Behaviors.Player
                     if (context.GetVariable<float>("coverDistance") < 0.1f)
                     {
                         // Handle movement while in cover here
-                        var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
-                        var translation = GeometryHelper.GetHeldTranslation(context.Camera, CoverSpeed, inputProvider);
+                        var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
+                        var translation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), CoverSpeed, inputProvider);
 
                         if (translation.IsSignificant())
                         {
-                            var filteredColliders = context.Provider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID).Where(b => context.GetEntity(b.EntityID) is IBrush);
+                            var filteredColliders = context.SystemProvider.GetGameSystem<IPhysicsProvider>().GetCollisionBodies(context.GetEntity().ID).Where(b => context.GetEntity(b.EntityID) is IBrush);
 
                             // Calculate the furthest point along the bounds of our object, since we should attempt to raycast from there
                             var shape = context.GetComponent<IBody>().Shape;

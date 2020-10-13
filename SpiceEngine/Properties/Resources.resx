@@ -127,71 +127,14 @@
   <data name="arrow_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Selection\arrow.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="billboard_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Billboard\billboard.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="billboard_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Billboard\billboard.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="billboard_selection_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Billboard\billboard-selection.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="billboard_selection_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Billboard\billboard-selection.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="billboard_selection_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Billboard\billboard-selection.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="billboard_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Billboard\billboard.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="blur_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\MotionBlur\blur.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="Cone" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Meshes\Cone.obj;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="Cube" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Meshes\Cube.obj;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="deferred_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\deferred.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="deferred_geom" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\deferred.geom;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="deferred_skinning_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\deferred-skinning.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="deferred_tesc" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\deferred.tesc;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="deferred_tese" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\deferred.tese;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="deferred_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\deferred.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="dilate_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\MotionBlur\dilate.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="directional_light_billboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Textures\directional-light.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
-  </data>
-  <data name="forward_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Forward\forward.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="forward_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Forward\forward.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="fxaa_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\FXAA\fxaa.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="fxaa_skinning_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\FXAA\fxaa-skinning.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="fxaa_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\FXAA\fxaa.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="GenericMaterial" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Meshes\GenericMaterial.mtl;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
@@ -202,17 +145,11 @@
   <data name="grid_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Wireframe\grid.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="invert_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Miscellaneous\invert.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="light_billboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Textures\light.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="light_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Lighting\light.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="myBlur_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\MotionBlur\myBlur.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="point_light_billboard" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Textures\point-light.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -231,30 +168,6 @@
   </data>
   <data name="point_shadow_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Shadows\point-shadow.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_1D_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-1D.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_2D_array_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-2D-array.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_2D_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-2D.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_2D_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-2D.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_3D_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-3D.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_cube_array_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-cube-array.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_cube_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-cube.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="render_cube_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\RenderToScreen\render-cube.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="rotation_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Selection\rotation.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
@@ -292,24 +205,6 @@
   <data name="selection_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Selection\selection.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
-  <data name="simple_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Simple\simple.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="simple_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Simple\simple.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="skybox2D_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Skybox\skybox2D.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="skybox2D_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Skybox\skybox2D.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="skybox_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Skybox\skybox.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="skybox_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Skybox\skybox.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
   <data name="Sphere" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Meshes\Sphere.obj;System.Byte[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
@@ -339,12 +234,6 @@
   </data>
   <data name="text_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Text\text.vert;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="uv_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\uv-fragment-shader.glsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
-  </data>
-  <data name="uv_vert" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\Shaders\Deferred\uv-vertex-shader.glsl;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>
   </data>
   <data name="wireframe_frag" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\Shaders\Wireframe\wireframe.frag;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;utf-8</value>

@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SauceEditor.Views.Docks;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;

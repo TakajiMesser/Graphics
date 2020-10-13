@@ -65,10 +65,8 @@ namespace SpiceEngine.Scripting
             if (_tickMeter.Increment())
             {
                 // Filter colliders by those that are stimuli, and those that aren't
-                var bodyProvider = context.Provider.GetComponentProvider<IBody>();
-                var physicsProvider = context.Provider.GetGameSystem<IPhysicsProvider>();
-
-                
+                var bodyProvider = context.SystemProvider.GetComponentProvider<IBody>();
+                var physicsProvider = context.SystemProvider.GetGameSystem<IPhysicsProvider>();
 
                 if (TriggerOnContact && HasContactStimulus(context, context.GetEntity(), physicsProvider))
                 {
@@ -78,7 +76,7 @@ namespace SpiceEngine.Scripting
                 {
                     var stimuliBodies = physicsProvider.GetCollisionIDs().Where(i => context.HasStimuli(i, Stimulus)).Select(i => physicsProvider.GetComponent(i));
 
-                    if (TriggerOnProximity && HasProximityStimulus(context.GetEntity(), stimuliBodies, context.Provider.GetEntityProvider()))
+                    if (TriggerOnProximity && HasProximityStimulus(context.GetEntity(), stimuliBodies, context.SystemProvider.EntityProvider))
                     {
                         Triggered?.Invoke(this, new StimulusTriggeredEventArgs(Stimulus));
                     }

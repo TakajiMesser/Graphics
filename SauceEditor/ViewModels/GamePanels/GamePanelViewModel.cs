@@ -123,7 +123,7 @@ namespace SauceEditor.ViewModels
         private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
-            panelViewModel.EntityProvider = SimulationManager.EntityManager;
+            panelViewModel.EntityProvider = SimulationManager.EntityProvider;
             panelViewModel.GameLoader = _gameLoader;
             panelViewModel.Mapper = this;
             panelViewModel.Control.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
@@ -145,29 +145,29 @@ namespace SauceEditor.ViewModels
         public void EnableLayer(string layerName)
         {
             // If the layer is enabled, it means that these IDs will get included regardless if they show up in other layers
-            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Enabled);
+            SimulationManager.EntityProvider.LayerProvider.SetLayerState(layerName, LayerStates.Enabled);
         }
 
         public void DisableLayer(string layerName)
         {
             // If the layer is disabled, it means that these IDs will get excluded regardless if they show up in other layers
-            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
+            SimulationManager.EntityProvider.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
         }
 
         public void NeutralizeLayer(string layerName)
         {
             // If the layer is neutralized, it means that these IDs will be included UNLESS they are excluded in another layer
-            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Neutral);
+            SimulationManager.EntityProvider.LayerProvider.SetLayerState(layerName, LayerStates.Neutral);
         }
 
         public void ClearLayer(string layerName)
         {
             // TODO - Remove entities from EntityManager tracking as well
             // Disable the layer and delay removing the entities
-            var entityIDs = SimulationManager.EntityManager.LayerProvider.GetLayerEntityIDs(layerName).ToList();
+            var entityIDs = SimulationManager.EntityProvider.LayerProvider.GetLayerEntityIDs(layerName).ToList();
 
-            SimulationManager.EntityManager.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
-            SimulationManager.EntityManager.ClearLayer(layerName);
+            SimulationManager.EntityProvider.LayerProvider.SetLayerState(layerName, LayerStates.Disabled);
+            SimulationManager.EntityProvider.LayerProvider.ClearLayer(layerName);
             //PerspectiveViewModel.Panel.DelayAction(2, () => GameManager.EntityManager.ClearLayer(layerName));
 
             foreach (var entityID in entityIDs)
@@ -210,11 +210,11 @@ namespace SauceEditor.ViewModels
                 entity.ID = id;
             }*/
             //GameManager.EntityManager.AddEntities(modelEntities);
-            SimulationManager.EntityManager.EntitiesAdded += (s, args) =>
+            SimulationManager.EntityProvider.EntitiesAdded += (s, args) =>
             {
                 foreach (var builder in args.Builders)
                 {
-                    SimulationManager.EntityManager.LayerProvider.AddToLayer(layerName, builder.Item1);
+                    SimulationManager.EntityProvider.LayerProvider.AddToLayer(layerName, builder.Item1);
 
                     if (builder.Item2 is IRenderableBuilder renderableBuilder)
                     {
@@ -234,12 +234,15 @@ namespace SauceEditor.ViewModels
             };
 
             // Add these entities to a new layer, enable it, and disable all other layers
-            if (!SimulationManager.EntityManager.LayerProvider.ContainsLayer(layerName))
+            if (!SimulationManager.EntityProvider.LayerProvider.ContainsLayer(layerName))
             {
-                SimulationManager.EntityManager.LayerProvider.AddLayer(layerName);
+                SimulationManager.EntityProvider.LayerProvider.AddLayer(layerName);
             }
 
-            SimulationManager.EntityManager.AddEntities(entityBuilders);
+            foreach (var builder in entityBuilders)
+            {
+                SimulationManager.EntityProvider.AddEntity(builder);
+            }
 
             //GameManager.EntityManager.AddEntitiesToLayer(layerName, modelEntities.Select(e => e.ID));
 
@@ -372,11 +375,11 @@ namespace SauceEditor.ViewModels
         private async void LoadAsync()
         {
             //GameManager = new GameManager(Resolution);
-            SimulationManager.LoadFromMap(MapComponent.Map);
+            //SimulationManager.LoadFromMap(MapComponent.Map);
 
             // TODO - Make these less janky...
             _gameLoader.TrackEntityMapping = true;
-            _gameLoader.SetEntityProvider(SimulationManager.EntityManager);
+            _gameLoader.SetEntityProvider(SimulationManager.EntityProvider);
             _gameLoader.AddComponentLoader(SimulationManager.PhysicsSystem);
             _gameLoader.AddComponentLoader(SimulationManager.BehaviorSystem);
             _gameLoader.AddComponentLoader(SimulationManager.AnimationSystem);

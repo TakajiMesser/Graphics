@@ -1,6 +1,6 @@
 ﻿using SauceEditor.ViewModels.Docks;
 
-namespace SauceEditor.Views
+namespace SauceEditor.Views.Docks
 {
     public interface IDockTracker
     {

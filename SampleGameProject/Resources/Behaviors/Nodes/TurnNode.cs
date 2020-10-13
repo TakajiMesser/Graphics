@@ -3,6 +3,7 @@ using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Utilities;
 using System;
+using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
@@ -16,13 +17,13 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
         {
             if (context.GetEntity() is IActor actor)
             {
-                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+                var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
                 var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
                 // Compare current position to location of mouse, and set rotation to face the mouse
                 if (!inputProvider.IsDown(inputProvider.InputMapping.ItemWheel) && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
                 {
-                    var clipSpacePosition = context.Camera.ViewProjectionMatrix.Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
+                    var clipSpacePosition = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive).ViewProjectionMatrix.Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
                     var screenCoordinates = new Vector2()
                     {
                         X = ((clipSpacePosition.X + 1.0f) / 2.0f) * inputProvider.WindowSize.Width,
@@ -36,7 +37,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                         // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
                         // TODO - This is mad suspect...
-                        var flattenedUp = context.Camera is Camera cameraInstance ? cameraInstance._viewMatrix.Up.Xy : Vector2.One;
+                        var flattenedUp = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive) is Camera cameraInstance ? cameraInstance._viewMatrix.Up.Xy : Vector2.One;
                         turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
 
                         actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);

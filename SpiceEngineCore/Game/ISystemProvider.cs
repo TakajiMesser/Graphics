@@ -6,8 +6,8 @@ namespace SpiceEngineCore.Game
 {
     public interface ISystemProvider
     {
-        IEntityProvider GetEntityProvider();
-        IRenderProvider GetRenderProvider();
+        IEntityProvider EntityProvider { get; }
+        IRenderProvider RenderProvider { get; }
 
         IComponentProvider<T> GetComponentProvider<T>() where T : IComponent;
         IComponentProvider<T> GetComponentProviderOrDefault<T>() where T : IComponent;

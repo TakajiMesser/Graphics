@@ -34,7 +34,7 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
 
         protected override bool Condition(BehaviorContext context)
         {
-            var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+            var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
 
             switch (InputType)
             {

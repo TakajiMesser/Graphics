@@ -12,6 +12,7 @@ namespace SpiceEngineCore.Entities.Cameras
     {
         public int ID { get; set; }
         public string Name { get; }
+        public bool IsActive { get; set; }
 
         // TODO - Fix this...
         public ModelMatrix WorldMatrix => throw new NotImplementedException();

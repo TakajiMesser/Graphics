@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game;
+﻿using SpiceEngineCore.Components;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
@@ -37,7 +36,7 @@ namespace StarchUICore
 
         public event EventHandler<OrderEventArgs> OrderChanged;
 
-        public UISystem(IEntityProvider entityProvider, Resolution resolution) : base(entityProvider)
+        public UISystem(Resolution resolution)
         {
             _resolution = resolution;
             _traverser = new UITraverser(_resolution);
@@ -122,7 +121,7 @@ namespace StarchUICore
                     {
                         if (!string.IsNullOrEmpty(childName))
                         {
-                            var childID = _entityProvider.GetEntity(childName).ID;
+                            var childID = _systemProvider.EntityProvider.GetEntity(childName).ID;
 
                             var childElement = GetComponent(childID);
                             group.AddChild(childElement);
@@ -181,7 +180,7 @@ namespace StarchUICore
         {
             if (!string.IsNullOrEmpty(entityName))
             {
-                var id = _entityProvider.GetEntity(entityName).ID;
+                var id = _systemProvider.EntityProvider.GetEntity(entityName).ID;
                 return GetComponent(id);
             }
             else

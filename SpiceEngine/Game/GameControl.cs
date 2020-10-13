@@ -223,7 +223,7 @@ namespace SpiceEngine.Game
 
         public void LoadSimulation(SimulationManager simulationManager, IMap map)
         {
-            _entityProvider = simulationManager.EntityManager;
+            _entityProvider = simulationManager.EntityProvider;
             _inputProvider = simulationManager.InputManager;
             _animationProvider = simulationManager.AnimationSystem;
             _uiProvider = simulationManager.UISystem;
@@ -292,7 +292,7 @@ namespace SpiceEngine.Game
                 RenderManager.SetEntityProvider(_entityProvider);
                 //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
 
-                _panelCamera = new PanelCamera(Resolution, RenderManager)
+                _panelCamera = new PanelCamera(Resolution, _entityProvider, RenderManager)
                 {
                     ViewType = ViewType
                 };
@@ -301,7 +301,6 @@ namespace SpiceEngine.Game
                 RenderManager.SetAnimationProvider(_animationProvider);
                 RenderManager.SetUIProvider(_uiProvider);
                 RenderManager.SetSelectionProvider(SelectionManager);
-                RenderManager.SetCamera(_panelCamera.Camera);
 
                 // TODO - Can we load the map here?
                 RenderManager.LoadFromMap(_map);

@@ -42,7 +42,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
         {
             if (context.GetEntity() is PerspectiveCamera camera)
             {
-                var inputProvider = context.Provider.GetGameSystem<IInputProvider>();
+                var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
 
                 if (inputProvider.IsDown(new Input(MouseButton.Right)))
                 {

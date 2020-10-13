@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Game;
+﻿using SpiceEngineCore.Components;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;

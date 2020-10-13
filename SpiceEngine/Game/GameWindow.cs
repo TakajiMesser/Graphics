@@ -2,6 +2,7 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
+using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Maps;
@@ -11,7 +12,6 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Linq;
 using System.Threading.Tasks;
 using TangyHIDCore;
 using Timer = System.Timers.Timer;
@@ -22,9 +22,7 @@ namespace SpiceEngine.Game
     {
         private SimulationManager _simulationManager;
         private RenderManager _renderManager;
-
         private GameLoader _gameLoader = new GameLoader();
-        private GameSystemProvider _systemProvider = new GameSystemProvider();
 
         //private Dispatcher _mainDispatcher;
         private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
@@ -135,10 +133,6 @@ namespace SpiceEngine.Game
 
         private async void LoadAsync()
         {
-            _simulationManager = new SimulationManager(Resolution);
-            _simulationManager.SetMouseTracker(this);
-            _simulationManager.InputManager.EscapePressed += (s, args) => Close();
-
             _renderManager = new RenderManager(Resolution, WindowSize)
             {
                 RenderMode = RenderModes.Full,
@@ -146,11 +140,16 @@ namespace SpiceEngine.Game
             };
             _fpsTimer.Start();
 
-            _simulationManager.LoadFromMap(_map);
-            _simulationManager.SystemProvider.SetRenderProvider(_renderManager);
-            
+            _simulationManager = new SimulationManager(Resolution);
+            _simulationManager.Load();
+            _simulationManager.InputManager.EscapePressed += (s, args) => Close();
+            _simulationManager.SetMouseTracker(this);
+            _simulationManager.RenderProvider = _renderManager;
 
-            _gameLoader.SetEntityProvider(_simulationManager.EntityManager);
+            var map = _map as Map3D;
+            _simulationManager.PhysicsSystem.SetBoundaries(map.Boundaries);
+
+            _gameLoader.SetEntityProvider(_simulationManager.EntityProvider);
             _gameLoader.AddComponentLoader(_simulationManager.PhysicsSystem);
             _gameLoader.AddComponentLoader(_simulationManager.BehaviorSystem);
             _gameLoader.AddComponentLoader(_simulationManager.AnimationSystem);
@@ -159,7 +158,7 @@ namespace SpiceEngine.Game
 
             _gameLoader.AddFromMap(_map);
 
-            _renderManager.SetEntityProvider(_simulationManager.EntityManager);
+            _renderManager.SetEntityProvider(_simulationManager.EntityProvider);
             _renderManager.SetAnimationProvider(_simulationManager.AnimationSystem);
             _renderManager.SetUIProvider(_simulationManager.UISystem);
             
@@ -168,12 +167,6 @@ namespace SpiceEngine.Game
             //_gameLoader.Load();
             _gameLoader.TimedOut += (s, args) => RunSync(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
-
-            // Propogate default camera to all systems that require it
-            var defaultCamera = _simulationManager.EntityManager.Cameras.First();
-            _simulationManager.Camera = defaultCamera;
-            _simulationManager.BehaviorSystem.SetCamera(defaultCamera);
-            _renderManager.SetCamera(defaultCamera);
 
             // Set up UIManager to track mouse selections for UI control interactions
             _simulationManager.InputManager.MouseDownSelected += (s, args) => _simulationManager.UISystem.RegisterSelection(_renderManager.GetEntityIDFromSelection(args.MouseCoordinates));

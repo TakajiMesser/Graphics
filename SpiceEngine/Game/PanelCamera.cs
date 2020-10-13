@@ -1,4 +1,5 @@
 ﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
@@ -27,6 +28,7 @@ namespace SpiceEngine.Game
         public const float MAX_YAW = MathExtensions.TWO_PI;
 
         private Resolution _resolution;
+        private IEntityProvider _entityProvider;
         private IGridRenderer _gridRenderer;
 
         // Yaw of zero should point in the direction of the X-Axis
@@ -38,9 +40,10 @@ namespace SpiceEngine.Game
         public Camera Camera { get; private set; }
         public ViewTypes ViewType { get; set; }
 
-        public PanelCamera(Resolution resolution, IGridRenderer gridRenderer)
+        public PanelCamera(Resolution resolution, IEntityProvider entityProvider, IGridRenderer gridRenderer)
         {
             _resolution = resolution;
+            _entityProvider = entityProvider;
             _gridRenderer = gridRenderer;
         }
 
@@ -161,6 +164,9 @@ namespace SpiceEngine.Game
                     _pitch = -MathExtensions.HALF_PI;
                     break;
             }
+
+            Camera.IsActive = true;
+            _entityProvider.AddEntity(Camera);
         }
 
         public void Travel(Vector2 mouseDelta)

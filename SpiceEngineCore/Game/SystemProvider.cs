@@ -8,25 +8,25 @@ namespace SpiceEngineCore.Game
 {
     public class SystemProvider : ISystemProvider
     {
-        private IEntityProvider _entityProvider;
-        private IRenderProvider _renderProvider;
-        
         private Dictionary<Type, IComponentProvider> _componentProviderByType = new Dictionary<Type, IComponentProvider>();
         private Dictionary<Type, IGameSystem> _gameSystemByType = new Dictionary<Type, IGameSystem>();
 
-        public void SetEntityProvider(IEntityProvider entityProvider) => _entityProvider = entityProvider;
-        public void SetRenderProvider(IRenderProvider renderProvider) => _renderProvider = renderProvider;
+        protected List<IGameSystem> _gameSystems = new List<IGameSystem>();
 
-        public void AddComponentProvider<T>(IComponentProvider componentProvider) where T : IComponent
+        public IEntityProvider EntityProvider { get; set; }
+        public IRenderProvider RenderProvider { get; set; }
+
+        public virtual void AddComponentProvider<T>(IComponentProvider componentProvider) where T : IComponent
         {
             if (!(componentProvider is IComponentProvider<T>)) throw new ArgumentException("Component Provider must provide type " + typeof(T).Name);
             _componentProviderByType.Add(typeof(T), componentProvider);
         }
 
-        public void AddGameSystem<T>(T gameSystem) where T : IGameSystem => _gameSystemByType.Add(typeof(T), gameSystem);
-
-        public IEntityProvider GetEntityProvider() => _entityProvider;
-        public IRenderProvider GetRenderProvider() => _renderProvider;
+        public virtual void AddGameSystem<T>(T gameSystem) where T : IGameSystem
+        {
+            _gameSystemByType.Add(typeof(T), gameSystem);
+            _gameSystems.Add(gameSystem);
+        }
 
         public IComponentProvider<T> GetComponentProvider<T>() where T : IComponent => (IComponentProvider<T>)_componentProviderByType[typeof(T)];
         public IComponentProvider<T> GetComponentProviderOrDefault<T>() where T : IComponent => HasComponentProvider<T>() ? GetComponentProvider<T>() : default;
@@ -37,12 +37,12 @@ namespace SpiceEngineCore.Game
         public bool HasComponentProvider<T>() where T : IComponent => _componentProviderByType.ContainsKey(typeof(T));
         public bool HasGameSystem<T>() where T : IGameSystem => _gameSystemByType.ContainsKey(typeof(T));
 
-        public IEntity GetEntity(int entityID) => _entityProvider.GetEntity(entityID);
-        public IEntity GetEntityOrDefault(int entityID) => _entityProvider.GetEntityOrDefault(entityID);
+        public IEntity GetEntity(int entityID) => EntityProvider.GetEntity(entityID);
+        public IEntity GetEntityOrDefault(int entityID) => EntityProvider.GetEntityOrDefault(entityID);
 
-        public IRenderable GetRenderable(int entityID) => _renderProvider.GetRenderable(entityID);
-        public IRenderable GetRenderableOrDefault(int entityID) => _renderProvider.GetRenderableOrDefault(entityID);
-        public bool HasRenderable(int entityID) => _renderProvider.HasRenderable(entityID);
+        public IRenderable GetRenderable(int entityID) => RenderProvider.GetRenderable(entityID);
+        public IRenderable GetRenderableOrDefault(int entityID) => RenderProvider.GetRenderableOrDefault(entityID);
+        public bool HasRenderable(int entityID) => RenderProvider.HasRenderable(entityID);
 
         public T GetComponent<T>(int entityID) where T : IComponent => GetComponentProvider<T>().GetComponent(entityID);
         public T GetComponentOrDefault<T>(int entityID) where T : IComponent
