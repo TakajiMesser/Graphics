@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using OpenTK;
 using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Geometry.Vectors;
 using System.Linq;
 
 namespace SpiceEngine.Maps
@@ -18,41 +18,39 @@ namespace SpiceEngine.Maps
 
         protected override void CalculateBounds()
         {
-            var min = new Vector2
-            {
-                X = new float[]
+            var min = new Vector2(
+                new float[]
                     {
                         Actors.Min(a => a.Position.X),
                         Brushes.Min(b => b.Position.X),
                         //Volumes.Min(v => v.Position.X),
                         Lights.Min(l => l.Position.X)
                     }.Min(),
-                Y = new float[]
+                new float[]
                     {
                         Actors.Min(a => a.Position.Y),
                         Brushes.Min(b => b.Position.Y),
                         //Volumes.Min(v => v.Position.Y),
                         Lights.Min(l => l.Position.Y)
                     }.Min()
-            };
+            );
 
-            var max = new Vector2
-            {
-                X = new float[]
+            var max = new Vector2(
+                new float[]
                     {
                         Actors.Max(a => a.Position.X),
                         Brushes.Max(b => b.Position.X),
                         //Volumes.Max(v => v.Position.X),
                         Lights.Max(l => l.Position.X)
                     }.Max(),
-                Y = new float[]
+                new float[]
                     {
                         Actors.Max(a => a.Position.Y),
                         Brushes.Max(b => b.Position.Y),
                         //Volumes.Max(v => v.Position.Y),
                         Lights.Max(l => l.Position.Y)
                     }.Max()
-            };
+            );
 
             Boundaries = new Quad(min, max);
         }

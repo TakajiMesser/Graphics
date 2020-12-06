@@ -1,5 +1,6 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Vectors;
+using SpiceEngineCore.Utilities;
 using StarchUICore.Attributes.Positions;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Styling;
@@ -240,7 +241,7 @@ namespace StarchUICore.Builders
 
             for (var i = 0; i < nSides; i++)
             {
-                var angle = MathHelper.PiOver2 * i / nSides + quadrantIndex * MathHelper.PiOver2;
+                var angle = MathExtensions.HALF_PI * i / nSides + quadrantIndex * MathExtensions.HALF_PI;
 
                 var x = radius * (float)Math.Cos(angle);
                 var y = radius * (float)Math.Sin(angle);

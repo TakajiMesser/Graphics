@@ -1,5 +1,5 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Vectors;
 using SweetGraphicsCore.Rendering.Models;
 
 namespace TowerWarfare.Entities.Actors.Troops

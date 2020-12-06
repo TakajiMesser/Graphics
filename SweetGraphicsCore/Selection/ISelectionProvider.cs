@@ -1,5 +1,5 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Geometry.Vectors;
 using System.Collections.Generic;
 
 namespace SweetGraphicsCore.Selection

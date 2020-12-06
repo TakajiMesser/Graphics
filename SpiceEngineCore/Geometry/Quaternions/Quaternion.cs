@@ -175,6 +175,8 @@ namespace SpiceEngineCore.Geometry.Quaternions
                 (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));*/
         }
 
+        public static Quaternion operator *(float scale, Quaternion quaternion) => new Quaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
+
         public static Quaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
         public static Quaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ)
         {

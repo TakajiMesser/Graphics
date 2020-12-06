@@ -1,7 +1,7 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Lights;
-using SpiceEngineCore.Entities;
+using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Quaternions;
 using SpiceEngineCore.Utilities;
 using System;
 

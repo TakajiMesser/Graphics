@@ -1,8 +1,8 @@
-﻿using OpenTK;
-using SpiceEngineCore.Commands;
+﻿using SpiceEngineCore.Commands;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game;
+using SpiceEngineCore.Geometry.Vectors;
 using System.Collections.Generic;
 using System.Linq;
 using UmamiScriptingCore.StimResponse;

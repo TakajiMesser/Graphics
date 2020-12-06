@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
-using SavoryPhysicsCore.Shapes;
+﻿using SavoryPhysicsCore.Shapes;
 
 namespace SavoryPhysicsCore.Bodies
 {

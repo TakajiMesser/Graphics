@@ -1,6 +1,7 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities.Actors;
+﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Linq;
@@ -23,12 +24,13 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 // Compare current position to location of mouse, and set rotation to face the mouse
                 if (!inputProvider.IsDown(inputProvider.InputMapping.ItemWheel) && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
                 {
-                    var clipSpacePosition = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive).ViewProjectionMatrix.Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
-                    var screenCoordinates = new Vector2()
-                    {
-                        X = ((clipSpacePosition.X + 1.0f) / 2.0f) * inputProvider.WindowSize.Width,
-                        Y = ((1.0f - clipSpacePosition.Y) / 2.0f) * inputProvider.WindowSize.Height,
-                    };
+                    var camera = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive);
+                    var viewProjectionMatrix = camera.ViewMatrix * camera.ProjectionMatrix;
+                    var clipSpacePosition = viewProjectionMatrix.Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
+                    var screenCoordinates = new Vector2(
+                        (clipSpacePosition.X + 1.0f) / 2.0f * inputProvider.WindowSize.Width,
+                        (1.0f - clipSpacePosition.Y) / 2.0f * inputProvider.WindowSize.Height
+                    );
 
                     if (inputProvider.MouseCoordinates.HasValue)
                     {
@@ -40,7 +42,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                         var flattenedUp = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive) is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
                         turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
 
-                        actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                        actor.Rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, turnAngle);
                         context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
                     }
                 }

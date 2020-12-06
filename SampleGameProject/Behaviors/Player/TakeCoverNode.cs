@@ -1,8 +1,9 @@
-﻿using OpenTK;
-using SavoryPhysicsCore;
+﻿using SavoryPhysicsCore;
 using SavoryPhysicsCore.Raycasting;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Linq;
@@ -39,7 +40,7 @@ namespace SampleGameProject.Behaviors.Player
                     context.SetVariable("coverDistance", vectorBetween.Length);
 
                     float turnAngle = (float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
-                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle + MathExtensions.PI);
+                    actor.Rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, turnAngle + MathExtensions.PI);
                     context.EulerRotation = new Vector3(0.0f, context.EulerRotation.Y, turnAngle + MathExtensions.PI);
 
                     return BehaviorStatus.Success;

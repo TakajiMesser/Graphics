@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using OpenTK;
 using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Geometry.Vectors;
 using System.Linq;
 
 namespace SpiceEngine.Maps
@@ -20,54 +20,52 @@ namespace SpiceEngine.Maps
         {
             Boundaries = new Oct()
             {
-                Min = new Vector3
-                {
-                    X = new float[]
+                Min = new Vector3(
+                    new float[]
                     {
                         Actors.Any() ? Actors.Min(a => a.Position.X) : 0.0f,
                         Brushes.Any() ? Brushes.Min(b => b.Position.X) : 0.0f,
                         //Volumes.Min(v => v.Position.X),
                         Lights.Any() ? Lights.Min(l => l.Position.X) : 0.0f
                     }.Min(),
-                    Y = new float[]
+                    new float[]
                     {
                         Actors.Any() ? Actors.Min(a => a.Position.Y) : 0.0f,
                         Brushes.Any() ? Brushes.Min(b => b.Position.Y) : 0.0f,
                         //Volumes.Min(v => v.Position.Y),
                         Lights.Any() ? Lights.Min(l => l.Position.Y) : 0.0f
                     }.Min(),
-                    Z = new float[]
+                    new float[]
                     {
                         Actors.Any() ? Actors.Min(a => a.Position.Z) : 0.0f,
                         Brushes.Any() ? Brushes.Min(b => b.Position.Z) : 0.0f,
                         //Volumes.Min(v => v.Position.Z),
                         Lights.Any() ? Lights.Min(l => l.Position.Z) : 0.0f
                     }.Min()
-                },
-                Max = new Vector3
-                {
-                    X = new float[]
+                ),
+                Max = new Vector3(
+                    new float[]
                     {
                         Actors.Any() ? Actors.Max(a => a.Position.X) : 0.0f,
                         Brushes.Any() ? Brushes.Max(b => b.Position.X) : 0.0f,
                         //Volumes.Max(v => v.Position.X),
                         Lights.Any() ? Lights.Max(l => l.Position.X) : 0.0f
                     }.Max(),
-                    Y = new float[]
+                    new float[]
                     {
                         Actors.Any() ? Actors.Max(a => a.Position.Y) : 0.0f,
                         Brushes.Any() ? Brushes.Max(b => b.Position.Y) : 0.0f,
                         //Volumes.Max(v => v.Position.Y),
                         Lights.Any() ? Lights.Max(l => l.Position.Y) : 0.0f
                     }.Max(),
-                    Z = new float[]
+                    new float[]
                     {
                         Actors.Any() ? Actors.Max(a => a.Position.Z) : 0.0f,
                         Brushes.Any() ? Brushes.Max(b => b.Position.Z) : 0.0f,
                         //Volumes.Max(v => v.Position.Z),
                         Lights.Any() ? Lights.Max(l => l.Position.Z) : 0.0f
                     }.Max()
-                }
+                )
             };
         }
     }

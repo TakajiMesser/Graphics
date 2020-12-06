@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using System.Collections.Generic;
 
 namespace SavoryPhysicsCore.Partitioning

@@ -1,8 +1,6 @@
 ﻿using CitrusAnimationCore;
 using CitrusAnimationCore.Animations;
 using CitrusAnimationCore.Bones;
-using OpenTK;
-using OpenTK.Graphics;
 using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SavoryPhysicsCore.Shapes.ThreeDimensional;
@@ -12,6 +10,10 @@ using SpiceEngine.Utilities;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Utilities;
@@ -137,8 +139,8 @@ namespace SpiceEngineCore.Maps
                     var vertices = scene.Meshes
                         .SelectMany(m => m.Vertices
                             .Select(v => v.ToVector3()))
-                        .Select(v => (Matrix4.CreateScale(Scale)
-                            * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
+                        .Select(v => (Matrix4.FromScale(Scale)
+                            * Matrix4.FromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
                             * Quaternion.FromEulerAngles(Rotation.ToRadians()))
                             * new Vector4(v, 1.0f)).Xyz);
 

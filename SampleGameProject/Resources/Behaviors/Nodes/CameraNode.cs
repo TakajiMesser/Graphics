@@ -1,6 +1,6 @@
-﻿using OpenTK;
-using OpenTK.Input;
+﻿using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry.Vectors;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
@@ -38,7 +38,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                     perspectiveCamera.CalculateUp();
                 }
 
-                var currentAngles = perspectiveCamera.CurrentAngles;
+                var currentX = perspectiveCamera.CurrentAngles.X;
+                var currentY = perspectiveCamera.CurrentAngles.Y;
+                var currentZ = perspectiveCamera.CurrentAngles.Z;
 
                 if (inputProvider.IsDown(new Input(MouseButton.Right)))
                 {
@@ -46,9 +48,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     if (mouseDelta != Vector2.Zero)
                     {
-                        currentAngles.X += mouseDelta.X;
-                        currentAngles.Y += mouseDelta.Y;
-                        perspectiveCamera.CurrentAngles = currentAngles;
+                        currentX += mouseDelta.X;
+                        currentY += mouseDelta.Y;
+                        perspectiveCamera.CurrentAngles = new Vector3(currentX, currentY, currentZ);
                         //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
                         perspectiveCamera.CalculateTranslation();
@@ -59,25 +61,25 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 {
                     if (inputProvider.IsDown(new Input(Key.Up)))
                     {
-                        currentAngles.Y += MoveSpeed;
+                        currentY += MoveSpeed;
                     }
 
                     if (inputProvider.IsDown(new Input(Key.Down)))
                     {
-                        currentAngles.Y -= MoveSpeed;
+                        currentY -= MoveSpeed;
                     }
 
                     if (inputProvider.IsDown(new Input(Key.Right)))
                     {
-                        currentAngles.X -= MoveSpeed;
+                        currentX -= MoveSpeed;
                     }
 
                     if (inputProvider.IsDown(new Input(Key.Left)))
                     {
-                        currentAngles.X += MoveSpeed;
+                        currentX += MoveSpeed;
                     }
 
-                    perspectiveCamera.CurrentAngles = currentAngles;
+                    perspectiveCamera.CurrentAngles = new Vector3(currentX, currentY, currentZ);
                     //_currentAngles.Y = _currentAngles.Y.Clamp(MIN_ANGLE_Y, MAX_ANGLE_Y);
 
                     perspectiveCamera.CalculateTranslation();

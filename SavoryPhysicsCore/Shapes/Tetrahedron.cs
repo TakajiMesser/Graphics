@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 

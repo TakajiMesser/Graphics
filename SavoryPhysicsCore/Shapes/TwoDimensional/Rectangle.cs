@@ -1,6 +1,6 @@
-﻿using OpenTK;
-using SavoryPhysicsCore.Helpers;
+﻿using SavoryPhysicsCore.Helpers;
 using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Geometry.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;

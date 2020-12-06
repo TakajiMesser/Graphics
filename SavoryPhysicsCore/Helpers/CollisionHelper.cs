@@ -122,32 +122,29 @@ namespace SavoryPhysicsCore.Helpers
                 // Check against the X-face
                 var x = collisionInfo.EntityA.Position.X >= collisionInfo.EntityB.Position.X ? collisionInfo.EntityB.Position.X + boxB.Width / 2.0f : collisionInfo.EntityB.Position.X - boxB.Width / 2.0f;
                 var tx = (x - collisionInfo.EntityB.Position.X) / v.X;
-                var xPenetration = new Vector3()
-                {
-                    X = x,
-                    Y = collisionInfo.EntityB.Position.Y + v.Y * tx,
-                    Z = collisionInfo.EntityB.Position.Z + v.Z * tx
-                };
+                var xPenetration = new Vector3(
+                    x,
+                    collisionInfo.EntityB.Position.Y + v.Y * tx,
+                    collisionInfo.EntityB.Position.Z + v.Z * tx
+                );
 
                 // Check against the Y-face
                 var y = collisionInfo.EntityA.Position.Y >= collisionInfo.EntityB.Position.Y ? collisionInfo.EntityB.Position.Y + boxB.Height / 2.0f : collisionInfo.EntityB.Position.Y - boxB.Height / 2.0f;
                 var ty = (y - collisionInfo.EntityB.Position.Y) / v.Y;
-                var yPenetration = new Vector3()
-                {
-                    X = collisionInfo.EntityB.Position.X + v.X * ty,
-                    Y = y,
-                    Z = collisionInfo.EntityB.Position.Z + v.Z * ty
-                };
+                var yPenetration = new Vector3(
+                    collisionInfo.EntityB.Position.X + v.X * ty,
+                    y,
+                    collisionInfo.EntityB.Position.Z + v.Z * ty
+                );
 
                 // Check against the Z-face
                 var z = collisionInfo.EntityA.Position.Z >= collisionInfo.EntityB.Position.Z ? collisionInfo.EntityB.Position.Z + boxB.Depth / 2.0f : collisionInfo.EntityB.Position.Z - boxB.Depth / 2.0f;
                 var tz = (z - collisionInfo.EntityB.Position.Z) / v.Z;
-                var zPenetration = new Vector3()
-                {
-                    X = collisionInfo.EntityB.Position.X + v.X * tz,
-                    Y = collisionInfo.EntityB.Position.Y + v.Y * tz,
-                    Z = z
-                };
+                var zPenetration = new Vector3(
+                    collisionInfo.EntityB.Position.X + v.X * tz,
+                    collisionInfo.EntityB.Position.Y + v.Y * tz,
+                    z
+                );
 
                 var xDiff = xPenetration - collisionInfo.EntityB.Position;
                 var yDiff = yPenetration - collisionInfo.EntityB.Position;
@@ -204,12 +201,11 @@ namespace SavoryPhysicsCore.Helpers
             var sphere = (Sphere)collisionInfo.BodyA.Shape;
             var box = (Box)collisionInfo.BodyB.Shape;
 
-            var contactPoint = new Vector3()
-            {
-                X = MathHelper.Clamp(collisionInfo.EntityA.Position.X, collisionInfo.EntityB.Position.X - box.Width / 2.0f, collisionInfo.EntityB.Position.X + box.Width / 2.0f),
-                Y = MathHelper.Clamp(collisionInfo.EntityA.Position.Y, collisionInfo.EntityB.Position.Y - box.Height / 2.0f, collisionInfo.EntityB.Position.Y + box.Height / 2.0f),
-                Z = MathHelper.Clamp(collisionInfo.EntityA.Position.Z, collisionInfo.EntityB.Position.Z - box.Depth / 2.0f, collisionInfo.EntityB.Position.Z + box.Depth / 2.0f)
-            };
+            var contactPoint = new Vector3(
+                collisionInfo.EntityA.Position.X.Clamp(collisionInfo.EntityB.Position.X - box.Width / 2.0f, collisionInfo.EntityB.Position.X + box.Width / 2.0f),
+                collisionInfo.EntityA.Position.Y.Clamp(collisionInfo.EntityB.Position.Y - box.Height / 2.0f, collisionInfo.EntityB.Position.Y + box.Height / 2.0f),
+                collisionInfo.EntityA.Position.Z.Clamp(collisionInfo.EntityB.Position.Z - box.Depth / 2.0f, collisionInfo.EntityB.Position.Z + box.Depth / 2.0f)
+            );
 
             var offset = collisionInfo.EntityA.Position - contactPoint;
 
@@ -231,12 +227,11 @@ namespace SavoryPhysicsCore.Helpers
             var sphere = (Sphere)collisionInfo.BodyA.Shape;
             var box = (Box)collisionInfo.BodyB.Shape;
 
-            var contactPoint = new Vector3()
-            {
-                X = MathHelper.Clamp(collisionInfo.EntityA.Position.X, collisionInfo.EntityB.Position.X - box.Width / 2.0f, collisionInfo.EntityB.Position.X + box.Width / 2.0f),
-                Y = MathHelper.Clamp(collisionInfo.EntityA.Position.Y, collisionInfo.EntityB.Position.Y - box.Height / 2.0f, collisionInfo.EntityB.Position.Y + box.Height / 2.0f),
-                Z = MathHelper.Clamp(collisionInfo.EntityA.Position.Z, collisionInfo.EntityB.Position.Z - box.Depth / 2.0f, collisionInfo.EntityB.Position.Z + box.Depth / 2.0f)
-            };
+            var contactPoint = new Vector3(
+                collisionInfo.EntityA.Position.X.Clamp(collisionInfo.EntityB.Position.X - box.Width / 2.0f, collisionInfo.EntityB.Position.X + box.Width / 2.0f),
+                collisionInfo.EntityA.Position.Y.Clamp(collisionInfo.EntityB.Position.Y - box.Height / 2.0f, collisionInfo.EntityB.Position.Y + box.Height / 2.0f),
+                collisionInfo.EntityA.Position.Z.Clamp(collisionInfo.EntityB.Position.Z - box.Depth / 2.0f, collisionInfo.EntityB.Position.Z + box.Depth / 2.0f)
+            );
 
             var offset = collisionInfo.EntityA.Position - contactPoint;
 
@@ -271,32 +266,29 @@ namespace SavoryPhysicsCore.Helpers
                 // Check against the X-face
                 var x = collisionInfo.EntityA.Position.X >= collisionInfo.EntityB.Position.X ? collisionInfo.EntityB.Position.X + box.Width / 2.0f : collisionInfo.EntityB.Position.X - box.Width / 2.0f;
                 var tx = (x - collisionInfo.EntityB.Position.X) / v.X;
-                var xPenetration = new Vector3()
-                {
-                    X = x,
-                    Y = collisionInfo.EntityB.Position.Y + v.Y * tx,
-                    Z = collisionInfo.EntityB.Position.Z + v.Z * tx
-                };
+                var xPenetration = new Vector3(
+                    x,
+                    collisionInfo.EntityB.Position.Y + v.Y * tx,
+                    collisionInfo.EntityB.Position.Z + v.Z * tx
+                );
 
                 // Check against the Y-face
                 var y = collisionInfo.EntityA.Position.Y >= collisionInfo.EntityB.Position.Y ? collisionInfo.EntityB.Position.Y + box.Height / 2.0f : collisionInfo.EntityB.Position.Y - box.Height / 2.0f;
                 var ty = (y - collisionInfo.EntityB.Position.Y) / v.Y;
-                var yPenetration = new Vector3()
-                {
-                    X = collisionInfo.EntityB.Position.X + v.X * ty,
-                    Y = y,
-                    Z = collisionInfo.EntityB.Position.Z + v.Z * ty
-                };
+                var yPenetration = new Vector3(
+                    collisionInfo.EntityB.Position.X + v.X * ty,
+                    y,
+                    collisionInfo.EntityB.Position.Z + v.Z * ty
+                );
 
                 // Check against the Z-face
                 var z = collisionInfo.EntityA.Position.Z >= collisionInfo.EntityB.Position.Z ? collisionInfo.EntityB.Position.Z + box.Depth / 2.0f : collisionInfo.EntityB.Position.Z - box.Depth / 2.0f;
                 var tz = (z - collisionInfo.EntityB.Position.Z) / v.Z;
-                var zPenetration = new Vector3()
-                {
-                    X = collisionInfo.EntityB.Position.X + v.X * tz,
-                    Y = collisionInfo.EntityB.Position.Y + v.Y * tz,
-                    Z = z
-                };
+                var zPenetration = new Vector3(
+                    collisionInfo.EntityB.Position.X + v.X * tz,
+                    collisionInfo.EntityB.Position.Y + v.Y * tz,
+                    z
+                );
 
                 var xDiff = xPenetration - collisionInfo.EntityB.Position;
                 var yDiff = yPenetration - collisionInfo.EntityB.Position;

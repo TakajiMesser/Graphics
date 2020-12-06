@@ -1,6 +1,6 @@
-﻿using OpenTK;
-using SavoryPhysicsCore.Shapes.ThreeDimensional;
+﻿using SavoryPhysicsCore.Shapes.ThreeDimensional;
 using SavoryPhysicsCore.Shapes.TwoDimensional;
+using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SavoryPhysicsCore.Raycasting
@@ -34,30 +34,27 @@ namespace SavoryPhysicsCore.Raycasting
             {
                 if (discriminant == 0)
                 {
-                    intersection = new Vector3()
-                    {
-                        X = position.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
-                        Y = position.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
-                        Z = position.Z
-                    };
+                    intersection = new Vector3(
+                        position.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        position.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        position.Z
+                    );
 
                     return true;
                 }
                 else
                 {
-                    var intersectionA = new Vector3()
-                    {
-                        X = position.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
-                        Y = position.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
-                        Z = position.Z
-                    };
+                    var intersectionA = new Vector3(
+                        position.X + (float)((d * dy + (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        position.Y + (float)((-d * dx + Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        position.Z
+                    );
 
-                    var intersectionB = new Vector3()
-                    {
-                        X = position.X + (float)((d * dy - (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
-                        Y = position.Y + (float)((-d * dx - Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
-                        Z = position.Z
-                    };
+                    var intersectionB = new Vector3(
+                        position.X + (float)((d * dy - (dy < 0 ? -1 : 1) * dx * Math.Sqrt(discriminant)) / dr2),
+                        position.Y + (float)((-d * dx - Math.Abs(dy) * Math.Sqrt(discriminant)) / dr2),
+                        position.Z
+                    );
 
                     intersection = (intersectionA - Origin).Length < (intersectionB - Origin).Length
                         ? intersectionA

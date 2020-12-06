@@ -1,8 +1,9 @@
-﻿using OpenTK;
-using SavoryPhysicsCore;
+﻿using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Linq;
@@ -39,8 +40,8 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                     nEvadeTicks++;
                     context.SetVariable("nEvadeTicks", nEvadeTicks);
 
-                    actor.Rotation = Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);
-                    actor.Rotation *= new Quaternion(0.0f, 0.0f, (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X));
+                    actor.Rotation = new Quaternion(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);
+                    actor.Rotation *= Quaternion.FromEulerAngles(0.0f, 0.0f, (float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X));
 
                     //context.Actor.Rotation = new Quaternion((float)Math.Atan2(evadeTranslation.Y, evadeTranslation.X), 0.0f, 0.0f);
                     //context.Actor.Rotation *= Quaternion.FromAxisAngle(Vector3.Cross(evadeTranslation.Normalized(), -Vector3.UnitZ), MathExtensions.TWO_PI / TickCount * nEvadeTicks);

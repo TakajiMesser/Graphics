@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SavoryPhysicsCore.Raycasting
@@ -36,11 +36,11 @@ namespace SavoryPhysicsCore.Raycasting
 
             if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
             {
-                intersection = new Vector3()
-                {
-                    X = PointA.X + (t * vectorA.X),
-                    Y = PointA.Y + (t * vectorA.Y)
-                };
+                intersection = new Vector3(
+                    PointA.X + (t * vectorA.X),
+                    PointA.Y + (t * vectorA.Y),
+                    0.0f
+                );
 
                 return true;
             }

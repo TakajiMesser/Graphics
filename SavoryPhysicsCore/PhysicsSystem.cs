@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SavoryPhysicsCore.Bodies;
+﻿using SavoryPhysicsCore.Bodies;
 using SavoryPhysicsCore.Collisions;
 using SavoryPhysicsCore.Constraints;
 using SavoryPhysicsCore.Partitioning;
@@ -8,6 +7,7 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Volumes;
+using SpiceEngineCore.Geometry.Vectors;
 using System;
 using System.Collections.Generic;
 using System.Linq;
