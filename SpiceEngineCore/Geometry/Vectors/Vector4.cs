@@ -9,6 +9,7 @@ namespace SpiceEngineCore.Geometry.Vectors
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector4 : IEquatable<Vector4>
     {
+        public Vector4(Vector3 xyz, float w) : this(xyz.X, xyz.Y, xyz.Z, w) { }
         public Vector4(float x, float y, float z, float w)
         {
             X = x;

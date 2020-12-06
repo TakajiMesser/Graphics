@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Rendering.Materials;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
@@ -20,7 +18,7 @@ namespace SpiceEngineCore.Entities
         public abstract void AddMaterial(Material material);
         public abstract void AddTextureMapping(TextureMapping? textureMapping);
 
-        public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
+        /*public void BindTextures(ShaderProgram program, ITextureProvider textureProvider)
         {
             if (CurrentTextureMapping.HasValue)
             {
@@ -30,7 +28,7 @@ namespace SpiceEngineCore.Entities
             {
                 program.UnbindTextures();
             }
-        }
+        }*/
 
         /*public override void SetUniforms(ShaderProgram program) => CurrentMaterial.SetUniforms(program);
 

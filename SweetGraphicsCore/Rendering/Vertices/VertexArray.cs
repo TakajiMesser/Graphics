@@ -1,10 +1,11 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.ES30;
+﻿using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Vertices;
 using SweetGraphicsCore.Rendering;
 using System;
 using System.Runtime.InteropServices;
+using Color4 = SpiceEngineCore.Geometry.Colors.Color4;
 
 namespace SweetGraphicsCore.Vertices
 {

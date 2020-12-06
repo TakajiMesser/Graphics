@@ -1,5 +1,4 @@
 ﻿using SpiceEngineCore.Rendering.Materials;
-using SpiceEngineCore.Rendering.Shaders;
 using System.Collections.Generic;
 
 namespace SpiceEngineCore.Rendering.Textures
@@ -14,7 +13,5 @@ namespace SpiceEngineCore.Rendering.Textures
 
         void AddMaterial(Material material);
         void AddTextureMapping(TextureMapping? textureMapping);
-
-        void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
     }
 }

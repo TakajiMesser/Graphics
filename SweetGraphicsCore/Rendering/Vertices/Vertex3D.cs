@@ -1,5 +1,5 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Matrices;
 using System.Runtime.InteropServices;
 

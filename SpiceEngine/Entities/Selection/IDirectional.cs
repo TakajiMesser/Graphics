@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Vectors;
 
 namespace SpiceEngine.Entities.Selection
 {

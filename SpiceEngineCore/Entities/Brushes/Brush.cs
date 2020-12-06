@@ -1,10 +1,5 @@
-﻿using OpenTK;
-using SpiceEngineCore.Rendering.Materials;
-using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Rendering.Textures;
-using SpiceEngineCore.Utilities;
-using System.Collections.Generic;
+﻿using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 
 namespace SpiceEngineCore.Entities.Brushes
 {

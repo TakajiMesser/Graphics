@@ -1,11 +1,10 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace SpiceEngineCore.Rendering.Batches
 {
@@ -16,6 +15,7 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public Batch(T renderable) => _renderable = renderable;
 
+        public IRenderable Renderable => _renderable;
         public IEnumerable<int> EntityIDs => _entityIDs;
         public int EntityCount => _entityIDs.Count;
         public bool IsLoaded { get; protected set; }
@@ -39,22 +39,26 @@ namespace SpiceEngineCore.Rendering.Batches
             IsLoaded = true;
         }
 
-        public abstract bool CompareUniforms(IRenderable renderable);
-        public abstract void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram);
-        public virtual void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider) { }
-        public virtual void Draw() => _renderable.Draw();
+        public abstract bool CanBatch(IRenderable renderable);
+
+        public virtual IEnumerable<IUniform> GetUniforms(IBatcher batcher) => Enumerable.Empty<IUniform>();
+        public virtual IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider) => Enumerable.Empty<TextureBinding>();
         
-        public virtual void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
+        public virtual void Draw() => _renderable.Draw();
+
+        /*public abstract void SetUniforms(IRender renderer, IEntityProvider entityProvider);
+        public virtual void BindTextures(IRender renderer, ITextureProvider textureProvider) { }
+        public virtual void Draw(IRender renderer, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
         {
-            SetUniforms(entityProvider, shaderProgram);
+            SetUniforms(renderer, entityProvider);
 
             if (textureProvider != null)
             {
-                BindTextures(shaderProgram, textureProvider);
+                BindTextures(renderer, textureProvider);
             }
 
             Draw();
-        }
+        }*/
 
         public abstract IBatch Duplicate();
     }

@@ -1,10 +1,12 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 
 namespace SpiceEngineCore.Utilities
 {
     public static class MatrixExtensions
     {
-        public static Vector3 GetTranslation(this Matrix4 transform) => new Vector3(transform.M14, transform.M24, transform.M34);
+        /*public static Vector3 GetTranslation(this Matrix4 transform) => new Vector3(transform.M14, transform.M24, transform.M34);
 
         public static Vector3 GetScale(this Matrix4 transform) => new Vector3(transform.Column0.Length, transform.Column1.Length, transform.Column2.Length);
 
@@ -42,6 +44,6 @@ namespace SpiceEngineCore.Utilities
                 M32 = transform.M32 / scale.Y,
                 M33 = transform.M33 / scale.Z
             };
-        }
+        }*/
     }
 }

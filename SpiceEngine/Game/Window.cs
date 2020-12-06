@@ -2,7 +2,7 @@
 
 namespace SpiceEngine.Game
 {
-    public class Window : SpiceEngineCore.Game.Window
+    /*public class Window : SpiceEngineCore.Game.Window
     {
         public Window(Configuration configuration) : base(configuration) { }
 
@@ -15,5 +15,5 @@ namespace SpiceEngine.Game
         {
             
         }
-    }
+    }*/
 }

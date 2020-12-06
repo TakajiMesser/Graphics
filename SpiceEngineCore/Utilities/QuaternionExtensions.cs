@@ -1,4 +1,6 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SpiceEngineCore.Utilities
@@ -21,7 +23,7 @@ namespace SpiceEngineCore.Utilities
             || (quaternion.Z - 1.0f).IsSignificant()
             || (quaternion.W - 1.0f).IsSignificant();
 
-        public static Vector3 ApplyTo(this Quaternion quaternion, Vector3 vector) => (new Vector4(vector, 1.0f) * Matrix4.CreateFromQuaternion(quaternion)).Xyz;
+        public static Vector3 ApplyTo(this Quaternion quaternion, Vector3 vector) => (new Vector4(vector.X, vector.Y, vector.Z, 1.0f) * Matrix4.FromQuaternion(quaternion)).Xyz;
 
         /*public static bool IsSignificant(this Quaternion quaternion) => quaternion.Xyz.IsSignificant()
             || quaternion.W >= MathExtensions.EPSILON
@@ -43,7 +45,7 @@ namespace SpiceEngineCore.Utilities
                     rotationAxis = Vector3.Cross(Vector3.UnitX, normalizedVectorA);
                 }
 
-                return Quaternion.FromAxisAngle(rotationAxis.Normalized(), MathExtensions.PI);
+                return new Quaternion(rotationAxis.Normalized(), MathExtensions.PI);
             }
             else
             {
@@ -51,13 +53,11 @@ namespace SpiceEngineCore.Utilities
                 var s = (float)Math.Sqrt((1.0f + cosAngle) * 2.0f);
                 var inverseS = 1.0f / s;
 
-                return new Quaternion()
-                {
-                    X = rotationAxis.X * inverseS,
-                    Y = rotationAxis.Y * inverseS,
-                    Z = rotationAxis.Z * inverseS,
-                    W = s * 0.5f
-                };
+                return new Quaternion(
+                    rotationAxis.X * inverseS,
+                    rotationAxis.Y * inverseS,
+                    rotationAxis.Z * inverseS,
+                    s * 0.5f);
             }
         }
 
@@ -112,12 +112,7 @@ namespace SpiceEngineCore.Utilities
                 roll = (float)Math.Atan2(2.0f * quaternion.X * quaternion.W - 2.0f * quaternion.Y * quaternion.Z, -xSquared + ySquared - zSquared + wSquared);
             }
 
-            return new Vector3()
-            {
-                X = pitch,
-                Y = yaw,
-                Z = roll
-            };
+            return new Vector3(pitch, yaw, roll);
         }
     }
 }

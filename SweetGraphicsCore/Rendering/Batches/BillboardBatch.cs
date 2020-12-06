@@ -1,8 +1,6 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Rendering.Billboards;
 using System.Collections.Generic;
@@ -41,9 +39,7 @@ namespace SweetGraphicsCore.Rendering.Batches
             base.AddEntity(id, renderable);
         }
 
-        public override bool CompareUniforms(IRenderable renderable) => renderable is IBillboard billboard && _renderable.TextureIndex == billboard.TextureIndex;
-
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram) { }
+        public override bool CanBatch(IRenderable renderable) => renderable is IBillboard billboard && _renderable.TextureIndex == billboard.TextureIndex;
 
         public override void Transform(int entityID, Transform transform)
         {
@@ -54,11 +50,11 @@ namespace SweetGraphicsCore.Rendering.Batches
             _renderable.Transform(transform, offset, count);
         }
 
-        public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)
+        public override IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider)
         {
             // TODO - Also set texture Alpha value here
             var texture = textureProvider.RetrieveTexture(_renderable.TextureIndex);
-            shaderProgram.BindTexture(texture, "mainTexture", 0);
+            yield return new TextureBinding("mainTexture", texture);
         }
     }
 }

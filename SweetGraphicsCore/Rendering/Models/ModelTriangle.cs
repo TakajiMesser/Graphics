@@ -1,6 +1,5 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Matrices;
-using SweetGraphicsCore.Rendering.Models;
 
 namespace SweetGraphicsCore.Rendering.Models
 {
@@ -63,12 +62,11 @@ namespace SweetGraphicsCore.Rendering.Models
             VertexC.ScaleTexture(x, y);
         }
 
-        public Vector3 GetAveragePosition() => new Vector3()
-        {
-            X = (VertexA.Position.X + VertexA.Origin.X + VertexB.Position.X + VertexB.Origin.X + VertexC.Position.X + VertexC.Origin.X) / 3.0f,
-            Y = (VertexA.Position.Y + VertexA.Origin.Y + VertexB.Position.Y + VertexB.Origin.Y + VertexC.Position.Y + VertexC.Origin.Y) / 3.0f,
-            Z = (VertexA.Position.Z + VertexA.Origin.Z + VertexB.Position.Z + VertexB.Origin.Z + VertexC.Position.Z + VertexC.Origin.Z) / 3.0f
-        };
+        public Vector3 GetAveragePosition() => new Vector3(
+            (VertexA.Position.X + VertexA.Origin.X + VertexB.Position.X + VertexB.Origin.X + VertexC.Position.X + VertexC.Origin.X) / 3.0f,
+            (VertexA.Position.Y + VertexA.Origin.Y + VertexB.Position.Y + VertexB.Origin.Y + VertexC.Position.Y + VertexC.Origin.Y) / 3.0f,
+            (VertexA.Position.Z + VertexA.Origin.Z + VertexB.Position.Z + VertexB.Origin.Z + VertexC.Position.Z + VertexC.Origin.Z) / 3.0f
+        );
 
         public void CenterAround(Vector3 position)
         {

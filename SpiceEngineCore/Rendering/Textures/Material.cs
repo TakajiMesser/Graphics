@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +7,11 @@ namespace SpiceEngineCore.Rendering.Materials
 {
     public struct Material
     {
+        public const string AMBIENT_NAME = "ambientColor";
+        public const string DIFFUSE_NAME = "diffuseColor";
+        public const string SPECULAR_NAME = "specularColor";
+        public const string SPECULAR_EXPONENT_NAME = "specularExponent";
+
         /// <summary>
         /// Ambient light is the light that enters a room and bounces around multiple times
         /// </summary>
@@ -24,14 +28,6 @@ namespace SpiceEngineCore.Rendering.Materials
         public Vector3 Specular { get; set; }
 
         public float SpecularExponent { get; set; }
-
-        public void SetUniforms(ShaderProgram program)
-        {
-            program.SetUniform("ambientColor", Ambient);
-            program.SetUniform("diffuseColor", Diffuse);
-            program.SetUniform("specularColor", Specular);
-            program.SetUniform("specularExponent", SpecularExponent);
-        }
 
         public void SaveToFile(string name, string path)
         {

@@ -1,5 +1,5 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Textures;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;

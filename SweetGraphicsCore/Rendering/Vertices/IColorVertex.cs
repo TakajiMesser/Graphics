@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SpiceEngineCore.Geometry.Colors;
 using SpiceEngineCore.Rendering.Vertices;
 
 namespace SweetGraphicsCore.Vertices

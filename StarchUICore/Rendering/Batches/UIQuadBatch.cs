@@ -1,10 +1,9 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Entities;
+using SpiceEngineCore.Geometry.Matrices;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Groups;
 using StarchUICore.Rendering.Vertices;
@@ -72,8 +71,8 @@ namespace StarchUICore.Rendering.Batches
                 // TODO - This order within the vertex buffer needs to be altered to match the draw order from the UI Provider
                 element.MeasurementChanged += (s, args) =>
                 {
-                    var selectionID = SelectionHelper.GetColorFromID(id);
-                    var vertex = new ViewQuadVertex(args.Position, args.BorderThickness, args.Size, args.CornerRadius, args.Color, args.BorderColor, selectionID);
+                    var idColor = SelectionHelper.GetColorFromID(id);
+                    var vertex = new ViewQuadVertex(args.Position, args.BorderThickness, args.Size, args.CornerRadius, args.Color, args.BorderColor, idColor);
 
                     //var count = _countByID[id];
 
@@ -223,33 +222,15 @@ namespace StarchUICore.Rendering.Batches
             //_renderable.Update(vertexUpdate, offset, count);
         }
 
-        public override bool CompareUniforms(IRenderable renderable)
+        // TODO - Determine if we do actually want to support batching for UI items
+        public override bool CanBatch(IRenderable renderable) => renderable is IView || renderable is IGroup;
+
+        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
         {
-            // TODO - Determine if we do actually want to support batching for UI items
-            if (renderable is IView || renderable is IGroup)
-            {
-                return true;
-            }
+            var entity = batcher.GetEntitiesForBatch(this).First();
 
-            return false;
-        }
-
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
-        {
-            // TODO - Are there any per entity uniforms that we actually need to set?
-            var entity = entityProvider.GetEntity(EntityIDs.First());
-            entity.WorldMatrix.Set(shaderProgram);
-
-            // TODO - This is janky to set this uniform based on entity type...
-            /*if (entity is IBrush)
-            {
-                shaderProgram.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
-                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
-            }
-            else
-            {
-                entity.WorldMatrix.Set(shaderProgram);
-            }*/
+            yield return new Uniform<Matrix4>(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
+            yield return new Uniform<Matrix4>(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
         }
     }
 }

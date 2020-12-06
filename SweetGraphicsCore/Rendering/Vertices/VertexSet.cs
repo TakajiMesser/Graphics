@@ -1,6 +1,6 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
@@ -8,6 +8,7 @@ using SweetGraphicsCore.Buffers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Color4 = SpiceEngineCore.Geometry.Colors.Color4;
 
 namespace SweetGraphicsCore.Vertices
 {

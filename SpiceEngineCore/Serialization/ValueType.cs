@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json.Linq;
-using OpenTK;
+using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SpiceEngineCore.Serialization

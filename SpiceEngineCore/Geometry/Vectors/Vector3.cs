@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Utilities;
+﻿using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Runtime.InteropServices;
 
@@ -77,7 +78,18 @@ namespace SpiceEngineCore.Geometry.Vectors
 
         public static Vector3 operator *(Vector3 left, Vector3 right) => new Vector3(left.X * right.X, left.Y * right.Y, left.Z * right.Z);
 
+        public static Vector3 operator /(Vector3 vector, float scale) => new Vector3(vector.X / scale, vector.Y / scale, vector.Z / scale);
+
         public static Vector3 operator /(Vector3 left, Vector3 right) => new Vector3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
+
+        public static Vector3 operator *(Quaternion quaternion, Vector3 vector)
+        {
+            var vectorQuat = new Quaternion(vector.X, vector.Y, vector.Z, 1.0f);
+            var invertedQuat = quaternion.Inverted();
+            var rotatedQuat = (quaternion * vectorQuat) * invertedQuat;
+
+            return new Vector3(rotatedQuat.X, rotatedQuat.Y, rotatedQuat.Z);
+        }
 
         public static float Dot(Vector3 left, Vector3 right) => left.X * right.X + left.Y * right.Y + left.Z * right.Z;
 

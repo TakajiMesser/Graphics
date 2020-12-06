@@ -1,6 +1,5 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 
 namespace SpiceEngineCore.Entities.Volumes
 {

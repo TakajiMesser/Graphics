@@ -4,10 +4,10 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 
 namespace SweetGraphicsCore.Renderers.Processing
@@ -15,9 +15,6 @@ namespace SweetGraphicsCore.Renderers.Processing
     public class ShadowRenderer : Renderer
     {
         public const int SHADOW_SIZE = 1024;
-
-        public Texture PointDepthCubeMap { get; protected set; }
-        public Texture SpotDepthTexture { get; protected set; }
 
         private ShaderProgram _pointShadowProgram;
         private ShaderProgram _pointShadowJointProgram;
@@ -27,7 +24,12 @@ namespace SweetGraphicsCore.Renderers.Processing
         private FrameBuffer _pointFrameBuffer = new FrameBuffer();
         private FrameBuffer _spotFrameBuffer = new FrameBuffer();
 
-        protected override void LoadPrograms()
+        public ShadowRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
+        public Texture PointDepthCubeMap { get; protected set; }
+        public Texture SpotDepthTexture { get; protected set; }
+
+        protected override void LoadShaders()
         {
             _pointShadowProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.point_shadow_vert),
@@ -158,36 +160,46 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         private void PointLightPass(ICamera camera, PointLight light, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_pointShadowProgram)
-                .SetCamera(camera, light) // Draw camera from the point light's perspective
-                .SetUniform("lightRadius", light.Radius)
-                .SetUniform("lightPosition", light.Position)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render() // Draw all geometry, but only the positions
-                .SetShader(_pointShadowJointProgram)
-                .SetCamera(camera, light)
-                .SetUniform("lightRadius", light.Radius)
-                .SetUniform("lightPosition", light.Position)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .Execute();
+            _pointShadowProgram.Use();
+            _pointShadowProgram.RenderLightFromCameraPerspective(light, camera);
+            _pointShadowProgram.SetUniform("lightRadius", light.Radius);
+            _pointShadowProgram.SetUniform("lightPosition", light.Position);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic))
+            {
+                RenderBatch(_pointShadowProgram, batcher, batch); // Draw all geometry, but only the positions
+            }
+
+            _pointShadowJointProgram.Use();
+            _pointShadowJointProgram.RenderLightFromCameraPerspective(light, camera);
+            _pointShadowJointProgram.SetUniform("lightRadius", light.Radius);
+            _pointShadowJointProgram.SetUniform("lightPosition", light.Position);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueAnimated))
+            {
+                RenderBatch(_pointShadowJointProgram, batcher, batch); // Draw all geometry, but only the positions
+            }
 
             _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }
 
         private void SpotLightPass(ICamera camera, SpotLight light, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_spotShadowProgram)
-                .SetCamera(camera, light) // Draw camera from the point light's perspective
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render() // Draw all geometry, but only the positions
-                .SetShader(_spotShadowJointProgram)
-                .SetCamera(camera, light)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .Execute();
+            _spotShadowProgram.Use();
+            _spotShadowProgram.RenderLightFromCameraPerspective(light, camera);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic))
+            {
+                RenderBatch(_spotShadowProgram, batcher, batch); // Draw all geometry, but only the positions
+            }
+
+            _spotShadowJointProgram.Use();
+            _spotShadowJointProgram.RenderLightFromCameraPerspective(light, camera);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueAnimated))
+            {
+                RenderBatch(_spotShadowJointProgram, batcher, batch); // Draw all geometry, but only the positions
+            }
 
             _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
         }

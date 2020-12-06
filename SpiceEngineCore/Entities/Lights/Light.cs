@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SpiceEngineCore.Entities.Lights
@@ -21,11 +20,13 @@ namespace SpiceEngineCore.Entities.Lights
             }
         }
 
-        public abstract void DrawForStencilPass(ShaderProgram program);
+        public abstract T ToStruct();
+
+        /*public abstract void DrawForStencilPass(ShaderProgram program);
         public abstract void DrawForLightPass(ShaderProgram program);
         public abstract T ToStruct();
 
         public void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
-        //public bool CompareUniforms(Entity entity) => entity is ILight && base.CompareUniforms(entity);
+        public bool CompareUniforms(Entity entity) => entity is ILight && base.CompareUniforms(entity);*/
     }
 }

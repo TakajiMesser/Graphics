@@ -1,5 +1,5 @@
 ﻿using CitrusAnimationCore.Animations;
-using OpenTK;
+using SpiceEngineCore.Geometry.Matrices;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -101,10 +101,10 @@ namespace CitrusAnimationCore.Bones
 
                         var meshTransform = meshTransforms.First(m => m.MeshIndex == kvp.Key);
 
-                        var jointIndex = transform.JointIndices.FirstOrDefault(i => i.MeshIndex == kvp.Key);
-                        if (jointIndex != null)
+                        var jointIndex = transform.GetJointIndex(kvp.Key);
+                        if (jointIndex.HasValue)
                         {
-                            meshTransform.TransformsByBoneIndex.Add(jointIndex.BoneIndex, kvp.Value);
+                            meshTransform.TransformsByBoneIndex.Add(jointIndex.Value.BoneIndex, kvp.Value);
                         }
                     }
                 }

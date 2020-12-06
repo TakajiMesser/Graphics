@@ -3,13 +3,15 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
+using Vector3 = SpiceEngineCore.Geometry.Vectors.Vector3;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -18,15 +20,17 @@ namespace SweetGraphicsCore.Renderers.Processing
     /// </summary>
     public class FXAARenderer : Renderer
     {
-        public Texture FinalTexture { get; protected set; }
-
         private ShaderProgram _fxaaProgram;
 
         private FrameBuffer _frameBuffer = new FrameBuffer();
         private int _vertexArrayHandle;
         private VertexBuffer<Simple3DVertex> _vertexBuffer = new VertexBuffer<Simple3DVertex>();
 
-        protected override void LoadPrograms()
+        public FXAARenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
+        public Texture FinalTexture { get; protected set; }
+
+        protected override void LoadShaders()
         {
             _fxaaProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.fxaa_vert),

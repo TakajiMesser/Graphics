@@ -1,17 +1,16 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
+using Vector3 = SpiceEngineCore.Geometry.Vectors.Vector3;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -24,7 +23,9 @@ namespace SweetGraphicsCore.Renderers.Processing
         internal ShaderProgram _program;
         internal FrameBuffer _frameBuffer = new FrameBuffer();
 
-        protected override void LoadPrograms()
+        public ForwardRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
+        protected override void LoadShaders()
         {
             _program = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.forward_vert),
@@ -118,11 +119,13 @@ namespace SweetGraphicsCore.Renderers.Processing
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, resolution.Width, resolution.Height);
 
-            batcher.CreateBatchAction()
-                .SetShader(_program)
-                .SetCamera(camera)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render();
+            _program.Use();
+            _program.SetCamera(camera);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic))
+            {
+                RenderBatch(_program, batcher, batch);
+            }
         }
 
         private void BindTextures(ITextureProvider textureProvider, TextureMapping textureMapping)

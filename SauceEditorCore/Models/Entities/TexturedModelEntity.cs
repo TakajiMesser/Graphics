@@ -1,6 +1,7 @@
-﻿using OpenTK;
-using SpiceEngine.Entities.Selection;
+﻿using SpiceEngine.Entities.Selection;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Rendering.Models;

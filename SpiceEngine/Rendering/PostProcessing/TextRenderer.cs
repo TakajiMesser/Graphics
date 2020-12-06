@@ -1,18 +1,17 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Renderers;
-using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.IO;
+using Vector2 = SpiceEngineCore.Geometry.Vectors.Vector2;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {
@@ -26,9 +25,11 @@ namespace SpiceEngine.Rendering.PostProcessing
         private VertexArray<TextureVertex2D> _vertexArray = new VertexArray<TextureVertex2D>();
         private FrameBuffer _frameBuffer = new FrameBuffer();
 
+        public TextRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
         public Texture FinalTexture { get; protected set; }
 
-        protected override void LoadPrograms()
+        protected override void LoadShaders()
         {
             _textProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.text_vert),
@@ -85,13 +86,13 @@ namespace SpiceEngine.Rendering.PostProcessing
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            batcher.CreateBatchAction()
-                .SetShader(_textProgram)
-                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
-                .SetRenderType(RenderTypes.TransparentText)
-                .SetEntityIDOrder(uiProvider.GetDrawOrder())
-                .Render()
-                .Execute();
+            _textProgram.Use();
+            _textProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
+
+            foreach (var batch in batcher.GetBatchesInOrder(RenderTypes.TransparentText, uiProvider.GetDrawOrder()))
+            {
+                RenderBatch(_textProgram, batcher, batch);
+            }
 
             GL.Disable(EnableCap.Blend);
         }

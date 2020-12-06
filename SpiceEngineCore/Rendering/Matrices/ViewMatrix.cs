@@ -1,15 +1,16 @@
-﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Vectors;
 
 namespace SpiceEngineCore.Rendering.Matrices
 {
     public class ViewMatrix
     {
-        public const string NAME = "viewMatrix";
+        public const string CURRENT_NAME = "viewMatrix";
         public const string PREVIOUS_NAME = "previousViewMatrix";
         public const string SHADOW_NAME = "shadowViewMatrices";
 
-        public Matrix4 Matrix { get; private set; }
+        public Matrix4 CurrentValue { get; private set; }
+        public Matrix4 PreviousValue { get; private set; }
 
         public Vector3 Translation
         {
@@ -45,8 +46,6 @@ namespace SpiceEngineCore.Rendering.Matrices
         private Vector3 _lookAt = -Vector3.UnitZ;
         private Vector3 _up = Vector3.UnitY;
 
-        private Matrix4 _previousMatrix;
-
         public ViewMatrix() { }
         public ViewMatrix(Vector3 translation, Vector3 lookAt, Vector3 up) => Update(translation, lookAt, up);
 
@@ -59,14 +58,10 @@ namespace SpiceEngineCore.Rendering.Matrices
             CalculateMatrix();
         }
 
-        public void Set(ShaderProgram program)
+        private void CalculateMatrix()
         {
-            program.SetUniform(NAME, Matrix);
-            program.SetUniform(PREVIOUS_NAME, _previousMatrix);
-
-            _previousMatrix = Matrix;
+            PreviousValue = CurrentValue;
+            CurrentValue = Matrix4.LookAt(Translation, LookAt, Up);
         }
-
-        private void CalculateMatrix() => Matrix = Matrix4.LookAt(Translation, LookAt, Up);
     }
 }

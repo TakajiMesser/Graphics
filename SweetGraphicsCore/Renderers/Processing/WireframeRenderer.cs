@@ -1,16 +1,17 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
-using SpiceEngineCore.Utilities;
+using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
@@ -19,6 +20,15 @@ namespace SweetGraphicsCore.Renderers.Processing
 {
     public class WireframeRenderer : Renderer
     {
+        private ShaderProgram _wireframeProgram;
+        private ShaderProgram _jointWireframeProgram;
+        private ShaderProgram _gridProgram;
+
+        private FrameBuffer _frameBuffer = new FrameBuffer();
+        private SimpleMesh _gridSquare;
+
+        public WireframeRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
         public float LineThickness { get; set; } = 0.02f;
         public Vector4 LineColor { get; set; } = Vector4.One;
 
@@ -40,14 +50,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        private ShaderProgram _wireframeProgram;
-        private ShaderProgram _jointWireframeProgram;
-        private ShaderProgram _gridProgram;
-
-        private FrameBuffer _frameBuffer = new FrameBuffer();
-        private SimpleMesh _gridSquare;
-
-        protected override void LoadPrograms()
+        protected override void LoadShaders()
         {
             _wireframeProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.wireframe_vert),
@@ -148,64 +151,84 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void WireframePass(ICamera camera, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_wireframeProgram)
-                .SetCamera(camera)
-                .SetUniform("lineThickness", LineThickness)
-                .SetUniform("lineColor", LineColor)
-                .SetUniform("selectedLineThickness", SelectedLineThickness)
-                .SetUniform("selectedLineColor", SelectedLineColor)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render()
-                .SetRenderType(RenderTypes.TransparentStatic)
-                .Render()
-                .SetShader(_jointWireframeProgram)
-                .SetCamera(camera)
-                .SetUniform("lineThickness", LineThickness)
-                .SetUniform("lineColor", LineColor)
-                .SetUniform("selectedLineThickness", SelectedLineThickness)
-                .SetUniform("selectedLineColor", SelectedLineColor)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()
-                .Execute();
+            _wireframeProgram.Use();
+            _wireframeProgram.SetCamera(camera);
+            _wireframeProgram.SetUniform("lineThickness", LineThickness);
+            _wireframeProgram.SetUniform("lineColor", LineColor);
+            _wireframeProgram.SetUniform("selectedLineThickness", SelectedLineThickness);
+            _wireframeProgram.SetUniform("selectedLineColor", SelectedLineColor);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic))
+            {
+                RenderBatch(_wireframeProgram, batcher, batch);
+            }
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentStatic))
+            {
+                RenderBatch(_wireframeProgram, batcher, batch);
+            }
+
+            _jointWireframeProgram.Use();
+            _jointWireframeProgram.SetCamera(camera);
+            _jointWireframeProgram.SetUniform("lineThickness", LineThickness);
+            _jointWireframeProgram.SetUniform("lineColor", LineColor);
+            _jointWireframeProgram.SetUniform("selectedLineThickness", SelectedLineThickness);
+            _jointWireframeProgram.SetUniform("selectedLineColor", SelectedLineColor);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueAnimated))
+            {
+                RenderBatch(_wireframeProgram, batcher, batch);
+            }
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentAnimated))
+            {
+                RenderBatch(_wireframeProgram, batcher, batch);
+            }
         }
 
         public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetEntityIDSet(entityIDs)
-                .SetShader(_wireframeProgram)
-                .SetCamera(camera)
-                .SetUniform("lineThickness", 0.0f)
-                .SetUniform("lineColor", Vector4.Zero)
-                .SetUniform("selectedLineThickness", SelectedLineThickness)
-                .SetUniform("selectedLineColor", SelectedLineColor)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render()
-                .SetRenderType(RenderTypes.TransparentStatic)
-                .Render()
-                .SetShader(_jointWireframeProgram)
-                .SetCamera(camera)
-                .SetUniform("lineThickness", 0.0f)
-                .SetUniform("lineColor", Vector4.Zero)
-                .SetUniform("selectedLineThickness", SelectedLineThickness)
-                .SetUniform("selectedLineColor", SelectedLineColor)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()
-                .Execute();
+            _wireframeProgram.Use();
+            _wireframeProgram.SetCamera(camera);
+            _wireframeProgram.SetUniform("lineThickness", 0.0f);
+            _wireframeProgram.SetUniform("lineColor", Vector4.Zero);
+            _wireframeProgram.SetUniform("selectedLineThickness", SelectedLineThickness);
+            _wireframeProgram.SetUniform("selectedLineColor", SelectedLineColor);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic, entityIDs))
+            {
+                RenderBatch(_wireframeProgram, batcher, batch);
+            }
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentStatic, entityIDs))
+            {
+                RenderBatch(_wireframeProgram, batcher, batch);
+            }
+
+            _jointWireframeProgram.Use();
+            _jointWireframeProgram.SetCamera(camera);
+            _jointWireframeProgram.SetUniform("lineThickness", 0.0f);
+            _jointWireframeProgram.SetUniform("lineColor", Vector4.Zero);
+            _jointWireframeProgram.SetUniform("selectedLineThickness", SelectedLineThickness);
+            _jointWireframeProgram.SetUniform("selectedLineColor", SelectedLineColor);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic, entityIDs))
+            {
+                RenderBatch(_jointWireframeProgram, batcher, batch);
+            }
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentStatic, entityIDs))
+            {
+                RenderBatch(_jointWireframeProgram, batcher, batch);
+            }
         }
 
         public void RenderGridLines(ICamera camera)
         {
             _gridProgram.Use();
+            _gridProgram.SetCamera(camera);
 
-            camera.SetUniforms(_gridProgram);
-
-            var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
+            var model = Matrix4.Identity * Matrix4.FromQuaternion(GridRotation) * Matrix4.FromScale(new Vector3(GridLength, GridLength, GridLength));
             _gridProgram.SetUniform("modelMatrix", model);
 
             _gridProgram.SetUniform("unit", GridUnit);
@@ -219,51 +242,13 @@ namespace SweetGraphicsCore.Renderers.Processing
             _gridSquare.Draw();
         }
 
-        // TODO - Pass multiple entity ID's to this method to render all selections at once
-        public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, IBatcher batcher)
-        {
-            batcher.CreateBatchAction()
-                .SetShader(_wireframeProgram)
-                .SetCamera(camera)
-                .SetEntityIDSet(entity.ID.Yield())
-                .SetUniform("lineThickness", SelectedLightLineThickness)
-                .SetUniform("lineColor", SelectedLineColor)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render()
-                .SetShader(_jointWireframeProgram)
-                .SetCamera(camera)
-                .SetEntityIDSet(entity.ID.Yield())
-                .SetUniform("lineThickness", SelectedLightLineThickness)
-                .SetUniform("lineColor", SelectedLineColor)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .Execute();
-
-            /*var batch = batchManager.GetBatch(entity.ID);
-
-            //var program = entity is AnimatedActor ? _jointWireframeProgram : _wireframeProgram;
-            var program = batch is ModelBatch modelBatch && modelBatch.Model is IAnimatedModel animatedModel
-                ? _jointWireframeProgram
-                : _wireframeProgram;
-
-            program.Use();
-
-            camera.SetUniforms(program);
-            program.SetUniform("lineThickness", SelectedLineThickness);
-            program.SetUniform("lineColor", SelectedLineColor);
-            
-            batch.Draw(entityProvider, program);*/
-        }
-
         public void SelectionPass(ICamera camera, ILight light, SimpleMesh mesh)
         {
             _wireframeProgram.Use();
-
-            camera.SetUniforms(_wireframeProgram);
+            _wireframeProgram.SetCamera(camera);
             _wireframeProgram.SetUniform("lineThickness", SelectedLightLineThickness);
             _wireframeProgram.SetUniform("lineColor", SelectedLightLineColor);
-
-            light.SetUniforms(_wireframeProgram);
+            _wireframeProgram.SetLight(light);
 
             mesh.Draw();
         }

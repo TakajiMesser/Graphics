@@ -1,13 +1,12 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 using System.Collections.Generic;
 
@@ -15,6 +14,13 @@ namespace SweetGraphicsCore.Renderers.Processing
 {
     public class DeferredRenderer : Renderer
     {
+        private FrameBuffer _frameBuffer = new FrameBuffer();
+
+        private ShaderProgram _geometryProgram;
+        private ShaderProgram _jointGeometryProgram;
+
+        public DeferredRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
         public Texture PositionTexture { get; protected set; }
         public Texture ColorTexture { get; protected set; }
         public Texture NormalTexture { get; protected set; }
@@ -24,12 +30,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        private FrameBuffer _frameBuffer = new FrameBuffer();
-
-        private ShaderProgram _geometryProgram;
-        private ShaderProgram _jointGeometryProgram;
-
-        protected override void LoadPrograms()
+        protected override void LoadShaders()
         {
             _geometryProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.deferred_vert),
@@ -264,49 +265,54 @@ namespace SweetGraphicsCore.Renderers.Processing
             });
         }
 
-        public void BindForDiffuseWriting()
-        {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment1);
-        }
+        public void BindForDiffuseWriting() => _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment1);
 
-        public void BindForLitWriting()
-        {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
-        }
+        public void BindForLitWriting() => _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
 
         public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_geometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render()
-                .SetShader(_jointGeometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .Execute();
+            _geometryProgram.Use();
+            _geometryProgram.SetCamera(camera);
+            _geometryProgram.SetUniform("cameraPosition", camera.Position);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic))
+            {
+                RenderBatch(_geometryProgram, batcher, batch);
+            }
+
+            _jointGeometryProgram.Use();
+            _jointGeometryProgram.SetCamera(camera);
+            _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueAnimated))
+            {
+                RenderBatch(_geometryProgram, batcher, batch);
+            }
 
             GL.Enable(EnableCap.CullFace);
         }
 
         public void TransparentGeometryPass(ICamera camera, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_geometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .PerformAction(() => _geometryProgram.UnbindTextures())
-                .SetRenderType(RenderTypes.TransparentStatic)
-                .Render()
-                .SetShader(_jointGeometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()
-                .Execute();
+            _geometryProgram.Use();
+            _geometryProgram.SetCamera(camera);
+            _geometryProgram.SetUniform("cameraPosition", camera.Position);
+            _geometryProgram.UnbindTextures();
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentStatic))
+            {
+                RenderBatch(_geometryProgram, batcher, batch);
+            }
+
+            _jointGeometryProgram.Use();
+            _jointGeometryProgram.SetCamera(camera);
+            _jointGeometryProgram.SetUniform("cameraPosition", camera.Position);
+            _jointGeometryProgram.UnbindTextures();
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentAnimated))
+            {
+                RenderBatch(_jointGeometryProgram, batcher, batch);
+            }
 
             //GL.Enable(EnableCap.Blend);
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
@@ -323,7 +329,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             // We will also need a bounding sphere or bounding box from the mesh to determine this
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Position;
+                //Vector3 position = actor.Position;
             }
 
             return actors;
@@ -334,7 +340,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             // TODO - Don't render meshes that are obscured by closer meshes
             foreach (var actor in actors)
             {
-                Vector3 position = actor.Position;
+                //Vector3 position = actor.Position;
             }
 
             return actors;

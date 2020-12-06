@@ -1,10 +1,10 @@
-﻿using OpenTK;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Brushes;
+﻿using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SweetGraphicsCore.Rendering.Meshes;
@@ -96,7 +96,7 @@ namespace SweetGraphicsCore.Rendering.Batches
             Mesh.AddVertices(vertices);
         }*/
 
-        public override bool CompareUniforms(IRenderable renderable)
+        public override bool CanBatch(IRenderable renderable)
         {
             if (renderable is IMesh)
             {
@@ -135,39 +135,46 @@ namespace SweetGraphicsCore.Rendering.Batches
                 && TextureMappings.Equals(textureBinder.TextureMappings);*/
         }
 
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
+        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
         {
-            var entity = entityProvider.GetEntity(EntityIDs.First());
+            var entity = batcher.GetEntitiesForBatch(this).First();
 
             // TODO - This is janky to set this uniform based on entity type...
             if (entity is IBrush)
             {
-                shaderProgram.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
-                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
+                yield return new Uniform<Matrix4>(ModelMatrix.CURRENT_NAME, Matrix4.Identity);
+                yield return new Uniform<Matrix4>(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
             }
             else
             {
-                entity.WorldMatrix.Set(shaderProgram);
+                yield return new Uniform<Matrix4>(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
+                yield return new Uniform<Matrix4>(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
             }
 
             if (_renderable is ITexturedMesh texturedMesh)
             {
-                texturedMesh.Material.SetUniforms(shaderProgram);
+                yield return new Uniform<Vector3>(Material.AMBIENT_NAME, texturedMesh.Material.Ambient);
+                yield return new Uniform<Vector3>(Material.DIFFUSE_NAME, texturedMesh.Material.Diffuse);
+                yield return new Uniform<Vector3>(Material.SPECULAR_NAME, texturedMesh.Material.Specular);
+                yield return new Uniform<float>(Material.SPECULAR_EXPONENT_NAME, texturedMesh.Material.SpecularExponent);
             }
         }
 
-        public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)
+        public override IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider)
         {
-            if (_renderable is ITexturedMesh texturedMesh)
+            if (_renderable is ITexturedMesh texturedMesh && texturedMesh.TextureMapping.HasValue)
             {
-                if (texturedMesh.TextureMapping.HasValue)
-                {
-                    shaderProgram.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
-                }
-                else
-                {
-                    shaderProgram.UnbindTextures();
-                }
+                var diffuseTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.DiffuseIndex);
+                yield return new TextureBinding(TextureMapping.DIFFUSE_NAME, diffuseTexture);
+
+                var normalTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.NormalIndex);
+                yield return new TextureBinding(TextureMapping.NORMAL_NAME, normalTexture);
+
+                var specularTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.SpecularIndex);
+                yield return new TextureBinding(TextureMapping.SPECULAR_NAME, specularTexture);
+
+                var parallaxTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.ParallaxIndex);
+                yield return new TextureBinding(TextureMapping.PARALLAX_NAME, parallaxTexture);
             }
         }
     }

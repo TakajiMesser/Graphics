@@ -1,6 +1,4 @@
 ﻿using CitrusAnimationCore.Animations;
-using OpenTK;
-using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
@@ -33,6 +31,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Color4 = SpiceEngineCore.Geometry.Colors.Color4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternions.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vectors.Vector2;
 
 namespace SpiceEngine.Rendering
 {
@@ -52,9 +53,6 @@ namespace SpiceEngine.Rendering
         public double Frequency { get; internal set; }
         public bool RenderGrid { get; set; }
 
-        public TextureManager TextureManager { get; } = new TextureManager();
-        public FontManager FontManager { get; }
-
         // TODO - Make this less janky
         public bool IsInEditorMode { get; set; }
 
@@ -62,23 +60,25 @@ namespace SpiceEngine.Rendering
         private IUIProvider _uiProvider;
         private ISelectionProvider _selectionProvider;
 
+        private TextureManager _textureManager = new TextureManager();
+        private FontManager _fontManager;
         private BatchManager _batchManager;
 
-        //private ForwardRenderer _forwardRenderer = new ForwardRenderer();
-        private DeferredRenderer _deferredRenderer = new DeferredRenderer();
-        private WireframeRenderer _wireframeRenderer = new WireframeRenderer();
-        private ShadowRenderer _shadowRenderer = new ShadowRenderer();
-        private LightRenderer _lightRenderer = new LightRenderer();
-        private SkyboxRenderer _skyboxRenderer = new SkyboxRenderer();
-        private SelectionRenderer _selectionRenderer = new SelectionRenderer();
-        private BillboardRenderer _billboardRenderer = new BillboardRenderer();
+        //private ForwardRenderer _forwardRenderer;
+        private DeferredRenderer _deferredRenderer;
+        private WireframeRenderer _wireframeRenderer;
+        private ShadowRenderer _shadowRenderer;
+        private LightRenderer _lightRenderer;
+        private SkyboxRenderer _skyboxRenderer;
+        private SelectionRenderer _selectionRenderer;
+        private BillboardRenderer _billboardRenderer;
 
-        private FXAARenderer _fxaaRenderer = new FXAARenderer();
-        private Blur _blurRenderer = new Blur();
-        private InvertColors _invertRenderer = new InvertColors();
-        private TextRenderer _textRenderer = new TextRenderer();
-        private RenderToScreen _renderToScreen = new RenderToScreen();
-        private UIRenderer _uiRenderer = new UIRenderer();
+        private FXAARenderer _fxaaRenderer;
+        private Blur _blurRenderer;
+        private InvertColors _invertRenderer;
+        private TextRenderer _textRenderer;
+        private RenderToScreen _renderToScreen;
+        private UIRenderer _uiRenderer;
 
         private LogManager _logManager;
 
@@ -89,7 +89,7 @@ namespace SpiceEngine.Rendering
             set
             {
                 _invoker = value;
-                TextureManager.Invoker = value;
+                _textureManager.Invoker = value;
             }
         }
 
@@ -107,8 +107,28 @@ namespace SpiceEngine.Rendering
                 }
             };
 
-            FontManager = new FontManager(TextureManager);
+            InitializeRenderers();
+
+            _fontManager = new FontManager(_textureManager);
             _logManager = new LogManager(_textRenderer);
+        }
+
+        private void InitializeRenderers()
+        {
+            _deferredRenderer = new DeferredRenderer(_textureManager);
+            _wireframeRenderer = new WireframeRenderer(_textureManager);
+            _shadowRenderer = new ShadowRenderer(_textureManager);
+            _lightRenderer = new LightRenderer(_textureManager);
+            _skyboxRenderer = new SkyboxRenderer(_textureManager);
+            _selectionRenderer = new SelectionRenderer(_textureManager);
+            _billboardRenderer = new BillboardRenderer(_textureManager);
+
+            _fxaaRenderer = new FXAARenderer(_textureManager);
+            _blurRenderer = new Blur(_textureManager);
+            _invertRenderer = new InvertColors(_textureManager);
+            _textRenderer = new TextRenderer(_textureManager);
+            _renderToScreen = new RenderToScreen(_textureManager);
+            _uiRenderer = new UIRenderer(_textureManager);
         }
 
         public IRenderable GetRenderable(int entityID) => _componentByID[entityID];
@@ -132,7 +152,7 @@ namespace SpiceEngine.Rendering
                 camera.UpdateAspectRatio(Resolution.AspectRatio);
             }*/
 
-            _batchManager = new BatchManager(_entityProvider, TextureManager);
+            _batchManager = new BatchManager(_entityProvider, _textureManager);
 
             if (_animationProvider != null)
             {
@@ -154,7 +174,7 @@ namespace SpiceEngine.Rendering
         public void SetUIProvider(IUIProvider uiProvider)
         {
             _uiProvider = uiProvider;
-            _uiProvider.SetTextureProvider(TextureManager);
+            _uiProvider.SetTextureProvider(_textureManager);
             _batchManager?.SetUIProvider(_uiProvider);
         }
 
@@ -176,7 +196,7 @@ namespace SpiceEngine.Rendering
             {
                 if (component is IBillboard billboard)
                 {
-                    billboard.LoadTexture(TextureManager);
+                    billboard.LoadTexture(_textureManager);
                 }
                 else if (component is ITexturedMesh texturedMesh)
                 {
@@ -186,7 +206,7 @@ namespace SpiceEngine.Rendering
 
                         if (texturePaths != null && !texturePaths.IsEmpty)
                         {
-                            texturedMesh.TextureMapping = texturePaths.ToTextureMapping(TextureManager);
+                            texturedMesh.TextureMapping = texturePaths.ToTextureMapping(_textureManager);
                         }
                     }
                 }
@@ -205,8 +225,8 @@ namespace SpiceEngine.Rendering
                                     if (model.Meshes[i] is ITexturedMesh modelTexturedMesh)
                                     {
                                         var textureMapping = i < texturePather.TexturesPaths.Count
-                                            ? texturePather.TexturesPaths[i].ToTextureMapping(TextureManager)
-                                            : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(modelPather.ModelFilePath)).ToTextureMapping(TextureManager);
+                                            ? texturePather.TexturesPaths[i].ToTextureMapping(_textureManager)
+                                            : scene.Materials[scene.Meshes[i].MaterialIndex].ToTexturePaths(Path.GetDirectoryName(modelPather.ModelFilePath)).ToTextureMapping(_textureManager);
 
                                         modelTexturedMesh.TextureMapping = textureMapping;
                                     }
@@ -219,7 +239,7 @@ namespace SpiceEngine.Rendering
                             {
                                 if (model.Meshes[i] is ITexturedMesh modelTexturedMesh && i < texturePather.TexturesPaths.Count)
                                 {
-                                    modelTexturedMesh.TextureMapping = texturePather.TexturesPaths[i].ToTextureMapping(TextureManager);
+                                    modelTexturedMesh.TextureMapping = texturePather.TexturesPaths[i].ToTextureMapping(_textureManager);
                                 }
                             }
                         }
@@ -256,7 +276,8 @@ namespace SpiceEngine.Rendering
                 //var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
                 //_logManager.SetFont(font);
 
-                GL.ClearColor(Color4.Black);
+                var clearColor = Color4.Black;
+                GL.ClearColor(clearColor.R, clearColor.G, clearColor.B, clearColor.A);
                 /*} catch (Exception ex)
                 {
                     Console.WriteLine(ex);

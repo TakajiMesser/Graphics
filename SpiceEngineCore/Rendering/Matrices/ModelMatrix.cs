@@ -1,12 +1,13 @@
-﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SpiceEngineCore.Rendering.Matrices
 {
     public class ModelMatrix
     {
-        public const string NAME = "modelMatrix";
+        public const string CURRENT_NAME = "modelMatrix";
         public const string PREVIOUS_NAME = "previousModelMatrix";
 
         public ModelMatrix() : this(new Transform()) { }
@@ -14,13 +15,12 @@ namespace SpiceEngineCore.Rendering.Matrices
         public ModelMatrix(Transform transform)
         {
             WorldTransform = transform;
-            CurrentMatrix = WorldTransform.ToMatrix();
+            CurrentValue = WorldTransform.ToMatrix();
         }
 
+        public Matrix4 CurrentValue { get; private set; }
+        public Matrix4 PreviousValue { get; private set; }
         public Transform WorldTransform { get; private set; }
-        public Matrix4 CurrentMatrix { get; private set; }
-        public Matrix4 PreviousMatrix { get; private set; }
-        
 
         public Vector3 Position
         {
@@ -48,12 +48,10 @@ namespace SpiceEngineCore.Rendering.Matrices
                 // TODO - Because we are calculating differences on scale set, if the scale is ever zero'd out we cannot recover from it :(
                 if (value.X == 0.0f || value.Y == 0.0f || value.Z == 0.0f) throw new NotSupportedException("Cannot handle a Scale value of zero!");
 
-                var scaleDifference = new Vector3()
-                {
-                    X = value.X / Scale.X,
-                    Y = value.Y / Scale.Y,
-                    Z = value.Z / Scale.Z
-                };
+                var scaleDifference = new Vector3(
+                    value.X / Scale.X,
+                    value.Y / Scale.Y,
+                    value.Z / Scale.Z);
 
                 Transform(Matrices.Transform.FromScale(scaleDifference));
             }
@@ -65,15 +63,9 @@ namespace SpiceEngineCore.Rendering.Matrices
         {
             Transformed?.Invoke(this, new TransformEventArgs(transform));
             WorldTransform.Combine(transform);
-            CurrentMatrix = WorldTransform.ToMatrix();
-        }
 
-        public void Set(ShaderProgram program)
-        {
-            program.SetUniform(NAME, CurrentMatrix);
-            program.SetUniform(PREVIOUS_NAME, PreviousMatrix);
-
-            PreviousMatrix = CurrentMatrix;
+            PreviousValue = CurrentValue;
+            CurrentValue = WorldTransform.ToMatrix();
         }
     }
 }

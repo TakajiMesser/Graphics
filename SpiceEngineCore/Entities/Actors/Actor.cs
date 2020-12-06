@@ -1,4 +1,5 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Quaternions;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngineCore.Entities.Actors

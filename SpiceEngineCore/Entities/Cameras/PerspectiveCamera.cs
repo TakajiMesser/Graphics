@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Utilities;
 using System;
@@ -39,12 +39,11 @@ namespace SpiceEngineCore.Entities.Cameras
             var horizontal = _distance * Math.Cos(CurrentAngles.Y);
             var vertical = _distance * Math.Sin(CurrentAngles.Y);
 
-            AttachedTranslation = new Vector3()
-            {
-                X = -(float)(horizontal * Math.Sin(CurrentAngles.X)),
-                Y = -(float)(horizontal * Math.Cos(CurrentAngles.X)),
-                Z = (float)vertical
-            };
+            var x = -(float)(horizontal * Math.Sin(CurrentAngles.X));
+            var y = -(float)(horizontal * Math.Cos(CurrentAngles.X));
+            var z = (float)vertical;
+
+            AttachedTranslation = new Vector3(x, y, z);
         }
 
         public void CalculateUp()
@@ -54,12 +53,11 @@ namespace SpiceEngineCore.Entities.Cameras
             var horizontal = _distance * Math.Cos(yAngle);
             var vertical = _distance * Math.Sin(yAngle);
 
-            _viewMatrix.Up = new Vector3()
-            {
-                X = -(float)(horizontal * Math.Sin(CurrentAngles.X)),
-                Y = -(float)(horizontal * Math.Cos(CurrentAngles.X)),
-                Z = (float)vertical
-            };
+            var x = -(float)(horizontal * Math.Sin(CurrentAngles.X));
+            var y = -(float)(horizontal * Math.Cos(CurrentAngles.X));
+            var z = (float)vertical;
+
+            _viewMatrix.Up = new Vector3(x, y, z);
         }
     }
 }

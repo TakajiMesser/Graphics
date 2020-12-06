@@ -1,4 +1,4 @@
-﻿using OpenTK;
+﻿using SpiceEngineCore.Geometry.Quaternions;
 
 namespace SpiceEngineCore.Entities.Actors
 {

@@ -1,15 +1,15 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry.Colors;
+using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Rendering.Batches;
+using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Selection;
 using SweetGraphicsCore.Vertices;
@@ -29,9 +29,6 @@ namespace SweetGraphicsCore.Renderers.Processing
         public const int MAGENTA_ID = 16711935;
         public const int YELLOW_ID = 65535;
 
-        public Texture FinalTexture { get; protected set; }
-        public Texture DepthStencilTexture { get; protected set; }
-
         private ShaderProgram _selectionProgram;
         private ShaderProgram _jointSelectionProgram;
         private ShaderProgram _translateProgram;
@@ -42,7 +39,12 @@ namespace SweetGraphicsCore.Renderers.Processing
         private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
         private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
 
-        protected override void LoadPrograms()
+        public SelectionRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
+
+        public Texture FinalTexture { get; protected set; }
+        public Texture DepthStencilTexture { get; protected set; }
+
+        protected override void LoadShaders()
         {
             _selectionProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.selection_vert),
@@ -154,25 +156,31 @@ namespace SweetGraphicsCore.Renderers.Processing
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
         public void SelectionPass(ICamera camera, IBatcher batcher, IEnumerable<int> ids)
         {
-            batcher.CreateBatchAction()
-                .SetShader(_selectionProgram)
-                .SetCamera(camera)
-                .SetEntityIDSet(ids)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render()
-                .SetRenderType(RenderTypes.TransparentStatic)
-                .Render()
-                //.RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
-                //.RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
-                .SetShader(_jointSelectionProgram)
-                .SetCamera(camera)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()
-                //.RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
-                //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
-                .Execute();
+            _selectionProgram.Use();
+            _selectionProgram.SetCamera(camera);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic, ids))
+            {
+                RenderBatch(_selectionProgram, batcher, batch);
+            }
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentStatic, ids))
+            {
+                RenderBatch(_selectionProgram, batcher, batch);
+            }
+
+            _jointSelectionProgram.Use();
+            _jointSelectionProgram.SetCamera(camera);
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueAnimated, ids))
+            {
+                RenderBatch(_jointSelectionProgram, batcher, batch);
+            }
+
+            foreach (var batch in batcher.GetBatches(RenderTypes.TransparentAnimated, ids))
+            {
+                RenderBatch(_jointSelectionProgram, batcher, batch);
+            }
         }
 
         //public void UIPass(ICamera camera, IBatcher batcher, IEntityProvider entity)
@@ -182,7 +190,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _translateProgram.Use();
 
-            camera.SetUniforms(_translateProgram);
+            _translateProgram.SetCamera(camera);
             _translateProgram.SetUniform("cameraPosition", camera.Position);
             _translateProgram.SetUniform("xDirection", xDirection);
             _translateProgram.SetUniform("yDirection", yDirection);
@@ -205,7 +213,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _rotateProgram.Use();
 
-            camera.SetUniforms(_rotateProgram);
+            _rotateProgram.SetCamera(camera);
             _rotateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -225,7 +233,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _scaleProgram.Use();
 
-            camera.SetUniforms(_scaleProgram);
+            _scaleProgram.SetCamera(camera);
             _scaleProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
