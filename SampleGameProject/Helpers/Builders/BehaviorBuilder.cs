@@ -1,6 +1,6 @@
-﻿using OpenTK;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Maps;
 using SpiceEngine.Scripting;
+using SpiceEngineCore.Geometry.Vectors;
 using System.Collections.Generic;
 using UmamiScriptingCore.Meters;
 using UmamiScriptingCore.Scripts;

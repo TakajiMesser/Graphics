@@ -83,28 +83,28 @@ namespace SweetGraphicsCore.Renderers.Shaders
         {
             switch (uniform)
             {
-                case IUniform<Matrix4> matrix4:
+                case Uniform<Matrix4> matrix4:
                     SetUniform(uniform.Name, matrix4.Value);
                     break;
-                case IUniform<Matrix4[]> matrices:
+                case Uniform<Matrix4[]> matrices:
                     SetUniform(uniform.Name, matrices.Value);
                     break;
-                case IUniform<Vector2> vector2:
+                case Uniform<Vector2> vector2:
                     SetUniform(uniform.Name, vector2.Value);
                     break;
-                case IUniform<Vector3> vector3:
+                case Uniform<Vector3> vector3:
                     SetUniform(uniform.Name, vector3.Value);
                     break;
-                case IUniform<Vector4> vector4:
+                case Uniform<Vector4> vector4:
                     SetUniform(uniform.Name, vector4.Value);
                     break;
-                case IUniform<Color4> color4:
+                case Uniform<Color4> color4:
                     SetUniform(uniform.Name, color4.Value);
                     break;
-                case IUniform<float> floatValue:
+                case Uniform<float> floatValue:
                     SetUniform(uniform.Name, floatValue.Value);
                     break;
-                case IUniform<int> intValue:
+                case Uniform<int> intValue:
                     SetUniform(uniform.Name, intValue.Value);
                     break;
             }
