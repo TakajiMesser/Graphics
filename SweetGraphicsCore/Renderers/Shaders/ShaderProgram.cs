@@ -162,15 +162,15 @@ namespace SweetGraphicsCore.Renderers.Shaders
 
             unsafe
             {
-                fixed(float *matrix_ptr = &matrix.Values[0])
-                {
-                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
-                }
-
-                /*fixed (float* matrix_ptr = &matrix.Row0.X)
+                /*fixed(float *matrix_ptr = &matrix.Values[0])
                 {
                     GL.UniformMatrix4(location, 1, false, matrix_ptr);
                 }*/
+
+                fixed (float* matrix_ptr = &matrix.Row0.X)
+                {
+                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
+                }
             }
         }
 
@@ -360,7 +360,7 @@ namespace SweetGraphicsCore.Renderers.Shaders
                 SetUniform("lightRadius", spotLight.Radius);
                 SetUniform("lightHeight", spotLight.Height);
 
-                var lightVector = (new Vector4(0.0f, 0.0f, -spotLight.Height, 1.0f) * Matrix4.FromQuaternion(spotLight.Rotation)).Xyz;
+                var lightVector = (new Vector4(0.0f, 0.0f, -spotLight.Height, 1.0f) * Matrix4.CreateFromQuaternion(spotLight.Rotation)).Xyz;
                 SetUniform("lightVector", lightVector);
 
                 var cutoffVector = new Vector2(spotLight.Radius, spotLight.Height);
@@ -393,7 +393,7 @@ namespace SweetGraphicsCore.Renderers.Shaders
                 SetUniform("lightRadius", spotLight.Radius);
                 SetUniform("lightHeight", spotLight.Height);
 
-                var lightVector = (new Vector4(0.0f, 0.0f, -spotLight.Height, 1.0f) * Matrix4.FromQuaternion(spotLight.Rotation)).Xyz;
+                var lightVector = (new Vector4(0.0f, 0.0f, -spotLight.Height, 1.0f) * Matrix4.CreateFromQuaternion(spotLight.Rotation)).Xyz;
                 SetUniform("lightVector", lightVector);
 
                 var cutoffVector = new Vector2(spotLight.Radius, spotLight.Height);

@@ -101,7 +101,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 _program.BindTexture(SkyTexture, "mainTexture", 0);
 
                 _program.SetCamera(camera);
-                _program.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.FromTranslation(camera.Position));
+                _program.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.CreateTranslation(camera.Position));
                 _cubeMesh.Draw();
 
                 GL.CullFace((CullFaceMode)oldCullFaceMode);
@@ -140,7 +140,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                     ? Quaternion.Identity
                     : new Quaternion(rotationAxis, UnitConversions.ToDegrees((float)Math.Acos(cosTheta)));
 
-                _2DProgram.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.FromQuaternion(rotation) * Matrix4.FromTranslation(camera.Position));
+                _2DProgram.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(camera.Position));
                 _squareMesh.Draw();
             }
         }

@@ -13,49 +13,49 @@ namespace SpiceEngineCore.Geometry.Matrices
     /// <seealso cref="Matrix4d"/>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct Matrix4 : IEquatable<Matrix4>
+    public struct TMatrix4 : IEquatable<TMatrix4>
     {
         /// <summary>
         /// Top row of the matrix.
         /// </summary>
-        public Vector4 Row0;
+        public TVector4 Row0;
 
         /// <summary>
         /// 2nd row of the matrix.
         /// </summary>
-        public Vector4 Row1;
+        public TVector4 Row1;
 
         /// <summary>
         /// 3rd row of the matrix.
         /// </summary>
-        public Vector4 Row2;
+        public TVector4 Row2;
 
         /// <summary>
         /// Bottom row of the matrix.
         /// </summary>
-        public Vector4 Row3;
+        public TVector4 Row3;
 
         public float[] Values => new[] { M11, M12, M13, M14, M21, M22, M23, M24, M31, M32, M33, M34, M41, M42, M43, M44 };
 
         /// <summary>
         /// The identity matrix.
         /// </summary>
-        public static readonly Matrix4 Identity =
-            new Matrix4(Vector4.UnitX, Vector4.UnitY, Vector4.UnitZ, Vector4.UnitW);
+        public static readonly TMatrix4 Identity =
+            new TMatrix4(TVector4.UnitX, TVector4.UnitY, TVector4.UnitZ, TVector4.UnitW);
 
         /// <summary>
         /// The zero matrix.
         /// </summary>
-        public static readonly Matrix4 Zero = new Matrix4(Vector4.Zero, Vector4.Zero, Vector4.Zero, Vector4.Zero);
+        public static readonly TMatrix4 Zero = new TMatrix4(TVector4.Zero, TVector4.Zero, TVector4.Zero, TVector4.Zero);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix4"/> struct.
+        /// Initializes a new instance of the <see cref="TMatrix4"/> struct.
         /// </summary>
         /// <param name="row0">Top row of the matrix.</param>
         /// <param name="row1">Second row of the matrix.</param>
         /// <param name="row2">Third row of the matrix.</param>
         /// <param name="row3">Bottom row of the matrix.</param>
-        public Matrix4(Vector4 row0, Vector4 row1, Vector4 row2, Vector4 row3)
+        public TMatrix4(TVector4 row0, TVector4 row1, TVector4 row2, TVector4 row3)
         {
             Row0 = row0;
             Row1 = row1;
@@ -64,7 +64,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix4"/> struct.
+        /// Initializes a new instance of the <see cref="TMatrix4"/> struct.
         /// </summary>
         /// <param name="m00">First item of the first row of the matrix.</param>
         /// <param name="m01">Second item of the first row of the matrix.</param>
@@ -83,7 +83,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="m32">Third item of the fourth row of the matrix.</param>
         /// <param name="m33">Fourth item of the fourth row of the matrix.</param>
         [SuppressMessage("ReSharper", "SA1117", Justification = "For better readability of Matrix struct.")]
-        public Matrix4
+        public TMatrix4
         (
             float m00, float m01, float m02, float m03,
             float m10, float m11, float m12, float m13,
@@ -91,17 +91,17 @@ namespace SpiceEngineCore.Geometry.Matrices
             float m30, float m31, float m32, float m33
         )
         {
-            Row0 = new Vector4(m00, m01, m02, m03);
-            Row1 = new Vector4(m10, m11, m12, m13);
-            Row2 = new Vector4(m20, m21, m22, m23);
-            Row3 = new Vector4(m30, m31, m32, m33);
+            Row0 = new TVector4(m00, m01, m02, m03);
+            Row1 = new TVector4(m10, m11, m12, m13);
+            Row2 = new TVector4(m20, m21, m22, m23);
+            Row3 = new TVector4(m30, m31, m32, m33);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix4"/> struct.
+        /// Initializes a new instance of the <see cref="TMatrix4"/> struct.
         /// </summary>
         /// <param name="topLeft">The top left 3x3 of the matrix.</param>
-        public Matrix4(Matrix3 topLeft)
+        public TMatrix4(TMatrix3 topLeft)
         {
             Row0.X = topLeft.Row0.X;
             Row0.Y = topLeft.Row0.Y;
@@ -159,9 +159,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <summary>
         /// Gets or sets the first column of this matrix.
         /// </summary>
-        public Vector4 Column0
+        public TVector4 Column0
         {
-            get => new Vector4(Row0.X, Row1.X, Row2.X, Row3.X);
+            get => new TVector4(Row0.X, Row1.X, Row2.X, Row3.X);
             set
             {
                 Row0.X = value.X;
@@ -174,9 +174,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <summary>
         /// Gets or sets the second column of this matrix.
         /// </summary>
-        public Vector4 Column1
+        public TVector4 Column1
         {
-            get => new Vector4(Row0.Y, Row1.Y, Row2.Y, Row3.Y);
+            get => new TVector4(Row0.Y, Row1.Y, Row2.Y, Row3.Y);
             set
             {
                 Row0.Y = value.X;
@@ -189,9 +189,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <summary>
         /// Gets or sets the third column of this matrix.
         /// </summary>
-        public Vector4 Column2
+        public TVector4 Column2
         {
-            get => new Vector4(Row0.Z, Row1.Z, Row2.Z, Row3.Z);
+            get => new TVector4(Row0.Z, Row1.Z, Row2.Z, Row3.Z);
             set
             {
                 Row0.Z = value.X;
@@ -204,9 +204,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <summary>
         /// Gets or sets the fourth column of this matrix.
         /// </summary>
-        public Vector4 Column3
+        public TVector4 Column3
         {
-            get => new Vector4(Row0.W, Row1.W, Row2.W, Row3.W);
+            get => new TVector4(Row0.W, Row1.W, Row2.W, Row3.W);
             set
             {
                 Row0.W = value.X;
@@ -363,9 +363,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <summary>
         /// Gets or sets the values along the main diagonal of the matrix.
         /// </summary>
-        public Vector4 Diagonal
+        public TVector4 Diagonal
         {
-            get => new Vector4(Row0.X, Row1.Y, Row2.Z, Row3.W);
+            get => new TVector4(Row0.X, Row1.Y, Row2.Z, Row3.W);
             set
             {
                 Row0.X = value.X;
@@ -460,7 +460,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Returns a normalized copy of this instance.
         /// </summary>
         /// <returns>The normalized copy.</returns>
-        public Matrix4 Normalized()
+        public TMatrix4 Normalized()
         {
             var m = this;
             m.Normalize();
@@ -483,7 +483,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Returns an inverted copy of this instance.
         /// </summary>
         /// <returns>The inverted copy.</returns>
-        public Matrix4 Inverted()
+        public TMatrix4 Inverted()
         {
             var m = this;
             if (m.Determinant != 0)
@@ -495,21 +495,21 @@ namespace SpiceEngineCore.Geometry.Matrices
         }
 
         /// <summary>
-        /// Returns a copy of this Matrix4 without translation.
+        /// Returns a copy of this TMatrix4 without translation.
         /// </summary>
         /// <returns>The matrix without translation.</returns>
-        public Matrix4 ClearTranslation()
+        public TMatrix4 ClearTranslation()
         {
             var m = this;
-            m.Row3.Xyz = Vector3.Zero;
+            m.Row3.Xyz = TVector3.Zero;
             return m;
         }
 
         /// <summary>
-        /// Returns a copy of this Matrix4 without scale.
+        /// Returns a copy of this TMatrix4 without scale.
         /// </summary>
         /// <returns>The matrix without scaling.</returns>
-        public Matrix4 ClearScale()
+        public TMatrix4 ClearScale()
         {
             var m = this;
             m.Row0.Xyz = m.Row0.Xyz.Normalized();
@@ -519,26 +519,26 @@ namespace SpiceEngineCore.Geometry.Matrices
         }
 
         /// <summary>
-        /// Returns a copy of this Matrix4 without rotation.
+        /// Returns a copy of this TMatrix4 without rotation.
         /// </summary>
         /// <returns>The matrix without rotation.</returns>
-        public Matrix4 ClearRotation()
+        public TMatrix4 ClearRotation()
         {
             var m = this;
-            m.Row0.Xyz = new Vector3(m.Row0.Xyz.Length, 0, 0);
-            m.Row1.Xyz = new Vector3(0, m.Row1.Xyz.Length, 0);
-            m.Row2.Xyz = new Vector3(0, 0, m.Row2.Xyz.Length);
+            m.Row0.Xyz = new TVector3(m.Row0.Xyz.Length, 0, 0);
+            m.Row1.Xyz = new TVector3(0, m.Row1.Xyz.Length, 0);
+            m.Row2.Xyz = new TVector3(0, 0, m.Row2.Xyz.Length);
             return m;
         }
 
         /// <summary>
-        /// Returns a copy of this Matrix4 without projection.
+        /// Returns a copy of this TMatrix4 without projection.
         /// </summary>
         /// <returns>The matrix without projection.</returns>
-        public Matrix4 ClearProjection()
+        public TMatrix4 ClearProjection()
         {
             var m = this;
-            m.Column3 = Vector4.Zero;
+            m.Column3 = TVector4.Zero;
             return m;
         }
 
@@ -546,7 +546,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Returns the translation component of this instance.
         /// </summary>
         /// <returns>The translation.</returns>
-        public Vector3 ExtractTranslation()
+        public TVector3 ExtractTranslation()
         {
             return Row3.Xyz;
         }
@@ -555,9 +555,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Returns the scale component of this instance.
         /// </summary>
         /// <returns>The scale.</returns>
-        public Vector3 ExtractScale()
+        public TVector3 ExtractScale()
         {
-            return new Vector3(Row0.Xyz.Length, Row1.Xyz.Length, Row2.Xyz.Length);
+            return new TVector3(Row0.Xyz.Length, Row1.Xyz.Length, Row2.Xyz.Length);
         }
 
         /// <summary>
@@ -569,7 +569,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </param>
         /// <returns>The rotation.</returns>
         [Pure]
-        public Quaternion ExtractRotation(bool rowNormalize = true)
+        public TQuaternion ExtractRotation(bool rowNormalize = true)
         {
             var row0 = Row0.Xyz;
             var row1 = Row1.Xyz;
@@ -583,7 +583,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             }
 
             // code below adapted from Blender
-            var q = default(Quaternion);
+            var q = default(TQuaternion);
             var trace = 0.25 * (row0[0] + row1[1] + row2[2] + 1.0);
 
             if (trace > 0)
@@ -635,7 +635,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Returns the projection component of this instance.
         /// </summary>
         /// <returns>The projection.</returns>
-        public Vector4 ExtractProjection()
+        public TVector4 ExtractProjection()
         {
             return Column3;
         }
@@ -646,7 +646,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="axis">The axis to rotate about.</param>
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <param name="result">A matrix instance.</param>
-        public static void CreateFromAxisAngle(Vector3 axis, float angle, out Matrix4 result)
+        public static void CreateFromAxisAngle(TVector3 axis, float angle, out TMatrix4 result)
         {
             // normalize and create a local copy of the vector.
             axis.Normalize();
@@ -681,7 +681,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             result.Row2.Y = tYZ + sinX;
             result.Row2.Z = tZZ + cos;
             result.Row2.W = 0;
-            result.Row3 = Vector4.UnitW;
+            result.Row3 = TVector4.UnitW;
         }
 
         /// <summary>
@@ -691,9 +691,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="angle">Angle in radians to rotate counter-clockwise (looking in the direction of the given axis).</param>
         /// <returns>A matrix instance.</returns>
         [Pure]
-        public static Matrix4 CreateFromAxisAngle(Vector3 axis, float angle)
+        public static TMatrix4 CreateFromAxisAngle(TVector3 axis, float angle)
         {
-            CreateFromAxisAngle(axis, angle, out Matrix4 result);
+            CreateFromAxisAngle(axis, angle, out TMatrix4 result);
             return result;
         }
 
@@ -702,9 +702,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="q">The quaternion to rotate by.</param>
         /// <param name="result">A matrix instance.</param>
-        public static void FromQuaternion(in Quaternion q, out Matrix4 result)
+        public static void CreateFromQuaternion(in TQuaternion q, out TMatrix4 result)
         {
-            // Adapted from https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#Quaternion-derived_rotation_matrix
+            // Adapted from https://en.wikipedia.org/wiki/Quaternions_and_spatial_rotation#TQuaternion-derived_rotation_matrix
             // with the caviat that opentk uses row-major matrices so the matrix we create is transposed
             float sqx = q.X * q.X;
             float sqy = q.Y * q.Y;
@@ -738,7 +738,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             result.Row0.W = 0;
             result.Row1.W = 0;
             result.Row2.W = 0;
-            result.Row3 = new Vector4(0, 0, 0, 1);
+            result.Row3 = new TVector4(0, 0, 0, 1);
         }
 
         /// <summary>
@@ -747,9 +747,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="q">The quaternion to rotate by.</param>
         /// <returns>A matrix instance.</returns>
         [Pure]
-        public static Matrix4 FromQuaternion(Quaternion q)
+        public static TMatrix4 CreateFromQuaternion(TQuaternion q)
         {
-            FromQuaternion(in q, out Matrix4 result);
+            CreateFromQuaternion(in q, out TMatrix4 result);
             return result;
         }
 
@@ -757,8 +757,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Builds a rotation matrix for a rotation around the x-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void CreateRotationX(float angle, out Matrix4 result)
+        /// <param name="result">The resulting TMatrix4 instance.</param>
+        public static void CreateRotationX(float angle, out TMatrix4 result)
         {
             var cos = (float)Math.Cos(angle);
             var sin = (float)Math.Sin(angle);
@@ -774,11 +774,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Builds a rotation matrix for a rotation around the x-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 CreateRotationX(float angle)
+        public static TMatrix4 CreateRotationX(float angle)
         {
-            CreateRotationX(angle, out Matrix4 result);
+            CreateRotationX(angle, out TMatrix4 result);
             return result;
         }
 
@@ -786,8 +786,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Builds a rotation matrix for a rotation around the y-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void CreateRotationY(float angle, out Matrix4 result)
+        /// <param name="result">The resulting TMatrix4 instance.</param>
+        public static void CreateRotationY(float angle, out TMatrix4 result)
         {
             var cos = (float)Math.Cos(angle);
             var sin = (float)Math.Sin(angle);
@@ -803,11 +803,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Builds a rotation matrix for a rotation around the y-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 CreateRotationY(float angle)
+        public static TMatrix4 CreateRotationY(float angle)
         {
-            CreateRotationY(angle, out Matrix4 result);
+            CreateRotationY(angle, out TMatrix4 result);
             return result;
         }
 
@@ -815,8 +815,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Builds a rotation matrix for a rotation around the z-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void CreateRotationZ(float angle, out Matrix4 result)
+        /// <param name="result">The resulting TMatrix4 instance.</param>
+        public static void CreateRotationZ(float angle, out TMatrix4 result)
         {
             var cos = (float)Math.Cos(angle);
             var sin = (float)Math.Sin(angle);
@@ -832,11 +832,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Builds a rotation matrix for a rotation around the z-axis.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 CreateRotationZ(float angle)
+        public static TMatrix4 CreateRotationZ(float angle)
         {
-            CreateRotationZ(angle, out Matrix4 result);
+            CreateRotationZ(angle, out TMatrix4 result);
             return result;
         }
 
@@ -846,8 +846,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="x">X translation.</param>
         /// <param name="y">Y translation.</param>
         /// <param name="z">Z translation.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void FromTranslation(float x, float y, float z, out Matrix4 result)
+        /// <param name="result">The resulting TMatrix4 instance.</param>
+        public static void CreateTranslation(float x, float y, float z, out TMatrix4 result)
         {
             result = Identity;
             result.Row3.X = x;
@@ -859,8 +859,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Creates a translation matrix.
         /// </summary>
         /// <param name="vector">The translation vector.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void FromTranslation(in Vector3 vector, out Matrix4 result)
+        /// <param name="result">The resulting TMatrix4 instance.</param>
+        public static void CreateTranslation(in TVector3 vector, out TMatrix4 result)
         {
             result = Identity;
             result.Row3.X = vector.X;
@@ -874,11 +874,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="x">X translation.</param>
         /// <param name="y">Y translation.</param>
         /// <param name="z">Z translation.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 FromTranslation(float x, float y, float z)
+        public static TMatrix4 CreateTranslation(float x, float y, float z)
         {
-            FromTranslation(x, y, z, out Matrix4 result);
+            CreateTranslation(x, y, z, out TMatrix4 result);
             return result;
         }
 
@@ -886,11 +886,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// Creates a translation matrix.
         /// </summary>
         /// <param name="vector">The translation vector.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 FromTranslation(Vector3 vector)
+        public static TMatrix4 CreateTranslation(TVector3 vector)
         {
-            FromTranslation(vector.X, vector.Y, vector.Z, out Matrix4 result);
+            CreateTranslation(vector.X, vector.Y, vector.Z, out TMatrix4 result);
             return result;
         }
 
@@ -900,9 +900,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="scale">Single scale factor for the x, y, and z axes.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix4 FromScale(float scale)
+        public static TMatrix4 CreateScale(float scale)
         {
-            FromScale(scale, out Matrix4 result);
+            CreateScale(scale, out TMatrix4 result);
             return result;
         }
 
@@ -912,9 +912,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="scale">Scale factors for the x, y, and z axes.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix4 FromScale(Vector3 scale)
+        public static TMatrix4 CreateScale(TVector3 scale)
         {
-            FromScale(in scale, out Matrix4 result);
+            CreateScale(in scale, out TMatrix4 result);
             return result;
         }
 
@@ -926,9 +926,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="z">Scale factor for the z axis.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix4 FromScale(float x, float y, float z)
+        public static TMatrix4 CreateScale(float x, float y, float z)
         {
-            FromScale(x, y, z, out Matrix4 result);
+            CreateScale(x, y, z, out TMatrix4 result);
             return result;
         }
 
@@ -937,7 +937,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="scale">Single scale factor for the x, y, and z axes.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void FromScale(float scale, out Matrix4 result)
+        public static void CreateScale(float scale, out TMatrix4 result)
         {
             result = Identity;
             result.Row0.X = scale;
@@ -950,7 +950,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="scale">Scale factors for the x, y, and z axes.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void FromScale(in Vector3 scale, out Matrix4 result)
+        public static void CreateScale(in TVector3 scale, out TMatrix4 result)
         {
             result = Identity;
             result.Row0.X = scale.X;
@@ -965,7 +965,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="y">Scale factor for the y axis.</param>
         /// <param name="z">Scale factor for the z axis.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void FromScale(float x, float y, float z, out Matrix4 result)
+        public static void CreateScale(float x, float y, float z, out TMatrix4 result)
         {
             result = Identity;
             result.Row0.X = x;
@@ -980,8 +980,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="depthNear">The near edge of the projection volume.</param>
         /// <param name="depthFar">The far edge of the projection volume.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
-        public static void Orthographic(float width, float height, float depthNear, float depthFar, out Matrix4 result)
+        /// <param name="result">The resulting TMatrix4 instance.</param>
+        public static void CreateOrthographic(float width, float height, float depthNear, float depthFar, out TMatrix4 result)
         {
             CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out result);
         }
@@ -993,11 +993,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="height">The height of the projection volume.</param>
         /// <param name="depthNear">The near edge of the projection volume.</param>
         /// <param name="depthFar">The far edge of the projection volume.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 Orthographic(float width, float height, float depthNear, float depthFar)
+        public static TMatrix4 CreateOrthographic(float width, float height, float depthNear, float depthFar)
         {
-            CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out Matrix4 result);
+            CreateOrthographicOffCenter(-width / 2, width / 2, -height / 2, height / 2, depthNear, depthFar, out TMatrix4 result);
             return result;
         }
 
@@ -1010,7 +1010,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="top">The top edge of the projection volume.</param>
         /// <param name="depthNear">The near edge of the projection volume.</param>
         /// <param name="depthFar">The far edge of the projection volume.</param>
-        /// <param name="result">The resulting Matrix4 instance.</param>
+        /// <param name="result">The resulting TMatrix4 instance.</param>
         public static void CreateOrthographicOffCenter
         (
             float left,
@@ -1019,7 +1019,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             float top,
             float depthNear,
             float depthFar,
-            out Matrix4 result
+            out TMatrix4 result
         )
         {
             result = Identity;
@@ -1046,9 +1046,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="top">The top edge of the projection volume.</param>
         /// <param name="depthNear">The near edge of the projection volume.</param>
         /// <param name="depthFar">The far edge of the projection volume.</param>
-        /// <returns>The resulting Matrix4 instance.</returns>
+        /// <returns>The resulting TMatrix4 instance.</returns>
         [Pure]
-        public static Matrix4 CreateOrthographicOffCenter
+        public static TMatrix4 CreateOrthographicOffCenter
         (
             float left,
             float right,
@@ -1058,7 +1058,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             float depthFar
         )
         {
-            CreateOrthographicOffCenter(left, right, bottom, top, depthNear, depthFar, out Matrix4 result);
+            CreateOrthographicOffCenter(left, right, bottom, top, depthNear, depthFar, out TMatrix4 result);
             return result;
         }
 
@@ -1080,13 +1080,13 @@ namespace SpiceEngineCore.Geometry.Matrices
         ///  <item>depthNear is larger than depthFar</item>
         ///  </list>
         /// </exception>
-        public static void Perspective
+        public static void CreatePerspectiveFieldOfView
         (
             float fovy,
             float aspect,
             float depthNear,
             float depthFar,
-            out Matrix4 result
+            out TMatrix4 result
         )
         {
             if (fovy <= 0 || fovy > Math.PI)
@@ -1136,9 +1136,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         ///  </list>
         /// </exception>
         [Pure]
-        public static Matrix4 Perspective(float fovy, float aspect, float depthNear, float depthFar)
+        public static TMatrix4 CreatePerspectiveFieldOfView(float fovy, float aspect, float depthNear, float depthFar)
         {
-            Perspective(fovy, aspect, depthNear, depthFar, out Matrix4 result);
+            CreatePerspectiveFieldOfView(fovy, aspect, depthNear, depthFar, out TMatrix4 result);
             return result;
         }
 
@@ -1168,7 +1168,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             float top,
             float depthNear,
             float depthFar,
-            out Matrix4 result
+            out TMatrix4 result
         )
         {
             if (depthNear <= 0)
@@ -1230,7 +1230,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         ///  </list>
         /// </exception>
         [Pure]
-        public static Matrix4 CreatePerspectiveOffCenter
+        public static TMatrix4 CreatePerspectiveOffCenter
         (
             float left,
             float right,
@@ -1240,7 +1240,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             float depthFar
         )
         {
-            CreatePerspectiveOffCenter(left, right, bottom, top, depthNear, depthFar, out Matrix4 result);
+            CreatePerspectiveOffCenter(left, right, bottom, top, depthNear, depthFar, out TMatrix4 result);
             return result;
         }
 
@@ -1250,15 +1250,15 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="eye">Eye (camera) position in world space.</param>
         /// <param name="target">Target position in world space.</param>
         /// <param name="up">Up vector in world space (should not be parallel to the camera direction, that is target - eye).</param>
-        /// <returns>A Matrix4 that transforms world space to camera space.</returns>
+        /// <returns>A TMatrix4 that transforms world space to camera space.</returns>
         [Pure]
-        public static Matrix4 LookAt(Vector3 eye, Vector3 target, Vector3 up)
+        public static TMatrix4 LookAt(TVector3 eye, TVector3 target, TVector3 up)
         {
-            var z = Vector3.Normalize(eye - target);
-            var x = Vector3.Normalize(Vector3.Cross(up, z));
-            var y = Vector3.Normalize(Vector3.Cross(z, x));
+            var z = TVector3.Normalize(eye - target);
+            var x = TVector3.Normalize(TVector3.Cross(up, z));
+            var y = TVector3.Normalize(TVector3.Cross(z, x));
 
-            Matrix4 result;
+            TMatrix4 result;
 
             result.Row0.X = x.X;
             result.Row0.Y = y.X;
@@ -1298,9 +1298,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="upZ">
         /// Z of the up vector in world space (should not be parallel to the camera direction, that is target - eye).
         /// </param>
-        /// <returns>A Matrix4 that transforms world space to camera space.</returns>
+        /// <returns>A TMatrix4 that transforms world space to camera space.</returns>
         [Pure]
-        public static Matrix4 LookAt
+        public static TMatrix4 LookAt
         (
             float eyeX,
             float eyeY,
@@ -1315,9 +1315,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         {
             return LookAt
             (
-                new Vector3(eyeX, eyeY, eyeZ),
-                new Vector3(targetX, targetY, targetZ),
-                new Vector3(upX, upY, upZ)
+                new TVector3(eyeX, eyeY, eyeZ),
+                new TVector3(targetX, targetY, targetZ),
+                new TVector3(upX, upY, upZ)
             );
         }
 
@@ -1328,9 +1328,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
         [Pure]
-        public static Matrix4 Add(Matrix4 left, Matrix4 right)
+        public static TMatrix4 Add(TMatrix4 left, TMatrix4 right)
         {
-            Add(in left, in right, out Matrix4 result);
+            Add(in left, in right, out TMatrix4 result);
             return result;
         }
 
@@ -1340,7 +1340,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <param name="result">A new instance that is the result of the addition.</param>
-        public static void Add(in Matrix4 left, in Matrix4 right, out Matrix4 result)
+        public static void Add(in TMatrix4 left, in TMatrix4 right, out TMatrix4 result)
         {
             result.Row0 = left.Row0 + right.Row0;
             result.Row1 = left.Row1 + right.Row1;
@@ -1355,9 +1355,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="right">The right operand of the subraction.</param>
         /// <returns>A new instance that is the result of the subraction.</returns>
         [Pure]
-        public static Matrix4 Subtract(Matrix4 left, Matrix4 right)
+        public static TMatrix4 Subtract(TMatrix4 left, TMatrix4 right)
         {
-            Subtract(in left, in right, out Matrix4 result);
+            Subtract(in left, in right, out TMatrix4 result);
             return result;
         }
 
@@ -1367,7 +1367,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="left">The left operand of the subraction.</param>
         /// <param name="right">The right operand of the subraction.</param>
         /// <param name="result">A new instance that is the result of the subraction.</param>
-        public static void Subtract(in Matrix4 left, in Matrix4 right, out Matrix4 result)
+        public static void Subtract(in TMatrix4 left, in TMatrix4 right, out TMatrix4 result)
         {
             result.Row0 = left.Row0 - right.Row0;
             result.Row1 = left.Row1 - right.Row1;
@@ -1382,9 +1382,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4 Mult(Matrix4 left, Matrix4 right)
+        public static TMatrix4 Mult(TMatrix4 left, TMatrix4 right)
         {
-            Mult(in left, in right, out Matrix4 result);
+            Mult(in left, in right, out TMatrix4 result);
             return result;
         }
 
@@ -1394,7 +1394,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <param name="result">A new instance that is the result of the multiplication.</param>
-        public static void Mult(in Matrix4 left, in Matrix4 right, out Matrix4 result)
+        public static void Mult(in TMatrix4 left, in TMatrix4 right, out TMatrix4 result)
         {
             float leftM11 = left.Row0.X;
             float leftM12 = left.Row0.Y;
@@ -1454,9 +1454,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4 Mult(Matrix4 left, float right)
+        public static TMatrix4 Mult(TMatrix4 left, float right)
         {
-            Mult(in left, right, out Matrix4 result);
+            Mult(in left, right, out TMatrix4 result);
             return result;
         }
 
@@ -1466,7 +1466,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <param name="result">A new instance that is the result of the multiplication.</param>
-        public static void Mult(in Matrix4 left, float right, out Matrix4 result)
+        public static void Mult(in TMatrix4 left, float right, out TMatrix4 result)
         {
             result.Row0 = left.Row0 * right;
             result.Row1 = left.Row1 * right;
@@ -1479,8 +1479,8 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
         /// <param name="result">The inverse of the given matrix if it has one, or the input if it is singular.</param>
-        /// <exception cref="InvalidOperationException">Thrown if the Matrix4 is singular.</exception>
-        public static void Invert(in Matrix4 mat, out Matrix4 result)
+        /// <exception cref="InvalidOperationException">Thrown if the TMatrix4 is singular.</exception>
+        public static void Invert(in TMatrix4 mat, out TMatrix4 result)
         {
             int[] colIdx = { 0, 0, 0, 0 };
             int[] rowIdx = { 0, 0, 0, 0 };
@@ -1608,11 +1608,11 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
         /// <returns>The inverse of the given matrix.</returns>
-        /// <exception cref="InvalidOperationException">Thrown if the Matrix4 is singular.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the TMatrix4 is singular.</exception>
         [Pure]
-        public static Matrix4 Invert(Matrix4 mat)
+        public static TMatrix4 Invert(TMatrix4 mat)
         {
-            Invert(in mat, out Matrix4 result);
+            Invert(in mat, out TMatrix4 result);
             return result;
         }
 
@@ -1622,9 +1622,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="mat">The matrix to transpose.</param>
         /// <returns>The transpose of the given matrix.</returns>
         [Pure]
-        public static Matrix4 Transpose(Matrix4 mat)
+        public static TMatrix4 Transpose(TMatrix4 mat)
         {
-            return new Matrix4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
+            return new TMatrix4(mat.Column0, mat.Column1, mat.Column2, mat.Column3);
         }
 
         /// <summary>
@@ -1632,7 +1632,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="mat">The matrix to transpose.</param>
         /// <param name="result">The result of the calculation.</param>
-        public static void Transpose(in Matrix4 mat, out Matrix4 result)
+        public static void Transpose(in TMatrix4 mat, out TMatrix4 result)
         {
             result.Row0 = mat.Column0;
             result.Row1 = mat.Column1;
@@ -1645,9 +1645,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix4 which holds the result of the multiplication.</returns>
+        /// <returns>A new TMatrix4 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4 operator *(Matrix4 left, Matrix4 right)
+        public static TMatrix4 operator *(TMatrix4 left, TMatrix4 right)
         {
             return Mult(left, right);
         }
@@ -1657,9 +1657,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix4 which holds the result of the multiplication.</returns>
+        /// <returns>A new TMatrix4 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix4 operator *(Matrix4 left, float right)
+        public static TMatrix4 operator *(TMatrix4 left, float right)
         {
             return Mult(left, right);
         }
@@ -1669,9 +1669,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix4 which holds the result of the addition.</returns>
+        /// <returns>A new TMatrix4 which holds the result of the addition.</returns>
         [Pure]
-        public static Matrix4 operator +(Matrix4 left, Matrix4 right)
+        public static TMatrix4 operator +(TMatrix4 left, TMatrix4 right)
         {
             return Add(left, right);
         }
@@ -1681,9 +1681,9 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix4 which holds the result of the subtraction.</returns>
+        /// <returns>A new TMatrix4 which holds the result of the subtraction.</returns>
         [Pure]
-        public static Matrix4 operator -(Matrix4 left, Matrix4 right)
+        public static TMatrix4 operator -(TMatrix4 left, TMatrix4 right)
         {
             return Subtract(left, right);
         }
@@ -1695,7 +1695,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
         [Pure]
-        public static bool operator ==(Matrix4 left, Matrix4 right)
+        public static bool operator ==(TMatrix4 left, TMatrix4 right)
         {
             return left.Equals(right);
         }
@@ -1707,13 +1707,13 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
         [Pure]
-        public static bool operator !=(Matrix4 left, Matrix4 right)
+        public static bool operator !=(TMatrix4 left, TMatrix4 right)
         {
             return !left.Equals(right);
         }
 
         /// <summary>
-        /// Returns a System.String that represents the current Matrix4.
+        /// Returns a System.String that represents the current TMatrix4.
         /// </summary>
         /// <returns>The string representation of the matrix.</returns>
         public override string ToString()
@@ -1756,7 +1756,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         [Pure]
         public override bool Equals(object obj)
         {
-            return obj is Matrix4 && Equals((Matrix4)obj);
+            return obj is TMatrix4 && Equals((TMatrix4)obj);
         }
 
         /// <summary>
@@ -1765,7 +1765,7 @@ namespace SpiceEngineCore.Geometry.Matrices
         /// <param name="other">An matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         [Pure]
-        public bool Equals(Matrix4 other)
+        public bool Equals(TMatrix4 other)
         {
             return
                 Row0 == other.Row0 &&

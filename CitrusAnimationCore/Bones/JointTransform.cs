@@ -15,7 +15,7 @@ namespace CitrusAnimationCore.Bones
         public Quaternion Rotation { get; set; } = Quaternion.Identity;
         public Vector3 Scale { get; set; } = Vector3.One;
 
-        public Matrix4 Transform => Matrix4.FromScale(Scale) * Matrix4.FromQuaternion(Rotation) * Matrix4.FromTranslation(Position);
+        public Matrix4 Transform => Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Position);
 
         public void AddJointIndex(int meshIndex, int boneIndex) => _jointIndices.Add(new JointIndex(meshIndex, boneIndex));
         

@@ -3,13 +3,21 @@ using SpiceEngineCore.Geometry.Quaternions;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Runtime.InteropServices;
+using Color4 = SpiceEngineCore.Geometry.Colors.CColor4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrices.CMatrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrices.CMatrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrices.CMatrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternions.CQuaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vectors.CVector2;
+using Vector3 = SpiceEngineCore.Geometry.Vectors.CVector3;
+using Vector4 = SpiceEngineCore.Geometry.Vectors.CVector4;
 
 namespace SpiceEngineCore.Geometry.Vectors
 {
     [StructLayout(LayoutKind.Sequential)]
     public struct CVector4 : IEquatable<CVector4>
     {
-        public CVector4(Vector3 xyz, float w) : this(xyz.X, xyz.Y, xyz.Z, w) { }
+        public CVector4(CVector3 xyz, float w) : this(xyz.X, xyz.Y, xyz.Z, w) { }
         public CVector4(float x, float y, float z, float w)
         {
             X = x;
@@ -23,8 +31,8 @@ namespace SpiceEngineCore.Geometry.Vectors
         public float Z { get; private set; }
         public float W { get; private set; }
 
-        public Vector2 Xy => new Vector2(X, Y);
-        public Vector3 Xyz => new Vector3(X, Y, Z);
+        public CVector2 Xy => new CVector2(X, Y);
+        public CVector3 Xyz => new CVector3(X, Y, Z);
 
         public float LengthSquared => X * X + Y * Y + Z * Z + W * W;
 
@@ -98,9 +106,9 @@ namespace SpiceEngineCore.Geometry.Vectors
             (matrix.M20 * vector.X) + (matrix.M21 * vector.Y) + (matrix.M22 * vector.Z) + (matrix.M23 * vector.W),
             (matrix.M30 * vector.X) + (matrix.M31 * vector.Y) + (matrix.M32 * vector.Z) + (matrix.M33 * vector.W));
 
-        public static CVector4 operator *(Quaternion quaternion, CVector4 vector)
+        public static CVector4 operator *(CQuaternion quaternion, CVector4 vector)
         {
-            var vectorQuat = new Quaternion(vector.X, vector.Y, vector.Z, vector.W);
+            var vectorQuat = new CQuaternion(vector.X, vector.Y, vector.Z, vector.W);
             var invertedQuat = quaternion.Inverted();
             var rotatedQuat = (quaternion * vectorQuat) * invertedQuat;
 

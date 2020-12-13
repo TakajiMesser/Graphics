@@ -9,15 +9,15 @@ using SpiceEngineCore.Utilities;
 namespace SpiceEngineCore.Geometry.Quaternions
 {
     /// <summary>
-    /// Represents a Quaternion.
+    /// Represents a TQuaternion.
     /// </summary>
     [Serializable, StructLayout(LayoutKind.Sequential)]
-    public struct Quaternion : IEquatable<Quaternion>
+    public struct TQuaternion : IEquatable<TQuaternion>
     {
         /// <summary>
         /// The X, Y and Z components of this instance.
         /// </summary>
-        public Vector3 Xyz;
+        public TVector3 Xyz;
 
         /// <summary>
         /// The W component of this instance.
@@ -25,37 +25,37 @@ namespace SpiceEngineCore.Geometry.Quaternions
         public float W;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="TQuaternion"/> struct.
         /// </summary>
         /// <param name="v">The vector part.</param>
         /// <param name="w">The w part.</param>
-        public Quaternion(Vector3 v, float w)
+        public TQuaternion(TVector3 v, float w)
         {
             Xyz = v;
             W = w;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Quaternion"/> struct.
+        /// Initializes a new instance of the <see cref="TQuaternion"/> struct.
         /// </summary>
         /// <param name="x">The x component.</param>
         /// <param name="y">The y component.</param>
         /// <param name="z">The z component.</param>
         /// <param name="w">The w component.</param>
-        public Quaternion(float x, float y, float z, float w)
-            : this(new Vector3(x, y, z), w)
+        public TQuaternion(float x, float y, float z, float w)
+            : this(new TVector3(x, y, z), w)
         {
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Quaternion"/> struct from given Euler angles in radians.
+        /// Initializes a new instance of the <see cref="TQuaternion"/> struct from given Euler angles in radians.
         /// The rotations will get applied in following order:
         /// 1. around X axis, 2. around Y axis, 3. around Z axis.
         /// </summary>
         /// <param name="rotationX">Counterclockwise rotation around X axis in radian.</param>
         /// <param name="rotationY">Counterclockwise rotation around Y axis in radian.</param>
         /// <param name="rotationZ">Counterclockwise rotation around Z axis in radian.</param>
-        public Quaternion(float rotationX, float rotationY, float rotationZ)
+        public TQuaternion(float rotationX, float rotationY, float rotationZ)
         {
             rotationX *= 0.5f;
             rotationY *= 0.5f;
@@ -75,12 +75,12 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Quaternion"/> struct from given Euler angles in radians.
+        /// Initializes a new instance of the <see cref="TQuaternion"/> struct from given Euler angles in radians.
         /// The rotations will get applied in following order:
         /// 1. Around X, 2. Around Y, 3. Around Z.
         /// </summary>
-        /// <param name="eulerAngles">The counterclockwise euler angles as a Vector3.</param>
-        public Quaternion(Vector3 eulerAngles)
+        /// <param name="eulerAngles">The counterclockwise euler angles as a TVector3.</param>
+        public TQuaternion(TVector3 eulerAngles)
             : this(eulerAngles.X, eulerAngles.Y, eulerAngles.Z)
         {
         }
@@ -120,7 +120,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// </summary>
         /// <param name="axis">The resultant axis.</param>
         /// <param name="angle">The resultant angle.</param>
-        public void ToAxisAngle(out Vector3 axis, out float angle)
+        public void ToAxisAngle(out TVector3 axis, out float angle)
         {
             var result = ToAxisAngle();
             axis = result.Xyz;
@@ -130,8 +130,8 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <summary>
         /// Convert this instance to an axis-angle representation.
         /// </summary>
-        /// <returns>A Vector4 that is the axis-angle representation of this quaternion.</returns>
-        public Vector4 ToAxisAngle()
+        /// <returns>A TVector4 that is the axis-angle representation of this quaternion.</returns>
+        public TVector4 ToAxisAngle()
         {
             var q = this;
             if (Math.Abs(q.W) > 1.0f)
@@ -139,7 +139,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                 q.Normalize();
             }
 
-            var result = new Vector4
+            var result = new TVector4
             {
                 W = 2.0f * (float)Math.Acos(q.W) // angle
             };
@@ -153,7 +153,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
             {
                 // This occurs when the angle is zero.
                 // Not a problem: just set an arbitrary normalized axis.
-                result.Xyz = Vector3.UnitX;
+                result.Xyz = TVector3.UnitX;
             }
 
             return result;
@@ -163,7 +163,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// Convert the current quaternion to Euler angle representation.
         /// </summary>
         /// <param name="angles">The Euler angles in radians.</param>
-        public void ToEulerAngles(out Vector3 angles)
+        public void ToEulerAngles(out TVector3 angles)
         {
             angles = ToEulerAngles();
         }
@@ -172,7 +172,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// Convert this instance to an Euler angle representation.
         /// </summary>
         /// <returns>The Euler angles in radians.</returns>
-        public Vector3 ToEulerAngles()
+        public TVector3 ToEulerAngles()
         {
             //reference
             //http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
@@ -180,7 +180,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
 
             var q = this;
 
-            Vector3 eulerAngles;
+            TVector3 eulerAngles;
 
             // Threshold for the singularities found at the north/south poles.
             const float SINGULARITY_THRESHOLD = 0.4999995f;
@@ -226,10 +226,10 @@ namespace SpiceEngineCore.Geometry.Quaternions
         public float LengthSquared => (W * W) + Xyz.LengthSquared;
 
         /// <summary>
-        /// Returns a copy of the Quaternion scaled to unit length.
+        /// Returns a copy of the TQuaternion scaled to unit length.
         /// </summary>
         /// <returns>The normalized copy.</returns>
-        public Quaternion Normalized()
+        public TQuaternion Normalized()
         {
             var q = this;
             q.Normalize();
@@ -237,7 +237,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Inverts this Quaternion.
+        /// Inverts this TQuaternion.
         /// </summary>
         public void Invert()
         {
@@ -245,10 +245,10 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Returns the inverse of this Quaternion.
+        /// Returns the inverse of this TQuaternion.
         /// </summary>
         /// <returns>The inverted copy.</returns>
-        public Quaternion Inverted()
+        public TQuaternion Inverted()
         {
             var q = this;
             q.Invert();
@@ -256,7 +256,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Scales the Quaternion to unit length.
+        /// Scales the TQuaternion to unit length.
         /// </summary>
         public void Normalize()
         {
@@ -266,7 +266,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Inverts the Vector3 component of this Quaternion.
+        /// Inverts the TVector3 component of this TQuaternion.
         /// </summary>
         public void Conjugate()
         {
@@ -276,7 +276,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <summary>
         /// Defines the identity quaternion.
         /// </summary>
-        public static readonly Quaternion Identity = new Quaternion(0, 0, 0, 1);
+        public static readonly TQuaternion Identity = new TQuaternion(0, 0, 0, 1);
 
         /// <summary>
         /// Add two quaternions.
@@ -285,9 +285,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="right">The second operand.</param>
         /// <returns>The result of the addition.</returns>
         [Pure]
-        public static Quaternion Add(Quaternion left, Quaternion right)
+        public static TQuaternion Add(TQuaternion left, TQuaternion right)
         {
-            return new Quaternion(
+            return new TQuaternion(
                 left.Xyz + right.Xyz,
                 left.W + right.W);
         }
@@ -298,9 +298,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="left">The first operand.</param>
         /// <param name="right">The second operand.</param>
         /// <param name="result">The result of the addition.</param>
-        public static void Add(in Quaternion left, in Quaternion right, out Quaternion result)
+        public static void Add(in TQuaternion left, in TQuaternion right, out TQuaternion result)
         {
-            result = new Quaternion(
+            result = new TQuaternion(
                 left.Xyz + right.Xyz,
                 left.W + right.W);
         }
@@ -312,9 +312,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="right">The right instance.</param>
         /// <returns>The result of the operation.</returns>
         [Pure]
-        public static Quaternion Sub(Quaternion left, Quaternion right)
+        public static TQuaternion Sub(TQuaternion left, TQuaternion right)
         {
-            return new Quaternion(
+            return new TQuaternion(
                 left.Xyz - right.Xyz,
                 left.W - right.W);
         }
@@ -325,9 +325,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="left">The left instance.</param>
         /// <param name="right">The right instance.</param>
         /// <param name="result">The result of the operation.</param>
-        public static void Sub(in Quaternion left, in Quaternion right, out Quaternion result)
+        public static void Sub(in TQuaternion left, in TQuaternion right, out TQuaternion result)
         {
-            result = new Quaternion(
+            result = new TQuaternion(
                 left.Xyz - right.Xyz,
                 left.W - right.W);
         }
@@ -339,9 +339,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="right">The second instance.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
         [Pure]
-        public static Quaternion Multiply(Quaternion left, Quaternion right)
+        public static TQuaternion Multiply(TQuaternion left, TQuaternion right)
         {
-            Multiply(in left, in right, out Quaternion result);
+            Multiply(in left, in right, out TQuaternion result);
             return result;
         }
 
@@ -351,11 +351,11 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(in Quaternion left, in Quaternion right, out Quaternion result)
+        public static void Multiply(in TQuaternion left, in TQuaternion right, out TQuaternion result)
         {
-            result = new Quaternion(
-                (right.W * left.Xyz) + (left.W * right.Xyz) + Vector3.Cross(left.Xyz, right.Xyz),
-                (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));
+            result = new TQuaternion(
+                (right.W * left.Xyz) + (left.W * right.Xyz) + TVector3.Cross(left.Xyz, right.Xyz),
+                (left.W * right.W) - TVector3.Dot(left.Xyz, right.Xyz));
         }
 
         /// <summary>
@@ -364,9 +364,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="quaternion">The instance.</param>
         /// <param name="scale">The scalar.</param>
         /// <param name="result">A new instance containing the result of the calculation.</param>
-        public static void Multiply(in Quaternion quaternion, float scale, out Quaternion result)
+        public static void Multiply(in TQuaternion quaternion, float scale, out TQuaternion result)
         {
-            result = new Quaternion
+            result = new TQuaternion
             (
                 quaternion.X * scale,
                 quaternion.Y * scale,
@@ -382,9 +382,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
         [Pure]
-        public static Quaternion Multiply(Quaternion quaternion, float scale)
+        public static TQuaternion Multiply(TQuaternion quaternion, float scale)
         {
-            return new Quaternion
+            return new TQuaternion
             (
                 quaternion.X * scale,
                 quaternion.Y * scale,
@@ -399,9 +399,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="q">The quaternion.</param>
         /// <returns>The conjugate of the given quaternion.</returns>
         [Pure]
-        public static Quaternion Conjugate(Quaternion q)
+        public static TQuaternion Conjugate(TQuaternion q)
         {
-            return new Quaternion(-q.Xyz, q.W);
+            return new TQuaternion(-q.Xyz, q.W);
         }
 
         /// <summary>
@@ -409,9 +409,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// </summary>
         /// <param name="q">The quaternion.</param>
         /// <param name="result">The conjugate of the given quaternion.</param>
-        public static void Conjugate(in Quaternion q, out Quaternion result)
+        public static void Conjugate(in TQuaternion q, out TQuaternion result)
         {
-            result = new Quaternion(-q.Xyz, q.W);
+            result = new TQuaternion(-q.Xyz, q.W);
         }
 
         /// <summary>
@@ -420,9 +420,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="q">The quaternion to invert.</param>
         /// <returns>The inverse of the given quaternion.</returns>
         [Pure]
-        public static Quaternion Invert(Quaternion q)
+        public static TQuaternion Invert(TQuaternion q)
         {
-            Invert(in q, out Quaternion result);
+            Invert(in q, out TQuaternion result);
             return result;
         }
 
@@ -431,13 +431,13 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// </summary>
         /// <param name="q">The quaternion to invert.</param>
         /// <param name="result">The inverse of the given quaternion.</param>
-        public static void Invert(in Quaternion q, out Quaternion result)
+        public static void Invert(in TQuaternion q, out TQuaternion result)
         {
             var lengthSq = q.LengthSquared;
             if (lengthSq != 0.0)
             {
                 var i = 1.0f / lengthSq;
-                result = new Quaternion(q.Xyz * -i, q.W * i);
+                result = new TQuaternion(q.Xyz * -i, q.W * i);
             }
             else
             {
@@ -451,9 +451,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="q">The quaternion to normalize.</param>
         /// <returns>The normalized copy.</returns>
         [Pure]
-        public static Quaternion Normalize(Quaternion q)
+        public static TQuaternion Normalize(TQuaternion q)
         {
-            Normalize(in q, out Quaternion result);
+            Normalize(in q, out TQuaternion result);
             return result;
         }
 
@@ -462,10 +462,10 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// </summary>
         /// <param name="q">The quaternion to normalize.</param>
         /// <param name="result">The normalized quaternion.</param>
-        public static void Normalize(in Quaternion q, out Quaternion result)
+        public static void Normalize(in TQuaternion q, out TQuaternion result)
         {
             var scale = 1.0f / q.Length;
-            result = new Quaternion(q.Xyz * scale, q.W * scale);
+            result = new TQuaternion(q.Xyz * scale, q.W * scale);
         }
 
         /// <summary>
@@ -475,7 +475,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="angle">The rotation angle in radians.</param>
         /// <returns>The equivalent quaternion.</returns>
         [Pure]
-        public static Quaternion FromAxisAngle(Vector3 axis, float angle)
+        public static TQuaternion FromAxisAngle(TVector3 axis, float angle)
         {
             if (axis.LengthSquared == 0.0f)
             {
@@ -493,7 +493,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Builds a Quaternion from the given euler angles in radians
+        /// Builds a TQuaternion from the given euler angles in radians
         /// The rotations will get applied in following order:
         /// 1. pitch (X axis), 2. yaw (Y axis), 3. roll (Z axis).
         /// </summary>
@@ -502,32 +502,32 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="roll">The roll (bank), counterclockwise rotation around Z axis.</param>
         /// <returns>The quaternion.</returns>
         [Pure]
-        public static Quaternion FromEulerAngles(float pitch, float yaw, float roll)
+        public static TQuaternion FromEulerAngles(float pitch, float yaw, float roll)
         {
-            return new Quaternion(pitch, yaw, roll);
+            return new TQuaternion(pitch, yaw, roll);
         }
 
         /// <summary>
-        /// Builds a Quaternion from the given euler angles in radians.
+        /// Builds a TQuaternion from the given euler angles in radians.
         /// The rotations will get applied in following order:
         /// 1. X axis, 2. Y axis, 3. Z axis.
         /// </summary>
         /// <param name="eulerAngles">The counterclockwise euler angles as a vector.</param>
-        /// <returns>The equivalent Quaternion.</returns>
+        /// <returns>The equivalent TQuaternion.</returns>
         [Pure]
-        public static Quaternion FromEulerAngles(Vector3 eulerAngles)
+        public static TQuaternion FromEulerAngles(TVector3 eulerAngles)
         {
-            return new Quaternion(eulerAngles);
+            return new TQuaternion(eulerAngles);
         }
 
         /// <summary>
-        /// Builds a Quaternion from the given euler angles in radians.
+        /// Builds a TQuaternion from the given euler angles in radians.
         /// The rotations will get applied in following order:
         /// 1. Around X, 2. Around Y, 3. Around Z.
         /// </summary>
         /// <param name="eulerAngles">The counterclockwise euler angles a vector.</param>
-        /// <param name="result">The equivalent Quaternion.</param>
-        public static void FromEulerAngles(in Vector3 eulerAngles, out Quaternion result)
+        /// <param name="result">The equivalent TQuaternion.</param>
+        public static void FromEulerAngles(in TVector3 eulerAngles, out TQuaternion result)
         {
             var c1 = (float)Math.Cos(eulerAngles.X * 0.5f);
             var c2 = (float)Math.Cos(eulerAngles.Y * 0.5f);
@@ -545,9 +545,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <summary>
         /// Converts a quaternion to it's euler angle representation.
         /// </summary>
-        /// <param name="q">The Quaternion.</param>
+        /// <param name="q">The TQuaternion.</param>
         /// <param name="result">The resulting euler angles in radians.</param>
-        public static void ToEulerAngles(in Quaternion q, out Vector3 result)
+        public static void ToEulerAngles(in TQuaternion q, out TVector3 result)
         {
             q.ToEulerAngles(out result);
         }
@@ -558,9 +558,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="matrix">A rotation matrix.</param>
         /// <returns>The equivalent quaternion.</returns>
         [Pure]
-        public static Quaternion FromMatrix(Matrix3 matrix)
+        public static TQuaternion FromMatrix(TMatrix3 matrix)
         {
-            FromMatrix(in matrix, out Quaternion result);
+            FromMatrix(in matrix, out TQuaternion result);
             return result;
         }
 
@@ -569,7 +569,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// </summary>
         /// <param name="matrix">A rotation matrix.</param>
         /// <param name="result">The equivalent quaternion.</param>
-        public static void FromMatrix(in Matrix3 matrix, out Quaternion result)
+        public static void FromMatrix(in TMatrix3 matrix, out TQuaternion result)
         {
             var trace = matrix.Trace;
 
@@ -628,7 +628,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="blend">The blend factor.</param>
         /// <returns>A smooth blend between the given quaternions.</returns>
         [Pure]
-        public static Quaternion Slerp(Quaternion q1, Quaternion q2, float blend)
+        public static TQuaternion Slerp(TQuaternion q1, TQuaternion q2, float blend)
         {
             // if either input is zero, return the other.
             if (q1.LengthSquared == 0.0f)
@@ -646,7 +646,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                 return q1;
             }
 
-            var cosHalfAngle = (q1.W * q2.W) + Vector3.Dot(q1.Xyz, q2.Xyz);
+            var cosHalfAngle = (q1.W * q2.W) + TVector3.Dot(q1.Xyz, q2.Xyz);
 
             if (cosHalfAngle >= 1.0f || cosHalfAngle <= -1.0f)
             {
@@ -679,7 +679,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                 blendB = blend;
             }
 
-            var result = new Quaternion((blendA * q1.Xyz) + (blendB * q2.Xyz), (blendA * q1.W) + (blendB * q2.W));
+            var result = new TQuaternion((blendA * q1.Xyz) + (blendB * q2.Xyz), (blendA * q1.W) + (blendB * q2.W));
             if (result.LengthSquared > 0.0f)
             {
                 return Normalize(result);
@@ -695,7 +695,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static Quaternion operator +(Quaternion left, Quaternion right)
+        public static TQuaternion operator +(TQuaternion left, TQuaternion right)
         {
             left.Xyz += right.Xyz;
             left.W += right.W;
@@ -709,7 +709,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static Quaternion operator -(Quaternion left, Quaternion right)
+        public static TQuaternion operator -(TQuaternion left, TQuaternion right)
         {
             left.Xyz -= right.Xyz;
             left.W -= right.W;
@@ -723,7 +723,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static Quaternion operator *(Quaternion left, Quaternion right)
+        public static TQuaternion operator *(TQuaternion left, TQuaternion right)
         {
             Multiply(in left, in right, out left);
             return left;
@@ -736,7 +736,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
         [Pure]
-        public static Quaternion operator *(Quaternion quaternion, float scale)
+        public static TQuaternion operator *(TQuaternion quaternion, float scale)
         {
             Multiply(in quaternion, scale, out quaternion);
             return quaternion;
@@ -749,9 +749,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="scale">The scalar.</param>
         /// <returns>A new instance containing the result of the calculation.</returns>
         [Pure]
-        public static Quaternion operator *(float scale, Quaternion quaternion)
+        public static TQuaternion operator *(float scale, TQuaternion quaternion)
         {
-            return new Quaternion
+            return new TQuaternion
             (
                 quaternion.X * scale,
                 quaternion.Y * scale,
@@ -766,7 +766,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(Quaternion left, Quaternion right)
+        public static bool operator ==(TQuaternion left, TQuaternion right)
         {
             return left.Equals(right);
         }
@@ -777,7 +777,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
-        public static bool operator !=(Quaternion left, Quaternion right)
+        public static bool operator !=(TQuaternion left, TQuaternion right)
         {
             return !(left == right);
         }
@@ -785,11 +785,11 @@ namespace SpiceEngineCore.Geometry.Quaternions
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is Quaternion && Equals((Quaternion)obj);
+            return obj is TQuaternion && Equals((TQuaternion)obj);
         }
 
         /// <inheritdoc />
-        public bool Equals(Quaternion other)
+        public bool Equals(TQuaternion other)
         {
             return Xyz.Equals(other.Xyz) &&
                    W == other.W;
@@ -808,7 +808,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
         }
 
         /// <summary>
-        /// Returns a System.String that represents the current Quaternion.
+        /// Returns a System.String that represents the current TQuaternion.
         /// </summary>
         /// <returns>A human-readable representation of the quaternion.</returns>
         public override string ToString()

@@ -9,13 +9,34 @@ namespace SpiceEngineCore.Geometry.Quaternions
     [StructLayout(LayoutKind.Sequential)]
     public struct CQuaternion : IEquatable<CQuaternion>
     {
-        public CQuaternion(Vector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
+        public CQuaternion(CVector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
         public CQuaternion(float x, float y, float z, float w)
         {
             X = x;
             Y = y;
             Z = z;
             W = w;
+        }
+
+        public CQuaternion(CVector3 eulerAngles) : this(eulerAngles.X, eulerAngles.Y, eulerAngles.Z) { }
+        public CQuaternion(float rotationX, float rotationY, float rotationZ)
+        {
+            rotationX *= 0.5f;
+            rotationY *= 0.5f;
+            rotationZ *= 0.5f;
+
+            var c1 = (float)Math.Cos(rotationX);
+            var c2 = (float)Math.Cos(rotationY);
+            var c3 = (float)Math.Cos(rotationZ);
+            var s1 = (float)Math.Sin(rotationX);
+            var s2 = (float)Math.Sin(rotationY);
+            var s3 = (float)Math.Sin(rotationZ);
+
+
+            X = (s1 * c2 * c3) + (c1 * s2 * s3);
+            Y = (c1 * s2 * c3) - (s1 * c2 * s3);
+            Z = (c1 * c2 * s3) + (s1 * s2 * c3);
+            W = (c1 * c2 * c3) - (s1 * s2 * s3);
         }
 
         public float X { get; private set; }
@@ -48,7 +69,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
             return new CQuaternion(X * scale, Y * scale, Z * scale, W * scale);
         }
 
-        public Vector3 ToEulerAngles()
+        public CVector3 ToEulerAngles()
         {
             /*
             reference
@@ -89,10 +110,10 @@ namespace SpiceEngineCore.Geometry.Quaternions
                 x = (float)Math.Atan2(2 * ((q.W * q.X) - (q.Y * q.Z)), sqw - sqx - sqy + sqz);
             }
 
-            return new Vector3(x, y, z);
+            return new CVector3(x, y, z);
         }
 
-        public Vector4 ToAxisAngle()
+        public CVector4 ToAxisAngle()
         {
             var quaternion = Math.Abs(W) > 1.0f
                 ? Normalized()
@@ -103,7 +124,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
 
             if (den > 0.0001f)
             {
-                return new Vector4(
+                return new CVector4(
                     quaternion.X / den,
                     quaternion.Y / den,
                     quaternion.Z / den,
@@ -111,7 +132,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
             }
             else
             {
-                return new Vector4(
+                return new CVector4(
                     1f,
                     0f,
                     0f,
@@ -171,34 +192,14 @@ namespace SpiceEngineCore.Geometry.Quaternions
             return new CQuaternion(x, y, z, w);
 
             /*result = new CQuaternion(
-                (right.W * left.Xyz) + (left.W * right.Xyz) + Vector3.Cross(left.Xyz, right.Xyz),
-                (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));*/
+                (right.W * left.Xyz) + (left.W * right.Xyz) + CVector3.Cross(left.Xyz, right.Xyz),
+                (left.W * right.W) - CVector3.Dot(left.Xyz, right.Xyz));*/
         }
 
         public static CQuaternion operator *(float scale, CQuaternion quaternion) => new CQuaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
 
-        public static CQuaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
-        public static CQuaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ)
-        {
-            rotationX *= 0.5f;
-            rotationY *= 0.5f;
-            rotationZ *= 0.5f;
-
-            var c1 = (float)Math.Cos(rotationX);
-            var c2 = (float)Math.Cos(rotationY);
-            var c3 = (float)Math.Cos(rotationZ);
-            var s1 = (float)Math.Sin(rotationX);
-            var s2 = (float)Math.Sin(rotationY);
-            var s3 = (float)Math.Sin(rotationZ);
-
-            
-            float x = (s1 * c2 * c3) + (c1 * s2 * s3);
-            float y = (c1 * s2 * c3) - (s1 * c2 * s3);
-            float z = (c1 * c2 * s3) + (s1 * s2 * c3);
-            float w = (c1 * c2 * c3) - (s1 * s2 * s3);
-
-            return new CQuaternion(x, y, z, w);
-        }
+        public static CQuaternion FromEulerAngles(CVector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
+        public static CQuaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ) => new CQuaternion(rotationX, rotationY, rotationZ);
 
         public static CQuaternion FromMatrix(CMatrix3 matrix)
         {

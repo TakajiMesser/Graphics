@@ -105,7 +105,7 @@ namespace SpiceEngineCore.Rendering.Matrices
                     CurrentValue = Matrix4.Orthographic(_width, _width / _aspectRatio, _zNear, _zFar);
                     break;
                 case ProjectionTypes.Perspective:
-                    CurrentValue = Matrix4.Perspective(_fieldOfView, _aspectRatio, _zNear, _zFar);
+                    CurrentValue = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
                     break;
                 default:
                     throw new NotImplementedException();

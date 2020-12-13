@@ -36,10 +36,10 @@ namespace SpiceEngineCore.Entities.Lights
             set => _modelMatrix.Rotation = value;
         }
 
-        public Vector3 Direction => (new Vector4(0.0f, 0.0f, -Height, 1.0f) * Matrix4.FromQuaternion(Rotation)).Xyz;
+        public Vector3 Direction => (new Vector4(0.0f, 0.0f, -Height, 1.0f) * Matrix4.CreateFromQuaternion(Rotation)).Xyz;
 
         public Matrix4 View => Matrix4.LookAt(Position, Position + Direction.Normalized(), Vector3.UnitZ);
-        public Matrix4 Projection => Matrix4.Perspective((float)Math.Atan2(_radius, Height) * 2.0f, 1.0f, 0.1f, Height);
+        public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView((float)Math.Atan2(_radius, Height) * 2.0f, 1.0f, 0.1f, Height);
 
         public void Rotate(Quaternion rotation) => _modelMatrix.Rotation = rotation * _modelMatrix.Rotation;
 
