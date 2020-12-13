@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
-using SpiceEngineCore.Rendering.Textures;
+﻿using SpiceEngineCore.Rendering.Textures;
 using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Text;
@@ -8,6 +6,15 @@ using StarchUICore.Traversal;
 using SweetGraphicsCore.Vertices;
 using System;
 using System.Collections.Generic;
+
+using Color4 = OpenTK.Graphics.Color4;
+using Matrix2 = OpenTK.Matrix2;
+using Matrix3 = OpenTK.Matrix3;
+using Matrix4 = OpenTK.Matrix4;
+using Quaternion = OpenTK.Quaternion;
+using Vector2 = OpenTK.Vector2;
+using Vector3 = OpenTK.Vector3;
+using Vector4 = OpenTK.Vector4;
 
 namespace StarchUICore.Views
 {

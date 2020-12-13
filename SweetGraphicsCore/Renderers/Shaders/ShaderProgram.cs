@@ -2,15 +2,21 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
-using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
+
+using Color4 = OpenTK.Graphics.Color4;
+using Matrix2 = OpenTK.Matrix2;
+using Matrix3 = OpenTK.Matrix3;
+using Matrix4 = OpenTK.Matrix4;
+using Quaternion = OpenTK.Quaternion;
+using Vector2 = OpenTK.Vector2;
+using Vector3 = OpenTK.Vector3;
+using Vector4 = OpenTK.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Shaders
 {
@@ -158,20 +164,17 @@ namespace SweetGraphicsCore.Renderers.Shaders
 
         private void SetMatrix4Uniform(int location, ref Matrix4 matrix)
         {
+            GL.UniformMatrix4(location, false, ref matrix);
             //GL.UniformMatrix4(location, 1, false, matrix.Values);
 
-            unsafe
+            /*unsafe
             {
-                /*fixed(float *matrix_ptr = &matrix.Values[0])
-                {
-                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
-                }*/
-
+                //fixed(float *matrix_ptr = &matrix.Values[0])
                 fixed (float* matrix_ptr = &matrix.Row0.X)
                 {
                     GL.UniformMatrix4(location, 1, false, matrix_ptr);
                 }
-            }
+            }*/
         }
 
         public void SetUniform(string name, Vector2 vector)
