@@ -17,7 +17,7 @@ namespace SpiceEngineCore.Geometry.Vectors
     /// <remarks>
     /// The Vector4 structure is suitable for interoperation with unmanaged code requiring four consecutive floats.
     /// </remarks>
-    /*[Serializable]
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector4 : IEquatable<Vector4>
     {
@@ -2069,5 +2069,5 @@ namespace SpiceEngineCore.Geometry.Vectors
             z = Z;
             w = W;
         }
-    }*/
+    }
 }

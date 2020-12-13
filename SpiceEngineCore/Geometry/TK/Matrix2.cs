@@ -9,7 +9,7 @@ namespace SpiceEngineCore.Geometry.Matrices
     /// <summary>
     /// Represents a 2x2 matrix.
     /// </summary>
-    /*[Serializable]
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Matrix2 : IEquatable<Matrix2>
     {
@@ -631,5 +631,5 @@ namespace SpiceEngineCore.Geometry.Matrices
                 Row0 == other.Row0 &&
                 Row1 == other.Row1;
         }
-    }*/
+    }
 }

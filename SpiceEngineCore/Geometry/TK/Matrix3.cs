@@ -10,7 +10,7 @@ namespace SpiceEngineCore.Geometry.Matrices
     /// <summary>
     /// Represents a 3x3 matrix containing 3D rotation and scale.
     /// </summary>
-    /*[Serializable]
+    [Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Matrix3 : IEquatable<Matrix3>
     {
@@ -1027,5 +1027,5 @@ namespace SpiceEngineCore.Geometry.Matrices
                 Row1 == other.Row1 &&
                 Row2 == other.Row2;
         }
-    }*/
+    }
 }
