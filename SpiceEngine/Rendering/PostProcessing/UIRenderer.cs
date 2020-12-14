@@ -124,23 +124,32 @@ namespace SpiceEngine.Rendering.PostProcessing
             //GL.Disable(EnableCap.DepthTest);
 
             // TODO - Contain all rendering logic in batcher as well in view batches
-            _uiSelectionProgram.Use();
+            /*_uiSelectionProgram.Use();
             _uiSelectionProgram.SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height));
             _uiSelectionProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
 
             foreach (var batch in batcher.GetBatchesInOrder(RenderTypes.OpaqueView, uiProvider.GetDrawOrder()))
             {
                 RenderBatch(_uiSelectionProgram, batcher, batch);
-            }
+            }*/
+
+            batcher.CreateBatchAction()
+               .SetShader(_uiSelectionProgram)
+               .SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height))
+               .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+               .SetRenderType(RenderTypes.OpaqueView)
+               .SetEntityIDOrder(uiProvider.GetDrawOrder())
+               .Render()
+               .Execute();
         }
 
         public void Render(IBatcher batcher, IUIProvider uiProvider)
         {
             // Clear the depth buffer, since the UI should be rendered above everything else
             //GL.Clear(ClearBufferMask.DepthBufferBit);
-            
+
             // Enable blending for transparent rendering
-            GL.Enable(EnableCap.Blend);
+            /*GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.Disable(EnableCap.DepthTest);
@@ -160,7 +169,16 @@ namespace SpiceEngine.Rendering.PostProcessing
             //_uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
             //uiProvider.Draw();
 
-            GL.Disable(EnableCap.Blend);
+            GL.Disable(EnableCap.Blend);*/
+
+            batcher.CreateBatchAction()
+                .SetShader(_uiProgram)
+                .SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height))
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.OpaqueView)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
         }
     }
 }

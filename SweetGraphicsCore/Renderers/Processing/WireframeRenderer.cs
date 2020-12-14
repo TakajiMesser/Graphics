@@ -157,7 +157,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void WireframePass(ICamera camera, IBatcher batcher)
         {
-            _wireframeProgram.Use();
+            /*_wireframeProgram.Use();
             _wireframeProgram.SetCamera(camera);
             _wireframeProgram.SetUniform("lineThickness", LineThickness);
             _wireframeProgram.SetUniform("lineColor", LineColor);
@@ -189,12 +189,35 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.TransparentAnimated))
             {
                 RenderBatch(_wireframeProgram, batcher, batch);
-            }
+            }*/
+
+            batcher.CreateBatchAction()
+                .SetShader(_wireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", LineThickness)
+                .SetUniform("lineColor", LineColor)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
+                .SetShader(_jointWireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", LineThickness)
+                .SetUniform("lineColor", LineColor)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
+                .Execute();
         }
 
         public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, IBatcher batcher)
         {
-            _wireframeProgram.Use();
+            /*_wireframeProgram.Use();
             _wireframeProgram.SetCamera(camera);
             _wireframeProgram.SetUniform("lineThickness", 0.0f);
             _wireframeProgram.SetUniform("lineColor", Vector4.Zero);
@@ -226,7 +249,31 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.TransparentStatic, entityIDs))
             {
                 RenderBatch(_jointWireframeProgram, batcher, batch);
-            }
+            }*/
+
+            batcher.CreateBatchAction()
+                .SetEntityIDSet(entityIDs)
+                .SetShader(_wireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", 0.0f)
+                .SetUniform("lineColor", Vector4.Zero)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
+                .SetShader(_jointWireframeProgram)
+                .SetCamera(camera)
+                .SetUniform("lineThickness", 0.0f)
+                .SetUniform("lineColor", Vector4.Zero)
+                .SetUniform("selectedLineThickness", SelectedLineThickness)
+                .SetUniform("selectedLineColor", SelectedLineColor)
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
+                .Execute();
         }
 
         public void RenderGridLines(ICamera camera)

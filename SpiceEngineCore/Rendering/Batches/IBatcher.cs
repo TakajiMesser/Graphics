@@ -26,5 +26,7 @@ namespace SpiceEngineCore.Rendering.Batches
         IEnumerable<IBatch> GetBatches(RenderTypes renderType, IEnumerable<int> entityIDs);
         IEnumerable<IBatch> GetBatchesInOrder(RenderTypes renderType, IEnumerable<int> entityIDs);
         //void DrawBatches(RenderTypes renderType);
+
+        IBatchAction CreateBatchAction();
     }
 }

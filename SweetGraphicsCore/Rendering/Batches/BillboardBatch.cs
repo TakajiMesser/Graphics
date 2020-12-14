@@ -1,4 +1,6 @@
-﻿using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
@@ -50,11 +52,20 @@ namespace SweetGraphicsCore.Rendering.Batches
             _renderable.Transform(transform, offset, count);
         }
 
-        public override IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider)
+        /*public override IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider)
         {
             // TODO - Also set texture Alpha value here
             var texture = textureProvider.RetrieveTexture(_renderable.TextureIndex);
             yield return new TextureBinding("mainTexture", texture);
+        }*/
+
+        public override void SetUniforms(IRender renderer, IEntityProvider entityProvider) { }
+
+        public override void BindTextures(IRender renderer, ITextureProvider textureProvider)
+        {
+            // TODO - Also set texture Alpha value here
+            var texture = textureProvider.RetrieveTexture(_renderable.TextureIndex);
+            renderer.BindTexture(texture, "mainTexture", 0);
         }
     }
 }

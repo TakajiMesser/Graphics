@@ -24,7 +24,7 @@ namespace SweetGraphicsCore.Renderers
         protected abstract void LoadTextures(Resolution resolution);
         protected abstract void LoadBuffers();
 
-        protected void RenderBatch(ShaderProgram program, IBatcher batcher, IBatch batch)
+        /*protected void RenderBatch(ShaderProgram program, IBatcher batcher, IBatch batch)
         {
             foreach (var uniform in batch.GetUniforms(batcher))
             {
@@ -37,6 +37,6 @@ namespace SweetGraphicsCore.Renderers
             }
 
             batch.Draw();
-        }
+        }*/
     }
 }

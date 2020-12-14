@@ -120,7 +120,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             // TODO - Where does frame buffer binding and GL value setting fit into BatchAction?
             //_program.Use();
-            _frameBuffer.BindAndDraw();
+            /*_frameBuffer.BindAndDraw();
 
             GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -132,7 +132,13 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic))
             {
                 RenderBatch(_program, batcher, batch);
-            }
+            }*/
+
+            batcher.CreateBatchAction()
+                .SetShader(_program)
+                .SetCamera(camera)
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render();
         }
 
         private void BindTextures(ITextureProvider textureProvider, TextureMapping textureMapping)

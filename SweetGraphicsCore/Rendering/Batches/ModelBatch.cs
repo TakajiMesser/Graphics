@@ -1,4 +1,7 @@
-﻿using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Game;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
@@ -41,7 +44,7 @@ namespace SweetGraphicsCore.Rendering.Batches
         // For now, assume that models are never good candidates for combining batches, as their positions must get updated too frequently
         public override bool CanBatch(IRenderable renderable) => false;
 
-        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
+        /*public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
         {
             var entity = batcher.GetEntitiesForBatch(this).First();
 
@@ -73,13 +76,62 @@ namespace SweetGraphicsCore.Rendering.Batches
                 var parallaxTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.ParallaxIndex);
                 yield return new TextureBinding(TextureMapping.PARALLAX_NAME, parallaxTexture);
             }
+        }*/
+
+        public override void SetUniforms(IRender renderer, IEntityProvider entityProvider)
+        {
+            if (_renderable.Meshes[_drawIndex] is ITexturedMesh texturedMesh)
+            {
+                renderer.SetMaterial(texturedMesh.Material);
+            }
+
+            //_renderable.SetUniforms(renderer, _drawIndex);
+        }
+
+        public override void BindTextures(IRender renderer, ITextureProvider textureProvider)
+        {
+            if (_renderable.Meshes[_drawIndex] is ITexturedMesh texturedMesh)
+            {
+                if (texturedMesh.TextureMapping.HasValue)
+                {
+                    renderer.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
+                }
+                else
+                {
+                    renderer.UnbindTextures();
+                }
+            }
         }
 
         public override void Draw()
         {
             _renderable.Meshes[_drawIndex].Draw();
-            _drawIndex++;
-            _drawIndex %= _renderable.Meshes.Count;
+            //_drawIndex++;
+            //_drawIndex %= _renderable.Meshes.Count;
+        }
+
+        public override void Draw(IRender renderer, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
+        {
+            var entity = entityProvider.GetEntity(EntityIDs.First());
+
+            // TODO - This is janky to set this uniform based on entity type...
+            if (entity is IBrush)
+            {
+                renderer.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.Identity);
+                renderer.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
+            }
+            else
+            {
+                renderer.SetUniform(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
+                renderer.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
+                //entity.WorldMatrix.Set(shaderProgram);
+            }
+
+            for (var i = 0; i < _renderable.Meshes.Count; i++)
+            {
+                _drawIndex = i;
+                base.Draw(renderer, entityProvider, textureProvider);
+            }
         }
     }
 }

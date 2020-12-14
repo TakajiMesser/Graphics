@@ -1,4 +1,6 @@
-﻿using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Entities;
+using SpiceEngineCore.Game;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
@@ -139,7 +141,7 @@ namespace StarchUICore.Rendering.Batches
 
         public override bool CanBatch(IRenderable renderable) => renderable is Label textView && textView.Font == _renderable.Font;
 
-        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
+        /*public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
         {
             var entity = batcher.GetEntitiesForBatch(this).First();
 
@@ -148,6 +150,16 @@ namespace StarchUICore.Rendering.Batches
 
             //shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
             yield return new Uniform<Color4>("color", _renderable.Color);
+        }*/
+
+        public override void SetUniforms(IRender renderer, IEntityProvider entityProvider)
+        {
+            var entity = entityProvider.GetEntity(EntityIDs.First());
+
+            renderer.SetUniform(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
+            renderer.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
+
+            renderer.SetUniform("color", _renderable.Color);
         }
     }
 }

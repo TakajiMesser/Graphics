@@ -163,7 +163,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
         public void SelectionPass(ICamera camera, IBatcher batcher, IEnumerable<int> ids)
         {
-            _selectionProgram.Use();
+            /*_selectionProgram.Use();
             _selectionProgram.SetCamera(camera);
 
             foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueStatic, ids))
@@ -187,7 +187,27 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.TransparentAnimated, ids))
             {
                 RenderBatch(_jointSelectionProgram, batcher, batch);
-            }
+            }*/
+
+            batcher.CreateBatchAction()
+                .SetShader(_selectionProgram)
+                .SetCamera(camera)
+                .SetEntityIDSet(ids)
+                .SetRenderType(RenderTypes.OpaqueStatic)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentStatic)
+                .Render()
+                //.RenderOpaqueStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                //.RenderTransparentStaticWithAction(id => _selectionProgram.SetUniform("id", GetColorFromID(id)))
+                .SetShader(_jointSelectionProgram)
+                .SetCamera(camera)
+                .SetRenderType(RenderTypes.OpaqueAnimated)
+                .Render()
+                .SetRenderType(RenderTypes.TransparentAnimated)
+                .Render()
+                //.RenderOpaqueAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                //.RenderTransparentAnimatedWithAction(id => _jointSelectionProgram.SetUniform("id", GetColorFromID(id)))
+                .Execute();
         }
 
         //public void UIPass(ICamera camera, IBatcher batcher, IEntityProvider entity)
