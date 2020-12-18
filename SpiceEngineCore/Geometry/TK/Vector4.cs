@@ -8,14 +8,6 @@ using SpiceEngineCore.Geometry.Colors;
 using SpiceEngineCore.Geometry.Matrices;
 using SpiceEngineCore.Geometry.Quaternions;
 using SpiceEngineCore.Utilities;
-using Color4 = SpiceEngineCore.Geometry.Colors.TColor4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrices.TMatrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrices.TMatrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrices.TMatrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternions.TQuaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vectors.TVector2;
-using Vector3 = SpiceEngineCore.Geometry.Vectors.TVector3;
-using Vector4 = SpiceEngineCore.Geometry.Vectors.TVector4;
 
 namespace SpiceEngineCore.Geometry.Vectors
 {
@@ -23,82 +15,82 @@ namespace SpiceEngineCore.Geometry.Vectors
     /// Represents a 4D vector using four single-precision floating-point numbers.
     /// </summary>
     /// <remarks>
-    /// The TVector4 structure is suitable for interoperation with unmanaged code requiring four consecutive floats.
+    /// The Vector4 structure is suitable for interoperation with unmanaged code requiring four consecutive floats.
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct TVector4 : IEquatable<TVector4>
+    public struct Vector4 : IEquatable<Vector4>
     {
         /// <summary>
-        /// The X component of the TVector4.
+        /// The X component of the Vector4.
         /// </summary>
         public float X;
 
         /// <summary>
-        /// The Y component of the TVector4.
+        /// The Y component of the Vector4.
         /// </summary>
         public float Y;
 
         /// <summary>
-        /// The Z component of the TVector4.
+        /// The Z component of the Vector4.
         /// </summary>
         public float Z;
 
         /// <summary>
-        /// The W component of the TVector4.
+        /// The W component of the Vector4.
         /// </summary>
         public float W;
 
         /// <summary>
-        /// Defines a unit-length TVector4 that points towards the X-axis.
+        /// Defines a unit-length Vector4 that points towards the X-axis.
         /// </summary>
-        public static readonly TVector4 UnitX = new TVector4(1, 0, 0, 0);
+        public static readonly Vector4 UnitX = new Vector4(1, 0, 0, 0);
 
         /// <summary>
-        /// Defines a unit-length TVector4 that points towards the Y-axis.
+        /// Defines a unit-length Vector4 that points towards the Y-axis.
         /// </summary>
-        public static readonly TVector4 UnitY = new TVector4(0, 1, 0, 0);
+        public static readonly Vector4 UnitY = new Vector4(0, 1, 0, 0);
 
         /// <summary>
-        /// Defines a unit-length TVector4 that points towards the Z-axis.
+        /// Defines a unit-length Vector4 that points towards the Z-axis.
         /// </summary>
-        public static readonly TVector4 UnitZ = new TVector4(0, 0, 1, 0);
+        public static readonly Vector4 UnitZ = new Vector4(0, 0, 1, 0);
 
         /// <summary>
-        /// Defines a unit-length TVector4 that points towards the W-axis.
+        /// Defines a unit-length Vector4 that points towards the W-axis.
         /// </summary>
-        public static readonly TVector4 UnitW = new TVector4(0, 0, 0, 1);
+        public static readonly Vector4 UnitW = new Vector4(0, 0, 0, 1);
 
         /// <summary>
-        /// Defines a zero-length TVector4.
+        /// Defines a zero-length Vector4.
         /// </summary>
-        public static readonly TVector4 Zero = new TVector4(0, 0, 0, 0);
+        public static readonly Vector4 Zero = new Vector4(0, 0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly TVector4 One = new TVector4(1, 1, 1, 1);
+        public static readonly Vector4 One = new Vector4(1, 1, 1, 1);
 
         /// <summary>
         /// Defines an instance with all components set to positive infinity.
         /// </summary>
-        public static readonly TVector4 PositiveInfinity = new TVector4(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+        public static readonly Vector4 PositiveInfinity = new Vector4(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
 
         /// <summary>
         /// Defines an instance with all components set to negative infinity.
         /// </summary>
-        public static readonly TVector4 NegativeInfinity = new TVector4(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+        public static readonly Vector4 NegativeInfinity = new Vector4(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
 
         /// <summary>
-        /// Defines the size of the TVector4 struct in bytes.
+        /// Defines the size of the Vector4 struct in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = UnitConversions.SizeOf<TVector4>();//Unsafe.SizeOf<TVector4>();
+        public static readonly int SizeInBytes = UnitConversions.SizeOf<Vector4>();//Unsafe.SizeOf<Vector4>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Vector4"/> struct.
         /// </summary>
         /// <param name="value">The value that will initialize this instance.</param>
-        public TVector4(float value)
+        public Vector4(float value)
         {
             X = value;
             Y = value;
@@ -107,13 +99,13 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Vector4"/> struct.
         /// </summary>
-        /// <param name="x">The x component of the TVector4.</param>
-        /// <param name="y">The y component of the TVector4.</param>
-        /// <param name="z">The z component of the TVector4.</param>
-        /// <param name="w">The w component of the TVector4.</param>
-        public TVector4(float x, float y, float z, float w)
+        /// <param name="x">The x component of the Vector4.</param>
+        /// <param name="y">The y component of the Vector4.</param>
+        /// <param name="z">The z component of the Vector4.</param>
+        /// <param name="w">The w component of the Vector4.</param>
+        public Vector4(float x, float y, float z, float w)
         {
             X = x;
             Y = y;
@@ -122,10 +114,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Vector4"/> struct.
         /// </summary>
-        /// <param name="v">The TVector2 to copy components from.</param>
-        public TVector4(TVector2 v)
+        /// <param name="v">The Vector2 to copy components from.</param>
+        public Vector4(Vector2 v)
         {
             X = v.X;
             Y = v.Y;
@@ -134,13 +126,13 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Vector4"/> struct.
         /// </summary>
-        /// <param name="v">The TVector3 to copy components from.</param>
+        /// <param name="v">The Vector3 to copy components from.</param>
         /// <remarks>
-        ///  .<seealso cref="TVector4(TVector3, float)"/>
+        ///  .<seealso cref="Vector4(Vector3, float)"/>
         /// </remarks>
-        public TVector4(TVector3 v)
+        public Vector4(Vector3 v)
         {
             X = v.X;
             Y = v.Y;
@@ -149,11 +141,11 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Vector4"/> struct.
         /// </summary>
-        /// <param name="v">The TVector3 to copy components from.</param>
-        /// <param name="w">The w component of the new TVector4.</param>
-        public TVector4(TVector3 v, float w)
+        /// <param name="v">The Vector3 to copy components from.</param>
+        /// <param name="w">The w component of the new Vector4.</param>
+        public Vector4(Vector3 v, float w)
         {
             X = v.X;
             Y = v.Y;
@@ -162,10 +154,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct.
+        /// Initializes a new instance of the <see cref="Vector4"/> struct.
         /// </summary>
-        /// <param name="v">The TVector4 to copy components from.</param>
-        public TVector4(TVector4 v)
+        /// <param name="v">The Vector4 to copy components from.</param>
+        public Vector4(Vector4 v)
         {
             X = v.X;
             Y = v.Y;
@@ -260,10 +252,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         public float LengthSquared => (X * X) + (Y * Y) + (Z * Z) + (W * W);
 
         /// <summary>
-        /// Returns a copy of the TVector4 scaled to unit length.
+        /// Returns a copy of the Vector4 scaled to unit length.
         /// </summary>
         /// <returns>The normalized copy.</returns>
-        public TVector4 Normalized()
+        public Vector4 Normalized()
         {
             var v = this;
             v.Normalize();
@@ -271,7 +263,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Scales the TVector4 to unit length.
+        /// Scales the Vector4 to unit length.
         /// </summary>
         public void Normalize()
         {
@@ -283,7 +275,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Scales the TVector4 to approximately unit length.
+        /// Scales the Vector4 to approximately unit length.
         /// </summary>
         public void NormalizeFast()
         {
@@ -301,7 +293,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Right operand.</param>
         /// <returns>Result of operation.</returns>
         [Pure]
-        public static TVector4 Add(TVector4 a, TVector4 b)
+        public static Vector4 Add(Vector4 a, Vector4 b)
         {
             Add(in a, in b, out a);
             return a;
@@ -313,7 +305,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">Left operand.</param>
         /// <param name="b">Right operand.</param>
         /// <param name="result">Result of operation.</param>
-        public static void Add(in TVector4 a, in TVector4 b, out TVector4 result)
+        public static void Add(in Vector4 a, in Vector4 b, out Vector4 result)
         {
             result.X = a.X + b.X;
             result.Y = a.Y + b.Y;
@@ -328,7 +320,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second operand.</param>
         /// <returns>Result of subtraction.</returns>
         [Pure]
-        public static TVector4 Subtract(TVector4 a, TVector4 b)
+        public static Vector4 Subtract(Vector4 a, Vector4 b)
         {
             Subtract(in a, in b, out a);
             return a;
@@ -340,7 +332,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">First operand.</param>
         /// <param name="b">Second operand.</param>
         /// <param name="result">Result of subtraction.</param>
-        public static void Subtract(in TVector4 a, in TVector4 b, out TVector4 result)
+        public static void Subtract(in Vector4 a, in Vector4 b, out Vector4 result)
         {
             result.X = a.X - b.X;
             result.Y = a.Y - b.Y;
@@ -355,7 +347,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector4 Multiply(TVector4 vector, float scale)
+        public static Vector4 Multiply(Vector4 vector, float scale)
         {
             Multiply(in vector, scale, out vector);
             return vector;
@@ -367,7 +359,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Multiply(in TVector4 vector, float scale, out TVector4 result)
+        public static void Multiply(in Vector4 vector, float scale, out Vector4 result)
         {
             result.X = vector.X * scale;
             result.Y = vector.Y * scale;
@@ -382,7 +374,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector4 Multiply(TVector4 vector, TVector4 scale)
+        public static Vector4 Multiply(Vector4 vector, Vector4 scale)
         {
             Multiply(in vector, in scale, out vector);
             return vector;
@@ -394,7 +386,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Multiply(in TVector4 vector, in TVector4 scale, out TVector4 result)
+        public static void Multiply(in Vector4 vector, in Vector4 scale, out Vector4 result)
         {
             result.X = vector.X * scale.X;
             result.Y = vector.Y * scale.Y;
@@ -409,7 +401,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector4 Divide(TVector4 vector, float scale)
+        public static Vector4 Divide(Vector4 vector, float scale)
         {
             Divide(in vector, scale, out vector);
             return vector;
@@ -421,7 +413,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Divide(in TVector4 vector, float scale, out TVector4 result)
+        public static void Divide(in Vector4 vector, float scale, out Vector4 result)
         {
             result.X = vector.X / scale;
             result.Y = vector.Y / scale;
@@ -436,7 +428,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector4 Divide(TVector4 vector, TVector4 scale)
+        public static Vector4 Divide(Vector4 vector, Vector4 scale)
         {
             Divide(in vector, in scale, out vector);
             return vector;
@@ -448,7 +440,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Divide(in TVector4 vector, in TVector4 scale, out TVector4 result)
+        public static void Divide(in Vector4 vector, in Vector4 scale, out Vector4 result)
         {
             result.X = vector.X / scale.X;
             result.Y = vector.Y / scale.Y;
@@ -463,7 +455,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second operand.</param>
         /// <returns>The component-wise minimum.</returns>
         [Pure]
-        public static TVector4 ComponentMin(TVector4 a, TVector4 b)
+        public static Vector4 ComponentMin(Vector4 a, Vector4 b)
         {
             a.X = a.X < b.X ? a.X : b.X;
             a.Y = a.Y < b.Y ? a.Y : b.Y;
@@ -478,7 +470,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">First operand.</param>
         /// <param name="b">Second operand.</param>
         /// <param name="result">The component-wise minimum.</param>
-        public static void ComponentMin(in TVector4 a, in TVector4 b, out TVector4 result)
+        public static void ComponentMin(in Vector4 a, in Vector4 b, out Vector4 result)
         {
             result.X = a.X < b.X ? a.X : b.X;
             result.Y = a.Y < b.Y ? a.Y : b.Y;
@@ -493,7 +485,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second operand.</param>
         /// <returns>The component-wise maximum.</returns>
         [Pure]
-        public static TVector4 ComponentMax(TVector4 a, TVector4 b)
+        public static Vector4 ComponentMax(Vector4 a, Vector4 b)
         {
             a.X = a.X > b.X ? a.X : b.X;
             a.Y = a.Y > b.Y ? a.Y : b.Y;
@@ -508,7 +500,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">First operand.</param>
         /// <param name="b">Second operand.</param>
         /// <param name="result">The component-wise maximum.</param>
-        public static void ComponentMax(in TVector4 a, in TVector4 b, out TVector4 result)
+        public static void ComponentMax(in Vector4 a, in Vector4 b, out Vector4 result)
         {
             result.X = a.X > b.X ? a.X : b.X;
             result.Y = a.Y > b.Y ? a.Y : b.Y;
@@ -517,51 +509,51 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Returns the TVector4 with the minimum magnitude. If the magnitudes are equal, the second vector
+        /// Returns the Vector4 with the minimum magnitude. If the magnitudes are equal, the second vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
-        /// <returns>The minimum TVector4.</returns>
+        /// <returns>The minimum Vector4.</returns>
         [Pure]
-        public static TVector4 MagnitudeMin(TVector4 left, TVector4 right)
+        public static Vector4 MagnitudeMin(Vector4 left, Vector4 right)
         {
             return left.LengthSquared < right.LengthSquared ? left : right;
         }
 
         /// <summary>
-        /// Returns the TVector4 with the minimum magnitude. If the magnitudes are equal, the second vector
+        /// Returns the Vector4 with the minimum magnitude. If the magnitudes are equal, the second vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <param name="result">The magnitude-wise minimum.</param>
-        public static void MagnitudeMin(in TVector4 left, in TVector4 right, out TVector4 result)
+        public static void MagnitudeMin(in Vector4 left, in Vector4 right, out Vector4 result)
         {
             result = left.LengthSquared < right.LengthSquared ? left : right;
         }
 
         /// <summary>
-        /// Returns the TVector4 with the maximum magnitude. If the magnitudes are equal, the first vector
+        /// Returns the Vector4 with the maximum magnitude. If the magnitudes are equal, the first vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
-        /// <returns>The maximum TVector4.</returns>
+        /// <returns>The maximum Vector4.</returns>
         [Pure]
-        public static TVector4 MagnitudeMax(TVector4 left, TVector4 right)
+        public static Vector4 MagnitudeMax(Vector4 left, Vector4 right)
         {
             return left.LengthSquared >= right.LengthSquared ? left : right;
         }
 
         /// <summary>
-        /// Returns the TVector4 with the maximum magnitude. If the magnitudes are equal, the first vector
+        /// Returns the Vector4 with the maximum magnitude. If the magnitudes are equal, the first vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <param name="result">The magnitude-wise maximum.</param>
-        public static void MagnitudeMax(in TVector4 left, in TVector4 right, out TVector4 result)
+        public static void MagnitudeMax(in Vector4 left, in Vector4 right, out Vector4 result)
         {
             result = left.LengthSquared >= right.LengthSquared ? left : right;
         }
@@ -574,7 +566,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="max">Maximum vector.</param>
         /// <returns>The clamped vector.</returns>
         [Pure]
-        public static TVector4 Clamp(TVector4 vec, TVector4 min, TVector4 max)
+        public static Vector4 Clamp(Vector4 vec, Vector4 min, Vector4 max)
         {
             vec.X = vec.X < min.X ? min.X : vec.X > max.X ? max.X : vec.X;
             vec.Y = vec.Y < min.Y ? min.Y : vec.Y > max.Y ? max.Y : vec.Y;
@@ -590,7 +582,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="min">Minimum vector.</param>
         /// <param name="max">Maximum vector.</param>
         /// <param name="result">The clamped vector.</param>
-        public static void Clamp(in TVector4 vec, in TVector4 min, in TVector4 max, out TVector4 result)
+        public static void Clamp(in Vector4 vec, in Vector4 min, in Vector4 max, out Vector4 result)
         {
             result.X = vec.X < min.X ? min.X : vec.X > max.X ? max.X : vec.X;
             result.Y = vec.Y < min.Y ? min.Y : vec.Y > max.Y ? max.Y : vec.Y;
@@ -604,7 +596,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The input vector.</param>
         /// <returns>The normalized copy.</returns>
         [Pure]
-        public static TVector4 Normalize(TVector4 vec)
+        public static Vector4 Normalize(Vector4 vec)
         {
             var scale = 1.0f / vec.Length;
             vec.X *= scale;
@@ -619,7 +611,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// </summary>
         /// <param name="vec">The input vector.</param>
         /// <param name="result">The normalized vector.</param>
-        public static void Normalize(in TVector4 vec, out TVector4 result)
+        public static void Normalize(in Vector4 vec, out Vector4 result)
         {
             var scale = 1.0f / vec.Length;
             result.X = vec.X * scale;
@@ -634,7 +626,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The input vector.</param>
         /// <returns>The normalized copy.</returns>
         [Pure]
-        public static TVector4 NormalizeFast(TVector4 vec)
+        public static Vector4 NormalizeFast(Vector4 vec)
         {
             var scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z) + (vec.W * vec.W));
             vec.X *= scale;
@@ -649,7 +641,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// </summary>
         /// <param name="vec">The input vector.</param>
         /// <param name="result">The normalized copy.</param>
-        public static void NormalizeFast(in TVector4 vec, out TVector4 result)
+        public static void NormalizeFast(in Vector4 vec, out Vector4 result)
         {
             var scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z) + (vec.W * vec.W));
             result.X = vec.X * scale;
@@ -665,7 +657,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">Second operand.</param>
         /// <returns>The dot product of the two inputs.</returns>
         [Pure]
-        public static float Dot(TVector4 left, TVector4 right)
+        public static float Dot(Vector4 left, Vector4 right)
         {
             return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
         }
@@ -676,7 +668,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">First operand.</param>
         /// <param name="right">Second operand.</param>
         /// <param name="result">The dot product of the two inputs.</param>
-        public static void Dot(in TVector4 left, in TVector4 right, out float result)
+        public static void Dot(in Vector4 left, in Vector4 right, out float result)
         {
             result = (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z) + (left.W * right.W);
         }
@@ -689,7 +681,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         /// <returns>a when blend=0, b when blend=1, and a linear combination otherwise.</returns>
         [Pure]
-        public static TVector4 Lerp(TVector4 a, TVector4 b, float blend)
+        public static Vector4 Lerp(Vector4 a, Vector4 b, float blend)
         {
             a.X = (blend * (b.X - a.X)) + a.X;
             a.Y = (blend * (b.Y - a.Y)) + a.Y;
@@ -705,7 +697,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second input vector.</param>
         /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         /// <param name="result">a when blend=0, b when blend=1, and a linear combination otherwise.</param>
-        public static void Lerp(in TVector4 a, in TVector4 b, float blend, out TVector4 result)
+        public static void Lerp(in Vector4 a, in Vector4 b, float blend, out Vector4 result)
         {
             result.X = (blend * (b.X - a.X)) + a.X;
             result.Y = (blend * (b.Y - a.Y)) + a.Y;
@@ -723,7 +715,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="v">Second Barycentric Coordinate.</param>
         /// <returns>a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise.</returns>
         [Pure]
-        public static TVector4 BaryCentric(TVector4 a, TVector4 b, TVector4 c, float u, float v)
+        public static Vector4 BaryCentric(Vector4 a, Vector4 b, Vector4 c, float u, float v)
         {
             BaryCentric(in a, in b, in c, u, v, out var result);
             return result;
@@ -743,12 +735,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// </param>
         public static void BaryCentric
         (
-            in TVector4 a,
-            in TVector4 b,
-            in TVector4 c,
+            in Vector4 a,
+            in Vector4 b,
+            in Vector4 c,
             float u,
             float v,
-            out TVector4 result
+            out Vector4 result
         )
         {
             Subtract(in b, in a, out var ab);
@@ -767,9 +759,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector4 TransformRow(TVector4 vec, TMatrix4 mat)
+        public static Vector4 TransformRow(Vector4 vec, Matrix4 mat)
         {
-            TransformRow(in vec, in mat, out TVector4 result);
+            TransformRow(in vec, in mat, out Vector4 result);
             return result;
         }
 
@@ -779,9 +771,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <param name="result">The transformed vector.</param>
-        public static void TransformRow(in TVector4 vec, in TMatrix4 mat, out TVector4 result)
+        public static void TransformRow(in Vector4 vec, in Matrix4 mat, out Vector4 result)
         {
-            result = new TVector4(
+            result = new Vector4(
                 (vec.X * mat.Row0.X) + (vec.Y * mat.Row1.X) + (vec.Z * mat.Row2.X) + (vec.W * mat.Row3.X),
                 (vec.X * mat.Row0.Y) + (vec.Y * mat.Row1.Y) + (vec.Z * mat.Row2.Y) + (vec.W * mat.Row3.Y),
                 (vec.X * mat.Row0.Z) + (vec.Y * mat.Row1.Z) + (vec.Z * mat.Row2.Z) + (vec.W * mat.Row3.Z),
@@ -795,9 +787,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="quat">The quaternion to rotate the vector by.</param>
         /// <returns>The result of the operation.</returns>
         [Pure]
-        public static TVector4 Transform(TVector4 vec, TQuaternion quat)
+        public static Vector4 Transform(Vector4 vec, Quaternion quat)
         {
-            Transform(in vec, in quat, out TVector4 result);
+            Transform(in vec, in quat, out Vector4 result);
             return result;
         }
 
@@ -807,12 +799,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <param name="quat">The quaternion to rotate the vector by.</param>
         /// <param name="result">The result of the operation.</param>
-        public static void Transform(in TVector4 vec, in TQuaternion quat, out TVector4 result)
+        public static void Transform(in Vector4 vec, in Quaternion quat, out Vector4 result)
         {
-            TQuaternion v = new TQuaternion(vec.X, vec.Y, vec.Z, vec.W);
-            TQuaternion.Invert(in quat, out TQuaternion i);
-            TQuaternion.Multiply(in quat, in v, out TQuaternion t);
-            TQuaternion.Multiply(in t, in i, out v);
+            Quaternion v = new Quaternion(vec.X, vec.Y, vec.Z, vec.W);
+            Quaternion.Invert(in quat, out Quaternion i);
+            Quaternion.Multiply(in quat, in v, out Quaternion t);
+            Quaternion.Multiply(in t, in i, out v);
 
             result.X = v.X;
             result.Y = v.Y;
@@ -827,9 +819,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector4 TransformColumn(TMatrix4 mat, TVector4 vec)
+        public static Vector4 TransformColumn(Matrix4 mat, Vector4 vec)
         {
-            TransformColumn(in mat, in vec, out TVector4 result);
+            TransformColumn(in mat, in vec, out Vector4 result);
             return result;
         }
 
@@ -839,9 +831,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <param name="vec">The vector to transform.</param>
         /// <param name="result">The transformed vector.</param>
-        public static void TransformColumn(in TMatrix4 mat, in TVector4 vec, out TVector4 result)
+        public static void TransformColumn(in Matrix4 mat, in Vector4 vec, out Vector4 result)
         {
-            result = new TVector4(
+            result = new Vector4(
                 (mat.Row0.X * vec.X) + (mat.Row0.Y * vec.Y) + (mat.Row0.Z * vec.Z) + (mat.Row0.W * vec.W),
                 (mat.Row1.X * vec.X) + (mat.Row1.Y * vec.Y) + (mat.Row1.Z * vec.Z) + (mat.Row1.W * vec.W),
                 (mat.Row2.X * vec.X) + (mat.Row2.Y * vec.Y) + (mat.Row2.Z * vec.Z) + (mat.Row2.W * vec.W),
@@ -849,12 +841,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the X and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the X and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Xy
+        public Vector2 Xy
         {
-            get => new TVector2(X, Y);// Unsafe.As<TVector4, TVector2>(ref this);
+            get => new Vector2(X, Y);// Unsafe.As<Vector4, Vector2>(ref this);
             set
             {
                 X = value.X;
@@ -863,12 +855,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the X and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the X and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Xz
+        public Vector2 Xz
         {
-            get => new TVector2(X, Z);
+            get => new Vector2(X, Z);
             set
             {
                 X = value.X;
@@ -877,12 +869,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the X and W components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the X and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Xw
+        public Vector2 Xw
         {
-            get => new TVector2(X, W);
+            get => new Vector2(X, W);
             set
             {
                 X = value.X;
@@ -891,12 +883,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Y and X components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Y and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Yx
+        public Vector2 Yx
         {
-            get => new TVector2(Y, X);
+            get => new Vector2(Y, X);
             set
             {
                 Y = value.X;
@@ -905,12 +897,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Y and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Y and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Yz
+        public Vector2 Yz
         {
-            get => new TVector2(Y, Z);
+            get => new Vector2(Y, Z);
             set
             {
                 Y = value.X;
@@ -919,12 +911,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Y and W components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Y and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Yw
+        public Vector2 Yw
         {
-            get => new TVector2(Y, W);
+            get => new Vector2(Y, W);
             set
             {
                 Y = value.X;
@@ -933,12 +925,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Z and X components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Z and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Zx
+        public Vector2 Zx
         {
-            get => new TVector2(Z, X);
+            get => new Vector2(Z, X);
             set
             {
                 Z = value.X;
@@ -947,12 +939,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Z and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Z and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Zy
+        public Vector2 Zy
         {
-            get => new TVector2(Z, Y);
+            get => new Vector2(Z, Y);
             set
             {
                 Z = value.X;
@@ -961,12 +953,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Z and W components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Z and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Zw
+        public Vector2 Zw
         {
-            get => new TVector2(Z, W);
+            get => new Vector2(Z, W);
             set
             {
                 Z = value.X;
@@ -975,12 +967,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the W and X components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the W and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Wx
+        public Vector2 Wx
         {
-            get => new TVector2(W, X);
+            get => new Vector2(W, X);
             set
             {
                 W = value.X;
@@ -989,12 +981,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the W and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the W and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Wy
+        public Vector2 Wy
         {
-            get => new TVector2(W, Y);
+            get => new Vector2(W, Y);
             set
             {
                 W = value.X;
@@ -1003,12 +995,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the W and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the W and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Wz
+        public Vector2 Wz
         {
-            get => new TVector2(W, Z);
+            get => new Vector2(W, Z);
             set
             {
                 W = value.X;
@@ -1017,12 +1009,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, Y, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, Y, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xyz
+        public Vector3 Xyz
         {
-            get => new TVector3(X, Y, Z);//Unsafe.As<TVector4, TVector3>(ref this);
+            get => new Vector3(X, Y, Z);//Unsafe.As<Vector4, Vector3>(ref this);
             set
             {
                 X = value.X;
@@ -1032,12 +1024,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, Y, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, Y, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xyw
+        public Vector3 Xyw
         {
-            get => new TVector3(X, Y, W);
+            get => new Vector3(X, Y, W);
             set
             {
                 X = value.X;
@@ -1047,12 +1039,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, Z, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, Z, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xzy
+        public Vector3 Xzy
         {
-            get => new TVector3(X, Z, Y);
+            get => new Vector3(X, Z, Y);
             set
             {
                 X = value.X;
@@ -1062,12 +1054,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, Z, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, Z, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xzw
+        public Vector3 Xzw
         {
-            get => new TVector3(X, Z, W);
+            get => new Vector3(X, Z, W);
             set
             {
                 X = value.X;
@@ -1077,12 +1069,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, W, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, W, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xwy
+        public Vector3 Xwy
         {
-            get => new TVector3(X, W, Y);
+            get => new Vector3(X, W, Y);
             set
             {
                 X = value.X;
@@ -1092,12 +1084,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, W, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, W, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xwz
+        public Vector3 Xwz
         {
-            get => new TVector3(X, W, Z);
+            get => new Vector3(X, W, Z);
             set
             {
                 X = value.X;
@@ -1107,12 +1099,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, X, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, X, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Yxz
+        public Vector3 Yxz
         {
-            get => new TVector3(Y, X, Z);
+            get => new Vector3(Y, X, Z);
             set
             {
                 Y = value.X;
@@ -1122,12 +1114,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, X, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, X, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Yxw
+        public Vector3 Yxw
         {
-            get => new TVector3(Y, X, W);
+            get => new Vector3(Y, X, W);
             set
             {
                 Y = value.X;
@@ -1137,12 +1129,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, Z, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, Z, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Yzx
+        public Vector3 Yzx
         {
-            get => new TVector3(Y, Z, X);
+            get => new Vector3(Y, Z, X);
             set
             {
                 Y = value.X;
@@ -1152,12 +1144,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, Z, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, Z, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Yzw
+        public Vector3 Yzw
         {
-            get => new TVector3(Y, Z, W);
+            get => new Vector3(Y, Z, W);
             set
             {
                 Y = value.X;
@@ -1167,12 +1159,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, W, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, W, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Ywx
+        public Vector3 Ywx
         {
-            get => new TVector3(Y, W, X);
+            get => new Vector3(Y, W, X);
             set
             {
                 Y = value.X;
@@ -1182,12 +1174,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, W, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, W, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Ywz
+        public Vector3 Ywz
         {
-            get => new TVector3(Y, W, Z);
+            get => new Vector3(Y, W, Z);
             set
             {
                 Y = value.X;
@@ -1197,12 +1189,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, X, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, X, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zxy
+        public Vector3 Zxy
         {
-            get => new TVector3(Z, X, Y);
+            get => new Vector3(Z, X, Y);
             set
             {
                 Z = value.X;
@@ -1212,12 +1204,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, X, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, X, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zxw
+        public Vector3 Zxw
         {
-            get => new TVector3(Z, X, W);
+            get => new Vector3(Z, X, W);
             set
             {
                 Z = value.X;
@@ -1227,12 +1219,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, Y, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, Y, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zyx
+        public Vector3 Zyx
         {
-            get => new TVector3(Z, Y, X);
+            get => new Vector3(Z, Y, X);
             set
             {
                 Z = value.X;
@@ -1242,12 +1234,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, Y, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, Y, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zyw
+        public Vector3 Zyw
         {
-            get => new TVector3(Z, Y, W);
+            get => new Vector3(Z, Y, W);
             set
             {
                 Z = value.X;
@@ -1257,12 +1249,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, W, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, W, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zwx
+        public Vector3 Zwx
         {
-            get => new TVector3(Z, W, X);
+            get => new Vector3(Z, W, X);
             set
             {
                 Z = value.X;
@@ -1272,12 +1264,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, W, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, W, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zwy
+        public Vector3 Zwy
         {
-            get => new TVector3(Z, W, Y);
+            get => new Vector3(Z, W, Y);
             set
             {
                 Z = value.X;
@@ -1287,12 +1279,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the W, X, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the W, X, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Wxy
+        public Vector3 Wxy
         {
-            get => new TVector3(W, X, Y);
+            get => new Vector3(W, X, Y);
             set
             {
                 W = value.X;
@@ -1302,12 +1294,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the W, X, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the W, X, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Wxz
+        public Vector3 Wxz
         {
-            get => new TVector3(W, X, Z);
+            get => new Vector3(W, X, Z);
             set
             {
                 W = value.X;
@@ -1317,12 +1309,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the W, Y, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the W, Y, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Wyx
+        public Vector3 Wyx
         {
-            get => new TVector3(W, Y, X);
+            get => new Vector3(W, Y, X);
             set
             {
                 W = value.X;
@@ -1332,12 +1324,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the W, Y, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the W, Y, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Wyz
+        public Vector3 Wyz
         {
-            get => new TVector3(W, Y, Z);
+            get => new Vector3(W, Y, Z);
             set
             {
                 W = value.X;
@@ -1347,12 +1339,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the W, Z, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the W, Z, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Wzx
+        public Vector3 Wzx
         {
-            get => new TVector3(W, Z, X);
+            get => new Vector3(W, Z, X);
             set
             {
                 W = value.X;
@@ -1362,12 +1354,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the W, Z, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the W, Z, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Wzy
+        public Vector3 Wzy
         {
-            get => new TVector3(W, Z, Y);
+            get => new Vector3(W, Z, Y);
             set
             {
                 W = value.X;
@@ -1377,12 +1369,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the X, Y, W, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the X, Y, W, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Xywz
+        public Vector4 Xywz
         {
-            get => new TVector4(X, Y, W, Z);
+            get => new Vector4(X, Y, W, Z);
             set
             {
                 X = value.X;
@@ -1393,12 +1385,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the X, Z, Y, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the X, Z, Y, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Xzyw
+        public Vector4 Xzyw
         {
-            get => new TVector4(X, Z, Y, W);
+            get => new Vector4(X, Z, Y, W);
             set
             {
                 X = value.X;
@@ -1409,12 +1401,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the X, Z, W, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the X, Z, W, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Xzwy
+        public Vector4 Xzwy
         {
-            get => new TVector4(X, Z, W, Y);
+            get => new Vector4(X, Z, W, Y);
             set
             {
                 X = value.X;
@@ -1425,12 +1417,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the X, W, Y, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the X, W, Y, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Xwyz
+        public Vector4 Xwyz
         {
-            get => new TVector4(X, W, Y, Z);
+            get => new Vector4(X, W, Y, Z);
             set
             {
                 X = value.X;
@@ -1441,12 +1433,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the X, W, Z, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the X, W, Z, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Xwzy
+        public Vector4 Xwzy
         {
-            get => new TVector4(X, W, Z, Y);
+            get => new Vector4(X, W, Z, Y);
             set
             {
                 X = value.X;
@@ -1457,12 +1449,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, X, Z, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, X, Z, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Yxzw
+        public Vector4 Yxzw
         {
-            get => new TVector4(Y, X, Z, W);
+            get => new Vector4(Y, X, Z, W);
             set
             {
                 Y = value.X;
@@ -1473,12 +1465,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, X, W, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, X, W, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Yxwz
+        public Vector4 Yxwz
         {
-            get => new TVector4(Y, X, W, Z);
+            get => new Vector4(Y, X, W, Z);
             set
             {
                 Y = value.X;
@@ -1489,12 +1481,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, Y, Z, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, Y, Z, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Yyzw
+        public Vector4 Yyzw
         {
-            get => new TVector4(Y, Y, Z, W);
+            get => new Vector4(Y, Y, Z, W);
             set
             {
                 X = value.X;
@@ -1505,12 +1497,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, Y, W, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, Y, W, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Yywz
+        public Vector4 Yywz
         {
-            get => new TVector4(Y, Y, W, Z);
+            get => new Vector4(Y, Y, W, Z);
             set
             {
                 X = value.X;
@@ -1521,12 +1513,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, Z, X, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, Z, X, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Yzxw
+        public Vector4 Yzxw
         {
-            get => new TVector4(Y, Z, X, W);
+            get => new Vector4(Y, Z, X, W);
             set
             {
                 Y = value.X;
@@ -1537,12 +1529,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, Z, W, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, Z, W, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Yzwx
+        public Vector4 Yzwx
         {
-            get => new TVector4(Y, Z, W, X);
+            get => new Vector4(Y, Z, W, X);
             set
             {
                 Y = value.X;
@@ -1553,12 +1545,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, W, X, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, W, X, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Ywxz
+        public Vector4 Ywxz
         {
-            get => new TVector4(Y, W, X, Z);
+            get => new Vector4(Y, W, X, Z);
             set
             {
                 Y = value.X;
@@ -1569,12 +1561,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Y, W, Z, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Y, W, Z, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Ywzx
+        public Vector4 Ywzx
         {
-            get => new TVector4(Y, W, Z, X);
+            get => new Vector4(Y, W, Z, X);
             set
             {
                 Y = value.X;
@@ -1585,12 +1577,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, X, Y, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, X, Y, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zxyw
+        public Vector4 Zxyw
         {
-            get => new TVector4(Z, X, Y, W);
+            get => new Vector4(Z, X, Y, W);
             set
             {
                 Z = value.X;
@@ -1601,12 +1593,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, X, W, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, X, W, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zxwy
+        public Vector4 Zxwy
         {
-            get => new TVector4(Z, X, W, Y);
+            get => new Vector4(Z, X, W, Y);
             set
             {
                 Z = value.X;
@@ -1617,12 +1609,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, Y, X, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, Y, X, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zyxw
+        public Vector4 Zyxw
         {
-            get => new TVector4(Z, Y, X, W);
+            get => new Vector4(Z, Y, X, W);
             set
             {
                 Z = value.X;
@@ -1633,12 +1625,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, Y, W, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, Y, W, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zywx
+        public Vector4 Zywx
         {
-            get => new TVector4(Z, Y, W, X);
+            get => new Vector4(Z, Y, W, X);
             set
             {
                 Z = value.X;
@@ -1649,12 +1641,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, W, X, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, W, X, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zwxy
+        public Vector4 Zwxy
         {
-            get => new TVector4(Z, W, X, Y);
+            get => new Vector4(Z, W, X, Y);
             set
             {
                 Z = value.X;
@@ -1665,12 +1657,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, W, Y, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, W, Y, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zwyx
+        public Vector4 Zwyx
         {
-            get => new TVector4(Z, W, Y, X);
+            get => new Vector4(Z, W, Y, X);
             set
             {
                 Z = value.X;
@@ -1681,12 +1673,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the Z, W, Z, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the Z, W, Z, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Zwzy
+        public Vector4 Zwzy
         {
-            get => new TVector4(Z, W, Z, Y);
+            get => new Vector4(Z, W, Z, Y);
             set
             {
                 X = value.X;
@@ -1697,12 +1689,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, X, Y, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, X, Y, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wxyz
+        public Vector4 Wxyz
         {
-            get => new TVector4(W, X, Y, Z);
+            get => new Vector4(W, X, Y, Z);
             set
             {
                 W = value.X;
@@ -1713,12 +1705,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, X, Z, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, X, Z, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wxzy
+        public Vector4 Wxzy
         {
-            get => new TVector4(W, X, Z, Y);
+            get => new Vector4(W, X, Z, Y);
             set
             {
                 W = value.X;
@@ -1729,12 +1721,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, Y, X, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, Y, X, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wyxz
+        public Vector4 Wyxz
         {
-            get => new TVector4(W, Y, X, Z);
+            get => new Vector4(W, Y, X, Z);
             set
             {
                 W = value.X;
@@ -1745,12 +1737,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, Y, Z, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, Y, Z, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wyzx
+        public Vector4 Wyzx
         {
-            get => new TVector4(W, Y, Z, X);
+            get => new Vector4(W, Y, Z, X);
             set
             {
                 W = value.X;
@@ -1761,12 +1753,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, Z, X, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, Z, X, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wzxy
+        public Vector4 Wzxy
         {
-            get => new TVector4(W, Z, X, Y);
+            get => new Vector4(W, Z, X, Y);
             set
             {
                 W = value.X;
@@ -1777,12 +1769,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, Z, Y, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, Z, Y, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wzyx
+        public Vector4 Wzyx
         {
-            get => new TVector4(W, Z, Y, X);
+            get => new Vector4(W, Z, Y, X);
             set
             {
                 W = value.X;
@@ -1793,12 +1785,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector4 with the W, Z, Y, and W components of this instance.
+        /// Gets or sets an OpenTK.Vector4 with the W, Z, Y, and W components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector4 Wzyw
+        public Vector4 Wzyw
         {
-            get => new TVector4(W, Z, Y, W);
+            get => new Vector4(W, Z, Y, W);
             set
             {
                 X = value.X;
@@ -1815,7 +1807,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector4 operator +(TVector4 left, TVector4 right)
+        public static Vector4 operator +(Vector4 left, Vector4 right)
         {
             left.X += right.X;
             left.Y += right.Y;
@@ -1831,7 +1823,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector4 operator -(TVector4 left, TVector4 right)
+        public static Vector4 operator -(Vector4 left, Vector4 right)
         {
             left.X -= right.X;
             left.Y -= right.Y;
@@ -1846,7 +1838,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector4 operator -(TVector4 vec)
+        public static Vector4 operator -(Vector4 vec)
         {
             vec.X = -vec.X;
             vec.Y = -vec.Y;
@@ -1862,7 +1854,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">The scalar.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector4 operator *(TVector4 vec, float scale)
+        public static Vector4 operator *(Vector4 vec, float scale)
         {
             vec.X *= scale;
             vec.Y *= scale;
@@ -1878,7 +1870,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector4 operator *(float scale, TVector4 vec)
+        public static Vector4 operator *(float scale, Vector4 vec)
         {
             vec.X *= scale;
             vec.Y *= scale;
@@ -1894,7 +1886,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">Right operand.</param>
         /// <returns>Result of multiplication.</returns>
         [Pure]
-        public static TVector4 operator *(TVector4 vec, TVector4 scale)
+        public static Vector4 operator *(Vector4 vec, Vector4 scale)
         {
             vec.X *= scale.X;
             vec.Y *= scale.Y;
@@ -1910,9 +1902,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector4 operator *(TVector4 vec, TMatrix4 mat)
+        public static Vector4 operator *(Vector4 vec, Matrix4 mat)
         {
-            TransformRow(in vec, in mat, out TVector4 result);
+            TransformRow(in vec, in mat, out Vector4 result);
             return result;
         }
 
@@ -1923,9 +1915,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector4 operator *(TMatrix4 mat, TVector4 vec)
+        public static Vector4 operator *(Matrix4 mat, Vector4 vec)
         {
-            TransformColumn(in mat, in vec, out TVector4 result);
+            TransformColumn(in mat, in vec, out Vector4 result);
             return result;
         }
 
@@ -1936,9 +1928,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector4 operator *(TQuaternion quat, TVector4 vec)
+        public static Vector4 operator *(Quaternion quat, Vector4 vec)
         {
-            Transform(in vec, in quat, out TVector4 result);
+            Transform(in vec, in quat, out Vector4 result);
             return result;
         }
 
@@ -1949,7 +1941,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">The scalar.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector4 operator /(TVector4 vec, float scale)
+        public static Vector4 operator /(Vector4 vec, float scale)
         {
             vec.X /= scale;
             vec.Y /= scale;
@@ -1964,7 +1956,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(TVector4 left, TVector4 right)
+        public static bool operator ==(Vector4 left, Vector4 right)
         {
             return left.Equals(right);
         }
@@ -1975,7 +1967,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equa lright; false otherwise.</returns>
-        public static bool operator !=(TVector4 left, TVector4 right)
+        public static bool operator !=(Vector4 left, Vector4 right)
         {
             return !(left == right);
         }
@@ -1986,7 +1978,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="v">The instance.</param>
         /// <returns>A pointer to the first element of v.</returns>
         [Pure]
-        public static unsafe explicit operator float*(TVector4 v)
+        public static unsafe explicit operator float*(Vector4 v)
         {
             return &v.X;
         }
@@ -1997,7 +1989,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="v">The instance.</param>
         /// <returns>A pointer to the first element of v.</returns>
         [Pure]
-        public static explicit operator IntPtr(TVector4 v)
+        public static explicit operator IntPtr(Vector4 v)
         {
             unsafe
             {
@@ -2006,27 +1998,27 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Returns this TVector4 as a TColor4. The resulting struct will have RGBA mapped to XYZW, in that order.
+        /// Returns this Vector4 as a Color4. The resulting struct will have RGBA mapped to XYZW, in that order.
         /// </summary>
-        /// <param name="v">The TVector4 to convert.</param>
-        /// <returns>The TVector4, converted to a TColor4.</returns>
+        /// <param name="v">The Vector4 to convert.</param>
+        /// <returns>The Vector4, converted to a Color4.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
-        public static explicit operator TColor4(TVector4 v)
+        public static explicit operator Color4(Vector4 v)
         {
-            return new TColor4(v.X, v.Y, v.Z, v.W);//Unsafe.As<TVector4, TColor4>(ref v);
+            return new Color4(v.X, v.Y, v.Z, v.W);//Unsafe.As<Vector4, Color4>(ref v);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector4"/> struct using a tuple containing the component
+        /// Initializes a new instance of the <see cref="Vector4"/> struct using a tuple containing the component
         /// values.
         /// </summary>
         /// <param name="values">A tuple containing the component values.</param>
-        /// <returns>A new instance of the <see cref="TVector4"/> struct with the given component values.</returns>
+        /// <returns>A new instance of the <see cref="Vector4"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator TVector4((float X, float Y, float Z, float W) values)
+        public static implicit operator Vector4((float X, float Y, float Z, float W) values)
         {
-            return new TVector4(values.X, values.Y, values.Z, values.W);
+            return new Vector4(values.X, values.Y, values.Z, values.W);
         }
 
         /// <inheritdoc />
@@ -2038,11 +2030,11 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is TVector4 && Equals((TVector4)obj);
+            return obj is Vector4 && Equals((Vector4)obj);
         }
 
         /// <inheritdoc />
-        public bool Equals(TVector4 other)
+        public bool Equals(Vector4 other)
         {
             return X == other.X &&
                    Y == other.Y &&

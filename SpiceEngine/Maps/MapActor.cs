@@ -139,8 +139,8 @@ namespace SpiceEngineCore.Maps
                     var vertices = scene.Meshes
                         .SelectMany(m => m.Vertices
                             .Select(v => v.ToVector3()))
-                        .Select(v => (Matrix4.CreateScale(Scale)
-                            * Matrix4.CreateFromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
+                        .Select(v => (Matrix4.FromScale(Scale)
+                            * Matrix4.FromQuaternion(Quaternion.FromEulerAngles(Orientation.ToRadians())
                             * Quaternion.FromEulerAngles(Rotation.ToRadians()))
                             * new Vector4(v, 1.0f)).Xyz);
 

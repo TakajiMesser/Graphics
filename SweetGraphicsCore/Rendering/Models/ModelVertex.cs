@@ -35,7 +35,7 @@ namespace SweetGraphicsCore.Rendering.Models
         public void Transform(Transform transform)
         {
             _origin += transform.Translation;
-            Position = (new Vector4(Position, 1.0f) * Matrix4.CreateFromQuaternion(transform.Rotation)).Xyz;
+            Position = (new Vector4(Position, 1.0f) * Matrix4.FromQuaternion(transform.Rotation)).Xyz;
         }
 
         public void Translate(Vector3 translation)
@@ -47,7 +47,7 @@ namespace SweetGraphicsCore.Rendering.Models
             //Position += translation;
         }
 
-        public void Rotate(Quaternion rotation) => Position = (new Vector4(Position, 1.0f) * Matrix4.CreateFromQuaternion(rotation)).Xyz;
+        public void Rotate(Quaternion rotation) => Position = (new Vector4(Position, 1.0f) * Matrix4.FromQuaternion(rotation)).Xyz;
 
         public void TranslateTexture(Vector2 translation) => UV += translation;
 

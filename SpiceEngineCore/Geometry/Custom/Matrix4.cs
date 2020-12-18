@@ -209,11 +209,11 @@ namespace SpiceEngineCore.Geometry.Matrices
 
         public static bool operator !=(CMatrix4 left, CMatrix4 right) => !(left == right);
 
-        public static CMatrix4 CreateTranslation(CVector3 vector) => new CMatrix4(1, 0, 0, 0, 0, 1, 0, 0, vector.X, vector.Y, vector.Z, 0, 0, 0, 0, 1);
+        public static CMatrix4 FromTranslation(CVector3 vector) => new CMatrix4(1, 0, 0, 0, 0, 1, 0, 0, vector.X, vector.Y, vector.Z, 0, 0, 0, 0, 1);
 
-        public static CMatrix4 CreateScale(CVector3 scale) => new CMatrix4(scale.X, 0, 0, 0, 0, scale.Y, 0, 0, 0, 0, scale.Z, 0, 0, 0, 0, 1);
+        public static CMatrix4 FromScale(CVector3 scale) => new CMatrix4(scale.X, 0, 0, 0, 0, scale.Y, 0, 0, 0, 0, scale.Z, 0, 0, 0, 0, 1);
 
-        public static CMatrix4 CreateFromQuaternion(CQuaternion quaternion)
+        public static CMatrix4 FromQuaternion(CQuaternion quaternion)
         {
             var axisAngle = quaternion.ToAxisAngle();
 
@@ -240,7 +240,7 @@ namespace SpiceEngineCore.Geometry.Matrices
                 0, 0, 0, 1);
         }
 
-        public static CMatrix4 CreateOrthographic(float width, float height, float depthNear, float depthFar)
+        public static CMatrix4 Orthographic(float width, float height, float depthNear, float depthFar)
         {
             var left = -width / 2;
             var right = width / 2;
@@ -259,7 +259,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             );
         }
 
-        public static CMatrix4 CreatePerspectiveFieldOfView(float fovy, float aspect, float depthNear, float depthFar)
+        public static CMatrix4 Perspective(float fovy, float aspect, float depthNear, float depthFar)
         {
             if (fovy <= 0 || fovy > Math.PI) throw new ArgumentOutOfRangeException(nameof(fovy));
             if (aspect <= 0) throw new ArgumentOutOfRangeException(nameof(aspect));

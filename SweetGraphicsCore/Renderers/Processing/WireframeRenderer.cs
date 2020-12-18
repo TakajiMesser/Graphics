@@ -228,7 +228,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             _gridProgram.Use();
             _gridProgram.SetCamera(camera);
 
-            var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(new Vector3(GridLength, GridLength, GridLength));
+            var model = Matrix4.Identity * Matrix4.FromQuaternion(GridRotation) * Matrix4.FromScale(new Vector3(GridLength, GridLength, GridLength));
             _gridProgram.SetUniform("modelMatrix", model);
 
             _gridProgram.SetUniform("unit", GridUnit);

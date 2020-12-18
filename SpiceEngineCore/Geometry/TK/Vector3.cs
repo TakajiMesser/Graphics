@@ -14,32 +14,32 @@ namespace SpiceEngineCore.Geometry.Vectors
     /// Represents a 3D vector using three single-precision floating-point numbers.
     /// </summary>
     /// <remarks>
-    /// The TVector3 structure is suitable for interoperation with unmanaged code requiring three consecutive floats.
+    /// The Vector3 structure is suitable for interoperation with unmanaged code requiring three consecutive floats.
     /// </remarks>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct TVector3 : IEquatable<TVector3>
+    public struct Vector3 : IEquatable<Vector3>
     {
         /// <summary>
-        /// The X component of the TVector3.
+        /// The X component of the Vector3.
         /// </summary>
         public float X;
 
         /// <summary>
-        /// The Y component of the TVector3.
+        /// The Y component of the Vector3.
         /// </summary>
         public float Y;
 
         /// <summary>
-        /// The Z component of the TVector3.
+        /// The Z component of the Vector3.
         /// </summary>
         public float Z;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector3"/> struct.
+        /// Initializes a new instance of the <see cref="Vector3"/> struct.
         /// </summary>
         /// <param name="value">The value that will initialize this instance.</param>
-        public TVector3(float value)
+        public Vector3(float value)
         {
             X = value;
             Y = value;
@@ -47,12 +47,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector3"/> struct.
+        /// Initializes a new instance of the <see cref="Vector3"/> struct.
         /// </summary>
-        /// <param name="x">The x component of the TVector3.</param>
-        /// <param name="y">The y component of the TVector3.</param>
-        /// <param name="z">The z component of the TVector3.</param>
-        public TVector3(float x, float y, float z)
+        /// <param name="x">The x component of the Vector3.</param>
+        /// <param name="y">The y component of the Vector3.</param>
+        /// <param name="z">The z component of the Vector3.</param>
+        public Vector3(float x, float y, float z)
         {
             X = x;
             Y = y;
@@ -60,10 +60,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector3"/> struct.
+        /// Initializes a new instance of the <see cref="Vector3"/> struct.
         /// </summary>
-        /// <param name="v">The TVector2 to copy components from.</param>
-        public TVector3(TVector2 v)
+        /// <param name="v">The Vector2 to copy components from.</param>
+        public Vector3(Vector2 v)
         {
             X = v.X;
             Y = v.Y;
@@ -71,10 +71,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector3"/> struct.
+        /// Initializes a new instance of the <see cref="Vector3"/> struct.
         /// </summary>
-        /// <param name="v">The TVector3 to copy components from.</param>
-        public TVector3(TVector3 v)
+        /// <param name="v">The Vector3 to copy components from.</param>
+        public Vector3(Vector3 v)
         {
             X = v.X;
             Y = v.Y;
@@ -82,10 +82,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector3"/> struct.
+        /// Initializes a new instance of the <see cref="Vector3"/> struct.
         /// </summary>
-        /// <param name="v">The TVector4 to copy components from.</param>
-        public TVector3(TVector4 v)
+        /// <param name="v">The Vector4 to copy components from.</param>
+        public Vector3(Vector4 v)
         {
             X = v.X;
             Y = v.Y;
@@ -170,10 +170,10 @@ namespace SpiceEngineCore.Geometry.Vectors
         public float LengthSquared => (X * X) + (Y * Y) + (Z * Z);
 
         /// <summary>
-        /// Returns a copy of the TVector3 scaled to unit length.
+        /// Returns a copy of the Vector3 scaled to unit length.
         /// </summary>
         /// <returns>The normalized copy.</returns>
-        public TVector3 Normalized()
+        public Vector3 Normalized()
         {
             var v = this;
             v.Normalize();
@@ -181,7 +181,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Scales the TVector3 to unit length.
+        /// Scales the Vector3 to unit length.
         /// </summary>
         public void Normalize()
         {
@@ -192,7 +192,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Scales the TVector3 to approximately unit length.
+        /// Scales the Vector3 to approximately unit length.
         /// </summary>
         public void NormalizeFast()
         {
@@ -203,44 +203,44 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Defines a unit-length TVector3 that points towards the X-axis.
+        /// Defines a unit-length Vector3 that points towards the X-axis.
         /// </summary>
-        public static readonly TVector3 UnitX = new TVector3(1, 0, 0);
+        public static readonly Vector3 UnitX = new Vector3(1, 0, 0);
 
         /// <summary>
-        /// Defines a unit-length TVector3 that points towards the Y-axis.
+        /// Defines a unit-length Vector3 that points towards the Y-axis.
         /// </summary>
-        public static readonly TVector3 UnitY = new TVector3(0, 1, 0);
+        public static readonly Vector3 UnitY = new Vector3(0, 1, 0);
 
         /// <summary>
-        /// Defines a unit-length TVector3 that points towards the Z-axis.
+        /// Defines a unit-length Vector3 that points towards the Z-axis.
         /// </summary>
-        public static readonly TVector3 UnitZ = new TVector3(0, 0, 1);
+        public static readonly Vector3 UnitZ = new Vector3(0, 0, 1);
 
         /// <summary>
-        /// Defines a zero-length TVector3.
+        /// Defines a zero-length Vector3.
         /// </summary>
-        public static readonly TVector3 Zero = new TVector3(0, 0, 0);
+        public static readonly Vector3 Zero = new Vector3(0, 0, 0);
 
         /// <summary>
         /// Defines an instance with all components set to 1.
         /// </summary>
-        public static readonly TVector3 One = new TVector3(1, 1, 1);
+        public static readonly Vector3 One = new Vector3(1, 1, 1);
 
         /// <summary>
         /// Defines an instance with all components set to positive infinity.
         /// </summary>
-        public static readonly TVector3 PositiveInfinity = new TVector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
+        public static readonly Vector3 PositiveInfinity = new Vector3(float.PositiveInfinity, float.PositiveInfinity, float.PositiveInfinity);
 
         /// <summary>
         /// Defines an instance with all components set to negative infinity.
         /// </summary>
-        public static readonly TVector3 NegativeInfinity = new TVector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
+        public static readonly Vector3 NegativeInfinity = new Vector3(float.NegativeInfinity, float.NegativeInfinity, float.NegativeInfinity);
 
         /// <summary>
-        /// Defines the size of the TVector3 struct in bytes.
+        /// Defines the size of the Vector3 struct in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf<TVector3>();
+        public static readonly int SizeInBytes = Marshal.SizeOf<Vector3>();
 
         /// <summary>
         /// Adds two vectors.
@@ -249,7 +249,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Right operand.</param>
         /// <returns>Result of operation.</returns>
         [Pure]
-        public static TVector3 Add(TVector3 a, TVector3 b)
+        public static Vector3 Add(Vector3 a, Vector3 b)
         {
             Add(in a, in b, out a);
             return a;
@@ -261,7 +261,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">Left operand.</param>
         /// <param name="b">Right operand.</param>
         /// <param name="result">Result of operation.</param>
-        public static void Add(in TVector3 a, in TVector3 b, out TVector3 result)
+        public static void Add(in Vector3 a, in Vector3 b, out Vector3 result)
         {
             result.X = a.X + b.X;
             result.Y = a.Y + b.Y;
@@ -275,7 +275,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second operand.</param>
         /// <returns>Result of subtraction.</returns>
         [Pure]
-        public static TVector3 Subtract(TVector3 a, TVector3 b)
+        public static Vector3 Subtract(Vector3 a, Vector3 b)
         {
             Subtract(in a, in b, out a);
             return a;
@@ -287,7 +287,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">First operand.</param>
         /// <param name="b">Second operand.</param>
         /// <param name="result">Result of subtraction.</param>
-        public static void Subtract(in TVector3 a, in TVector3 b, out TVector3 result)
+        public static void Subtract(in Vector3 a, in Vector3 b, out Vector3 result)
         {
             result.X = a.X - b.X;
             result.Y = a.Y - b.Y;
@@ -301,7 +301,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector3 Multiply(TVector3 vector, float scale)
+        public static Vector3 Multiply(Vector3 vector, float scale)
         {
             Multiply(in vector, scale, out vector);
             return vector;
@@ -313,7 +313,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Multiply(in TVector3 vector, float scale, out TVector3 result)
+        public static void Multiply(in Vector3 vector, float scale, out Vector3 result)
         {
             result.X = vector.X * scale;
             result.Y = vector.Y * scale;
@@ -327,7 +327,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector3 Multiply(TVector3 vector, TVector3 scale)
+        public static Vector3 Multiply(Vector3 vector, Vector3 scale)
         {
             Multiply(in vector, in scale, out vector);
             return vector;
@@ -339,7 +339,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Multiply(in TVector3 vector, in TVector3 scale, out TVector3 result)
+        public static void Multiply(in Vector3 vector, in Vector3 scale, out Vector3 result)
         {
             result.X = vector.X * scale.X;
             result.Y = vector.Y * scale.Y;
@@ -353,7 +353,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector3 Divide(TVector3 vector, float scale)
+        public static Vector3 Divide(Vector3 vector, float scale)
         {
             Divide(in vector, scale, out vector);
             return vector;
@@ -365,7 +365,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Divide(in TVector3 vector, float scale, out TVector3 result)
+        public static void Divide(in Vector3 vector, float scale, out Vector3 result)
         {
             result.X = vector.X / scale;
             result.Y = vector.Y / scale;
@@ -379,7 +379,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">Right operand.</param>
         /// <returns>Result of the operation.</returns>
         [Pure]
-        public static TVector3 Divide(TVector3 vector, TVector3 scale)
+        public static Vector3 Divide(Vector3 vector, Vector3 scale)
         {
             Divide(in vector, in scale, out vector);
             return vector;
@@ -391,7 +391,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vector">Left operand.</param>
         /// <param name="scale">Right operand.</param>
         /// <param name="result">Result of the operation.</param>
-        public static void Divide(in TVector3 vector, in TVector3 scale, out TVector3 result)
+        public static void Divide(in Vector3 vector, in Vector3 scale, out Vector3 result)
         {
             result.X = vector.X / scale.X;
             result.Y = vector.Y / scale.Y;
@@ -405,7 +405,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second operand.</param>
         /// <returns>The component-wise minimum.</returns>
         [Pure]
-        public static TVector3 ComponentMin(TVector3 a, TVector3 b)
+        public static Vector3 ComponentMin(Vector3 a, Vector3 b)
         {
             a.X = a.X < b.X ? a.X : b.X;
             a.Y = a.Y < b.Y ? a.Y : b.Y;
@@ -419,7 +419,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">First operand.</param>
         /// <param name="b">Second operand.</param>
         /// <param name="result">The component-wise minimum.</param>
-        public static void ComponentMin(in TVector3 a, in TVector3 b, out TVector3 result)
+        public static void ComponentMin(in Vector3 a, in Vector3 b, out Vector3 result)
         {
             result.X = a.X < b.X ? a.X : b.X;
             result.Y = a.Y < b.Y ? a.Y : b.Y;
@@ -433,7 +433,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second operand.</param>
         /// <returns>The component-wise maximum.</returns>
         [Pure]
-        public static TVector3 ComponentMax(TVector3 a, TVector3 b)
+        public static Vector3 ComponentMax(Vector3 a, Vector3 b)
         {
             a.X = a.X > b.X ? a.X : b.X;
             a.Y = a.Y > b.Y ? a.Y : b.Y;
@@ -447,7 +447,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="a">First operand.</param>
         /// <param name="b">Second operand.</param>
         /// <param name="result">The component-wise maximum.</param>
-        public static void ComponentMax(in TVector3 a, in TVector3 b, out TVector3 result)
+        public static void ComponentMax(in Vector3 a, in Vector3 b, out Vector3 result)
         {
             result.X = a.X > b.X ? a.X : b.X;
             result.Y = a.Y > b.Y ? a.Y : b.Y;
@@ -455,51 +455,51 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Returns the TVector3 with the minimum magnitude. If the magnitudes are equal, the second vector
+        /// Returns the Vector3 with the minimum magnitude. If the magnitudes are equal, the second vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
-        /// <returns>The minimum TVector3.</returns>
+        /// <returns>The minimum Vector3.</returns>
         [Pure]
-        public static TVector3 MagnitudeMin(TVector3 left, TVector3 right)
+        public static Vector3 MagnitudeMin(Vector3 left, Vector3 right)
         {
             return left.LengthSquared < right.LengthSquared ? left : right;
         }
 
         /// <summary>
-        /// Returns the TVector3 with the minimum magnitude. If the magnitudes are equal, the second vector
+        /// Returns the Vector3 with the minimum magnitude. If the magnitudes are equal, the second vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <param name="result">The magnitude-wise minimum.</param>
-        public static void MagnitudeMin(in TVector3 left, in TVector3 right, out TVector3 result)
+        public static void MagnitudeMin(in Vector3 left, in Vector3 right, out Vector3 result)
         {
             result = left.LengthSquared < right.LengthSquared ? left : right;
         }
 
         /// <summary>
-        /// Returns the TVector3 with the maximum magnitude. If the magnitudes are equal, the first vector
+        /// Returns the Vector3 with the maximum magnitude. If the magnitudes are equal, the first vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
-        /// <returns>The maximum TVector3.</returns>
+        /// <returns>The maximum Vector3.</returns>
         [Pure]
-        public static TVector3 MagnitudeMax(TVector3 left, TVector3 right)
+        public static Vector3 MagnitudeMax(Vector3 left, Vector3 right)
         {
             return left.LengthSquared >= right.LengthSquared ? left : right;
         }
 
         /// <summary>
-        /// Returns the TVector3 with the maximum magnitude. If the magnitudes are equal, the first vector
+        /// Returns the Vector3 with the maximum magnitude. If the magnitudes are equal, the first vector
         /// is selected.
         /// </summary>
         /// <param name="left">Left operand.</param>
         /// <param name="right">Right operand.</param>
         /// <param name="result">The magnitude-wise maximum.</param>
-        public static void MagnitudeMax(in TVector3 left, in TVector3 right, out TVector3 result)
+        public static void MagnitudeMax(in Vector3 left, in Vector3 right, out Vector3 result)
         {
             result = left.LengthSquared >= right.LengthSquared ? left : right;
         }
@@ -512,7 +512,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="max">Maximum vector.</param>
         /// <returns>The clamped vector.</returns>
         [Pure]
-        public static TVector3 Clamp(TVector3 vec, TVector3 min, TVector3 max)
+        public static Vector3 Clamp(Vector3 vec, Vector3 min, Vector3 max)
         {
             vec.X = vec.X < min.X ? min.X : vec.X > max.X ? max.X : vec.X;
             vec.Y = vec.Y < min.Y ? min.Y : vec.Y > max.Y ? max.Y : vec.Y;
@@ -527,7 +527,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="min">Minimum vector.</param>
         /// <param name="max">Maximum vector.</param>
         /// <param name="result">The clamped vector.</param>
-        public static void Clamp(in TVector3 vec, in TVector3 min, in TVector3 max, out TVector3 result)
+        public static void Clamp(in Vector3 vec, in Vector3 min, in Vector3 max, out Vector3 result)
         {
             result.X = vec.X < min.X ? min.X : vec.X > max.X ? max.X : vec.X;
             result.Y = vec.Y < min.Y ? min.Y : vec.Y > max.Y ? max.Y : vec.Y;
@@ -541,7 +541,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec2">The second vector.</param>
         /// <returns>The distance.</returns>
         [Pure]
-        public static float Distance(TVector3 vec1, TVector3 vec2)
+        public static float Distance(Vector3 vec1, Vector3 vec2)
         {
             Distance(in vec1, in vec2, out float result);
             return result;
@@ -553,7 +553,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec1">The first vector.</param>
         /// <param name="vec2">The second vector.</param>
         /// <param name="result">The distance.</param>
-        public static void Distance(in TVector3 vec1, in TVector3 vec2, out float result)
+        public static void Distance(in Vector3 vec1, in Vector3 vec2, out float result)
         {
             result = (float)Math.Sqrt(((vec2.X - vec1.X) * (vec2.X - vec1.X)) + ((vec2.Y - vec1.Y) * (vec2.Y - vec1.Y)) +
                                       ((vec2.Z - vec1.Z) * (vec2.Z - vec1.Z)));
@@ -566,7 +566,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec2">The second vector.</param>
         /// <returns>The squared distance.</returns>
         [Pure]
-        public static float DistanceSquared(TVector3 vec1, TVector3 vec2)
+        public static float DistanceSquared(Vector3 vec1, Vector3 vec2)
         {
             DistanceSquared(in vec1, in vec2, out float result);
             return result;
@@ -578,7 +578,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec1">The first vector.</param>
         /// <param name="vec2">The second vector.</param>
         /// <param name="result">The squared distance.</param>
-        public static void DistanceSquared(in TVector3 vec1, in TVector3 vec2, out float result)
+        public static void DistanceSquared(in Vector3 vec1, in Vector3 vec2, out float result)
         {
             result = ((vec2.X - vec1.X) * (vec2.X - vec1.X)) + ((vec2.Y - vec1.Y) * (vec2.Y - vec1.Y)) +
                      ((vec2.Z - vec1.Z) * (vec2.Z - vec1.Z));
@@ -590,7 +590,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The input vector.</param>
         /// <returns>The normalized copy.</returns>
         [Pure]
-        public static TVector3 Normalize(TVector3 vec)
+        public static Vector3 Normalize(Vector3 vec)
         {
             var scale = 1.0f / vec.Length;
             vec.X *= scale;
@@ -604,7 +604,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// </summary>
         /// <param name="vec">The input vector.</param>
         /// <param name="result">The normalized vector.</param>
-        public static void Normalize(in TVector3 vec, out TVector3 result)
+        public static void Normalize(in Vector3 vec, out Vector3 result)
         {
             var scale = 1.0f / vec.Length;
             result.X = vec.X * scale;
@@ -618,7 +618,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The input vector.</param>
         /// <returns>The normalized copy.</returns>
         [Pure]
-        public static TVector3 NormalizeFast(TVector3 vec)
+        public static Vector3 NormalizeFast(Vector3 vec)
         {
             var scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z));
             vec.X *= scale;
@@ -632,7 +632,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// </summary>
         /// <param name="vec">The input vector.</param>
         /// <param name="result">The normalized vector.</param>
-        public static void NormalizeFast(in TVector3 vec, out TVector3 result)
+        public static void NormalizeFast(in Vector3 vec, out Vector3 result)
         {
             var scale = MathHelper.InverseSqrtFast((vec.X * vec.X) + (vec.Y * vec.Y) + (vec.Z * vec.Z));
             result.X = vec.X * scale;
@@ -647,7 +647,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">Second operand.</param>
         /// <returns>The dot product of the two inputs.</returns>
         [Pure]
-        public static float Dot(TVector3 left, TVector3 right)
+        public static float Dot(Vector3 left, Vector3 right)
         {
             return (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
         }
@@ -658,7 +658,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">First operand.</param>
         /// <param name="right">Second operand.</param>
         /// <param name="result">The dot product of the two inputs.</param>
-        public static void Dot(in TVector3 left, in TVector3 right, out float result)
+        public static void Dot(in Vector3 left, in Vector3 right, out float result)
         {
             result = (left.X * right.X) + (left.Y * right.Y) + (left.Z * right.Z);
         }
@@ -670,9 +670,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">Second operand.</param>
         /// <returns>The cross product of the two inputs.</returns>
         [Pure]
-        public static TVector3 Cross(TVector3 left, TVector3 right)
+        public static Vector3 Cross(Vector3 left, Vector3 right)
         {
-            Cross(in left, in right, out TVector3 result);
+            Cross(in left, in right, out Vector3 result);
             return result;
         }
 
@@ -682,7 +682,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">First operand.</param>
         /// <param name="right">Second operand.</param>
         /// <param name="result">The cross product of the two inputs.</param>
-        public static void Cross(in TVector3 left, in TVector3 right, out TVector3 result)
+        public static void Cross(in Vector3 left, in Vector3 right, out Vector3 result)
         {
             result.X = (left.Y * right.Z) - (left.Z * right.Y);
             result.Y = (left.Z * right.X) - (left.X * right.Z);
@@ -697,7 +697,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         /// <returns>a when blend=0, b when blend=1, and a linear combination otherwise.</returns>
         [Pure]
-        public static TVector3 Lerp(TVector3 a, TVector3 b, float blend)
+        public static Vector3 Lerp(Vector3 a, Vector3 b, float blend)
         {
             a.X = (blend * (b.X - a.X)) + a.X;
             a.Y = (blend * (b.Y - a.Y)) + a.Y;
@@ -712,7 +712,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="b">Second input vector.</param>
         /// <param name="blend">The blend factor. a when blend=0, b when blend=1.</param>
         /// <param name="result">a when blend=0, b when blend=1, and a linear combination otherwise.</param>
-        public static void Lerp(in TVector3 a, in TVector3 b, float blend, out TVector3 result)
+        public static void Lerp(in Vector3 a, in Vector3 b, float blend, out Vector3 result)
         {
             result.X = (blend * (b.X - a.X)) + a.X;
             result.Y = (blend * (b.Y - a.Y)) + a.Y;
@@ -729,7 +729,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="v">Second Barycentric Coordinate.</param>
         /// <returns>a when u=v=0, b when u=1,v=0, c when u=0,v=1, and a linear combination of a,b,c otherwise.</returns>
         [Pure]
-        public static TVector3 BaryCentric(TVector3 a, TVector3 b, TVector3 c, float u, float v)
+        public static Vector3 BaryCentric(Vector3 a, Vector3 b, Vector3 c, float u, float v)
         {
             BaryCentric(in a, in b, in c, u, v, out var result);
             return result;
@@ -750,12 +750,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         [Pure]
         public static void BaryCentric
         (
-            in TVector3 a,
-            in TVector3 b,
-            in TVector3 c,
+            in Vector3 a,
+            in Vector3 b,
+            in Vector3 c,
             float u,
             float v,
-            out TVector3 result
+            out Vector3 result
         )
         {
             Subtract(in b, in a, out var ab);
@@ -775,9 +775,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector3 TransformVector(TVector3 vec, TMatrix4 mat)
+        public static Vector3 TransformVector(Vector3 vec, Matrix4 mat)
         {
-            TransformVector(in vec, in mat, out TVector3 result);
+            TransformVector(in vec, in mat, out Vector3 result);
             return result;
         }
 
@@ -788,7 +788,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <param name="result">The transformed vector.</param>
-        public static void TransformVector(in TVector3 vec, in TMatrix4 mat, out TVector3 result)
+        public static void TransformVector(in Vector3 vec, in Matrix4 mat, out Vector3 result)
         {
             result.X = (vec.X * mat.Row0.X) +
                        (vec.Y * mat.Row1.X) +
@@ -814,9 +814,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed normal.</returns>
         [Pure]
-        public static TVector3 TransformNormal(TVector3 norm, TMatrix4 mat)
+        public static Vector3 TransformNormal(Vector3 norm, Matrix4 mat)
         {
-            TransformNormal(in norm, in mat, out TVector3 result);
+            TransformNormal(in norm, in mat, out Vector3 result);
             return result;
         }
 
@@ -830,9 +830,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="norm">The normal to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <param name="result">The transformed normal.</param>
-        public static void TransformNormal(in TVector3 norm, in TMatrix4 mat, out TVector3 result)
+        public static void TransformNormal(in Vector3 norm, in Matrix4 mat, out Vector3 result)
         {
-            var inverse = TMatrix4.Invert(mat);
+            var inverse = Matrix4.Invert(mat);
             TransformNormalInverse(in norm, in inverse, out result);
         }
 
@@ -847,9 +847,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="invMat">The inverse of the desired transformation.</param>
         /// <returns>The transformed normal.</returns>
         [Pure]
-        public static TVector3 TransformNormalInverse(TVector3 norm, TMatrix4 invMat)
+        public static Vector3 TransformNormalInverse(Vector3 norm, Matrix4 invMat)
         {
-            TransformNormalInverse(in norm, in invMat, out TVector3 result);
+            TransformNormalInverse(in norm, in invMat, out Vector3 result);
             return result;
         }
 
@@ -863,7 +863,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="norm">The normal to transform.</param>
         /// <param name="invMat">The inverse of the desired transformation.</param>
         /// <param name="result">The transformed normal.</param>
-        public static void TransformNormalInverse(in TVector3 norm, in TMatrix4 invMat, out TVector3 result)
+        public static void TransformNormalInverse(in Vector3 norm, in Matrix4 invMat, out Vector3 result)
         {
             result.X = (norm.X * invMat.Row0.X) +
                        (norm.Y * invMat.Row0.Y) +
@@ -885,9 +885,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed position.</returns>
         [Pure]
-        public static TVector3 TransformPosition(TVector3 pos, TMatrix4 mat)
+        public static Vector3 TransformPosition(Vector3 pos, Matrix4 mat)
         {
-            TransformPosition(in pos, in mat, out TVector3 result);
+            TransformPosition(in pos, in mat, out Vector3 result);
             return result;
         }
 
@@ -897,7 +897,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="pos">The position to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <param name="result">The transformed position.</param>
-        public static void TransformPosition(in TVector3 pos, in TMatrix4 mat, out TVector3 result)
+        public static void TransformPosition(in Vector3 pos, in Matrix4 mat, out Vector3 result)
         {
             result.X = (pos.X * mat.Row0.X) +
                        (pos.Y * mat.Row1.X) +
@@ -922,9 +922,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector3 TransformRow(TVector3 vec, TMatrix3 mat)
+        public static Vector3 TransformRow(Vector3 vec, Matrix3 mat)
         {
-            TransformRow(in vec, in mat, out TVector3 result);
+            TransformRow(in vec, in mat, out Vector3 result);
             return result;
         }
 
@@ -934,7 +934,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <param name="result">The transformed vector.</param>
-        public static void TransformRow(in TVector3 vec, in TMatrix3 mat, out TVector3 result)
+        public static void TransformRow(in Vector3 vec, in Matrix3 mat, out Vector3 result)
         {
             result.X = (vec.X * mat.Row0.X) + (vec.Y * mat.Row1.X) + (vec.Z * mat.Row2.X);
             result.Y = (vec.X * mat.Row0.Y) + (vec.Y * mat.Row1.Y) + (vec.Z * mat.Row2.Y);
@@ -948,9 +948,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="quat">The quaternion to rotate the vector by.</param>
         /// <returns>The result of the operation.</returns>
         [Pure]
-        public static TVector3 Transform(TVector3 vec, TQuaternion quat)
+        public static Vector3 Transform(Vector3 vec, Quaternion quat)
         {
-            Transform(in vec, in quat, out TVector3 result);
+            Transform(in vec, in quat, out Vector3 result);
             return result;
         }
 
@@ -960,13 +960,13 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <param name="quat">The quaternion to rotate the vector by.</param>
         /// <param name="result">The result of the operation.</param>
-        public static void Transform(in TVector3 vec, in TQuaternion quat, out TVector3 result)
+        public static void Transform(in Vector3 vec, in Quaternion quat, out Vector3 result)
         {
             // Since vec.W == 0, we can optimize quat * vec * quat^-1 as follows:
             // vec + 2.0 * cross(quat.xyz, cross(quat.xyz, vec) + quat.w * vec)
-            TVector3 xyz = quat.Xyz;
-            Cross(in xyz, in vec, out TVector3 temp);
-            Multiply(in vec, quat.W, out TVector3 temp2);
+            Vector3 xyz = quat.Xyz;
+            Cross(in xyz, in vec, out Vector3 temp);
+            Multiply(in vec, quat.W, out Vector3 temp2);
             Add(in temp, in temp2, out temp);
             Cross(in xyz, in temp, out temp2);
             Multiply(in temp2, 2f, out temp2);
@@ -980,9 +980,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector3 TransformColumn(TMatrix3 mat, TVector3 vec)
+        public static Vector3 TransformColumn(Matrix3 mat, Vector3 vec)
         {
-            TransformColumn(in mat, in vec, out TVector3 result);
+            TransformColumn(in mat, in vec, out Vector3 result);
             return result;
         }
 
@@ -992,7 +992,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <param name="vec">The vector to transform.</param>
         /// <param name="result">The transformed vector.</param>
-        public static void TransformColumn(in TMatrix3 mat, in TVector3 vec, out TVector3 result)
+        public static void TransformColumn(in Matrix3 mat, in Vector3 vec, out Vector3 result)
         {
             result.X = (mat.Row0.X * vec.X) + (mat.Row0.Y * vec.Y) + (mat.Row0.Z * vec.Z);
             result.Y = (mat.Row1.X * vec.X) + (mat.Row1.Y * vec.Y) + (mat.Row1.Z * vec.Z);
@@ -1000,28 +1000,28 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Transform a TVector3 by the given Matrix, and project the resulting TVector4 back to a TVector3.
+        /// Transform a Vector3 by the given Matrix, and project the resulting Vector4 back to a Vector3.
         /// </summary>
         /// <param name="vec">The vector to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector3 TransformPerspective(TVector3 vec, TMatrix4 mat)
+        public static Vector3 TransformPerspective(Vector3 vec, Matrix4 mat)
         {
-            TransformPerspective(in vec, in mat, out TVector3 result);
+            TransformPerspective(in vec, in mat, out Vector3 result);
             return result;
         }
 
         /// <summary>
-        /// Transform a TVector3 by the given Matrix, and project the resulting TVector4 back to a TVector3.
+        /// Transform a Vector3 by the given Matrix, and project the resulting Vector4 back to a Vector3.
         /// </summary>
         /// <param name="vec">The vector to transform.</param>
         /// <param name="mat">The desired transformation.</param>
         /// <param name="result">The transformed vector.</param>
-        public static void TransformPerspective(in TVector3 vec, in TMatrix4 mat, out TVector3 result)
+        public static void TransformPerspective(in Vector3 vec, in Matrix4 mat, out Vector3 result)
         {
-            var v = new TVector4(vec.X, vec.Y, vec.Z, 1);
-            TVector4.TransformRow(in v, in mat, out v);
+            var v = new Vector4(vec.X, vec.Y, vec.Z, 1);
+            Vector4.TransformRow(in v, in mat, out v);
             result.X = v.X / v.W;
             result.Y = v.Y / v.W;
             result.Z = v.Z / v.W;
@@ -1035,7 +1035,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <returns>Angle (in radians) between the vectors.</returns>
         /// <remarks>Note that the returned angle is never bigger than the constant Pi.</remarks>
         [Pure]
-        public static float CalculateAngle(TVector3 first, TVector3 second)
+        public static float CalculateAngle(Vector3 first, Vector3 second)
         {
             CalculateAngle(in first, in second, out float result);
             return result;
@@ -1048,7 +1048,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="second">The second vector.</param>
         /// <param name="result">Angle (in radians) between the vectors.</param>
         /// <remarks>Note that the returned angle is never bigger than the constant Pi.</remarks>
-        public static void CalculateAngle(in TVector3 first, in TVector3 second, out float result)
+        public static void CalculateAngle(in Vector3 first, in Vector3 second, out float result)
         {
             Dot(in first, in second, out float temp);
             result = (float)Math.Acos(MathHelper.Clamp(temp / (first.Length * second.Length), -1.0f, 1.0f));
@@ -1071,19 +1071,19 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// Project(vector, -1, -1, 2, 2, -1, 1, worldViewProjection).
         /// </remarks>
         [Pure]
-        public static TVector3 Project
+        public static Vector3 Project
         (
-            TVector3 vector,
+            Vector3 vector,
             float x,
             float y,
             float width,
             float height,
             float minZ,
             float maxZ,
-            TMatrix4 worldViewProjection
+            Matrix4 worldViewProjection
         )
         {
-            TVector4 result;
+            Vector4 result;
 
             result.X =
                 (vector.X * worldViewProjection.M11) +
@@ -1115,7 +1115,7 @@ namespace SpiceEngineCore.Geometry.Vectors
             result.Y = y + (height * ((result.Y + 1.0f) / 2.0f));
             result.Z = minZ + ((maxZ - minZ) * ((result.Z + 1.0f) / 2.0f));
 
-            return new TVector3(result.X, result.Y, result.Z);
+            return new Vector3(result.X, result.Y, result.Z);
         }
 
         /// <summary>
@@ -1135,23 +1135,23 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// Project(vector, -1, -1, 2, 2, -1, 1, inverseWorldViewProjection).
         /// </remarks>
         [Pure]
-        public static TVector3 Unproject
+        public static Vector3 Unproject
         (
-            TVector3 vector,
+            Vector3 vector,
             float x,
             float y,
             float width,
             float height,
             float minZ,
             float maxZ,
-            TMatrix4 inverseWorldViewProjection
+            Matrix4 inverseWorldViewProjection
         )
         {
             float tempX = ((vector.X - x) / width * 2.0f) - 1.0f;
             float tempY = ((vector.Y - y) / height * 2.0f) - 1.0f;
             float tempZ = ((vector.Z - minZ) / (maxZ - minZ) * 2.0f) - 1.0f;
 
-            TVector3 result;
+            Vector3 result;
             result.X =
                 (tempX * inverseWorldViewProjection.M11) +
                 (tempY * inverseWorldViewProjection.M21) +
@@ -1182,12 +1182,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the X and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the X and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Xy
+        public Vector2 Xy
         {
-            get => new TVector2(X, Y);// Unsafe.As<TVector3, TVector2>(ref this);
+            get => new Vector2(X, Y);// Unsafe.As<Vector3, Vector2>(ref this);
             set
             {
                 X = value.X;
@@ -1196,12 +1196,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the X and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the X and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Xz
+        public Vector2 Xz
         {
-            get => new TVector2(X, Z);
+            get => new Vector2(X, Z);
             set
             {
                 X = value.X;
@@ -1210,12 +1210,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Y and X components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Y and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Yx
+        public Vector2 Yx
         {
-            get => new TVector2(Y, X);
+            get => new Vector2(Y, X);
             set
             {
                 Y = value.X;
@@ -1224,12 +1224,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Y and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Y and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Yz
+        public Vector2 Yz
         {
-            get => new TVector2(Y, Z);
+            get => new Vector2(Y, Z);
             set
             {
                 Y = value.X;
@@ -1238,12 +1238,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Z and X components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Z and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Zx
+        public Vector2 Zx
         {
-            get => new TVector2(Z, X);
+            get => new Vector2(Z, X);
             set
             {
                 Z = value.X;
@@ -1252,12 +1252,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector2 with the Z and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector2 with the Z and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector2 Zy
+        public Vector2 Zy
         {
-            get => new TVector2(Z, Y);
+            get => new Vector2(Z, Y);
             set
             {
                 Z = value.X;
@@ -1266,12 +1266,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the X, Z, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the X, Z, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Xzy
+        public Vector3 Xzy
         {
-            get => new TVector3(X, Z, Y);
+            get => new Vector3(X, Z, Y);
             set
             {
                 X = value.X;
@@ -1281,12 +1281,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, X, and Z components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, X, and Z components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Yxz
+        public Vector3 Yxz
         {
-            get => new TVector3(Y, X, Z);
+            get => new Vector3(Y, X, Z);
             set
             {
                 Y = value.X;
@@ -1296,12 +1296,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Y, Z, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Y, Z, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Yzx
+        public Vector3 Yzx
         {
-            get => new TVector3(Y, Z, X);
+            get => new Vector3(Y, Z, X);
             set
             {
                 Y = value.X;
@@ -1311,12 +1311,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, X, and Y components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, X, and Y components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zxy
+        public Vector3 Zxy
         {
-            get => new TVector3(Z, X, Y);
+            get => new Vector3(Z, X, Y);
             set
             {
                 Z = value.X;
@@ -1326,12 +1326,12 @@ namespace SpiceEngineCore.Geometry.Vectors
         }
 
         /// <summary>
-        /// Gets or sets an OpenTK.TVector3 with the Z, Y, and X components of this instance.
+        /// Gets or sets an OpenTK.Vector3 with the Z, Y, and X components of this instance.
         /// </summary>
         [XmlIgnore]
-        public TVector3 Zyx
+        public Vector3 Zyx
         {
-            get => new TVector3(Z, Y, X);
+            get => new Vector3(Z, Y, X);
             set
             {
                 Z = value.X;
@@ -1347,7 +1347,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector3 operator +(TVector3 left, TVector3 right)
+        public static Vector3 operator +(Vector3 left, Vector3 right)
         {
             left.X += right.X;
             left.Y += right.Y;
@@ -1362,7 +1362,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="right">The second instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector3 operator -(TVector3 left, TVector3 right)
+        public static Vector3 operator -(Vector3 left, Vector3 right)
         {
             left.X -= right.X;
             left.Y -= right.Y;
@@ -1376,7 +1376,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector3 operator -(TVector3 vec)
+        public static Vector3 operator -(Vector3 vec)
         {
             vec.X = -vec.X;
             vec.Y = -vec.Y;
@@ -1391,7 +1391,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">The scalar.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector3 operator *(TVector3 vec, float scale)
+        public static Vector3 operator *(Vector3 vec, float scale)
         {
             vec.X *= scale;
             vec.Y *= scale;
@@ -1406,7 +1406,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The instance.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector3 operator *(float scale, TVector3 vec)
+        public static Vector3 operator *(float scale, Vector3 vec)
         {
             vec.X *= scale;
             vec.Y *= scale;
@@ -1421,7 +1421,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">Right operand.</param>
         /// <returns>Result of multiplication.</returns>
         [Pure]
-        public static TVector3 operator *(TVector3 vec, TVector3 scale)
+        public static Vector3 operator *(Vector3 vec, Vector3 scale)
         {
             vec.X *= scale.X;
             vec.Y *= scale.Y;
@@ -1436,9 +1436,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="mat">The desired transformation.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector3 operator *(TVector3 vec, TMatrix3 mat)
+        public static Vector3 operator *(Vector3 vec, Matrix3 mat)
         {
-            TransformRow(in vec, in mat, out TVector3 result);
+            TransformRow(in vec, in mat, out Vector3 result);
             return result;
         }
 
@@ -1449,9 +1449,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="vec">The vector to transform.</param>
         /// <returns>The transformed vector.</returns>
         [Pure]
-        public static TVector3 operator *(TMatrix3 mat, TVector3 vec)
+        public static Vector3 operator *(Matrix3 mat, Vector3 vec)
         {
-            TransformColumn(in mat, in vec, out TVector3 result);
+            TransformColumn(in mat, in vec, out Vector3 result);
             return result;
         }
 
@@ -1462,9 +1462,9 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="quat">The quaternion to rotate the vector by.</param>
         /// <returns>The multiplied vector.</returns>
         [Pure]
-        public static TVector3 operator *(TQuaternion quat, TVector3 vec)
+        public static Vector3 operator *(Quaternion quat, Vector3 vec)
         {
-            Transform(in vec, in quat, out TVector3 result);
+            Transform(in vec, in quat, out Vector3 result);
             return result;
         }
 
@@ -1475,7 +1475,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="scale">The scalar.</param>
         /// <returns>The result of the calculation.</returns>
         [Pure]
-        public static TVector3 operator /(TVector3 vec, float scale)
+        public static Vector3 operator /(Vector3 vec, float scale)
         {
             vec.X /= scale;
             vec.Y /= scale;
@@ -1489,7 +1489,7 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
-        public static bool operator ==(TVector3 left, TVector3 right)
+        public static bool operator ==(Vector3 left, Vector3 right)
         {
             return left.Equals(right);
         }
@@ -1500,21 +1500,21 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <param name="left">The first instance.</param>
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
-        public static bool operator !=(TVector3 left, TVector3 right)
+        public static bool operator !=(Vector3 left, Vector3 right)
         {
             return !(left == right);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="TVector3"/> struct using a tuple containing the component
+        /// Initializes a new instance of the <see cref="Vector3"/> struct using a tuple containing the component
         /// values.
         /// </summary>
         /// <param name="values">A tuple containing the component values.</param>
-        /// <returns>A new instance of the <see cref="TVector3"/> struct with the given component values.</returns>
+        /// <returns>A new instance of the <see cref="Vector3"/> struct with the given component values.</returns>
         [Pure]
-        public static implicit operator TVector3((float X, float Y, float Z) values)
+        public static implicit operator Vector3((float X, float Y, float Z) values)
         {
-            return new TVector3(values.X, values.Y, values.Z);
+            return new Vector3(values.X, values.Y, values.Z);
         }
 
         /// <inheritdoc />
@@ -1526,11 +1526,11 @@ namespace SpiceEngineCore.Geometry.Vectors
         /// <inheritdoc />
         public override bool Equals(object obj)
         {
-            return obj is TVector3 && Equals((TVector3)obj);
+            return obj is Vector3 && Equals((Vector3)obj);
         }
 
         /// <inheritdoc />
-        public bool Equals(TVector3 other)
+        public bool Equals(Vector3 other)
         {
             return X == other.X &&
                    Y == other.Y &&

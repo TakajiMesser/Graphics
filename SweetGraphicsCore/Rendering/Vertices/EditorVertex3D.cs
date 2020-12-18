@@ -55,7 +55,7 @@ namespace SweetGraphicsCore.Vertices
         public IVertex3D Transformed(Transform transform)
         {
             var modelMatrix = transform.ToMatrix();
-            var rotationMatrix = Matrix4.CreateFromQuaternion(transform.Rotation);
+            var rotationMatrix = Matrix4.FromQuaternion(transform.Rotation);
 
             return new EditorVertex3D()
             {

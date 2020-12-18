@@ -18,7 +18,7 @@ namespace SpiceEngineCore.Entities.Lights
             }
         }
 
-        public Matrix4 Projection => Matrix4.CreatePerspectiveFieldOfView(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
+        public Matrix4 Projection => Matrix4.Perspective(UnitConversions.ToRadians(90.0f), 1.0f, 0.1f, Radius);
 
         public override PLight ToStruct() => new PLight(Position, Radius, Color.Xyz, Intensity);
     }
