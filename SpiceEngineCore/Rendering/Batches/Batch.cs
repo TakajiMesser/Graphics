@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game;
-using SpiceEngineCore.Rendering.Matrices;
+﻿using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
@@ -51,12 +49,12 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public abstract bool CanBatch(IRenderable renderable);
 
-        /*public virtual IEnumerable<IUniform> GetUniforms(IBatcher batcher) => Enumerable.Empty<IUniform>();
-        public virtual IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider) => Enumerable.Empty<TextureBinding>();*/
+        public virtual IEnumerable<IUniform> GetUniforms(IBatcher batcher) => Enumerable.Empty<IUniform>();
+        public virtual IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider) => Enumerable.Empty<TextureBinding>();
         
         public virtual void Draw() => _renderable.Draw();
 
-        public abstract void SetUniforms(IRender renderer, IEntityProvider entityProvider);
+        /*public abstract void SetUniforms(IRender renderer, IEntityProvider entityProvider);
         public virtual void BindTextures(IRender renderer, ITextureProvider textureProvider) { }
         public virtual void Draw(IRender renderer, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
         {
@@ -68,7 +66,7 @@ namespace SpiceEngineCore.Rendering.Batches
             }
 
             Draw();
-        }
+        }*/
 
         public abstract IBatch Duplicate();
     }

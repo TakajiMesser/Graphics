@@ -2,7 +2,6 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
-using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
@@ -21,7 +20,7 @@ using Vector4 = OpenTK.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Shaders
 {
-    public class ShaderProgram : IRender
+    public class ShaderProgram
     {
         private readonly int _handle;
         private int _textureIndex = 0;
@@ -151,21 +150,6 @@ namespace SweetGraphicsCore.Renderers.Shaders
         public void SetUniform(string name, Matrix4 matrix)
         {
             var location = GetUniformLocation(name);
-            GL.UniformMatrix4(location, false, ref matrix);
-        }
-
-        public void SetUniform(string name, Matrix4[] matrices)
-        {
-            for (var i = 0; i < matrices.Length; i++)
-            {
-                var iLocation = GetUniformLocation(name + "[" + i + "]");
-                GL.UniformMatrix4(iLocation, false, ref matrices[i]);
-            }
-        }
-
-        /*public void SetUniform(string name, Matrix4 matrix)
-        {
-            var location = GetUniformLocation(name);
             SetMatrix4Uniform(location, ref matrix);
         }
 
@@ -191,7 +175,7 @@ namespace SweetGraphicsCore.Renderers.Shaders
                     GL.UniformMatrix4(location, 1, false, matrix_ptr);
                 }
             }*/
-        //}
+        }
 
         public void SetUniform(string name, Vector2 vector)
         {

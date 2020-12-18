@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game;
-using SpiceEngineCore.Rendering.Matrices;
+﻿using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
@@ -49,12 +47,12 @@ namespace SpiceEngineCore.Rendering.Batches
         void Load();
         void Draw();
 
-        /*IEnumerable<IUniform> GetUniforms(IBatcher batcher);
-        IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider);*/
+        IEnumerable<IUniform> GetUniforms(IBatcher batcher);
+        IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider);
 
-        void SetUniforms(IRender renderer, IEntityProvider entityProvider);
+        /*void SetUniforms(IRender renderer, IEntityProvider entityProvider);
         void BindTextures(IRender renderer, ITextureProvider textureProvider);
-        void Draw(IRender renderer, IEntityProvider entityProvider, ITextureProvider textureProvider = null);
+        void Draw(IRender renderer, IEntityProvider entityProvider, ITextureProvider textureProvider = null);*/
 
         IBatch Duplicate();
     }

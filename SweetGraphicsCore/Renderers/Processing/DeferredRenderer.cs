@@ -271,7 +271,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            /*_geometryProgram.Use();
+            _geometryProgram.Use();
             _geometryProgram.SetCamera(camera);
             _geometryProgram.SetUniform("cameraPosition", camera.Position);
 
@@ -289,25 +289,12 @@ namespace SweetGraphicsCore.Renderers.Processing
                 RenderBatch(_geometryProgram, batcher, batch);
             }
 
-            GL.Enable(EnableCap.CullFace);*/
-
-            batcher.CreateBatchAction()
-                .SetShader(_geometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetRenderType(RenderTypes.OpaqueStatic)
-                .Render()
-                .SetShader(_jointGeometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetRenderType(RenderTypes.OpaqueAnimated)
-                .Render()
-                .Execute();
+            GL.Enable(EnableCap.CullFace);
         }
 
         public void TransparentGeometryPass(ICamera camera, IBatcher batcher)
         {
-            /*_geometryProgram.Use();
+            _geometryProgram.Use();
             _geometryProgram.SetCamera(camera);
             _geometryProgram.SetUniform("cameraPosition", camera.Position);
             _geometryProgram.UnbindTextures();
@@ -325,27 +312,13 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.TransparentAnimated))
             {
                 RenderBatch(_jointGeometryProgram, batcher, batch);
-            }*/
+            }
 
             //GL.Enable(EnableCap.Blend);
             //GL.BlendEquation(BlendEquationMode.FuncAdd);
             //GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcAlpha);
 
             //GL.Disable(EnableCap.Blend);
-
-            batcher.CreateBatchAction()
-                .SetShader(_geometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .PerformAction(() => _geometryProgram.UnbindTextures())
-                .SetRenderType(RenderTypes.TransparentStatic)
-                .Render()
-                .SetShader(_jointGeometryProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()
-                .Execute();
         }
 
         private IEnumerable<Actor> PerformFrustumCulling(IEnumerable<Actor> actors)

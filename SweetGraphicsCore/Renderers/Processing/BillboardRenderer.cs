@@ -119,7 +119,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            /*_billboardProgram.Use();
+            _billboardProgram.Use();
             _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
             _billboardProgram.SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f));
@@ -127,23 +127,14 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueBillboard))
             {
                 RenderBatch(_billboardProgram, batcher, batch);
-            }*/
+            }
 
             //GL.Enable(EnableCap.CullFace);
-
-            batcher.CreateBatchAction()
-                .SetShader(_billboardProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f))
-                .SetRenderType(RenderTypes.OpaqueBillboard)
-                .Render()
-                .Execute();
         }
 
         public void SelectionPass(ICamera camera, IBatcher batcher)
         {
-            /*_billboardProgram.Use();
+            _billboardProgram.Use();
             _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
             _billboardProgram.SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f));
@@ -151,18 +142,9 @@ namespace SweetGraphicsCore.Renderers.Processing
             foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueBillboard))
             {
                 RenderBatch(_billboardProgram, batcher, batch);
-            }*/
+            }
 
             //GL.Enable(EnableCap.CullFace);
-
-            batcher.CreateBatchAction()
-                .SetShader(_billboardProgram)
-                .SetCamera(camera)
-                .SetUniform("cameraPosition", camera.Position)
-                .SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f))
-                .SetRenderType(RenderTypes.OpaqueBillboard)
-                .Render()
-                .Execute();
         }
 
         public void RenderEntities(ICamera camera, IEnumerable<IEntity> entities, ITexture texture)

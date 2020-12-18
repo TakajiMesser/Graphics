@@ -88,7 +88,7 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         public void Render(IBatcher batcher, IUIProvider uiProvider)
         {
-            /*GL.Enable(EnableCap.Blend);
+            GL.Enable(EnableCap.Blend);
             GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
 
             GL.Disable(EnableCap.DepthTest);
@@ -102,15 +102,7 @@ namespace SpiceEngine.Rendering.PostProcessing
                 RenderBatch(_textProgram, batcher, batch);
             }
 
-            GL.Disable(EnableCap.Blend);*/
-
-            batcher.CreateBatchAction()
-                .SetShader(_textProgram)
-                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
-                .SetRenderType(RenderTypes.TransparentText)
-                .SetEntityIDOrder(uiProvider.GetDrawOrder())
-                .Render()
-                .Execute();
+            GL.Disable(EnableCap.Blend);
         }
 
         /// <summary>

@@ -1,6 +1,4 @@
 ﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Entities;
-using SpiceEngineCore.Game;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
@@ -235,21 +233,12 @@ namespace StarchUICore.Rendering.Batches
         // TODO - Determine if we do actually want to support batching for UI items
         public override bool CanBatch(IRenderable renderable) => renderable is IView || renderable is IGroup;
 
-        /*public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
+        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
         {
             var entity = batcher.GetEntitiesForBatch(this).First();
 
             yield return new Uniform<Matrix4>(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
             yield return new Uniform<Matrix4>(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
-        }*/
-
-        public override void SetUniforms(IRender renderer, IEntityProvider entityProvider)
-        {
-            // TODO - Are there any per entity uniforms that we actually need to set?
-            var entity = entityProvider.GetEntity(EntityIDs.First());
-
-            renderer.SetUniform(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
-            renderer.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
         }
     }
 }

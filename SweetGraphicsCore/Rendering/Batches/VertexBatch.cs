@@ -1,12 +1,7 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Game;
-using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
-using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Vertices;
 using System;
@@ -121,43 +116,40 @@ namespace SweetGraphicsCore.Rendering.Batches
                 && TextureMappings.Equals(textureBinder.TextureMappings);*/
         }
 
-        public override void SetUniforms(IRender renderer, IEntityProvider entityProvider)
+        /*public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
         {
             var entity = entityProvider.GetEntity(EntityIDs.First());
 
             // TODO - This is janky to set this uniform based on entity type...
             if (entity is IBrush)
             {
-                renderer.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.Identity);
-                renderer.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
+                shaderProgram.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
+                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
             }
             else
             {
-                renderer.SetUniform(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
-                renderer.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
-                //entity.WorldMatrix.Set(shaderProgram);
+                entity.WorldMatrix.Set(shaderProgram);
             }
 
             if (_renderable is ITexturedMesh texturedMesh)
             {
-                renderer.SetMaterial(texturedMesh.Material);
-                //texturedMesh.Material.SetUniforms(shaderProgram);
+                texturedMesh.Material.SetUniforms(shaderProgram);
             }
         }
 
-        public override void BindTextures(IRender renderer, ITextureProvider textureProvider)
+        public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)
         {
             if (_renderable is ITexturedMesh texturedMesh)
             {
                 if (texturedMesh.TextureMapping.HasValue)
                 {
-                    renderer.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
+                    shaderProgram.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
                 }
                 else
                 {
-                    renderer.UnbindTextures();
+                    shaderProgram.UnbindTextures();
                 }
             }
-        }
+        }*/
     }
 }
