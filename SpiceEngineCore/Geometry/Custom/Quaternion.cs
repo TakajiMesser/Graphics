@@ -7,10 +7,10 @@ using System.Runtime.InteropServices;
 namespace SpiceEngineCore.Geometry.Quaternions
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct CQuaternion : IEquatable<CQuaternion>
+    public struct Quaternion : IEquatable<Quaternion>
     {
-        public CQuaternion(Vector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
-        public CQuaternion(float x, float y, float z, float w)
+        public Quaternion(Vector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
+        public Quaternion(float x, float y, float z, float w)
         {
             X = x;
             Y = y;
@@ -27,14 +27,14 @@ namespace SpiceEngineCore.Geometry.Quaternions
 
         public float LengthSquared => X * X + Y * Y + Z * Z + W * W;
 
-        public CQuaternion Inverted()
+        public Quaternion Inverted()
         {
             var lengthSquared = LengthSquared;
 
             if (lengthSquared != 0f)
             {
                 var i = 1.0f / lengthSquared;
-                return new CQuaternion(X * -i, Y * -i, Z * -i, W * i);
+                return new Quaternion(X * -i, Y * -i, Z * -i, W * i);
             }
             else
             {
@@ -42,10 +42,10 @@ namespace SpiceEngineCore.Geometry.Quaternions
             }
         }
 
-        public CQuaternion Normalized()
+        public Quaternion Normalized()
         {
             var scale = 1.0f / Length;
-            return new CQuaternion(X * scale, Y * scale, Z * scale, W * scale);
+            return new Quaternion(X * scale, Y * scale, Z * scale, W * scale);
         }
 
         public Vector3 ToEulerAngles()
@@ -121,9 +121,9 @@ namespace SpiceEngineCore.Geometry.Quaternions
 
         public override string ToString() => "<" + X + "," + Y + "," + Z + "," + W + ">";
 
-        public override bool Equals(object obj) => obj is CQuaternion quaternion && Equals(quaternion);
+        public override bool Equals(object obj) => obj is Quaternion quaternion && Equals(quaternion);
 
-        public bool Equals(CQuaternion other) => X == other.X && Y == other.Y && Z == other.Z && W == other.W;
+        public bool Equals(Quaternion other) => X == other.X && Y == other.Y && Z == other.Z && W == other.W;
 
         public override int GetHashCode()
         {
@@ -135,50 +135,50 @@ namespace SpiceEngineCore.Geometry.Quaternions
             return hashCode;
         }
 
-        public static bool operator ==(CQuaternion left, CQuaternion right) => left.Equals(right);
+        public static bool operator ==(Quaternion left, Quaternion right) => left.Equals(right);
 
-        public static bool operator !=(CQuaternion left, CQuaternion right) => !(left == right);
+        public static bool operator !=(Quaternion left, Quaternion right) => !(left == right);
 
-        public static readonly CQuaternion Identity = new CQuaternion(0f, 0f, 0f, 1f);
+        public static readonly Quaternion Identity = new Quaternion(0f, 0f, 0f, 1f);
 
-        public static CQuaternion operator +(CQuaternion left, CQuaternion right)
+        public static Quaternion operator +(Quaternion left, Quaternion right)
         {
             var x = left.X + left.Y;
             var y = left.Y + right.Y;
             var z = left.Z + right.Z;
             var w = left.W + right.W;
 
-            return new CQuaternion(x, y, z, w);
+            return new Quaternion(x, y, z, w);
         }
 
-        public static CQuaternion operator -(CQuaternion left, CQuaternion right)
+        public static Quaternion operator -(Quaternion left, Quaternion right)
         {
             var x = left.X - left.Y;
             var y = left.Y - right.Y;
             var z = left.Z - right.Z;
             var w = left.W - right.W;
 
-            return new CQuaternion(x, y, z, w);
+            return new Quaternion(x, y, z, w);
         }
 
-        public static CQuaternion operator *(CQuaternion left, CQuaternion right)
+        public static Quaternion operator *(Quaternion left, Quaternion right)
         {
             var x = left.X + left.Y;
             var y = left.Y + right.Y;
             var z = left.Z + right.Z;
             var w = left.W + right.W;
 
-            return new CQuaternion(x, y, z, w);
+            return new Quaternion(x, y, z, w);
 
-            /*result = new CQuaternion(
+            /*result = new Quaternion(
                 (right.W * left.Xyz) + (left.W * right.Xyz) + Vector3.Cross(left.Xyz, right.Xyz),
                 (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));*/
         }
 
-        public static CQuaternion operator *(float scale, CQuaternion quaternion) => new CQuaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
+        public static Quaternion operator *(float scale, Quaternion quaternion) => new Quaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
 
-        public static CQuaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
-        public static CQuaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ)
+        public static Quaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
+        public static Quaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ)
         {
             rotationX *= 0.5f;
             rotationY *= 0.5f;
@@ -197,10 +197,10 @@ namespace SpiceEngineCore.Geometry.Quaternions
             float z = (c1 * c2 * s3) + (s1 * s2 * c3);
             float w = (c1 * c2 * c3) - (s1 * s2 * s3);
 
-            return new CQuaternion(x, y, z, w);
+            return new Quaternion(x, y, z, w);
         }
 
-        public static CQuaternion FromMatrix(CMatrix3 matrix)
+        public static Quaternion FromMatrix(Matrix3 matrix)
         {
             var trace = matrix.Trace;
 
@@ -209,7 +209,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                 var s = 1f / (float)Math.Sqrt(trace + 1) * 2;
                 var invS = 1f / s;
 
-                return new CQuaternion(
+                return new Quaternion(
                     (matrix.M21 - matrix.M12) * invS,
                     (matrix.M02 - matrix.M20) * invS,
                     (matrix.M10 - matrix.M01) * invS,
@@ -223,7 +223,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                     var s = (float)Math.Sqrt(1 + matrix.M00 - matrix.M11 - matrix.M22) * 2f;
                     var invS = 1f / s;
 
-                    return new CQuaternion(
+                    return new Quaternion(
                         s * 0.25f,
                         (matrix.M01 + matrix.M10) * invS,
                         (matrix.M02 + matrix.M20) * invS,
@@ -235,7 +235,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                     var s = (float)Math.Sqrt(1 + matrix.M11 - matrix.M00 - matrix.M22) * 2;
                     var invS = 1f / s;
 
-                    return new CQuaternion(
+                    return new Quaternion(
                         (matrix.M01 + matrix.M10) * invS,
                         s * 0.25f,
                         (matrix.M12 + matrix.M21) * invS,
@@ -247,7 +247,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
                     var s = (float)Math.Sqrt(1 + matrix.M22 - matrix.M00 - matrix.M11) * 2;
                     var invS = 1f / s;
 
-                    return new CQuaternion(
+                    return new Quaternion(
                         (matrix.M02 + matrix.M20) * invS,
                         (matrix.M12 + matrix.M21) * invS,
                         s * 0.25f,

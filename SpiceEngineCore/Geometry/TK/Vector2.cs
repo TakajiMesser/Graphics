@@ -16,7 +16,7 @@ namespace SpiceEngineCore.Geometry.Vectors
     /// <remarks>
     /// The Vector2 structure is suitable for interoperation with unmanaged code requiring two consecutive floats.
     /// </remarks>
-    [Serializable]
+    /*[Serializable]
     [StructLayout(LayoutKind.Sequential)]
     public struct Vector2 : IEquatable<Vector2>
     {
@@ -1003,5 +1003,5 @@ namespace SpiceEngineCore.Geometry.Vectors
             x = X;
             y = Y;
         }
-    }
+    }*/
 }

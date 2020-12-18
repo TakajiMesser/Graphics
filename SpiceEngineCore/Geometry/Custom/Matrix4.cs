@@ -6,9 +6,9 @@ using System.Runtime.InteropServices;
 namespace SpiceEngineCore.Geometry.Matrices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct CMatrix4 : IEquatable<CMatrix4>
+    public struct Matrix4 : IEquatable<Matrix4>
     {
-        public CMatrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)
+        public Matrix4(float m00, float m01, float m02, float m03, float m10, float m11, float m12, float m13, float m20, float m21, float m22, float m23, float m30, float m31, float m32, float m33)
         {
             M00 = m00;
             M01 = m01;
@@ -57,9 +57,9 @@ namespace SpiceEngineCore.Geometry.Matrices
 
         public float Trace => M00 + M11 + M22 + M33;
 
-        public CMatrix4 Transposed() => new CMatrix4(M00, M10, M20, M30, M01, M11, M21, M31, M02, M12, M22, M32, M03, M13, M23, M33);
+        public Matrix4 Transposed() => new Matrix4(M00, M10, M20, M30, M01, M11, M21, M31, M02, M12, M22, M32, M03, M13, M23, M33);
 
-        public CMatrix4 Inverted()
+        public Matrix4 Inverted()
         {
             /*  M00    M01     M02     M03
                 M10    M11     M12     M13
@@ -188,7 +188,7 @@ namespace SpiceEngineCore.Geometry.Matrices
 
             determinant = 1.0f / determinant;
 
-            return new CMatrix4(inverseM00 * determinant, inverseM01 * determinant, inverseM02 * determinant, inverseM03 * determinant,
+            return new Matrix4(inverseM00 * determinant, inverseM01 * determinant, inverseM02 * determinant, inverseM03 * determinant,
                                inverseM10 * determinant, inverseM11 * determinant, inverseM12 * determinant, inverseM13 * determinant,
                                inverseM20 * determinant, inverseM21 * determinant, inverseM22 * determinant, inverseM23 * determinant,
                                inverseM30 * determinant, inverseM31 * determinant, inverseM32 * determinant, inverseM33 * determinant);
@@ -199,21 +199,21 @@ namespace SpiceEngineCore.Geometry.Matrices
                      + Environment.NewLine + "|" + M20 + "," + M21 + "," + M22 + "," + M23 + "|"
                      + Environment.NewLine + "|" + M30 + "," + M31 + "," + M32 + "," + M33 + "|"; 
 
-        public static CMatrix4 operator +(CMatrix4 left, CMatrix4 right) => new CMatrix4(left.M00 + right.M00, left.M01 + right.M01, left.M02 + right.M02, left.M03 + right.M03, left.M10 + right.M10, left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M20 + right.M20, left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M30 + right.M30, left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33);
+        public static Matrix4 operator +(Matrix4 left, Matrix4 right) => new Matrix4(left.M00 + right.M00, left.M01 + right.M01, left.M02 + right.M02, left.M03 + right.M03, left.M10 + right.M10, left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M20 + right.M20, left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M30 + right.M30, left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33);
 
-        public static CMatrix4 operator -(CMatrix4 left, CMatrix4 right) => new CMatrix4(left.M00 - right.M00, left.M01 - right.M01, left.M02 - right.M02, left.M03 - right.M03, left.M10 - right.M10, left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M20 - right.M20, left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M30 - right.M30, left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33);
+        public static Matrix4 operator -(Matrix4 left, Matrix4 right) => new Matrix4(left.M00 - right.M00, left.M01 - right.M01, left.M02 - right.M02, left.M03 - right.M03, left.M10 - right.M10, left.M11 - right.M11, left.M12 - right.M12, left.M13 - right.M13, left.M20 - right.M20, left.M21 - right.M21, left.M22 - right.M22, left.M23 - right.M23, left.M30 - right.M30, left.M31 - right.M31, left.M32 - right.M32, left.M33 - right.M33);
 
-        public static CMatrix4 operator *(CMatrix4 left, CMatrix4 right) => new CMatrix4(left.M00 * right.M00 + left.M01 * right.M10 + left.M02 * right.M20 + left.M03 * right.M30, left.M00 * right.M01 + left.M01 * right.M11 + left.M02 * right.M21 + left.M03 * right.M31, left.M00 * right.M02 + left.M01 * right.M12 + left.M02 * right.M22 + left.M03 * right.M32, left.M00 * right.M03 + left.M01 * right.M13 + left.M02 * right.M23 + left.M03 * right.M33, left.M10 * right.M00 + left.M11 * right.M10 + left.M12 * right.M20 + left.M13 * right.M30, left.M10 * right.M01 + left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31, left.M10 * right.M02 + left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32, left.M10 * right.M03 + left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33, left.M20 * right.M00 + left.M21 * right.M10 + left.M22 * right.M20 + left.M23 * right.M30, left.M20 * right.M01 + left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31, left.M20 * right.M02 + left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32, left.M20 * right.M03 + left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33, left.M30 * right.M00 + left.M31 * right.M10 + left.M32 * right.M20 + left.M33 * right.M30, left.M30 * right.M01 + left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31, left.M30 * right.M02 + left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32, left.M30 * right.M03 + left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33);
+        public static Matrix4 operator *(Matrix4 left, Matrix4 right) => new Matrix4(left.M00 * right.M00 + left.M01 * right.M10 + left.M02 * right.M20 + left.M03 * right.M30, left.M00 * right.M01 + left.M01 * right.M11 + left.M02 * right.M21 + left.M03 * right.M31, left.M00 * right.M02 + left.M01 * right.M12 + left.M02 * right.M22 + left.M03 * right.M32, left.M00 * right.M03 + left.M01 * right.M13 + left.M02 * right.M23 + left.M03 * right.M33, left.M10 * right.M00 + left.M11 * right.M10 + left.M12 * right.M20 + left.M13 * right.M30, left.M10 * right.M01 + left.M11 * right.M11 + left.M12 * right.M21 + left.M13 * right.M31, left.M10 * right.M02 + left.M11 * right.M12 + left.M12 * right.M22 + left.M13 * right.M32, left.M10 * right.M03 + left.M11 * right.M13 + left.M12 * right.M23 + left.M13 * right.M33, left.M20 * right.M00 + left.M21 * right.M10 + left.M22 * right.M20 + left.M23 * right.M30, left.M20 * right.M01 + left.M21 * right.M11 + left.M22 * right.M21 + left.M23 * right.M31, left.M20 * right.M02 + left.M21 * right.M12 + left.M22 * right.M22 + left.M23 * right.M32, left.M20 * right.M03 + left.M21 * right.M13 + left.M22 * right.M23 + left.M23 * right.M33, left.M30 * right.M00 + left.M31 * right.M10 + left.M32 * right.M20 + left.M33 * right.M30, left.M30 * right.M01 + left.M31 * right.M11 + left.M32 * right.M21 + left.M33 * right.M31, left.M30 * right.M02 + left.M31 * right.M12 + left.M32 * right.M22 + left.M33 * right.M32, left.M30 * right.M03 + left.M31 * right.M13 + left.M32 * right.M23 + left.M33 * right.M33);
 
-        public static bool operator ==(CMatrix4 left, CMatrix4 right) => left.Equals(right);
+        public static bool operator ==(Matrix4 left, Matrix4 right) => left.Equals(right);
 
-        public static bool operator !=(CMatrix4 left, CMatrix4 right) => !(left == right);
+        public static bool operator !=(Matrix4 left, Matrix4 right) => !(left == right);
 
-        public static CMatrix4 FromTranslation(CVector3 vector) => new CMatrix4(1, 0, 0, 0, 0, 1, 0, 0, vector.X, vector.Y, vector.Z, 0, 0, 0, 0, 1);
+        public static Matrix4 FromTranslation(Vector3 vector) => new Matrix4(1, 0, 0, 0, 0, 1, 0, 0, vector.X, vector.Y, vector.Z, 0, 0, 0, 0, 1);
 
-        public static CMatrix4 FromScale(CVector3 scale) => new CMatrix4(scale.X, 0, 0, 0, 0, scale.Y, 0, 0, 0, 0, scale.Z, 0, 0, 0, 0, 1);
+        public static Matrix4 FromScale(Vector3 scale) => new Matrix4(scale.X, 0, 0, 0, 0, scale.Y, 0, 0, 0, 0, scale.Z, 0, 0, 0, 0, 1);
 
-        public static CMatrix4 FromQuaternion(CQuaternion quaternion)
+        public static Matrix4 FromQuaternion(Quaternion quaternion)
         {
             var axisAngle = quaternion.ToAxisAngle();
 
@@ -233,14 +233,14 @@ namespace SpiceEngineCore.Geometry.Matrices
             float sinY = sin * axis.Y;
             float sinZ = sin * axis.Z;
 
-            return new CMatrix4(
+            return new Matrix4(
                 tXX + cos, tXY - sinZ, tXZ + sinY, 0,
                 tXY + sinZ, tYY + cos, tYZ - sinX, 0,
                 tXZ - sinY, tYZ + sinX, tZZ + cos, 0,
                 0, 0, 0, 1);
         }
 
-        public static CMatrix4 Orthographic(float width, float height, float depthNear, float depthFar)
+        public static Matrix4 Orthographic(float width, float height, float depthNear, float depthFar)
         {
             var left = -width / 2;
             var right = width / 2;
@@ -251,7 +251,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             var invTB = 1.0f / (top - bottom);
             var invFN = 1.0f / (depthFar - depthNear);
 
-            return new CMatrix4(
+            return new Matrix4(
                 2 * invRL, 0, 0, 0,
                 0, 2 * invTB, 0, 0,
                 0, 0, -2 * invFN, 0,
@@ -259,7 +259,7 @@ namespace SpiceEngineCore.Geometry.Matrices
             );
         }
 
-        public static CMatrix4 Perspective(float fovy, float aspect, float depthNear, float depthFar)
+        public static Matrix4 Perspective(float fovy, float aspect, float depthNear, float depthFar)
         {
             if (fovy <= 0 || fovy > Math.PI) throw new ArgumentOutOfRangeException(nameof(fovy));
             if (aspect <= 0) throw new ArgumentOutOfRangeException(nameof(aspect));
@@ -278,39 +278,39 @@ namespace SpiceEngineCore.Geometry.Matrices
             var c = -(depthFar + depthNear) / (depthFar - depthNear);
             var d = -(2.0f * depthFar * depthNear) / (depthFar - depthNear);
 
-            return new CMatrix4(
+            return new Matrix4(
                 x, 0, 0, 0,
                 0, y, 0, 0,
                 a, b, c, -1,
                 0, 0, d, 0);
         }
 
-        public static CMatrix4 LookAt(CVector3 eye, CVector3 target, CVector3 up)
+        public static Matrix4 LookAt(Vector3 eye, Vector3 target, Vector3 up)
         {
             var z = (eye - target).Normalized();
-            var x = CVector3.Cross(up, z).Normalized();
-            var y = CVector3.Cross(z, x).Normalized();
+            var x = Vector3.Cross(up, z).Normalized();
+            var y = Vector3.Cross(z, x).Normalized();
 
-            return new CMatrix4(
+            return new Matrix4(
                 x.X, y.X, z.X, 0,
                 x.Y, y.Y, z.Y, 0,
                 x.Z, y.Z, z.Z, 0,
                 -((x.X * eye.X) + (x.Y * eye.Y) + (x.Z * eye.Z)), -((y.X * eye.X) + (y.Y * eye.Y) + (y.Z * eye.Z)), -((z.X * eye.X) + (z.Y * eye.Y) + (z.Z * eye.Z)), 1);
         }
 
-        public static CMatrix4 Identity => new CMatrix4(1.0f, 0.0f, 0.0f, 0.0f,
+        public static Matrix4 Identity => new Matrix4(1.0f, 0.0f, 0.0f, 0.0f,
                                                       0.0f, 1.0f, 0.0f, 0.0f,
                                                       0.0f, 0.0f, 1.0f, 0.0f,
                                                       0.0f, 0.0f, 0.0f, 1.0f);
 
-        public static CMatrix4 Zero => new CMatrix4(0.0f, 0.0f, 0.0f, 0.0f,
+        public static Matrix4 Zero => new Matrix4(0.0f, 0.0f, 0.0f, 0.0f,
                                                   0.0f, 0.0f, 0.0f, 0.0f,
                                                   0.0f, 0.0f, 0.0f, 0.0f,
                                                   0.0f, 0.0f, 0.0f, 0.0f);
 
-        public override bool Equals(object obj) => obj is CMatrix4 matrix && Equals(matrix);
+        public override bool Equals(object obj) => obj is Matrix4 matrix && Equals(matrix);
 
-        public bool Equals(CMatrix4 other) => M00 == other.M00
+        public bool Equals(Matrix4 other) => M00 == other.M00
             && M01 == other.M01
             && M02 == other.M02
             && M03 == other.M03

@@ -4,9 +4,9 @@ using System.Runtime.InteropServices;
 namespace SpiceEngineCore.Geometry.Matrices
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct CMatrix3 : IEquatable<CMatrix3>
+    public struct Matrix3 : IEquatable<Matrix3>
     {
-        public CMatrix3(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22)
+        public Matrix3(float m00, float m01, float m02, float m10, float m11, float m12, float m20, float m21, float m22)
         {
             M00 = m00;
             M01 = m01;
@@ -33,15 +33,15 @@ namespace SpiceEngineCore.Geometry.Matrices
 
         public float Trace => M00 + M11 + M22;
 
-        public CMatrix3 Transposed() => new CMatrix3(M00, M10, M20, M01, M11, M21, M02, M12, M22);
+        public Matrix3 Transposed() => new Matrix3(M00, M10, M20, M01, M11, M21, M02, M12, M22);
 
         public override string ToString() => "|" + M00 + "," + M01 + "," + M02 + "|"
             + Environment.NewLine + "|" + M10 + "," + M11 + "," + M12 + "|"
             + Environment.NewLine + "|" + M20 + "," + M21 + "," + M22 + "|";
 
-        public override bool Equals(object obj) => obj is CMatrix3 matrix && Equals(matrix);
+        public override bool Equals(object obj) => obj is Matrix3 matrix && Equals(matrix);
 
-        public bool Equals(CMatrix3 other) => M00 == other.M00
+        public bool Equals(Matrix3 other) => M00 == other.M00
             && M01 == other.M01
             && M02 == other.M02
             && M10 == other.M10
@@ -66,14 +66,14 @@ namespace SpiceEngineCore.Geometry.Matrices
             return hashCode;
         }
 
-        public static bool operator ==(CMatrix3 left, CMatrix3 right) => left.Equals(right);
+        public static bool operator ==(Matrix3 left, Matrix3 right) => left.Equals(right);
 
-        public static bool operator !=(CMatrix3 left, CMatrix3 right) => !(left == right);
+        public static bool operator !=(Matrix3 left, Matrix3 right) => !(left == right);
 
-        public static CMatrix3 operator +(CMatrix3 left, CMatrix3 right) => new CMatrix3(left.M00 + right.M00, left.M01 + right.M01, left.M02 + right.M02, left.M10 + right.M10, left.M11 + right.M11, left.M12 + right.M12, left.M20 + right.M20, left.M21 + right.M21, left.M22 + right.M22);
+        public static Matrix3 operator +(Matrix3 left, Matrix3 right) => new Matrix3(left.M00 + right.M00, left.M01 + right.M01, left.M02 + right.M02, left.M10 + right.M10, left.M11 + right.M11, left.M12 + right.M12, left.M20 + right.M20, left.M21 + right.M21, left.M22 + right.M22);
 
-        public static CMatrix3 operator -(CMatrix3 left, CMatrix3 right) => new CMatrix3(left.M00 - right.M00, left.M01 - right.M01, left.M02 - right.M02, left.M10 - right.M10, left.M11 - right.M11, left.M12 - right.M12, left.M20 - right.M20, left.M21 - right.M21, left.M22 - right.M22);
+        public static Matrix3 operator -(Matrix3 left, Matrix3 right) => new Matrix3(left.M00 - right.M00, left.M01 - right.M01, left.M02 - right.M02, left.M10 - right.M10, left.M11 - right.M11, left.M12 - right.M12, left.M20 - right.M20, left.M21 - right.M21, left.M22 - right.M22);
 
-        public static CMatrix3 operator *(CMatrix3 left, CMatrix3 right) => new CMatrix3(left.M00 * right.M00 + left.M01 * right.M10 + left.M02 * right.M20, left.M00 * right.M01 + left.M01 * right.M11 + left.M02 * right.M21, left.M00 * right.M02 + left.M01 * right.M12 + left.M02 * right.M22, left.M10 * right.M00 + left.M11 * right.M10 + left.M12 * right.M20, left.M10 * right.M01 + left.M11 * right.M11 + left.M12 * right.M21, left.M10 * right.M02 + left.M11 * right.M12 + left.M12 * right.M22, left.M20 * right.M00 + left.M21 * right.M10 + left.M22 * right.M20, left.M20 * right.M01 + left.M21 * right.M11 + left.M22 * right.M21, left.M20 * right.M02 + left.M21 * right.M12 + left.M22 * right.M22);
+        public static Matrix3 operator *(Matrix3 left, Matrix3 right) => new Matrix3(left.M00 * right.M00 + left.M01 * right.M10 + left.M02 * right.M20, left.M00 * right.M01 + left.M01 * right.M11 + left.M02 * right.M21, left.M00 * right.M02 + left.M01 * right.M12 + left.M02 * right.M22, left.M10 * right.M00 + left.M11 * right.M10 + left.M12 * right.M20, left.M10 * right.M01 + left.M11 * right.M11 + left.M12 * right.M21, left.M10 * right.M02 + left.M11 * right.M12 + left.M12 * right.M22, left.M20 * right.M00 + left.M21 * right.M10 + left.M22 * right.M20, left.M20 * right.M01 + left.M21 * right.M11 + left.M22 * right.M21, left.M20 * right.M02 + left.M21 * right.M12 + left.M22 * right.M22);
     }
 }

@@ -11,7 +11,7 @@ namespace SpiceEngineCore.Geometry.Quaternions
     /// <summary>
     /// Represents a Quaternion.
     /// </summary>
-    [Serializable, StructLayout(LayoutKind.Sequential)]
+    /*[Serializable, StructLayout(LayoutKind.Sequential)]
     public struct Quaternion : IEquatable<Quaternion>
     {
         /// <summary>
@@ -815,5 +815,5 @@ namespace SpiceEngineCore.Geometry.Quaternions
         {
             return $"V: {Xyz}{MathHelper.ListSeparator} W: {W}";
         }
-    }
+    }*/
 }
