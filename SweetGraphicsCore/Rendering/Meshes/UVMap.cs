@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 
 namespace SweetGraphicsCore.Rendering.Meshes
 {

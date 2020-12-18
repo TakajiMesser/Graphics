@@ -1,7 +1,11 @@
-﻿using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Vertices;
@@ -69,7 +73,7 @@ namespace SweetGraphicsCore.Rendering.Batches
             _renderable.Update(vertexUpdate, offset, count);
         }
 
-        public override bool CanBatch(IRenderable renderable)
+        public override bool CompareUniforms(IRenderable renderable)
         {
             if (renderable is IMesh)
             {
@@ -108,7 +112,7 @@ namespace SweetGraphicsCore.Rendering.Batches
                 && TextureMappings.Equals(textureBinder.TextureMappings);*/
         }
 
-        /*public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
+        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
         {
             var entity = entityProvider.GetEntity(EntityIDs.First());
 
@@ -142,6 +146,6 @@ namespace SweetGraphicsCore.Rendering.Batches
                     shaderProgram.UnbindTextures();
                 }
             }
-        }*/
+        }
     }
 }

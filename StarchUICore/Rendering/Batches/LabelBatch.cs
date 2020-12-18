@@ -1,9 +1,8 @@
 ﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Matrices;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Views;
 using SweetGraphicsCore.Buffers;
@@ -131,17 +130,16 @@ namespace StarchUICore.Rendering.Batches
             //_renderable.Update(vertexUpdate, offset, count);
         }
 
-        public override bool CanBatch(IRenderable renderable) => renderable is Label textView && textView.Font == _renderable.Font;
+        public override bool CompareUniforms(IRenderable renderable) => renderable is Label textView && textView.Font == _renderable.Font;
 
-        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
+        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
         {
-            var entity = batcher.GetEntitiesForBatch(this).First();
-
-            yield return new Uniform<Matrix4>(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
-            yield return new Uniform<Matrix4>(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
+            // TODO - Are there any per entity uniforms that we actually need to set?
+            var entity = entityProvider.GetEntity(EntityIDs.First());
+            entity.WorldMatrix.Set(shaderProgram);
 
             //shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
-            yield return new Uniform<Color4>("color", _renderable.Color);
+            shaderProgram.SetUniform("color", _renderable.Color);
         }
     }
 }

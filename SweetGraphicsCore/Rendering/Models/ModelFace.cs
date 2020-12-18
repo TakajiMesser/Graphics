@@ -1,8 +1,7 @@
-﻿using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Rendering.Meshes;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,8 +48,8 @@ namespace SweetGraphicsCore.Rendering.Models
         public UVMap UVMap { get; set; } = UVMap.Standard;
 
         public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
-        public float UVXOrigin => Vertices.Min(v => Vector3.Dot(new Quaternion(Normal, UVMap.Rotation) * Bitangent, v.Position));
-        public float UVYOrigin => Vertices.Min(v => Vector3.Dot(new Quaternion(Normal, UVMap.Rotation) * Tangent, v.Position));
+        public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v.Position));
+        public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v.Position));
 
         public ModelFace() { }
         public ModelFace(params ModelVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
@@ -156,7 +155,7 @@ namespace SweetGraphicsCore.Rendering.Models
 
         public ModelFace Rotated(Vector3 axis, float angle)
         {
-            var rotation = new Quaternion(axis, angle);
+            var rotation = Quaternion.FromAxisAngle(axis, angle);
 
             var rotated = new ModelFace(Vertices)
             {
@@ -247,7 +246,7 @@ namespace SweetGraphicsCore.Rendering.Models
 
             var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
             var exteriorAngle = MathExtensions.TWO_PI / nSides;
-            var rotation = new Quaternion(Vector3.UnitZ, -exteriorAngle);
+            var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, -exteriorAngle);
 
             var direction = -Vector3.UnitX;
             vertices.Add(new Vector3(sideLength / 2.0f, -apothem, 0.0f));

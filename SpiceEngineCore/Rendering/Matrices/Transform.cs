@@ -1,6 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 
 namespace SpiceEngineCore.Rendering.Matrices
 {
@@ -25,7 +23,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             Scale *= transform.Scale;
         }
 
-        public Matrix4 ToMatrix() => Matrix4.FromScale(Scale) * Matrix4.FromQuaternion(Rotation) * Matrix4.FromTranslation(Translation);
+        public Matrix4 ToMatrix() => Matrix4.CreateScale(Scale) * Matrix4.CreateFromQuaternion(Rotation) * Matrix4.CreateTranslation(Translation);
 
         public static Transform FromTranslation(Vector3 translation) => new Transform()
         {

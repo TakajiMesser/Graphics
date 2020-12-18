@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
+﻿using OpenTK;
+using SpiceEngineCore.Rendering.Shaders;
 using System;
 
 namespace SpiceEngineCore.Rendering.Matrices
@@ -11,11 +12,10 @@ namespace SpiceEngineCore.Rendering.Matrices
 
     public class ProjectionMatrix
     {
-        public const string CURRENT_NAME = "projectionMatrix";
+        public const string NAME = "projectionMatrix";
         public const string PREVIOUS_NAME = "previousProjectionMatrix";
 
-        public Matrix4 CurrentValue { get; private set; }
-        public Matrix4 PreviousValue { get; private set; }
+        public Matrix4 Matrix { get; private set; }
 
         public ProjectionTypes Type { get; }
 
@@ -75,6 +75,8 @@ namespace SpiceEngineCore.Rendering.Matrices
         private float _zNear = 0.0f;
         private float _zFar = 0.0f;
 
+        private Matrix4 _previousMatrix;
+
         public ProjectionMatrix(ProjectionTypes type) => Type = type;
 
         public void UpdateOrthographic(float width, float zNear, float zFar)
@@ -95,17 +97,23 @@ namespace SpiceEngineCore.Rendering.Matrices
             CalculateMatrix();
         }
 
+        public void Set(ShaderProgram program)
+        {
+            program.SetUniform(NAME, Matrix);
+            program.SetUniform(PREVIOUS_NAME, _previousMatrix);
+
+            _previousMatrix = Matrix;
+        }
+
         private void CalculateMatrix()
         {
-            PreviousValue = CurrentValue;
-
             switch (Type)
             {
                 case ProjectionTypes.Orthographic:
-                    CurrentValue = Matrix4.Orthographic(_width, _width / _aspectRatio, _zNear, _zFar);
+                    Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, _zNear, _zFar);
                     break;
                 case ProjectionTypes.Perspective:
-                    CurrentValue = Matrix4.Perspective(_fieldOfView, _aspectRatio, _zNear, _zFar);
+                    Matrix = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
                     break;
                 default:
                     throw new NotImplementedException();

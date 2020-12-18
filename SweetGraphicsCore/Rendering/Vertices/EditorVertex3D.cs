@@ -1,7 +1,5 @@
-﻿using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using SpiceEngineCore.Rendering.Matrices;
 using System.Runtime.InteropServices;
 
@@ -17,9 +15,9 @@ namespace SweetGraphicsCore.Vertices
         public Color4 Color { get; private set; }
         public Vector4 BoneIDs { get; private set; }
         public Vector4 BoneWeights { get; private set; }
-        public Color4 IDColor { get; private set; }
+        public Color4 SelectionID { get; private set; }
 
-        public EditorVertex3D(IVertex3D vertex, Color4 idColor)
+        public EditorVertex3D(IVertex3D vertex, Color4 selectionID)
         {
             Position = vertex.Position;
 
@@ -49,13 +47,13 @@ namespace SweetGraphicsCore.Vertices
                 BoneWeights = Vector4.Zero;
             }
 
-            IDColor = idColor;
+            SelectionID = selectionID;
         }
 
         public IVertex3D Transformed(Transform transform)
         {
             var modelMatrix = transform.ToMatrix();
-            var rotationMatrix = Matrix4.FromQuaternion(transform.Rotation);
+            var rotationMatrix = Matrix4.CreateFromQuaternion(transform.Rotation);
 
             return new EditorVertex3D()
             {
@@ -66,7 +64,7 @@ namespace SweetGraphicsCore.Vertices
                 Color = Color,
                 BoneIDs = BoneIDs,
                 BoneWeights = BoneWeights,
-                IDColor = IDColor
+                SelectionID = SelectionID
             };
         }
 
@@ -76,10 +74,14 @@ namespace SweetGraphicsCore.Vertices
 
             // Rotate in relation to center axis
             // TODO - Determine if this Normal needs to be the Normal of the face, rather than of the vertex
-            var rotationQuaternion = new Quaternion(center + Normal, rotation);
+            var rotationQuaternion = Quaternion.FromAxisAngle(center + Normal, rotation);
 
-            // Handle translation (X bitangent, Y tangent)
-            var textureCoords = new Vector2(TextureCoords.X + translation.X, TextureCoords.Y + translation.Y);
+            // Handle translation
+            var textureCoords = new Vector2()
+            {
+                X = TextureCoords.X + translation.X,// * 100.0f,/// * bitangent,
+                Y = TextureCoords.Y + translation.Y// * 100.0f// * Tangent
+            };
 
             return new EditorVertex3D()
             {
@@ -91,7 +93,7 @@ namespace SweetGraphicsCore.Vertices
                 Color = Color,
                 BoneIDs = BoneIDs,
                 BoneWeights = BoneWeights,
-                IDColor = IDColor
+                SelectionID = SelectionID
             };
         }
 
@@ -104,7 +106,7 @@ namespace SweetGraphicsCore.Vertices
             Color = Color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,
-            IDColor = new Color4(IDColor.R, IDColor.G, IDColor.B, 0.5f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 0.5f)
         };
 
         public ISelectionVertex Deselected() => new EditorVertex3D()
@@ -116,7 +118,7 @@ namespace SweetGraphicsCore.Vertices
             Color = Color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,
-            IDColor = new Color4(IDColor.R, IDColor.G, IDColor.B, 1.0f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 1.0f)
         };
 
         public IColorVertex Colored(Color4 color) => new EditorVertex3D()
@@ -128,7 +130,7 @@ namespace SweetGraphicsCore.Vertices
             Color = color,
             BoneIDs = BoneIDs,
             BoneWeights = BoneWeights,
-            IDColor = IDColor
+            SelectionID = SelectionID
         };
     }
 }

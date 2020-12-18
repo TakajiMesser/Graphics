@@ -1,11 +1,11 @@
-﻿using SpiceEngineCore.Geometry.Colors;
+﻿using OpenTK.Graphics;
 using SpiceEngineCore.Rendering.Vertices;
 
 namespace SweetGraphicsCore.Vertices
 {
     public interface ISelectionVertex : IVertex
     {
-        Color4 IDColor { get; }
+        Color4 SelectionID { get; }
 
         ISelectionVertex Selected();
         ISelectionVertex Deselected();

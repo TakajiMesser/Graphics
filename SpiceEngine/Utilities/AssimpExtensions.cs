@@ -1,7 +1,6 @@
 ﻿using Assimp;
 using CitrusAnimationCore.Bones;
-using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Vectors;
+using OpenTK;
 using SweetGraphicsCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
@@ -24,7 +23,7 @@ namespace SpiceEngine.Utilities
             {
                 for (var j = 0; j < 4; j++)
                 {
-                    matrix4[j, i] = matrix[i + 1, j + 1];
+                    matrix4[i, j] = matrix[i + 1, j + 1];
                 }
             }
             //matrix4.Invert();

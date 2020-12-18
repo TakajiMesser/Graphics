@@ -3,7 +3,7 @@ using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 
-namespace SweetGraphicsCore.Renderers.Shaders
+namespace SpiceEngineCore.Rendering.Shaders
 {
     public class Shader : IDisposable
     {

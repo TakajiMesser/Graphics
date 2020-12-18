@@ -1,6 +1,6 @@
 ﻿using CitrusAnimationCore.Animations;
 using CitrusAnimationCore.Bones;
-using SpiceEngineCore.Geometry.Matrices;
+using OpenTK;
 using SweetGraphicsCore.Rendering.Models;
 
 namespace CitrusAnimationCore.Rendering

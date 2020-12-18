@@ -1,6 +1,7 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using System;
 
 namespace SpiceEngineCore.Entities
@@ -17,8 +18,6 @@ namespace SpiceEngineCore.Entities
             set => _modelMatrix.Position = value;
         }
 
-        public Matrix4 ModelMatrix => _modelMatrix.CurrentValue;
-        public Matrix4 PreviousModelMatrix => _modelMatrix.PreviousValue;
         public ModelMatrix WorldMatrix => _modelMatrix;
 
         private event EventHandler<EntityTransformEventArgs> _transformed;

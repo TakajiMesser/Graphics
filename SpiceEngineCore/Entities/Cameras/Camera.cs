@@ -1,7 +1,10 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using System;
+using System.Collections.Generic;
 
 namespace SpiceEngineCore.Entities.Cameras
 {
@@ -12,8 +15,6 @@ namespace SpiceEngineCore.Entities.Cameras
         public bool IsActive { get; set; }
 
         // TODO - Fix this...
-        public Matrix4 ModelMatrix => throw new NotImplementedException();
-        public Matrix4 PreviousModelMatrix => throw new NotImplementedException();
         public ModelMatrix WorldMatrix => throw new NotImplementedException();
 
         public Vector3 Position
@@ -41,14 +42,13 @@ namespace SpiceEngineCore.Entities.Cameras
         public IEntity AttachedEntity { get; private set; }
         public Vector3 AttachedTranslation { get; protected set; }
 
-        public Matrix4 ViewMatrix => _viewMatrix.CurrentValue;
-        public Matrix4 PreviousViewMatrix => _viewMatrix.PreviousValue;
-        public Matrix4 ProjectionMatrix => _projectionMatrix.CurrentValue;
-        public Matrix4 PreviousProjectionMatrix => _projectionMatrix.PreviousValue;
+        public ViewMatrix _viewMatrix = new ViewMatrix();
+        internal ProjectionMatrix _projectionMatrix;
 
-        protected ViewMatrix _viewMatrix = new ViewMatrix();
-        protected ProjectionMatrix _projectionMatrix;
         protected float _distance;
+        public Matrix4 ViewMatrix => _viewMatrix.Matrix;
+        public Matrix4 ProjectionMatrix => _projectionMatrix.Matrix;
+        public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
 
         public event EventHandler<EntityTransformEventArgs> Transformed;
 
@@ -89,5 +89,37 @@ namespace SpiceEngineCore.Entities.Cameras
             AttachedTranslation = Vector3.Zero;
             _distance = 0.0f;
         }
+
+        public void SetUniforms(ShaderProgram program)
+        {
+            _viewMatrix.Set(program);
+            _projectionMatrix.Set(program);
+        }
+
+        public void SetUniforms(ShaderProgram program, ILight light)
+        {
+            if (light is PointLight pointLight)
+            {
+                var shadowViews = new List<Matrix4>();
+
+                for (var i = 0; i < 6; i++)
+                {
+                    shadowViews.Add(pointLight.GetView(TextureTarget.TextureCubeMapPositiveX + i) * pointLight.Projection);
+                }
+
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
+            }
+            else if (light is SpotLight spotLight)
+            {
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ProjectionMatrix.NAME, spotLight.Projection);
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.NAME, spotLight.View);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool CompareUniforms(IEntity entity) => false;
     }
 }

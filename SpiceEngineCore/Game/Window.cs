@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenTK;
+using System;
 using System.Collections.Concurrent;
 using System.ComponentModel;
 using System.Diagnostics;
@@ -6,10 +7,10 @@ using Configuration = SpiceEngineCore.Game.Settings.Configuration;
 
 namespace SpiceEngineCore.Game
 {
-    /*public abstract class Window : NativeWindow
+    public abstract class Window : NativeWindow
     {
-        private ISimulate _simulator;
-        private IRender _renderer;
+        private ISimulator _simulator;
+        private IRenderer _renderer;
 
         private Configuration _configuration;
         private GameLoader _gameLoader;
@@ -112,5 +113,5 @@ namespace SpiceEngineCore.Game
                 Render();
             }
         }
-    }*/
+    }
 }

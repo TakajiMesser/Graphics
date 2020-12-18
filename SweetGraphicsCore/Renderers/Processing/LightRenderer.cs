@@ -4,9 +4,8 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Textures;
 using System;
@@ -23,9 +22,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         private SimpleMesh _pointLightMesh;
         private SimpleMesh _spotLightMesh;
 
-        public LightRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
-
-        protected override void LoadShaders()
+        protected override void LoadPrograms()
         {
             _stencilProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.stencil_vert)
@@ -120,10 +117,9 @@ namespace SweetGraphicsCore.Renderers.Processing
             GL.StencilOpSeparate(StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
             GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
 
-            _stencilProgram.SetCamera(camera);
-            _stencilProgram.SetLight(light);
-            _stencilProgram.RenderLightForStencilPass(light);
-
+            camera.SetUniforms(_stencilProgram);
+            light.SetUniforms(_stencilProgram);
+            light.DrawForStencilPass(_stencilProgram);
             mesh.Draw();
         }
 
@@ -143,11 +139,11 @@ namespace SweetGraphicsCore.Renderers.Processing
             program.BindTexture(deferredRenderer.SpecularTexture, "specularMap", 4);
             program.BindTexture(shadowMap, "shadowMap", 5);
 
-            program.SetCamera(camera);
+            camera.SetUniforms(program);
             program.SetUniform("cameraPosition", camera.Position);
-            program.SetLight(light);
+            light.SetUniforms(program);
 
-            program.RenderLightForLightPass(light);
+            light.DrawForLightPass(program);
             mesh.Draw();
         }
 

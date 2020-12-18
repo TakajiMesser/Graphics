@@ -1,5 +1,7 @@
-﻿using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using System;
@@ -23,7 +25,6 @@ namespace SpiceEngineCore.Rendering.Batches
 
     public interface IBatch
     {
-        IRenderable Renderable { get; }
         IEnumerable<int> EntityIDs { get; }
         int EntityCount { get; }
         bool IsLoaded { get; }
@@ -33,18 +34,13 @@ namespace SpiceEngineCore.Rendering.Batches
         void TransformTexture(int entityID, Vector3 center, Vector2 translation, float rotation, Vector2 scale);
         void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate);
         void RemoveEntity(int id);
-        
-        bool CanBatch(IRenderable renderable);
+
+        void SetUniforms(IEntityProvider entityProvider, ShaderProgram program);
+        bool CompareUniforms(IRenderable renderable);
+        void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
 
         void Load();
-        void Draw();
-
-        IEnumerable<IUniform> GetUniforms(IBatcher batcher);
-        IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider);
-
-        /*void SetUniforms(IRender renderer, IEntityProvider entityProvider);
-        void BindTextures(IRender renderer, ITextureProvider textureProvider);
-        void Draw(IRender renderer, IEntityProvider entityProvider, ITextureProvider textureProvider = null);*/
+        void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null);
 
         IBatch Duplicate();
     }

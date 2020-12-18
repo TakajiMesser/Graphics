@@ -1,9 +1,11 @@
 ﻿using CitrusAnimationCore.Animations;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore;
@@ -93,8 +95,6 @@ namespace SpiceEngine.Rendering.Batches
         }
 
         public IBatch GetBatchOrDefault(int entityID) => _batchIndexByEntityID.ContainsKey(entityID) ? _batches[_batchIndexByEntityID[entityID]] : null;
-
-        public IEnumerable<IEntity> GetEntitiesForBatch(IBatch batch) => batch.EntityIDs.Select(i => _entityProvider.GetEntity(i));
 
         public void RemoveByEntityID(int entityID)
         {
@@ -285,7 +285,7 @@ namespace SpiceEngine.Rendering.Batches
             {
                 var batch = _batches[i];
 
-                if (batch.CanBatch(renderable))
+                if (batch.CompareUniforms(renderable))
                 {
                     //var entity = _entityProvider.GetEntity(entityID);
 
@@ -342,6 +342,8 @@ namespace SpiceEngine.Rendering.Batches
 
             IsLoaded = true;
         }
+
+        public IBatchAction CreateBatchAction() => new BatchAction(this);
 
         /*private void DrawEntities(ShaderProgram shader, HashSet<int> ids, Action<int> action = null)
         {
@@ -408,71 +410,7 @@ namespace SpiceEngine.Rendering.Batches
             }
         }*/
 
-        public IEnumerable<IBatch> GetBatches(RenderTypes renderType)
-        {
-            var batchIndices = new HashSet<int>();
-
-            foreach (var id in GetEntityIDs(renderType))
-            {
-                var batchIndex = _batchIndexByEntityID[id];
-                if (!batchIndices.Contains(batchIndex))
-                {
-                    batchIndices.Add(batchIndex);
-                    yield return _batches[batchIndex];
-                }
-            }
-        }
-
-        public IEnumerable<IBatch> GetBatches(RenderTypes renderType, IEnumerable<int> entityIDs)
-        {
-            var batchIndices = new HashSet<int>();
-
-            foreach (var id in GetEntityIDs(renderType).Intersect(entityIDs))
-            {
-                var batchIndex = _batchIndexByEntityID[id];
-                if (!batchIndices.Contains(batchIndex))
-                {
-                    batchIndices.Add(batchIndex);
-                    yield return _batches[batchIndex];
-                }
-            }
-        }
-
-        public IEnumerable<IBatch> GetBatchesInOrder(RenderTypes renderType, IEnumerable<int> entityIDs)
-        {
-            var batchIndices = new HashSet<int>();
-            var idSet = new HashSet<int>(GetEntityIDs(renderType));
-
-            foreach (var id in entityIDs)
-            {
-                if (idSet.Contains(id))
-                {
-                    var batchIndex = _batchIndexByEntityID[id];
-                    if (!batchIndices.Contains(batchIndex))
-                    {
-                        batchIndices.Add(batchIndex);
-                        yield return _batches[batchIndex];
-                    }
-                }
-            }
-        }
-
-        /*public void DrawBatches(RenderTypes renderType)
-        {
-            var batchIndices = new HashSet<int>();
-
-            foreach (var id in GetEntityIDs(renderType))
-            {
-                var batchIndex = _batchIndexByEntityID[id];
-                if (!batchIndices.Contains(batchIndex))
-                {
-                    batchIndices.Add(batchIndex);
-                    _batches[batchIndex].Draw(renderer, _entityProvider, _textureProvider);
-                }
-            }
-        }*/
-
-        private IEnumerable<int> GetEntityIDs(RenderTypes? renderType, HashSet<int> idSet = null, List<int> idOrder = null)
+        private IEnumerable<int> GetEntityIDs(RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder)
         {
             var entityIDOrder = idOrder ?? _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render);
             var entityIDFilter = new HashSet<int>(_entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Render));
@@ -496,7 +434,7 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        /*private void DrawEntities(IRender renderer, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> perIdAction = null, Action<IBatch> perBatchAction = null)
+        private void DrawEntities(ShaderProgram shader, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> perIdAction = null, Action<IBatch> perBatchAction = null)
         {
             var batchIndices = new HashSet<int>();
 
@@ -506,14 +444,20 @@ namespace SpiceEngine.Rendering.Batches
                 if (!batchIndices.Contains(batchIndex))
                 {
                     batchIndices.Add(batchIndex);
-
                     perIdAction?.Invoke(id);
+
                     perBatchAction?.Invoke(_batches[batchIndex]);
 
-                    _batches[batchIndex].Draw(renderer, _entityProvider, _textureProvider);
+                    var a = 3;
+                    if (renderType.HasValue && (renderType.Value == RenderTypes.TransparentText || renderType.Value == RenderTypes.OpaqueText))
+                    {
+                        a = 4;
+                    }
+
+                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
                 }
             }
-        }*/
+        }
 
         private HashSet<int> GetEntityIDSet(RenderTypes renderType)
         {
@@ -565,6 +509,134 @@ namespace SpiceEngine.Rendering.Batches
             else
             {
                 return renderable.IsTransparent ? RenderTypes.TransparentStatic : RenderTypes.OpaqueStatic;
+            }
+        }
+
+        public class BatchAction : IBatchAction
+        {
+            private BatchManager _batchManager;
+            private Queue<Action> _commandQueue = new Queue<Action>();
+
+            private ShaderProgram _shader;
+            private RenderTypes? _renderType;
+
+            private Action<int> _perIDAction;
+            private Action<IBatch> _perBatchAction;
+
+            private HashSet<int> _entityIDSet;
+            private List<int> _entityIDOrder;
+
+            public BatchAction(BatchManager batchManager) => _batchManager = batchManager;
+
+            public ICamera Camera { get; set; }
+
+            public IBatchAction SetShader(ShaderProgram shader)
+            {
+                _commandQueue.Enqueue(() =>
+                {
+                    _shader = shader;
+                    _shader.Use();
+                });
+                return this;
+            }
+
+            public IBatchAction SetCamera(ICamera camera)
+            {
+                _commandQueue.Enqueue(() =>
+                {
+                    Camera = camera;
+                    Camera.SetUniforms(_shader);
+                });
+                return this;
+            }
+
+            public IBatchAction SetCamera(ICamera camera, ILight light)
+            {
+                _commandQueue.Enqueue(() =>
+                {
+                    Camera = camera;
+                    Camera.SetUniforms(_shader, light);
+                });
+                return this;
+            }
+
+            public IBatchAction SetUniform<T>(string name, T value) where T : struct
+            {
+                _commandQueue.Enqueue(() => _shader.SetUniform<T>(name, value));
+                return this;
+            }
+
+            public IBatchAction SetPerIDAction(Action<int> action)
+            {
+                _commandQueue.Enqueue(() => _perIDAction = action);
+                return this;
+            }
+
+            public IBatchAction SetPerBatchAction(Action<IBatch> action)
+            {
+                _commandQueue.Enqueue(() => _perBatchAction = action);
+                return this;
+            }
+
+            public IBatchAction SetRenderType(RenderTypes renderType)
+            {
+                _commandQueue.Enqueue(() => _renderType = renderType);
+                return this;
+            }
+
+            public IBatchAction ClearRenderType()
+            {
+                _commandQueue.Enqueue(() => _renderType = null);
+                return this;
+            }
+
+            public IBatchAction SetEntityIDSet(IEnumerable<int> ids)
+            {
+                _commandQueue.Enqueue(() => _entityIDSet = new HashSet<int>(ids));
+                return this;
+            }
+
+            public IBatchAction SetEntityIDOrder(IEnumerable<int> ids)
+            {
+                _commandQueue.Enqueue(() => _entityIDOrder = new List<int>(ids));
+                return this;
+            }
+
+            public IBatchAction ClearEntityIDs()
+            {
+                _commandQueue.Enqueue(() =>
+                {
+                    _entityIDSet = null;
+                    _entityIDOrder = null;
+                });
+                return this;
+            }
+
+            public IBatchAction PerformAction(Action action)
+            {
+                _commandQueue.Enqueue(action);
+                return this;
+            }
+
+            public IBatchAction SetTexture(ITexture texture, string name, int index)
+            {
+                _commandQueue.Enqueue(() => _shader.BindTexture(texture, name, index));
+                return this;
+            }
+
+            public IBatchAction Render()
+            {
+                _commandQueue.Enqueue(() => _batchManager.DrawEntities(_shader, _renderType, _entityIDSet, _entityIDOrder, _perIDAction, _perBatchAction));
+                return this;
+            }
+
+            public void Execute()
+            {
+                while (_commandQueue.Any())
+                {
+                    Action action = _commandQueue.Dequeue();
+                    action();
+                }
             }
         }
     }

@@ -12,6 +12,7 @@ namespace CitrusAnimationCore.Animations
 
         public string Name { get; }
         public float Duration { get; }
+
         public List<IKeyFrame> KeyFrames { get; set; } = new List<IKeyFrame>();
     }
 }

@@ -1,7 +1,6 @@
-﻿//using OpenTK;
+﻿using OpenTK;
 using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 using TangyHIDCore;
@@ -137,11 +136,12 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
         {
             var distance = (camera.Position - position).Length;
 
-            var translation = new Vector3(
-                distance * (float)(Math.Cos(_pitch) * Math.Cos(_yaw)),
-                distance * (float)(Math.Cos(_pitch) * Math.Sin(_yaw)),
-                distance * (float)Math.Sin(_pitch)
-            );
+            var translation = new Vector3()
+            {
+                X = distance * (float)(Math.Cos(_pitch) * Math.Cos(_yaw)),
+                Y = distance * (float)(Math.Cos(_pitch) * Math.Sin(_yaw)),
+                Z = distance * (float)Math.Sin(_pitch)
+            };
 
             camera.Position = position - translation;
             camera._viewMatrix.LookAt = camera.Position + translation / distance;
@@ -149,11 +149,12 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
 
         private void CalculateLookAt(PerspectiveCamera camera)
         {
-            var lookDirection = new Vector3(
-                (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
-                (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
-                (float)Math.Sin(_pitch)
-            );
+            var lookDirection = new Vector3()
+            {
+                X = (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
+                Z = (float)Math.Sin(_pitch)
+            };
 
             camera._viewMatrix.LookAt = camera.Position + lookDirection.Normalized();
         }
@@ -162,11 +163,12 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
         {
             var yAngle = _pitch + MathExtensions.HALF_PI;
 
-            var upDirection = new Vector3(
-                (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
-                (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
-                (float)Math.Sin(yAngle)
-            );
+            var upDirection = new Vector3()
+            {
+                X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
+                Z = (float)Math.Sin(yAngle)
+            };
 
             camera._viewMatrix.Up = upDirection.Normalized();
         }

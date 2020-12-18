@@ -16,11 +16,11 @@ namespace SweetGraphicsCore.Renderers.PreProcessing
 
         public void Load()
         {
-            LoadShaders();
+            LoadPrograms();
             LoadBuffers();
         }
 
-        protected abstract void LoadShaders();
+        protected abstract void LoadPrograms();
         protected abstract void LoadBuffers();
         //public abstract void Render();
     }

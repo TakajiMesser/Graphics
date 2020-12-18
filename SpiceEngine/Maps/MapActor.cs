@@ -263,7 +263,7 @@ namespace SpiceEngineCore.Maps
 
                                             foreach (var match in matches)
                                             {
-                                                kvp.Value.AddJointIndex(match.meshIndex, match.boneIndex);
+                                                kvp.Value.JointIndices.Add(new JointIndex(match.meshIndex, match.boneIndex));
                                             }
 
                                             kvp.Value.Name = nodeChannel.NodeName;

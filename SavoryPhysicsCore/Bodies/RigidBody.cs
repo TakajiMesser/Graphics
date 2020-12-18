@@ -1,6 +1,5 @@
-﻿using SavoryPhysicsCore.Shapes;
-using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SavoryPhysicsCore.Shapes;
 using SpiceEngineCore.Utilities;
 using System;
 

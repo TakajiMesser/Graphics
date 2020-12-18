@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Game.Loading.Builders;
 
 namespace SpiceEngineCore.Maps
 {

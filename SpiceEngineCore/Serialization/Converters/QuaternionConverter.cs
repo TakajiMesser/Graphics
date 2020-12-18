@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SpiceEngineCore.Geometry.Quaternions;
+using OpenTK;
 using System;
 using System.Linq;
 

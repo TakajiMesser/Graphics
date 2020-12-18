@@ -1,6 +1,6 @@
-﻿using SpiceEngineCore.Entities;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading.Builders;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 

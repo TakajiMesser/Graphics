@@ -1,20 +1,19 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace SweetGraphicsCore.Rendering.Batches
 {
-    // TODO - This is a shit class, since it isn't actually a proper batch (might consist of multiple set-uniform steps and draw calls)
     public class ModelBatch : Batch<IModel>
     {
         private int _drawIndex = 0;
@@ -31,48 +30,57 @@ namespace SweetGraphicsCore.Rendering.Batches
             }
         }
 
-        // For now, assume that models are never good candidates for combining batches, as their positions must get updated too frequently
-        public override bool CanBatch(IRenderable renderable) => false;
+        // For now, assume that models are never good candidates for combining batches,
+        // as their positions must get updated too frequently
+        public override bool CompareUniforms(IRenderable renderable) => false;
 
-        public override IEnumerable<IUniform> GetUniforms(IBatcher batcher)
+        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
         {
-            var entity = batcher.GetEntitiesForBatch(this).First();
-
-            yield return new Uniform<Matrix4>(ModelMatrix.CURRENT_NAME, entity.WorldMatrix.CurrentValue);
-            yield return new Uniform<Matrix4>(ModelMatrix.PREVIOUS_NAME, entity.WorldMatrix.PreviousValue);
-
             if (_renderable.Meshes[_drawIndex] is ITexturedMesh texturedMesh)
             {
-                yield return new Uniform<Vector3>(Material.AMBIENT_NAME, texturedMesh.Material.Ambient);
-                yield return new Uniform<Vector3>(Material.DIFFUSE_NAME, texturedMesh.Material.Diffuse);
-                yield return new Uniform<Vector3>(Material.SPECULAR_NAME, texturedMesh.Material.Specular);
-                yield return new Uniform<float>(Material.SPECULAR_EXPONENT_NAME, texturedMesh.Material.SpecularExponent);
+                texturedMesh.Material.SetUniforms(shaderProgram);
             }
+
+            _renderable.SetUniforms(shaderProgram, _drawIndex);
         }
 
-        public override IEnumerable<TextureBinding> GetTextureBindings(ITextureProvider textureProvider)
+        public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)
         {
-            if (_renderable.Meshes[_drawIndex] is ITexturedMesh texturedMesh && texturedMesh.TextureMapping.HasValue)
+            if (_renderable.Meshes[_drawIndex] is ITexturedMesh texturedMesh)
             {
-                var diffuseTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.DiffuseIndex);
-                yield return new TextureBinding(TextureMapping.DIFFUSE_NAME, diffuseTexture);
-
-                var normalTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.NormalIndex);
-                yield return new TextureBinding(TextureMapping.NORMAL_NAME, normalTexture);
-
-                var specularTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.SpecularIndex);
-                yield return new TextureBinding(TextureMapping.SPECULAR_NAME, specularTexture);
-
-                var parallaxTexture = textureProvider.RetrieveTexture(texturedMesh.TextureMapping.Value.ParallaxIndex);
-                yield return new TextureBinding(TextureMapping.PARALLAX_NAME, parallaxTexture);
+                if (texturedMesh.TextureMapping.HasValue)
+                {
+                    shaderProgram.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
+                }
+                else
+                {
+                    shaderProgram.UnbindTextures();
+                }
             }
         }
 
-        public override void Draw()
+        public override void Draw() => _renderable.Meshes[_drawIndex].Draw();
+
+        public override void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
         {
-            _renderable.Meshes[_drawIndex].Draw();
-            _drawIndex++;
-            _drawIndex %= _renderable.Meshes.Count;
+            var entity = entityProvider.GetEntity(EntityIDs.First());
+
+            // TODO - This is janky to set this uniform based on entity type...
+            if (entity is IBrush)
+            {
+                shaderProgram.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
+                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
+            }
+            else
+            {
+                entity.WorldMatrix.Set(shaderProgram);
+            }
+
+            for (var i = 0; i < _renderable.Meshes.Count; i++)
+            {
+                _drawIndex = i;
+                base.Draw(entityProvider, shaderProgram, textureProvider);
+            }
         }
     }
 }

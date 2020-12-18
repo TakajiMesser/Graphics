@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Game;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering;
 using System;
 using TangyHIDCore.Inputs;

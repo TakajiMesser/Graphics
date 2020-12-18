@@ -1,6 +1,6 @@
-﻿using OpenTK.Input;
+﻿using OpenTK;
+using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 using TangyHIDCore;

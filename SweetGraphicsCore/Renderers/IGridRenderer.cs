@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Colors;
+﻿using OpenTK.Graphics;
 
 namespace SweetGraphicsCore.Renderers
 {

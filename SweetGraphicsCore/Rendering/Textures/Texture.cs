@@ -4,7 +4,6 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-using Vector4 = SpiceEngineCore.Geometry.Vectors.Vector4;
 
 namespace SweetGraphicsCore.Rendering.Textures
 {
@@ -81,12 +80,13 @@ namespace SweetGraphicsCore.Rendering.Textures
                 GL.ReadPixels(x, y, 1, 1, PixelFormat, PixelType, bytes);
             }
 
-            return new Vector4(
-                (int)bytes[0],
-                (int)bytes[1],
-                (int)bytes[2],
-                (int)bytes[3]
-            );
+            return new Vector4()
+            {
+                X = (int)bytes[0],
+                Y = (int)bytes[1],
+                Z = (int)bytes[2],
+                W = (int)bytes[3]
+            };
         }
 
         public void ReserveMemory()

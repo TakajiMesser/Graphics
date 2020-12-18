@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 using SpiceEngineCore.Rendering.Matrices;
 using System;
 
@@ -9,9 +8,6 @@ namespace SpiceEngineCore.Entities
     {
         int ID { get; set; }
         Vector3 Position { get; set; }
-
-        Matrix4 ModelMatrix { get; }
-        Matrix4 PreviousModelMatrix { get; }
         ModelMatrix WorldMatrix { get; }
 
         event EventHandler<EntityTransformEventArgs> Transformed;

@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 using SpiceEngineCore.Rendering;
 
 namespace SpiceEngineCore.Game.Loading.Builders

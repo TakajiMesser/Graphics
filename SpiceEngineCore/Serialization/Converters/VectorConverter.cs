@@ -1,8 +1,10 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using SpiceEngineCore.Geometry.Vectors;
+using OpenTK;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 
 namespace SpiceEngineCore.Serialization.Converters
 {

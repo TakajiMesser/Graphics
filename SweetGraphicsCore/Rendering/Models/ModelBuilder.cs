@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 using SweetGraphicsCore.Rendering.Meshes;
 using System.Collections.Generic;
 using System.Linq;
@@ -72,20 +71,20 @@ namespace SweetGraphicsCore.Rendering.Models
 
         public void Normalize()
         {
-            for (var i = 0; i < Normals.Count; i++)
+            foreach (var normal in Normals)
             {
-                Normals[i] = Normals[i].Normalized();
+                normal.Normalize();
             }
 
-            for (var i = 0; i < Tangents.Count; i++)
+            foreach (var tangent in Tangents)
             {
-                Tangents[i] = Tangents[i].Normalized();
+                tangent.Normalize();
             }
         }
 
         private void AddFace(ModelFace face)
         {
-            var uvRotation = new Quaternion(face.Normal, face.UVMap.Rotation);
+            var uvRotation = Quaternion.FromAxisAngle(face.Normal, face.UVMap.Rotation);
             var uvXOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Bitangent, v.Position));
             var uvYOrigin = face.Vertices.Min(v => Vector3.Dot(uvRotation * face.Tangent, v.Position));
 
@@ -97,20 +96,23 @@ namespace SweetGraphicsCore.Rendering.Models
 
         private void AddTriangle(ModelTriangle triangle, float uvXOrigin, float uvYOrigin, Quaternion uvRotation, UVMap uvMap)
         {
-            var uvA = triangle.VertexA.UV != Vector2.Zero ? triangle.VertexA.UV : new Vector2(
-                (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexA.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
-                (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexA.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
-            );
+            var uvA = triangle.VertexA.UV != Vector2.Zero ? triangle.VertexA.UV : new Vector2()
+            {
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexA.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexA.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
+            };
 
-            var uvB = triangle.VertexB.UV != Vector2.Zero ? triangle.VertexB.UV : new Vector2(
-                (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexB.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
-                (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexB.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
-            );
+            var uvB = triangle.VertexB.UV != Vector2.Zero ? triangle.VertexB.UV : new Vector2()
+            {
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexB.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexB.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
+            };
 
-            var uvC = triangle.VertexC.UV != Vector2.Zero ? triangle.VertexC.UV : new Vector2(
-                (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexC.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
-                (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexC.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
-            );
+            var uvC = triangle.VertexC.UV != Vector2.Zero ? triangle.VertexC.UV : new Vector2()
+            {
+                X = (Vector3.Dot(uvRotation * triangle.Bitangent, triangle.VertexC.Position) - uvXOrigin + uvMap.Translation.X) / uvMap.Scale.X,
+                Y = (Vector3.Dot(uvRotation * triangle.Tangent, triangle.VertexC.Position) - uvYOrigin + uvMap.Translation.Y) / uvMap.Scale.Y
+            };
 
             var indexA = AddVertex(triangle.VertexA.Position, triangle.Normal, triangle.Tangent, uvA);
             var indexB = AddVertex(triangle.VertexB.Position, triangle.Normal, triangle.Tangent, uvB);

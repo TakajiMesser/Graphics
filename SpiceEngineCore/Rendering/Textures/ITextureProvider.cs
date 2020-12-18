@@ -9,6 +9,6 @@
         //int AddTexture(IFont font);
         int AddTexture(string texturePath);
 
-        ITexture RetrieveTexture(int id);
+        ITexture RetrieveTexture(int index);
     }
 }

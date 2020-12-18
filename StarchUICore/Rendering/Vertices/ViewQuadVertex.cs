@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using SpiceEngineCore.Rendering.Matrices;
 using SweetGraphicsCore.Vertices;
 using System.Runtime.InteropServices;
@@ -15,9 +15,9 @@ namespace StarchUICore.Rendering.Vertices
         public Vector2 CornerRadius { get; private set; }
         public Color4 Color { get; private set; }
         public Color4 BorderColor { get; private set; }
-        public Color4 IDColor { get; private set; }
+        public Color4 SelectionID { get; private set; }
 
-        public ViewQuadVertex(Vector3 position, float borderThickness, Vector2 size, Vector2 cornerRadius, Color4 color, Color4 borderColor, Color4 idColor)
+        public ViewQuadVertex(Vector3 position, float borderThickness, Vector2 size, Vector2 cornerRadius, Color4 color, Color4 borderColor, Color4 selectionID)
         {
             Position = position;
             BorderThickness = borderThickness;
@@ -25,7 +25,7 @@ namespace StarchUICore.Rendering.Vertices
             CornerRadius = cornerRadius;
             Color = color;
             BorderColor = borderColor;
-            IDColor = idColor;
+            SelectionID = selectionID;
         }
 
         /*public ViewQuadVertex(IVertex3D vertex, Color4 selectionID)
@@ -45,7 +45,7 @@ namespace StarchUICore.Rendering.Vertices
                 Size = Size,
                 CornerRadius = CornerRadius,
                 Color = Color,
-                IDColor = IDColor
+                SelectionID = SelectionID
             };
         }
 
@@ -55,7 +55,7 @@ namespace StarchUICore.Rendering.Vertices
             Size = Size,
             CornerRadius = CornerRadius,
             Color = Color,
-            IDColor = new Color4(IDColor.R, IDColor.G, IDColor.B, 0.5f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 0.5f)
         };
 
         public ISelectionVertex Deselected() => new ViewQuadVertex()
@@ -64,7 +64,7 @@ namespace StarchUICore.Rendering.Vertices
             Size = Size,
             CornerRadius = CornerRadius,
             Color = Color,
-            IDColor = new Color4(IDColor.R, IDColor.G, IDColor.B, 1.0f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 1.0f)
         };
 
         public IColorVertex Colored(Color4 color) => new ViewQuadVertex()
@@ -73,7 +73,7 @@ namespace StarchUICore.Rendering.Vertices
             Size = Size,
             CornerRadius = CornerRadius,
             Color = color,
-            IDColor = IDColor
+            SelectionID = SelectionID
         };
     }
 }

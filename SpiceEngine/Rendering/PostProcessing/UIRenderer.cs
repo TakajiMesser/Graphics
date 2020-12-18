@@ -3,11 +3,11 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Shaders;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Renderers;
-using SweetGraphicsCore.Renderers.Shaders;
+using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
 
 namespace SpiceEngine.Rendering.PostProcessing
@@ -18,11 +18,9 @@ namespace SpiceEngine.Rendering.PostProcessing
         private ShaderProgram _uiSelectionProgram;
         private FrameBuffer _frameBuffer = new FrameBuffer();
 
-        public UIRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
-
         public Texture FinalTexture { get; protected set; }
         
-        protected override void LoadShaders()
+        protected override void LoadPrograms()
         {
             _uiProgram = new ShaderProgram(
                 //new Shader(ShaderType.VertexShader, Resources.ui_vert),
@@ -124,14 +122,14 @@ namespace SpiceEngine.Rendering.PostProcessing
             //GL.Disable(EnableCap.DepthTest);
 
             // TODO - Contain all rendering logic in batcher as well in view batches
-            _uiSelectionProgram.Use();
-            _uiSelectionProgram.SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height));
-            _uiSelectionProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
-
-            foreach (var batch in batcher.GetBatchesInOrder(RenderTypes.OpaqueView, uiProvider.GetDrawOrder()))
-            {
-                RenderBatch(_uiSelectionProgram, batcher, batch);
-            }
+            batcher.CreateBatchAction()
+                .SetShader(_uiSelectionProgram)
+                .SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height))
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.OpaqueView)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
         }
 
         public void Render(IBatcher batcher, IUIProvider uiProvider)
@@ -147,14 +145,14 @@ namespace SpiceEngine.Rendering.PostProcessing
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
             // TODO - Contain all rendering logic in batcher as well in view batches
-            _uiProgram.Use();
-            _uiProgram.SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height));
-            _uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
-
-            foreach (var batch in batcher.GetBatchesInOrder(RenderTypes.OpaqueView, uiProvider.GetDrawOrder()))
-            {
-                RenderBatch(_uiProgram, batcher, batch);
-            }
+            batcher.CreateBatchAction()
+                .SetShader(_uiProgram)
+                .SetUniform("resolution", new Vector2(FinalTexture.Width, FinalTexture.Height))
+                .SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2))
+                .SetRenderType(RenderTypes.OpaqueView)
+                .SetEntityIDOrder(uiProvider.GetDrawOrder())
+                .Render()
+                .Execute();
 
             //_uiProgram.Use();
             //_uiProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));

@@ -1,5 +1,5 @@
-﻿using SpiceEngine.Entities.Selection;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngine.Entities.Selection;
 using SpiceEngineCore.Rendering;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;

@@ -1,6 +1,6 @@
-﻿using SavoryPhysicsCore.Collisions;
+﻿using OpenTK;
+using SavoryPhysicsCore.Collisions;
 using SavoryPhysicsCore.Shapes.ThreeDimensional;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System;
 
@@ -76,11 +76,12 @@ namespace SavoryPhysicsCore.Helpers
             var boxA = (Box)collisionInfo.BodyA.Shape;
             var boxB = (Box)collisionInfo.BodyB.Shape;
 
-            var contactPointB = new Vector3(
-                collisionInfo.EntityA.Position.X.Clamp(collisionInfo.EntityB.Position.X - boxB.Width / 2.0f, collisionInfo.EntityB.Position.X + boxB.Width / 2.0f),
-                collisionInfo.EntityA.Position.Y.Clamp(collisionInfo.EntityB.Position.Y - boxB.Height / 2.0f, collisionInfo.EntityB.Position.Y + boxB.Height / 2.0f),
-                collisionInfo.EntityA.Position.Z.Clamp(collisionInfo.EntityB.Position.Z - boxB.Depth / 2.0f, collisionInfo.EntityB.Position.Z + boxB.Depth / 2.0f)
-            );
+            var contactPointB = new Vector3()
+            {
+                X = MathHelper.Clamp(collisionInfo.EntityA.Position.X, collisionInfo.EntityB.Position.X - boxB.Width / 2.0f, collisionInfo.EntityB.Position.X + boxB.Width / 2.0f),
+                Y = MathHelper.Clamp(collisionInfo.EntityA.Position.Y, collisionInfo.EntityB.Position.Y - boxB.Height / 2.0f, collisionInfo.EntityB.Position.Y + boxB.Height / 2.0f),
+                Z = MathHelper.Clamp(collisionInfo.EntityA.Position.Z, collisionInfo.EntityB.Position.Z - boxB.Depth / 2.0f, collisionInfo.EntityB.Position.Z + boxB.Depth / 2.0f)
+            };
 
             var offset = collisionInfo.EntityA.Position - contactPointB;
 

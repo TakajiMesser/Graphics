@@ -1,14 +1,13 @@
-﻿using OpenTK.Graphics;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Textures;
+using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Renderers.Shaders;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Vertices;
 using System;
-using Vector2 = SpiceEngineCore.Geometry.Vectors.Vector2;
 
 namespace SweetGraphicsCore.Renderers.PostProcessing
 {
@@ -27,9 +26,7 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
         private VertexArray<Simple2DVertex> _vertexArray = new VertexArray<Simple2DVertex>();
         private VertexBuffer<Simple2DVertex> _vertexBuffer = new VertexBuffer<Simple2DVertex>();
 
-        public RenderToScreen(ITextureProvider textureProvider) : base(textureProvider) { }
-
-        protected override void LoadShaders()
+        protected override void LoadPrograms()
         {
             _render1DProgram = new ShaderProgram(new Shader(ShaderType.FragmentShader, Resources.render_1D_frag));
 

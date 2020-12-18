@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Quaternions;
+﻿using OpenTK;
 
 namespace SpiceEngineCore.Entities
 {

@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Matrices;
+﻿using OpenTK;
 using SpiceEngineCore.Rendering.Matrices;
 
 namespace SpiceEngineCore.Entities.Cameras
@@ -14,16 +14,16 @@ namespace SpiceEngineCore.Entities.Cameras
             set => _projectionMatrix.Width = value;
         }
 
-        public OrthographicCamera(string name, float zNear, float zFar, float startingWidth) : base(name, ProjectionTypes.Orthographic) =>
+        public OrthographicCamera(string name, float zNear, float zFar, float startingWidth) : base(name, ProjectionTypes.Orthographic)
+        {
             _projectionMatrix.UpdateOrthographic(startingWidth, zNear, zFar);
+        }
 
         public Matrix4 CalculateProjection()
         {
-            // TODO - What is this magic number?
             var width = 0.8f;
             var height = width / _projectionMatrix.AspectRatio;
-
-            return Matrix4.Orthographic(width, height, _projectionMatrix.ZNear, _projectionMatrix.ZFar);
+            return Matrix4.CreateOrthographic(width, height, _projectionMatrix.ZNear, _projectionMatrix.ZFar);
         }
     }
 }

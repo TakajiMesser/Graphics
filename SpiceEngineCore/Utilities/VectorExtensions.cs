@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -33,6 +33,11 @@ namespace SpiceEngineCore.Utilities
 
         public static Vector3 ToDegrees(this Vector3 vector) => new Vector3(UnitConversions.ToDegrees(vector.X), UnitConversions.ToDegrees(vector.Y), UnitConversions.ToDegrees(vector.Z));
 
-        public static Vector3 Average(this IEnumerable<Vector3> vertices) => new Vector3(vertices.Average(v => v.X), vertices.Average(v => v.Y), vertices.Average(v => v.Z));
+        public static Vector3 Average(this IEnumerable<Vector3> vertices) => new Vector3()
+        {
+            X = vertices.Average(v => v.X),
+            Y = vertices.Average(v => v.Y),
+            Z = vertices.Average(v => v.Z)
+        };
     }
 }

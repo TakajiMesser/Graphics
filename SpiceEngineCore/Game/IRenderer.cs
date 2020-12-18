@@ -1,6 +1,6 @@
 ﻿namespace SpiceEngineCore.Game
 {
-    public interface IRender
+    public interface IRenderer
     {
 
     }

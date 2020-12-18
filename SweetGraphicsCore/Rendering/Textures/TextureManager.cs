@@ -10,7 +10,7 @@ namespace SweetGraphicsCore.Rendering.Textures
 {
     public class TextureManager : ITextureProvider, IDisposable
     {
-        private ConcurrentDictionary<string, int> _idByPath = new ConcurrentDictionary<string, int>(); 
+        private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
         private List<ITexture> _textures = new List<ITexture>();
 
         private object _textureLock = new object();
@@ -75,7 +75,7 @@ namespace SweetGraphicsCore.Rendering.Textures
 
         public int AddTexture(string texturePath)
         {
-            return _idByPath.GetOrAdd(texturePath, p =>
+            return _indexByPath.GetOrAdd(texturePath, p =>
             {
                 var index = 0;
 
@@ -119,11 +119,11 @@ namespace SweetGraphicsCore.Rendering.Textures
         public void Clear()
         {
             // TODO - Probably need to unbind/unload textures here...
-            _idByPath.Clear();
+            _indexByPath.Clear();
             _textures.Clear();
         }
 
-        public ITexture RetrieveTexture(int id) => (id >= 0 && id < _textures.Count) ? _textures[id] : null;
+        public ITexture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
 
         #region IDisposable Support
         private bool disposedValue = false;

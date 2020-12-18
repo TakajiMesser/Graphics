@@ -1,8 +1,7 @@
-﻿using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Rendering.Meshes;
+using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -101,7 +100,12 @@ namespace SweetGraphicsCore.Rendering.Models
                 }
             }
 
-            return new Vector3(xSum / nVertices, ySum / nVertices, zSum / nVertices);
+            return new Vector3()
+            {
+                X = xSum / nVertices,
+                Y = ySum / nVertices,
+                Z = zSum / nVertices
+            };
         }
 
         public void CenterAround(Vector3 position)
@@ -227,7 +231,7 @@ namespace SweetGraphicsCore.Rendering.Models
 
             var sideLength = apothem / (float)Math.Cos(MathExtensions.PI / nSides);
             var exteriorAngle = MathExtensions.TWO_PI / nSides;
-            var rotation = new Quaternion(Vector3.UnitZ, exteriorAngle);
+            var rotation = Quaternion.FromAxisAngle(Vector3.UnitZ, exteriorAngle);
 
             var direction = Vector3.UnitX;
             meshFace.AddVertex(new Vector3(-sideLength, -apothem, 0.0f));

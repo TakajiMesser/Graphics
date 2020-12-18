@@ -8,17 +8,17 @@ using SpiceEngineCore.Entities.Volumes;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Renderers.Shaders;
+using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
-using Vector3 = SpiceEngineCore.Geometry.Vectors.Vector3;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -27,6 +27,8 @@ namespace SweetGraphicsCore.Renderers.Processing
     /// </summary>
     public class BillboardRenderer : Renderer
     {
+        public Texture FinalTexture { get; protected set; }
+
         private ShaderProgram _billboardProgram;
         private ShaderProgram _billboardSelectionProgram;
 
@@ -43,11 +45,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         private Texture _selectedSpotLightTexture;
         private Texture _selectedDirectionalLightTexture;
 
-        public BillboardRenderer(ITextureProvider textureProvider) : base(textureProvider) { }
-
-        public Texture FinalTexture { get; protected set; }
-
-        protected override void LoadShaders()
+        protected override void LoadPrograms()
         {
             _billboardProgram = new ShaderProgram(
                 new Shader(ShaderType.VertexShader, Resources.billboard_vert),
@@ -112,30 +110,28 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void GeometryPass(ICamera camera, IBatcher batcher)
         {
-            _billboardProgram.Use();
-            _billboardProgram.SetCamera(camera);
-            _billboardProgram.SetUniform("cameraPosition", camera.Position);
-            _billboardProgram.SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f));
-
-            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueBillboard))
-            {
-                RenderBatch(_billboardProgram, batcher, batch);
-            }
+            batcher.CreateBatchAction()
+                .SetShader(_billboardProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .SetUniform("overrideColor", new Vector4(0.0f, 0.7f, 0.7f, 1.0f))
+                .SetRenderType(RenderTypes.OpaqueBillboard)
+                .Render()
+                .Execute();
 
             //GL.Enable(EnableCap.CullFace);
         }
 
         public void SelectionPass(ICamera camera, IBatcher batcher)
         {
-            _billboardProgram.Use();
-            _billboardProgram.SetCamera(camera);
-            _billboardProgram.SetUniform("cameraPosition", camera.Position);
-            _billboardProgram.SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f));
-
-            foreach (var batch in batcher.GetBatches(RenderTypes.OpaqueBillboard))
-            {
-                RenderBatch(_billboardProgram, batcher, batch);
-            }
+            batcher.CreateBatchAction()
+                .SetShader(_billboardProgram)
+                .SetCamera(camera)
+                .SetUniform("cameraPosition", camera.Position)
+                .SetUniform("overrideColor", new Vector4(0.0f, 1.0f, 1.0f, 1.0f))
+                .SetRenderType(RenderTypes.OpaqueBillboard)
+                .Render()
+                .Execute();
 
             //GL.Enable(EnableCap.CullFace);
         }
@@ -145,7 +141,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             _billboardProgram.Use();
             _billboardProgram.BindTexture(texture, "mainTexture", 0);
 
-            _billboardProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -168,7 +164,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            _billboardProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
             _billboardProgram.SetUniform("overrideColor", Vector4.Zero);
 
@@ -186,7 +182,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            _billboardProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             // Need to bind a texture for each selectable vertex point
@@ -214,7 +210,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            _billboardProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             switch (light)
@@ -237,7 +233,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            _billboardProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardProgram);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardProgram.BindTexture(_vertexTexture, "mainTexture", 0);
@@ -248,7 +244,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardSelectionProgram.Use();
 
-            _billboardSelectionProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardSelectionProgram);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardSelectionProgram.BindTexture(_vertexTexture, "mainTexture", 0);
@@ -259,7 +255,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardSelectionProgram.Use();
 
-            _billboardSelectionProgram.SetCamera(camera);
+            camera.SetUniforms(_billboardSelectionProgram);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardSelectionProgram.BindTexture(_pointLightTexture, "mainTexture", 0);
