@@ -74,8 +74,8 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
         {
             if (mouseDelta != Vector2.Zero)
             {
-                var upDirection = camera.Up;
-                var lookDirection = camera.LookAt - camera.Position;
+                var upDirection = camera._viewMatrix.Up;
+                var lookDirection = camera._viewMatrix.LookAt - camera.Position;
 
                 var rightDirection = Vector3.Cross(upDirection, lookDirection).Normalized();
 
@@ -84,26 +84,27 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                 var horizontalTranslation = rightDirection * mouseDelta.X * TRAVEL_SCALE;//STRAFE_SCALE * camera.Position.Z;
 
                 camera.Position += verticalTranslation + horizontalTranslation;
-                camera.LookAt += verticalTranslation + horizontalTranslation;
+                camera._viewMatrix.LookAt += verticalTranslation + horizontalTranslation;
             }
         }
 
         public void Zoom(PerspectiveCamera camera, int mouseWheelDelta)
         {
-            var translation = (camera.LookAt - camera.Position) * mouseWheelDelta * ZOOM_SCALE;
+            var translation = (camera._viewMatrix.LookAt - camera.Position) * mouseWheelDelta * ZOOM_SCALE;
 
-            camera.Position = new Vector3(
-                camera.Position.X - translation.X,
-                camera.Position.Y - translation.Y,
-                (camera.Position.Z - translation.Z).Clamp(MIN_ZOOM_POSITION, MAX_ZOOM_POSITION)
-            );
+            camera.Position = new Vector3()
+            {
+                X = camera.Position.X - translation.X,
+                Y = camera.Position.Y - translation.Y,
+                Z = (camera.Position.Z - translation.Z).Clamp(MIN_ZOOM_POSITION, MAX_ZOOM_POSITION)
+            };
         }
 
         public void Travel(PerspectiveCamera camera, Vector2 mouseDelta)
         {
             if (mouseDelta != Vector2.Zero)
             {
-                var translation = (camera.LookAt - camera.Position) * mouseDelta.Y * TRAVEL_SCALE;
+                var translation = (camera._viewMatrix.LookAt - camera.Position) * mouseDelta.Y * TRAVEL_SCALE;
                 camera.Position -= translation;
 
                 _yaw = (_yaw - mouseDelta.X * TURN_SCALE) % MathExtensions.TWO_PI;
@@ -127,26 +128,28 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
 
         private void CalculateLookAt(PerspectiveCamera camera)
         {
-            var lookDirection = new Vector3(
-                (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
-                (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
-                (float)Math.Sin(_pitch)
-            );
+            var lookDirection = new Vector3()
+            {
+                X = (float)(Math.Cos(_yaw) * Math.Cos(_pitch)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(_pitch)),
+                Z = (float)Math.Sin(_pitch)
+            };
 
-            camera.LookAt = camera.Position + lookDirection.Normalized();
+            camera._viewMatrix.LookAt = camera.Position + lookDirection.Normalized();
         }
 
         private void CalculateUp(PerspectiveCamera camera)
         {
             var yAngle = _pitch + MathExtensions.HALF_PI;
 
-            var upDirection = new Vector3(
-                (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
-                (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
-                (float)Math.Sin(yAngle)
-            );
+            var upDirection = new Vector3()
+            {
+                X = (float)(Math.Cos(_yaw) * Math.Cos(yAngle)),
+                Y = (float)(Math.Sin(_yaw) * Math.Cos(yAngle)),
+                Z = (float)Math.Sin(yAngle)
+            };
 
-            camera.Up = upDirection.Normalized();
+            camera._viewMatrix.Up = upDirection.Normalized();
         }
     }
 }

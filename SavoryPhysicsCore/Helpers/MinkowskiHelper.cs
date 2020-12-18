@@ -1,6 +1,6 @@
-﻿using SavoryPhysicsCore.Collisions;
+﻿using OpenTK;
+using SavoryPhysicsCore.Collisions;
 using SavoryPhysicsCore.Shapes;
-using SpiceEngineCore.Geometry.Vectors;
 
 namespace SavoryPhysicsCore.Helpers
 {

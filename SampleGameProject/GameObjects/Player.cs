@@ -1,6 +1,6 @@
-﻿using SampleGameProject.Helpers;
+﻿using OpenTK;
+using SampleGameProject.Helpers;
 using SpiceEngine.Maps;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Maps;
 using SweetGraphicsCore.Rendering.Textures;
 using UmamiScriptingCore.StimResponse;

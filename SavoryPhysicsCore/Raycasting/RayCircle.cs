@@ -1,6 +1,6 @@
-﻿using SavoryPhysicsCore.Shapes.ThreeDimensional;
+﻿using OpenTK;
+using SavoryPhysicsCore.Shapes.ThreeDimensional;
 using SavoryPhysicsCore.Shapes.TwoDimensional;
-using SpiceEngineCore.Geometry.Vectors;
 using System;
 
 namespace SavoryPhysicsCore.Raycasting
@@ -183,27 +183,30 @@ namespace SavoryPhysicsCore.Raycasting
 
                 if (discriminant == 0)
                 {
-                    intersection = new Vector3(
-                        0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
-                        0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
-                        position.Z
-                    );
+                    intersection = new Vector3()
+                    {
+                        X = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Z = position.Z
+                    };
 
                     return true;
                 }
                 else
                 {
-                    var intersectionA = new Vector3(
-                        0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
-                        0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
-                        position.Z
-                    );
+                    var intersectionA = new Vector3()
+                    {
+                        X = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) + c * (position.Y - Origin.Y),
+                        Z = position.Z
+                    };
 
-                    var intersectionB = new Vector3(
-                        0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) - c * (position.Y - Origin.Y),
-                        0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) - c * (position.Y - Origin.Y),
-                        position.Z
-                    );
+                    var intersectionB = new Vector3()
+                    {
+                        X = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) - c * (position.Y - Origin.Y),
+                        Y = 0.5f * (Origin.X + position.X) + b * (position.X - Origin.X) - c * (position.Y - Origin.Y),
+                        Z = position.Z
+                    };
 
                     intersection = (intersectionA - Origin).Length < (intersectionB - Origin).Length
                         ? intersectionA

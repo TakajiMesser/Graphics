@@ -1,7 +1,7 @@
-﻿using SampleGameProject.GameObjects;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using SampleGameProject.GameObjects;
 using SpiceEngine.Maps;
-using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Maps;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;

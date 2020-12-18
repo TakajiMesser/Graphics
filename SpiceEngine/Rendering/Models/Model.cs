@@ -1,6 +1,7 @@
-﻿using SpiceEngine.Utilities;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngine.Utilities;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Models;
@@ -47,16 +48,8 @@ namespace SpiceEngine.Rendering.Models
                             var normals = mesh.HasNormals ? mesh.Normals[i].ToVector3() : new Vector3();
                             var tangents = mesh.HasTangentBasis ? mesh.Tangents[i].ToVector3() : new Vector3();
                             var textureCoords = mesh.HasTextureCoords(0) ? mesh.TextureCoordinateChannels[0][i].ToVector2() : new Vector2();
-
-                            var boneIDX = 0.0f;
-                            var boneIDY = 0.0f;
-                            var boneIDZ = 0.0f;
-                            var boneIDW = 0.0f;
-
-                            var boneWeightX = 0.0f;
-                            var boneWeightY = 0.0f;
-                            var boneWeightZ = 0.0f;
-                            var boneWeightW = 0.0f;
+                            var boneIDs = new Vector4();
+                            var boneWeights = new Vector4();
 
                             if (mesh.HasBones)
                             {
@@ -64,32 +57,14 @@ namespace SpiceEngine.Rendering.Models
                                     .Where(b => b.bone.VertexWeights.Any(v => v.VertexID == i))
                                     .ToList();
 
-                                if (matches.Count > 0)
+                                for (var j = 0; j < 4 && j < matches.Count; j++)
                                 {
-                                    boneIDX = matches[0].boneIndex;
-                                    boneWeightX = matches[0].bone.VertexWeights.First(v => v.VertexID == i).Weight;
-                                }
-
-                                if (matches.Count > 1)
-                                {
-                                    boneIDY = matches[1].boneIndex;
-                                    boneWeightY = matches[1].bone.VertexWeights.First(v => v.VertexID == i).Weight;
-                                }
-
-                                if (matches.Count > 2)
-                                {
-                                    boneIDZ = matches[2].boneIndex;
-                                    boneWeightZ = matches[2].bone.VertexWeights.First(v => v.VertexID == i).Weight;
-                                }
-
-                                if (matches.Count > 3)
-                                {
-                                    boneIDW = matches[3].boneIndex;
-                                    boneWeightW = matches[3].bone.VertexWeights.First(v => v.VertexID == i).Weight;
+                                    boneIDs[j] = matches[j].boneIndex;
+                                    boneWeights[j] = matches[j].bone.VertexWeights.First(v => v.VertexID == i).Weight;
                                 }
                             }
 
-                            vertices.Add(new AnimatedVertex3D(position, normals, tangents, textureCoords, new Vector4(boneIDX, boneIDY, boneIDZ, boneIDW), new Vector4(boneWeightX, boneWeightY, boneWeightZ, boneWeightW)));
+                            vertices.Add(new AnimatedVertex3D(position, normals, tangents, textureCoords, boneIDs, boneWeights));
                         }
 
                         var triangleIndices = mesh.GetIndices().ToList();
@@ -152,6 +127,8 @@ namespace SpiceEngine.Rendering.Models
                 mesh.Draw();
             }
         }
+
+        public virtual void SetUniforms(ShaderProgram shaderProgram, int meshIndex) { }
 
         public IModel Duplicate()
         {

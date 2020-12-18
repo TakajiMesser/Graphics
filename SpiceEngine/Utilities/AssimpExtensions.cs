@@ -16,12 +16,24 @@ namespace SpiceEngine.Utilities
 
         public static Vector2 ToVector2(this Vector3D vector) => new Vector2(vector.X, vector.Y);
 
-        public static Matrix4 ToMatrix4(this Matrix4x4 matrix) => new Matrix4(matrix[1, 1], matrix[2, 1], matrix[3, 1], matrix[4, 1],
-                                                                              matrix[1, 2], matrix[2, 2], matrix[3, 2], matrix[4, 2],
-                                                                              matrix[1, 3], matrix[2, 3], matrix[3, 3], matrix[4, 3],
-                                                                              matrix[1, 4], matrix[2, 4], matrix[3, 4], matrix[4, 4]);
+        public static Matrix4 ToMatrix4(this Matrix4x4 matrix)
+        {
+            var matrix4 = Matrix4.Identity;
 
-        public static SpiceEngineCore.Geometry.Quaternions.Quaternion ToQuaternion(this Assimp.Quaternion quaternion) => new SpiceEngineCore.Geometry.Quaternions.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+            for (var i = 0; i < 4; i++)
+            {
+                for (var j = 0; j < 4; j++)
+                {
+                    matrix4[j, i] = matrix[i + 1, j + 1];
+                }
+            }
+            //matrix4.Invert();
+            matrix4.Transpose();
+            
+            return matrix4;
+        }
+
+        public static OpenTK.Quaternion ToQuaternion(this Assimp.Quaternion quaternion) => new OpenTK.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
 
         public static SpiceEngineCore.Rendering.Materials.Material ToMaterial(this Material material) => new SpiceEngineCore.Rendering.Materials.Material()
         {

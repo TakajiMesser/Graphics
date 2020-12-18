@@ -1,8 +1,9 @@
 ﻿using CitrusAnimationCore.Animations;
 using CitrusAnimationCore.Bones;
 using CitrusAnimationCore.Rendering;
+using OpenTK;
 using SpiceEngine.Utilities;
-using SpiceEngineCore.Geometry.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using System.Collections.Generic;
 
@@ -75,6 +76,6 @@ namespace SpiceEngine.Rendering.Models
             }
         }
 
-        //public override void SetUniforms(ShaderProgram shaderProgram, int meshIndex) => shaderProgram.SetUniform("jointTransforms", GetJointTransforms(meshIndex));
+        public override void SetUniforms(ShaderProgram shaderProgram, int meshIndex) => shaderProgram.SetUniform("jointTransforms", GetJointTransforms(meshIndex));
     }
 }

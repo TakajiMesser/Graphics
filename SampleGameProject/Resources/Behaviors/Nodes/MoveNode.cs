@@ -1,7 +1,7 @@
-﻿using SavoryPhysicsCore;
+﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
-using SpiceEngineCore.Geometry.Vectors;
 using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
@@ -36,17 +36,17 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
             if (inputProvider.IsDown(inputProvider.InputMapping.In))
             {
-                translation = new Vector3(translation.X, translation.Y, translation.Z + speed);
+                translation.Z += speed;
             }
 
             if (inputProvider.IsDown(inputProvider.InputMapping.Out))
             {
-                translation = new Vector3(translation.X, translation.Y, translation.Z - speed);
+                translation.Z -= speed;
             }
 
             if (inputProvider.IsDown(inputProvider.InputMapping.Evade))
             {
-                translation = new Vector3(translation.X, translation.Y, translation.Z + 0.6f);
+                translation.Z += 0.6f;
             }
 
             if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot1))

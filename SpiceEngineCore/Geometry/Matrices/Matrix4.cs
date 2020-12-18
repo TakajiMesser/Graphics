@@ -59,145 +59,278 @@ namespace SpiceEngineCore.Geometry.Matrices
 
         public Matrix4 Transposed() => new Matrix4(M00, M10, M20, M30, M01, M11, M21, M31, M02, M12, M22, M32, M03, M13, M23, M33);
 
+        /*
+         M00    M01     M02     M03
+         M10    M11     M12     M13
+         M20    M21     M22     M23
+         M30    M31     M32     M33
+         */
+
         public Matrix4 Inverted()
         {
-            /*  M00    M01     M02     M03
-                M10    M11     M12     M13
-                M20    M21     M22     M23
-                M30    M31     M32     M33 */
+            inverseM00 = m[5] * m[10] * m[15] -
+             m[5] * m[11] * m[14] -
+             m[9] * m[6] * m[15] +
+             m[9] * m[7] * m[14] +
+             m[13] * m[6] * m[11] -
+             m[13] * m[7] * m[10];
 
-            /*  [0]    [1]     [2]     [3] 
-                [4]    [5]     [6]     [7]
-                [8]    [9]    [10]    [11]
-               [12]   [13]    [14]    [15] */
+            inv[4] = -m[4] * m[10] * m[15] +
+                      m[4] * m[11] * m[14] +
+                      m[8] * m[6] * m[15] -
+                      m[8] * m[7] * m[14] -
+                      m[12] * m[6] * m[11] +
+                      m[12] * m[7] * m[10];
 
-            var inverseM00 = M11 * M22 * M33
-                - M11 * M23 * M32
-                - M21 * M12 * M33
-                + M21 * M13 * M32
-                + M31 * M12 * M23
-                - M31 * M13 * M22;
+            inv[8] = m[4] * m[9] * m[15] -
+                     m[4] * m[11] * m[13] -
+                     m[8] * m[5] * m[15] +
+                     m[8] * m[7] * m[13] +
+                     m[12] * m[5] * m[11] -
+                     m[12] * m[7] * m[9];
 
-            var inverseM10 = -M10 * M22 * M33
-                + M10 * M23 * M32
-                + M20 * M12 * M33
-                - M20 * M13 * M32
-                - M30 * M12 * M23
-                + M30 * M13 * M22;
+            inv[12] = -m[4] * m[9] * m[14] +
+                       m[4] * m[10] * m[13] +
+                       m[8] * m[5] * m[14] -
+                       m[8] * m[6] * m[13] -
+                       m[12] * m[5] * m[10] +
+                       m[12] * m[6] * m[9];
 
-            var inverseM20 = M10 * M21 * M33
-                - M10 * M23 * M31
-                - M20 * M11 * M33
-                + M20 * M13 * M31
-                + M30 * M11 * M23
-                - M30 * M13 * M21;
+            inv[1] = -m[1] * m[10] * m[15] +
+                      m[1] * m[11] * m[14] +
+                      m[9] * m[2] * m[15] -
+                      m[9] * m[3] * m[14] -
+                      m[13] * m[2] * m[11] +
+                      m[13] * m[3] * m[10];
 
-            var inverseM30 = -M10 * M21 * M32
-                + M10 * M22 * M31
-                + M20 * M11 * M32
-                - M20 * M12 * M31
-                - M30 * M11 * M22
-                + M30 * M12 * M21;
+            inv[5] = m[0] * m[10] * m[15] -
+                     m[0] * m[11] * m[14] -
+                     m[8] * m[2] * m[15] +
+                     m[8] * m[3] * m[14] +
+                     m[12] * m[2] * m[11] -
+                     m[12] * m[3] * m[10];
 
-            var inverseM01 = -M01 * M22 * M33
-                + M01 * M23 * M32
-                + M21 * M02 * M33
-                - M21 * M03 * M32
-                - M31 * M02 * M23
-                + M31 * M03 * M22;
+            inv[9] = -m[0] * m[9] * m[15] +
+                      m[0] * m[11] * m[13] +
+                      m[8] * m[1] * m[15] -
+                      m[8] * m[3] * m[13] -
+                      m[12] * m[1] * m[11] +
+                      m[12] * m[3] * m[9];
 
-            var inverseM11 = M00 * M22 * M33
-                - M00 * M23 * M32
-                - M20 * M02 * M33
-                + M20 * M03 * M32
-                + M30 * M02 * M23
-                - M30 * M03 * M22;
+            inv[13] = m[0] * m[9] * m[14] -
+                      m[0] * m[10] * m[13] -
+                      m[8] * m[1] * m[14] +
+                      m[8] * m[2] * m[13] +
+                      m[12] * m[1] * m[10] -
+                      m[12] * m[2] * m[9];
 
-            var inverseM21 = -M00 * M21 * M33
-                + M00 * M23 * M31
-                + M20 * M01 * M33
-                - M20 * M03 * M31
-                - M30 * M01 * M23
-                + M30 * M03 * M21;
+            inv[2] = m[1] * m[6] * m[15] -
+                     m[1] * m[7] * m[14] -
+                     m[5] * m[2] * m[15] +
+                     m[5] * m[3] * m[14] +
+                     m[13] * m[2] * m[7] -
+                     m[13] * m[3] * m[6];
 
-            var inverseM31 = M00 * M21 * M32
-                - M00 * M22 * M31
-                - M20 * M01 * M32
-                + M20 * M02 * M31
-                + M30 * M01 * M22
-                - M30 * M02 * M21;
+            inv[6] = -m[0] * m[6] * m[15] +
+                      m[0] * m[7] * m[14] +
+                      m[4] * m[2] * m[15] -
+                      m[4] * m[3] * m[14] -
+                      m[12] * m[2] * m[7] +
+                      m[12] * m[3] * m[6];
 
-            var inverseM02 = M01 * M12 * M33
-                - M01 * M13 * M32
-                - M11 * M02 * M33
-                + M11 * M03 * M32
-                + M31 * M02 * M13
-                - M31 * M03 * M12;
+            inv[10] = m[0] * m[5] * m[15] -
+                      m[0] * m[7] * m[13] -
+                      m[4] * m[1] * m[15] +
+                      m[4] * m[3] * m[13] +
+                      m[12] * m[1] * m[7] -
+                      m[12] * m[3] * m[5];
 
-            var inverseM12 = -M00 * M12 * M33
-                + M00 * M13 * M32
-                + M10 * M02 * M33
-                - M10 * M03 * M32
-                - M30 * M02 * M13
-                + M30 * M03 * M12;
+            inv[14] = -m[0] * m[5] * m[14] +
+                       m[0] * m[6] * m[13] +
+                       m[4] * m[1] * m[14] -
+                       m[4] * m[2] * m[13] -
+                       m[12] * m[1] * m[6] +
+                       m[12] * m[2] * m[5];
 
-            var inverseM22 = M00 * M11 * M33
-                - M00 * M13 * M31
-                - M10 * M01 * M33
-                + M10 * M03 * M31
-                + M30 * M01 * M13
-                - M30 * M03 * M11;
+            inv[3] = -m[1] * m[6] * m[11] +
+                      m[1] * m[7] * m[10] +
+                      m[5] * m[2] * m[11] -
+                      m[5] * m[3] * m[10] -
+                      m[9] * m[2] * m[7] +
+                      m[9] * m[3] * m[6];
 
-            var inverseM32 = -M00 * M11 * M32
-                + M00 * M12 * M31
-                + M10 * M01 * M32
-                - M10 * M02 * M31
-                - M30 * M01 * M12
-                + M30 * M02 * M11;
+            inv[7] = m[0] * m[6] * m[11] -
+                     m[0] * m[7] * m[10] -
+                     m[4] * m[2] * m[11] +
+                     m[4] * m[3] * m[10] +
+                     m[8] * m[2] * m[7] -
+                     m[8] * m[3] * m[6];
 
-            var inverseM03 = -M01 * M12 * M23
-                + M01 * M13 * M22
-                + M11 * M02 * M23
-                - M11 * M03 * M22
-                - M21 * M02 * M13
-                + M21 * M03 * M12;
+            inv[11] = -m[0] * m[5] * m[11] +
+                       m[0] * m[7] * m[9] +
+                       m[4] * m[1] * m[11] -
+                       m[4] * m[3] * m[9] -
+                       m[8] * m[1] * m[7] +
+                       m[8] * m[3] * m[5];
 
-            var inverseM13 = M00 * M12 * M23
-                - M00 * M13 * M22
-                - M10 * M02 * M23
-                + M10 * M03 * M22
-                + M20 * M02 * M13
-                - M20 * M03 * M12;
+            inv[15] = m[0] * m[5] * m[10] -
+                      m[0] * m[6] * m[9] -
+                      m[4] * m[1] * m[10] +
+                      m[4] * m[2] * m[9] +
+                      m[8] * m[1] * m[6] -
+                      m[8] * m[2] * m[5];
 
-            var inverseM23 = -M00 * M11 * M23
-                + M00 * M13 * M21
-                + M10 * M01 * M23
-                - M10 * M03 * M21
-                - M20 * M01 * M13
-                + M20 * M03 * M11;
+            det = m[0] * inv[0] + m[1] * inv[4] + m[2] * inv[8] + m[3] * inv[12];
 
-            var inverseM33 = M00 * M11 * M22
-                - M00 * M12 * M21
-                - M10 * M01 * M22
-                + M10 * M02 * M21
-                + M20 * M01 * M12
-                - M20 * M02 * M11;
+            if (det == 0)
+                return false;
 
-            var determinant = M00 * inverseM00 + M01 * inverseM10 + M02 * inverseM20 + M03 * inverseM30;
-            if (determinant == 0.0f) throw new InvalidOperationException("Matrix is singular");
+            det = 1.0 / det;
 
-            determinant = 1.0f / determinant;
+            for (i = 0; i < 16; i++)
+                invOut[i] = inv[i] * det;
 
-            return new Matrix4(inverseM00 * determinant, inverseM01 * determinant, inverseM02 * determinant, inverseM03 * determinant,
-                               inverseM10 * determinant, inverseM11 * determinant, inverseM12 * determinant, inverseM13 * determinant,
-                               inverseM20 * determinant, inverseM21 * determinant, inverseM22 * determinant, inverseM23 * determinant,
-                               inverseM30 * determinant, inverseM31 * determinant, inverseM32 * determinant, inverseM33 * determinant);
+            return true;
+
+
+
+
+
+
+            if (Determinant == 0)
+            {
+                return this;
+            }
+            else
+            {
+                int[] columnIndices = { 0, 0, 0, 0 };
+                int[] rowIndices = { 0, 0, 0, 0 };
+                int[] pivotIndices = { -1, -1, -1, -1 };
+
+
+            }
+
+            // convert the matrix to an array for easy looping
+            float[,] inverse =
+            {
+                { mat.Row0.X, mat.Row0.Y, mat.Row0.Z, mat.Row0.W },
+                { mat.Row1.X, mat.Row1.Y, mat.Row1.Z, mat.Row1.W },
+                { mat.Row2.X, mat.Row2.Y, mat.Row2.Z, mat.Row2.W },
+                { mat.Row3.X, mat.Row3.Y, mat.Row3.Z, mat.Row3.W }
+            };
+            var icol = 0;
+            var irow = 0;
+            for (var i = 0; i < 4; i++)
+            {
+                // Find the largest pivot value
+                var maxPivot = 0.0f;
+                for (var j = 0; j < 4; j++)
+                {
+                    if (pivotIdx[j] != 0)
+                    {
+                        for (var k = 0; k < 4; ++k)
+                        {
+                            if (pivotIdx[k] == -1)
+                            {
+                                var absVal = Math.Abs(inverse[j, k]);
+                                if (absVal > maxPivot)
+                                {
+                                    maxPivot = absVal;
+                                    irow = j;
+                                    icol = k;
+                                }
+                            }
+                            else if (pivotIdx[k] > 0)
+                            {
+                                result = mat;
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                ++pivotIdx[icol];
+
+                // Swap rows over so pivot is on diagonal
+                if (irow != icol)
+                {
+                    for (var k = 0; k < 4; ++k)
+                    {
+                        var f = inverse[irow, k];
+                        inverse[irow, k] = inverse[icol, k];
+                        inverse[icol, k] = f;
+                    }
+                }
+
+                rowIdx[i] = irow;
+                colIdx[i] = icol;
+
+                var pivot = inverse[icol, icol];
+
+                // check for singular matrix
+                if (pivot == 0.0f)
+                {
+                    throw new InvalidOperationException("Matrix is singular and cannot be inverted.");
+                }
+
+                // Scale row so it has a unit diagonal
+                var oneOverPivot = 1.0f / pivot;
+                inverse[icol, icol] = 1.0f;
+                for (var k = 0; k < 4; ++k)
+                {
+                    inverse[icol, k] *= oneOverPivot;
+                }
+
+                // Do elimination of non-diagonal elements
+                for (var j = 0; j < 4; ++j)
+                {
+                    // check this isn't on the diagonal
+                    if (icol != j)
+                    {
+                        var f = inverse[j, icol];
+                        inverse[j, icol] = 0.0f;
+                        for (var k = 0; k < 4; ++k)
+                        {
+                            inverse[j, k] -= inverse[icol, k] * f;
+                        }
+                    }
+                }
+            }
+
+            for (var j = 3; j >= 0; --j)
+            {
+                var ir = rowIdx[j];
+                var ic = colIdx[j];
+                for (var k = 0; k < 4; ++k)
+                {
+                    var f = inverse[k, ir];
+                    inverse[k, ir] = inverse[k, ic];
+                    inverse[k, ic] = f;
+                }
+            }
+
+            result.Row0.X = inverse[0, 0];
+            result.Row0.Y = inverse[0, 1];
+            result.Row0.Z = inverse[0, 2];
+            result.Row0.W = inverse[0, 3];
+            result.Row1.X = inverse[1, 0];
+            result.Row1.Y = inverse[1, 1];
+            result.Row1.Z = inverse[1, 2];
+            result.Row1.W = inverse[1, 3];
+            result.Row2.X = inverse[2, 0];
+            result.Row2.Y = inverse[2, 1];
+            result.Row2.Z = inverse[2, 2];
+            result.Row2.W = inverse[2, 3];
+            result.Row3.X = inverse[3, 0];
+            result.Row3.Y = inverse[3, 1];
+            result.Row3.Z = inverse[3, 2];
+            result.Row3.W = inverse[3, 3];
         }
 
         public override string ToString() => "|" + M00 + "," + M01 + "," + M02 + "," + M03 + "|"
-                     + Environment.NewLine + "|" + M10 + "," + M11 + "," + M12 + "," + M13 + "|"
-                     + Environment.NewLine + "|" + M20 + "," + M21 + "," + M22 + "," + M23 + "|"
-                     + Environment.NewLine + "|" + M30 + "," + M31 + "," + M32 + "," + M33 + "|"; 
+            + Environment.NewLine + "|" + M10 + "," + M11 + "," + M12 + "," + M13 + "|"
+            + Environment.NewLine + "|" + M20 + "," + M21 + "," + M22 + "," + M23 + "|"
+            + Environment.NewLine + "|" + M30 + "," + M31 + "," + M32 + "," + M33 + "|"; 
 
         public static Matrix4 operator +(Matrix4 left, Matrix4 right) => new Matrix4(left.M00 + right.M00, left.M01 + right.M01, left.M02 + right.M02, left.M03 + right.M03, left.M10 + right.M10, left.M11 + right.M11, left.M12 + right.M12, left.M13 + right.M13, left.M20 + right.M20, left.M21 + right.M21, left.M22 + right.M22, left.M23 + right.M23, left.M30 + right.M30, left.M31 + right.M31, left.M32 + right.M32, left.M33 + right.M33);
 
@@ -298,15 +431,11 @@ namespace SpiceEngineCore.Geometry.Matrices
                 -((x.X * eye.X) + (x.Y * eye.Y) + (x.Z * eye.Z)), -((y.X * eye.X) + (y.Y * eye.Y) + (y.Z * eye.Z)), -((z.X * eye.X) + (z.Y * eye.Y) + (z.Z * eye.Z)), 1);
         }
 
-        public static Matrix4 Identity => new Matrix4(1.0f, 0.0f, 0.0f, 0.0f,
-                                                      0.0f, 1.0f, 0.0f, 0.0f,
-                                                      0.0f, 0.0f, 1.0f, 0.0f,
-                                                      0.0f, 0.0f, 0.0f, 1.0f);
-
-        public static Matrix4 Zero => new Matrix4(0.0f, 0.0f, 0.0f, 0.0f,
-                                                  0.0f, 0.0f, 0.0f, 0.0f,
-                                                  0.0f, 0.0f, 0.0f, 0.0f,
-                                                  0.0f, 0.0f, 0.0f, 0.0f);
+        public static Matrix4 Identity => new Matrix4(
+            1.0f, 0.0f, 0.0f, 0.0f,
+            0.0f, 1.0f, 0.0f, 0.0f,
+            0.0f, 0.0f, 1.0f, 0.0f,
+            0.0f, 0.0f, 0.0f, 1.0f);
 
         public override bool Equals(object obj) => obj is Matrix4 matrix && Equals(matrix);
 

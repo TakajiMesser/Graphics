@@ -1,6 +1,6 @@
-﻿using SpiceEngine.Maps;
-using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using SpiceEngine.Maps;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
 using SweetGraphicsCore.Rendering.Models;

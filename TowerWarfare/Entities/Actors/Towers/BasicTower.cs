@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using SweetGraphicsCore.Rendering.Models;
 
 namespace TowerWarfare.Entities.Actors.Towers

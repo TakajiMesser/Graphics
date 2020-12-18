@@ -1,8 +1,8 @@
-﻿using SavoryPhysicsCore;
+﻿using OpenTK;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Utilities;
 using System.Linq;
 using TangyHIDCore;

@@ -65,7 +65,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
         {
             if (mouseDelta != Vector2.Zero)
             {
-                var translation = (camera.LookAt - camera.Position) * mouseDelta.Y * 0.02f;
+                var translation = (camera._viewMatrix.LookAt - camera.Position) * mouseDelta.Y * 0.02f;
                 camera.Position -= translation;
 
                 _yaw = (_yaw - mouseDelta.X * 0.001f) % MAX_YAW;
@@ -91,8 +91,8 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
         {
             if (mouseDelta != Vector2.Zero)
             {
-                var upDirection = camera.Up;
-                var lookDirection = camera.LookAt - camera.Position;
+                var upDirection = camera._viewMatrix.Up;
+                var lookDirection = camera._viewMatrix.LookAt - camera.Position;
 
                 var rightDirection = Vector3.Cross(upDirection, lookDirection).Normalized();
 
@@ -100,7 +100,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                 var horizontalTranslation = rightDirection * mouseDelta.X * 0.02f;
 
                 camera.Position -= verticalTranslation + horizontalTranslation;
-                camera.LookAt -= verticalTranslation + horizontalTranslation;
+                camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
             }
         }
 
@@ -144,7 +144,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
             );
 
             camera.Position = position - translation;
-            camera.LookAt = camera.Position + translation / distance;
+            camera._viewMatrix.LookAt = camera.Position + translation / distance;
         }
 
         private void CalculateLookAt(PerspectiveCamera camera)
@@ -155,7 +155,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                 (float)Math.Sin(_pitch)
             );
 
-            camera.LookAt = camera.Position + lookDirection.Normalized();
+            camera._viewMatrix.LookAt = camera.Position + lookDirection.Normalized();
         }
 
         private void CalculateUp(PerspectiveCamera camera)
@@ -168,7 +168,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                 (float)Math.Sin(yAngle)
             );
 
-            camera.Up = upDirection.Normalized();
+            camera._viewMatrix.Up = upDirection.Normalized();
         }
     }
 }

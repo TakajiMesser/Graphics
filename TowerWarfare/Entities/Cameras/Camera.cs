@@ -1,5 +1,5 @@
-﻿using SpiceEngine.Maps;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngine.Maps;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Utilities;

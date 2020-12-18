@@ -49,29 +49,32 @@ namespace SavoryPhysicsCore.Shapes.ThreeDimensional
             // Check against the X-face
             var x = Math.Sign(direction.X) * (Width / 2.0f);
             var tx = x / direction.X;
-            var xPenetration = new Vector3(
-                x,
-                direction.Y * tx,
-                direction.Z * tx
-            );
+            var xPenetration = new Vector3()
+            {
+                X = x,
+                Y = direction.Y * tx,
+                Z = direction.Z * tx
+            };
 
             // Check against the Y-face
             var y = Math.Sign(direction.Y) * (Height / 2.0f);
             var ty = y / direction.Y;
-            var yPenetration = new Vector3(
-                direction.X * ty,
-                y,
-                direction.Z * ty
-            );
+            var yPenetration = new Vector3()
+            {
+                X = direction.X * ty,
+                Y = y,
+                Z = direction.Z * ty
+            };
 
             // Check against the Z-face
             var z = Math.Sign(direction.Z) * (Depth / 2.0f);
             var tz = z / direction.Z;
-            var zPenetration = new Vector3(
-                direction.X * tz,
-                direction.Y * tz,
-                z
-            );
+            var zPenetration = new Vector3()
+            {
+                X = direction.X * tz,
+                Y = direction.Y * tz,
+                Z = z
+            };
 
             // Ensure that we take NaN values into consideration
             if (direction.X != 0.0f

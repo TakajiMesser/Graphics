@@ -1,12 +1,11 @@
-﻿using SavoryPhysicsCore;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SavoryPhysicsCore.Shapes.ThreeDimensional;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Maps;
 using SpiceEngineCore.Rendering;

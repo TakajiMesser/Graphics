@@ -1,5 +1,5 @@
-﻿using SavoryPhysicsCore.Partitioning;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SavoryPhysicsCore.Partitioning;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -15,17 +15,19 @@ namespace SavoryPhysicsCore.Shapes.ThreeDimensional
 
         public IPartition ToPartition(Vector3 position)
         {
-            var min = new Vector3(
-                Vertices.Min(v => v.X),
-                Vertices.Min(v => v.Y),
-                Vertices.Min(v => v.Z)
-            );
+            var min = new Vector3()
+            {
+                X = Vertices.Min(v => v.X),
+                Y = Vertices.Min(v => v.Y),
+                Z = Vertices.Min(v => v.Z)
+            };
 
-            var max = new Vector3(
-                Vertices.Max(v => v.X),
-                Vertices.Max(v => v.Y),
-                Vertices.Max(v => v.Z)
-            );
+            var max = new Vector3()
+            {
+                X = Vertices.Max(v => v.X),
+                Y = Vertices.Max(v => v.Y),
+                Z = Vertices.Max(v => v.Z)
+            };
 
             return new Oct(min, max);
         }

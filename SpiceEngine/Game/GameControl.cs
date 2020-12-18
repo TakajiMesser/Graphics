@@ -23,9 +23,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
-using Color4 = SpiceEngineCore.Geometry.Colors.Color4;
 using Timer = System.Timers.Timer;
-using Vector2 = SpiceEngineCore.Geometry.Vectors.Vector2;
 
 namespace SpiceEngine.Game
 {

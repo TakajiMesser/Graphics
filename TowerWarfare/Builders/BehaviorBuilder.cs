@@ -2,8 +2,8 @@
 using SpiceEngineCore.Scripting.Meters;
 using SpiceEngineCore.Scripting.Scripts;
 using SpiceEngineCore.Scripting.StimResponse;*/
+using OpenTK;
 using SpiceEngine.Maps;
-using SpiceEngineCore.Geometry.Vectors;
 using System.Collections.Generic;
 using TowerWarfare.Helpers;
 using UmamiScriptingCore.Scripts;

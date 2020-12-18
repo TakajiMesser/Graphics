@@ -1,5 +1,5 @@
-﻿using SavoryPhysicsCore.Partitioning;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SavoryPhysicsCore.Partitioning;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -17,15 +17,17 @@ namespace SavoryPhysicsCore.Shapes.TwoDimensional
         {
             Vertices.Select(v => v.X).Min();
 
-            var min = new Vector2(
-                Vertices.Min(v => v.X),
-                Vertices.Min(v => v.Y)
-            );
+            var min = new Vector2()
+            {
+                X = Vertices.Min(v => v.X),
+                Y = Vertices.Min(v => v.Y)
+            };
 
-            var max = new Vector2(
-                Vertices.Max(v => v.X),
-                Vertices.Max(v => v.Y)
-            );
+            var max = new Vector2()
+            {
+                X = Vertices.Max(v => v.X),
+                Y = Vertices.Max(v => v.Y)
+            };
 
             return new Quad(min, max);
         }

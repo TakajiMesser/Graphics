@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Graphics;
 using SpiceEngineCore.Rendering.Matrices;
 using SweetGraphicsCore.Vertices;
 using System.Runtime.InteropServices;
@@ -11,20 +11,20 @@ namespace StarchUICore.Rendering.Vertices
     {
         public Vector3 Position { get; private set; }
         public Color4 Color { get; private set; }
-        public Color4 IDColor { get; private set; }
+        public Color4 SelectionID { get; private set; }
 
-        public ViewVertex(Vector3 position, Color4 color, Color4 idColor)
+        public ViewVertex(Vector3 position, Color4 color, Color4 selectionID)
         {
             Position = position;
             Color = color;
-            IDColor = idColor;
+            SelectionID = selectionID;
         }
 
-        public ViewVertex(IVertex3D vertex, Color4 idColor)
+        public ViewVertex(IVertex3D vertex, Color4 selectionID)
         {
             Position = vertex.Position;
             Color = vertex is IColorVertex colorVertex ? colorVertex.Color : new Color4();
-            IDColor = idColor;
+            SelectionID = selectionID;
         }
 
         public IVertex3D Transformed(Transform transform)
@@ -35,7 +35,7 @@ namespace StarchUICore.Rendering.Vertices
             {
                 Position = (new Vector4(Position, 1.0f) * modelMatrix).Xyz,
                 Color = Color,
-                IDColor = IDColor
+                SelectionID = SelectionID
             };
         }
 
@@ -43,21 +43,21 @@ namespace StarchUICore.Rendering.Vertices
         {
             Position = Position,
             Color = Color,
-            IDColor = new Color4(IDColor.R, IDColor.G, IDColor.B, 0.5f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 0.5f)
         };
 
         public ISelectionVertex Deselected() => new ViewVertex()
         {
             Position = Position,
             Color = Color,
-            IDColor = new Color4(IDColor.R, IDColor.G, IDColor.B, 1.0f)
+            SelectionID = new Color4(SelectionID.R, SelectionID.G, SelectionID.B, 1.0f)
         };
 
         public IColorVertex Colored(Color4 color) => new ViewVertex()
         {
             Position = Position,
             Color = color,
-            IDColor = IDColor
+            SelectionID = SelectionID
         };
     }
 }

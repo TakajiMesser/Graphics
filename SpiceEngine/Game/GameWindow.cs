@@ -15,7 +15,6 @@ using System.Drawing;
 using System.Threading.Tasks;
 using TangyHIDCore;
 using Timer = System.Timers.Timer;
-using Vector2 = SpiceEngineCore.Geometry.Vectors.Vector2;
 
 namespace SpiceEngine.Game
 {

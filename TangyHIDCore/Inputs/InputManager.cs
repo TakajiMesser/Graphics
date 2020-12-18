@@ -1,6 +1,6 @@
-﻿using OpenTK.Input;
+﻿using OpenTK;
+using OpenTK.Input;
 using SpiceEngineCore.Game;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;

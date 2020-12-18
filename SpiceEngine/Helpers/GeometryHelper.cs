@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SpiceEngineCore.Entities.Cameras;
 using TangyHIDCore;
 
 namespace SpiceEngine.Helpers
@@ -12,7 +12,7 @@ namespace SpiceEngine.Helpers
 
             // Project the "Up" vector of the camera's view onto the XY plane, since that is what we restrict our movement translation to
             // TODO - This is mad suspect...
-            var flattenedUp = camera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
+            var flattenedUp = camera is Camera cameraInstance ? cameraInstance._viewMatrix.Up.Xy : Vector2.One;
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
 
@@ -45,7 +45,7 @@ namespace SpiceEngine.Helpers
 
             // Project the "Up" vector of the camera's view onto the XY plane, since that is what we restrict our movement translation to
             // TODO - This is mad suspect...
-            var flattenedUp = camera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
+            var flattenedUp = camera is Camera cameraInstance ? cameraInstance._viewMatrix.Up.Xy : Vector2.One;
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
 

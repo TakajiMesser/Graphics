@@ -82,8 +82,6 @@ namespace SpiceEngineCore.Geometry.Vectors
 
         public static Vector3 operator /(Vector3 left, Vector3 right) => new Vector3(left.X / right.X, left.Y / right.Y, left.Z / right.Z);
 
-        public static Vector3 operator *(float scale, Vector3 vector) => new Vector3(scale * vector.X, scale * vector.Y, scale * vector.Z);
-
         public static Vector3 operator *(Quaternion quaternion, Vector3 vector)
         {
             var vectorQuat = new Quaternion(vector.X, vector.Y, vector.Z, 1.0f);

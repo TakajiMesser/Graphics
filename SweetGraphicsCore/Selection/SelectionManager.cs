@@ -1,7 +1,5 @@
-﻿using SpiceEngineCore.Entities;
-using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
-using System;
+﻿using OpenTK;
+using SpiceEngineCore.Entities;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
@@ -34,11 +32,12 @@ namespace SweetGraphicsCore.Selection
             {
                 var positions = _selectedByID.Where(kvp => kvp.Value).Select(kvp => _entityProvider.GetEntity(kvp.Key).Position);
 
-                return new Vector3(
-                    positions.Average(p => p.X),
-                    positions.Average(p => p.Y),
-                    positions.Average(p => p.Z)
-                );
+                return new Vector3()
+                {
+                    X = positions.Average(p => p.X),
+                    Y = positions.Average(p => p.Y),
+                    Z = positions.Average(p => p.Z)
+                };
             }
         }
 
@@ -162,71 +161,104 @@ namespace SweetGraphicsCore.Selection
 
         private Vector3 GetTranslation(Vector2 mouseDelta)
         {
+            var translation = Vector3.Zero;
+
             switch (SelectionType)
             {
                 case SelectionTypes.Red:
-                    return new Vector3(-mouseDelta.Y * 0.002f, 0.0f, 0.0f);
+                    translation.X -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Green:
-                    return new Vector3(0.0f, -mouseDelta.Y * 0.002f, 0.0f);
+                    translation.Y -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Blue:
-                    return new Vector3(0.0f, 0.0f, -mouseDelta.Y * 0.002f);
+                    translation.Z -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Cyan:
-                    return new Vector3(0.0f, mouseDelta.X * 0.002f, -mouseDelta.Y * 0.002f);
+                    translation.Y += mouseDelta.X * 0.002f;
+                    translation.Z -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Magenta:
-                    return new Vector3(mouseDelta.X * 0.002f, 0.0f, -mouseDelta.Y * 0.002f);
+                    translation.Z -= mouseDelta.Y * 0.002f;
+                    translation.X += mouseDelta.X * 0.002f;
+                    break;
                 case SelectionTypes.Yellow:
-                    return new Vector3(mouseDelta.X * 0.002f, -mouseDelta.Y * 0.002f, 0.0f);
-                case SelectionTypes.None:
-                    return Vector3.Zero;
+                    translation.X += mouseDelta.X * 0.002f;
+                    translation.Y -= mouseDelta.Y * 0.002f;
+                    break;
             }
 
-            throw new ArgumentOutOfRangeException("Cannot handle selection type " + SelectionType);
+            return translation;
         }
 
         private Quaternion GetRotation(Vector2 mouseDelta)
         {
+            var rotation = Quaternion.Identity;
+
             switch (SelectionType)
             {
                 case SelectionTypes.Red:
-                    return Quaternion.FromEulerAngles(-mouseDelta.Y * 0.002f, 0.0f, 0.0f);
+                    //rotation.X -= mouseDelta.Y * 0.002f;
+                    //rotation *= Quaternion.FromAxisAngle(Vector3.UnitZ, -mouseDelta.Y * 0.002f);
+                    rotation = Quaternion.FromEulerAngles(-mouseDelta.Y * 0.002f, 0.0f, 0.0f) * rotation;
+                    break;
                 case SelectionTypes.Green:
-                    return Quaternion.FromEulerAngles(0.0f, -mouseDelta.Y * 0.002f, 0.0f);
+                    //rotation.Y -= mouseDelta.Y * 0.002f;
+                    //rotation *= Quaternion.FromAxisAngle(Vector3.UnitX, -mouseDelta.Y * 0.002f);
+                    rotation = Quaternion.FromEulerAngles(0.0f, -mouseDelta.Y * 0.002f, 0.0f) * rotation;
+                    break;
                 case SelectionTypes.Blue:
-                    return Quaternion.FromEulerAngles(0.0f, 0.0f, -mouseDelta.Y * 0.002f);
+                    //rotation.Z -= mouseDelta.Y * 0.002f;
+                    //rotation *= Quaternion.FromAxisAngle(Vector3.UnitY, -mouseDelta.Y * 0.002f);
+                    rotation = Quaternion.FromEulerAngles(0.0f, 0.0f, -mouseDelta.Y * 0.002f) * rotation;
+                    break;
                 case SelectionTypes.Cyan:
-                    return new Quaternion(0.0f, mouseDelta.X * 0.002f, -mouseDelta.Y * 0.002f, 1.0f);
+                    rotation.Y += mouseDelta.X * 0.002f;
+                    rotation.Z -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Magenta:
-                    return new Quaternion(mouseDelta.X * 0.002f, 0.0f, -mouseDelta.Y * 0.002f, 1.0f);
+                    rotation.Z -= mouseDelta.Y * 0.002f;
+                    rotation.X += mouseDelta.X * 0.002f;
+                    break;
                 case SelectionTypes.Yellow:
-                    return new Quaternion(mouseDelta.X * 0.002f, -mouseDelta.Y * 0.002f, 0.0f, 1.0f);
-                case SelectionTypes.None:
-                    return Quaternion.Identity;
+                    rotation.X += mouseDelta.X * 0.002f;
+                    rotation.Y -= mouseDelta.Y * 0.002f;
+                    break;
             }
 
-            throw new ArgumentOutOfRangeException("Cannot handle selection type " + SelectionType);
+            return rotation;
         }
 
         private Vector3 GetScale(Vector2 mouseDelta)
         {
+            var scale = Vector3.One;
+
             switch (SelectionType)
             {
                 case SelectionTypes.Red:
-                    return new Vector3(-mouseDelta.Y * 0.002f, 1.0f, 1.0f);
+                    scale.X -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Green:
-                    return new Vector3(1.0f, -mouseDelta.Y * 0.002f, 1.0f);
+                    scale.Y -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Blue:
-                    return new Vector3(1.0f, 1.0f, -mouseDelta.Y * 0.002f);
+                    scale.Z -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Cyan:
-                    return new Vector3(1.0f, mouseDelta.X * 0.002f, -mouseDelta.Y * 0.002f);
+                    scale.Y += mouseDelta.X * 0.002f;
+                    scale.Z -= mouseDelta.Y * 0.002f;
+                    break;
                 case SelectionTypes.Magenta:
-                    return new Vector3(mouseDelta.X * 0.002f, 1.0f, -mouseDelta.Y * 0.002f);
+                    scale.Z -= mouseDelta.Y * 0.002f;
+                    scale.X += mouseDelta.X * 0.002f;
+                    break;
                 case SelectionTypes.Yellow:
-                    return new Vector3(mouseDelta.X * 0.002f, -mouseDelta.Y * 0.002f, 1.0f);
-                case SelectionTypes.None:
-                    return Vector3.One;
+                    scale.X += mouseDelta.X * 0.002f;
+                    scale.Y -= mouseDelta.Y * 0.002f;
+                    break;
             }
 
-            throw new ArgumentOutOfRangeException("Cannot handle selection type " + SelectionType);
+            return scale;
         }
     }
 }

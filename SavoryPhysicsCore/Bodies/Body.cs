@@ -1,7 +1,6 @@
-﻿using SavoryPhysicsCore.Shapes;
+﻿using OpenTK;
+using SavoryPhysicsCore.Shapes;
 using SpiceEngineCore.Components;
-using SpiceEngineCore.Geometry.Quaternions;
-using SpiceEngineCore.Geometry.Vectors;
 
 namespace SavoryPhysicsCore.Bodies
 {

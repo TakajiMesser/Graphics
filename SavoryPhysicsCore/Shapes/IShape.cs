@@ -1,5 +1,5 @@
-﻿using SavoryPhysicsCore.Partitioning;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using SavoryPhysicsCore.Partitioning;
 
 namespace SavoryPhysicsCore.Shapes
 {

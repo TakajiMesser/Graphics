@@ -1,5 +1,5 @@
-﻿using OpenTK.Input;
-using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
+using OpenTK.Input;
 using System;
 
 namespace TangyHIDCore.Inputs

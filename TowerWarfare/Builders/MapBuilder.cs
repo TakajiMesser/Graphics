@@ -1,7 +1,7 @@
-﻿using SpiceEngine.Maps;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using SpiceEngine.Maps;
 using SpiceEngine.Rendering.PostProcessing;
-using SpiceEngineCore.Geometry.Colors;
-using SpiceEngineCore.Geometry.Vectors;
 using SpiceEngineCore.Maps;
 using StarchUICore.Attributes.Positions;
 using SweetGraphicsCore.Rendering.Meshes;

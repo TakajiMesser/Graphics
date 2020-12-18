@@ -1,4 +1,4 @@
-﻿using SpiceEngineCore.Geometry.Vectors;
+﻿using OpenTK;
 using SpiceEngineCore.Rendering;
 
 namespace TangyHIDCore.Outputs
@@ -20,7 +20,7 @@ namespace TangyHIDCore.Outputs
         {
             Name = name;
             WindowedResolution = resolution;
-            FullscreenResolution = new Resolution(OpenTK.DisplayDevice.Default.Width, OpenTK.DisplayDevice.Default.Height);
+            FullscreenResolution = new Resolution(DisplayDevice.Default.Width, DisplayDevice.Default.Height);
             IsFullscreen = isFullscreen;
         }
     }
