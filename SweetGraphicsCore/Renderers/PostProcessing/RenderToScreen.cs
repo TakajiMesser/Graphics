@@ -90,8 +90,7 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            // TODO - Change this to a more sensible color, like black
-            GL.ClearColor(Color4.AliceBlue);
+            GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, FinalTexture.Width, FinalTexture.Height);
 

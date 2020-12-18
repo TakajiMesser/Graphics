@@ -144,7 +144,7 @@ namespace SweetGraphicsCore.Renderers.Shaders
         public void SetUniform(string name, Matrix4 matrix)
         {
             var location = GetUniformLocation(name);
-            SetMatrix4Uniform(location, ref matrix);
+            GL.UniformMatrix4(location, 16, false, matrix.Values);
         }
 
         public void SetUniform(string name, Matrix4[] matrices)
@@ -152,25 +152,7 @@ namespace SweetGraphicsCore.Renderers.Shaders
             for (var i = 0; i < matrices.Length; i++)
             {
                 var iLocation = GetUniformLocation(name + "[" + i + "]");
-                SetMatrix4Uniform(iLocation, ref matrices[i]);
-            }
-        }
-
-        private void SetMatrix4Uniform(int location, ref Matrix4 matrix)
-        {
-            //GL.UniformMatrix4(location, 1, false, matrix.Values);
-
-            unsafe
-            {
-                fixed(float *matrix_ptr = &matrix.Values[0])
-                {
-                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
-                }
-
-                /*fixed (float* matrix_ptr = &matrix.Row0.X)
-                {
-                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
-                }*/
+                GL.UniformMatrix4(iLocation, 16, false, matrices[i].Values);
             }
         }
 
