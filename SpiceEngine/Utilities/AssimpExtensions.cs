@@ -1,11 +1,19 @@
 ﻿using Assimp;
 using CitrusAnimationCore.Bones;
-using OpenTK;
 using SweetGraphicsCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Utilities
 {
@@ -30,7 +38,7 @@ namespace SpiceEngine.Utilities
             return matrix4;
         }
 
-        public static OpenTK.Quaternion ToQuaternion(this Assimp.Quaternion quaternion) => new OpenTK.Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
+        public static Quaternion ToQuaternion(this Assimp.Quaternion quaternion) => new Quaternion(quaternion.X, quaternion.Y, quaternion.Z, quaternion.W);
 
         public static SpiceEngineCore.Rendering.Materials.Material ToMaterial(this Material material) => new SpiceEngineCore.Rendering.Materials.Material()
         {

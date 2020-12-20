@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Maps;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngineCore.Maps;
 using StarchUICore.Attributes.Positions;
@@ -11,6 +9,15 @@ using TowerWarfare.Entities.Actors.Towers;
 using TowerWarfare.Entities.Actors.Troops;
 using TowerWarfare.Entities.Cameras;
 using static SpiceEngineCore.Maps.MapLight;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace TowerWarfare.Builders
 {

@@ -26,22 +26,79 @@ namespace SpiceEngineCore.Geometry
             M33 = m33;
         }
 
-        public float M00 { get; private set; }
-        public float M01 { get; private set; }
-        public float M02 { get; private set; }
-        public float M03 { get; private set; }
-        public float M10 { get; private set; }
-        public float M11 { get; private set; }
-        public float M12 { get; private set; }
-        public float M13 { get; private set; }
-        public float M20 { get; private set; }
-        public float M21 { get; private set; }
-        public float M22 { get; private set; }
-        public float M23 { get; private set; }
-        public float M30 { get; private set; }
-        public float M31 { get; private set; }
-        public float M32 { get; private set; }
-        public float M33 { get; private set; }
+        public float M00 { get; set; }
+        public float M01 { get; set; }
+        public float M02 { get; set; }
+        public float M03 { get; set; }
+        public float M10 { get; set; }
+        public float M11 { get; set; }
+        public float M12 { get; set; }
+        public float M13 { get; set; }
+        public float M20 { get; set; }
+        public float M21 { get; set; }
+        public float M22 { get; set; }
+        public float M23 { get; set; }
+        public float M30 { get; set; }
+        public float M31 { get; set; }
+        public float M32 { get; set; }
+        public float M33 { get; set; }
+
+        public Vector4 Row0 => new Vector4(M00, M01, M02, M03);
+        public Vector4 Row1 => new Vector4(M10, M11, M12, M13);
+        public Vector4 Row2 => new Vector4(M20, M21, M22, M23);
+        public Vector4 Row3 => new Vector4(M30, M31, M32, M33);
+
+        public Vector4 Column0 => new Vector4(M00, M10, M20, M30);
+        public Vector4 Column1 => new Vector4(M01, M11, M21, M31);
+        public Vector4 Column2 => new Vector4(M02, M12, M22, M32);
+        public Vector4 Column3 => new Vector4(M03, M13, M23, M33);
+
+        public float this[int rowIndex, int columnIndex]
+        {
+            get => (rowIndex, columnIndex) switch
+            {
+                (0, 0) => M00,
+                (0, 1) => M01,
+                (0, 2) => M02,
+                (0, 3) => M03,
+                (1, 0) => M10,
+                (1, 1) => M11,
+                (1, 2) => M12,
+                (1, 3) => M13,
+                (2, 0) => M20,
+                (2, 1) => M21,
+                (2, 2) => M22,
+                (2, 3) => M23,
+                (3, 0) => M30,
+                (3, 1) => M31,
+                (3, 2) => M32,
+                (3, 3) => M33,
+                _ => throw new ArgumentOutOfRangeException(),
+            };
+            set
+            {
+                _ = (rowIndex, columnIndex) switch
+                {
+                    (0, 0) => M00 = value,
+                    (0, 1) => M01 = value,
+                    (0, 2) => M02 = value,
+                    (0, 3) => M03 = value,
+                    (1, 0) => M10 = value,
+                    (1, 1) => M11 = value,
+                    (1, 2) => M12 = value,
+                    (1, 3) => M13 = value,
+                    (2, 0) => M20 = value,
+                    (2, 1) => M21 = value,
+                    (2, 2) => M22 = value,
+                    (2, 3) => M23 = value,
+                    (3, 0) => M30 = value,
+                    (3, 1) => M31 = value,
+                    (3, 2) => M32 = value,
+                    (3, 3) => M33 = value,
+                    _ => throw new ArgumentOutOfRangeException(),
+                };
+            }
+        }
 
         // TODO - Consider actually storing these matrices as arrays, and having properties mask index access
         public float[] Values => new[] { M00, M01, M02, M03, M10, M11, M12, M13, M20, M21, M22, M23, M30, M31, M32, M33 };
@@ -207,9 +264,11 @@ namespace SpiceEngineCore.Geometry
 
         public static bool operator !=(CMatrix4 left, CMatrix4 right) => !(left == right);
 
-        public static CMatrix4 CreateTranslation(CVector3 vector) => new CMatrix4(1, 0, 0, 0, 0, 1, 0, 0, vector.X, vector.Y, vector.Z, 0, 0, 0, 0, 1);
+        public static CMatrix4 CreateTranslation(Vector3 vector) => new CMatrix4(1, 0, 0, 0, 0, 1, 0, 0, vector.X, vector.Y, vector.Z, 0, 0, 0, 0, 1);
 
-        public static CMatrix4 CreateScale(CVector3 scale) => new CMatrix4(scale.X, 0, 0, 0, 0, scale.Y, 0, 0, 0, 0, scale.Z, 0, 0, 0, 0, 1);
+        public static CMatrix4 CreateScale(Vector3 scale) => new CMatrix4(scale.X, 0, 0, 0, 0, scale.Y, 0, 0, 0, 0, scale.Z, 0, 0, 0, 0, 1);
+
+        public static CMatrix4 CreateScale(float scale) => CreateScale(new Vector3(scale, scale, scale));
 
         public static CMatrix4 CreateFromCQuaternion(CQuaternion quaternion)
         {
@@ -283,11 +342,11 @@ namespace SpiceEngineCore.Geometry
                 0, 0, d, 0);
         }
 
-        public static CMatrix4 LookAt(CVector3 eye, CVector3 target, CVector3 up)
+        public static CMatrix4 LookAt(Vector3 eye, Vector3 target, Vector3 up)
         {
             var z = (eye - target).Normalized();
-            var x = CVector3.Cross(up, z).Normalized();
-            var y = CVector3.Cross(z, x).Normalized();
+            var x = Vector3.Cross(up, z).Normalized();
+            var y = Vector3.Cross(z, x).Normalized();
 
             return new CMatrix4(
                 x.X, y.X, z.X, 0,

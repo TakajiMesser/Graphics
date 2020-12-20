@@ -1,7 +1,15 @@
-﻿using OpenTK;
-using SweetGraphicsCore.Rendering.Meshes;
+﻿using SweetGraphicsCore.Rendering.Meshes;
 using System.Collections.Generic;
 using System.Linq;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Rendering.Models
 {
@@ -71,14 +79,14 @@ namespace SweetGraphicsCore.Rendering.Models
 
         public void Normalize()
         {
-            foreach (var normal in Normals)
+            for (var i = 0; i < Normals.Count; i++)
             {
-                normal.Normalize();
+                Normals[i] = Normals[i].Normalized();
             }
 
-            foreach (var tangent in Tangents)
+            for (var i = 0; i < Tangents.Count; i++)
             {
-                tangent.Normalize();
+                Tangents[i] = Tangents[i].Normalized();
             }
         }
 

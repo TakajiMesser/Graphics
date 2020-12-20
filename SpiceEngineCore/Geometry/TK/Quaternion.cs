@@ -482,7 +482,7 @@ namespace SpiceEngineCore.Geometry
             var result = Identity;
 
             angle *= 0.5f;
-            axis.Normalize();
+            axis = axis.Normalized();
             result.Xyz = axis * (float)Math.Sin(angle);
             result.W = (float)Math.Cos(angle);
 

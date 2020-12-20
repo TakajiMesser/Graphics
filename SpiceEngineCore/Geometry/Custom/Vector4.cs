@@ -16,13 +16,31 @@ namespace SpiceEngineCore.Geometry
             W = w;
         }
 
-        public float X { get; private set; }
-        public float Y { get; private set; }
-        public float Z { get; private set; }
-        public float W { get; private set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float W { get; set; }
 
-        public CVector2 Xy => new CVector2(X, Y);
-        public CVector3 Xyz => new CVector3(X, Y, Z);
+        public CVector2 Xy
+        {
+            get => new CVector2(X, Y);
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+            }
+        }
+
+        public CVector3 Xyz
+        {
+            get => new CVector3(X, Y, Z);
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+                Z = value.Z;
+            }
+        }
 
         public float LengthSquared => X * X + Y * Y + Z * Z + W * W;
 

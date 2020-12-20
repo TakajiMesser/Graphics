@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
@@ -10,6 +8,15 @@ using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -89,7 +96,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
             GL.Disable(EnableCap.DepthTest);
-            GL.ClearColor(Color4.Black);
+            GL.ClearColor(OpenTK.Graphics.Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 

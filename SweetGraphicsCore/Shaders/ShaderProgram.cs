@@ -11,6 +11,15 @@ using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
+
 namespace SweetGraphicsCore.Shaders
 {
     public class ShaderProgram : IShader
@@ -108,10 +117,28 @@ namespace SweetGraphicsCore.Shaders
             }
         }
 
+        private void SetMatrix4Uniform(int location, ref Matrix4 matrix)
+        {
+            //GL.UniformMatrix4(location, 1, false, matrix.Values);
+
+            unsafe
+            {
+                fixed (float* matrix_ptr = &matrix.Values[0])
+                {
+                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
+                }
+
+                /*fixed (float* matrix_ptr = &matrix.Row0.X)
+                {
+                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
+                }*/
+            }
+        }
+
         public void SetUniform(string name, Matrix4 matrix)
         {
             var location = GetUniformLocation(name);
-            GL.UniformMatrix4(location, false, ref matrix);
+            SetMatrix4Uniform(location, ref matrix);
         }
 
         public void SetUniform(string name, Matrix4[] matrices)
@@ -119,7 +146,7 @@ namespace SweetGraphicsCore.Shaders
             for (var i = 0; i < matrices.Length; i++)
             {
                 var iLocation = GetUniformLocation(name + "[" + i + "]");
-                GL.UniformMatrix4(iLocation, false, ref matrices[i]);
+                SetMatrix4Uniform(iLocation, ref matrices[i]);
             }
 
             /*int location = GetUniformLocation(name);
@@ -150,25 +177,25 @@ namespace SweetGraphicsCore.Shaders
         public void SetUniform(string name, Vector2 vector)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform2(location, vector);
+            GL.Uniform2(location, vector.X, vector.Y);
         }
 
         public void SetUniform(string name, Vector3 vector)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform3(location, vector);
+            GL.Uniform3(location, vector.X, vector.Y, vector.Z);
         }
 
         public void SetUniform(string name, Vector4 vector)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform4(location, vector);
+            GL.Uniform4(location, vector.X, vector.Y, vector.Z, vector.W);
         }
 
         public void SetUniform(string name, Color4 color)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform4(location, color);
+            GL.Uniform4(location, color.R, color.G, color.B, color.A);
         }
 
         public void SetUniform(string name, float value)
@@ -205,6 +232,27 @@ namespace SweetGraphicsCore.Shaders
             SetUniform(ModelMatrix.PREVIOUS_NAME, light.PreviousModelMatrix);
         }
 
+        private Matrix4 GetView(PointLight pointLight, TextureTarget target)
+        {
+            switch (target)
+            {
+                case TextureTarget.TextureCubeMapPositiveX:
+                    return Matrix4.LookAt(pointLight.Position, pointLight.Position + Vector3.UnitX, -Vector3.UnitY);
+                case TextureTarget.TextureCubeMapNegativeX:
+                    return Matrix4.LookAt(pointLight.Position, pointLight.Position - Vector3.UnitX, -Vector3.UnitY);
+                case TextureTarget.TextureCubeMapPositiveY:
+                    return Matrix4.LookAt(pointLight.Position, pointLight.Position + Vector3.UnitY, Vector3.UnitZ);
+                case TextureTarget.TextureCubeMapNegativeY:
+                    return Matrix4.LookAt(pointLight.Position, pointLight.Position - Vector3.UnitY, -Vector3.UnitZ);
+                case TextureTarget.TextureCubeMapPositiveZ:
+                    return Matrix4.LookAt(pointLight.Position, pointLight.Position + Vector3.UnitZ, -Vector3.UnitY);
+                case TextureTarget.TextureCubeMapNegativeZ:
+                    return Matrix4.LookAt(pointLight.Position, pointLight.Position - Vector3.UnitZ, -Vector3.UnitY);
+                default:
+                    throw new NotImplementedException("Could not handle target " + target);
+            }
+        }
+
         public void SetLightView(ILight light)
         {
             if (light is PointLight pointLight)
@@ -213,7 +261,7 @@ namespace SweetGraphicsCore.Shaders
 
                 for (var i = 0; i < 6; i++)
                 {
-                    shadowViews.Add(pointLight.GetView(TextureTarget.TextureCubeMapPositiveX + i) * pointLight.Projection);
+                    shadowViews.Add(GetView(pointLight, TextureTarget.TextureCubeMapPositiveX + i) * pointLight.Projection);
                 }
 
                 SetUniform(ViewMatrix.SHADOW_NAME, shadowViews.ToArray());

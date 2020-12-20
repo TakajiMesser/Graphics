@@ -1,6 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
@@ -15,6 +13,17 @@ using System.Drawing;
 using System.Threading.Tasks;
 using TangyHIDCore;
 using Timer = System.Timers.Timer;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
+using OpenTK;
+using OpenTK.Graphics;
 
 namespace SpiceEngine.Game
 {

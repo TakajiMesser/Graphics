@@ -1,10 +1,7 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Entities.Lights;
-using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
+﻿using SpiceEngineCore.Rendering.Matrices;
 using System;
-using System.Collections.Generic;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
 
 namespace SpiceEngineCore.Entities.Cameras
 {

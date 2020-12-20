@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SpiceEngine.Utilities;
+﻿using SpiceEngine.Utilities;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
@@ -11,6 +10,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Rendering.Models
 {
@@ -57,10 +65,28 @@ namespace SpiceEngine.Rendering.Models
                                     .Where(b => b.bone.VertexWeights.Any(v => v.VertexID == i))
                                     .ToList();
 
-                                for (var j = 0; j < 4 && j < matches.Count; j++)
+                                if (matches.Count > 0)
                                 {
-                                    boneIDs[j] = matches[j].boneIndex;
-                                    boneWeights[j] = matches[j].bone.VertexWeights.First(v => v.VertexID == i).Weight;
+                                    boneIDs.X = matches[0].boneIndex;
+                                    boneWeights.X = matches[0].bone.VertexWeights.First(v => v.VertexID == i).Weight;
+                                }
+
+                                if (matches.Count > 1)
+                                {
+                                    boneIDs.Y = matches[1].boneIndex;
+                                    boneWeights.Y = matches[1].bone.VertexWeights.First(v => v.VertexID == i).Weight;
+                                }
+
+                                if (matches.Count > 2)
+                                {
+                                    boneIDs.Z = matches[2].boneIndex;
+                                    boneWeights.Z = matches[2].bone.VertexWeights.First(v => v.VertexID == i).Weight;
+                                }
+
+                                if (matches.Count > 3)
+                                {
+                                    boneIDs.W = matches[3].boneIndex;
+                                    boneWeights.W = matches[3].bone.VertexWeights.First(v => v.VertexID == i).Weight;
                                 }
                             }
 

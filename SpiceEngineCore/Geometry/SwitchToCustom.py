@@ -22,10 +22,10 @@ def getRelativePaths(directory):
 def getEnablingReplacements():
     replacements = []
     replacements.append(Replacement("CColor4", "Color4"))
-    replacements.append(Replacement("CMatrix2", "Matrix2"))
-    replacements.append(Replacement("CMatrix3", "Matrix3"))
-    replacements.append(Replacement("CMatrix4", "Matrix4"))
-    replacements.append(Replacement("CQuaternion", "Quaternion"))
+    #replacements.append(Replacement("CMatrix2", "Matrix2"))
+    #replacements.append(Replacement("CMatrix3", "Matrix3"))
+    #replacements.append(Replacement("CMatrix4", "Matrix4"))
+    #replacements.append(Replacement("CQuaternion", "Quaternion"))
     replacements.append(Replacement("CVector2", "Vector2"))
     replacements.append(Replacement("CVector3", "Vector3"))
     replacements.append(Replacement("CVector4", "Vector4"))
@@ -35,10 +35,10 @@ def getEnablingReplacements():
 def getDisablingReplacements():
     replacements = []
     replacements.append(Replacement("Color4", "TColor4"))
-    replacements.append(Replacement("Matrix2", "TMatrix2"))
-    replacements.append(Replacement("Matrix3", "TMatrix3"))
-    replacements.append(Replacement("Matrix4", "TMatrix4"))
-    replacements.append(Replacement("Quaternion", "TQuaternion"))
+    #replacements.append(Replacement("Matrix2", "TMatrix2"))
+    #replacements.append(Replacement("Matrix3", "TMatrix3"))
+    #replacements.append(Replacement("Matrix4", "TMatrix4"))
+    #replacements.append(Replacement("Quaternion", "TQuaternion"))
     replacements.append(Replacement("Vector2", "TVector2"))
     replacements.append(Replacement("Vector3", "TVector3"))
     replacements.append(Replacement("Vector4", "TVector4"))

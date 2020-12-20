@@ -13,8 +13,8 @@ namespace SpiceEngineCore.Geometry
             Y = y;
         }
 
-        public float X { get; private set; }
-        public float Y { get; private set; }
+        public float X { get; set; }
+        public float Y { get; set; }
 
         public float LengthSquared => X * X + Y * Y;
 

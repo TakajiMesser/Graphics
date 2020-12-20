@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Input;
+﻿using OpenTK.Input;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Utilities;
 using System;
@@ -8,6 +7,15 @@ using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
+
+using Color4 = SpiceEngineCore.Geometry.Color4;
+using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
+using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
+using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
+using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using Vector3 = SpiceEngineCore.Geometry.Vector3;
+using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace TowerWarfare.Resources.Behaviors.Nodes
 {

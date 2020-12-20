@@ -19,15 +19,15 @@ namespace SpiceEngineCore.Geometry
             M22 = m22;
         }
 
-        public float M00 { get; private set; }
-        public float M01 { get; private set; }
-        public float M02 { get; private set; }
-        public float M10 { get; private set; }
-        public float M11 { get; private set; }
-        public float M12 { get; private set; }
-        public float M20 { get; private set; }
-        public float M21 { get; private set; }
-        public float M22 { get; private set; }
+        public float M00 { get; set; }
+        public float M01 { get; set; }
+        public float M02 { get; set; }
+        public float M10 { get; set; }
+        public float M11 { get; set; }
+        public float M12 { get; set; }
+        public float M20 { get; set; }
+        public float M21 { get; set; }
+        public float M22 { get; set; }
 
         public float Determinant => M00 * M11 * M22 + M01 * M12 * M20 + M02 * M10 * M21 - M02 * M11 * M20 - M00 * M12 * M21 - M01 * M10 * M22;
 

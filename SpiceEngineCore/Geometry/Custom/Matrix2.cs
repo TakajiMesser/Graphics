@@ -14,10 +14,10 @@ namespace SpiceEngineCore.Geometry
             M11 = m11;
         }
 
-        public float M00 { get; private set; }
-        public float M01 { get; private set; }
-        public float M10 { get; private set; }
-        public float M11 { get; private set; }
+        public float M00 { get; set; }
+        public float M01 { get; set; }
+        public float M10 { get; set; }
+        public float M11 { get; set; }
 
         public float Determinant => M00 * M11 - M01 * M10;
 

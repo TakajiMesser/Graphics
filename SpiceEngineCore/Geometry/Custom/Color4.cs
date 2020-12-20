@@ -4,10 +4,10 @@ using System.Runtime.InteropServices;
 namespace SpiceEngineCore.Geometry
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct CColor4 : IEquatable<CColor4>
+    public struct Color4 : IEquatable<Color4>
     {
-        public CColor4(byte r, byte g, byte b, byte a) : this(r / (float)byte.MaxValue, g / (float)byte.MaxValue, b / (float)byte.MaxValue, a / (float)byte.MaxValue) { }
-        public CColor4(float r, float g, float b, float a)
+        public Color4(byte r, byte g, byte b, byte a) : this(r / (float)byte.MaxValue, g / (float)byte.MaxValue, b / (float)byte.MaxValue, a / (float)byte.MaxValue) { }
+        public Color4(float r, float g, float b, float a)
         {
             R = r;
             G = g;
@@ -15,10 +15,10 @@ namespace SpiceEngineCore.Geometry
             A = a;
         }
 
-        public float R { get; private set; }
-        public float G { get; private set; }
-        public float B { get; private set; }
-        public float A { get; private set; }
+        public float R { get; set; }
+        public float G { get; set; }
+        public float B { get; set; }
+        public float A { get; set; }
 
         public int ToArgb()
         {
@@ -30,149 +30,149 @@ namespace SpiceEngineCore.Geometry
             return unchecked((int)value);
         }
 
-        public static CColor4 Transparent => new CColor4(255, 255, 255, 0);
-        public static CColor4 AliceBlue => new CColor4(240, 248, 255, 255);
-        public static CColor4 AntiqueWhite => new CColor4(250, 235, 215, 255);
-        public static CColor4 Aqua => new CColor4(0, 255, 255, 255);
-        public static CColor4 Aquamarine => new CColor4(127, 255, 212, 255);
-        public static CColor4 Azure => new CColor4(240, 255, 255, 255);
-        public static CColor4 Beige => new CColor4(245, 245, 220, 255);
-        public static CColor4 Bisque => new CColor4(255, 228, 196, 255);
-        public static CColor4 Black => new CColor4(0, 0, 0, 255);
-        public static CColor4 BlanchedAlmond => new CColor4(255, 235, 205, 255);
-        public static CColor4 Blue => new CColor4(0, 0, 255, 255);
-        public static CColor4 BlueViolet => new CColor4(138, 43, 226, 255);
-        public static CColor4 Brown => new CColor4(165, 42, 42, 255);
-        public static CColor4 BurlyWood => new CColor4(222, 184, 135, 255);
-        public static CColor4 CadetBlue => new CColor4(95, 158, 160, 255);
-        public static CColor4 Chartreuse => new CColor4(127, 255, 0, 255);
-        public static CColor4 Chocolate => new CColor4(210, 105, 30, 255);
-        public static CColor4 Coral => new CColor4(255, 127, 80, 255);
-        public static CColor4 CornflowerBlue => new CColor4(100, 149, 237, 255);
-        public static CColor4 Cornsilk => new CColor4(255, 248, 220, 255);
-        public static CColor4 Crimson => new CColor4(220, 20, 60, 255);
-        public static CColor4 Cyan => new CColor4(0, 255, 255, 255);
-        public static CColor4 DarkBlue => new CColor4(0, 0, 139, 255);
-        public static CColor4 DarkCyan => new CColor4(0, 139, 139, 255);
-        public static CColor4 DarkGoldenrod => new CColor4(184, 134, 11, 255);
-        public static CColor4 DarkGray => new CColor4(169, 169, 169, 255);
-        public static CColor4 DarkGreen => new CColor4(0, 100, 0, 255);
-        public static CColor4 DarkKhaki => new CColor4(189, 183, 107, 255);
-        public static CColor4 DarkMagenta => new CColor4(139, 0, 139, 255);
-        public static CColor4 DarkOliveGreen => new CColor4(85, 107, 47, 255);
-        public static CColor4 DarkOrange => new CColor4(255, 140, 0, 255);
-        public static CColor4 DarkOrchid => new CColor4(153, 50, 204, 255);
-        public static CColor4 DarkRed => new CColor4(139, 0, 0, 255);
-        public static CColor4 DarkSalmon => new CColor4(233, 150, 122, 255);
-        public static CColor4 DarkSeaGreen => new CColor4(143, 188, 139, 255);
-        public static CColor4 DarkSlateBlue => new CColor4(72, 61, 139, 255);
-        public static CColor4 DarkSlateGray => new CColor4(47, 79, 79, 255);
-        public static CColor4 DarkTurquoise => new CColor4(0, 206, 209, 255);
-        public static CColor4 DarkViolet => new CColor4(148, 0, 211, 255);
-        public static CColor4 DeepPink => new CColor4(255, 20, 147, 255);
-        public static CColor4 DeepSkyBlue => new CColor4(0, 191, 255, 255);
-        public static CColor4 DimGray => new CColor4(105, 105, 105, 255);
-        public static CColor4 DodgerBlue => new CColor4(30, 144, 255, 255);
-        public static CColor4 Firebrick => new CColor4(178, 34, 34, 255);
-        public static CColor4 FloralWhite => new CColor4(255, 250, 240, 255);
-        public static CColor4 ForestGreen => new CColor4(34, 139, 34, 255);
-        public static CColor4 Fuchsia => new CColor4(255, 0, 255, 255);
-        public static CColor4 Gainsboro => new CColor4(220, 220, 220, 255);
-        public static CColor4 GhostWhite => new CColor4(248, 248, 255, 255);
-        public static CColor4 Gold => new CColor4(255, 215, 0, 255);
-        public static CColor4 Goldenrod => new CColor4(218, 165, 32, 255);
-        public static CColor4 Gray => new CColor4(128, 128, 128, 255);
-        public static CColor4 Green => new CColor4(0, 128, 0, 255);
-        public static CColor4 GreenYellow => new CColor4(173, 255, 47, 255);
-        public static CColor4 Honeydew => new CColor4(240, 255, 240, 255);
-        public static CColor4 HotPink => new CColor4(255, 105, 180, 255);
-        public static CColor4 IndianRed => new CColor4(205, 92, 92, 255);
-        public static CColor4 Indigo => new CColor4(75, 0, 130, 255);
-        public static CColor4 Ivory => new CColor4(255, 255, 240, 255);
-        public static CColor4 Khaki => new CColor4(240, 230, 140, 255);
-        public static CColor4 Lavender => new CColor4(230, 230, 250, 255);
-        public static CColor4 LavenderBlush => new CColor4(255, 240, 245, 255);
-        public static CColor4 LawnGreen => new CColor4(124, 252, 0, 255);
-        public static CColor4 LemonChiffon => new CColor4(255, 250, 205, 255);
-        public static CColor4 LightBlue => new CColor4(173, 216, 230, 255);
-        public static CColor4 LightCoral => new CColor4(240, 128, 128, 255);
-        public static CColor4 LightCyan => new CColor4(224, 255, 255, 255);
-        public static CColor4 LightGoldenrodYellow => new CColor4(250, 250, 210, 255);
-        public static CColor4 LightGreen => new CColor4(144, 238, 144, 255);
-        public static CColor4 LightGray => new CColor4(211, 211, 211, 255);
-        public static CColor4 LightPink => new CColor4(255, 182, 193, 255);
-        public static CColor4 LightSalmon => new CColor4(255, 160, 122, 255);
-        public static CColor4 LightSeaGreen => new CColor4(32, 178, 170, 255);
-        public static CColor4 LightSkyBlue => new CColor4(135, 206, 250, 255);
-        public static CColor4 LightSlateGray => new CColor4(119, 136, 153, 255);
-        public static CColor4 LightSteelBlue => new CColor4(176, 196, 222, 255);
-        public static CColor4 LightYellow => new CColor4(255, 255, 224, 255);
-        public static CColor4 Lime => new CColor4(0, 255, 0, 255);
-        public static CColor4 LimeGreen => new CColor4(50, 205, 50, 255);
-        public static CColor4 Linen => new CColor4(250, 240, 230, 255);
-        public static CColor4 Magenta => new CColor4(255, 0, 255, 255);
-        public static CColor4 Maroon => new CColor4(128, 0, 0, 255);
-        public static CColor4 MediumAquamarine => new CColor4(102, 205, 170, 255);
-        public static CColor4 MediumBlue => new CColor4(0, 0, 205, 255);
-        public static CColor4 MediumOrchid => new CColor4(186, 85, 211, 255);
-        public static CColor4 MediumPurple => new CColor4(147, 112, 219, 255);
-        public static CColor4 MediumSeaGreen => new CColor4(60, 179, 113, 255);
-        public static CColor4 MediumSlateBlue => new CColor4(123, 104, 238, 255);
-        public static CColor4 MediumSpringGreen => new CColor4(0, 250, 154, 255);
-        public static CColor4 MediumTurquoise => new CColor4(72, 209, 204, 255);
-        public static CColor4 MediumVioletRed => new CColor4(199, 21, 133, 255);
-        public static CColor4 MidnightBlue => new CColor4(25, 25, 112, 255);
-        public static CColor4 MintCream => new CColor4(245, 255, 250, 255);
-        public static CColor4 MistyRose => new CColor4(255, 228, 225, 255);
-        public static CColor4 Moccasin => new CColor4(255, 228, 181, 255);
-        public static CColor4 NavajoWhite => new CColor4(255, 222, 173, 255);
-        public static CColor4 Navy => new CColor4(0, 0, 128, 255);
-        public static CColor4 OldLace => new CColor4(253, 245, 230, 255);
-        public static CColor4 Olive => new CColor4(128, 128, 0, 255);
-        public static CColor4 OliveDrab => new CColor4(107, 142, 35, 255);
-        public static CColor4 Orange => new CColor4(255, 165, 0, 255);
-        public static CColor4 OrangeRed => new CColor4(255, 69, 0, 255);
-        public static CColor4 Orchid => new CColor4(218, 112, 214, 255);
-        public static CColor4 PaleGoldenrod => new CColor4(238, 232, 170, 255);
-        public static CColor4 PaleGreen => new CColor4(152, 251, 152, 255);
-        public static CColor4 PaleTurquoise => new CColor4(175, 238, 238, 255);
-        public static CColor4 PaleVioletRed => new CColor4(219, 112, 147, 255);
-        public static CColor4 PapayaWhip => new CColor4(255, 239, 213, 255);
-        public static CColor4 PeachPuff => new CColor4(255, 218, 185, 255);
-        public static CColor4 Peru => new CColor4(205, 133, 63, 255);
-        public static CColor4 Pink => new CColor4(255, 192, 203, 255);
-        public static CColor4 Plum => new CColor4(221, 160, 221, 255);
-        public static CColor4 PowderBlue => new CColor4(176, 224, 230, 255);
-        public static CColor4 Purple => new CColor4(128, 0, 128, 255);
-        public static CColor4 Red => new CColor4(255, 0, 0, 255);
-        public static CColor4 RosyBrown => new CColor4(188, 143, 143, 255);
-        public static CColor4 RoyalBlue => new CColor4(65, 105, 225, 255);
-        public static CColor4 SaddleBrown => new CColor4(139, 69, 19, 255);
-        public static CColor4 Salmon => new CColor4(250, 128, 114, 255);
-        public static CColor4 SandyBrown => new CColor4(244, 164, 96, 255);
-        public static CColor4 SeaGreen => new CColor4(46, 139, 87, 255);
-        public static CColor4 SeaShell => new CColor4(255, 245, 238, 255);
-        public static CColor4 Sienna => new CColor4(160, 82, 45, 255);
-        public static CColor4 Silver => new CColor4(192, 192, 192, 255);
-        public static CColor4 SkyBlue => new CColor4(135, 206, 235, 255);
-        public static CColor4 SlateBlue => new CColor4(106, 90, 205, 255);
-        public static CColor4 SlateGray => new CColor4(112, 128, 144, 255);
-        public static CColor4 Snow => new CColor4(255, 250, 250, 255);
-        public static CColor4 SpringGreen => new CColor4(0, 255, 127, 255);
-        public static CColor4 SteelBlue => new CColor4(70, 130, 180, 255);
-        public static CColor4 Tan => new CColor4(210, 180, 140, 255);
-        public static CColor4 Teal => new CColor4(0, 128, 128, 255);
-        public static CColor4 Thistle => new CColor4(216, 191, 216, 255);
-        public static CColor4 Tomato => new CColor4(255, 99, 71, 255);
-        public static CColor4 Turquoise => new CColor4(64, 224, 208, 255);
-        public static CColor4 Violet => new CColor4(238, 130, 238, 255);
-        public static CColor4 Wheat => new CColor4(245, 222, 179, 255);
-        public static CColor4 White => new CColor4(255, 255, 255, 255);
-        public static CColor4 WhiteSmoke => new CColor4(245, 245, 245, 255);
-        public static CColor4 Yellow => new CColor4(255, 255, 0, 255);
-        public static CColor4 YellowGreen => new CColor4(154, 205, 50, 255);
+        public static Color4 Transparent => new Color4(255, 255, 255, 0);
+        public static Color4 AliceBlue => new Color4(240, 248, 255, 255);
+        public static Color4 AntiqueWhite => new Color4(250, 235, 215, 255);
+        public static Color4 Aqua => new Color4(0, 255, 255, 255);
+        public static Color4 Aquamarine => new Color4(127, 255, 212, 255);
+        public static Color4 Azure => new Color4(240, 255, 255, 255);
+        public static Color4 Beige => new Color4(245, 245, 220, 255);
+        public static Color4 Bisque => new Color4(255, 228, 196, 255);
+        public static Color4 Black => new Color4(0, 0, 0, 255);
+        public static Color4 BlanchedAlmond => new Color4(255, 235, 205, 255);
+        public static Color4 Blue => new Color4(0, 0, 255, 255);
+        public static Color4 BlueViolet => new Color4(138, 43, 226, 255);
+        public static Color4 Brown => new Color4(165, 42, 42, 255);
+        public static Color4 BurlyWood => new Color4(222, 184, 135, 255);
+        public static Color4 CadetBlue => new Color4(95, 158, 160, 255);
+        public static Color4 Chartreuse => new Color4(127, 255, 0, 255);
+        public static Color4 Chocolate => new Color4(210, 105, 30, 255);
+        public static Color4 Coral => new Color4(255, 127, 80, 255);
+        public static Color4 CornflowerBlue => new Color4(100, 149, 237, 255);
+        public static Color4 Cornsilk => new Color4(255, 248, 220, 255);
+        public static Color4 Crimson => new Color4(220, 20, 60, 255);
+        public static Color4 Cyan => new Color4(0, 255, 255, 255);
+        public static Color4 DarkBlue => new Color4(0, 0, 139, 255);
+        public static Color4 DarkCyan => new Color4(0, 139, 139, 255);
+        public static Color4 DarkGoldenrod => new Color4(184, 134, 11, 255);
+        public static Color4 DarkGray => new Color4(169, 169, 169, 255);
+        public static Color4 DarkGreen => new Color4(0, 100, 0, 255);
+        public static Color4 DarkKhaki => new Color4(189, 183, 107, 255);
+        public static Color4 DarkMagenta => new Color4(139, 0, 139, 255);
+        public static Color4 DarkOliveGreen => new Color4(85, 107, 47, 255);
+        public static Color4 DarkOrange => new Color4(255, 140, 0, 255);
+        public static Color4 DarkOrchid => new Color4(153, 50, 204, 255);
+        public static Color4 DarkRed => new Color4(139, 0, 0, 255);
+        public static Color4 DarkSalmon => new Color4(233, 150, 122, 255);
+        public static Color4 DarkSeaGreen => new Color4(143, 188, 139, 255);
+        public static Color4 DarkSlateBlue => new Color4(72, 61, 139, 255);
+        public static Color4 DarkSlateGray => new Color4(47, 79, 79, 255);
+        public static Color4 DarkTurquoise => new Color4(0, 206, 209, 255);
+        public static Color4 DarkViolet => new Color4(148, 0, 211, 255);
+        public static Color4 DeepPink => new Color4(255, 20, 147, 255);
+        public static Color4 DeepSkyBlue => new Color4(0, 191, 255, 255);
+        public static Color4 DimGray => new Color4(105, 105, 105, 255);
+        public static Color4 DodgerBlue => new Color4(30, 144, 255, 255);
+        public static Color4 Firebrick => new Color4(178, 34, 34, 255);
+        public static Color4 FloralWhite => new Color4(255, 250, 240, 255);
+        public static Color4 ForestGreen => new Color4(34, 139, 34, 255);
+        public static Color4 Fuchsia => new Color4(255, 0, 255, 255);
+        public static Color4 Gainsboro => new Color4(220, 220, 220, 255);
+        public static Color4 GhostWhite => new Color4(248, 248, 255, 255);
+        public static Color4 Gold => new Color4(255, 215, 0, 255);
+        public static Color4 Goldenrod => new Color4(218, 165, 32, 255);
+        public static Color4 Gray => new Color4(128, 128, 128, 255);
+        public static Color4 Green => new Color4(0, 128, 0, 255);
+        public static Color4 GreenYellow => new Color4(173, 255, 47, 255);
+        public static Color4 Honeydew => new Color4(240, 255, 240, 255);
+        public static Color4 HotPink => new Color4(255, 105, 180, 255);
+        public static Color4 IndianRed => new Color4(205, 92, 92, 255);
+        public static Color4 Indigo => new Color4(75, 0, 130, 255);
+        public static Color4 Ivory => new Color4(255, 255, 240, 255);
+        public static Color4 Khaki => new Color4(240, 230, 140, 255);
+        public static Color4 Lavender => new Color4(230, 230, 250, 255);
+        public static Color4 LavenderBlush => new Color4(255, 240, 245, 255);
+        public static Color4 LawnGreen => new Color4(124, 252, 0, 255);
+        public static Color4 LemonChiffon => new Color4(255, 250, 205, 255);
+        public static Color4 LightBlue => new Color4(173, 216, 230, 255);
+        public static Color4 LightCoral => new Color4(240, 128, 128, 255);
+        public static Color4 LightCyan => new Color4(224, 255, 255, 255);
+        public static Color4 LightGoldenrodYellow => new Color4(250, 250, 210, 255);
+        public static Color4 LightGreen => new Color4(144, 238, 144, 255);
+        public static Color4 LightGray => new Color4(211, 211, 211, 255);
+        public static Color4 LightPink => new Color4(255, 182, 193, 255);
+        public static Color4 LightSalmon => new Color4(255, 160, 122, 255);
+        public static Color4 LightSeaGreen => new Color4(32, 178, 170, 255);
+        public static Color4 LightSkyBlue => new Color4(135, 206, 250, 255);
+        public static Color4 LightSlateGray => new Color4(119, 136, 153, 255);
+        public static Color4 LightSteelBlue => new Color4(176, 196, 222, 255);
+        public static Color4 LightYellow => new Color4(255, 255, 224, 255);
+        public static Color4 Lime => new Color4(0, 255, 0, 255);
+        public static Color4 LimeGreen => new Color4(50, 205, 50, 255);
+        public static Color4 Linen => new Color4(250, 240, 230, 255);
+        public static Color4 Magenta => new Color4(255, 0, 255, 255);
+        public static Color4 Maroon => new Color4(128, 0, 0, 255);
+        public static Color4 MediumAquamarine => new Color4(102, 205, 170, 255);
+        public static Color4 MediumBlue => new Color4(0, 0, 205, 255);
+        public static Color4 MediumOrchid => new Color4(186, 85, 211, 255);
+        public static Color4 MediumPurple => new Color4(147, 112, 219, 255);
+        public static Color4 MediumSeaGreen => new Color4(60, 179, 113, 255);
+        public static Color4 MediumSlateBlue => new Color4(123, 104, 238, 255);
+        public static Color4 MediumSpringGreen => new Color4(0, 250, 154, 255);
+        public static Color4 MediumTurquoise => new Color4(72, 209, 204, 255);
+        public static Color4 MediumVioletRed => new Color4(199, 21, 133, 255);
+        public static Color4 MidnightBlue => new Color4(25, 25, 112, 255);
+        public static Color4 MintCream => new Color4(245, 255, 250, 255);
+        public static Color4 MistyRose => new Color4(255, 228, 225, 255);
+        public static Color4 Moccasin => new Color4(255, 228, 181, 255);
+        public static Color4 NavajoWhite => new Color4(255, 222, 173, 255);
+        public static Color4 Navy => new Color4(0, 0, 128, 255);
+        public static Color4 OldLace => new Color4(253, 245, 230, 255);
+        public static Color4 Olive => new Color4(128, 128, 0, 255);
+        public static Color4 OliveDrab => new Color4(107, 142, 35, 255);
+        public static Color4 Orange => new Color4(255, 165, 0, 255);
+        public static Color4 OrangeRed => new Color4(255, 69, 0, 255);
+        public static Color4 Orchid => new Color4(218, 112, 214, 255);
+        public static Color4 PaleGoldenrod => new Color4(238, 232, 170, 255);
+        public static Color4 PaleGreen => new Color4(152, 251, 152, 255);
+        public static Color4 PaleTurquoise => new Color4(175, 238, 238, 255);
+        public static Color4 PaleVioletRed => new Color4(219, 112, 147, 255);
+        public static Color4 PapayaWhip => new Color4(255, 239, 213, 255);
+        public static Color4 PeachPuff => new Color4(255, 218, 185, 255);
+        public static Color4 Peru => new Color4(205, 133, 63, 255);
+        public static Color4 Pink => new Color4(255, 192, 203, 255);
+        public static Color4 Plum => new Color4(221, 160, 221, 255);
+        public static Color4 PowderBlue => new Color4(176, 224, 230, 255);
+        public static Color4 Purple => new Color4(128, 0, 128, 255);
+        public static Color4 Red => new Color4(255, 0, 0, 255);
+        public static Color4 RosyBrown => new Color4(188, 143, 143, 255);
+        public static Color4 RoyalBlue => new Color4(65, 105, 225, 255);
+        public static Color4 SaddleBrown => new Color4(139, 69, 19, 255);
+        public static Color4 Salmon => new Color4(250, 128, 114, 255);
+        public static Color4 SandyBrown => new Color4(244, 164, 96, 255);
+        public static Color4 SeaGreen => new Color4(46, 139, 87, 255);
+        public static Color4 SeaShell => new Color4(255, 245, 238, 255);
+        public static Color4 Sienna => new Color4(160, 82, 45, 255);
+        public static Color4 Silver => new Color4(192, 192, 192, 255);
+        public static Color4 SkyBlue => new Color4(135, 206, 235, 255);
+        public static Color4 SlateBlue => new Color4(106, 90, 205, 255);
+        public static Color4 SlateGray => new Color4(112, 128, 144, 255);
+        public static Color4 Snow => new Color4(255, 250, 250, 255);
+        public static Color4 SpringGreen => new Color4(0, 255, 127, 255);
+        public static Color4 SteelBlue => new Color4(70, 130, 180, 255);
+        public static Color4 Tan => new Color4(210, 180, 140, 255);
+        public static Color4 Teal => new Color4(0, 128, 128, 255);
+        public static Color4 Thistle => new Color4(216, 191, 216, 255);
+        public static Color4 Tomato => new Color4(255, 99, 71, 255);
+        public static Color4 Turquoise => new Color4(64, 224, 208, 255);
+        public static Color4 Violet => new Color4(238, 130, 238, 255);
+        public static Color4 Wheat => new Color4(245, 222, 179, 255);
+        public static Color4 White => new Color4(255, 255, 255, 255);
+        public static Color4 WhiteSmoke => new Color4(245, 245, 245, 255);
+        public static Color4 Yellow => new Color4(255, 255, 0, 255);
+        public static Color4 YellowGreen => new Color4(154, 205, 50, 255);
 
-        public static CColor4 FromSrgb(CColor4 srgb)
+        public static Color4 FromSrgb(Color4 srgb)
         {
             float r, g, b;
 
@@ -203,10 +203,10 @@ namespace SpiceEngineCore.Geometry
                 b = (float)Math.Pow((srgb.B + 0.055f) / (1.0f + 0.055f), 2.4f);
             }
 
-            return new CColor4(r, g, b, srgb.A);
+            return new Color4(r, g, b, srgb.A);
         }
 
-        public static CColor4 ToSrgb(CColor4 rgb)
+        public static Color4 ToSrgb(Color4 rgb)
         {
             float r, g, b;
 
@@ -237,7 +237,7 @@ namespace SpiceEngineCore.Geometry
                 b = ((1.0f + 0.055f) * (float)Math.Pow(rgb.B, 1.0f / 2.4f)) - 0.055f;
             }
 
-            return new CColor4(r, g, b, rgb.A);
+            return new Color4(r, g, b, rgb.A);
         }
 
         /// <summary>
@@ -253,7 +253,7 @@ namespace SpiceEngineCore.Geometry
         /// Each has a range of 0.0 to 1.0.
         /// </param>
         
-        public static CColor4 FromHsl(CVector4 hsl)
+        public static Color4 FromHsl(Vector4 hsl)
         {
             var hue = hsl.X * 360.0f;
             var saturation = hsl.Y;
@@ -313,7 +313,7 @@ namespace SpiceEngineCore.Geometry
             {
                 m = 0;
             }
-            return new CColor4(r + m, g + m, b + m, hsl.W);
+            return new Color4(r + m, g + m, b + m, hsl.W);
         }
 
         /// <summary>
@@ -326,7 +326,7 @@ namespace SpiceEngineCore.Geometry
         /// Each has a range of 0.0 to 1.0.
         /// </returns>
         /// <param name="rgb">Color value to convert.</param>
-        public static CVector4 ToHsl(CColor4 rgb)
+        public static Vector4 ToHsl(Color4 rgb)
         {
             var max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
             var min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
@@ -368,7 +368,7 @@ namespace SpiceEngineCore.Geometry
                 saturation = diff / (1.0f - Math.Abs((2.0f * lightness) - 1.0f));
             }
 
-            return new CVector4(hue, saturation, lightness, rgb.A);
+            return new Vector4(hue, saturation, lightness, rgb.A);
         }
 
         /// <summary>
@@ -383,7 +383,7 @@ namespace SpiceEngineCore.Geometry
         /// (which is copied to the output's Alpha value).
         /// Each has a range of 0.0 to 1.0.
         /// </param>
-        public static CColor4 FromHsv(CVector4 hsv)
+        public static Color4 FromHsv(Vector4 hsv)
         {
             var hue = hsv.X * 360.0f;
             var saturation = hsv.Y;
@@ -439,7 +439,7 @@ namespace SpiceEngineCore.Geometry
             }
 
             var m = value - c;
-            return new CColor4(r + m, g + m, b + m, hsv.W);
+            return new Color4(r + m, g + m, b + m, hsv.W);
         }
 
         /// <summary>
@@ -452,7 +452,7 @@ namespace SpiceEngineCore.Geometry
         /// Each has a range of 0.0 to 1.0.
         /// </returns>
         /// <param name="rgb">Color value to convert.</param>
-        public static CVector4 ToHsv(CColor4 rgb)
+        public static Vector4 ToHsv(Color4 rgb)
         {
             var max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
             var min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
@@ -488,7 +488,7 @@ namespace SpiceEngineCore.Geometry
                 saturation = diff / max;
             }
 
-            return new CVector4(hue, saturation, max, rgb.A);
+            return new Vector4(hue, saturation, max, rgb.A);
         }
 
         /// <summary>
@@ -503,12 +503,12 @@ namespace SpiceEngineCore.Geometry
         /// Each has a range of 0.0 to 1.0.
         /// </param>
         /// <remarks>Uses the CIE XYZ colorspace.</remarks>
-        public static CColor4 FromXyz(CVector4 xyz)
+        public static Color4 FromXyz(Vector4 xyz)
         {
             var r = (0.41847f * xyz.X) + (-0.15866f * xyz.Y) + (-0.082835f * xyz.Z);
             var g = (-0.091169f * xyz.X) + (0.25243f * xyz.Y) + (0.015708f * xyz.Z);
             var b = (0.00092090f * xyz.X) + (-0.0025498f * xyz.Y) + (0.17860f * xyz.Z);
-            return new CColor4(r, g, b, xyz.W);
+            return new Color4(r, g, b, xyz.W);
         }
 
         /// <summary>
@@ -521,12 +521,12 @@ namespace SpiceEngineCore.Geometry
         /// </returns>
         /// <param name="rgb">Color value to convert.</param>
         /// <remarks>Uses the CIE XYZ colorspace.</remarks>
-        public static CVector4 ToXyz(CColor4 rgb)
+        public static Vector4 ToXyz(Color4 rgb)
         {
             var x = ((0.49f * rgb.R) + (0.31f * rgb.G) + (0.20f * rgb.B)) / 0.17697f;
             var y = ((0.17697f * rgb.R) + (0.81240f * rgb.G) + (0.01063f * rgb.B)) / 0.17697f;
             var z = ((0.00f * rgb.R) + (0.01f * rgb.G) + (0.99f * rgb.B)) / 0.17697f;
-            return new CVector4(x, y, z, rgb.A);
+            return new Vector4(x, y, z, rgb.A);
         }
 
         /// <summary>
@@ -542,12 +542,12 @@ namespace SpiceEngineCore.Geometry
         /// to the output's Alpha value).
         /// </param>
         /// <remarks>Converts using ITU-R BT.601/CCIR 601 W(r) = 0.299 W(b) = 0.114 U(max) = 0.436 V(max) = 0.615.</remarks>
-        public static CColor4 FromYcbcr(CVector4 ycbcr)
+        public static Color4 FromYcbcr(Vector4 ycbcr)
         {
             var r = (1.0f * ycbcr.X) + (0.0f * ycbcr.Y) + (1.402f * ycbcr.Z);
             var g = (1.0f * ycbcr.X) + (-0.344136f * ycbcr.Y) + (-0.714136f * ycbcr.Z);
             var b = (1.0f * ycbcr.X) + (1.772f * ycbcr.Y) + (0.0f * ycbcr.Z);
-            return new CColor4(r, g, b, ycbcr.W);
+            return new Color4(r, g, b, ycbcr.W);
         }
 
         /// <summary>
@@ -562,12 +562,12 @@ namespace SpiceEngineCore.Geometry
         /// </returns>
         /// <param name="rgb">Color value to convert.</param>
         /// <remarks>Converts using ITU-R BT.601/CCIR 601 W(r) = 0.299 W(b) = 0.114 U(max) = 0.436 V(max) = 0.615.</remarks>
-        public static CVector4 ToYcbcr(CColor4 rgb)
+        public static Vector4 ToYcbcr(Color4 rgb)
         {
             var y = (0.299f * rgb.R) + (0.587f * rgb.G) + (0.114f * rgb.B);
             var u = (-0.168736f * rgb.R) + (-0.331264f * rgb.G) + (0.5f * rgb.B);
             var v = (0.5f * rgb.R) + (-0.418688f * rgb.G) + (-0.081312f * rgb.B);
-            return new CVector4(y, u, v, rgb.A);
+            return new Vector4(y, u, v, rgb.A);
         }
 
         /// <summary>
@@ -582,7 +582,7 @@ namespace SpiceEngineCore.Geometry
         /// (which is copied to the output's Alpha value).
         /// Each has a range of 0.0 to 1.0.
         /// </param>
-        public static CColor4 FromHcy(CVector4 hcy)
+        public static Color4 FromHcy(Vector4 hcy)
         {
             var hue = hcy.X * 360.0f;
             var y = hcy.Y;
@@ -636,7 +636,7 @@ namespace SpiceEngineCore.Geometry
             }
 
             var m = luminance - (0.30f * r) + (0.59f * g) + (0.11f * b);
-            return new CColor4(r + m, g + m, b + m, hcy.W);
+            return new Color4(r + m, g + m, b + m, hcy.W);
         }
 
         /// <summary>
@@ -649,7 +649,7 @@ namespace SpiceEngineCore.Geometry
         /// Each has a range of 0.0 to 1.0.
         /// </returns>
         /// <param name="rgb">Color value to convert.</param>
-        public static CVector4 ToHcy(CColor4 rgb)
+        public static Vector4 ToHcy(Color4 rgb)
         {
             var max = Math.Max(rgb.R, Math.Max(rgb.G, rgb.B));
             var min = Math.Min(rgb.R, Math.Min(rgb.G, rgb.B));
@@ -673,12 +673,12 @@ namespace SpiceEngineCore.Geometry
 
             var luminance = (0.30f * rgb.R) + (0.59f * rgb.G) + (0.11f * rgb.B);
 
-            return new CVector4(hue, diff, luminance, rgb.A);
+            return new Vector4(hue, diff, luminance, rgb.A);
         }
 
-        public override bool Equals(object obj) => obj is CColor4 color && Equals(color);
+        public override bool Equals(object obj) => obj is Color4 color && Equals(color);
 
-        public bool Equals(CColor4 other) => R == other.R
+        public bool Equals(Color4 other) => R == other.R
             && G == other.G
             && B == other.B
             && A == other.A;
@@ -693,8 +693,8 @@ namespace SpiceEngineCore.Geometry
             return hashCode;
         }
 
-        public static bool operator ==(CColor4 left, CColor4 right) => left.Equals(right);
+        public static bool operator ==(Color4 left, Color4 right) => left.Equals(right);
 
-        public static bool operator !=(CColor4 left, CColor4 right) => !(left == right);
+        public static bool operator !=(Color4 left, Color4 right) => !(left == right);
     }
 }

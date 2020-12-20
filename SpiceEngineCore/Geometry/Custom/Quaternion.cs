@@ -7,7 +7,9 @@ namespace SpiceEngineCore.Geometry
     [StructLayout(LayoutKind.Sequential)]
     public struct CQuaternion : IEquatable<CQuaternion>
     {
-        public CQuaternion(CVector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
+        public static CQuaternion FromAxisAngle(Vector3 v, float w) => new CQuaternion(v, w);
+
+        public CQuaternion(Vector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
         public CQuaternion(float x, float y, float z, float w)
         {
             X = x;
@@ -16,7 +18,7 @@ namespace SpiceEngineCore.Geometry
             W = w;
         }
 
-        public CQuaternion(CVector3 eulerAngles) : this(eulerAngles.X, eulerAngles.Y, eulerAngles.Z) { }
+        public CQuaternion(Vector3 eulerAngles) : this(eulerAngles.X, eulerAngles.Y, eulerAngles.Z) { }
         public CQuaternion(float rotationX, float rotationY, float rotationZ)
         {
             rotationX *= 0.5f;
@@ -37,10 +39,10 @@ namespace SpiceEngineCore.Geometry
             W = (c1 * c2 * c3) - (s1 * s2 * s3);
         }
 
-        public float X { get; private set; }
-        public float Y { get; private set; }
-        public float Z { get; private set; }
-        public float W { get; private set; }
+        public float X { get; set; }
+        public float Y { get; set; }
+        public float Z { get; set; }
+        public float W { get; set; }
 
         public float Length => (float)Math.Sqrt(LengthSquared);
 
@@ -67,7 +69,7 @@ namespace SpiceEngineCore.Geometry
             return new CQuaternion(X * scale, Y * scale, Z * scale, W * scale);
         }
 
-        public CVector3 ToEulerAngles()
+        public Vector3 ToEulerAngles()
         {
             /*
             reference
@@ -108,10 +110,10 @@ namespace SpiceEngineCore.Geometry
                 x = (float)Math.Atan2(2 * ((q.W * q.X) - (q.Y * q.Z)), sqw - sqx - sqy + sqz);
             }
 
-            return new CVector3(x, y, z);
+            return new Vector3(x, y, z);
         }
 
-        public CVector4 ToAxisAngle()
+        public Vector4 ToAxisAngle()
         {
             var quaternion = Math.Abs(W) > 1.0f
                 ? Normalized()
@@ -122,7 +124,7 @@ namespace SpiceEngineCore.Geometry
 
             if (den > 0.0001f)
             {
-                return new CVector4(
+                return new Vector4(
                     quaternion.X / den,
                     quaternion.Y / den,
                     quaternion.Z / den,
@@ -130,7 +132,7 @@ namespace SpiceEngineCore.Geometry
             }
             else
             {
-                return new CVector4(
+                return new Vector4(
                     1f,
                     0f,
                     0f,
@@ -190,13 +192,13 @@ namespace SpiceEngineCore.Geometry
             return new CQuaternion(x, y, z, w);
 
             /*result = new CQuaternion(
-                (right.W * left.Xyz) + (left.W * right.Xyz) + CVector3.Cross(left.Xyz, right.Xyz),
-                (left.W * right.W) - CVector3.Dot(left.Xyz, right.Xyz));*/
+                (right.W * left.Xyz) + (left.W * right.Xyz) + Vector3.Cross(left.Xyz, right.Xyz),
+                (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));*/
         }
 
         public static CQuaternion operator *(float scale, CQuaternion quaternion) => new CQuaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
 
-        public static CQuaternion FromEulerAngles(CVector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
+        public static CQuaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
         public static CQuaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ) => new CQuaternion(rotationX, rotationY, rotationZ);
 
         public static CQuaternion FromMatrix(CMatrix3 matrix)

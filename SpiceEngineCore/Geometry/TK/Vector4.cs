@@ -1994,15 +1994,15 @@ namespace SpiceEngineCore.Geometry
         }
 
         /// <summary>
-        /// Returns this Vector4 as a Color4. The resulting struct will have RGBA mapped to XYZW, in that order.
+        /// Returns this Vector4 as a TColor4. The resulting struct will have RGBA mapped to XYZW, in that order.
         /// </summary>
         /// <param name="v">The Vector4 to convert.</param>
-        /// <returns>The Vector4, converted to a Color4.</returns>
+        /// <returns>The Vector4, converted to a TColor4.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
-        public static explicit operator Color4(Vector4 v)
+        public static explicit operator TColor4(Vector4 v)
         {
-            return new Color4(v.X, v.Y, v.Z, v.W);//Unsafe.As<Vector4, Color4>(ref v);
+            return new TColor4(v.X, v.Y, v.Z, v.W);//Unsafe.As<Vector4, TColor4>(ref v);
         }
 
         /// <summary>
