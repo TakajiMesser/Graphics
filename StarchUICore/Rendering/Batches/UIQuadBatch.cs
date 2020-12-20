@@ -223,7 +223,7 @@ namespace StarchUICore.Rendering.Batches
             //_renderable.Update(vertexUpdate, offset, count);
         }
 
-        public override bool CompareUniforms(IRenderable renderable)
+        public override bool CanBatch(IRenderable renderable)
         {
             // TODO - Determine if we do actually want to support batching for UI items
             if (renderable is IView || renderable is IGroup)

@@ -39,7 +39,7 @@ namespace SpiceEngineCore.Rendering.Batches
             IsLoaded = true;
         }
 
-        public abstract bool CompareUniforms(IRenderable renderable);
+        public abstract bool CanBatch(IRenderable renderable);
         public abstract void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram);
         public virtual void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider) { }
         public virtual void Draw() => _renderable.Draw();

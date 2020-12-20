@@ -23,11 +23,9 @@ namespace SpiceEngine.Utilities
             {
                 for (var j = 0; j < 4; j++)
                 {
-                    matrix4[i, j] = matrix[i + 1, j + 1];
+                    matrix4[j, i] = matrix[i + 1, j + 1];
                 }
             }
-            //matrix4.Invert();
-            matrix4.Transpose();
             
             return matrix4;
         }

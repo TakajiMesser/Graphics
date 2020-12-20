@@ -41,7 +41,7 @@ namespace SweetGraphicsCore.Rendering.Batches
             base.AddEntity(id, renderable);
         }
 
-        public override bool CompareUniforms(IRenderable renderable) => renderable is IBillboard billboard && _renderable.TextureIndex == billboard.TextureIndex;
+        public override bool CanBatch(IRenderable renderable) => renderable is IBillboard billboard && _renderable.TextureIndex == billboard.TextureIndex;
 
         public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram) { }
 

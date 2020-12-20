@@ -36,7 +36,7 @@ namespace SpiceEngineCore.Rendering.Batches
         void RemoveEntity(int id);
 
         void SetUniforms(IEntityProvider entityProvider, ShaderProgram program);
-        bool CompareUniforms(IRenderable renderable);
+        bool CanBatch(IRenderable renderable);
         void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
 
         void Load();

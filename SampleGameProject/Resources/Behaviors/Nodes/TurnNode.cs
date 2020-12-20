@@ -37,7 +37,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                         // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
                         // TODO - This is mad suspect...
-                        var flattenedUp = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive) is Camera cameraInstance ? cameraInstance._viewMatrix.Up.Xy : Vector2.One;
+                        var flattenedUp = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive) is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
                         turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
 
                         actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);

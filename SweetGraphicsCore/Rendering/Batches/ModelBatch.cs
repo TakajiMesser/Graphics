@@ -32,7 +32,7 @@ namespace SweetGraphicsCore.Rendering.Batches
 
         // For now, assume that models are never good candidates for combining batches,
         // as their positions must get updated too frequently
-        public override bool CompareUniforms(IRenderable renderable) => false;
+        public override bool CanBatch(IRenderable renderable) => false;
 
         public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
         {
@@ -68,7 +68,7 @@ namespace SweetGraphicsCore.Rendering.Batches
             // TODO - This is janky to set this uniform based on entity type...
             if (entity is IBrush)
             {
-                shaderProgram.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
+                shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.Identity);
                 shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
             }
             else

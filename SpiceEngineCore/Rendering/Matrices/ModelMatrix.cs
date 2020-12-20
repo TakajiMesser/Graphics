@@ -6,7 +6,7 @@ namespace SpiceEngineCore.Rendering.Matrices
 {
     public class ModelMatrix
     {
-        public const string NAME = "modelMatrix";
+        public const string CURRENT_NAME = "modelMatrix";
         public const string PREVIOUS_NAME = "previousModelMatrix";
 
         public ModelMatrix() : this(new Transform()) { }
@@ -14,13 +14,12 @@ namespace SpiceEngineCore.Rendering.Matrices
         public ModelMatrix(Transform transform)
         {
             WorldTransform = transform;
-            CurrentMatrix = WorldTransform.ToMatrix();
+            CurrentValue = WorldTransform.ToMatrix();
         }
 
+        public Matrix4 CurrentValue { get; private set; }
+        public Matrix4 PreviousValue { get; private set; }
         public Transform WorldTransform { get; private set; }
-        public Matrix4 CurrentMatrix { get; private set; }
-        public Matrix4 PreviousMatrix { get; private set; }
-        
 
         public Vector3 Position
         {
@@ -65,15 +64,16 @@ namespace SpiceEngineCore.Rendering.Matrices
         {
             Transformed?.Invoke(this, new TransformEventArgs(transform));
             WorldTransform.Combine(transform);
-            CurrentMatrix = WorldTransform.ToMatrix();
+
+            CurrentValue = WorldTransform.ToMatrix();
         }
 
         public void Set(ShaderProgram program)
         {
-            program.SetUniform(NAME, CurrentMatrix);
-            program.SetUniform(PREVIOUS_NAME, PreviousMatrix);
+            program.SetUniform(CURRENT_NAME, CurrentValue);
+            program.SetUniform(PREVIOUS_NAME, PreviousValue);
 
-            PreviousMatrix = CurrentMatrix;
+            PreviousValue = CurrentValue;
         }
     }
 }

@@ -130,7 +130,7 @@ namespace StarchUICore.Rendering.Batches
             //_renderable.Update(vertexUpdate, offset, count);
         }
 
-        public override bool CompareUniforms(IRenderable renderable) => renderable is Label textView && textView.Font == _renderable.Font;
+        public override bool CanBatch(IRenderable renderable) => renderable is Label textView && textView.Font == _renderable.Font;
 
         public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
         {

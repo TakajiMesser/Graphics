@@ -21,12 +21,5 @@ namespace SpiceEngineCore.Entities.Volumes
             get => _modelMatrix.Scale;
             set => _modelMatrix.Scale = value;
         }
-
-        //public void Load() => Mesh.Load();
-        //public void Draw() => Mesh.Draw();
-
-        /*public override void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
-
-        public override bool CompareUniforms(IEntity entity) => false;*/
     }
 }

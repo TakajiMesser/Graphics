@@ -5,11 +5,19 @@ namespace SpiceEngineCore.Rendering.Matrices
 {
     public class ViewMatrix
     {
-        public const string NAME = "viewMatrix";
+        public const string CURRENT_NAME = "viewMatrix";
         public const string PREVIOUS_NAME = "previousViewMatrix";
         public const string SHADOW_NAME = "shadowViewMatrices";
 
-        public Matrix4 Matrix { get; private set; }
+        private Vector3 _translation = Vector3.Zero;
+        private Vector3 _lookAt = -Vector3.UnitZ;
+        private Vector3 _up = Vector3.UnitY;
+
+        public ViewMatrix() { }
+        public ViewMatrix(Vector3 translation, Vector3 lookAt, Vector3 up) => Update(translation, lookAt, up);
+
+        public Matrix4 CurrentValue { get; private set; }
+        public Matrix4 PreviousValue { get; private set; }
 
         public Vector3 Translation
         {
@@ -41,15 +49,6 @@ namespace SpiceEngineCore.Rendering.Matrices
             }
         }
 
-        private Vector3 _translation = Vector3.Zero;
-        private Vector3 _lookAt = -Vector3.UnitZ;
-        private Vector3 _up = Vector3.UnitY;
-
-        private Matrix4 _previousMatrix;
-
-        public ViewMatrix() { }
-        public ViewMatrix(Vector3 translation, Vector3 lookAt, Vector3 up) => Update(translation, lookAt, up);
-
         public void Update(Vector3 translation, Vector3 lookAt, Vector3 up)
         {
             _translation = translation;
@@ -61,12 +60,15 @@ namespace SpiceEngineCore.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
-            program.SetUniform(NAME, Matrix);
-            program.SetUniform(PREVIOUS_NAME, _previousMatrix);
+            program.SetUniform(CURRENT_NAME, CurrentValue);
+            program.SetUniform(PREVIOUS_NAME, PreviousValue);
 
-            _previousMatrix = Matrix;
+            PreviousValue = CurrentValue;
         }
 
-        private void CalculateMatrix() => Matrix = Matrix4.LookAt(Translation, LookAt, Up);
+        private void CalculateMatrix()
+        {
+            CurrentValue = Matrix4.LookAt(Translation, LookAt, Up);
+        }
     }
 }

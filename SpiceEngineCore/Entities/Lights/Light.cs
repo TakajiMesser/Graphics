@@ -26,6 +26,5 @@ namespace SpiceEngineCore.Entities.Lights
         public abstract T ToStruct();
 
         public void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
-        //public bool CompareUniforms(Entity entity) => entity is ILight && base.CompareUniforms(entity);
     }
 }

@@ -96,7 +96,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 _program.BindTexture(SkyTexture, "mainTexture", 0);
 
                 camera.SetUniforms(_program);
-                _program.SetUniform(ModelMatrix.NAME, Matrix4.CreateTranslation(camera.Position));
+                _program.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.CreateTranslation(camera.Position));
                 _cubeMesh.Draw();
 
                 GL.CullFace((CullFaceMode)oldCullFaceMode);
@@ -124,7 +124,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 var height = width / camera._projectionMatrix.Resolution.AspectRatio;
                 var projection = Matrix4.CreateOrthographic(width, height, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);*/
                 var projection = camera.CalculateProjection();
-                _2DProgram.SetUniform(ProjectionMatrix.NAME, projection);
+                _2DProgram.SetUniform(ProjectionMatrix.CURRENT_NAME, projection);
 
                 var originalDirection = -Vector3.UnitZ;
                 var direction = (camera._viewMatrix.LookAt - camera._viewMatrix.Translation).Normalized();
@@ -135,7 +135,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                     ? Quaternion.Identity
                     : Quaternion.FromAxisAngle(rotationAxis, UnitConversions.ToDegrees((float)Math.Acos(cosTheta)));
 
-                _2DProgram.SetUniform(ModelMatrix.NAME, Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(camera.Position));
+                _2DProgram.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.CreateFromQuaternion(rotation) * Matrix4.CreateTranslation(camera.Position));
                 _squareMesh.Draw();
             }
         }

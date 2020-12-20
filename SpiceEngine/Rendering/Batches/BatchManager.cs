@@ -285,7 +285,7 @@ namespace SpiceEngine.Rendering.Batches
             {
                 var batch = _batches[i];
 
-                if (batch.CompareUniforms(renderable))
+                if (batch.CanBatch(renderable))
                 {
                     //var entity = _entityProvider.GetEntity(entityID);
 

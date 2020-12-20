@@ -9,8 +9,8 @@ namespace SpiceEngineCore.Game
 {
     public abstract class Window : NativeWindow
     {
-        private ISimulator _simulator;
-        private IRenderer _renderer;
+        private ISimulate _simulator;
+        private IRender _renderer;
 
         private Configuration _configuration;
         private GameLoader _gameLoader;

@@ -17,9 +17,6 @@ namespace SauceEditorCore.Models.Entities
 
         public TriangleEntity(ModelTriangle modelTriangle, TexturePaths texturePaths) : base(modelTriangle, texturePaths) { }
 
-        /*public override bool CompareUniforms(IEntity entity) => entity is TriangleEntity
-            && base.CompareUniforms(entity);*/
-
         public override IRenderable ToRenderable()
         {
             var meshBuild = new ModelBuilder(ModelShape);

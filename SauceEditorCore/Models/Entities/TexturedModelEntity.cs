@@ -89,10 +89,6 @@ namespace SauceEditorCore.Models.Entities
         {
             base.SetUniforms(program);
             CurrentMaterial.SetUniforms(program);
-        }
-
-        public override bool CompareUniforms(IEntity entity) => entity is ITextureBinder textureBinder
-            && CurrentMaterial.Equals(textureBinder.CurrentMaterial)
-            && CurrentTextureMapping.Equals(textureBinder.CurrentTextureMapping);*/
+        }*/
     }
 }

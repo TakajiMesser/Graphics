@@ -7,6 +7,8 @@ namespace CitrusAnimationCore.Bones
 {
     public class Joint
     {
+        public Joint(string name) => Name = name;
+
         public string Name { get; private set; }
         public List<Joint> Children { get; private set; } = new List<Joint>();
 
@@ -50,11 +52,6 @@ namespace CitrusAnimationCore.Bones
             {
                 child.CalculateInverseBindTransforms(meshIndex, bindTransform);
             }
-        }
-
-        public Joint(string name)
-        {
-            Name = name;
         }
 
         /// <summary>
@@ -101,10 +98,10 @@ namespace CitrusAnimationCore.Bones
 
                         var meshTransform = meshTransforms.First(m => m.MeshIndex == kvp.Key);
 
-                        var jointIndex = transform.JointIndices.FirstOrDefault(i => i.MeshIndex == kvp.Key);
-                        if (jointIndex != null)
+                        var jointIndex = transform.GetJointIndex(kvp.Key);
+                        if (jointIndex.HasValue)
                         {
-                            meshTransform.TransformsByBoneIndex.Add(jointIndex.BoneIndex, kvp.Value);
+                            meshTransform.AddTransform(jointIndex.Value.BoneIndex, kvp.Value);
                         }
                     }
                 }

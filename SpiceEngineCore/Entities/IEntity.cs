@@ -13,7 +13,5 @@ namespace SpiceEngineCore.Entities
         event EventHandler<EntityTransformEventArgs> Transformed;
 
         void Transform(Transform transform);
-        //void SetUniforms(ShaderProgram shader);
-        //bool CompareUniforms(IEntity entity);
     }
 }

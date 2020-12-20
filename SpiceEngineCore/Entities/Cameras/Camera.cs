@@ -46,9 +46,9 @@ namespace SpiceEngineCore.Entities.Cameras
         internal ProjectionMatrix _projectionMatrix;
 
         protected float _distance;
-        public Matrix4 ViewMatrix => _viewMatrix.Matrix;
-        public Matrix4 ProjectionMatrix => _projectionMatrix.Matrix;
-        public Matrix4 ViewProjectionMatrix => _viewMatrix.Matrix * _projectionMatrix.Matrix;
+        public Matrix4 ViewMatrix => _viewMatrix.CurrentValue;
+        public Matrix4 ProjectionMatrix => _projectionMatrix.CurrentValue;
+        public Matrix4 ViewProjectionMatrix => _viewMatrix.CurrentValue * _projectionMatrix.CurrentValue;
 
         public event EventHandler<EntityTransformEventArgs> Transformed;
 
@@ -111,15 +111,13 @@ namespace SpiceEngineCore.Entities.Cameras
             }
             else if (light is SpotLight spotLight)
             {
-                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ProjectionMatrix.NAME, spotLight.Projection);
-                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.NAME, spotLight.View);
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ProjectionMatrix.CURRENT_NAME, spotLight.Projection);
+                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.CURRENT_NAME, spotLight.View);
             }
             else
             {
                 throw new NotImplementedException();
             }
         }
-
-        public bool CompareUniforms(IEntity entity) => false;
     }
 }

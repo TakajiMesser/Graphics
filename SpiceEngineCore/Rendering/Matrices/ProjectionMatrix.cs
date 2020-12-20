@@ -12,10 +12,19 @@ namespace SpiceEngineCore.Rendering.Matrices
 
     public class ProjectionMatrix
     {
-        public const string NAME = "projectionMatrix";
+        public const string CURRENT_NAME = "projectionMatrix";
         public const string PREVIOUS_NAME = "previousProjectionMatrix";
 
-        public Matrix4 Matrix { get; private set; }
+        private float _width = 0.0f;
+        private float _aspectRatio = 1.0f;
+        private float _fieldOfView = 0.0f;
+        private float _zNear = 0.0f;
+        private float _zFar = 0.0f;
+
+        public ProjectionMatrix(ProjectionTypes type) => Type = type;
+
+        public Matrix4 CurrentValue { get; private set; }
+        public Matrix4 PreviousValue { get; private set; }
 
         public ProjectionTypes Type { get; }
 
@@ -69,16 +78,6 @@ namespace SpiceEngineCore.Rendering.Matrices
             }
         }
 
-        private float _width = 0.0f;
-        private float _aspectRatio = 1.0f;
-        private float _fieldOfView = 0.0f;
-        private float _zNear = 0.0f;
-        private float _zFar = 0.0f;
-
-        private Matrix4 _previousMatrix;
-
-        public ProjectionMatrix(ProjectionTypes type) => Type = type;
-
         public void UpdateOrthographic(float width, float zNear, float zFar)
         {
             _width = width;
@@ -99,10 +98,10 @@ namespace SpiceEngineCore.Rendering.Matrices
 
         public void Set(ShaderProgram program)
         {
-            program.SetUniform(NAME, Matrix);
-            program.SetUniform(PREVIOUS_NAME, _previousMatrix);
+            program.SetUniform(CURRENT_NAME, CurrentValue);
+            program.SetUniform(PREVIOUS_NAME, PreviousValue);
 
-            _previousMatrix = Matrix;
+            PreviousValue = CurrentValue;
         }
 
         private void CalculateMatrix()
@@ -110,10 +109,10 @@ namespace SpiceEngineCore.Rendering.Matrices
             switch (Type)
             {
                 case ProjectionTypes.Orthographic:
-                    Matrix = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, _zNear, _zFar);
+                    CurrentValue = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, _zNear, _zFar);
                     break;
                 case ProjectionTypes.Perspective:
-                    Matrix = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
+                    CurrentValue = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
                     break;
                 default:
                     throw new NotImplementedException();

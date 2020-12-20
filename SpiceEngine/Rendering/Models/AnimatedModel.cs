@@ -59,19 +59,7 @@ namespace SpiceEngine.Rendering.Models
 
                 foreach (var transforms in meshTransforms)
                 {
-                    var jointTransforms = ArrayExtensions.Initialize(MAX_JOINTS, Matrix4.Identity);
-
-                    for (var i = 0; i < MAX_JOINTS; i++)
-                    {
-                        jointTransforms[i] = Matrix4.Zero;
-                    }
-
-                    foreach (var kvp in transforms.TransformsByBoneIndex)
-                    {
-                        jointTransforms[kvp.Key] = kvp.Value;
-                    }
-
-                    _jointTransformsByMeshIndex[transforms.MeshIndex] = jointTransforms;
+                    _jointTransformsByMeshIndex[transforms.MeshIndex] = transforms.Transforms;
                 }
             }
         }

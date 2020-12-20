@@ -12,8 +12,8 @@ namespace SavoryPhysicsCore.Bodies
         public BodyStates State { get; set; }
         public float Restitution { get; set; }
 
-        public bool IsMovable => this is RigidBody || this is SoftBody;
         public bool IsPhysical { get; set; }
+        public bool IsMovable => this is RigidBody || this is SoftBody;
 
         public virtual Vector3 UpdatePosition(Vector3 position, int nTicks) => position;
         
