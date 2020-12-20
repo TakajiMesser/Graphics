@@ -104,5 +104,18 @@ namespace SpiceEngineCore.Utilities
         }
 
         public static float Modulo(this float value, float moduloBy) => value - moduloBy * (float)Math.Floor(value / moduloBy);
+
+        public static float InverseSqrtFast(float x)
+        {
+            unsafe
+            {
+                var xhalf = 0.5f * x;
+                var i = *(int*)&x; // Read bits as integer.
+                i = 0x5f375a86 - (i >> 1); // Make an initial guess for Newton-Raphson approximation
+                x = *(float*)&i; // Convert bits back to float
+                x *= (1.5f - (xhalf * x * x)); // Perform left single Newton-Raphson step.
+                return x;
+            }
+        }
     }
 }
