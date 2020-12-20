@@ -15,7 +15,7 @@ namespace SweetGraphicsCore.Rendering.Batches
         IBatchAction SetShader(ShaderProgram shader);
 
         IBatchAction SetCamera(ICamera camera);
-        IBatchAction SetCamera(ICamera camera, ILight light);
+        IBatchAction SetLightView(ICamera camera, ILight light);
 
         IBatchAction SetUniform<T>(string name, T value) where T : struct;
         IBatchAction SetPerIDAction(Action<int> action);

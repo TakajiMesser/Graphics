@@ -1,6 +1,5 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using System;
 
@@ -41,28 +40,6 @@ namespace SpiceEngineCore.Entities.Lights
                 default:
                     throw new NotImplementedException("Could not handle target " + target);
             }
-        }
-
-        public override void DrawForStencilPass(ShaderProgram program)
-        {
-            //var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
-            //program.SetUniform("modelMatrix", model);
-
-            program.SetUniform("lightPosition", Position);
-            program.SetUniform("lightRadius", Radius);
-            program.SetUniform("lightColor", Color);
-            program.SetUniform("lightIntensity", Intensity);
-        }
-
-        public override void DrawForLightPass(ShaderProgram program)
-        {
-            //var model = Matrix4.Identity * Matrix4.CreateScale(Radius) * Matrix4.CreateTranslation(Position);
-            //program.SetUniform("modelMatrix", model);
-
-            program.SetUniform("lightPosition", Position);
-            program.SetUniform("lightRadius", Radius);
-            program.SetUniform("lightColor", Color.Xyz);
-            program.SetUniform("lightIntensity", Intensity);
         }
 
         public override PLight ToStruct() => new PLight(Position, Radius, Color.Xyz, Intensity);

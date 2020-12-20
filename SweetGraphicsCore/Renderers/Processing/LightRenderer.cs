@@ -119,7 +119,8 @@ namespace SweetGraphicsCore.Renderers.Processing
 
             _stencilProgram.SetCamera(camera);
             _stencilProgram.SetLight(light);
-            light.DrawForStencilPass(_stencilProgram);
+
+            _stencilProgram.StencilPass(light);
             mesh.Draw();
         }
 
@@ -143,7 +144,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             program.SetUniform("cameraPosition", camera.Position);
             program.SetLight(light);
 
-            light.DrawForLightPass(program);
+            program.LightPass(light);
             mesh.Draw();
         }
 

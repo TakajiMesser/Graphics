@@ -160,13 +160,13 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             batcher.CreateBatchAction()
                 .SetShader(_pointShadowProgram)
-                .SetCamera(camera, light) // Draw camera from the point light's perspective
+                .SetLightView(camera, light) // Draw camera from the point light's perspective
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
                 .SetRenderType(RenderTypes.OpaqueStatic)
                 .Render() // Draw all geometry, but only the positions
                 .SetShader(_pointShadowJointProgram)
-                .SetCamera(camera, light)
+                .SetLightView(camera, light)
                 .SetUniform("lightRadius", light.Radius)
                 .SetUniform("lightPosition", light.Position)
                 .SetRenderType(RenderTypes.OpaqueAnimated)
@@ -180,11 +180,11 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             batcher.CreateBatchAction()
                 .SetShader(_spotShadowProgram)
-                .SetCamera(camera, light) // Draw camera from the point light's perspective
+                .SetLightView(camera, light) // Draw camera from the point light's perspective
                 .SetRenderType(RenderTypes.OpaqueStatic)
                 .Render() // Draw all geometry, but only the positions
                 .SetShader(_spotShadowJointProgram)
-                .SetCamera(camera, light)
+                .SetLightView(camera, light)
                 .SetRenderType(RenderTypes.OpaqueAnimated)
                 .Render()
                 .Execute();

@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
 using System;
 
 namespace SpiceEngineCore.Entities.Lights
@@ -21,8 +20,6 @@ namespace SpiceEngineCore.Entities.Lights
             }
         }
 
-        public abstract void DrawForStencilPass(ShaderProgram program);
-        public abstract void DrawForLightPass(ShaderProgram program);
         public abstract T ToStruct();
     }
 }

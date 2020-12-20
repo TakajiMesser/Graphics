@@ -550,12 +550,12 @@ namespace SpiceEngine.Rendering.Batches
                 return this;
             }
 
-            public IBatchAction SetCamera(ICamera camera, ILight light)
+            public IBatchAction SetLightView(ICamera camera, ILight light)
             {
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    _shader.SetCamera(Camera, light);
+                    _shader.SetLightView(light);
                 });
                 return this;
             }

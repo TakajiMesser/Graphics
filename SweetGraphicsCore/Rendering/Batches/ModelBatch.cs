@@ -38,7 +38,7 @@ namespace SweetGraphicsCore.Rendering.Batches
         {
             if (_renderable.Meshes[_drawIndex] is ITexturedMesh texturedMesh)
             {
-                texturedMesh.Material.SetUniforms(shaderProgram);
+                shaderProgram.SetMaterial(texturedMesh.Material);
             }
 
             _renderable.SetUniforms(shaderProgram, _drawIndex);

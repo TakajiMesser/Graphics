@@ -4,6 +4,7 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
 using System;
@@ -181,6 +182,14 @@ namespace SpiceEngineCore.Rendering.Shaders
             GL.Uniform1(location, value);
         }
 
+        public void SetMaterial(Material material)
+        {
+            SetUniform("ambientColor", material.Ambient);
+            SetUniform("diffuseColor", material.Diffuse);
+            SetUniform("specularColor", material.Specular);
+            SetUniform("specularExponent", material.SpecularExponent);
+        }
+
         public void SetCamera(ICamera camera)
         {
             SetUniform(ViewMatrix.CURRENT_NAME, camera.CurrentModelMatrix);
@@ -195,7 +204,7 @@ namespace SpiceEngineCore.Rendering.Shaders
             SetUniform(ModelMatrix.PREVIOUS_NAME, light.PreviousModelMatrix);
         }
 
-        public void SetCamera(ICamera camera, ILight light)
+        public void SetLightView(ILight light)
         {
             if (light is PointLight pointLight)
             {
@@ -212,6 +221,57 @@ namespace SpiceEngineCore.Rendering.Shaders
             {
                 SetUniform(ProjectionMatrix.CURRENT_NAME, spotLight.Projection);
                 SetUniform(ViewMatrix.CURRENT_NAME, spotLight.View);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void StencilPass(ILight light)
+        {
+            if (light is PointLight pointLight)
+            {
+                SetUniform("lightPosition", pointLight.Position);
+                SetUniform("lightRadius", pointLight.Radius);
+                SetUniform("lightColor", pointLight.Color);
+                SetUniform("lightIntensity", pointLight.Intensity);
+            }
+            else if (light is SpotLight spotLight)
+            {
+                SetUniform("lightPosition", spotLight.Position);
+                SetUniform("lightRadius", spotLight.Radius);
+                SetUniform("lightColor", spotLight.Color);
+                SetUniform("lightIntensity", spotLight.Intensity);
+                SetUniform("lightHeight", spotLight.Height);
+                SetUniform("lightVector", spotLight.Direction);
+                SetUniform("lightCutoffAngle", spotLight.CutoffAngle);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void LightPass(ILight light)
+        {
+            if (light is PointLight pointLight)
+            {
+                SetUniform("lightPosition", pointLight.Position);
+                SetUniform("lightRadius", pointLight.Radius);
+                SetUniform("lightColor", pointLight.Color.Xyz);
+                SetUniform("lightIntensity", pointLight.Intensity);
+            }
+            else if (light is SpotLight spotLight)
+            {
+                SetUniform("lightPosition", spotLight.Position);
+                SetUniform("lightRadius", spotLight.Radius);
+                SetUniform("lightColor", spotLight.Color.Xyz);
+                SetUniform("lightIntensity", spotLight.Intensity);
+                SetUniform("lightHeight", spotLight.Height);
+                SetUniform("lightVector", spotLight.Direction);
+                SetUniform("lightCutoffAngle", spotLight.CutoffAngle);
+                SetUniform("lightMatrix", spotLight.View * spotLight.Projection);
             }
             else
             {

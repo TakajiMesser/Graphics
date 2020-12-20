@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,14 +23,6 @@ namespace SpiceEngineCore.Rendering.Materials
         public Vector3 Specular { get; set; }
 
         public float SpecularExponent { get; set; }
-
-        public void SetUniforms(ShaderProgram program)
-        {
-            program.SetUniform("ambientColor", Ambient);
-            program.SetUniform("diffuseColor", Diffuse);
-            program.SetUniform("specularColor", Specular);
-            program.SetUniform("specularExponent", SpecularExponent);
-        }
 
         public void SaveToFile(string name, string path)
         {
