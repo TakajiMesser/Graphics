@@ -1,10 +1,8 @@
-﻿using OpenTK;
-
-namespace SpiceEngineCore.Game.Settings
+﻿namespace SpiceEngineCore.Game.Settings
 {
     public class Configuration
     {
-        public VSyncMode VSyncMode { get; set; }
+        public bool VSync { get; set; }
         public int UpdatesPerSecond { get; set; }
         public int RendersPerSecond { get; set; }
     }
