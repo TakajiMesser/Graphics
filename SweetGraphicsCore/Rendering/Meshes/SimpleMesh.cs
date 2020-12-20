@@ -1,9 +1,9 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System;
 using System.Collections.Generic;

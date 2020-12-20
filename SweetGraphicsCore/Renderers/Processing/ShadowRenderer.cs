@@ -4,11 +4,11 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {

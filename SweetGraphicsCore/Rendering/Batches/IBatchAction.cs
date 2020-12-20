@@ -12,7 +12,7 @@ namespace SweetGraphicsCore.Rendering.Batches
     {
         ICamera Camera { get; set; }
 
-        IBatchAction SetShader(ShaderProgram shader);
+        IBatchAction SetShader(IShader shader);
 
         IBatchAction SetCamera(ICamera camera);
         IBatchAction SetLightView(ICamera camera, ILight light);

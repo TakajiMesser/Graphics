@@ -10,6 +10,7 @@ using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.IO;

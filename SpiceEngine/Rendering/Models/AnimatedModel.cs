@@ -64,6 +64,6 @@ namespace SpiceEngine.Rendering.Models
             }
         }
 
-        public override void SetUniforms(ShaderProgram shaderProgram, int meshIndex) => shaderProgram.SetUniform("jointTransforms", GetJointTransforms(meshIndex));
+        public override void SetUniforms(IShader shader, int meshIndex) => shader.SetUniform("jointTransforms", GetJointTransforms(meshIndex));
     }
 }

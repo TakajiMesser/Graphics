@@ -3,6 +3,7 @@ using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Views;
 using SweetGraphicsCore.Buffers;
@@ -98,20 +99,6 @@ namespace StarchUICore.Rendering.Batches
             }*/
         }
 
-        public override void Draw()
-        {
-            _vertexArray.Bind();
-            _vertexBuffer.Bind();
-
-            _vertexBuffer.Buffer();
-            _vertexBuffer.DrawQuads();
-
-            _vertexArray.Unbind();
-            _vertexBuffer.Unbind();
-
-            //if (IsVisible && Measurement.Width > 0 && Measurement.Height > 0)
-        }
-
         public override void Transform(int entityID, Transform transform)
         {
             // TODO - This is redundant with function overloads for Mesh.Transform()
@@ -132,16 +119,27 @@ namespace StarchUICore.Rendering.Batches
 
         public override bool CanBatch(IRenderable renderable) => renderable is Label textView && textView.Font == _renderable.Font;
 
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
+        public override void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
         {
             // TODO - Are there any per entity uniforms that we actually need to set?
             var entity = entityProvider.GetEntity(EntityIDs.First());
 
-            shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
-            shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
+            shader.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
+            shader.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
 
             //shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
-            shaderProgram.SetUniform("color", _renderable.Color);
+            shader.SetUniform("color", _renderable.Color);
+
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+
+            _vertexBuffer.Buffer();
+            _vertexBuffer.DrawQuads();
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+
+            //if (IsVisible && Measurement.Width > 0 && Measurement.Height > 0)
         }
     }
 }

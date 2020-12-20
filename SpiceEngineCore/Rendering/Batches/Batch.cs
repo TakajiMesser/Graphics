@@ -33,28 +33,15 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public virtual void RemoveEntity(int id) => _entityIDs.Remove(id);
 
+        public abstract bool CanBatch(IRenderable renderable);
+
         public virtual void Load()
         {
             _renderable.Load();
             IsLoaded = true;
         }
 
-        public abstract bool CanBatch(IRenderable renderable);
-        public abstract void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram);
-        public virtual void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider) { }
-        public virtual void Draw() => _renderable.Draw();
-        
-        public virtual void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null)
-        {
-            SetUniforms(entityProvider, shaderProgram);
-
-            if (textureProvider != null)
-            {
-                BindTextures(shaderProgram, textureProvider);
-            }
-
-            Draw();
-        }
+        public virtual void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null) => _renderable.Draw();
 
         public abstract IBatch Duplicate();
     }

@@ -43,8 +43,6 @@ namespace SweetGraphicsCore.Rendering.Batches
 
         public override bool CanBatch(IRenderable renderable) => renderable is IBillboard billboard && _renderable.TextureIndex == billboard.TextureIndex;
 
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram) { }
-
         public override void Transform(int entityID, Transform transform)
         {
             // TODO - This is redundant with function overloads for Mesh.Transform()
@@ -54,11 +52,16 @@ namespace SweetGraphicsCore.Rendering.Batches
             _renderable.Transform(transform, offset, count);
         }
 
-        public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)
+        public override void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
         {
-            // TODO - Also set texture Alpha value here
-            var texture = textureProvider.RetrieveTexture(_renderable.TextureIndex);
-            shaderProgram.BindTexture(texture, "mainTexture", 0);
+            if (textureProvider != null)
+            {
+                // TODO - Also set texture Alpha value here
+                var texture = textureProvider.RetrieveTexture(_renderable.TextureIndex);
+                shader.BindTexture(texture, "mainTexture", 0);
+            }
+            
+            base.Draw(shader, entityProvider, textureProvider);
         }
     }
 }

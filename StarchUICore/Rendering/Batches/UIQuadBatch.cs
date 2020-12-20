@@ -5,6 +5,7 @@ using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Shaders;
+using SpiceEngineCore.Rendering.Textures;
 using SpiceEngineCore.Rendering.Vertices;
 using StarchUICore.Groups;
 using StarchUICore.Rendering.Vertices;
@@ -191,20 +192,6 @@ namespace StarchUICore.Rendering.Batches
             }
         }*/
 
-        public override void Draw()
-        {
-            _vertexArray.Bind();
-            _vertexBuffer.Bind();
-
-            _vertexBuffer.Buffer();
-            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
-
-            _vertexArray.Unbind();
-            _vertexBuffer.Unbind();
-
-            //if (IsVisible && Measurement.Width > 0 && Measurement.Height > 0)
-        }
-
         public override void Transform(int entityID, Transform transform)
         {
             // TODO - This is redundant with function overloads for Mesh.Transform()
@@ -234,24 +221,24 @@ namespace StarchUICore.Rendering.Batches
             return false;
         }
 
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
+        public override void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
         {
             // TODO - Are there any per entity uniforms that we actually need to set?
             var entity = entityProvider.GetEntity(EntityIDs.First());
 
-            shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
-            shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
+            shader.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
+            shader.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
 
-            // TODO - This is janky to set this uniform based on entity type...
-            /*if (entity is IBrush)
-            {
-                shaderProgram.SetUniform(ModelMatrix.NAME, Matrix4.Identity);
-                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
-            }
-            else
-            {
-                entity.WorldMatrix.Set(shaderProgram);
-            }*/
+            _vertexArray.Bind();
+            _vertexBuffer.Bind();
+
+            _vertexBuffer.Buffer();
+            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+
+            _vertexArray.Unbind();
+            _vertexBuffer.Unbind();
+
+            //if (IsVisible && Measurement.Width > 0 && Measurement.Height > 0)
         }
     }
 }

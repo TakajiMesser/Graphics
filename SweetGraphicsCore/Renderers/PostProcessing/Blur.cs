@@ -1,11 +1,11 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 
 namespace SweetGraphicsCore.Renderers.PostProcessing

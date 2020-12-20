@@ -35,12 +35,10 @@ namespace SpiceEngineCore.Rendering.Batches
         void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate);
         void RemoveEntity(int id);
 
-        void SetUniforms(IEntityProvider entityProvider, ShaderProgram program);
         bool CanBatch(IRenderable renderable);
-        void BindTextures(ShaderProgram program, ITextureProvider textureProvider);
 
         void Load();
-        void Draw(IEntityProvider entityProvider, ShaderProgram shaderProgram, ITextureProvider textureProvider = null);
+        void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null);
 
         IBatch Duplicate();
     }

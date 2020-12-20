@@ -3,12 +3,12 @@ using OpenTK.Graphics.OpenGL;
 using SpiceEngine.Properties;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {

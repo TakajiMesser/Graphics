@@ -10,7 +10,7 @@ namespace SweetGraphicsCore.Rendering.Models
         List<IMesh> Meshes { get; }
 
         void Add(IMesh mesh);
-        void SetUniforms(ShaderProgram shaderProgram, int meshIndex);
+        void SetUniforms(IShader shader, int meshIndex);
         IModel Duplicate();
     }
 }

@@ -434,7 +434,7 @@ namespace SpiceEngine.Rendering.Batches
             }
         }
 
-        private void DrawEntities(ShaderProgram shader, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> perIdAction = null, Action<IBatch> perBatchAction = null)
+        private void DrawEntities(IShader shader, RenderTypes? renderType, HashSet<int> idSet, List<int> idOrder, Action<int> perIdAction = null, Action<IBatch> perBatchAction = null)
         {
             var batchIndices = new HashSet<int>();
 
@@ -454,7 +454,7 @@ namespace SpiceEngine.Rendering.Batches
                         a = 4;
                     }
 
-                    _batches[batchIndex].Draw(_entityProvider, shader, _textureProvider);
+                    _batches[batchIndex].Draw(shader, _entityProvider, _textureProvider);
                 }
             }
         }
@@ -517,7 +517,7 @@ namespace SpiceEngine.Rendering.Batches
             private BatchManager _batchManager;
             private Queue<Action> _commandQueue = new Queue<Action>();
 
-            private ShaderProgram _shader;
+            private IShader _shader;
             private RenderTypes? _renderType;
 
             private Action<int> _perIDAction;
@@ -530,7 +530,7 @@ namespace SpiceEngine.Rendering.Batches
 
             public ICamera Camera { get; set; }
 
-            public IBatchAction SetShader(ShaderProgram shader)
+            public IBatchAction SetShader(IShader shader)
             {
                 _commandQueue.Enqueue(() =>
                 {

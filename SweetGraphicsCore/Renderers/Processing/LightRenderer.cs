@@ -8,6 +8,7 @@ using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 using System;
 
 namespace SweetGraphicsCore.Renderers.Processing

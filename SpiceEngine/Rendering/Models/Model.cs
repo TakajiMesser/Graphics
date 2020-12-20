@@ -128,7 +128,7 @@ namespace SpiceEngine.Rendering.Models
             }
         }
 
-        public virtual void SetUniforms(ShaderProgram shaderProgram, int meshIndex) { }
+        public virtual void SetUniforms(IShader shader, int meshIndex) { }
 
         public IModel Duplicate()
         {

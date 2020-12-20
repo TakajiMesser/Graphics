@@ -130,41 +130,40 @@ namespace SweetGraphicsCore.Rendering.Batches
             return false;
         }
 
-        public override void SetUniforms(IEntityProvider entityProvider, ShaderProgram shaderProgram)
+        public override void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null)
         {
             var entity = entityProvider.GetEntity(EntityIDs.First());
 
             // TODO - This is janky to set this uniform based on entity type...
             if (entity is IBrush)
             {
-                shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.Identity);
-                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
+                shader.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.Identity);
+                shader.SetUniform(ModelMatrix.PREVIOUS_NAME, Matrix4.Identity);
             }
             else
             {
-                shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
-                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
+                shader.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
+                shader.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
             }
 
             if (_renderable is ITexturedMesh texturedMesh)
             {
-                shaderProgram.SetMaterial(texturedMesh.Material);
-            }
-        }
+                shader.SetMaterial(texturedMesh.Material);
 
-        public override void BindTextures(ShaderProgram shaderProgram, ITextureProvider textureProvider)
-        {
-            if (_renderable is ITexturedMesh texturedMesh)
-            {
-                if (texturedMesh.TextureMapping.HasValue)
+                if (textureProvider != null)
                 {
-                    shaderProgram.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
-                }
-                else
-                {
-                    shaderProgram.UnbindTextures();
+                    if (texturedMesh.TextureMapping.HasValue)
+                    {
+                        shader.BindTextures(textureProvider, texturedMesh.TextureMapping.Value);
+                    }
+                    else
+                    {
+                        shader.UnbindTextures();
+                    }
                 }
             }
+
+            base.Draw(shader, entityProvider, textureProvider);
         }
     }
 }

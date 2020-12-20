@@ -1,10 +1,10 @@
 ﻿using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Processing.Post;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 
 namespace SweetGraphicsCore.Renderers.PostProcessing
 {

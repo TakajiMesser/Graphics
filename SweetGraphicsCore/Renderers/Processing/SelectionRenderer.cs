@@ -6,12 +6,12 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Selection;
+using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 

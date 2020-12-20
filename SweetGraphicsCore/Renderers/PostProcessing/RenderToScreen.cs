@@ -2,10 +2,10 @@
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Textures;
+using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System;
 

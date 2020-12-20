@@ -6,13 +6,14 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
+using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 
-namespace SpiceEngineCore.Rendering.Shaders
+namespace SweetGraphicsCore.Shaders
 {
-    public class ShaderProgram
+    public class ShaderProgram : IShader
     {
         private readonly int _handle;
 
