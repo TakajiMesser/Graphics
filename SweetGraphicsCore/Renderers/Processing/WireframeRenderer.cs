@@ -202,8 +202,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         public void RenderGridLines(ICamera camera)
         {
             _gridProgram.Use();
-
-            camera.SetUniforms(_gridProgram);
+            _gridProgram.SetCamera(camera);
 
             var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
             _gridProgram.SetUniform("modelMatrix", model);
@@ -258,12 +257,12 @@ namespace SweetGraphicsCore.Renderers.Processing
         public void SelectionPass(ICamera camera, ILight light, SimpleMesh mesh)
         {
             _wireframeProgram.Use();
+            _wireframeProgram.SetCamera(camera);
 
-            camera.SetUniforms(_wireframeProgram);
             _wireframeProgram.SetUniform("lineThickness", SelectedLightLineThickness);
             _wireframeProgram.SetUniform("lineColor", SelectedLightLineColor);
 
-            light.SetUniforms(_wireframeProgram);
+            _wireframeProgram.SetLight(light);
 
             mesh.Draw();
         }

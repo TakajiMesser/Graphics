@@ -24,7 +24,5 @@ namespace SpiceEngineCore.Entities.Lights
         public abstract void DrawForStencilPass(ShaderProgram program);
         public abstract void DrawForLightPass(ShaderProgram program);
         public abstract T ToStruct();
-
-        public void SetUniforms(ShaderProgram program) => _modelMatrix.Set(program);
     }
 }

@@ -23,7 +23,9 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 // Compare current position to location of mouse, and set rotation to face the mouse
                 if (!inputProvider.IsDown(inputProvider.InputMapping.ItemWheel) && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
                 {
-                    var clipSpacePosition = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive).ViewProjectionMatrix.Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
+                    var camera = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive);
+
+                    var clipSpacePosition = (camera.CurrentModelMatrix * camera.CurrentProjectionMatrix).Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
                     var screenCoordinates = new Vector2()
                     {
                         X = ((clipSpacePosition.X + 1.0f) / 2.0f) * inputProvider.WindowSize.Width,

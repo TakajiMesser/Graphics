@@ -4,7 +4,7 @@ using System;
 
 namespace SpiceEngineCore.Rendering.Matrices
 {
-    public class ModelMatrix
+    public class ModelMatrix : TransformMatrix
     {
         public const string CURRENT_NAME = "modelMatrix";
         public const string PREVIOUS_NAME = "previousModelMatrix";
@@ -14,11 +14,9 @@ namespace SpiceEngineCore.Rendering.Matrices
         public ModelMatrix(Transform transform)
         {
             WorldTransform = transform;
-            CurrentValue = WorldTransform.ToMatrix();
+            InitializeValue(WorldTransform.ToMatrix());
         }
 
-        public Matrix4 CurrentValue { get; private set; }
-        public Matrix4 PreviousValue { get; private set; }
         public Transform WorldTransform { get; private set; }
 
         public Vector3 Position
@@ -65,15 +63,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             Transformed?.Invoke(this, new TransformEventArgs(transform));
             WorldTransform.Combine(transform);
 
-            CurrentValue = WorldTransform.ToMatrix();
-        }
-
-        public void Set(ShaderProgram program)
-        {
-            program.SetUniform(CURRENT_NAME, CurrentValue);
-            program.SetUniform(PREVIOUS_NAME, PreviousValue);
-
-            PreviousValue = CurrentValue;
+            UpdateValue(WorldTransform.ToMatrix());
         }
     }
 }

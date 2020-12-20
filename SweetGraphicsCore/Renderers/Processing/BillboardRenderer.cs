@@ -141,7 +141,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             _billboardProgram.Use();
             _billboardProgram.BindTexture(texture, "mainTexture", 0);
 
-            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -164,7 +164,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
             _billboardProgram.SetUniform("overrideColor", Vector4.Zero);
 
@@ -182,7 +182,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             // Need to bind a texture for each selectable vertex point
@@ -210,7 +210,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             switch (light)
@@ -233,7 +233,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardProgram.Use();
 
-            camera.SetUniforms(_billboardProgram);
+            _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardProgram.BindTexture(_vertexTexture, "mainTexture", 0);
@@ -244,7 +244,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardSelectionProgram.Use();
 
-            camera.SetUniforms(_billboardSelectionProgram);
+            _billboardSelectionProgram.SetCamera(camera);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardSelectionProgram.BindTexture(_vertexTexture, "mainTexture", 0);
@@ -255,7 +255,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _billboardSelectionProgram.Use();
 
-            camera.SetUniforms(_billboardSelectionProgram);
+            _billboardSelectionProgram.SetCamera(camera);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
 
             _billboardSelectionProgram.BindTexture(_pointLightTexture, "mainTexture", 0);

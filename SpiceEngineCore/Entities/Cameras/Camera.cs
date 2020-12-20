@@ -10,12 +10,19 @@ namespace SpiceEngineCore.Entities.Cameras
 {
     public abstract class Camera : ICamera
     {
+        protected ViewMatrix _viewMatrix = new ViewMatrix();
+        protected ProjectionMatrix _projectionMatrix;
+        protected float _distance;
+
+        public Camera(string name, ProjectionTypes projectionType)
+        {
+            Name = name;
+            _projectionMatrix = new ProjectionMatrix(projectionType);
+        }
+
         public int ID { get; set; }
         public string Name { get; }
         public bool IsActive { get; set; }
-
-        // TODO - Fix this...
-        public ModelMatrix WorldMatrix => throw new NotImplementedException();
 
         public Vector3 Position
         {
@@ -41,22 +48,14 @@ namespace SpiceEngineCore.Entities.Cameras
 
         public IEntity AttachedEntity { get; private set; }
         public Vector3 AttachedTranslation { get; protected set; }
-
-        public ViewMatrix _viewMatrix = new ViewMatrix();
-        internal ProjectionMatrix _projectionMatrix;
-
-        protected float _distance;
-        public Matrix4 ViewMatrix => _viewMatrix.CurrentValue;
-        public Matrix4 ProjectionMatrix => _projectionMatrix.CurrentValue;
-        public Matrix4 ViewProjectionMatrix => _viewMatrix.CurrentValue * _projectionMatrix.CurrentValue;
+        
+        // While a bit janky, we are outwardly referring to the camera's ViewMatrix as its ModelMatrix
+        public Matrix4 CurrentModelMatrix => _viewMatrix.CurrentValue;
+        public Matrix4 PreviousModelMatrix => _viewMatrix.CurrentValue;
+        public Matrix4 CurrentProjectionMatrix => _projectionMatrix.CurrentValue;
+        public Matrix4 PreviousProjectionMatrix => _projectionMatrix.CurrentValue;
 
         public event EventHandler<EntityTransformEventArgs> Transformed;
-
-        public Camera(string name, ProjectionTypes projectionType)
-        {
-            Name = name;
-            _projectionMatrix = new ProjectionMatrix(projectionType);
-        }
 
         public void Transform(Transform transform) => throw new NotImplementedException();
 
@@ -88,36 +87,6 @@ namespace SpiceEngineCore.Entities.Cameras
             AttachedEntity = null;
             AttachedTranslation = Vector3.Zero;
             _distance = 0.0f;
-        }
-
-        public void SetUniforms(ShaderProgram program)
-        {
-            _viewMatrix.Set(program);
-            _projectionMatrix.Set(program);
-        }
-
-        public void SetUniforms(ShaderProgram program, ILight light)
-        {
-            if (light is PointLight pointLight)
-            {
-                var shadowViews = new List<Matrix4>();
-
-                for (var i = 0; i < 6; i++)
-                {
-                    shadowViews.Add(pointLight.GetView(TextureTarget.TextureCubeMapPositiveX + i) * pointLight.Projection);
-                }
-
-                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
-            }
-            else if (light is SpotLight spotLight)
-            {
-                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ProjectionMatrix.CURRENT_NAME, spotLight.Projection);
-                program.SetUniform(SpiceEngineCore.Rendering.Matrices.ViewMatrix.CURRENT_NAME, spotLight.View);
-            }
-            else
-            {
-                throw new NotImplementedException();
-            }
         }
     }
 }

@@ -29,10 +29,7 @@ namespace SpiceEngineCore.Entities.Cameras
 
         public Vector3 CurrentAngles { get; set; } = new Vector3(0, -MathExtensions.HALF_PI, 0);
 
-        public PerspectiveCamera(string name, float zNear, float zFar, float fieldOfViewY) : base(name, ProjectionTypes.Perspective)
-        {
-            _projectionMatrix.UpdatePerspective(fieldOfViewY, zNear, zFar);
-        }
+        public PerspectiveCamera(string name, float zNear, float zFar, float fieldOfViewY) : base(name, ProjectionTypes.Perspective) => _projectionMatrix.InitializePerspective(fieldOfViewY, zNear, zFar);
 
         public void CalculateTranslation()
         {

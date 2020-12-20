@@ -136,7 +136,9 @@ namespace StarchUICore.Rendering.Batches
         {
             // TODO - Are there any per entity uniforms that we actually need to set?
             var entity = entityProvider.GetEntity(EntityIDs.First());
-            entity.WorldMatrix.Set(shaderProgram);
+
+            shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
+            shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
 
             //shaderProgram.BindTexture(_renderable.Font.Texture, "textureSampler", 0);
             shaderProgram.SetUniform("color", _renderable.Color);

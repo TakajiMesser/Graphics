@@ -1,5 +1,4 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
 using System;
 
 namespace SpiceEngineCore.Rendering.Matrices
@@ -10,7 +9,7 @@ namespace SpiceEngineCore.Rendering.Matrices
         Perspective
     }
 
-    public class ProjectionMatrix
+    public class ProjectionMatrix : TransformMatrix
     {
         public const string CURRENT_NAME = "projectionMatrix";
         public const string PREVIOUS_NAME = "previousProjectionMatrix";
@@ -23,9 +22,6 @@ namespace SpiceEngineCore.Rendering.Matrices
 
         public ProjectionMatrix(ProjectionTypes type) => Type = type;
 
-        public Matrix4 CurrentValue { get; private set; }
-        public Matrix4 PreviousValue { get; private set; }
-
         public ProjectionTypes Type { get; }
 
         public float Width
@@ -34,7 +30,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _width = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
@@ -44,7 +40,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _aspectRatio = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
@@ -54,7 +50,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _fieldOfView = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
@@ -64,7 +60,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _zNear = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
@@ -74,49 +70,39 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _zFar = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
-        public void UpdateOrthographic(float width, float zNear, float zFar)
+        public void InitializeOrthographic(float width, float zNear, float zFar)
         {
             _width = width;
             _zNear = zNear;
             _zFar = zFar;
 
-            CalculateMatrix();
+            InitializeValue(Calculate());
         }
 
-        public void UpdatePerspective(float fieldOfView, float zNear, float zFar)
+        public void InitializePerspective(float fieldOfView, float zNear, float zFar)
         {
             _fieldOfView = fieldOfView;
             _zNear = zNear;
             _zFar = zFar;
 
-            CalculateMatrix();
+            InitializeValue(Calculate());
         }
 
-        public void Set(ShaderProgram program)
-        {
-            program.SetUniform(CURRENT_NAME, CurrentValue);
-            program.SetUniform(PREVIOUS_NAME, PreviousValue);
-
-            PreviousValue = CurrentValue;
-        }
-
-        private void CalculateMatrix()
+        private Matrix4 Calculate()
         {
             switch (Type)
             {
                 case ProjectionTypes.Orthographic:
-                    CurrentValue = Matrix4.CreateOrthographic(_width, _width / _aspectRatio, _zNear, _zFar);
-                    break;
+                    return Matrix4.CreateOrthographic(_width, _width / _aspectRatio, _zNear, _zFar);
                 case ProjectionTypes.Perspective:
-                    CurrentValue = Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
-                    break;
-                default:
-                    throw new NotImplementedException();
+                    return Matrix4.CreatePerspectiveFieldOfView(_fieldOfView, _aspectRatio, _zNear, _zFar);
             }
+
+            throw new NotImplementedException("Could not handle projection matrix type " + Type);
         }
     }
 }

@@ -28,8 +28,8 @@ namespace SweetGraphicsCore.Buffers
 
         public void AddEntities(ICamera camera, IEnumerable<Actor> actors, IEnumerable<Brush> brushes)
         {
-            _viewMatrixBuffer.AddMatrix(camera.ViewMatrix);
-            _projectionMatrixBuffer.AddMatrix(camera.ProjectionMatrix);
+            _viewMatrixBuffer.AddMatrix(camera.CurrentModelMatrix);
+            _projectionMatrixBuffer.AddMatrix(camera.CurrentProjectionMatrix);
 
             /*foreach (var actor in actors)
             {

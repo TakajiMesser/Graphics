@@ -75,7 +75,7 @@ namespace SpiceEngine.Game
                     };
 
                     Camera.Position += translationX;
-                    Camera._viewMatrix.LookAt += translationX;
+                    Camera.LookAt += translationX;
                     break;
                 case ViewTypes.Y:
                     var translationY = new Vector3()
@@ -86,7 +86,7 @@ namespace SpiceEngine.Game
                     };
 
                     Camera.Position += translationY;
-                    Camera._viewMatrix.LookAt += translationY;
+                    Camera.LookAt += translationY;
                     break;
                 case ViewTypes.Z:
                     var translationZ = new Vector3()
@@ -97,7 +97,7 @@ namespace SpiceEngine.Game
                     };
 
                     Camera.Position += translationZ;
-                    Camera._viewMatrix.LookAt += translationZ;
+                    Camera.LookAt += translationZ;
                     break;
             }
         }
@@ -126,8 +126,8 @@ namespace SpiceEngine.Game
                     Camera = new PerspectiveCamera("", 0.1f, 1000.0f, UnitConversions.ToRadians(45.0f));
                     Camera.DetachFromEntity();
                     Camera.Position = new Vector3(0.0f, -10.0f, 10.0f);
-                    Camera._viewMatrix.Up = Vector3.UnitZ;
-                    Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
+                    Camera.Up = Vector3.UnitZ;
+                    Camera.LookAt = Camera.Position + Vector3.UnitY;
                     _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;
@@ -136,8 +136,8 @@ namespace SpiceEngine.Game
                     {
                         Position = Vector3.UnitX * -100.0f//new Vector3(_map.Boundaries.Min.X - 10.0f, 0.0f, 0.0f),
                     };
-                    Camera._viewMatrix.Up = Vector3.UnitZ;
-                    Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitX;
+                    Camera.Up = Vector3.UnitZ;
+                    Camera.LookAt = Camera.Position + Vector3.UnitX;
                     _gridRenderer.RotateGrid(0.0f, MathExtensions.HALF_PI, 0.0f);
                     _yaw = 0.0f;
                     _pitch = 0.0f;
@@ -147,8 +147,8 @@ namespace SpiceEngine.Game
                     {
                         Position = Vector3.UnitY * -100.0f,//new Vector3(0.0f, _map.Boundaries.Min.Y - 10.0f, 0.0f),
                     };
-                    Camera._viewMatrix.Up = Vector3.UnitZ;
-                    Camera._viewMatrix.LookAt = Camera.Position + Vector3.UnitY;
+                    Camera.Up = Vector3.UnitZ;
+                    Camera.LookAt = Camera.Position + Vector3.UnitY;
                     _gridRenderer.RotateGrid(MathExtensions.HALF_PI, 0.0f, 0.0f);
                     _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
@@ -158,8 +158,8 @@ namespace SpiceEngine.Game
                     {
                         Position = Vector3.UnitZ * 100.0f,//new Vector3(0.0f, 0.0f, _map.Boundaries.Max.Z + 10.0f),
                     };
-                    Camera._viewMatrix.Up = Vector3.UnitY;
-                    Camera._viewMatrix.LookAt = Camera.Position - Vector3.UnitZ;
+                    Camera.Up = Vector3.UnitY;
+                    Camera.LookAt = Camera.Position - Vector3.UnitZ;
                     _yaw = 0.0f;
                     _pitch = -MathExtensions.HALF_PI;
                     break;
@@ -174,7 +174,7 @@ namespace SpiceEngine.Game
             // Left mouse button allows "moving"
             if (mouseDelta != Vector2.Zero)
             {
-                var translation = (Camera._viewMatrix.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
+                var translation = (Camera.LookAt - Camera.Position) * mouseDelta.Y * 0.02f;
                 Camera.Position -= translation;
                 
                 _yaw = (_yaw - mouseDelta.X * 0.001f) % MAX_YAW;
@@ -202,8 +202,8 @@ namespace SpiceEngine.Game
             // Both mouse buttons allow "strafing"
             if (mouseDelta != Vector2.Zero)
             {
-                var upDirection = Camera._viewMatrix.Up;
-                var lookDirection = Camera._viewMatrix.LookAt - Camera.Position;
+                var upDirection = Camera.Up;
+                var lookDirection = Camera.LookAt - Camera.Position;
 
                 var rightDirection = Vector3.Cross(upDirection, lookDirection).Normalized();
 
@@ -211,7 +211,7 @@ namespace SpiceEngine.Game
                 var horizontalTranslation = rightDirection * mouseDelta.X * 0.02f;
 
                 Camera.Position -= verticalTranslation + horizontalTranslation;
-                Camera._viewMatrix.LookAt -= verticalTranslation + horizontalTranslation;
+                Camera.LookAt -= verticalTranslation + horizontalTranslation;
             }
         }
 
@@ -256,7 +256,7 @@ namespace SpiceEngine.Game
             };
 
             Camera.Position = position - translation;
-            Camera._viewMatrix.LookAt = Camera.Position + translation / distance;
+            Camera.LookAt = Camera.Position + translation / distance;
         }
 
         private void CalculateLookAt()
@@ -269,7 +269,7 @@ namespace SpiceEngine.Game
             };
 
 
-            Camera._viewMatrix.LookAt = Camera.Position + lookDirection.Normalized();
+            Camera.LookAt = Camera.Position + lookDirection.Normalized();
         }
 
         private void CalculateUp()
@@ -284,7 +284,7 @@ namespace SpiceEngine.Game
                 Z = (float)Math.Sin(yAngle)
             };
 
-            Camera._viewMatrix.Up = upDirection.Normalized();
+            Camera.Up = upDirection.Normalized();
         }
     }
 }

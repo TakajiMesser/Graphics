@@ -20,8 +20,6 @@ namespace SweetGraphicsCore.Rendering.Textures
 
         public IInvoker Invoker { get; set; }
 
-        public TextureManager() { }
-
         /// <summary>
         /// 
         /// </summary>

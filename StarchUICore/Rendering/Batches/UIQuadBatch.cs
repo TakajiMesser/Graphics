@@ -238,7 +238,9 @@ namespace StarchUICore.Rendering.Batches
         {
             // TODO - Are there any per entity uniforms that we actually need to set?
             var entity = entityProvider.GetEntity(EntityIDs.First());
-            entity.WorldMatrix.Set(shaderProgram);
+
+            shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
+            shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
 
             // TODO - This is janky to set this uniform based on entity type...
             /*if (entity is IBrush)

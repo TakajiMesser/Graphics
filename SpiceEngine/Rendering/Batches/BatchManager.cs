@@ -545,7 +545,7 @@ namespace SpiceEngine.Rendering.Batches
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    Camera.SetUniforms(_shader);
+                    _shader.SetCamera(Camera);
                 });
                 return this;
             }
@@ -555,7 +555,7 @@ namespace SpiceEngine.Rendering.Batches
                 _commandQueue.Enqueue(() =>
                 {
                     Camera = camera;
-                    Camera.SetUniforms(_shader, light);
+                    _shader.SetCamera(Camera, light);
                 });
                 return this;
             }

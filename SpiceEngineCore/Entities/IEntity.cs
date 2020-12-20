@@ -8,7 +8,8 @@ namespace SpiceEngineCore.Entities
     {
         int ID { get; set; }
         Vector3 Position { get; set; }
-        ModelMatrix WorldMatrix { get; }
+        Matrix4 CurrentModelMatrix { get; }
+        Matrix4 PreviousModelMatrix { get; }
 
         event EventHandler<EntityTransformEventArgs> Transformed;
 

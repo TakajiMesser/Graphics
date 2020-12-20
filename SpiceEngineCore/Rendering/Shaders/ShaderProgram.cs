@@ -1,7 +1,13 @@
 ﻿using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
+using System;
+using System.Collections.Generic;
 
 namespace SpiceEngineCore.Rendering.Shaders
 {
@@ -173,6 +179,44 @@ namespace SpiceEngineCore.Rendering.Shaders
         {
             var location = GetUniformLocation(name);
             GL.Uniform1(location, value);
+        }
+
+        public void SetCamera(ICamera camera)
+        {
+            SetUniform(ViewMatrix.CURRENT_NAME, camera.CurrentModelMatrix);
+            SetUniform(ViewMatrix.PREVIOUS_NAME, camera.PreviousModelMatrix);
+            SetUniform(ProjectionMatrix.CURRENT_NAME, camera.CurrentProjectionMatrix);
+            SetUniform(ProjectionMatrix.PREVIOUS_NAME, camera.PreviousProjectionMatrix);
+        }
+
+        public void SetLight(ILight light)
+        {
+            SetUniform(ModelMatrix.CURRENT_NAME, light.CurrentModelMatrix);
+            SetUniform(ModelMatrix.PREVIOUS_NAME, light.PreviousModelMatrix);
+        }
+
+        public void SetCamera(ICamera camera, ILight light)
+        {
+            if (light is PointLight pointLight)
+            {
+                var shadowViews = new List<Matrix4>();
+
+                for (var i = 0; i < 6; i++)
+                {
+                    shadowViews.Add(pointLight.GetView(TextureTarget.TextureCubeMapPositiveX + i) * pointLight.Projection);
+                }
+
+                SetUniform(ViewMatrix.SHADOW_NAME, shadowViews.ToArray());
+            }
+            else if (light is SpotLight spotLight)
+            {
+                SetUniform(ProjectionMatrix.CURRENT_NAME, spotLight.Projection);
+                SetUniform(ViewMatrix.CURRENT_NAME, spotLight.View);
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
         }
 
         public int GetVertexAttributeLocation(string name)

@@ -117,8 +117,8 @@ namespace SweetGraphicsCore.Renderers.Processing
             GL.StencilOpSeparate(StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
             GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
 
-            camera.SetUniforms(_stencilProgram);
-            light.SetUniforms(_stencilProgram);
+            _stencilProgram.SetCamera(camera);
+            _stencilProgram.SetLight(light);
             light.DrawForStencilPass(_stencilProgram);
             mesh.Draw();
         }
@@ -139,9 +139,9 @@ namespace SweetGraphicsCore.Renderers.Processing
             program.BindTexture(deferredRenderer.SpecularTexture, "specularMap", 4);
             program.BindTexture(shadowMap, "shadowMap", 5);
 
-            camera.SetUniforms(program);
+            program.SetCamera(camera);
             program.SetUniform("cameraPosition", camera.Position);
-            light.SetUniforms(program);
+            program.SetLight(light);
 
             light.DrawForLightPass(program);
             mesh.Draw();

@@ -95,7 +95,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
                 _program.BindTexture(SkyTexture, "mainTexture", 0);
 
-                camera.SetUniforms(_program);
+                _program.SetCamera(camera);
                 _program.SetUniform(ModelMatrix.CURRENT_NAME, Matrix4.CreateTranslation(camera.Position));
                 _cubeMesh.Draw();
 
@@ -117,17 +117,18 @@ namespace SweetGraphicsCore.Renderers.Processing
                 _2DProgram.BindTexture(SkyTexture2D, "mainTexture", 0);
 
                 //camera.Draw(_2DProgram);
-                camera._viewMatrix.Set(_2DProgram);
+                //camera._viewMatrix.Set(_2DProgram);
                 //camera._projectionMatrix.Set(_2DProgram);
                 //var width = camera._projectionMatrix.Width;
                 /*var width = 0.8f;
                 var height = width / camera._projectionMatrix.Resolution.AspectRatio;
                 var projection = Matrix4.CreateOrthographic(width, height, camera._projectionMatrix.ZNear, camera._projectionMatrix.ZFar);*/
                 var projection = camera.CalculateProjection();
-                _2DProgram.SetUniform(ProjectionMatrix.CURRENT_NAME, projection);
+                //_2DProgram.SetUniform(ProjectionMatrix.CURRENT_NAME, projection);
+                _2DProgram.SetCamera(camera);
 
                 var originalDirection = -Vector3.UnitZ;
-                var direction = (camera._viewMatrix.LookAt - camera._viewMatrix.Translation).Normalized();
+                var direction = (camera.LookAt - camera.Position).Normalized();
 
                 var cosTheta = Vector3.Dot(originalDirection, direction);
                 var rotationAxis = Vector3.Cross(originalDirection, direction);

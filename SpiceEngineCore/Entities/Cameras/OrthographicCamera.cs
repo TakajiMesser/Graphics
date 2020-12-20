@@ -8,7 +8,7 @@ namespace SpiceEngineCore.Entities.Cameras
         public const float ZNEAR = -100.0f;
         public const float ZFAR = 100.0f;
 
-        public OrthographicCamera(string name, float zNear, float zFar, float startingWidth) : base(name, ProjectionTypes.Orthographic) => _projectionMatrix.UpdateOrthographic(startingWidth, zNear, zFar);
+        public OrthographicCamera(string name, float zNear, float zFar, float startingWidth) : base(name, ProjectionTypes.Orthographic) => _projectionMatrix.InitializeOrthographic(startingWidth, zNear, zFar);
 
         public float Width
         {

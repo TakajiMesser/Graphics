@@ -1,7 +1,5 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Entities;
 using SpiceEngineCore.Rendering.Matrices;
-using SpiceEngineCore.Rendering.Shaders;
 using System;
 
 namespace SpiceEngineCore.Entities
@@ -18,11 +16,11 @@ namespace SpiceEngineCore.Entities
             set => _modelMatrix.Position = value;
         }
 
-        public ModelMatrix WorldMatrix => _modelMatrix;
+        public Matrix4 CurrentModelMatrix => _modelMatrix.CurrentValue;
+        public Matrix4 PreviousModelMatrix => _modelMatrix.PreviousValue;
 
         private event EventHandler<EntityTransformEventArgs> _transformed;
 
-        public event EventHandler<EntityEventArgs> UniformsChanged;
         public event EventHandler<EntityTransformEventArgs> Transformed
         {
             add

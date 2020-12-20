@@ -119,7 +119,8 @@ namespace SweetGraphicsCore.Rendering.Batches
             }
             else
             {
-                entity.WorldMatrix.Set(shaderProgram);
+                shaderProgram.SetUniform(ModelMatrix.CURRENT_NAME, entity.CurrentModelMatrix);
+                shaderProgram.SetUniform(ModelMatrix.PREVIOUS_NAME, entity.PreviousModelMatrix);
             }
 
             if (_renderable is ITexturedMesh texturedMesh)

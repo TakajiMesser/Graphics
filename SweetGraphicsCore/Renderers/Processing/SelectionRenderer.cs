@@ -182,7 +182,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _translateProgram.Use();
 
-            camera.SetUniforms(_translateProgram);
+            _translateProgram.SetCamera(camera);
             _translateProgram.SetUniform("cameraPosition", camera.Position);
             _translateProgram.SetUniform("xDirection", xDirection);
             _translateProgram.SetUniform("yDirection", yDirection);
@@ -205,7 +205,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _rotateProgram.Use();
 
-            camera.SetUniforms(_rotateProgram);
+            _rotateProgram.SetCamera(camera);
             _rotateProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();
@@ -225,7 +225,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             _scaleProgram.Use();
 
-            camera.SetUniforms(_scaleProgram);
+            _scaleProgram.SetCamera(camera);
             _scaleProgram.SetUniform("cameraPosition", camera.Position);
 
             _vertexBuffer.Clear();

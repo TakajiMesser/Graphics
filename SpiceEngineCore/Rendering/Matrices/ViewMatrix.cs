@@ -1,9 +1,8 @@
 ﻿using OpenTK;
-using SpiceEngineCore.Rendering.Shaders;
 
 namespace SpiceEngineCore.Rendering.Matrices
 {
-    public class ViewMatrix
+    public class ViewMatrix : TransformMatrix
     {
         public const string CURRENT_NAME = "viewMatrix";
         public const string PREVIOUS_NAME = "previousViewMatrix";
@@ -14,10 +13,14 @@ namespace SpiceEngineCore.Rendering.Matrices
         private Vector3 _up = Vector3.UnitY;
 
         public ViewMatrix() { }
-        public ViewMatrix(Vector3 translation, Vector3 lookAt, Vector3 up) => Update(translation, lookAt, up);
+        public ViewMatrix(Vector3 translation, Vector3 lookAt, Vector3 up)
+        {
+            _translation = translation;
+            _lookAt = lookAt;
+            _up = up;
 
-        public Matrix4 CurrentValue { get; private set; }
-        public Matrix4 PreviousValue { get; private set; }
+            InitializeValue(Calculate());
+        }
 
         public Vector3 Translation
         {
@@ -25,7 +28,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _translation = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
@@ -35,7 +38,7 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _lookAt = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
@@ -45,30 +48,10 @@ namespace SpiceEngineCore.Rendering.Matrices
             set
             {
                 _up = value;
-                CalculateMatrix();
+                UpdateValue(Calculate());
             }
         }
 
-        public void Update(Vector3 translation, Vector3 lookAt, Vector3 up)
-        {
-            _translation = translation;
-            _lookAt = lookAt;
-            _up = up;
-
-            CalculateMatrix();
-        }
-
-        public void Set(ShaderProgram program)
-        {
-            program.SetUniform(CURRENT_NAME, CurrentValue);
-            program.SetUniform(PREVIOUS_NAME, PreviousValue);
-
-            PreviousValue = CurrentValue;
-        }
-
-        private void CalculateMatrix()
-        {
-            CurrentValue = Matrix4.LookAt(Translation, LookAt, Up);
-        }
+        private Matrix4 Calculate() => Matrix4.LookAt(Translation, LookAt, Up);
     }
 }
