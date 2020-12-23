@@ -201,7 +201,7 @@ namespace SpiceEngineCore.Geometry
         public static CQuaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
         public static CQuaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ) => new CQuaternion(rotationX, rotationY, rotationZ);
 
-        public static CQuaternion FromMatrix(CMatrix3 matrix)
+        public static CQuaternion FromMatrix(Matrix3 matrix)
         {
             var trace = matrix.Trace;
 

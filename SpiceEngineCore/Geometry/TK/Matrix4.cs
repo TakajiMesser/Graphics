@@ -582,7 +582,7 @@ namespace SpiceEngineCore.Geometry
 
             // code below adapted from Blender
             var q = default(Quaternion);
-            var trace = 0.25 * (row0[0] + row1[1] + row2[2] + 1.0);
+            var trace = 0.25 * (row0.X + row1.Y + row2.Z + 1.0);
 
             if (trace > 0)
             {
@@ -590,39 +590,39 @@ namespace SpiceEngineCore.Geometry
 
                 q.W = (float)sq;
                 sq = 1.0 / (4.0 * sq);
-                q.X = (float)((row1[2] - row2[1]) * sq);
-                q.Y = (float)((row2[0] - row0[2]) * sq);
-                q.Z = (float)((row0[1] - row1[0]) * sq);
+                q.X = (float)((row1.Z - row2.Y) * sq);
+                q.Y = (float)((row2.X - row0.Z) * sq);
+                q.Z = (float)((row0.Y - row1.X) * sq);
             }
-            else if (row0[0] > row1[1] && row0[0] > row2[2])
+            else if (row0.X > row1.Y && row0.X > row2.Z)
             {
-                var sq = 2.0 * Math.Sqrt(1.0 + row0[0] - row1[1] - row2[2]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row0.X - row1.Y - row2.Z);
 
                 q.X = (float)(0.25 * sq);
                 sq = 1.0 / sq;
-                q.W = (float)((row2[1] - row1[2]) * sq);
-                q.Y = (float)((row1[0] + row0[1]) * sq);
-                q.Z = (float)((row2[0] + row0[2]) * sq);
+                q.W = (float)((row2.Y - row1.Z) * sq);
+                q.Y = (float)((row1.X + row0.Y) * sq);
+                q.Z = (float)((row2.X + row0.Z) * sq);
             }
-            else if (row1[1] > row2[2])
+            else if (row1.Y > row2.Z)
             {
-                var sq = 2.0 * Math.Sqrt(1.0 + row1[1] - row0[0] - row2[2]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row1.Y - row0.X - row2.Z);
 
                 q.Y = (float)(0.25 * sq);
                 sq = 1.0 / sq;
-                q.W = (float)((row2[0] - row0[2]) * sq);
-                q.X = (float)((row1[0] + row0[1]) * sq);
-                q.Z = (float)((row2[1] + row1[2]) * sq);
+                q.W = (float)((row2.X - row0.Z) * sq);
+                q.X = (float)((row1.X + row0.Y) * sq);
+                q.Z = (float)((row2.Y + row1.Z) * sq);
             }
             else
             {
-                var sq = 2.0 * Math.Sqrt(1.0 + row2[2] - row0[0] - row1[1]);
+                var sq = 2.0 * Math.Sqrt(1.0 + row2.Z - row0.X - row1.Y);
 
                 q.Z = (float)(0.25 * sq);
                 sq = 1.0 / sq;
-                q.W = (float)((row1[0] - row0[1]) * sq);
-                q.X = (float)((row2[0] + row0[2]) * sq);
-                q.Y = (float)((row2[1] + row1[2]) * sq);
+                q.W = (float)((row1.X - row0.Y) * sq);
+                q.X = (float)((row2.X + row0.Z) * sq);
+                q.Y = (float)((row2.Y + row1.Z) * sq);
             }
 
             q.Normalize();
@@ -647,7 +647,7 @@ namespace SpiceEngineCore.Geometry
         public static void CreateFromAxisAngle(Vector3 axis, float angle, out Matrix4 result)
         {
             // normalize and create a local copy of the vector.
-            axis.Normalize();
+            axis = axis.Normalized();
             float axisX = axis.X, axisY = axis.Y, axisZ = axis.Z;
 
             // calculate angles
@@ -1252,9 +1252,9 @@ namespace SpiceEngineCore.Geometry
         [Pure]
         public static Matrix4 LookAt(Vector3 eye, Vector3 target, Vector3 up)
         {
-            var z = Vector3.Normalize(eye - target);
-            var x = Vector3.Normalize(Vector3.Cross(up, z));
-            var y = Vector3.Normalize(Vector3.Cross(z, x));
+            var z = (eye - target).Normalized();
+            var x = Vector3.Cross(up, z).Normalized();
+            var y = Vector3.Cross(z, x).Normalized();
 
             Matrix4 result;
 

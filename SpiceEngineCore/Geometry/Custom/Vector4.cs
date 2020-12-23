@@ -7,7 +7,7 @@ namespace SpiceEngineCore.Geometry
     [StructLayout(LayoutKind.Sequential)]
     public struct CVector4 : IEquatable<CVector4>
     {
-        public CVector4(CVector3 xyz, float w) : this(xyz.X, xyz.Y, xyz.Z, w) { }
+        public CVector4(Vector3 xyz, float w) : this(xyz.X, xyz.Y, xyz.Z, w) { }
         public CVector4(float x, float y, float z, float w)
         {
             X = x;
@@ -21,9 +21,9 @@ namespace SpiceEngineCore.Geometry
         public float Z { get; set; }
         public float W { get; set; }
 
-        public CVector2 Xy
+        public Vector2 Xy
         {
-            get => new CVector2(X, Y);
+            get => new Vector2(X, Y);
             set
             {
                 X = value.X;
@@ -31,9 +31,9 @@ namespace SpiceEngineCore.Geometry
             }
         }
 
-        public CVector3 Xyz
+        public Vector3 Xyz
         {
-            get => new CVector3(X, Y, Z);
+            get => new Vector3(X, Y, Z);
             set
             {
                 X = value.X;

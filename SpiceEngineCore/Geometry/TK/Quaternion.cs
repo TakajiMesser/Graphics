@@ -66,9 +66,12 @@ namespace SpiceEngineCore.Geometry
             var s3 = (float)Math.Sin(rotationZ);
 
             W = (c1 * c2 * c3) - (s1 * s2 * s3);
-            Xyz.X = (s1 * c2 * c3) + (c1 * s2 * s3);
-            Xyz.Y = (c1 * s2 * c3) - (s1 * c2 * s3);
-            Xyz.Z = (c1 * c2 * s3) + (s1 * s2 * c3);
+            Xyz = new Vector3()
+            {
+                X = (s1 * c2 * c3) + (c1 * s2 * s3),
+                Y = (c1 * s2 * c3) - (s1 * c2 * s3),
+                Z = (c1 * c2 * s3) + (s1 * s2 * c3)
+            };
         }
 
         /// <summary>
@@ -177,7 +180,7 @@ namespace SpiceEngineCore.Geometry
 
             var q = this;
 
-            Vector3 eulerAngles;
+            Vector3 eulerAngles = new Vector3();
 
             // Threshold for the singularities found at the north/south poles.
             const float SINGULARITY_THRESHOLD = 0.4999995f;
@@ -534,9 +537,12 @@ namespace SpiceEngineCore.Geometry
             var s3 = (float)Math.Sin(eulerAngles.Z * 0.5f);
 
             result.W = (c1 * c2 * c3) - (s1 * s2 * s3);
-            result.Xyz.X = (s1 * c2 * c3) + (c1 * s2 * s3);
-            result.Xyz.Y = (c1 * s2 * c3) - (s1 * c2 * s3);
-            result.Xyz.Z = (c1 * c2 * s3) + (s1 * s2 * c3);
+            result.Xyz = new Vector3()
+            {
+                X = (s1 * c2 * c3) + (c1 * s2 * s3),
+                Y = (c1 * s2 * c3) - (s1 * c2 * s3),
+                Z = (c1 * c2 * s3) + (s1 * s2 * c3)
+            };
         }
 
         /// <summary>
@@ -576,9 +582,12 @@ namespace SpiceEngineCore.Geometry
                 var invS = 1f / s;
 
                 result.W = s * 0.25f;
-                result.Xyz.X = (matrix.Row2.Y - matrix.Row1.Z) * invS;
-                result.Xyz.Y = (matrix.Row0.Z - matrix.Row2.X) * invS;
-                result.Xyz.Z = (matrix.Row1.X - matrix.Row0.Y) * invS;
+                result.Xyz = new Vector3()
+                {
+                    X = (matrix.Row2.Y - matrix.Row1.Z) * invS,
+                    Y = (matrix.Row0.Z - matrix.Row2.X) * invS,
+                    Z = (matrix.Row1.X - matrix.Row0.Y) * invS
+                };
             }
             else
             {
@@ -590,9 +599,12 @@ namespace SpiceEngineCore.Geometry
                     var invS = 1f / s;
 
                     result.W = (matrix.Row2.Y - matrix.Row1.Z) * invS;
-                    result.Xyz.X = s * 0.25f;
-                    result.Xyz.Y = (matrix.Row0.Y + matrix.Row1.X) * invS;
-                    result.Xyz.Z = (matrix.Row0.Z + matrix.Row2.X) * invS;
+                    result.Xyz = new Vector3()
+                    {
+                        X = s * 0.25f,
+                        Y = (matrix.Row0.Y + matrix.Row1.X) * invS,
+                        Z = (matrix.Row0.Z + matrix.Row2.X) * invS
+                    };
                 }
                 else if (m11 > m22)
                 {
@@ -600,9 +612,12 @@ namespace SpiceEngineCore.Geometry
                     var invS = 1f / s;
 
                     result.W = (matrix.Row0.Z - matrix.Row2.X) * invS;
-                    result.Xyz.X = (matrix.Row0.Y + matrix.Row1.X) * invS;
-                    result.Xyz.Y = s * 0.25f;
-                    result.Xyz.Z = (matrix.Row1.Z + matrix.Row2.Y) * invS;
+                    result.Xyz = new Vector3()
+                    {
+                        X = (matrix.Row0.Y + matrix.Row1.X) * invS,
+                        Y = s * 0.25f,
+                        Z = (matrix.Row1.Z + matrix.Row2.Y) * invS
+                    };
                 }
                 else
                 {
@@ -610,9 +625,12 @@ namespace SpiceEngineCore.Geometry
                     var invS = 1f / s;
 
                     result.W = (matrix.Row1.X - matrix.Row0.Y) * invS;
-                    result.Xyz.X = (matrix.Row0.Z + matrix.Row2.X) * invS;
-                    result.Xyz.Y = (matrix.Row1.Z + matrix.Row2.Y) * invS;
-                    result.Xyz.Z = s * 0.25f;
+                    result.Xyz = new Vector3()
+                    {
+                        X = (matrix.Row0.Z + matrix.Row2.X) * invS,
+                        Y = (matrix.Row1.Z + matrix.Row2.Y) * invS,
+                        Z = s * 0.25f
+                    };
                 }
             }
         }
@@ -756,6 +774,30 @@ namespace SpiceEngineCore.Geometry
                 quaternion.W * scale
             );
         }
+
+        public static Vector3 operator *(Quaternion quaternion, Vector3 vector)
+        {
+            var xyz = quaternion.Xyz;
+            var temp = Vector3.Cross(quaternion.Xyz, vector);
+            var temp2 = vector * quaternion.W;
+            temp = temp + temp2;
+            temp2 = Vector3.Cross(quaternion.Xyz, temp);
+            temp2 = temp2 * 2f;
+            return vector + temp2;
+        }
+
+        /*public static void Transform(in TVector3 vec, in Quaternion quat, out TVector3 result)
+        {
+            // Since vec.W == 0, we can optimize quat * vec * quat^-1 as follows:
+            // vec + 2.0 * cross(quat.xyz, cross(quat.xyz, vec) + quat.w * vec)
+            TVector3 xyz = new TVector3(quat.Xyz.X, quat.Xyz.Y, quat.Xyz.Z);
+            Cross(in xyz, in vec, out TVector3 temp);
+            Multiply(in vec, quat.W, out TVector3 temp2);
+            Add(in temp, in temp2, out temp);
+            Cross(in xyz, in temp, out temp2);
+            Multiply(in temp2, 2f, out temp2);
+            Add(in vec, in temp2, out result);
+        }*/
 
         /// <summary>
         /// Compares two instances for equality.

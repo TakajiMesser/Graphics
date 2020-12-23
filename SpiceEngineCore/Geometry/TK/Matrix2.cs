@@ -10,55 +10,55 @@ namespace SpiceEngineCore.Geometry
     /// </summary>
     [Serializable]
     [StructLayout(LayoutKind.Sequential)]
-    public struct Matrix2 : IEquatable<Matrix2>
+    public struct TMatrix2 : IEquatable<TMatrix2>
     {
         /// <summary>
         /// Top row of the matrix.
         /// </summary>
-        public Vector2 Row0;
+        public TVector2 Row0;
 
         /// <summary>
         /// Bottom row of the matrix.
         /// </summary>
-        public Vector2 Row1;
+        public TVector2 Row1;
 
         /// <summary>
         /// The identity matrix.
         /// </summary>
-        public static readonly Matrix2 Identity = new Matrix2(Vector2.UnitX, Vector2.UnitY);
+        public static readonly TMatrix2 Identity = new TMatrix2(TVector2.UnitX, TVector2.UnitY);
 
         /// <summary>
         /// The zero matrix.
         /// </summary>
-        public static readonly Matrix2 Zero = new Matrix2(Vector2.Zero, Vector2.Zero);
+        public static readonly TMatrix2 Zero = new TMatrix2(TVector2.Zero, TVector2.Zero);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix2"/> struct.
+        /// Initializes a new instance of the <see cref="TMatrix2"/> struct.
         /// </summary>
         /// <param name="row0">Top row of the matrix.</param>
         /// <param name="row1">Bottom row of the matrix.</param>
-        public Matrix2(Vector2 row0, Vector2 row1)
+        public TMatrix2(TVector2 row0, TVector2 row1)
         {
             Row0 = row0;
             Row1 = row1;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Matrix2"/> struct.
+        /// Initializes a new instance of the <see cref="TMatrix2"/> struct.
         /// </summary>
         /// <param name="m00">First item of the first row of the matrix.</param>
         /// <param name="m01">Second item of the first row of the matrix.</param>
         /// <param name="m10">First item of the second row of the matrix.</param>
         /// <param name="m11">Second item of the second row of the matrix.</param>
         [SuppressMessage("ReSharper", "SA1117", Justification = "For better readability of Matrix struct.")]
-        public Matrix2
+        public TMatrix2
         (
             float m00, float m01,
             float m10, float m11
         )
         {
-            Row0 = new Vector2(m00, m01);
-            Row1 = new Vector2(m10, m11);
+            Row0 = new TVector2(m00, m01);
+            Row1 = new TVector2(m10, m11);
         }
 
         /// <summary>
@@ -80,9 +80,9 @@ namespace SpiceEngineCore.Geometry
         /// <summary>
         /// Gets or sets the first column of this matrix.
         /// </summary>
-        public Vector2 Column0
+        public TVector2 Column0
         {
-            get => new Vector2(Row0.X, Row1.X);
+            get => new TVector2(Row0.X, Row1.X);
             set
             {
                 Row0.X = value.X;
@@ -93,9 +93,9 @@ namespace SpiceEngineCore.Geometry
         /// <summary>
         /// Gets or sets the second column of this matrix.
         /// </summary>
-        public Vector2 Column1
+        public TVector2 Column1
         {
-            get => new Vector2(Row0.Y, Row1.Y);
+            get => new TVector2(Row0.Y, Row1.Y);
             set
             {
                 Row0.Y = value.X;
@@ -142,9 +142,9 @@ namespace SpiceEngineCore.Geometry
         /// <summary>
         /// Gets or sets the values along the main diagonal of the matrix.
         /// </summary>
-        public Vector2 Diagonal
+        public TVector2 Diagonal
         {
-            get => new Vector2(Row0.X, Row1.Y);
+            get => new TVector2(Row0.X, Row1.Y);
             set
             {
                 Row0.X = value.X;
@@ -219,8 +219,8 @@ namespace SpiceEngineCore.Geometry
         /// Builds a rotation matrix.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <param name="result">The resulting Matrix2 instance.</param>
-        public static void CreateRotation(float angle, out Matrix2 result)
+        /// <param name="result">The resulting TMatrix2 instance.</param>
+        public static void CreateRotation(float angle, out TMatrix2 result)
         {
             var cos = (float)Math.Cos(angle);
             var sin = (float)Math.Sin(angle);
@@ -235,11 +235,11 @@ namespace SpiceEngineCore.Geometry
         /// Builds a rotation matrix.
         /// </summary>
         /// <param name="angle">The counter-clockwise angle in radians.</param>
-        /// <returns>The resulting Matrix2 instance.</returns>
+        /// <returns>The resulting TMatrix2 instance.</returns>
         [Pure]
-        public static Matrix2 CreateRotation(float angle)
+        public static TMatrix2 CreateRotation(float angle)
         {
-            CreateRotation(angle, out Matrix2 result);
+            CreateRotation(angle, out TMatrix2 result);
             return result;
         }
 
@@ -248,7 +248,7 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="scale">Single scale factor for the x, y, and z axes.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void CreateScale(float scale, out Matrix2 result)
+        public static void CreateScale(float scale, out TMatrix2 result)
         {
             result.Row0.X = scale;
             result.Row0.Y = 0;
@@ -262,9 +262,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="scale">Single scale factor for the x and y axes.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix2 CreateScale(float scale)
+        public static TMatrix2 CreateScale(float scale)
         {
-            CreateScale(scale, out Matrix2 result);
+            CreateScale(scale, out TMatrix2 result);
             return result;
         }
 
@@ -273,7 +273,7 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="scale">Scale factors for the x and y axes.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void CreateScale(Vector2 scale, out Matrix2 result)
+        public static void CreateScale(TVector2 scale, out TMatrix2 result)
         {
             result.Row0.X = scale.X;
             result.Row0.Y = 0;
@@ -287,9 +287,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="scale">Scale factors for the x and y axes.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix2 CreateScale(Vector2 scale)
+        public static TMatrix2 CreateScale(TVector2 scale)
         {
-            CreateScale(scale, out Matrix2 result);
+            CreateScale(scale, out TMatrix2 result);
             return result;
         }
 
@@ -299,7 +299,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="x">Scale factor for the x axis.</param>
         /// <param name="y">Scale factor for the y axis.</param>
         /// <param name="result">A scale matrix.</param>
-        public static void CreateScale(float x, float y, out Matrix2 result)
+        public static void CreateScale(float x, float y, out TMatrix2 result)
         {
             result.Row0.X = x;
             result.Row0.Y = 0;
@@ -314,9 +314,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="y">Scale factor for the y axis.</param>
         /// <returns>A scale matrix.</returns>
         [Pure]
-        public static Matrix2 CreateScale(float x, float y)
+        public static TMatrix2 CreateScale(float x, float y)
         {
-            CreateScale(x, y, out Matrix2 result);
+            CreateScale(x, y, out TMatrix2 result);
             return result;
         }
 
@@ -326,7 +326,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <param name="result">A new instance that is the result of the multiplication.</param>
-        public static void Mult(in Matrix2 left, float right, out Matrix2 result)
+        public static void Mult(in TMatrix2 left, float right, out TMatrix2 result)
         {
             result.Row0.X = left.Row0.X * right;
             result.Row0.Y = left.Row0.Y * right;
@@ -341,9 +341,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication.</returns>
         [Pure]
-        public static Matrix2 Mult(Matrix2 left, float right)
+        public static TMatrix2 Mult(TMatrix2 left, float right)
         {
-            Mult(in left, right, out Matrix2 result);
+            Mult(in left, right, out TMatrix2 result);
             return result;
         }
 
@@ -353,7 +353,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="left">The left operand of the multiplication.</param>
         /// <param name="right">The right operand of the multiplication.</param>
         /// <param name="result">A new instance that is the result of the multiplication.</param>
-        public static void Mult(in Matrix2 left, in Matrix2 right, out Matrix2 result)
+        public static void Mult(in TMatrix2 left, in TMatrix2 right, out TMatrix2 result)
         {
             float leftM11 = left.Row0.X;
             float leftM12 = left.Row0.Y;
@@ -377,9 +377,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="right">The right operand of the multiplication.</param>
         /// <returns>A new instance that is the result of the multiplication.</returns>
         [Pure]
-        public static Matrix2 Mult(Matrix2 left, Matrix2 right)
+        public static TMatrix2 Mult(TMatrix2 left, TMatrix2 right)
         {
-            Mult(in left, in right, out Matrix2 result);
+            Mult(in left, in right, out TMatrix2 result);
             return result;
         }
 
@@ -389,7 +389,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="left">The left operand of the addition.</param>
         /// <param name="right">The right operand of the addition.</param>
         /// <param name="result">A new instance that is the result of the addition.</param>
-        public static void Add(in Matrix2 left, in Matrix2 right, out Matrix2 result)
+        public static void Add(in TMatrix2 left, in TMatrix2 right, out TMatrix2 result)
         {
             result.Row0.X = left.Row0.X + right.Row0.X;
             result.Row0.Y = left.Row0.Y + right.Row0.Y;
@@ -404,9 +404,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="right">The right operand of the addition.</param>
         /// <returns>A new instance that is the result of the addition.</returns>
         [Pure]
-        public static Matrix2 Add(Matrix2 left, Matrix2 right)
+        public static TMatrix2 Add(TMatrix2 left, TMatrix2 right)
         {
-            Add(in left, in right, out Matrix2 result);
+            Add(in left, in right, out TMatrix2 result);
             return result;
         }
 
@@ -416,7 +416,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="left">The left operand of the subtraction.</param>
         /// <param name="right">The right operand of the subtraction.</param>
         /// <param name="result">A new instance that is the result of the subtraction.</param>
-        public static void Subtract(in Matrix2 left, in Matrix2 right, out Matrix2 result)
+        public static void Subtract(in TMatrix2 left, in TMatrix2 right, out TMatrix2 result)
         {
             result.Row0.X = left.Row0.X - right.Row0.X;
             result.Row0.Y = left.Row0.Y - right.Row0.Y;
@@ -431,9 +431,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="right">The right operand of the subtraction.</param>
         /// <returns>A new instance that is the result of the subtraction.</returns>
         [Pure]
-        public static Matrix2 Subtract(Matrix2 left, Matrix2 right)
+        public static TMatrix2 Subtract(TMatrix2 left, TMatrix2 right)
         {
-            Subtract(in left, in right, out Matrix2 result);
+            Subtract(in left, in right, out TMatrix2 result);
             return result;
         }
 
@@ -442,8 +442,8 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
         /// <param name="result">The inverse of the given matrix.</param>
-        /// <exception cref="InvalidOperationException">Thrown if the Matrix2 is singular.</exception>
-        public static void Invert(in Matrix2 mat, out Matrix2 result)
+        /// <exception cref="InvalidOperationException">Thrown if the TMatrix2 is singular.</exception>
+        public static void Invert(in TMatrix2 mat, out TMatrix2 result)
         {
             var det = mat.Determinant;
 
@@ -465,12 +465,12 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="mat">The matrix to invert.</param>
         /// <returns>The inverse of the given matrix.</returns>
-        /// <exception cref="InvalidOperationException">Thrown if the Matrix2 is singular.</exception>
+        /// <exception cref="InvalidOperationException">Thrown if the TMatrix2 is singular.</exception>
         /// <returns>The inverted copy.</returns>
         [Pure]
-        public static Matrix2 Invert(Matrix2 mat)
+        public static TMatrix2 Invert(TMatrix2 mat)
         {
-            Invert(in mat, out Matrix2 result);
+            Invert(in mat, out TMatrix2 result);
             return result;
         }
 
@@ -479,7 +479,7 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="mat">The matrix to transpose.</param>
         /// <param name="result">The transpose of the given matrix.</param>
-        public static void Transpose(in Matrix2 mat, out Matrix2 result)
+        public static void Transpose(in TMatrix2 mat, out TMatrix2 result)
         {
             result.Row0.X = mat.Row0.X;
             result.Row0.Y = mat.Row1.X;
@@ -493,9 +493,9 @@ namespace SpiceEngineCore.Geometry
         /// <param name="mat">The matrix to transpose.</param>
         /// <returns>The transpose of the given matrix.</returns>
         [Pure]
-        public static Matrix2 Transpose(Matrix2 mat)
+        public static TMatrix2 Transpose(TMatrix2 mat)
         {
-            Transpose(in mat, out Matrix2 result);
+            Transpose(in mat, out TMatrix2 result);
             return result;
         }
 
@@ -504,9 +504,9 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix2 which holds the result of the multiplication.</returns>
+        /// <returns>A new TMatrix2 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix2 operator *(float left, Matrix2 right)
+        public static TMatrix2 operator *(float left, TMatrix2 right)
         {
             return Mult(right, left);
         }
@@ -516,9 +516,9 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix2 which holds the result of the multiplication.</returns>
+        /// <returns>A new TMatrix2 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix2 operator *(Matrix2 left, float right)
+        public static TMatrix2 operator *(TMatrix2 left, float right)
         {
             return Mult(left, right);
         }
@@ -528,9 +528,9 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix2 which holds the result of the multiplication.</returns>
+        /// <returns>A new TMatrix2 which holds the result of the multiplication.</returns>
         [Pure]
-        public static Matrix2 operator *(Matrix2 left, Matrix2 right)
+        public static TMatrix2 operator *(TMatrix2 left, TMatrix2 right)
         {
             return Mult(left, right);
         }
@@ -540,9 +540,9 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix2 which holds the result of the addition.</returns>
+        /// <returns>A new TMatrix2 which holds the result of the addition.</returns>
         [Pure]
-        public static Matrix2 operator +(Matrix2 left, Matrix2 right)
+        public static TMatrix2 operator +(TMatrix2 left, TMatrix2 right)
         {
             return Add(left, right);
         }
@@ -552,9 +552,9 @@ namespace SpiceEngineCore.Geometry
         /// </summary>
         /// <param name="left">left-hand operand.</param>
         /// <param name="right">right-hand operand.</param>
-        /// <returns>A new Matrix2 which holds the result of the subtraction.</returns>
+        /// <returns>A new TMatrix2 which holds the result of the subtraction.</returns>
         [Pure]
-        public static Matrix2 operator -(Matrix2 left, Matrix2 right)
+        public static TMatrix2 operator -(TMatrix2 left, TMatrix2 right)
         {
             return Subtract(left, right);
         }
@@ -566,7 +566,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left equals right; false otherwise.</returns>
         [Pure]
-        public static bool operator ==(Matrix2 left, Matrix2 right)
+        public static bool operator ==(TMatrix2 left, TMatrix2 right)
         {
             return left.Equals(right);
         }
@@ -578,7 +578,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="right">The second instance.</param>
         /// <returns>True, if left does not equal right; false otherwise.</returns>
         [Pure]
-        public static bool operator !=(Matrix2 left, Matrix2 right)
+        public static bool operator !=(TMatrix2 left, TMatrix2 right)
         {
             return !left.Equals(right);
         }
@@ -615,7 +615,7 @@ namespace SpiceEngineCore.Geometry
         [Pure]
         public override bool Equals(object obj)
         {
-            return obj is Matrix2 && Equals((Matrix2)obj);
+            return obj is TMatrix2 && Equals((TMatrix2)obj);
         }
 
         /// <summary>
@@ -624,7 +624,7 @@ namespace SpiceEngineCore.Geometry
         /// <param name="other">An matrix to compare with this matrix.</param>
         /// <returns>true if the current matrix is equal to the matrix parameter; otherwise, false.</returns>
         [Pure]
-        public bool Equals(Matrix2 other)
+        public bool Equals(TMatrix2 other)
         {
             return
                 Row0 == other.Row0 &&

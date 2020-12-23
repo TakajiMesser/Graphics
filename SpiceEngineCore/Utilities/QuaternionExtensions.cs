@@ -69,7 +69,7 @@ namespace SpiceEngineCore.Utilities
             }
         }
 
-        public static Quaternion RotationBetween(Vector3 vectorA, Vector3 vectorB, Vector3 up)
+        /*public static Quaternion RotationBetween(Vector3 vectorA, Vector3 vectorB, Vector3 up)
         {
             var directionRotation = RotationBetween(vectorA, vectorB);
             
@@ -82,7 +82,7 @@ namespace SpiceEngineCore.Utilities
             var upRotation = RotationBetween(correctedUp, up);
 
             return upRotation * directionRotation;
-        }
+        }*/
 
         // Using Tait-Bryan rotation convention conversion from this post: https://math.stackexchange.com/questions/687964/getting-euler-tait-bryan-angles-from-quaternion-representation
         public static Vector3 ToEulerAngles(this Quaternion quaternion)
