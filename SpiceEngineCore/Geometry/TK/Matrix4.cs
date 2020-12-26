@@ -101,22 +101,34 @@ namespace SpiceEngineCore.Geometry
         /// <param name="topLeft">The top left 3x3 of the matrix.</param>
         public Matrix4(Matrix3 topLeft)
         {
-            Row0.X = topLeft.Row0.X;
-            Row0.Y = topLeft.Row0.Y;
-            Row0.Z = topLeft.Row0.Z;
-            Row0.W = 0;
-            Row1.X = topLeft.Row1.X;
-            Row1.Y = topLeft.Row1.Y;
-            Row1.Z = topLeft.Row1.Z;
-            Row1.W = 0;
-            Row2.X = topLeft.Row2.X;
-            Row2.Y = topLeft.Row2.Y;
-            Row2.Z = topLeft.Row2.Z;
-            Row2.W = 0;
-            Row3.X = 0;
-            Row3.Y = 0;
-            Row3.Z = 0;
-            Row3.W = 1;
+            Row0 = new Vector4()
+            {
+                X = topLeft.Row0.X,
+                Y = topLeft.Row0.Y,
+                Z = topLeft.Row0.Z,
+                W = 0
+            };
+            Row1 = new Vector4()
+            {
+                X = topLeft.Row1.X,
+                Y = topLeft.Row1.Y,
+                Z = topLeft.Row1.Z,
+                W = 0
+            };
+            Row2 = new Vector4()
+            {
+                X = topLeft.Row2.X,
+                Y = topLeft.Row2.Y,
+                Z = topLeft.Row2.Z,
+                W = 0
+            };
+            Row3 = new Vector4()
+            {
+                X = 0,
+                Y = 0,
+                Z = 0,
+                W = 1
+            };
         }
 
         /// <summary>
@@ -667,18 +679,30 @@ namespace SpiceEngineCore.Geometry
             float sinY = sin * axisY;
             float sinZ = sin * axisZ;
 
-            result.Row0.X = tXX + cos;
-            result.Row0.Y = tXY - sinZ;
-            result.Row0.Z = tXZ + sinY;
-            result.Row0.W = 0;
-            result.Row1.X = tXY + sinZ;
-            result.Row1.Y = tYY + cos;
-            result.Row1.Z = tYZ - sinX;
-            result.Row1.W = 0;
-            result.Row2.X = tXZ - sinY;
-            result.Row2.Y = tYZ + sinX;
-            result.Row2.Z = tZZ + cos;
-            result.Row2.W = 0;
+            result.Row0 = new Vector4()
+            {
+                X = tXX + cos,
+                Y = tXY - sinZ,
+                Z = tXZ + sinY,
+                W = 0
+            };
+
+            result.Row1 = new Vector4()
+            {
+                X = tXY + sinZ,
+                Y = tYY + cos,
+                Z = tYZ - sinX,
+                W = 0
+            };
+
+            result.Row2 = new Vector4()
+            {
+                X = tXZ - sinY,
+                Y = tYZ + sinX,
+                Z = tZZ + cos,
+                W = 0
+            };
+
             result.Row3 = Vector4.UnitW;
         }
 
@@ -720,22 +744,30 @@ namespace SpiceEngineCore.Geometry
 
             float s2 = 2f / (sqx + sqy + sqz + sqw);
 
-            result.Row0.X = 1f - (s2 * (sqy + sqz));
-            result.Row1.Y = 1f - (s2 * (sqx + sqz));
-            result.Row2.Z = 1f - (s2 * (sqx + sqy));
+            result.Row0 = new Vector4()
+            {
+                X = 1f - (s2 * (sqy + sqz)),
+                Y = s2 * (xy + zw),
+                Z = s2 * (xz - yw),
+                W = 0
+            };
 
-            result.Row0.Y = s2 * (xy + zw);
-            result.Row1.X = s2 * (xy - zw);
+            result.Row1 = new Vector4()
+            {
+                X = s2 * (xy - zw),
+                Y = 1f - (s2 * (sqx + sqz)),
+                Z = s2 * (yz + xw),
+                W = 0
+            };
 
-            result.Row2.X = s2 * (xz + yw);
-            result.Row0.Z = s2 * (xz - yw);
+            result.Row2 = new Vector4()
+            {
+                X = s2 * (xz + yw),
+                Y = s2 * (yz - xw),
+                Z = 1f - (s2 * (sqx + sqy)),
+                W = 0
+            };
 
-            result.Row2.Y = s2 * (yz - xw);
-            result.Row1.Z = s2 * (yz + xw);
-
-            result.Row0.W = 0;
-            result.Row1.W = 0;
-            result.Row2.W = 0;
             result.Row3 = new Vector4(0, 0, 0, 1);
         }
 
@@ -1191,22 +1223,37 @@ namespace SpiceEngineCore.Geometry
             var c = -(depthFar + depthNear) / (depthFar - depthNear);
             var d = -(2.0f * depthFar * depthNear) / (depthFar - depthNear);
 
-            result.Row0.X = x;
-            result.Row0.Y = 0;
-            result.Row0.Z = 0;
-            result.Row0.W = 0;
-            result.Row1.X = 0;
-            result.Row1.Y = y;
-            result.Row1.Z = 0;
-            result.Row1.W = 0;
-            result.Row2.X = a;
-            result.Row2.Y = b;
-            result.Row2.Z = c;
-            result.Row2.W = -1;
-            result.Row3.X = 0;
-            result.Row3.Y = 0;
-            result.Row3.Z = d;
-            result.Row3.W = 0;
+            result.Row0 = new Vector4()
+            {
+                X = x,
+                Y = 0,
+                Z = 0,
+                W = 0
+            };
+
+            result.Row1 = new Vector4()
+            {
+                X = 0,
+                Y = y,
+                Z = 0,
+                W = 0
+            };
+
+            result.Row2 = new Vector4()
+            {
+                X = a,
+                Y = b,
+                Z = c,
+                W = -1
+            };
+
+            result.Row3 = new Vector4()
+            {
+                X = 0,
+                Y = 0,
+                Z = d,
+                W = 0
+            };
         }
 
         /// <summary>
@@ -1256,7 +1303,7 @@ namespace SpiceEngineCore.Geometry
             var x = Vector3.Cross(up, z).Normalized();
             var y = Vector3.Cross(z, x).Normalized();
 
-            Matrix4 result;
+            Matrix4 result = Zero;
 
             result.Row0.X = x.X;
             result.Row0.Y = y.X;
@@ -1427,22 +1474,37 @@ namespace SpiceEngineCore.Geometry
             float rightM43 = right.Row3.Z;
             float rightM44 = right.Row3.W;
 
-            result.Row0.X = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41);
-            result.Row0.Y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42);
-            result.Row0.Z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43);
-            result.Row0.W = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44);
-            result.Row1.X = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41);
-            result.Row1.Y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42);
-            result.Row1.Z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43);
-            result.Row1.W = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44);
-            result.Row2.X = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41);
-            result.Row2.Y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42);
-            result.Row2.Z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43);
-            result.Row2.W = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44);
-            result.Row3.X = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41);
-            result.Row3.Y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42);
-            result.Row3.Z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43);
-            result.Row3.W = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44);
+            result.Row0 = new Vector4()
+            {
+                X = (leftM11 * rightM11) + (leftM12 * rightM21) + (leftM13 * rightM31) + (leftM14 * rightM41),
+                Y = (leftM11 * rightM12) + (leftM12 * rightM22) + (leftM13 * rightM32) + (leftM14 * rightM42),
+                Z = (leftM11 * rightM13) + (leftM12 * rightM23) + (leftM13 * rightM33) + (leftM14 * rightM43),
+                W = (leftM11 * rightM14) + (leftM12 * rightM24) + (leftM13 * rightM34) + (leftM14 * rightM44)
+            };
+
+            result.Row1 = new Vector4()
+            {
+                X = (leftM21 * rightM11) + (leftM22 * rightM21) + (leftM23 * rightM31) + (leftM24 * rightM41),
+                Y = (leftM21 * rightM12) + (leftM22 * rightM22) + (leftM23 * rightM32) + (leftM24 * rightM42),
+                Z = (leftM21 * rightM13) + (leftM22 * rightM23) + (leftM23 * rightM33) + (leftM24 * rightM43),
+                W = (leftM21 * rightM14) + (leftM22 * rightM24) + (leftM23 * rightM34) + (leftM24 * rightM44)
+            };
+
+            result.Row2 = new Vector4()
+            {
+                X = (leftM31 * rightM11) + (leftM32 * rightM21) + (leftM33 * rightM31) + (leftM34 * rightM41),
+                Y = (leftM31 * rightM12) + (leftM32 * rightM22) + (leftM33 * rightM32) + (leftM34 * rightM42),
+                Z = (leftM31 * rightM13) + (leftM32 * rightM23) + (leftM33 * rightM33) + (leftM34 * rightM43),
+                W = (leftM31 * rightM14) + (leftM32 * rightM24) + (leftM33 * rightM34) + (leftM34 * rightM44)
+            };
+
+            result.Row3 = new Vector4()
+            {
+                X = (leftM41 * rightM11) + (leftM42 * rightM21) + (leftM43 * rightM31) + (leftM44 * rightM41),
+                Y = (leftM41 * rightM12) + (leftM42 * rightM22) + (leftM43 * rightM32) + (leftM44 * rightM42),
+                Z = (leftM41 * rightM13) + (leftM42 * rightM23) + (leftM43 * rightM33) + (leftM44 * rightM43),
+                W = (leftM41 * rightM14) + (leftM42 * rightM24) + (leftM43 * rightM34) + (leftM44 * rightM44)
+            };
         }
 
         /// <summary>
@@ -1583,22 +1645,37 @@ namespace SpiceEngineCore.Geometry
                 }
             }
 
-            result.Row0.X = inverse[0, 0];
-            result.Row0.Y = inverse[0, 1];
-            result.Row0.Z = inverse[0, 2];
-            result.Row0.W = inverse[0, 3];
-            result.Row1.X = inverse[1, 0];
-            result.Row1.Y = inverse[1, 1];
-            result.Row1.Z = inverse[1, 2];
-            result.Row1.W = inverse[1, 3];
-            result.Row2.X = inverse[2, 0];
-            result.Row2.Y = inverse[2, 1];
-            result.Row2.Z = inverse[2, 2];
-            result.Row2.W = inverse[2, 3];
-            result.Row3.X = inverse[3, 0];
-            result.Row3.Y = inverse[3, 1];
-            result.Row3.Z = inverse[3, 2];
-            result.Row3.W = inverse[3, 3];
+            result.Row0 = new Vector4()
+            {
+                X = inverse[0, 0],
+                Y = inverse[0, 1],
+                Z = inverse[0, 2],
+                W = inverse[0, 3]
+            };
+
+            result.Row1 = new Vector4()
+            {
+                X = inverse[1, 0],
+                Y = inverse[1, 1],
+                Z = inverse[1, 2],
+                W = inverse[1, 3]
+            };
+
+            result.Row2 = new Vector4()
+            {
+                X = inverse[2, 0],
+                Y = inverse[2, 1],
+                Z = inverse[2, 2],
+                W = inverse[2, 3]
+            };
+
+            result.Row3 = new Vector4()
+            {
+                X = inverse[3, 0],
+                Y = inverse[3, 1],
+                Z = inverse[3, 2],
+                W = inverse[3, 3]
+            };
         }
 
         /// <summary>
