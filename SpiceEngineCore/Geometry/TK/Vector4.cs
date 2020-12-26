@@ -2000,9 +2000,9 @@ namespace SpiceEngineCore.Geometry
         /// <returns>The Vector4, converted to a TColor4.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         [Pure]
-        public static explicit operator TColor4(Vector4 v)
+        public static explicit operator Color4(Vector4 v)
         {
-            return new TColor4(v.X, v.Y, v.Z, v.W);//Unsafe.As<Vector4, TColor4>(ref v);
+            return new Color4(v.X, v.Y, v.Z, v.W);//Unsafe.As<Vector4, TColor4>(ref v);
         }
 
         /// <summary>

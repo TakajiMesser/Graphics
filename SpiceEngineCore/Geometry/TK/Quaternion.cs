@@ -777,12 +777,11 @@ namespace SpiceEngineCore.Geometry
 
         public static Vector3 operator *(Quaternion quaternion, Vector3 vector)
         {
-            var xyz = quaternion.Xyz;
             var temp = Vector3.Cross(quaternion.Xyz, vector);
             var temp2 = vector * quaternion.W;
-            temp = temp + temp2;
+            temp += temp2;
             temp2 = Vector3.Cross(quaternion.Xyz, temp);
-            temp2 = temp2 * 2f;
+            temp2 *= 2f;
             return vector + temp2;
         }
 
