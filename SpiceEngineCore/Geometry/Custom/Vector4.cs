@@ -120,18 +120,18 @@ namespace SpiceEngineCore.Geometry
             (matrix.M20 * vector.X) + (matrix.M21 * vector.Y) + (matrix.M22 * vector.Z) + (matrix.M23 * vector.W),
             (matrix.M30 * vector.X) + (matrix.M31 * vector.Y) + (matrix.M32 * vector.Z) + (matrix.M33 * vector.W));
 
-        public static CVector4 operator *(CQuaternion quaternion, CVector4 vector)
+        public static CVector4 operator /(CVector4 left, CVector4 right) => new CVector4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
+
+        public static float Dot(CVector4 left, CVector4 right) => left.X * right.X + left.Y * right.Y + left.Z * right.Z + left.W * right.W;
+
+        public static CVector4 Transform(Quaternion quaternion, CVector4 vector)
         {
-            var vectorQuat = new CQuaternion(vector.X, vector.Y, vector.Z, vector.W);
+            var vectorQuat = new Quaternion(vector.X, vector.Y, vector.Z, vector.W);
             var invertedQuat = quaternion.Inverted();
             var rotatedQuat = (quaternion * vectorQuat) * invertedQuat;
 
             return new CVector4(rotatedQuat.X, rotatedQuat.Y, rotatedQuat.Z, rotatedQuat.W);
         }
-
-        public static CVector4 operator /(CVector4 left, CVector4 right) => new CVector4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
-
-        public static float Dot(CVector4 left, CVector4 right) => left.X * right.X + left.Y * right.Y + left.Z * right.Z + left.W * right.W;
 
         public static CVector4 Transform(CVector4 vector, Quaternion quaternion)
         {

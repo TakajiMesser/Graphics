@@ -91,9 +91,9 @@ namespace SpiceEngineCore.Geometry
 
         public static Vector3 operator *(float scale, Vector3 vector) => new Vector3(scale * vector.X, scale * vector.Y, scale * vector.Z);
 
-        public static Vector3 operator *(CQuaternion quaternion, Vector3 vector)
+        public static Vector3 operator *(Quaternion quaternion, Vector3 vector)
         {
-            var vectorQuat = new CQuaternion(vector.X, vector.Y, vector.Z, 1.0f);
+            var vectorQuat = new Quaternion(vector.X, vector.Y, vector.Z, 1.0f);
             var invertedQuat = quaternion.Inverted();
             var rotatedQuat = (quaternion * vectorQuat) * invertedQuat;
 

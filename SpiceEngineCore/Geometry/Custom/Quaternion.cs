@@ -8,6 +8,28 @@ namespace SpiceEngineCore.Geometry
     public struct CQuaternion : IEquatable<CQuaternion>
     {
         public static CQuaternion FromAxisAngle(Vector3 v, float w) => new CQuaternion(v, w);
+        public static void Invert(in CQuaternion q, out CQuaternion result)
+        {
+            var lengthSq = q.LengthSquared;
+            if (lengthSq != 0.0)
+            {
+                var i = 1.0f / lengthSq;
+                result = new CQuaternion(new Vector3(q.X, q.Y, q.Z) * -i, q.W * i);
+            }
+            else
+            {
+                result = q;
+            }
+        }
+        public static void Multiply(in CQuaternion left, in CQuaternion right, out CQuaternion result)
+        {
+            result = new CQuaternion(
+                (right.W * new Vector3(left.X, left.Y, left.Z))
+                    + (left.W * new Vector3(right.X, right.Y, right.Z))
+                    + Vector3.Cross(new Vector3(left.X, left.Y, left.Z), new Vector3(right.X, right.Y, right.Z)),
+                (left.W * right.W)
+                    - Vector3.Dot(new Vector3(left.X, left.Y, left.Z), new Vector3(right.X, right.Y, right.Z)));
+        }
 
         public CQuaternion(Vector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
         public CQuaternion(float x, float y, float z, float w)

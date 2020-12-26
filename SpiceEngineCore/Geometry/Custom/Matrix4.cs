@@ -270,7 +270,7 @@ namespace SpiceEngineCore.Geometry
 
         public static CMatrix4 CreateScale(float scale) => CreateScale(new Vector3(scale, scale, scale));
 
-        public static CMatrix4 CreateFromCQuaternion(CQuaternion quaternion)
+        public static CMatrix4 CreateFromQuaternion(Quaternion quaternion)
         {
             var axisAngle = quaternion.ToAxisAngle();
 
