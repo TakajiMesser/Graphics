@@ -102,6 +102,12 @@ namespace SpiceEngineCore.Geometry
 
         public static CVector4 operator *(CVector4 left, CVector4 right) => new CVector4(left.X * right.X, left.Y * right.Y, left.Z * right.Z, left.W * right.W);
 
+        public static CVector4 operator *(Quaternion quaternion, CVector4 vector) => Transform(vector, quaternion);
+
+        public static CVector4 operator *(CVector4 vector, Matrix4 matrix) => TransformRow(vector, matrix);
+
+        public static CVector4 operator *(Matrix4 matrix, CVector4 vector) => TransformColumn(vector, matrix);
+
         public static CVector4 operator *(CVector4 vector, CMatrix4 matrix) => new CVector4(
             (vector.X * matrix.M00) + (vector.Y * matrix.M10) + (vector.Z * matrix.M20) + (vector.W * matrix.M30),
             (vector.X * matrix.M01) + (vector.Y * matrix.M11) + (vector.Z * matrix.M21) + (vector.W * matrix.M31),
@@ -126,5 +132,27 @@ namespace SpiceEngineCore.Geometry
         public static CVector4 operator /(CVector4 left, CVector4 right) => new CVector4(left.X / right.X, left.Y / right.Y, left.Z / right.Z, left.W / right.W);
 
         public static float Dot(CVector4 left, CVector4 right) => left.X * right.X + left.Y * right.Y + left.Z * right.Z + left.W * right.W;
+
+        public static CVector4 Transform(CVector4 vector, Quaternion quaternion)
+        {
+            Quaternion v = new Quaternion(vector.X, vector.Y, vector.Z, vector.W);
+            Quaternion.Invert(in quaternion, out Quaternion i);
+            Quaternion.Multiply(in quaternion, in v, out Quaternion t);
+            Quaternion.Multiply(in t, in i, out v);
+
+            return new CVector4(v.X, v.Y, v.Z, v.W);
+        }
+
+        public static CVector4 TransformRow(CVector4 vector, Matrix4 matrix) => new CVector4(
+            (vector.X * matrix.Row0.X) + (vector.Y * matrix.Row1.X) + (vector.Z * matrix.Row2.X) + (vector.W * matrix.Row3.X),
+            (vector.X * matrix.Row0.Y) + (vector.Y * matrix.Row1.Y) + (vector.Z * matrix.Row2.Y) + (vector.W * matrix.Row3.Y),
+            (vector.X * matrix.Row0.Z) + (vector.Y * matrix.Row1.Z) + (vector.Z * matrix.Row2.Z) + (vector.W * matrix.Row3.Z),
+            (vector.X * matrix.Row0.W) + (vector.Y * matrix.Row1.W) + (vector.Z * matrix.Row2.W) + (vector.W * matrix.Row3.W));
+
+        public static CVector4 TransformColumn(CVector4 vector, Matrix4 matrix) => new CVector4(
+            (matrix.Row0.X * vector.X) + (matrix.Row0.Y * vector.Y) + (matrix.Row0.Z * vector.Z) + (matrix.Row0.W * vector.W),
+            (matrix.Row1.X * vector.X) + (matrix.Row1.Y * vector.Y) + (matrix.Row1.Z * vector.Z) + (matrix.Row1.W * vector.W),
+            (matrix.Row2.X * vector.X) + (matrix.Row2.Y * vector.Y) + (matrix.Row2.Z * vector.Z) + (matrix.Row2.W * vector.W),
+            (matrix.Row3.X * vector.X) + (matrix.Row3.Y * vector.Y) + (matrix.Row3.Z * vector.Z) + (matrix.Row3.W * vector.W));
     }
 }
