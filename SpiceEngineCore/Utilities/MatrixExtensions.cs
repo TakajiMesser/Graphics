@@ -8,8 +8,8 @@ namespace SpiceEngineCore.Utilities
     public static class MatrixExtensions
     {
         public static Vector3 GetTranslation(this Matrix4 transform) =>
-            new Vector3(transform.M14, transform.M24, transform.M34);
-            //new Vector3(transform.M03, transform.M13, transform.M23);
+            //new Vector3(transform.M14, transform.M24, transform.M34);
+            new Vector3(transform.M03, transform.M13, transform.M23);
 
         public static Vector3 GetScale(this Matrix4 transform) => new Vector3(transform.Column0.Length, transform.Column1.Length, transform.Column2.Length);
 

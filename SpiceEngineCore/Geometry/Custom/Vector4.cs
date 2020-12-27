@@ -160,7 +160,7 @@ namespace SpiceEngineCore.Geometry
 
         public static Vector4 operator *(Matrix4 matrix, Vector4 vector) => TransformColumn(vector, matrix);
 
-        public static Vector4 operator *(Vector4 vector, CMatrix4 matrix) => new Vector4(
+        /*public static Vector4 operator *(Vector4 vector, CMatrix4 matrix) => new Vector4(
             (vector.X * matrix.M00) + (vector.Y * matrix.M10) + (vector.Z * matrix.M20) + (vector.W * matrix.M30),
             (vector.X * matrix.M01) + (vector.Y * matrix.M11) + (vector.Z * matrix.M21) + (vector.W * matrix.M31),
             (vector.X * matrix.M02) + (vector.Y * matrix.M12) + (vector.Z * matrix.M22) + (vector.W * matrix.M32),
@@ -170,7 +170,7 @@ namespace SpiceEngineCore.Geometry
             (matrix.M00 * vector.X) + (matrix.M01 * vector.Y) + (matrix.M02 * vector.Z) + (matrix.M03 * vector.W),
             (matrix.M10 * vector.X) + (matrix.M11 * vector.Y) + (matrix.M12 * vector.Z) + (matrix.M13 * vector.W),
             (matrix.M20 * vector.X) + (matrix.M21 * vector.Y) + (matrix.M22 * vector.Z) + (matrix.M23 * vector.W),
-            (matrix.M30 * vector.X) + (matrix.M31 * vector.Y) + (matrix.M32 * vector.Z) + (matrix.M33 * vector.W));
+            (matrix.M30 * vector.X) + (matrix.M31 * vector.Y) + (matrix.M32 * vector.Z) + (matrix.M33 * vector.W));*/
 
         public static Vector4 operator /(Vector4 vector, float scale) => new Vector4(vector.X / scale, vector.Y / scale, vector.Z / scale, vector.W / scale);
 
