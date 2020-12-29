@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using SpiceEngine.Maps;
+﻿using SpiceEngine.Maps;
 using StarchUICore;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Builders;
@@ -23,9 +22,7 @@ namespace TowerWarfare
 
             using (var gameWindow = new GameWindow(map))
             {
-                gameWindow.VSync = VSyncMode.Adaptive;
                 gameWindow.LoadAndRun();
-                //gameWindow.Run(60.0, 0.0);
             }
         }
 

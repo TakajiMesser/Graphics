@@ -14,20 +14,13 @@ using System.Threading.Tasks;
 using TangyHIDCore;
 using Timer = System.Timers.Timer;
 
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 using OpenTK;
 using OpenTK.Graphics;
 
 namespace SpiceEngine.Game
 {
-    public class GameWindow : OpenTK.GameWindow, IMouseTracker, IInvoker
+    public class GameWindow : OpenTK.GameWindow, IMouseTracker, IInvoker, IDisposable
     {
         private SimulationManager _simulationManager;
         private RenderManager _renderManager;
@@ -51,6 +44,7 @@ namespace SpiceEngine.Game
         public GameWindow(IMap map) : base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
             _map = map;
+            VSync = VSyncMode.Adaptive;
 
             Resolution = new Resolution(Width, Height);
             WindowSize = new Resolution(Width, Height);

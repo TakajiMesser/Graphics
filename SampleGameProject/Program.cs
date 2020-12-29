@@ -1,8 +1,7 @@
-﻿using OpenTK;
-using SampleGameProject.Helpers;
+﻿using SampleGameProject.Helpers;
 using SampleGameProject.Helpers.Builders;
 using SpiceEngine.Maps;
-using GameWindow = SpiceEngine.Game.GameWindow;
+using SpiceEngine.Game;
 
 namespace SampleGameProject
 {
@@ -16,9 +15,7 @@ namespace SampleGameProject
 
             using (var gameWindow = new GameWindow(map))
             {
-                gameWindow.VSync = VSyncMode.Adaptive;
                 gameWindow.LoadAndRun();
-                //gameWindow.Run(60.0, 0.0);
             }
         }
     }
