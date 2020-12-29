@@ -5,34 +5,9 @@ using System.Runtime.InteropServices;
 namespace SpiceEngineCore.Geometry
 {
     [StructLayout(LayoutKind.Sequential)]
-    public struct CQuaternion : IEquatable<CQuaternion>
+    public struct Quaternion : IEquatable<Quaternion>
     {
-        public static CQuaternion FromAxisAngle(Vector3 v, float w) => new CQuaternion(v, w);
-        public static void Invert(in CQuaternion q, out CQuaternion result)
-        {
-            var lengthSq = q.LengthSquared;
-            if (lengthSq != 0.0)
-            {
-                var i = 1.0f / lengthSq;
-                result = new CQuaternion(new Vector3(q.X, q.Y, q.Z) * -i, q.W * i);
-            }
-            else
-            {
-                result = q;
-            }
-        }
-        public static void Multiply(in CQuaternion left, in CQuaternion right, out CQuaternion result)
-        {
-            result = new CQuaternion(
-                (right.W * new Vector3(left.X, left.Y, left.Z))
-                    + (left.W * new Vector3(right.X, right.Y, right.Z))
-                    + Vector3.Cross(new Vector3(left.X, left.Y, left.Z), new Vector3(right.X, right.Y, right.Z)),
-                (left.W * right.W)
-                    - Vector3.Dot(new Vector3(left.X, left.Y, left.Z), new Vector3(right.X, right.Y, right.Z)));
-        }
-
-        public CQuaternion(Vector3 v, float w) : this(v.X, v.Y, v.Z, w) { }
-        public CQuaternion(float x, float y, float z, float w)
+        public Quaternion(float x, float y, float z, float w)
         {
             X = x;
             Y = y;
@@ -40,8 +15,8 @@ namespace SpiceEngineCore.Geometry
             W = w;
         }
 
-        public CQuaternion(Vector3 eulerAngles) : this(eulerAngles.X, eulerAngles.Y, eulerAngles.Z) { }
-        public CQuaternion(float rotationX, float rotationY, float rotationZ)
+        public Quaternion(Vector3 eulerAngles) : this(eulerAngles.X, eulerAngles.Y, eulerAngles.Z) { }
+        public Quaternion(float rotationX, float rotationY, float rotationZ)
         {
             rotationX *= 0.5f;
             rotationY *= 0.5f;
@@ -66,18 +41,31 @@ namespace SpiceEngineCore.Geometry
         public float Z { get; set; }
         public float W { get; set; }
 
+        public Vector3 Xyz
+        {
+            get => new Vector3(X, Y, Z);
+            set
+            {
+                X = value.X;
+                Y = value.Y;
+                Z = value.Z;
+            }
+        }
+
         public float Length => (float)Math.Sqrt(LengthSquared);
 
         public float LengthSquared => X * X + Y * Y + Z * Z + W * W;
 
-        public CQuaternion Inverted()
+        public static readonly Quaternion Identity = new Quaternion(0f, 0f, 0f, 1f);
+
+        public Quaternion Inverted()
         {
             var lengthSquared = LengthSquared;
 
             if (lengthSquared != 0f)
             {
                 var i = 1.0f / lengthSquared;
-                return new CQuaternion(X * -i, Y * -i, Z * -i, W * i);
+                return new Quaternion(X * -i, Y * -i, Z * -i, W * i);
             }
             else
             {
@@ -85,19 +73,17 @@ namespace SpiceEngineCore.Geometry
             }
         }
 
-        public CQuaternion Normalized()
+        public Quaternion Normalized()
         {
             var scale = 1.0f / Length;
-            return new CQuaternion(X * scale, Y * scale, Z * scale, W * scale);
+            return new Quaternion(X * scale, Y * scale, Z * scale, W * scale);
         }
 
         public Vector3 ToEulerAngles()
         {
-            /*
-            reference
-            http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
-            http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
-            */
+            //reference
+            //http://en.wikipedia.org/wiki/Conversion_between_quaternions_and_Euler_angles
+            //http://www.euclideanspace.com/maths/geometry/rotations/conversions/quaternionToEuler/
 
             var q = this;
 
@@ -113,15 +99,15 @@ namespace SpiceEngineCore.Geometry
 
             float x, y, z;
 
-            if (singularityTest > SINGULARITY_THRESHOLD * unit)
+            if (singularityTest > SINGULARITY_THRESHOLD* unit)
             {
-                z = (float)(2 * Math.Atan2(q.X, q.W));
+                z = (float) (2 * Math.Atan2(q.X, q.W));
                 y = MathExtensions.HALF_PI;
                 x = 0;
             }
-            else if (singularityTest < -SINGULARITY_THRESHOLD * unit)
+            else if (singularityTest< -SINGULARITY_THRESHOLD* unit)
             {
-                z = (float)(-2 * Math.Atan2(q.X, q.W));
+                z = (float) (-2 * Math.Atan2(q.X, q.W));
                 y = -MathExtensions.HALF_PI;
                 x = 0;
             }
@@ -146,27 +132,25 @@ namespace SpiceEngineCore.Geometry
 
             if (den > 0.0001f)
             {
-                return new Vector4(
-                    quaternion.X / den,
-                    quaternion.Y / den,
-                    quaternion.Z / den,
-                    w);
+                return new Vector4()
+                {
+                    X = quaternion.X / den,
+                    Y = quaternion.Y / den,
+                    Z = quaternion.Z / den,
+                    W = w
+                };
             }
             else
             {
-                return new Vector4(
-                    1f,
-                    0f,
-                    0f,
-                    w);
+                return new Vector4(1.0f, 0.0f, 0.0f, w);
             }
         }
 
         public override string ToString() => "<" + X + "," + Y + "," + Z + "," + W + ">";
 
-        public override bool Equals(object obj) => obj is CQuaternion quaternion && Equals(quaternion);
+        public override bool Equals(object obj) => obj is Quaternion quaternion && Equals(quaternion);
 
-        public bool Equals(CQuaternion other) => X == other.X && Y == other.Y && Z == other.Z && W == other.W;
+        public bool Equals(Quaternion other) => X == other.X && Y == other.Y && Z == other.Z && W == other.W;
 
         public override int GetHashCode()
         {
@@ -178,52 +162,27 @@ namespace SpiceEngineCore.Geometry
             return hashCode;
         }
 
-        public static bool operator ==(CQuaternion left, CQuaternion right) => left.Equals(right);
-
-        public static bool operator !=(CQuaternion left, CQuaternion right) => !(left == right);
-
-        public static readonly CQuaternion Identity = new CQuaternion(0f, 0f, 0f, 1f);
-
-        public static CQuaternion operator +(CQuaternion left, CQuaternion right)
+        public static Quaternion FromAxisAngle(Vector3 axis, float angle)
         {
-            var x = left.X + left.Y;
-            var y = left.Y + right.Y;
-            var z = left.Z + right.Z;
-            var w = left.W + right.W;
+            if (axis.LengthSquared == 0.0f)
+            {
+                return Identity;
+            }
 
-            return new CQuaternion(x, y, z, w);
+            var result = Identity;
+
+            angle *= 0.5f;
+            axis = axis.Normalized();
+            result.Xyz = axis * (float)Math.Sin(angle);
+            result.W = (float)Math.Cos(angle);
+
+            return result.Normalized();
         }
 
-        public static CQuaternion operator -(CQuaternion left, CQuaternion right)
-        {
-            var x = left.X - left.Y;
-            var y = left.Y - right.Y;
-            var z = left.Z - right.Z;
-            var w = left.W - right.W;
+        public static Quaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
+        public static Quaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ) => new Quaternion(rotationX, rotationY, rotationZ);
 
-            return new CQuaternion(x, y, z, w);
-        }
-
-        public static CQuaternion operator *(CQuaternion left, CQuaternion right)
-        {
-            var x = left.X + left.Y;
-            var y = left.Y + right.Y;
-            var z = left.Z + right.Z;
-            var w = left.W + right.W;
-
-            return new CQuaternion(x, y, z, w);
-
-            /*result = new CQuaternion(
-                (right.W * left.Xyz) + (left.W * right.Xyz) + Vector3.Cross(left.Xyz, right.Xyz),
-                (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));*/
-        }
-
-        public static CQuaternion operator *(float scale, CQuaternion quaternion) => new CQuaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
-
-        public static CQuaternion FromEulerAngles(Vector3 eulerAngles) => FromEulerAngles(eulerAngles.X, eulerAngles.Y, eulerAngles.Z);
-        public static CQuaternion FromEulerAngles(float rotationX, float rotationY, float rotationZ) => new CQuaternion(rotationX, rotationY, rotationZ);
-
-        public static CQuaternion FromMatrix(Matrix3 matrix)
+        public static Quaternion FromMatrix(Matrix3 matrix)
         {
             var trace = matrix.Trace;
 
@@ -232,7 +191,7 @@ namespace SpiceEngineCore.Geometry
                 var s = 1f / (float)Math.Sqrt(trace + 1) * 2;
                 var invS = 1f / s;
 
-                return new CQuaternion(
+                return new Quaternion(
                     (matrix.M21 - matrix.M12) * invS,
                     (matrix.M02 - matrix.M20) * invS,
                     (matrix.M10 - matrix.M01) * invS,
@@ -246,7 +205,7 @@ namespace SpiceEngineCore.Geometry
                     var s = (float)Math.Sqrt(1 + matrix.M00 - matrix.M11 - matrix.M22) * 2f;
                     var invS = 1f / s;
 
-                    return new CQuaternion(
+                    return new Quaternion(
                         s * 0.25f,
                         (matrix.M01 + matrix.M10) * invS,
                         (matrix.M02 + matrix.M20) * invS,
@@ -258,7 +217,7 @@ namespace SpiceEngineCore.Geometry
                     var s = (float)Math.Sqrt(1 + matrix.M11 - matrix.M00 - matrix.M22) * 2;
                     var invS = 1f / s;
 
-                    return new CQuaternion(
+                    return new Quaternion(
                         (matrix.M01 + matrix.M10) * invS,
                         s * 0.25f,
                         (matrix.M12 + matrix.M21) * invS,
@@ -270,7 +229,7 @@ namespace SpiceEngineCore.Geometry
                     var s = (float)Math.Sqrt(1 + matrix.M22 - matrix.M00 - matrix.M11) * 2;
                     var invS = 1f / s;
 
-                    return new CQuaternion(
+                    return new Quaternion(
                         (matrix.M02 + matrix.M20) * invS,
                         (matrix.M12 + matrix.M21) * invS,
                         s * 0.25f,
@@ -279,5 +238,50 @@ namespace SpiceEngineCore.Geometry
                 }
             }
         }
+
+        public static Quaternion operator +(Quaternion left, Quaternion right)
+        {
+            var x = left.X + left.Y;
+            var y = left.Y + right.Y;
+            var z = left.Z + right.Z;
+            var w = left.W + right.W;
+
+            return new Quaternion(x, y, z, w);
+        }
+
+        public static Quaternion operator -(Quaternion left, Quaternion right)
+        {
+            var x = left.X - left.Y;
+            var y = left.Y - right.Y;
+            var z = left.Z - right.Z;
+            var w = left.W - right.W;
+
+            return new Quaternion(x, y, z, w);
+        }
+
+        public static Quaternion operator *(Quaternion left, Quaternion right)
+        {
+            var vector = (right.W * left.Xyz) + (left.W * right.Xyz) + Vector3.Cross(left.Xyz, right.Xyz);
+            return new Quaternion(vector.X, vector.Y, vector.Z, (left.W * right.W) - Vector3.Dot(left.Xyz, right.Xyz));
+        }
+
+        public static Quaternion operator *(Quaternion quaternion, float scale) => new Quaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
+
+        public static Quaternion operator *(float scale, Quaternion quaternion) => new Quaternion(scale * quaternion.X, scale * quaternion.Y, scale * quaternion.Z, scale * quaternion.W);
+
+        public static Vector3 operator *(Quaternion quaternion, Vector3 vector)
+        {
+            var xyz = new Vector3(quaternion.X, quaternion.Y, quaternion.Z);
+            var temp = Vector3.Cross(xyz, vector);
+            var temp2 = vector * quaternion.W;
+            temp += temp2;
+            temp2 = Vector3.Cross(xyz, temp);
+            temp2 *= 2f;
+            return vector + temp2;
+        }
+
+        public static bool operator ==(Quaternion left, Quaternion right) => left.Equals(right);
+
+        public static bool operator !=(Quaternion left, Quaternion right) => !(left == right);
     }
 }

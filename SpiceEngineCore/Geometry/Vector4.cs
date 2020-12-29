@@ -190,9 +190,9 @@ namespace SpiceEngineCore.Geometry
         public static Vector4 Transform(Vector4 vector, Quaternion quaternion)
         {
             Quaternion v = new Quaternion(vector.X, vector.Y, vector.Z, vector.W);
-            Quaternion.Invert(in quaternion, out Quaternion i);
-            Quaternion.Multiply(in quaternion, in v, out Quaternion t);
-            Quaternion.Multiply(in t, in i, out v);
+            var i = quaternion.Inverted();
+            var t = quaternion * v;
+            v = t * i;
 
             return new Vector4(v.X, v.Y, v.Z, v.W);
         }
