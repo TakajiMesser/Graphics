@@ -11,6 +11,7 @@ using SauceEditor.ViewModels.Trees.Entities;
 using SauceEditor.ViewModels.Trees.Projects;
 using SauceEditor.Views;
 using SauceEditor.Views.Custom;
+using SauceEditor.Views.Docks;
 using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 using SpiceEngineCore.Utilities;

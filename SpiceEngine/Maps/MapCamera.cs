@@ -53,9 +53,6 @@ namespace SpiceEngineCore.Maps
                 camera.Position = Position;
             }
 
-            // TODO - For now, set all cameras to be active
-            camera.IsActive = true;
-
             return camera;
         }
 

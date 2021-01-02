@@ -173,8 +173,8 @@ namespace SpiceEngine.Game
                     break;
             }
 
-            Camera.IsActive = true;
             _entityProvider.AddEntity(Camera);
+            Camera.IsActive = true;
         }
 
         public void Travel(Vector2 mouseDelta)

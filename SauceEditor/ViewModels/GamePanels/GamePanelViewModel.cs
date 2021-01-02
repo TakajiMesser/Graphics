@@ -5,6 +5,7 @@ using SauceEditor.Views.Factories;
 using SauceEditorCore.Models.Components;
 using SauceEditorCore.Models.Entities;
 using SpiceEngine.Game;
+using SpiceEngine.Maps;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game;
@@ -62,6 +63,7 @@ namespace SauceEditor.ViewModels
             if (SimulationManager == null)
             {
                 SimulationManager = new SimulationManager(Resolution);
+                SimulationManager.Load();
             }
         }
 
@@ -124,13 +126,18 @@ namespace SauceEditor.ViewModels
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
             panelViewModel.EntityProvider = SimulationManager.EntityProvider;
-            panelViewModel.GameLoader = _gameLoader;
+            panelViewModel.GameLoader = _gameLoader; 
             panelViewModel.Mapper = this;
             panelViewModel.Control.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
             panelViewModel.Control.Load += (s, args) =>
             {
                 // Because this panel has finished loading in, we can now safely notify the GameLoader that we are ready to load in some RenderBuilders
                 //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
+
+                // We need to "register" the PanelCamera with the game loader to avoid ID offset problems
+                //_gameLoader.Add(mapActor);
+                //_gameLoader.LoadSync();
+
                 panelViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
                 //LoadPanels();
                 _gameLoader.AddRenderableLoader(panelViewModel.Control.RenderManager);
@@ -376,6 +383,8 @@ namespace SauceEditor.ViewModels
         {
             //GameManager = new GameManager(Resolution);
             //SimulationManager.LoadFromMap(MapComponent.Map);
+            var map = MapComponent.Map as Map3D;
+            SimulationManager.PhysicsSystem.SetBoundaries(map.Boundaries);
 
             // TODO - Make these less janky...
             _gameLoader.TrackEntityMapping = true;

@@ -31,7 +31,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 // Compare current position to location of mouse, and set rotation to face the mouse
                 if (!inputProvider.IsDown(inputProvider.InputMapping.ItemWheel) && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
                 {
-                    var camera = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive);
+                    var camera = context.SystemProvider.EntityProvider.ActiveCamera;
 
                     var clipSpacePosition = (camera.CurrentModelMatrix * camera.CurrentProjectionMatrix).Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
                     var screenCoordinates = new Vector2()
@@ -47,7 +47,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                         // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
                         // TODO - This is mad suspect...
-                        var flattenedUp = context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive) is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
+                        var flattenedUp = context.SystemProvider.EntityProvider.ActiveCamera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
                         turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
 
                         actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);

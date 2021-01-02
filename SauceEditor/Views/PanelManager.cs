@@ -1,6 +1,7 @@
 ﻿using SauceEditor.Models;
 using SauceEditor.ViewModels;
 using SauceEditor.Views.Behaviors;
+using SauceEditor.Views.Docks;
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.GamePanels;
 using SauceEditor.Views.Libraries;
@@ -165,7 +166,7 @@ namespace SauceEditor.Views
 
             if (_mainWindowViewModel.EntityTreePanelViewModel != null)
             {
-                _mainWindowViewModel.EntityTreePanelViewModel.LayerProvider = gamePanel.ViewModel.SimulationManager.EntityManager.LayerProvider;
+                _mainWindowViewModel.EntityTreePanelViewModel.LayerProvider = gamePanel.ViewModel.SimulationManager.EntityProvider.LayerProvider;
                 gamePanel.ViewModel.EntityDisplayer = _mainWindowViewModel.EntityTreePanelViewModel;
             }
 

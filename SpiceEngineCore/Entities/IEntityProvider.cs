@@ -13,6 +13,7 @@ namespace SpiceEngineCore.Entities
     public interface IEntityProvider
     {
         ILayerProvider LayerProvider { get; }
+        ICamera ActiveCamera { get; }
 
         List<ICamera> Cameras { get; }
         List<IActor> Actors { get; }

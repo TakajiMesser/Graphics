@@ -1,12 +1,13 @@
-﻿using SpiceEngineCore.Rendering.Matrices;
+﻿using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering.Matrices;
 using System;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
 
 namespace SpiceEngineCore.Entities.Cameras
 {
     public abstract class Camera : ICamera
     {
+        private bool _isActive;
+
         protected ViewMatrix _viewMatrix = new ViewMatrix();
         protected ProjectionMatrix _projectionMatrix;
         protected float _distance;
@@ -19,7 +20,20 @@ namespace SpiceEngineCore.Entities.Cameras
 
         public int ID { get; set; }
         public string Name { get; }
-        public bool IsActive { get; set; }
+
+        public bool IsActive
+        {
+            get => _isActive;
+            set
+            {
+                if (!_isActive && value)
+                {
+                    BecameActive?.Invoke(this, EventArgs.Empty);
+                }
+
+                _isActive = value;
+            }
+        }
 
         public Vector3 Position
         {
@@ -52,6 +66,7 @@ namespace SpiceEngineCore.Entities.Cameras
         public Matrix4 CurrentProjectionMatrix => _projectionMatrix.CurrentValue;
         public Matrix4 PreviousProjectionMatrix => _projectionMatrix.CurrentValue;
 
+        public event EventHandler BecameActive;
         public event EventHandler<EntityTransformEventArgs> Transformed;
 
         public void Transform(Transform transform) => throw new NotImplementedException();

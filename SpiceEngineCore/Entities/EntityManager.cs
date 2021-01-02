@@ -33,14 +33,27 @@ namespace SpiceEngineCore.Entities
 
         private object _availableIDLock = new object();
 
+        public ILayerProvider LayerProvider { get; } = new LayerManager();
+        public ICamera ActiveCamera
+        {
+            get
+            {
+                var camera = Cameras.FirstOrDefault(c => c.IsActive);
+                if (camera == null)
+                {
+                    camera = Cameras.FirstOrDefault();
+                }
+
+                return camera;
+            }
+        }
+
         public List<ICamera> Cameras { get; } = new List<ICamera>();
         public List<IActor> Actors { get; } = new List<IActor>();
         public List<IBrush> Brushes { get; } = new List<IBrush>();
         public List<IVolume> Volumes { get; } = new List<IVolume>();
         public List<ILight> Lights { get; } = new List<ILight>();
         public List<IUIItem> UIItems { get; } = new List<IUIItem>();
-
-        public ILayerProvider LayerProvider { get; } = new LayerManager();
 
         public event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         public event EventHandler<IDEventArgs> EntitiesRemoved;
@@ -256,7 +269,16 @@ namespace SpiceEngineCore.Entities
             if (entity.ID == 0)
             {
                 int id = GetUniqueID();
-                _entities[id - 1] = entity;
+
+                if (id > _entities.Count)
+                {
+                    _entities.Add(entity);
+                }
+                else
+                {
+                    _entities[id - 1] = entity;
+                }
+                
                 entity.ID = id;
             }
 
@@ -274,9 +296,22 @@ namespace SpiceEngineCore.Entities
                 _namedEntityQueue.Enqueue(namedEntity);
             }
 
+            if (entity is ICamera camera)
+            {
+                camera.BecameActive += Camera_BecameActive;
+            }
+
             AddToList(entity);
 
             return entity.ID;
+        }
+
+        private void Camera_BecameActive(object sender, EventArgs e)
+        {
+            foreach (var camera in Cameras.Where(c => c != sender))
+            {
+                //camera.IsActive = false;
+            }
         }
 
         private void AddToList(IEntity entity)
@@ -318,19 +353,19 @@ namespace SpiceEngineCore.Entities
             return duplicateEntity;
         }
 
-        public void RemoveEntityByID(int id)
+        public void RemoveEntity(IEntity entity)
         {
-            var entity = GetEntity(id);
-            _entities[id - 1] = null;
+            _entities[entity.ID - 1] = null;
 
             lock (_availableIDLock)
             {
-                _removedIDs.Enqueue(id);
+                _removedIDs.Enqueue(entity.ID);
             }
 
             switch (entity)
             {
                 case ICamera camera:
+                    camera.BecameActive -= Camera_BecameActive;
                     Cameras.Remove(camera);
                     break;
                 case IActor actor:
@@ -350,6 +385,8 @@ namespace SpiceEngineCore.Entities
                     break;
             }
         }
+
+        public void RemoveEntityByID(int id) => RemoveEntity(GetEntity(id));
 
         private int GetUniqueID()
         {

@@ -1,4 +1,5 @@
 ﻿using CitrusAnimationCore.Animations;
+using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Entities.Selection;
@@ -21,18 +22,10 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
-using Timer = System.Timers.Timer;
-using GLControl = OpenTK.GLControl;
-
 using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using GLControl = OpenTK.GLControl;
+using Timer = System.Timers.Timer;
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-using OpenTK.Graphics;
 
 namespace SpiceEngine.Game
 {

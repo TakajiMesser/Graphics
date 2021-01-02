@@ -40,7 +40,7 @@ namespace SampleGameProject.Behaviors.Player
 
                 if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
                 {
-                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), EvadeSpeed, inputProvider);
+                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {
@@ -62,7 +62,7 @@ namespace SampleGameProject.Behaviors.Player
 
                 if (nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
                 {
-                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), EvadeSpeed, inputProvider);
+                    var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {

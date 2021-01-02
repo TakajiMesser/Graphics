@@ -40,7 +40,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                     ? CreepSpeed
                     : WalkSpeed;
 
-            var translation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.Cameras.First(c => c.IsActive), speed, inputProvider);
+            var translation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, speed, inputProvider);
 
             if (inputProvider.IsDown(inputProvider.InputMapping.In))
             {
