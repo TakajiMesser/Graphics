@@ -43,7 +43,10 @@ namespace SpiceEngine.Rendering.Batches
 
         private Dictionary<int, RenderTypes> _renderTypeByEntityID = new Dictionary<int, RenderTypes>();
         private Dictionary<int, int> _batchIndexByEntityID = new Dictionary<int, int>();
+
         private List<IBatch> _batches = new List<IBatch>();
+        private List<IBatch> _loadedBatches = new List<IBatch>();
+        private Queue<int> _batchIndicesToLoad = new Queue<int>();
 
         public bool IsLoaded { get; private set; } = false;
 
@@ -109,19 +112,8 @@ namespace SpiceEngine.Rendering.Batches
 
             if (!batch.EntityIDs.Any())
             {
-                // TODO - This is horribly inefficient AND not thread-safe
-                // Since we are removing this batch from the list, the dictionary values need to be updated accordingly
-                _batches.RemoveAt(batchIndex);
-
-                foreach (var entityIDKey in _batchIndexByEntityID.Keys.ToList())
-                {
-                    var batchIndexValue = _batchIndexByEntityID[entityIDKey];
-
-                    if (batchIndexValue >= batchIndex)
-                    {
-                        _batchIndexByEntityID[entityIDKey] = batchIndexValue - 1;
-                    }
-                }
+                _batches[batchIndex] = null;
+                _loadedBatches[batchIndex] = null;
             }
         }
 
@@ -224,31 +216,20 @@ namespace SpiceEngine.Rendering.Batches
 
         private IBatch CreateOrGetBatch(int entityID, IRenderable renderable)
         {
-            var match = FindAppropriateBatch(entityID, renderable);
+            var batch = FindAppropriateBatch(entityID, renderable);
 
-            if (match != null)
+            if (batch == null)
             {
-                return match;
-            }
-            else
-            {
-                var batch = CreateBatch(renderable);
+                batch = CreateBatch(renderable);
                 _batches.Add(batch);
+                _loadedBatches.Add(null);
 
                 var batchIndex = _batches.Count - 1;
                 _batchIndexByEntityID.Add(entityID, batchIndex);
-
-                //var entity = _entityProvider.GetEntity(entityID) as Entity;
-                //batch.Transform(entityID, entity.GetModelMatrix());
-
-                // TODO - For now, let's avoid this to tease out why the BatchManager is getting loaded too soon
-                /*if (IsLoaded)
-                {
-                    batch.Load();
-                }*/
-
-                return batch;
+                _batchIndicesToLoad.Enqueue(batchIndex);
             }
+
+            return batch;
         }
 
         private IBatch CreateBatch(IRenderable renderable)
@@ -299,6 +280,7 @@ namespace SpiceEngine.Rendering.Batches
                     }*/
 
                     _batchIndexByEntityID.Add(entityID, i);
+                    _batchIndicesToLoad.Enqueue(i);
                     return batch;
                 }
             }
@@ -331,12 +313,15 @@ namespace SpiceEngine.Rendering.Batches
 
         public void Load()
         {
-            // TODO - Instead of checking every time, have a load queue
-            foreach (var batch in _batches)
+            while (_batchIndicesToLoad.Count > 0)
             {
-                if (!batch.IsLoaded)
+                var batchIndex = _batchIndicesToLoad.Dequeue();
+                var batch = _batches[batchIndex];
+
+                if (batch != null)
                 {
                     batch.Load();
+                    _loadedBatches[batchIndex] = batch;
                 }
             }
 
@@ -443,18 +428,16 @@ namespace SpiceEngine.Rendering.Batches
                 var batchIndex = _batchIndexByEntityID[id];
                 if (!batchIndices.Contains(batchIndex))
                 {
+                    var batch = _loadedBatches[batchIndex];
                     batchIndices.Add(batchIndex);
-                    perIdAction?.Invoke(id);
 
-                    perBatchAction?.Invoke(_batches[batchIndex]);
-
-                    var a = 3;
-                    if (renderType.HasValue && (renderType.Value == RenderTypes.TransparentText || renderType.Value == RenderTypes.OpaqueText))
+                    if (batch != null)
                     {
-                        a = 4;
-                    }
+                        perIdAction?.Invoke(id);
+                        perBatchAction?.Invoke(batch);
 
-                    _batches[batchIndex].Draw(shader, _entityProvider, _textureProvider);
+                        batch.Draw(shader, _entityProvider, _textureProvider);
+                    }
                 }
             }
         }

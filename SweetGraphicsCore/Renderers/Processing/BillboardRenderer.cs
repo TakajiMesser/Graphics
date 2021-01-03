@@ -198,8 +198,8 @@ namespace SweetGraphicsCore.Renderers.Processing
 
             _vertexBuffer.Clear();
 
-            var batch = batcher.GetBatch(volume.ID);
-            /*foreach (var vertex in batch.Vertices)
+            /*var batch = batcher.GetBatch(volume.ID);
+            foreach (var vertex in batch.Vertices)
             {
                 _vertexBuffer.AddVertex(new ColorVertex3D(volume.Position + vertex.Position, new Vector4(vertex.Color.X * 1.5f, vertex.Color.Y * 1.5f, vertex.Color.Z * 1.5f, 1.0f)));
             }*/

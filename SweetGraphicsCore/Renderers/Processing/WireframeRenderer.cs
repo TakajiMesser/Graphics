@@ -2,6 +2,7 @@
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
@@ -13,15 +14,6 @@ using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 using System.Collections.Generic;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -165,7 +157,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .SetUniform("selectedLineColor", SelectedLineColor)
                 .SetRenderType(RenderTypes.OpaqueStatic)
                 .Render()
-                .SetRenderType(RenderTypes.TransparentStatic)
+                /*.SetRenderType(RenderTypes.TransparentStatic)
                 .Render()
                 .SetShader(_jointWireframeProgram)
                 .SetCamera(camera)
@@ -176,13 +168,13 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .SetRenderType(RenderTypes.OpaqueAnimated)
                 .Render()
                 .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()
+                .Render()*/
                 .Execute();
         }
 
         public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
+            /*batcher.CreateBatchAction()
                 .SetEntityIDSet(entityIDs)
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
@@ -204,7 +196,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .Render()
                 .SetRenderType(RenderTypes.TransparentAnimated)
                 .Render()
-                .Execute();
+                .Execute();*/
         }
 
         public void RenderGridLines(ICamera camera)
@@ -229,7 +221,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         // TODO - Pass multiple entity ID's to this method to render all selections at once
         public void SelectionPass(IEntityProvider entityProvider, ICamera camera, IEntity entity, IBatcher batcher)
         {
-            batcher.CreateBatchAction()
+            /*batcher.CreateBatchAction()
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
                 .SetEntityIDSet(entity.ID.Yield())
@@ -244,7 +236,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .SetUniform("lineColor", SelectedLineColor)
                 .SetRenderType(RenderTypes.OpaqueAnimated)
                 .Render()
-                .Execute();
+                .Execute();*/
 
             /*var batch = batchManager.GetBatch(entity.ID);
 

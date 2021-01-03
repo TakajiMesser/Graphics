@@ -4,15 +4,8 @@ using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Renderers;
 using System;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
 using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Game
 {
@@ -37,7 +30,6 @@ namespace SpiceEngine.Game
 
         private Resolution _resolution;
         private IEntityProvider _entityProvider;
-        private IGridRenderer _gridRenderer;
 
         // Yaw of zero should point in the direction of the X-Axis
         private float _yaw;
@@ -45,15 +37,15 @@ namespace SpiceEngine.Game
         // Pitch of zero should point in the direction of the X-Axis
         private float _pitch;
 
-        public Camera Camera { get; private set; }
-        public ViewTypes ViewType { get; set; }
-
-        public PanelCamera(Resolution resolution, IEntityProvider entityProvider, IGridRenderer gridRenderer)
+        public PanelCamera(Resolution resolution, IEntityProvider entityProvider)
         {
             _resolution = resolution;
             _entityProvider = entityProvider;
-            _gridRenderer = gridRenderer;
         }
+
+        public Camera Camera { get; private set; }
+        public ViewTypes ViewType { get; set; }
+        public IGridRenderer GridRenderer { get; set; }
 
         public void CenterView(Vector3 position)
         {
@@ -146,7 +138,7 @@ namespace SpiceEngine.Game
                     };
                     Camera.Up = Vector3.UnitZ;
                     Camera.LookAt = Camera.Position + Vector3.UnitX;
-                    _gridRenderer.RotateGrid(0.0f, MathExtensions.HALF_PI, 0.0f);
+                    GridRenderer?.RotateGrid(0.0f, MathExtensions.HALF_PI, 0.0f);
                     _yaw = 0.0f;
                     _pitch = 0.0f;
                     break;
@@ -157,7 +149,7 @@ namespace SpiceEngine.Game
                     };
                     Camera.Up = Vector3.UnitZ;
                     Camera.LookAt = Camera.Position + Vector3.UnitY;
-                    _gridRenderer.RotateGrid(MathExtensions.HALF_PI, 0.0f, 0.0f);
+                    GridRenderer?.RotateGrid(MathExtensions.HALF_PI, 0.0f, 0.0f);
                     _yaw = MathExtensions.HALF_PI;
                     _pitch = 0.0f;
                     break;

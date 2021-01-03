@@ -275,6 +275,7 @@
     <Compile Include="Rendering\PostProcessing\LogManager.cs" />
     <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\UIRenderer.cs" />
+    <Compile Include="Rendering\EditorRenderManager.cs" />
     <Compile Include="Rendering\RenderManager.cs" />
     <Compile Include="Scripting\Nodes\CameraNode.cs" />
     <Compile Include="Scripting\Nodes\InputConditionNode.cs" />

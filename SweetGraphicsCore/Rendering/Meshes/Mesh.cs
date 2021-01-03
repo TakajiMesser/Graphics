@@ -125,6 +125,22 @@ namespace SweetGraphicsCore.Rendering.Meshes
 
         public void Draw()
         {
+            var a = 3;
+            for (var i = 0; i < _vertexBuffer.Count; i++)
+            {
+                if (_vertexBuffer.GetVertex(i) is ISelectionVertex selectionVertex)
+                {
+                    if (selectionVertex.SelectionID.A != 1.0f)
+                    {
+                        a = 4;
+                    }
+                }
+                else
+                {
+                    a = 5;
+                }
+            }
+
             _vertexArray.Bind();
             _vertexBuffer.Bind();
             _indexBuffer.Bind();

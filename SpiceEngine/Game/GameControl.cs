@@ -66,7 +66,7 @@ namespace SpiceEngine.Game
         private RenderModes _renderMode;
         private ViewTypes _viewType;
 
-        public RenderManager RenderManager { get; private set; }
+        public EditorRenderManager RenderManager { get; private set; }
 
         public TransformModes TransformMode
         {
@@ -285,21 +285,22 @@ namespace SpiceEngine.Game
             RunSync(() =>
             {
                 //MakeCurrent();
-                RenderManager = new RenderManager(Resolution, WindowSize)
-                {
-                    IsInEditorMode = true,
-                    RenderMode = _renderMode,
-                    Invoker = this
-                };
-                RenderManager.SetEntityProvider(_entityProvider);
-                //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
-
-                _panelCamera = new PanelCamera(Resolution, _entityProvider, RenderManager)
+                _panelCamera = new PanelCamera(Resolution, _entityProvider)
                 {
                     ViewType = ViewType
                 };
-                _panelCamera.Load();
 
+                RenderManager = new EditorRenderManager(Resolution, WindowSize, _panelCamera)
+                {
+                    RenderMode = _renderMode,
+                    Invoker = this
+                };
+
+                _panelCamera.GridRenderer = RenderManager;
+                _panelCamera.Load();
+                
+                //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
+                RenderManager.SetEntityProvider(_entityProvider);
                 RenderManager.SetAnimationProvider(_animationProvider);
                 RenderManager.SetUIProvider(_uiProvider);
                 RenderManager.SetSelectionProvider(SelectionManager);

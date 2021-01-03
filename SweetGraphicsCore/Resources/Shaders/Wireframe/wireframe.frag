@@ -30,12 +30,12 @@ void main()
     }
     else
     {
-		float innerEdgeIntensity = exp2(-1.0 * distance * distance);
-        float outerEdgeIntensity = exp2(-1.0 / 20.0 * distance * distance);
+		//float innerEdgeIntensity = exp2(-1.0 * distance * distance);
+        //float outerEdgeIntensity = exp2(-1.0 / 20.0 * distance * distance);
 
-		float alpha = innerEdgeIntensity + (1.0 - outerEdgeIntensity);
+		//float alpha = innerEdgeIntensity + (1.0 - outerEdgeIntensity);
 
-        color = vec4(lColor.xyz, alpha);
-		//color = lColor;
+        //color = vec4(lColor.xyz, alpha);
+        color = lColor;
     }
 }

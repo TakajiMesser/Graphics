@@ -138,7 +138,6 @@ namespace SpiceEngine.Game
         {
             _renderManager = new RenderManager(Resolution, WindowSize)
             {
-                RenderMode = RenderModes.Full,
                 Invoker = this
             };
             _fpsTimer.Start();
