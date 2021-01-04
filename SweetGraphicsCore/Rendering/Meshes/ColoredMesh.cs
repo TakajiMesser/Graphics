@@ -40,7 +40,8 @@ namespace SweetGraphicsCore.Rendering.Meshes
         public ColoredMesh(Vertex3DSet<T> vertexSet) : base(vertexSet.Updated(v => (T)((IColorVertex)v).Colored(DEFAULT_COLOR)))
         {
             // TODO - Fix this shit...
-            Alpha = 1.0f;
+            //Alpha = 1.0f;
+            Alpha = 0.5f;
             _color = DEFAULT_COLOR;
         }
     }

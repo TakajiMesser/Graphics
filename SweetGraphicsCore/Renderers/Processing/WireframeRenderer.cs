@@ -157,7 +157,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .SetUniform("selectedLineColor", SelectedLineColor)
                 .SetRenderType(RenderTypes.OpaqueStatic)
                 .Render()
-                /*.SetRenderType(RenderTypes.TransparentStatic)
+                .SetRenderType(RenderTypes.TransparentStatic)
                 .Render()
                 .SetShader(_jointWireframeProgram)
                 .SetCamera(camera)
@@ -168,13 +168,13 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .SetRenderType(RenderTypes.OpaqueAnimated)
                 .Render()
                 .SetRenderType(RenderTypes.TransparentAnimated)
-                .Render()*/
+                .Render()
                 .Execute();
         }
 
         public void SelectionPass(ICamera camera, IEnumerable<int> entityIDs, IBatcher batcher)
         {
-            /*batcher.CreateBatchAction()
+            batcher.CreateBatchAction()
                 .SetEntityIDSet(entityIDs)
                 .SetShader(_wireframeProgram)
                 .SetCamera(camera)
@@ -196,7 +196,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .Render()
                 .SetRenderType(RenderTypes.TransparentAnimated)
                 .Render()
-                .Execute();*/
+                .Execute();
         }
 
         public void RenderGridLines(ICamera camera)

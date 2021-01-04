@@ -190,10 +190,9 @@ namespace SpiceEngine.Rendering
                 if (entity is ILight light)
                 {
                     var lightMesh = _lightRenderer.GetMeshForLight(light);
-                    var camera = _entityProvider.Cameras.First(c => c.IsActive);
 
-                    _wireframeRenderer.SelectionPass(camera, light, lightMesh);
-                    _billboardRenderer.RenderSelection(camera, light);
+                    _wireframeRenderer.SelectionPass(EditorCamera.Camera, light, lightMesh);
+                    _billboardRenderer.RenderSelection(EditorCamera.Camera, light);
                 }
                 else if (entity is Volume volume)
                 {
@@ -231,18 +230,16 @@ namespace SpiceEngine.Rendering
 
         private void RenderTransform(IEntity entity, TransformModes transformMode)
         {
-            var camera = _entityProvider.Cameras.First(c => c.IsActive);
-
             switch (transformMode)
             {
                 case TransformModes.Translate:
                     if (entity is IDirectional directional)
                     {
-                        _selectionRenderer.RenderTranslationArrows(camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
+                        _selectionRenderer.RenderTranslationArrows(EditorCamera.Camera, entity.Position, directional.XDirection, directional.YDirection, directional.ZDirection);
                     }
                     else
                     {
-                        _selectionRenderer.RenderTranslationArrows(camera, entity.Position);
+                        _selectionRenderer.RenderTranslationArrows(EditorCamera.Camera, entity.Position);
                     }
                     break;
                 case TransformModes.Rotate:
@@ -252,7 +249,7 @@ namespace SpiceEngine.Rendering
                     }
                     else
                     {*/
-                        _selectionRenderer.RenderRotationRings(camera, entity.Position);
+                        _selectionRenderer.RenderRotationRings(EditorCamera.Camera, entity.Position);
                     //}
                     break;
                 case TransformModes.Scale:
@@ -262,7 +259,7 @@ namespace SpiceEngine.Rendering
                     }
                     else
                     {*/
-                        _selectionRenderer.RenderScaleLines(camera, entity.Position);
+                        _selectionRenderer.RenderScaleLines(EditorCamera.Camera, entity.Position);
                     //}
                     break;
             }
@@ -367,7 +364,7 @@ namespace SpiceEngine.Rendering
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            //_billboardRenderer.RenderLights(_camera, _entityProvider.Lights);
+            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
