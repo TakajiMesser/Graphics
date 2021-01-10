@@ -19,7 +19,7 @@ namespace SpiceEngineCore.Rendering
             set
             {
                 _width = value;
-                ResolutionChanged?.Invoke(this, new ResolutionEventArgs(_width, _height));
+                ResolutionChanged?.Invoke(this, new ResolutionEventArgs(this));
             }
         }
 
@@ -29,11 +29,19 @@ namespace SpiceEngineCore.Rendering
             set
             {
                 _height = value;
-                ResolutionChanged?.Invoke(this, new ResolutionEventArgs(_width, _height));
+                ResolutionChanged?.Invoke(this, new ResolutionEventArgs(this));
             }
         }
 
         public float AspectRatio => (float)_width / _height;
+
+        public void Update(int width, int height)
+        {
+            _width = width;
+            _height = height;
+
+            ResolutionChanged?.Invoke(this, new ResolutionEventArgs(this));
+        }
 
         public event EventHandler<ResolutionEventArgs> ResolutionChanged;
     }

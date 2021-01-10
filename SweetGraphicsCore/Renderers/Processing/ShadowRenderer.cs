@@ -52,7 +52,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             );
         }
 
-        public override void Resize(Resolution resolution)
+        protected override void Resize(Resolution resolution)
         {
             PointDepthCubeMap.Resize(SHADOW_SIZE, SHADOW_SIZE, 0);
             PointDepthCubeMap.Bind();

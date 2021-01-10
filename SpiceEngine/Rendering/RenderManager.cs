@@ -7,6 +7,7 @@ using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Maps;
@@ -23,10 +24,11 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using TangyHIDCore.Outputs;
 
 namespace SpiceEngine.Rendering
 {
-    public class RenderManager : RenderableLoader, IRenderProvider
+    public class RenderManager : RenderableLoader, IRender, IRenderProvider
     {
         private IAnimationProvider _animationProvider;
         private IUIProvider _uiProvider;
@@ -47,27 +49,25 @@ namespace SpiceEngine.Rendering
         protected RenderToScreen _renderToScreen = new RenderToScreen();
         protected UIRenderer _uiRenderer = new UIRenderer();
 
-        public RenderManager(Resolution resolution, Resolution windowSize)
+        public RenderManager(Display display)
         {
-            Resolution = resolution;
-            WindowSize = windowSize;
+            Display = display;
 
             // TODO - We likely want to split the resolution by nCameras for splitscreen support
-            Resolution.ResolutionChanged += (s, args) =>
+            Display.Window.ResolutionChanged += (s, args) =>
             {
                 // TODO - This no longer works with our _entityProvider.ActiveCamera property
                 foreach (var camera in _entityProvider.Cameras.Where(c => c.IsActive))
                 {
-                    camera.UpdateAspectRatio(args.AspectRatio);
+                    camera.UpdateAspectRatio(args.Resolution.AspectRatio);
                 }
             };
 
             FontManager = new FontManager(TextureManager);
         }
 
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
-        public double Frequency { get; internal set; }
+        public Display Display { get; }
+        public double Frequency { get; set; }
         public bool RenderGrid { get; set; }
         public TextureManager TextureManager { get; } = new TextureManager();
         public FontManager FontManager { get; }
@@ -203,18 +203,18 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
-                _deferredRenderer.Load(Resolution);
-                _shadowRenderer.Load(Resolution);
-                _lightRenderer.Load(Resolution);
-                _skyboxRenderer.Load(Resolution);
-                _billboardRenderer.Load(Resolution);
-                _selectionRenderer.Load(Resolution);
-                _fxaaRenderer.Load(Resolution);
-                _blurRenderer.Load(Resolution);
-                _invertRenderer.Load(Resolution);
-                _textRenderer.Load(Resolution);
-                _renderToScreen.Load(WindowSize);
-                _uiRenderer.Load(WindowSize);
+                _deferredRenderer.Load(Display.Resolution);
+                _shadowRenderer.Load(Display.Resolution);
+                _lightRenderer.Load(Display.Resolution);
+                _skyboxRenderer.Load(Display.Resolution);
+                _billboardRenderer.Load(Display.Resolution);
+                _selectionRenderer.Load(Display.Resolution);
+                _fxaaRenderer.Load(Display.Resolution);
+                _blurRenderer.Load(Display.Resolution);
+                _invertRenderer.Load(Display.Resolution);
+                _textRenderer.Load(Display.Resolution);
+                _renderToScreen.Load(Display.Window);
+                _uiRenderer.Load(Display.Window);
 
                 //var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
                 //_logManager.SetFont(font);
@@ -267,34 +267,6 @@ namespace SpiceEngine.Rendering
 
         public void Duplicate(int entityID, int duplicateID) => _batchManager.DuplicateBatch(entityID, duplicateID);
 
-        public virtual void ResizeResolution()
-        {
-            if (IsLoaded)
-            {
-                _deferredRenderer.Resize(Resolution);
-                _shadowRenderer.Resize(Resolution);
-                _skyboxRenderer.Resize(Resolution);
-                _lightRenderer.Resize(Resolution);
-                _billboardRenderer.Resize(Resolution);
-                _selectionRenderer.Resize(Resolution);
-                _fxaaRenderer.Resize(Resolution);
-                _blurRenderer.Resize(Resolution);
-                _invertRenderer.Resize(Resolution);
-                _textRenderer.Resize(Resolution);
-                _uiRenderer.Resize(Resolution);
-            }
-        }
-
-        public void ResizeWindow()
-        {
-            if (IsLoaded)
-            {
-                _renderToScreen.Resize(WindowSize);
-            }
-        }
-
-        public bool LogToScreen { get; set; }
-
         protected override void Update()
         {
             RenderFullFrame();
@@ -304,7 +276,7 @@ namespace SpiceEngine.Rendering
         public void RenderFullFrame()
         {
             _deferredRenderer.BindForGeometryWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
             var camera = _entityProvider.ActiveCamera;
 
             _deferredRenderer.GeometryPass(camera, _batchManager);
@@ -312,7 +284,7 @@ namespace SpiceEngine.Rendering
             RenderLights();
 
             _deferredRenderer.BindForLitWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
             _skyboxRenderer.Render(camera);
 
             _deferredRenderer.BindForLitTransparentWriting();
@@ -361,7 +333,7 @@ namespace SpiceEngine.Rendering
             // TODO - Perform check first to see if ANY selection IDs (via layers) even exist...
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
             var camera = _entityProvider.ActiveCamera;
             _selectionRenderer.SelectionPass(camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
@@ -375,10 +347,10 @@ namespace SpiceEngine.Rendering
             var mouseCoordinates = coordinates;
 
             // We need to convert these to instead be from bottom-left
-            var windowCoordinates = new Vector2(mouseCoordinates.X, WindowSize.Height - mouseCoordinates.Y);
+            var windowCoordinates = new Vector2(mouseCoordinates.X, Display.Window.Height - mouseCoordinates.Y);
 
             // We now need to convert these coordinates from window-size to resolution-size
-            var resolutionCoordinates = new Vector2(Resolution.Width * windowCoordinates.X / WindowSize.Width, Resolution.Height * windowCoordinates.Y / WindowSize.Height);
+            var resolutionCoordinates = new Vector2(Display.Resolution.Width * windowCoordinates.X / Display.Window.Width, Display.Resolution.Height * windowCoordinates.Y / Display.Window.Height);
 
             _selectionRenderer.BindForReading();
             return _selectionRenderer.GetEntityIDFromPoint(resolutionCoordinates);
@@ -403,7 +375,7 @@ namespace SpiceEngine.Rendering
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();
-                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+                GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);
                 var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;

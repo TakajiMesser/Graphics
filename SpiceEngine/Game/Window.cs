@@ -1,117 +1,125 @@
-﻿using SpiceEngineCore.Game;
+﻿using OpenTK.Graphics.OpenGL;
+using OpenTK.Input;
+using SpiceEngine.Maps;
+using SpiceEngine.Rendering;
+using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Utilities;
 using System;
-using System.Collections.Concurrent;
-using System.ComponentModel;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Drawing;
+using System.Threading.Tasks;
+using System.Timers;
+using TangyHIDCore;
+using TangyHIDCore.Outputs;
 using Configuration = SpiceEngineCore.Game.Settings.Configuration;
-using NativeWindow = OpenTK.NativeWindow;
 
 namespace SpiceEngine.Game
 {
-    public abstract class Window : NativeWindow
+    public class Window : TangyHIDCore.Outputs.Window, IMouseTracker
     {
-        private ISimulate _simulator;
-        private IRender _renderer;
+        private MouseState? _mouseState = null;
+        private Timer _fpsTimer = new Timer(1000);
+        private List<double> _frequencies = new List<double>();
 
-        private Configuration _configuration;
-        private GameLoader _gameLoader;
-        private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
-
-        private Stopwatch _updateWatch = new Stopwatch();
-        private Stopwatch _renderWatch = new Stopwatch();
-
-        private double _msPerUpdate;
-        private double _msPerRender;
-
-        private double _msSinceUpdate;
-        private double _msSinceRender;
-
-        public Window(Configuration configuration)
+        public Window(Configuration configuration) : base(configuration)
         {
-            _configuration = configuration;
-
-            _msPerUpdate = 1000.0 / _configuration.UpdatesPerSecond;
-            _msPerRender = 1000.0 / _configuration.RendersPerSecond;
+            _fpsTimer.Elapsed += FpsTimer_Elapsed;
+            Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
         }
 
-        public bool IsExiting { get; private set; }
+        public Map Map { get; set; }
 
-        public void Load()
+        public Vector2? MouseCoordinates => _mouseState.HasValue
+            ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
+            : (Vector2?)null;
+
+        public Vector2? RelativeCoordinates => _mouseState.HasValue
+            ? PointToClient(new Point(_mouseState.Value.X, _mouseState.Value.Y)).ToVector2()
+            : (Vector2?)null;
+
+        public bool IsMouseInWindow => _mouseState != null
+            && (_mouseState.Value.X.IsBetween(0, Display.Window.Width)
+            && _mouseState.Value.Y.IsBetween(0, Display.Window.Height));
+
+        public Resolution WindowSize => Display.Window;
+
+        public override async Task LoadAsync()
         {
-            //MakeCurrent();
-        }
-
-        public void Run()
-        {
-            _updateWatch.Start();
-            _renderWatch.Start();
-
-            while (true)
+            var renderManager = new RenderManager(Display)
             {
-                ProcessEvents();
+                Invoker = this
+            };
+            _fpsTimer.Start();
 
-                if (!Exists || IsExiting)
+            var simulationManager = new SimulationManager(Display.Resolution);
+            simulationManager.Load();
+            simulationManager.InputManager.EscapePressed += (s, args) => Close();
+            simulationManager.SetMouseTracker(this);
+            simulationManager.RenderProvider = renderManager;
+            simulationManager.PhysicsSystem.SetBoundaries(Map.Boundaries);
+
+            _gameLoader.SetEntityProvider(simulationManager.EntityProvider);
+            _gameLoader.AddComponentLoader(simulationManager.PhysicsSystem);
+            _gameLoader.AddComponentLoader(simulationManager.BehaviorSystem);
+            _gameLoader.AddComponentLoader(simulationManager.AnimationSystem);
+            _gameLoader.AddComponentLoader(simulationManager.UISystem);
+            _gameLoader.AddRenderableLoader(renderManager);
+
+            _gameLoader.AddFromMap(Map);
+
+            renderManager.SetEntityProvider(simulationManager.EntityProvider);
+            renderManager.SetAnimationProvider(simulationManager.AnimationSystem);
+            renderManager.SetUIProvider(simulationManager.UISystem);
+
+            renderManager.LoadFromMap(Map);
+
+            //_gameLoader.Load();
+            _gameLoader.TimedOut += (s, args) => RunSync(() => throw new TimeoutException());
+            await _gameLoader.LoadAsync();
+
+            // Set up UIManager to track mouse selections for UI control interactions
+            simulationManager.InputManager.MouseDownSelected += (s, args) => simulationManager.UISystem.RegisterSelection(renderManager.GetEntityIDFromSelection(args.MouseCoordinates));
+            simulationManager.InputManager.MouseUpSelected += (s, args) => simulationManager.UISystem.RegisterDeselection(renderManager.GetEntityIDFromSelection(args.MouseCoordinates));
+            //_simulationManager.BehaviorSystem.SetSelectionTracker(_renderManager);
+
+            //_stopWatch.Stop();
+            //LogWatch("Total");
+
+            _simulator = simulationManager;
+            _renderer = renderManager;
+
+            IsLoaded = true;
+        }
+
+        protected override void Update()
+        {
+            _mouseState = Mouse.GetCursorState();
+            base.Update();
+        }
+
+        protected override void Render()
+        {
+            /*if (_renderer != null && _renderer.IsLoaded)
+            {
+                _frequencies.Add(RenderFrequency);
+            }*/
+            base.Render();
+        }
+
+        private void FpsTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            if (_frequencies.Count > 0)
+            {
+                var total = 0.0;
+
+                for (var i = 0; i < _frequencies.Count; i++)
                 {
-                    return;
+                    total += _frequencies[i];
                 }
 
-                CheckForUpdate();
-                CheckForRender();
-            }
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            IsExiting = true;
-            base.OnClosing(e);
-        }
-
-        protected abstract void Update();
-        protected abstract void Render();
-
-        private void CheckForUpdate()
-        {
-            _msSinceUpdate += _updateWatch.Elapsed.TotalMilliseconds;
-            _updateWatch.Restart();
-
-            // How many updates, if any, should take place?
-            if (_msSinceUpdate >= _msPerUpdate)
-            {
-                var nUpdates = (int)(_msSinceUpdate / _msPerUpdate);
-                _msSinceUpdate -= nUpdates * _msPerUpdate;
-
-                DispatchUpdates(nUpdates);
-            }
-        }
-
-        private void CheckForRender()
-        {
-            _msSinceRender += _renderWatch.Elapsed.TotalMilliseconds;
-            _renderWatch.Restart();
-
-            // How many updates, if any, should take place?
-            if (_msSinceRender >= _msPerRender)
-            {
-                var nRenders = (int)(_msSinceRender / _msPerRender);
-                _msSinceRender -= nRenders * _msPerRender;
-
-                DispatchRenders(nRenders);
-            }
-        }
-
-        private void DispatchUpdates(int nUpdates)
-        {
-            for (var i = 0; i < nUpdates; i++)
-            {
-                Update();
-            }
-        }
-
-        private void DispatchRenders(int nRenders)
-        {
-            for (var i = 0; i < nRenders; i++)
-            {
-                Render();
+                _renderer.Frequency = total / _frequencies.Count;//_frequencies.Average();
+                _frequencies.Clear();
             }
         }
     }

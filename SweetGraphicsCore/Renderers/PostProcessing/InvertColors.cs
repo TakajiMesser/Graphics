@@ -71,7 +71,7 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             _vertexBuffer.Unbind();
         }
 
-        public override void Resize(Resolution resolution)
+        protected override void Resize(Resolution resolution)
         {
             FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();

@@ -1,4 +1,5 @@
-﻿using SpiceEngine.Maps;
+﻿using SpiceEngine.Game;
+using SpiceEngine.Maps;
 using StarchUICore;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Builders;
@@ -7,7 +8,6 @@ using System;
 using System.Text;
 using TowerWarfare.Builders;
 using TowerWarfare.Helpers;
-using GameWindow = SpiceEngine.Game.GameWindow;
 
 namespace TowerWarfare
 {
@@ -19,6 +19,19 @@ namespace TowerWarfare
 
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
+
+            /*var configuration = new Configuration()
+            {
+                UpdatesPerSecond = 60,
+                RendersPerSecond = 60
+            };
+
+            var window = new Window(configuration)
+            {
+                Map = map
+            };
+
+            window.Start();*/
 
             using (var gameWindow = new GameWindow(map))
             {

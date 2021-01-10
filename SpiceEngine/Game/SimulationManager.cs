@@ -14,11 +14,10 @@ using System.Drawing.Imaging;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
-using UmamiScriptingCore.StimResponse;
 
 namespace SpiceEngine.Game
 {
-    public class SimulationManager : GameManager
+    public class SimulationManager : GameManager, ISimulate
     {
         private Resolution _resolution;
 

@@ -56,7 +56,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             );
         }
 
-        public override void Resize(Resolution resolution)
+        protected override void Resize(Resolution resolution)
         {
             PositionTexture.Resize(resolution.Width, resolution.Height, 0);
             PositionTexture.Bind();

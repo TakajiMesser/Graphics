@@ -6,6 +6,7 @@ using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Entities.Volumes;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
@@ -20,9 +21,7 @@ using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
+using TangyHIDCore.Outputs;
 
 namespace SpiceEngine.Rendering
 {
@@ -40,12 +39,12 @@ namespace SpiceEngine.Rendering
         private LogManager _logManager;
         private WireframeRenderer _wireframeRenderer = new WireframeRenderer();
 
-        public EditorRenderManager(Resolution resolution, Resolution windowSize, PanelCamera camera) : base(resolution, windowSize)
+        public EditorRenderManager(Display display, PanelCamera camera) : base(display)
         {
             _logManager = new LogManager(_textRenderer);
 
             EditorCamera = camera;
-            Resolution.ResolutionChanged += (s, args) => EditorCamera?.Camera.UpdateAspectRatio(args.AspectRatio);
+            Display.Resolution.ResolutionChanged += (s, args) => EditorCamera?.Camera.UpdateAspectRatio(args.Resolution.AspectRatio);
         }
 
         public PanelCamera EditorCamera { get; }
@@ -55,7 +54,7 @@ namespace SpiceEngine.Rendering
 
         protected async override Task LoadInitial()
         {
-            await Invoker.RunAsync(() => _wireframeRenderer.Load(Resolution));
+            await Invoker.RunAsync(() => _wireframeRenderer.Load(Display.Resolution));
             await base.LoadInitial();
         }
 
@@ -138,16 +137,6 @@ namespace SpiceEngine.Rendering
             {
                 return new Mesh<EditorVertex3D>(vertexSet);
             }
-        }
-
-        public override void ResizeResolution()
-        {
-            if (IsLoaded)
-            {
-                _wireframeRenderer.Resize(Resolution);
-            }
-
-            base.ResizeResolution();
         }
 
         /*public void RenderEntityIDs(Volume volume)
@@ -335,7 +324,7 @@ namespace SpiceEngine.Rendering
             // TODO - Perform check first to see if ANY selection IDs (via layers) even exist...
             _selectionRenderer.BindForWriting();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
             _selectionRenderer.SelectionPass(EditorCamera.Camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
             _billboardRenderer.RenderLightSelectIDs(EditorCamera.Camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
@@ -350,7 +339,7 @@ namespace SpiceEngine.Rendering
         public void RenderWireframe()
         {
             _wireframeRenderer.BindForWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
             if (RenderGrid)
             {
@@ -376,7 +365,7 @@ namespace SpiceEngine.Rendering
         public void RenderDiffuseFrame()
         {
             _deferredRenderer.BindForGeometryWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
             _deferredRenderer.GeometryPass(EditorCamera.Camera, _batchManager);
 
@@ -426,7 +415,7 @@ namespace SpiceEngine.Rendering
         public void RenderLitFrame()
         {
             _deferredRenderer.BindForGeometryWriting();
-            GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+            GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
             _deferredRenderer.GeometryPass(EditorCamera.Camera, _batchManager);
 
@@ -491,7 +480,7 @@ namespace SpiceEngine.Rendering
                 GL.Enable(EnableCap.Blend);
 
                 _deferredRenderer.BindForLitWriting();
-                GL.Viewport(0, 0, Resolution.Width, Resolution.Height);
+                GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
                 var lightProgram = _lightRenderer.GetProgramForLight(light);
                 var shadowMap = (light is PointLight) ? _shadowRenderer.PointDepthCubeMap : _shadowRenderer.SpotDepthTexture;

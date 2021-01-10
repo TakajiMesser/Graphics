@@ -1,15 +1,6 @@
-﻿using Newtonsoft.Json;
-using SavoryPhysicsCore.Partitioning;
+﻿using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Geometry;
 using System.Linq;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Maps
 {
@@ -19,11 +10,6 @@ namespace SpiceEngine.Maps
     /// </summary>
     public class Map3D : Map
     {
-        [JsonIgnore]
-        public Oct Boundaries { get; private set; }
-
-        public Map3D() { }
-
         protected override void CalculateBounds()
         {
             Boundaries = new Oct()

@@ -6,12 +6,14 @@ namespace SweetGraphicsCore.Renderers
     {
         public void Load(Resolution resolution)
         {
+            resolution.ResolutionChanged += (s, args) => Resize(args.Resolution);
+
             LoadPrograms();
             LoadTextures(resolution);
             LoadBuffers();
         }
 
-        public abstract void Resize(Resolution resolution);
+        protected abstract void Resize(Resolution resolution);
 
         protected abstract void LoadPrograms();
         protected abstract void LoadTextures(Resolution resolution);

@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using OpenTK;
+using OpenTK.Graphics;
+using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
@@ -12,11 +14,9 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Threading.Tasks;
 using TangyHIDCore;
+using TangyHIDCore.Outputs;
 using Timer = System.Timers.Timer;
-
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using OpenTK;
-using OpenTK.Graphics;
 
 namespace SpiceEngine.Game
 {
@@ -46,13 +46,30 @@ namespace SpiceEngine.Game
             _map = map;
             VSync = VSyncMode.Adaptive;
 
-            Resolution = new Resolution(Width, Height);
-            WindowSize = new Resolution(Width, Height);
+            Display = new Display(Width, Height);
 
             Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
             _fpsTimer.Elapsed += FpsTimer_Elapsed;
         }
+
+        public Display Display { get; }
+
+        public Vector2? MouseCoordinates => _mouseState.HasValue
+            ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
+            : (Vector2?)null;
+
+        public Vector2? RelativeCoordinates => _mouseState.HasValue
+            ? PointToClient(new Point(_mouseState.Value.X, _mouseState.Value.Y)).ToVector2()
+            : (Vector2?)null;
+
+        public bool IsMouseInWindow => _mouseState != null
+            ? (_mouseState.Value.X.IsBetween(0, Display.Window.Width) && _mouseState.Value.Y.IsBetween(0, Display.Window.Height))
+            : false;
+
+        public Resolution WindowSize => Display.Window;
+
+        public bool IsLoaded { get; private set; }
 
         private void FpsTimer_Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
@@ -136,13 +153,13 @@ namespace SpiceEngine.Game
 
         private async void LoadAsync()
         {
-            _renderManager = new RenderManager(Resolution, WindowSize)
+            _renderManager = new RenderManager(Display)
             {
                 Invoker = this
             };
             _fpsTimer.Start();
 
-            _simulationManager = new SimulationManager(Resolution);
+            _simulationManager = new SimulationManager(Display.Resolution);
             _simulationManager.Load();
             _simulationManager.InputManager.EscapePressed += (s, args) => Close();
             _simulationManager.SetMouseTracker(this);
@@ -200,36 +217,7 @@ namespace SpiceEngine.Game
             GameLoaded?.Invoke(this, new EventArgs());
         }
 
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
-
-        public Vector2? MouseCoordinates => _mouseState.HasValue
-            ? new Vector2(_mouseState.Value.X, _mouseState.Value.Y)
-            : (Vector2?)null;
-
-        public Vector2? RelativeCoordinates => _mouseState.HasValue
-            ? PointToClient(new Point(_mouseState.Value.X, _mouseState.Value.Y)).ToVector2()
-            : (Vector2?)null;
-
-        public bool IsMouseInWindow => _mouseState != null
-            ? (_mouseState.Value.X.IsBetween(0, WindowSize.Width) && _mouseState.Value.Y.IsBetween(0, WindowSize.Height))
-            : false;
-
-        public bool IsLoaded { get; private set; }
-
-        protected override void OnResize(EventArgs e)
-        {
-            WindowSize.Width = Width;
-            WindowSize.Height = Height;
-
-            if (_renderManager != null && _renderManager.IsLoaded)
-            {
-                _renderManager.ResizeWindow();
-            }
-            //Resolution.Width = Width;
-            //Resolution.Height = Height;
-            //_gameState?.Resize();
-        }
+        protected override void OnResize(EventArgs e) => Display.Window.Update(Width, Height);
 
         protected override void OnLoad(EventArgs e)
         {
@@ -310,7 +298,7 @@ namespace SpiceEngine.Game
             //_mouseDevice = InputDriver.Mouse;
             //_mouseDevice = Mouse;
             _mouseState = Mouse.GetCursorState();
-            _simulationManager.Update();
+            _simulationManager.Tick();
         }
 
         protected override void OnRenderFrame(FrameEventArgs e)

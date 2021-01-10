@@ -1,4 +1,6 @@
-﻿using SpiceEngineCore.Maps;
+﻿using Newtonsoft.Json;
+using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Maps;
 using SpiceEngineCore.Serialization.Converters;
 using System.Collections.Generic;
 
@@ -25,6 +27,9 @@ namespace SpiceEngine.Maps
         public int LightCount => Lights.Count;
         public int VolumeCount => Volumes.Count;
         public int UIItemCount => UIItems.Count;
+
+        [JsonIgnore]
+        public IPartition Boundaries { get; protected set; }
 
         public IMapCamera GetCameraAt(int index) => Cameras[index];
         public IMapBrush GetBrushAt(int index) => Brushes[index];

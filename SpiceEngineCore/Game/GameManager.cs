@@ -27,7 +27,7 @@ namespace SpiceEngineCore.Game
             base.AddGameSystem<T>(gameSystem);
         }
 
-        public void Update()
+        public void Tick()
         {
             foreach (var system in _gameSystems)
             {

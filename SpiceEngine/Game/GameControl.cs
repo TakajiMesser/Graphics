@@ -22,6 +22,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
+using TangyHIDCore.Outputs;
 using Color4 = SpiceEngineCore.Geometry.Color4;
 using GLControl = OpenTK.GLControl;
 using Timer = System.Timers.Timer;
@@ -114,8 +115,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public Resolution Resolution { get; private set; }
-        public Resolution WindowSize { get; private set; }
+        public Display Display { get; private set; }
 
         public double Frequency { get; private set; }
         public SelectionManager SelectionManager { get; private set; }
@@ -169,6 +169,7 @@ namespace SpiceEngine.Game
         public Vector2? MouseCoordinates { get; private set; }
         public Vector2? RelativeCoordinates { get; private set; }
         public bool IsMouseInWindow { get; private set; }
+        public Resolution WindowSize => Display.Window;
 
         public bool IsLoaded { get; private set; }
         public bool IsDragging { get; private set; }
@@ -188,8 +189,7 @@ namespace SpiceEngine.Game
 
         public GameControl() : base(GraphicsMode.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
         {
-            Resolution = new Resolution(Width, Height);
-            WindowSize = new Resolution(Width, Height);
+            Display = new Display(Width, Height);
 
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
 
@@ -285,12 +285,12 @@ namespace SpiceEngine.Game
             RunSync(() =>
             {
                 //MakeCurrent();
-                _panelCamera = new PanelCamera(Resolution, _entityProvider)
+                _panelCamera = new PanelCamera(Display.Resolution, _entityProvider)
                 {
                     ViewType = ViewType
                 };
 
-                RenderManager = new EditorRenderManager(Resolution, WindowSize, _panelCamera)
+                RenderManager = new EditorRenderManager(Display, _panelCamera)
                 {
                     RenderMode = _renderMode,
                     Invoker = this
@@ -417,27 +417,8 @@ namespace SpiceEngine.Game
 
         protected override void OnResize(EventArgs e)
         {
-            if (Resolution != null)
-            {
-                Resolution.Width = Width;
-                Resolution.Height = Height;
-
-                if (RenderManager != null && RenderManager.IsLoaded)
-                {
-                    RenderManager.ResizeResolution();
-                }
-            }
-
-            if (WindowSize != null)
-            {
-                WindowSize.Width = Width;
-                WindowSize.Height = Height;
-
-                if (RenderManager != null && RenderManager.IsLoaded)
-                {
-                    RenderManager.ResizeWindow();
-                }
-            }
+            Display.Resolution.Update(Width, Height);
+            Display.Window.Update(Width, Height);
         }
 
         //private static object _glContextLock = new object();

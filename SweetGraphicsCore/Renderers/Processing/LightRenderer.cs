@@ -4,7 +4,6 @@ using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
-using SpiceEngineCore.Rendering.Shaders;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Textures;
@@ -45,7 +44,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             );
         }
 
-        public override void Resize(Resolution resolution)
+        protected override void Resize(Resolution resolution)
         {
             /*DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
             DepthStencilTexture.Bind();

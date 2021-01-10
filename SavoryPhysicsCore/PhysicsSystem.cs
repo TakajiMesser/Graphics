@@ -43,12 +43,25 @@ namespace SavoryPhysicsCore
         private Dictionary<int, Vector3> _initialPositionByID = new Dictionary<int, Vector3>();
         private Dictionary<int, bool> _isPhysicalByID = new Dictionary<int, bool>();
 
-        public void SetBoundaries(Oct boundaries)
+        public void SetBoundaries(IPartition boundaries)
         {
-            _actorTree = new OctTree(0, boundaries);
-            _brushTree = new OctTree(0, boundaries);
-            _volumeTree = new OctTree(0, boundaries);
-            _lightTree = new OctTree(0, boundaries);
+            switch (boundaries)
+            {
+                case Oct oct:
+                    _actorTree = new OctTree(0, oct);
+                    _brushTree = new OctTree(0, oct);
+                    _volumeTree = new OctTree(0, oct);
+                    _lightTree = new OctTree(0, oct);
+                    break;
+                case Quad quad:
+                    _actorTree = new QuadTree(0, quad);
+                    _brushTree = new QuadTree(0, quad);
+                    _volumeTree = new QuadTree(0, quad);
+                    _lightTree = new QuadTree(0, quad);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException("Could not handle partition " + boundaries);
+            }
         }
 
         public IEnumerable<CollisionResult> GetCollisions() => _collisionManager.NarrowCollisions;

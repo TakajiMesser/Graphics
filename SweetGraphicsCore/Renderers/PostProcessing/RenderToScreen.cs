@@ -82,7 +82,7 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, -1.0f)));
         }
 
-        public override void Resize(Resolution resolution)
+        protected override void Resize(Resolution resolution)
         {
             FinalTexture.Resize(resolution.Width, resolution.Height, 0);
             FinalTexture.Bind();
