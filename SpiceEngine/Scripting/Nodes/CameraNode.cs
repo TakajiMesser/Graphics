@@ -1,16 +1,7 @@
-﻿using OpenTK.Input;
-using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngineCore.Entities.Cameras;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace UmamiScriptingCore.Behaviors.Nodes.Leaves
 {
@@ -45,7 +36,7 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Leaves
 
                 var currentAngles = perspectiveCamera.CurrentAngles;
 
-                if (inputProvider.IsDown(new Input(MouseButton.Right)))
+                if (inputProvider.IsDown(new Input(MouseButtons.Right)))
                 {
                     var mouseDelta = inputProvider.MouseDelta * TurnSpeed;
 
@@ -62,22 +53,22 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Leaves
                 }
                 else
                 {
-                    if (inputProvider.IsDown(new Input(Key.Up)))
+                    if (inputProvider.IsDown(new Input(Keys.Up)))
                     {
                         currentAngles.Y += MoveSpeed;
                     }
 
-                    if (inputProvider.IsDown(new Input(Key.Down)))
+                    if (inputProvider.IsDown(new Input(Keys.Down)))
                     {
                         currentAngles.Y -= MoveSpeed;
                     }
 
-                    if (inputProvider.IsDown(new Input(Key.Right)))
+                    if (inputProvider.IsDown(new Input(Keys.Right)))
                     {
                         currentAngles.X -= MoveSpeed;
                     }
 
-                    if (inputProvider.IsDown(new Input(Key.Left)))
+                    if (inputProvider.IsDown(new Input(Keys.Left)))
                     {
                         currentAngles.X += MoveSpeed;
                     }

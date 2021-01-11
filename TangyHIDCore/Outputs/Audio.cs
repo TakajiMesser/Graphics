@@ -1,4 +1,4 @@
-﻿using OpenTK.Audio;
+﻿//using OpenTK.Audio;
 
 namespace TangyHIDCore.Outputs
 {
@@ -7,7 +7,7 @@ namespace TangyHIDCore.Outputs
         public int Source { get; set; }
         public int Buffer { get; set; }
         public string FileName { get; set; }
-        public AudioContext Context { get; set; }
+        //public AudioContext Context { get; set; }
 
         public Audio(string fileName)
         {

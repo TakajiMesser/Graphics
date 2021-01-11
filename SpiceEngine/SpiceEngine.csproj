@@ -237,6 +237,7 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
+    <Compile Include="Game\GameWindowWrapper.cs" />
     <Compile Include="Game\WindowWrapper.cs" />
     <Compile Include="Game\Window.cs" />
     <Compile Include="Game\SimulationManager.cs" />

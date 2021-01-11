@@ -2,6 +2,7 @@
 {
     public enum GamePadButtons
     {
+        Unknown = -1,
         A = 0,
         B = 1,
         X = 2,

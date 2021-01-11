@@ -417,8 +417,8 @@ namespace SpiceEngine.Game
 
         protected override void OnResize(EventArgs e)
         {
-            Display.Resolution.Update(Width, Height);
-            Display.Window.Update(Width, Height);
+            Display?.Resolution.Update(Width, Height);
+            Display?.Window.Update(Width, Height);
         }
 
         //private static object _glContextLock = new object();
@@ -635,7 +635,7 @@ namespace SpiceEngine.Game
         public bool IsHeld()
         {
             _inputProvider.Tick();
-            return _inputProvider.IsDown(new Input(MouseButton.Left)) || _inputProvider.IsDown(new Input(MouseButton.Right));
+            return _inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Left)) || _inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Right));
         }
 
         public void EndDrag()
@@ -651,17 +651,17 @@ namespace SpiceEngine.Game
 
         private void HandleInput()
         {
-            if (_isDuplicating && !_inputProvider.IsDown(new Input(Key.ShiftLeft)))
+            if (_isDuplicating && !_inputProvider.IsDown(new Input(TangyHIDCore.Inputs.Keys.LeftShift)))
             {
                 _isDuplicating = false;
             }
 
-            if (_inputProvider.IsReleased(new Input(MouseButton.Left)))
+            if (_inputProvider.IsReleased(new Input(TangyHIDCore.Inputs.MouseButtons.Left)))
             {
                 SelectionManager.SelectionType = SelectionTypes.None;
             }
 
-            if (_inputProvider.IsDown(new Input(MouseButton.Left)) && _inputProvider.IsDown(new Input(MouseButton.Right)))
+            if (_inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Left)) && _inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Right)))
             {
                 _panelCamera.Strafe(_inputProvider.MouseDelta);
 
@@ -671,9 +671,9 @@ namespace SpiceEngine.Game
             }
             else if (SelectionManager.SelectionType != SelectionTypes.None)
             {
-                if (_inputProvider.IsDown(new Input(MouseButton.Left)))
+                if (_inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Left)))
                 {
-                    if (!_isDuplicating && _inputProvider.IsDown(new Input(Key.ShiftLeft)))
+                    if (!_isDuplicating && _inputProvider.IsDown(new Input(TangyHIDCore.Inputs.Keys.LeftShift)))
                     {
                         _isDuplicating = true;
 
@@ -691,17 +691,17 @@ namespace SpiceEngine.Game
             }
             else if (_panelCamera.ViewType == ViewTypes.Perspective)
             {
-                if (_inputProvider.IsDown(new Input(MouseButton.Left)))
+                if (_inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Left)))
                 {
                     _panelCamera.Travel(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_inputProvider.IsDown(new Input(MouseButton.Right)))
+                else if (_inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Right)))
                 {
                     _panelCamera.Turn(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_inputProvider.IsDown(new Input(MouseButton.Button1)))
+                else if (_inputProvider.IsDown(new Input(TangyHIDCore.Inputs.MouseButtons.Button1)))
                 {
                     if (SelectionManager.SelectionCount > 0)
                     {

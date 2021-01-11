@@ -12,12 +12,24 @@ namespace TangyHIDCore.Inputs
 
     public class Input
     {
-        private Key _primaryKey = Key.Unknown;
-        private Key _secondaryKey = Key.Unknown;
-        private MouseButton? _primaryMouse = null;
-        private MouseButton? _secondaryMouse = null;
-        private GamePad _primaryGamePadButton;
-        private GamePadButtons _secondaryGamePadButton;
+        private Keys _primaryKey = Keys.Unknown;
+        private Keys _secondaryKey = Keys.Unknown;
+        private MouseButtons _primaryMouse = MouseButtons.Unknown;
+        private MouseButtons _secondaryMouse = MouseButtons.Unknown;
+        private GamePadButtons _primaryGamePadButton = GamePadButtons.Unknown;
+        private GamePadButtons _secondaryGamePadButton = GamePadButtons.Unknown;
+
+        public Input(Keys primaryKey)
+        {
+            Type = InputTypes.Key;
+            _primaryKey = primaryKey;
+        }
+
+        public Input(MouseButtons primaryMouseButton)
+        {
+            Type = InputTypes.Mouse;
+            _primaryMouse = primaryMouseButton;
+        }
 
         public InputTypes Type { get; set; }
 
@@ -31,6 +43,8 @@ namespace TangyHIDCore.Inputs
                         return (int)_primaryKey;
                     case InputTypes.Mouse:
                         return (int)_primaryMouse;
+                    case InputTypes.GamePad:
+                        return (int)_primaryGamePadButton;
                 }
 
                 throw new NotImplementedException("Cannot handle InputType " + Enum.GetName(typeof(Type), Type));
@@ -47,25 +61,12 @@ namespace TangyHIDCore.Inputs
                         return (int)_secondaryKey;
                     case InputTypes.Mouse:
                         return (int)_secondaryMouse;
+                    case InputTypes.GamePad:
+                        return (int)_secondaryGamePadButton;
                 }
 
                 throw new NotImplementedException("Cannot handle InputType " + Enum.GetName(typeof(Type), Type));
             }
-        }
-
-        public bool HasPrimaryMouseInput => _primaryMouse.HasValue;
-        public bool HasSecondaryMouseInput => _secondaryMouse.HasValue;
-
-        public Input(Key primaryKey)
-        {
-            Type = InputTypes.Key;
-            _primaryKey = primaryKey;
-        }
-
-        public Input(MouseButton primaryMouseButton)
-        {
-            Type = InputTypes.Mouse;
-            _primaryMouse = primaryMouseButton;
         }
     }
 }

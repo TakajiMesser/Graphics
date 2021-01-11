@@ -49,7 +49,7 @@ namespace SweetGraphicsCore.Rendering.Textures
             if (Handle == 0)
             {
                 var errorCode = GL.GetError();
-                throw new GraphicsException("Failed to generate texture: " + errorCode);//GL.GetShaderInfoLog(_handle));
+                throw new Exception("Failed to generate texture: " + errorCode);//GL.GetShaderInfoLog(_handle));
             }
 
             Width = width;

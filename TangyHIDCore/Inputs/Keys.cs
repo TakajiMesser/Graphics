@@ -1,4 +1,7 @@
-﻿namespace TangyHIDCore.Inputs
+﻿using OpenTK.Input;
+using System;
+
+namespace TangyHIDCore.Inputs
 {
     public enum Keys
     {

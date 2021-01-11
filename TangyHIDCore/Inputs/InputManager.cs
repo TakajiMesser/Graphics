@@ -1,5 +1,4 @@
-﻿using OpenTK.Input;
-using SpiceEngineCore.Game;
+﻿using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
@@ -73,7 +72,7 @@ namespace TangyHIDCore.Inputs
 
             HandleMouseSelection();
 
-            if (EscapePressed != null && inputState.IsDown(new Input(OpenTK.Input.Key.Escape)))
+            if (EscapePressed != null && inputState.IsDown(new Input(Keys.Escape)))
             {
                 EscapePressed.Invoke(this, new EventArgs());
             }
@@ -85,12 +84,12 @@ namespace TangyHIDCore.Inputs
             {
                 if (MouseCoordinates.HasValue && IsMouseInWindow)
                 {
-                    if (MouseDownSelected != null && IsPressed(new Input(MouseButton.Left)))
+                    if (MouseDownSelected != null && IsPressed(new Input(MouseButtons.Left)))
                     {
                         MouseDownSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
                     }
                     
-                    if (MouseUpSelected != null && IsReleased(new Input(MouseButton.Left)))
+                    if (MouseUpSelected != null && IsReleased(new Input(MouseButtons.Left)))
                     {
                         MouseUpSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
                     }

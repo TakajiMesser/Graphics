@@ -1,7 +1,7 @@
 ﻿using SampleGameProject.Helpers;
 using SampleGameProject.Helpers.Builders;
-using SpiceEngine.Maps;
 using SpiceEngine.Game;
+using SpiceEngine.Maps;
 
 namespace SampleGameProject
 {
@@ -12,11 +12,8 @@ namespace SampleGameProject
             ProjectBuilder.CreateMeshOutputFile(SpiceEngineCore.Helpers.FilePathHelper.SPHERE_MESH_PATH, SpiceEngineCore.Helpers.FilePathHelper.SPHERE_OUTPUT_PATH);
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
-
-            using (var gameWindow = new GameWindow(map))
-            {
-                gameWindow.LoadAndRun();
-            }
+            var windowWrapper = new GameWindowWrapper(map);
+            windowWrapper.Start();
         }
     }
 }

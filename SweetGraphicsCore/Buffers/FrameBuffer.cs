@@ -40,7 +40,7 @@ namespace SweetGraphicsCore.Buffers
             // Check if the framebuffer is "complete"
             if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
             {
-                throw new GraphicsErrorException("Error in FrameBuffer: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
+                throw new Exception("Error in FrameBuffer: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             }
         }
 

@@ -19,6 +19,8 @@ namespace TowerWarfare
 
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
+            var windowWrapper = new GameWindowWrapper(map);
+            windowWrapper.Start();
 
             /*var configuration = new Configuration()
             {
@@ -33,10 +35,10 @@ namespace TowerWarfare
 
             window.Start();*/
 
-            using (var gameWindow = new GameWindow(map))
+            /*using (var gameWindow = new GameWindow(map))
             {
                 gameWindow.LoadAndRun();
-            }
+            }*/
         }
 
         private static void PerformUITest()

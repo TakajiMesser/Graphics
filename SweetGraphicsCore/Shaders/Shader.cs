@@ -1,5 +1,4 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
+﻿using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
 using System;
 
@@ -21,7 +20,7 @@ namespace SweetGraphicsCore.Shaders
             GL.GetShader(_handle, ShaderParameter.CompileStatus, out int statusCode);
             if (statusCode != 1)
             {
-                throw new GraphicsException(ShaderType + " Shader failed to compile: " + GL.GetShaderInfoLog(_handle));
+                throw new Exception(ShaderType + " Shader failed to compile: " + GL.GetShaderInfoLog(_handle));
             }
         }
 

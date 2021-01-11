@@ -1,5 +1,5 @@
-﻿using OpenTK.Input;
-using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Utilities;
 using System;
 using TangyHIDCore;
@@ -7,15 +7,6 @@ using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace TowerWarfare.Resources.Behaviors.Nodes
 {
@@ -52,7 +43,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
             {
                 var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
 
-                if (inputProvider.IsDown(new Input(MouseButton.Right)))
+                if (inputProvider.IsDown(new Input(MouseButtons.Right)))
                 {
                     Strafe(camera, inputProvider.MouseDelta);
                 }
@@ -62,12 +53,12 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                     Zoom(camera, inputProvider.MouseWheelDelta);
                 }
 
-                if (inputProvider.IsDown(new Input(MouseButton.Button1)))
+                if (inputProvider.IsDown(new Input(MouseButtons.Button1)))
                 {
                     Travel(camera, inputProvider.MouseDelta);
                 }
 
-                if (inputProvider.IsDown(new Input(MouseButton.Button2)))
+                if (inputProvider.IsDown(new Input(MouseButtons.Button2)))
                 {
                     Turn(camera, inputProvider.MouseDelta);
                 }

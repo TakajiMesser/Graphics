@@ -1,5 +1,6 @@
 ﻿using OpenTK.Input;
 using System;
+using TangyHIDCore.Utilities;
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
 
 namespace TangyHIDCore.Inputs
@@ -23,11 +24,13 @@ namespace TangyHIDCore.Inputs
             switch (input.Type)
             {
                 case InputTypes.Key:
-                    return _keyboardState.IsKeyDown((Key)input.PrimaryInput) || _keyboardState.IsKeyDown((Key)input.SecondaryInput);
+                    return _keyboardState.IsKeyDown(input.PrimaryInput.ConvertToOpenTKKey()) || _keyboardState.IsKeyDown(input.SecondaryInput.ConvertToOpenTKKey());
                 case InputTypes.Mouse:
-                    return input.HasPrimaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.PrimaryInput)
-                        || input.HasSecondaryMouseInput && _mouseState.IsButtonDown((MouseButton)input.SecondaryInput);
-                case InputTypes.GamePad:
+                    var primaryMouseButton = input.PrimaryInput.ConvertToOpenTKMouseButton();
+                    var secondaryMouseButton = input.SecondaryInput.ConvertToOpenTKMouseButton();
+
+                    return primaryMouseButton.HasValue && _mouseState.IsButtonDown(primaryMouseButton.Value)
+                        || secondaryMouseButton.HasValue && _mouseState.IsButtonDown(secondaryMouseButton.Value);
                 default:
                     throw new NotImplementedException("");
             }
@@ -40,9 +43,11 @@ namespace TangyHIDCore.Inputs
                 case InputTypes.Key:
                     return _keyboardState.IsKeyUp((Key)input.PrimaryInput) && _keyboardState.IsKeyUp((Key)input.SecondaryInput);
                 case InputTypes.Mouse:
-                    return (!input.HasPrimaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.PrimaryInput))
-                        && (!input.HasSecondaryMouseInput || _mouseState.IsButtonUp((MouseButton)input.SecondaryInput));
-                case InputTypes.GamePad:
+                    var primaryMouseButton = input.PrimaryInput.ConvertToOpenTKMouseButton();
+                    var secondaryMouseButton = input.SecondaryInput.ConvertToOpenTKMouseButton();
+
+                    return primaryMouseButton.HasValue && _mouseState.IsButtonUp(primaryMouseButton.Value)
+                        || secondaryMouseButton.HasValue && _mouseState.IsButtonUp(secondaryMouseButton.Value);
                 default:
                     throw new NotImplementedException("");
             }

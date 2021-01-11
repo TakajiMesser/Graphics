@@ -96,7 +96,7 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             GL.Uniform1(blurLocation, 50/*150*/);
 
             int sizeLocation = _dilateProgram.GetUniformLocation("texture_size");
-            GL.Uniform2(sizeLocation, new Vector2(_velocityTextureA.Width, _velocityTextureA.Height));
+            GL.Uniform2(sizeLocation, _velocityTextureA.Width, _velocityTextureA.Height);
 
             int directionLocation = _dilateProgram.GetUniformLocation("direction_selector");
 
