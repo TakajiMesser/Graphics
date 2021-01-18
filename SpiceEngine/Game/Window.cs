@@ -59,6 +59,7 @@ namespace SpiceEngine.Game
             simulationManager.RenderProvider = renderManager;
             simulationManager.PhysicsSystem.SetBoundaries(Map.Boundaries);
 
+            _gameLoader = new SpiceEngineCore.Game.GameLoader();
             _gameLoader.SetEntityProvider(simulationManager.EntityProvider);
             _gameLoader.AddComponentLoader(simulationManager.PhysicsSystem);
             _gameLoader.AddComponentLoader(simulationManager.BehaviorSystem);
@@ -92,19 +93,19 @@ namespace SpiceEngine.Game
             IsLoaded = true;
         }
 
-        protected override void Update()
+        protected override void Update(double elapsedMilliseconds)
         {
             _mouseState = Mouse.GetCursorState();
-            base.Update();
+            base.Update(elapsedMilliseconds);
         }
 
-        protected override void Render()
+        protected override void Render(double elapsedMilliseconds)
         {
             /*if (_renderer != null && _renderer.IsLoaded)
             {
                 _frequencies.Add(RenderFrequency);
             }*/
-            base.Render();
+            base.Render(elapsedMilliseconds);
         }
 
         private void FpsTimer_Elapsed(object sender, ElapsedEventArgs e)

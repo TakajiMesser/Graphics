@@ -1,5 +1,5 @@
 ﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+using OpenTK.Graphics;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering;
 using System;
@@ -11,8 +11,9 @@ using Configuration = SpiceEngineCore.Game.Settings.Configuration;
 
 namespace TangyHIDCore.Outputs
 {
-    public abstract class Window : NativeWindow, IInvoker
+    public abstract class Window : OpenTK.NativeWindow, IInvoker, IDisposable
     {
+        private GraphicsContext _context;
         private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
 
         private Stopwatch _updateWatch = new Stopwatch();
@@ -29,8 +30,13 @@ namespace TangyHIDCore.Outputs
         protected Configuration _configuration;
         protected GameLoader _gameLoader;
 
-        public Window(Configuration configuration)
+        //base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
+        public Window(Configuration configuration) : base(configuration.WindowSize.Width, configuration.WindowSize.Height, configuration.WindowTitle, GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default)
         {
+            _context = new GraphicsContext(GraphicsMode.Default, WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
+            _context.MakeCurrent(WindowInfo);
+            _context.LoadAll();
+            
             _configuration = configuration;
 
             _msPerUpdate = 1000.0 / _configuration.UpdatesPerSecond;
@@ -43,10 +49,15 @@ namespace TangyHIDCore.Outputs
         public bool IsLoaded { get; protected set; }
         public bool IsExiting { get; private set; }
 
+        public void MakeCurrent()
+        {
+            EnsureUndisposed();
+            _context.MakeCurrent(WindowInfo);
+        }
+
         public void Start()
         {
-            // TODO - Cannot access this method
-            // MakeCurrent();
+            MakeCurrent();
             LoadAsync();
 
             while (true)
@@ -74,6 +85,8 @@ namespace TangyHIDCore.Outputs
 
         public void Run()
         {
+            Visible = true;
+
             _updateWatch.Start();
             _renderWatch.Start();
 
@@ -119,6 +132,8 @@ namespace TangyHIDCore.Outputs
 
         protected override void OnResize(EventArgs e)
         {
+            base.OnResize(e);
+            _context.Update(WindowInfo);
             Display.Window.Update(Width, Height);
             // _gameState?.Resize();
         }
@@ -129,21 +144,18 @@ namespace TangyHIDCore.Outputs
             base.OnClosing(e);
         }
 
-        protected virtual void Update()
-        {
-            _simulator.Tick();
-        }
+        protected virtual void Update(double elapsedMilliseconds = 0.0) => _simulator.Tick();
 
-        protected virtual void Render()
+        protected virtual void Render(double elapsedMilliseconds = 0.0)
         {
             // TODO - Would be better to avoid checks every render cycle
             if (_renderer != null && _renderer.IsLoaded)
             {
                 _renderer.Tick();
-                GL.UseProgram(0); // TODO - Why is this needed?
+                //GL.UseProgram(0); // TODO - Why is this needed?
 
-                // TODO - Cannot access this method
-                //SwapBuffers();
+                EnsureUndisposed();
+                _context.SwapBuffers();
             }
         }
 
@@ -157,8 +169,9 @@ namespace TangyHIDCore.Outputs
             {
                 var nUpdates = (int)(_msSinceUpdate / _msPerUpdate);
                 _msSinceUpdate -= nUpdates * _msPerUpdate;
+                var elapsed = _msSinceUpdate;
 
-                DispatchUpdates(nUpdates);
+                Update(elapsed);
             }
         }
 
@@ -172,8 +185,9 @@ namespace TangyHIDCore.Outputs
             {
                 var nRenders = (int)(_msSinceRender / _msPerRender);
                 _msSinceRender -= nRenders * _msPerRender;
+                var elapsed = _msSinceRender;
 
-                DispatchRenders(nRenders);
+                Render(elapsed);
             }
         }
 
@@ -192,5 +206,41 @@ namespace TangyHIDCore.Outputs
                 Render();
             }
         }
+
+        #region IDisposable Support
+        private bool disposedValue = false;
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing && _context != null)
+                {
+                    _context.Dispose();
+                    _context = null;
+                }
+                
+                disposedValue = true;
+            }
+        }
+
+        ~Window()
+        {
+            Dispose(false);
+        }
+
+        public override void Dispose()
+        {
+            try
+            {
+                Dispose(true);
+            }
+            finally
+            {
+                base.Dispose();
+            }
+            GC.SuppressFinalize(this);
+        }
+        #endregion
     }
 }

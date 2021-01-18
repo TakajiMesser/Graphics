@@ -12,8 +12,11 @@ namespace SampleGameProject
             ProjectBuilder.CreateMeshOutputFile(SpiceEngineCore.Helpers.FilePathHelper.SPHERE_MESH_PATH, SpiceEngineCore.Helpers.FilePathHelper.SPHERE_OUTPUT_PATH);
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
-            var windowWrapper = new GameWindowWrapper(map);
-            windowWrapper.Start();
+            //var windowWrapper = new GameWindowWrapper(map);
+            //windowWrapper.Start();
+
+            var windowWrapper = new WindowWrapper(new SpiceEngineCore.Game.Settings.Configuration());
+            windowWrapper.Start(map);
         }
     }
 }
