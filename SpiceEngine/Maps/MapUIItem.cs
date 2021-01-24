@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Components;
+﻿using SpiceEngine.GLFW.Inputs;
+using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.UserInterfaces;
 using SpiceEngineCore.Maps;

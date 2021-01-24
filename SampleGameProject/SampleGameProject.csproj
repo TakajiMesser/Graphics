@@ -224,6 +224,10 @@
     <Content Include="Resources\Textures\water1-n.jpg" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SpiceEngine.GLFW\SpiceEngine.GLFWBindings.csproj">
+      <Project>{132EA7F6-E711-4D33-84BE-754F21A73D79}</Project>
+      <Name>SpiceEngine.GLFWBindings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
       <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
       <Name>SpiceEngineCore</Name>

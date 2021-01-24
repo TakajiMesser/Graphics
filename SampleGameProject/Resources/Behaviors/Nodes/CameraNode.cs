@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngine.GLFW.Inputs;
+using SpiceEngineCore.Entities.Cameras;
 using TangyHIDCore;
 using TangyHIDCore.Inputs;
 using UmamiScriptingCore;

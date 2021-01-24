@@ -50,6 +50,7 @@ namespace SpiceEngine.Scripting
             _compilerParameters.ReferencedAssemblies.Add("OpenTK.dll");
             _compilerParameters.ReferencedAssemblies.Add("Newtonsoft.Json.dll");
             _compilerParameters.ReferencedAssemblies.Add("SpiceEngineCore.dll");
+            _compilerParameters.ReferencedAssemblies.Add("SpiceEngine.GLFWBindings.dll");
             _compilerParameters.ReferencedAssemblies.Add("CitrusAnimationCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("SavoryPhysicsCore.dll");
             _compilerParameters.ReferencedAssemblies.Add("SmokyAudioCore.dll");
