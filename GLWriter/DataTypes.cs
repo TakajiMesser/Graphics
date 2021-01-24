@@ -1,0 +1,148 @@
+﻿using System;
+
+namespace GLWriter
+{
+    public enum DataTypes
+    {
+        None,
+        VOID,
+        INTEGER,
+        SHORT,
+        LONG,
+        FLOAT,
+        DOUBLE,
+        BOOL,
+        BYTE,
+        SBYTE,
+        UINT,
+        USHORT,
+        ULONG,
+        INTEGERPTR,
+        SHORTPTR,
+        LONGPTR,
+        FLOATPTR,
+        DOUBLEPTR,
+        BOOLPTR,
+        BYTEPTR,
+        BYTEPTRPTR,
+        SBYTEPTR,
+        UINTPTR,
+        USHORTPTR,
+        ULONGPTR,
+        VOIDPTR,
+        VOIDPTRPTR,
+        INTPTR,
+        OUTINTEGER,
+        OUTINTPTR,
+    }
+
+    public static class DataTypeExtensions
+    {
+        public static DataTypes ToOutDataType(DataTypes dataType) => dataType switch
+        {
+            DataTypes.INTEGER => DataTypes.OUTINTEGER,
+            DataTypes.INTPTR => DataTypes.OUTINTPTR,
+            _ => throw new ArgumentOutOfRangeException("Could not convert data type " + dataType),
+        };
+
+        public static DataTypes ParseDataType(string text) => text switch
+        {
+            "void" => DataTypes.VOID,
+            "int" => DataTypes.INTEGER,
+            "short" => DataTypes.SHORT,
+            "long" => DataTypes.LONG,
+            "float" => DataTypes.FLOAT,
+            "double" => DataTypes.DOUBLE,
+            "bool" => DataTypes.BOOL,
+            "byte" => DataTypes.BYTE,
+            "sbyte" => DataTypes.SBYTE,
+            "uint" => DataTypes.UINT,
+            "ushort" => DataTypes.USHORT,
+            "ulong" => DataTypes.ULONG,
+            "int*" => DataTypes.INTEGERPTR,
+            "short*" => DataTypes.SHORTPTR,
+            "long*" => DataTypes.LONGPTR,
+            "float*" => DataTypes.FLOATPTR,
+            "double*" => DataTypes.DOUBLEPTR,
+            "bool*" => DataTypes.BOOLPTR,
+            "byte*" => DataTypes.BYTEPTR,
+            "sbyte*" => DataTypes.SBYTEPTR,
+            "byte**" => DataTypes.BYTEPTRPTR,
+            "uint*" => DataTypes.UINTPTR,
+            "ushort*" => DataTypes.USHORTPTR,
+            "ulong*" => DataTypes.ULONGPTR,
+            "void*" => DataTypes.VOIDPTR,
+            "void**" => DataTypes.VOIDPTRPTR,
+            "IntPtr" => DataTypes.INTPTR,
+            _ => DataTypes.None
+        };
+
+        public static string ToText(DataTypes dataType) => dataType switch
+        {
+            DataTypes.VOID => "void",
+            DataTypes.INTEGER => "int",
+            DataTypes.SHORT => "short",
+            DataTypes.LONG => "long",
+            DataTypes.FLOAT => "float",
+            DataTypes.DOUBLE => "double",
+            DataTypes.BOOL => "bool",
+            DataTypes.BYTE => "byte",
+            DataTypes.SBYTE => "sbyte",
+            DataTypes.UINT => "uint",
+            DataTypes.USHORT => "ushort",
+            DataTypes.ULONG => "ulong",
+            DataTypes.INTEGERPTR => "int*",
+            DataTypes.SHORTPTR => "short*",
+            DataTypes.LONGPTR => "long*",
+            DataTypes.FLOATPTR => "float*",
+            DataTypes.DOUBLEPTR => "double*",
+            DataTypes.BOOLPTR => "bool*",
+            DataTypes.BYTEPTR => "byte*",
+            DataTypes.BYTEPTRPTR => "byte**",
+            DataTypes.SBYTEPTR => "sbyte*",
+            DataTypes.UINTPTR => "uint*",
+            DataTypes.USHORTPTR => "ushort*",
+            DataTypes.ULONGPTR => "ulong*",
+            DataTypes.VOIDPTR => "void*",
+            DataTypes.VOIDPTRPTR => "void**",
+            DataTypes.INTPTR => "IntPtr",
+            DataTypes.OUTINTEGER => "out int",
+            DataTypes.OUTINTPTR => "out IntPtr",
+            _ => throw new ArgumentOutOfRangeException("Could not convert data type " + dataType),
+        };
+
+        public static string ToCharacter(DataTypes dataType) => dataType switch
+        {
+            DataTypes.VOID => "V",
+            DataTypes.INTEGER => "I",
+            DataTypes.SHORT => "S",
+            DataTypes.LONG => "L",
+            DataTypes.FLOAT => "F",
+            DataTypes.DOUBLE => "D",
+            DataTypes.BOOL => "B",
+            DataTypes.BYTE => "By",
+            DataTypes.SBYTE => "Sby",
+            DataTypes.UINT => "Ui",
+            DataTypes.USHORT => "Us",
+            DataTypes.ULONG => "Ul",
+            DataTypes.INTEGERPTR => "Ip",
+            DataTypes.SHORTPTR => "Sp",
+            DataTypes.LONGPTR => "Lp",
+            DataTypes.FLOATPTR => "Fp",
+            DataTypes.DOUBLEPTR => "Dp",
+            DataTypes.BOOLPTR => "Bp",
+            DataTypes.BYTEPTR => "Byp",
+            DataTypes.BYTEPTRPTR => "Bypp",
+            DataTypes.SBYTEPTR => "Sbyp",
+            DataTypes.UINTPTR => "Uip",
+            DataTypes.USHORTPTR => "Usp",
+            DataTypes.ULONGPTR => "Ulp",
+            DataTypes.VOIDPTR => "Vp",
+            DataTypes.VOIDPTRPTR => "Vpp",
+            DataTypes.INTPTR => "P",
+            DataTypes.OUTINTEGER => "Oi",
+            DataTypes.OUTINTPTR => "Op",
+            _ => throw new ArgumentOutOfRangeException("Could not convert data type " + dataType),
+        };
+    }
+}

@@ -1,9 +1,10 @@
-﻿using SpiceEngineCore.Game;
+﻿using SpiceEngine.GLFW.Inputs;
+using SpiceEngineCore.Game;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
 
 namespace TangyHIDCore.Inputs
 {

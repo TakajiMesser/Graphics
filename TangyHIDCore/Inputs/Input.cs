@@ -1,4 +1,4 @@
-﻿using OpenTK.Input;
+﻿using SpiceEngine.GLFW.Inputs;
 using System;
 
 namespace TangyHIDCore.Inputs

@@ -1,5 +1,5 @@
-﻿using SpiceEngineCore.Rendering;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
+﻿using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering;
 
 namespace TangyHIDCore.Outputs
 {

@@ -1,4 +1,6 @@
-﻿namespace TangyHIDCore.Inputs
+﻿using SpiceEngine.GLFW.Inputs;
+
+namespace TangyHIDCore.Inputs
 {
     public class InputBinding
     {

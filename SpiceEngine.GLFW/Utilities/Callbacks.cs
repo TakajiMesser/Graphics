@@ -1,10 +1,10 @@
-﻿using SpiceEngine.GLFW.Initialization;
+﻿using SpiceEngine.GLFW.Context;
+using SpiceEngine.GLFW.Initialization;
 using SpiceEngine.GLFW.Inputs;
 using SpiceEngine.GLFW.Monitoring;
 using SpiceEngine.GLFW.Windowing;
 using System;
 using System.Runtime.InteropServices;
-using System.Text;
 
 namespace SpiceEngine.GLFW.Utilities
 {
@@ -83,8 +83,7 @@ namespace SpiceEngine.GLFW.Utilities
     /// <param name="state">The state.</param>
     /// <param name="modifiers">Flags describing which modifier keys were held down.</param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void MouseButtonCallback(Window window, MouseButtons button, InputState state,
-        ModifierKeys modifiers);
+    public delegate void MouseButtonCallback(Window window, MouseButtons button, InputStates state, ModifierKeys modifiers);
 
     /// <summary>
     ///     This is the function signature for Unicode character callback functions.
@@ -112,7 +111,7 @@ namespace SpiceEngine.GLFW.Utilities
     /// <param name="state">The state of the key.</param>
     /// <param name="mods">	Bit field describing which modifier keys were held down.</param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void KeyCallback(Window window, Keys key, int scanCode, InputState state, ModifierKeys mods);
+    public delegate void KeyCallback(Window window, Keys key, int scanCode, InputStates state, ModifierKeys mods);
 
     /// <summary>
     ///     This is the function signature for joystick configuration callback functions.
@@ -120,7 +119,7 @@ namespace SpiceEngine.GLFW.Utilities
     /// <param name="joystick">The joystick that was connected or disconnected.</param>
     /// <param name="status">The connection status.</param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void JoystickCallback(Joysticks joystick, ConnectionStatus status);
+    public delegate void JoystickCallback(Joysticks joystick, ConnectionStatuses status);
 
     /// <summary>
     ///     This is the function signature for monitor configuration callback functions.
@@ -128,7 +127,7 @@ namespace SpiceEngine.GLFW.Utilities
     /// <param name="monitor">The monitor that was connected or disconnected.</param>
     /// <param name="status">The connection status.</param>
     [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-    public delegate void MonitorCallback(Monitor monitor, ConnectionStatus status);
+    public delegate void MonitorCallback(Monitor monitor, ConnectionStatuses status);
 
     /// <summary>
     ///     This is the function signature for window iconify/restore callback functions.

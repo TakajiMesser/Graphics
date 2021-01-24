@@ -9,23 +9,18 @@ using System.Text;
 
 namespace SpiceEngineCore.GLFW
 {
-    public static class GLFWContext
+    public static class GLFW
     {
         public const string DLL_NAME =
 #if Windows
-            "glfw3"
+            "glfw3";
 #elif OSX
-            "libglfw.3"
+            "libglfw.3";
 #elif Linux
-            "glfw"
+            "glfw";
 #endif
-            ;
 
         public static IntPtr GetProcAddress(string procName) => GetProcAddress(Encoding.ASCII.GetBytes(procName));
-
-        private static readonly ErrorCallback errorCallback = GlfwError;
-
-        private static void GlfwError(ErrorCodes code, IntPtr message) => throw new Exception(message.ToStringUTF8());
 
         [DllImport(DLL_NAME, EntryPoint = "glfwInit", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool Init();
@@ -40,10 +35,10 @@ namespace SpiceEngineCore.GLFW
         public static extern void GetVersion(out int major, out int minor, out int revision);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetVersionString", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetVersionString();
+        public static extern IntPtr GetVersionString();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetError", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ErrorCodes GetErrorPrivate(out IntPtr description);
+        public static extern ErrorCodes GetErrorPrivate(out IntPtr description);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetErrorCallback", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.FunctionPtr, MarshalTypeRef = typeof(ErrorCallback))]
@@ -62,7 +57,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void WindowHintString(WindowHints hint, byte[] value);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwCreateWindow", CallingConvention = CallingConvention.Cdecl)]
-        private static extern Window CreateWindow(int width, int height, byte[] title, IntPtr monitor, IntPtr share);
+        public static extern Window CreateWindow(int width, int height, byte[] title, Monitor monitor, Window share);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwDestroyWindow", CallingConvention = CallingConvention.Cdecl)]
         public static extern void DestroyWindow(Window window);
@@ -74,7 +69,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void SetWindowShouldClose(Window window, bool close);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetWindowTitle", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SetWindowTitle(Window window, byte[] title);
+        public static extern void SetWindowTitle(Window window, byte[] title);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetWindowIcon", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetWindowIcon(Window window, int count, Image[] images);
@@ -125,7 +120,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void FocusWindow(Window window);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwRequestWindowAttention", CallingConvention = CallingConvention.Cdecl)]
-        public static extern void RequestWindowAttention(IntPtr window);
+        public static extern void RequestWindowAttention(Window window);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetWindowMonitor", CallingConvention = CallingConvention.Cdecl)]
         public static extern Monitor GetWindowMonitor(Window window);
@@ -134,7 +129,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void SetWindowMonitor(Window window, Monitor monitor, int x, int y, int width, int height, int refreshRate);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetWindowAttrib", CallingConvention = CallingConvention.Cdecl)]
-        private static extern int GetWindowAttribute(Window window, int attribute);
+        public static extern int GetWindowAttribute(Window window, int attribute);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetWindowAttrib", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetWindowAttribute(IntPtr window, WindowAttributes attr, bool value);
@@ -170,14 +165,14 @@ namespace SpiceEngineCore.GLFW
         public static extern IconifyCallback SetWindowIconifyCallback(Window window, IconifyCallback callback);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetWindowMaximizeCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern WindowMaximizedCallback SetWindowMaximizeCallback(IntPtr window, WindowMaximizedCallback cb);
+        public static extern WindowMaximizedCallback SetWindowMaximizeCallback(Window window, WindowMaximizedCallback cb);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetFramebufferSizeCallback", CallingConvention = CallingConvention.Cdecl)]
         [return: MarshalAs(UnmanagedType.FunctionPtr, MarshalTypeRef = typeof(SizeCallback))]
         public static extern SizeCallback SetFramebufferSizeCallback(Window window, SizeCallback sizeCallback);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetWindowContentScaleCallback", CallingConvention = CallingConvention.Cdecl)]
-        public static extern WindowContentsScaleCallback SetWindowContentScaleCallback(IntPtr window, WindowContentsScaleCallback cb);
+        public static extern WindowContentsScaleCallback SetWindowContentScaleCallback(Window window, WindowContentsScaleCallback cb);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwPollEvents", CallingConvention = CallingConvention.Cdecl)]
         public static extern void PollEvents();
@@ -200,22 +195,22 @@ namespace SpiceEngineCore.GLFW
         public static extern void MakeContextCurrent(Window window);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetCurrentContext", CallingConvention = CallingConvention.Cdecl)]
-        private static extern Window GetCurrentContext();
+        public static extern Window GetCurrentContext();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSwapInterval", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SwapInterval(int interval);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwExtensionSupported", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool GetExtensionSupported(byte[] extension);
+        public static extern bool GetExtensionSupported(byte[] extension);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetProcAddress", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetProcAddress(byte[] procName);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetMonitors", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetMonitors(out int count);
+        public static extern IntPtr GetMonitors(out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetPrimaryMonitor", CallingConvention = CallingConvention.Cdecl)]
-        private static extern Monitor GetPrimaryMonitor();
+        public static extern Monitor GetPrimaryMonitor();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetMonitorPos", CallingConvention = CallingConvention.Cdecl)]
         public static extern void GetMonitorPosition(Monitor monitor, out int x, out int y);
@@ -230,7 +225,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void GetMonitorContentScale(IntPtr monitor, out float xScale, out float yScale);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetMonitorName", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetMonitorNameInternal(Monitor monitor);
+        public static extern IntPtr GetMonitorNameInternal(Monitor monitor);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetMonitorUserPointer", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetMonitorUserPointer(IntPtr monitor, IntPtr pointer);
@@ -243,16 +238,16 @@ namespace SpiceEngineCore.GLFW
         public static extern MonitorCallback SetMonitorCallback(MonitorCallback monitorCallback);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetVideoModes", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetVideoModes(Monitor monitor, out int count);
+        public static extern IntPtr GetVideoModes(Monitor monitor, out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetVideoMode", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetVideoModeInternal(Monitor monitor);
+        public static extern IntPtr GetVideoModeInternal(Monitor monitor);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetGamma", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetGamma(Monitor monitor, float gamma);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetGammaRamp", CallingConvention = CallingConvention.Cdecl)]
-        internal static extern IntPtr GetGammaRampInternal(Monitor monitor);
+        public static extern IntPtr GetGammaRampInternal(Monitor monitor);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetGammaRamp", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetGammaRamp(Monitor monitor, GammaRamp gammaRamp);
@@ -269,7 +264,7 @@ namespace SpiceEngineCore.GLFW
         public static extern bool RawMouseMotionSupported();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetKeyName", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetKeyNameInternal(Keys key, int scanCode);
+        public static extern IntPtr GetKeyNameInternal(Keys key, int scanCode);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetKeyScancode", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetKeyScanCode(Keys key);
@@ -335,19 +330,19 @@ namespace SpiceEngineCore.GLFW
         public static extern bool JoystickPresent(Joysticks joystick);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickAxes", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetJoystickAxes(Joysticks joystick, out int count);
+        public static extern IntPtr GetJoystickAxes(Joysticks joystick, out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickButtons", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetJoystickButtons(Joysticks joystick, out int count);
+        public static extern IntPtr GetJoystickButtons(Joysticks joystick, out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickHats", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetJoystickHats(int joystickId, out int count);
+        public static extern IntPtr GetJoystickHats(int joystickId, out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickName", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetJoystickNameInternal(Joysticks joystick);
+        public static extern IntPtr GetJoystickNameInternal(Joysticks joystick);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickGUID", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetJoystickGuidPrivate(int joystickId);
+        public static extern IntPtr GetJoystickGuidPrivate(int joystickId);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetJoystickUserPointer", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetJoystickUserPointer(int joystickId, IntPtr pointer);
@@ -363,30 +358,30 @@ namespace SpiceEngineCore.GLFW
         public static extern JoystickCallback SetJoystickCallback(JoystickCallback callback);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwUpdateGamepadMappings", CallingConvention = CallingConvention.Cdecl)]
-        private static extern bool UpdateGamepadMappings(byte[] mappings);
+        public static extern bool UpdateGamepadMappings(byte[] mappings);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetGamepadName", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetGamepadNamePrivate(int gamepadId);
+        public static extern IntPtr GetGamepadNamePrivate(int gamepadId);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetGamepadState", CallingConvention = CallingConvention.Cdecl)]
         public static extern bool GetGamepadState(int id, out GamePadState state);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetClipboardString", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SetClipboardString(Window window, byte[] bytes);
+        public static extern void SetClipboardString(Window window, byte[] bytes);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetClipboardString", CallingConvention = CallingConvention.Cdecl)]
-        private static extern IntPtr GetClipboardStringInternal(Window window);
+        public static extern IntPtr GetClipboardStringInternal(Window window);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetTime", CallingConvention = CallingConvention.Cdecl)]
-        private static extern double GetTime();
+        public static extern double GetTime();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetTime", CallingConvention = CallingConvention.Cdecl)]
-        private static extern void SetTime(double time);
+        public static extern void SetTime(double time);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetTimerValue", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ulong GetTimerValue();
+        public static extern ulong GetTimerValue();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetTimerFrequency", CallingConvention = CallingConvention.Cdecl)]
-        private static extern ulong GetTimerFrequency();
+        public static extern ulong GetTimerFrequency();
     }
 }
