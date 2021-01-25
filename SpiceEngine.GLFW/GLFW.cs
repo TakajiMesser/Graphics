@@ -51,6 +51,9 @@ namespace SpiceEngineCore.GLFW
         public static extern void DefaultWindowHints();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwWindowHint", CallingConvention = CallingConvention.Cdecl)]
+        public static extern void WindowHint(Hints hint, int value);
+
+        [DllImport(DLL_NAME, EntryPoint = "glfwWindowHint", CallingConvention = CallingConvention.Cdecl)]
         public static extern void WindowHint(WindowHints hint, int value);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwWindowHintString", CallingConvention = CallingConvention.Cdecl)]
@@ -225,7 +228,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void GetMonitorContentScale(IntPtr monitor, out float xScale, out float yScale);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetMonitorName", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetMonitorNameInternal(Monitor monitor);
+        public static extern IntPtr GetMonitorName(Monitor monitor);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetMonitorUserPointer", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetMonitorUserPointer(IntPtr monitor, IntPtr pointer);
@@ -241,13 +244,13 @@ namespace SpiceEngineCore.GLFW
         public static extern IntPtr GetVideoModes(Monitor monitor, out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetVideoMode", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetVideoModeInternal(Monitor monitor);
+        public static extern SpiceEngine.GLFW.Monitoring.VideoMode GetVideoMode(Monitor monitor);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetGamma", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetGamma(Monitor monitor, float gamma);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetGammaRamp", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetGammaRampInternal(Monitor monitor);
+        public static extern IntPtr GetGammaRamp(Monitor monitor);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwSetGammaRamp", CallingConvention = CallingConvention.Cdecl)]
         public static extern void SetGammaRamp(Monitor monitor, GammaRamp gammaRamp);
@@ -264,7 +267,7 @@ namespace SpiceEngineCore.GLFW
         public static extern bool RawMouseMotionSupported();
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetKeyName", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetKeyNameInternal(Keys key, int scanCode);
+        public static extern IntPtr GetKeyName(Keys key, int scanCode);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetKeyScancode", CallingConvention = CallingConvention.Cdecl)]
         public static extern int GetKeyScanCode(Keys key);
@@ -339,7 +342,7 @@ namespace SpiceEngineCore.GLFW
         public static extern IntPtr GetJoystickHats(int joystickId, out int count);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickName", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetJoystickNameInternal(Joysticks joystick);
+        public static extern IntPtr GetJoystickName(Joysticks joystick);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetJoystickGUID", CallingConvention = CallingConvention.Cdecl)]
         public static extern IntPtr GetJoystickGuidPrivate(int joystickId);
@@ -370,7 +373,7 @@ namespace SpiceEngineCore.GLFW
         public static extern void SetClipboardString(Window window, byte[] bytes);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetClipboardString", CallingConvention = CallingConvention.Cdecl)]
-        public static extern IntPtr GetClipboardStringInternal(Window window);
+        public static extern IntPtr GetClipboardString(Window window);
 
         [DllImport(DLL_NAME, EntryPoint = "glfwGetTime", CallingConvention = CallingConvention.Cdecl)]
         public static extern double GetTime();

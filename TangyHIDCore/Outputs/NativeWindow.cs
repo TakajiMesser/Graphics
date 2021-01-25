@@ -1,10 +1,13 @@
-﻿using SpiceEngine.GLFW.Inputs;
+﻿using SpiceEngine.GLFW.Context;
+using SpiceEngine.GLFW.Inputs;
 using SpiceEngine.GLFW.Monitoring;
 using SpiceEngine.GLFW.Utilities;
 using SpiceEngine.GLFW.Windowing;
+using SpiceEngineCore.Game.Settings;
 using SpiceEngineCore.Geometry;
 using SpiceEngineCore.GLFW;
 using System;
+using System.ComponentModel;
 using System.Text;
 using TangyHIDCore.Inputs;
 using TangyHIDCore.Utilities;
@@ -32,22 +35,59 @@ namespace TangyHIDCore.Outputs
         private MouseButtonCallback _mouseButtonCallback;
         private CharModsCallback _charModsCallback;
 
-        private bool disposedValue;
-
         private static readonly ErrorCallback _errorCallback = (code, description) => throw new GLFWException(description.ToStringUTF8(), code);
 
-        public NativeWindow(int width, int height, string title, Monitor monitor, SpiceEngine.GLFW.Windowing.Window share)
+        public NativeWindow(Configuration configuration)
+        {
+            GLFW.Init();
+            GLFW.SetErrorCallback(_errorCallback);
+
+            var titleBytes = configuration.WindowTitle != null
+                ? Encoding.UTF8.GetBytes(configuration.WindowTitle)
+                : new byte[0];
+            var monitor = SpiceEngine.GLFW.Monitoring.Monitor.None;//GLFW.GetPrimaryMonitor();
+            var window = SpiceEngine.GLFW.Windowing.Window.None;//new SpiceEngine.GLFW.Windowing.Window();
+
+            SetWindowHints(configuration);
+            _windowHandle = GLFW.CreateWindow(configuration.WindowSize.Width, configuration.WindowSize.Height, titleBytes, monitor, window);
+            SetCallbacks();
+
+            Exists = true;
+        }
+
+        private void SetWindowHints(Configuration configuration)
+        {
+            GLFW.WindowHint(Hints.ClientAPI, (int)APIs.OpenGL);
+            GLFW.WindowHint(Hints.ContextVersionMajor, 3);
+            GLFW.WindowHint(Hints.ContextVersionMinor, 0);
+            GLFW.WindowHint(Hints.OpenGLForwardCompat, 1);
+            //GLFW.WindowHint(Hints.OpenGLDebugContext, 1);
+            GLFW.WindowHint(Hints.OpenGLProfile, (int)OpenGLProfiles.Any);
+            GLFW.WindowHint(WindowHints.Focused, 1);
+
+            var monitor = GLFW.GetPrimaryMonitor();
+            var videoMode = GLFW.GetVideoMode(monitor);
+
+            //GLFW.WindowHint(Hints.RedBits, videoMode.RedBits);
+            //GLFW.WindowHint(Hints.GreenBits, videoMode.GreenBits);
+            //GLFW.WindowHint(Hints.BlueBits, videoMode.BlueBits);
+            GLFW.WindowHint(Hints.RefreshRate, videoMode.RefreshRate);
+        }
+
+        /*public NativeWindow(int width, int height, string title, Monitor monitor, SpiceEngine.GLFW.Windowing.Window share)
         {
             // TODO - Do we need to keep track of the thread handle that GLFW was initialized on?
             GLFW.Init();
             GLFW.SetErrorCallback(_errorCallback);
-
+         
             var titleBytes = title != null ? Encoding.UTF8.GetBytes(title) : new byte[0];
             _windowHandle = GLFW.CreateWindow(width, height, titleBytes, monitor, share);
             SetCallbacks();
-        }
+        }*/
 
         //public IntPtr Handle => new IntPtr(_windowHandle);
+
+        public Vector2i PointToClient(Vector2i point) => point - Position;
 
         public Vector2i Position
         {
@@ -69,6 +109,42 @@ namespace TangyHIDCore.Outputs
             set => GLFW.SetWindowSize(_windowHandle, value.X, value.Y);
         }
 
+        public int X
+        {
+            get
+            {
+                GLFW.GetWindowPosition(_windowHandle, out var x, out var _);
+                return x;
+            }
+        }
+
+        public int Y
+        {
+            get
+            {
+                GLFW.GetWindowPosition(_windowHandle, out var _, out var y);
+                return y;
+            }
+        }
+
+        public int Width
+        {
+            get
+            {
+                GLFW.GetWindowSize(_windowHandle, out var width, out var _);
+                return width;
+            }
+        }
+
+        public int Height
+        {
+            get
+            {
+                GLFW.GetWindowSize(_windowHandle, out var _, out var height);
+                return height;
+            }
+        }
+
         public Vector2 ContentScale
         {
             get
@@ -80,7 +156,7 @@ namespace TangyHIDCore.Outputs
 
         public string ClipboardString
         {
-            get => GLFW.GetClipboardStringInternal(_windowHandle).ToStringUTF8();
+            get => GLFW.GetClipboardString(_windowHandle).ToStringUTF8();
             set => GLFW.SetClipboardString(_windowHandle, Encoding.UTF8.GetBytes(value));
         }
 
@@ -112,6 +188,9 @@ namespace TangyHIDCore.Outputs
 
         public bool IsMinimized => GetAttribute(WindowAttributes.AutoIconify);
 
+        public bool IsExiting { get; private set; }
+        public bool Exists { get; private set; }
+
         /*public CursorModes CursorMode
         {
             get => (CursorMode)GLFW.GetInputMode(_windowHandle, InputModes.Cursor);
@@ -126,7 +205,7 @@ namespace TangyHIDCore.Outputs
         public event EventHandler<ScaleEventArgs> ContentScaleChanged;
         public event EventHandler Refreshed;
         public event EventHandler Closed;
-        public event EventHandler Closing;
+        public event EventHandler<CancelEventArgs> Closing;
         public event EventHandler<FileDropEventArgs> FileDrop;
         public event EventHandler<CursorEventArgs> CursorPositionChanged;
         public event EventHandler<CursorEventArgs> Scrolled;
@@ -162,6 +241,22 @@ namespace TangyHIDCore.Outputs
         public void SetMonitor(Monitor monitor, int x, int y, int width, int height, int refreshRate) => GLFW.SetWindowMonitor(_windowHandle, monitor, x, y, width, height, refreshRate);
 
         //public void SetSizeLimits(int minWidth, int minHeight, int maxWidth, int maxHeight) => GLFW.SetWindowSizeLimits(_windowHandle, minWidth, minHeight, maxWidth, maxHeight);
+
+        public void Close()
+        {
+            OnClosing();
+            Dispose(true);
+        }
+
+        protected void DestroyWindow()
+        {
+            if (Exists)
+            {
+                Exists = false;
+                GLFW.DestroyWindow(_windowHandle);
+                OnClosed();
+            }
+        }
 
         private bool GetAttribute(WindowAttributes attribute)
         {
@@ -220,9 +315,19 @@ namespace TangyHIDCore.Outputs
 
         protected virtual void OnClosing()
         {
-            Closing?.Invoke(this, EventArgs.Empty);
-            GLFW.SetWindowShouldClose(_windowHandle, false);
-            OnClosed();
+            var args = new CancelEventArgs();
+            Closing?.Invoke(this, args);
+
+            if (args.Cancel)
+            {
+                GLFW.SetWindowShouldClose(_windowHandle, false);
+            }
+            else
+            {
+                IsExiting = true;
+            }
+
+            Dispose(true);
         }
 
         protected virtual void OnClosed() => Closed?.Invoke(this, EventArgs.Empty);
@@ -273,18 +378,34 @@ namespace TangyHIDCore.Outputs
 
         protected virtual void OnCharacterInput(uint codePoint, ModifierKeys mods) => CharacterInput?.Invoke(this, new CharacterEventArgs(codePoint, mods));
 
+        protected virtual bool ProcessEvents()
+        {
+            if (IsExiting)
+            {
+                DestroyWindow();
+                return false;
+            }
+
+            // TODO - Poll for inputs?
+            GLFW.PollEvents();
+            return true;
+        }
+
+        #region IDisposable Support
+        private bool _disposedValue = false;
+
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue)
+            if (!_disposedValue)
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects)
+                    // TODO: dispose managed state (managed objects).
                 }
 
                 // TODO: free unmanaged resources (unmanaged objects) and override finalizer
                 // TODO: set large fields to null
-                disposedValue = true;
+                _disposedValue = true;
             }
         }
 
@@ -292,14 +413,15 @@ namespace TangyHIDCore.Outputs
         // ~NativeWindow()
         // {
         //     // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-        //     Dispose(disposing: false);
+        //     Dispose(false);
         // }
 
-        void IDisposable.Dispose()
+        public void Dispose()
         {
             // Do not change this code. Put cleanup code in 'Dispose(bool disposing)' method
-            Dispose(disposing: true);
+            Dispose(true);
             GC.SuppressFinalize(this);
         }
+        #endregion
     }
 }

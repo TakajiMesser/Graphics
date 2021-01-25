@@ -1,6 +1,6 @@
 ﻿namespace SpiceEngine.GLFW.Monitoring
 {
-    public struct VidMode
+    public struct VideoMode
     {
         public int Width { get; set; }
         public int Height { get; set; }
