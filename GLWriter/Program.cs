@@ -1,4 +1,6 @@
-﻿using System;
+﻿using GLWriter.CSharp;
+using GLWriter.XML;
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -9,14 +11,32 @@ namespace GLWriter
         public const string SOURCE_PATH = @"D:\GitHub\glfw-net\Examples\HelloTriangle\OpenGL.cs";
         public const string DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GL.cs";
 
+        public const string XML_SOURCE_PATH = @"D:\GitHub\Spice-Engine\GLWriter\gl-enum-specification.xml";
+        public const string ENUM_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLEnums";
+        public const string COMMAND_DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLCommands.cs";//@"D:\GitHub\Spice-Engine\GLWriter\GLCommands.cs";
+
         static void Main(string[] args)
         {
             Console.WriteLine("Reading...");
-            var definitions = ReadFromSource(SOURCE_PATH);
+
+            var reader = new XMLSpecReader(XML_SOURCE_PATH);
+            reader.Parse();
+
+            var writer = new CSharpWriter();
+            writer.AddEnums(reader.ProcessEnums());
+            writer.AddFunctions(reader.ProcessFunctions());
+
+            writer.Process();
+
+            writer.WriteEnumFiles(ENUM_DESTINATION_DIRECTORY);
+            writer.WriteFunctionFile(COMMAND_DESTINATION_PATH);
+
+            /*var definitions = ReadFromSource(SOURCE_PATH);
             Console.WriteLine("Processing...");
             definitions.Process();
             Console.WriteLine("Writing...");
-            WriteToDestination(DESTINATION_PATH, definitions);
+            WriteToDestination(DESTINATION_PATH, definitions);*/
+
             Console.WriteLine("Finished...");
         }
 
