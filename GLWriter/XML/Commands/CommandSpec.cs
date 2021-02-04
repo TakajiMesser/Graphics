@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace GLWriter.XML
+namespace GLWriter.XML.Commands
 {
     public class CommandSpec : XMLSpec
     {

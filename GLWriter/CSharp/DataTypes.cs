@@ -5,7 +5,9 @@ namespace GLWriter.CSharp
     public enum DataTypes
     {
         None,
+        STRING,
         ENUM,
+        STRUCT,
         VOID,
         INTEGER,
         SHORT,
@@ -20,6 +22,7 @@ namespace GLWriter.CSharp
         USHORT,
         ULONG,
         ENUMPTR,
+        STRUCTPTR,
         INTEGERPTR,
         SHORTPTR,
         LONGPTR,
@@ -49,6 +52,7 @@ namespace GLWriter.CSharp
         public static DataTypes ToPtrType(this DataTypes dataType) => dataType switch
         {
             DataTypes.ENUM => DataTypes.ENUMPTR,
+            DataTypes.STRUCT => DataTypes.STRUCTPTR,
             DataTypes.INTEGER => DataTypes.INTEGERPTR,
             DataTypes.SHORT => DataTypes.SHORTPTR,
             DataTypes.LONG => DataTypes.LONGPTR,
@@ -119,6 +123,30 @@ namespace GLWriter.CSharp
             _ => DataTypes.None
         };
 
+        public static string ToText(DataTypes dataType, string group)
+        {
+            if (dataType == DataTypes.ENUM)
+            {
+                return "SpiceEngine.GLFWBindings.GLEnums." + group;
+            }
+            else if (dataType == DataTypes.ENUMPTR)
+            {
+                return "SpiceEngine.GLFWBindings.GLEnums." + group + "*";
+            }
+            else if (dataType == DataTypes.STRUCT)
+            {
+                return "SpiceEngine.GLFWBindings.GLStructs." + group;
+            }
+            else if (dataType == DataTypes.STRUCTPTR)
+            {
+                return "SpiceEngine.GLFWBindings.GLStructs." + group + "*";
+            }
+            else
+            {
+                return ToText(dataType);
+            }
+        }
+
         public static string ToText(DataTypes dataType) => dataType switch
         {
             DataTypes.VOID => "void",
@@ -158,6 +186,30 @@ namespace GLWriter.CSharp
             DataTypes.OUTINTPTR => "out IntPtr",
             _ => throw new ArgumentOutOfRangeException("Could not convert data type " + dataType),
         };
+
+        public static string ToCharacter(DataTypes dataType, string group)
+        {
+            if (dataType == DataTypes.ENUM)
+            {
+                return "E" + group + "E";
+            }
+            else if (dataType == DataTypes.ENUMPTR)
+            {
+                return "Ep" + group + "Ep";
+            }
+            else if (dataType == DataTypes.STRUCT)
+            {
+                return "St" + group + "St";
+            }
+            else if (dataType == DataTypes.STRUCTPTR)
+            {
+                return "Stp" + group + "Stp";
+            }
+            else
+            {
+                return ToCharacter(dataType);
+            }
+        }
 
         public static string ToCharacter(DataTypes dataType) => dataType switch
         {

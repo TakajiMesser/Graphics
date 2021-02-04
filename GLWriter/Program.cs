@@ -3,6 +3,7 @@ using GLWriter.XML;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Version = GLWriter.XML.Version;
 
 namespace GLWriter
 {
@@ -22,14 +23,13 @@ namespace GLWriter
             var reader = new XMLSpecReader(XML_SOURCE_PATH);
             reader.Parse();
 
+            var glVersion = Version.GL(3, 0);
+            var glSpec = reader.Spec;
+            var cSharpSpec = glSpec.GenerateCSharpSpec(glVersion);
+
             var writer = new CSharpWriter();
-            writer.AddEnums(reader.ProcessEnums());
-            writer.AddFunctions(reader.ProcessFunctions());
-
-            writer.Process();
-
-            writer.WriteEnumFiles(ENUM_DESTINATION_DIRECTORY);
-            writer.WriteFunctionFile(COMMAND_DESTINATION_PATH);
+            writer.WriteEnumFiles(cSharpSpec, ENUM_DESTINATION_DIRECTORY);
+            writer.WriteFunctionFile(cSharpSpec, COMMAND_DESTINATION_PATH);
 
             /*var definitions = ReadFromSource(SOURCE_PATH);
             Console.WriteLine("Processing...");

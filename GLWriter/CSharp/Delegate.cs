@@ -10,17 +10,17 @@ namespace GLWriter.CSharp
             var builder = new StringBuilder();
             builder.Append("DEL");
             builder.Append("_");
-            builder.Append(ToCharacter(function.ReturnType, function.EnumName));
+            builder.Append(DataTypeExtensions.ToCharacter(function.ReturnType, function.Group));
             builder.Append("_");
 
             foreach (var parameter in function.Parameters)
             {
-                builder.Append(ToCharacter(parameter.DataType, parameter.EnumName));
+                builder.Append(DataTypeExtensions.ToCharacter(parameter.DataType, parameter.Group));
             }
 
             Name = builder.ToString();
             ReturnType = function.ReturnType;
-            EnumName = function.EnumName;
+            Group = function.Group;
 
             for (var i = 0; i < function.Parameters.Count; i++)
             {
@@ -30,64 +30,22 @@ namespace GLWriter.CSharp
                 {
                     Name = "v" + i,
                     DataType = parameter.DataType,
-                    EnumName = parameter.EnumName
+                    Group = parameter.Group
                 });
             }
         }
 
         public string Name { get; }
         public DataTypes ReturnType { get; set; }
-        public string EnumName { get; set; }
+        public string Group { get; set; }
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
-
-        private string ToText(DataTypes dataType, string enumName)
-        {
-            if (dataType == DataTypes.ENUM)
-            {
-                return "SpiceEngine.GLFWBindings.GL.Enums." + enumName;
-            }
-            else if (dataType == DataTypes.ENUMPTR)
-            {
-                return "SpiceEngine.GLFWBindings.GL.Enums." + enumName + "*";
-            }
-            else
-            {
-                return DataTypeExtensions.ToText(dataType);
-            }
-        }
-
-        private string ToCharacter(DataTypes dataType, string enumName)
-        {
-            if (dataType == DataTypes.ENUM)
-            {
-                var builder = new StringBuilder();
-                builder.Append("E");
-                builder.Append(enumName);
-                builder.Append("E");
-
-                return builder.ToString();
-            }
-            else if (dataType == DataTypes.ENUMPTR)
-            {
-                var builder = new StringBuilder();
-                builder.Append("Ep");
-                builder.Append(enumName);
-                builder.Append("Ep");
-
-                return builder.ToString();
-            }
-            else
-            {
-                return DataTypeExtensions.ToCharacter(dataType);
-            }
-        }
 
         public string ToDefinitionLine()
         {
             var builder = new StringBuilder();
 
             builder.Append("private delegate ");
-            builder.Append(ToText(ReturnType, EnumName));
+            builder.Append(DataTypeExtensions.ToText(ReturnType, Group));
             builder.Append(" ");
             builder.Append(Name);
             builder.Append("(");
@@ -95,7 +53,7 @@ namespace GLWriter.CSharp
             for (var i = 0; i < Parameters.Count; i++)
             {
                 var parameter = Parameters[i];
-                var parameterType = ToText(parameter.DataType, parameter.EnumName);
+                var parameterType = DataTypeExtensions.ToText(parameter.DataType, parameter.Group);
 
                 if (i > 0)
                 {

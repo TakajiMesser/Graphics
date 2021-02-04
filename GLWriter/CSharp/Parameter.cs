@@ -11,6 +11,6 @@
 
         public string Name { get; set; }
         public DataTypes DataType { get; set; }
-        public string EnumName { get; set; }
+        public string Group { get; set; }
     }
 }

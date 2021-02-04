@@ -1,4 +1,4 @@
-﻿namespace GLWriter.XML
+﻿namespace GLWriter.XML.Commands
 {
     public class ParamSpec : XMLSpec
     {

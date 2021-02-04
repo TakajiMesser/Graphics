@@ -1,7 +1,7 @@
 ﻿using GLWriter.CSharp;
 using System;
 
-namespace GLWriter.XML
+namespace GLWriter.XML.Types
 {
     public enum GLTypes
     {
@@ -39,7 +39,15 @@ namespace GLWriter.XML
         UInt64,
         UInt64EXT,
         Sync,
-        HalfNV
+        ContextStruct,
+        EventStruct,
+        DebugProc,
+        DebugProcARB,
+        DebugProcKHR,
+        DebugProcAMD,
+        HalfNV,
+        VDPauSurfaceNV,
+        VulkanProcNV
     }
 
     public static class GLTypeExtensions
@@ -62,11 +70,16 @@ namespace GLWriter.XML
             GLTypes.ClampF => DataTypes.FLOAT,
             GLTypes.Double => DataTypes.DOUBLE,
             GLTypes.ClampD => DataTypes.DOUBLE,
-            //EGLClientBufferEXT,
-            //EGLImageOES,
+            GLTypes.EGLClientBufferEXT => DataTypes.VOIDPTR,
+            GLTypes.EGLImageOES => DataTypes.VOIDPTR,
             GLTypes.Char => DataTypes.CHAR,
             GLTypes.CharARB => DataTypes.CHAR,
-            //HandleARB,
+            GLTypes.HandleARB =>
+#if OSX
+                                 DataTypes.VOIDPTR,
+#else
+                                 DataTypes.UINT,
+#endif
             GLTypes.Half => DataTypes.USHORT,
             GLTypes.HalfARB => DataTypes.USHORT,
             GLTypes.Fixed => DataTypes.INTEGER,
@@ -78,8 +91,16 @@ namespace GLWriter.XML
             GLTypes.Int64EXT => DataTypes.LONG,
             GLTypes.UInt64 => DataTypes.ULONG,
             GLTypes.UInt64EXT => DataTypes.ULONG,
-            //Sync
+            GLTypes.Sync => DataTypes.STRUCTPTR,
+            GLTypes.ContextStruct => DataTypes.STRUCT,
+            GLTypes.EventStruct => DataTypes.STRUCT,
+            GLTypes.DebugProc => DataTypes.VOIDPTR,
+            GLTypes.DebugProcARB => DataTypes.VOIDPTR,
+            GLTypes.DebugProcKHR => DataTypes.VOIDPTR,
+            GLTypes.DebugProcAMD => DataTypes.VOIDPTR,
             GLTypes.HalfNV => DataTypes.USHORT,
+            GLTypes.VDPauSurfaceNV => DataTypes.INTPTR,
+            GLTypes.VulkanProcNV => DataTypes.VOIDPTR,
             _ => DataTypes.None
         };
 
@@ -118,7 +139,15 @@ namespace GLWriter.XML
             "GLuint64" => GLTypes.UInt64,
             "GLuint64EXT" => GLTypes.UInt64EXT,
             "GLsync" => GLTypes.Sync,
+            "struct _cl_context" => GLTypes.ContextStruct,
+            "struct _cl_event" => GLTypes.EventStruct,
+            "GLDEBUGPROC" => GLTypes.DebugProc,
+            "GLDEBUGPROCARB" => GLTypes.DebugProcAMD,
+            "GLDEBUGPROCKHR" => GLTypes.DebugProcKHR,
+            "GLDEBUGPROCAMD" => GLTypes.DebugProcAMD,
             "GLhalfNV" => GLTypes.HalfNV,
+            "GLvdpauSurfaceNV" => GLTypes.VDPauSurfaceNV,
+            "GLVULKANPROCNV" => GLTypes.VulkanProcNV,
             _ => GLTypes.None
         };
 

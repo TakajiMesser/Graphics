@@ -1,76 +1,28 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace GLWriter.CSharp
 {
     public class CSharpWriter
     {
-        private List<EnumGroup> _enumGroups = new List<EnumGroup>();
-        private List<Function> _functions = new List<Function>();
-        private List<Delegate> _delegates = new List<Delegate>();
-
-        public void AddEnums(IEnumerable<EnumGroup> enumGroups) => _enumGroups.AddRange(enumGroups);
-        public void AddFunctions(IEnumerable<Function> functions) => _functions.AddRange(functions);
-
-        public void Process()
+        public void WriteEnumFiles(CSharpSpec spec, string directoryPath)
         {
-            var functions = new List<Function>();
-            var delegates = new List<Delegate>();
-            var delegateByName = new Dictionary<string, Delegate>();
-
-            foreach (var function in _functions.OrderBy(f => f.Name))
+            if (Directory.Exists(directoryPath))
             {
-                if (!IsSupported(function)) continue;
-                functions.Add(function);
-
-                var delegateDefinition = new Delegate(function);
-                if (!delegateByName.ContainsKey(delegateDefinition.Name))
+                foreach (var file in Directory.GetFiles(directoryPath))
                 {
-                    _delegates.Add(delegateDefinition);
-                    delegateByName.Add(delegateDefinition.Name, delegateDefinition);
-                }
-
-                function.Delegate = delegateByName[delegateDefinition.Name];
-            }
-
-            foreach (var delegateDefinition in _delegates.OrderBy(d => d.Name))
-            {
-                delegates.Add(delegateDefinition);
-            }
-
-            _functions = functions;
-            _delegates = delegates;
-        }
-
-        private bool IsSupported(Function function)
-        {
-            if (function.ReturnType == DataTypes.None)
-            {
-                return false;
-            }
-
-            foreach (var parameter in function.Parameters)
-            {
-                if (parameter.DataType == DataTypes.None)
-                {
-                    return false;
+                    File.Delete(file);
                 }
             }
 
-            return true;
-        }
-
-        public void WriteEnumFiles(string directoryPath)
-        {
-            foreach (var enumGroup in _enumGroups)
+            foreach (var enumGroup in spec.Enums)
             {
                 var filePath = Path.Join(directoryPath, enumGroup.Name + ".cs");
                 File.WriteAllLines(filePath, enumGroup.ToLines());
             }
         }
 
-        public void WriteFunctionFile(string filePath)
+        public void WriteFunctionFile(CSharpSpec spec, string filePath)
         {
             var lines = new List<string>();
             lines.Add("using System;");
@@ -81,7 +33,7 @@ namespace GLWriter.CSharp
             lines.Add("    public static unsafe class GLCommands");
             lines.Add("    {");
 
-            foreach (var function in _functions)
+            foreach (var function in spec.Functions)
             {
                 lines.Add("        " + function.ToFieldLine());
             }
@@ -89,7 +41,7 @@ namespace GLWriter.CSharp
             lines.Add("        public static void LoadFunctions()");
             lines.Add("        {");
 
-            foreach (var function in _functions)
+            foreach (var function in spec.Functions)
             {
                 lines.Add("            " + function.ToLoadLine());
             }
@@ -97,10 +49,24 @@ namespace GLWriter.CSharp
             lines.Add("        }");
             lines.Add("");
 
-            foreach (var function in _functions)
+            foreach (var function in spec.Functions)
             {
                 lines.Add("        " + function.ToDefinitionLine());
             }
+
+            lines.Add("");
+
+            foreach (var function in spec.Functions)
+            {
+
+            }
+
+            // TODO - Generate "easy" function overloads
+            // Change uint parameters to int and explicitly cast for ease
+            // Convert char* to string
+            // If function has void return and last parameter is void* type, then convert to and return as byte[]
+
+            // TODO - Still need to properly handle extensions instead of throwing them all out - check the "extension->supported" field
 
             lines.Add("        private static T GetFunctionDelegate<T>(string name) where T : Delegate");
             lines.Add("        {");
@@ -109,14 +75,14 @@ namespace GLWriter.CSharp
             lines.Add("        }");
             lines.Add("");
 
-            for (var i = 0; i < _delegates.Count; i++)
+            for (var i = 0; i < spec.DelegateCount; i++)
             {
-                var delegateDefinition = _delegates[i];
+                var delegateDefinition = spec.DelegateAt(i);
 
                 lines.Add("        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]");
                 lines.Add("        " + delegateDefinition.ToDefinitionLine());
 
-                if (i < _delegates.Count - 1)
+                if (i < spec.DelegateCount - 1)
                 {
                     lines.Add("");
                 }

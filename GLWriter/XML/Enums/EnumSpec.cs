@@ -1,16 +1,18 @@
 ﻿using System.Collections.Generic;
 
-namespace GLWriter.XML
+namespace GLWriter.XML.Enums
 {
-    public class EnumSpec
+    public class EnumSpec : XMLSpec
     {
+        public EnumSpec() : base("enum") { }
+
         public string Name { get; set; }
         public string Value { get; set; }
         public string Comment { get; set; }
 
         public List<string> GroupNames { get; } = new List<string>();
 
-        public void SetAttribute(string name, string value)
+        public override void SetAttribute(string name, string value)
         {
             switch (name)
             {

@@ -1,19 +1,25 @@
-﻿namespace GLWriter.XML
+﻿namespace GLWriter.XML.Types
 {
-    public class ProtoSpec : XMLSpec
+    public class TypeSpec : XMLSpec
     {
-        public ProtoSpec() : base("proto") { }
+        public TypeSpec() : base("type") { }
 
         public string Name { get; set; }
-        public string Type { get; set; }
-        public string Group { get; set; }
+        public string Requires { get; set; }
+        public string Comment { get; set; }
 
         public override void SetAttribute(string name, string value)
         {
             switch (name)
             {
-                case "group":
-                    Group = value;
+                case "name":
+                    Name = value;
+                    break;
+                case "requires":
+                    Requires = value;
+                    break;
+                case "comment":
+                    Comment = value;
                     break;
             }
         }
@@ -24,9 +30,6 @@
             {
                 case "name":
                     Name = value;
-                    break;
-                case "ptype":
-                    Type = value;
                     break;
             }
         }
