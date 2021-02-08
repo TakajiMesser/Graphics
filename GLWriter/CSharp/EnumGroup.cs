@@ -11,8 +11,6 @@ namespace GLWriter.CSharp
 
         public IEnumerable<string> ToLines()
         {
-            yield return "using System;";
-            yield return "";
             yield return "namespace SpiceEngine.GLFWBindings.GLEnums";
             yield return "{";
             yield return "\t" + "public enum " + Name;

@@ -109,7 +109,7 @@ namespace GLWriter
                     }
 
                     var parameter = definition.Parameters[i];
-                    var parameterType = DataTypeExtensions.ToText(parameter.DataType);
+                    var parameterType = parameter.Type.ToText();
                     builder.Append(parameterType);
                     builder.Append(" ");
                     builder.Append(parameter.Name);
@@ -132,15 +132,15 @@ namespace GLWriter
                     var parameter = definition.Parameters[i];
                     var parameterType = delegateDefinition.Parameters[i];
 
-                    if (parameter.DataType == DataTypes.INTPTR && parameterType == DataTypes.VOIDPTR)
+                    if (parameter.Type.DataType == DataTypes.IntPtr && parameterType == DataTypes.Void/*Ptr*/)
                     {
                         builder.Append(parameter.Name + ".ToPointer()");
                     }
-                    else if ((parameter.DataType == DataTypes.INTEGER || parameter.DataType == DataTypes.LONG) && parameterType == DataTypes.INTPTR)
+                    else if ((parameter.Type.DataType == DataTypes.Int || parameter.Type.DataType == DataTypes.Long) && parameterType == DataTypes.IntPtr)
                     {
                         builder.Append("new IntPtr(" + parameter.Name + ")");
                     }
-                    else if (parameter.DataType == DataTypes.UINT && parameterType == DataTypes.UINTPTR)
+                    else if (parameter.Type.DataType == DataTypes.UInt && parameterType == DataTypes.UInt/*Ptr*/)
                     {
                         builder.Append("&" + parameter.Name);
                     }

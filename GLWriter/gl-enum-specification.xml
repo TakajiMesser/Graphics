@@ -6333,8 +6333,6 @@ typedef unsigned int GLhandleARB;
         <enum value="0x80DF" name="GL_COLOR_TABLE_INTENSITY_SIZE_SGI" group="GetColorTableParameterPNameSGI,ColorTableParameterPNameSGI"/>
     </enums>
 
-    <bananas/>
-
     <enums namespace="GL" start="0x80E0" end="0x810F" vendor="MS">
         <enum value="0x80E0" name="GL_BGR" group="PixelFormat"/>
         <enum value="0x80E0" name="GL_BGR_EXT"/>
@@ -11667,8 +11665,6 @@ typedef unsigned int GLhandleARB;
     <enums namespace="GL" start="101000" end="101999" vendor="ARB" comment="Conformance test enums"/>
     <enums namespace="GL" start="102000" end="102999" vendor="ARB" comment="Unused, unlikely to ever be used"/>
 
-    <bananas/>
-
     <enums namespace="GL" start="103000" end="103999" vendor="IBM" comment="IBM is out of the graphics hardware business. Most of this range will remain unused.">
         <enum value="0x19262" name="GL_RASTER_POSITION_UNCLIPPED_IBM"/>
         <enum value="103050" name="GL_CULL_VERTEX_IBM"/>
@@ -11692,12 +11688,9 @@ typedef unsigned int GLhandleARB;
         <enum value="103087" name="GL_SECONDARY_COLOR_ARRAY_LIST_STRIDE_IBM"/>
     </enums>
 
-    <bananas/>
-
     <enums namespace="GL" start="104000" end="104999" vendor="NEC" comment="NEC may be out of the graphics hardware business?"/>
     <enums namespace="GL" start="105000" end="105999" vendor="Compaq" comment="Compaq was acquired by HP"/>
     <enums namespace="GL" start="106000" end="106999" vendor="KPC" comment="Kubota Pacific is out of business"/>
-    <bananas/>
     <enums namespace="GL" start="107000" end="107999" vendor="PGI" comment="Portland Graphics was acquired by Template Graphics, which is out of business">
             <!-- lots of <unused> areas here which won't be computed yet -->
         <enum value="0x1A1F8" name="GL_PREFER_DOUBLEBUFFER_HINT_PGI" group="HintTarget"/>
@@ -11725,11 +11718,8 @@ typedef unsigned int GLhandleARB;
         <enum value="0x1A22C" name="GL_MATERIAL_SIDE_HINT_PGI" group="HintTarget,HintTargetPGI"/>
         <enum value="0x1A22D" name="GL_MAX_VERTEX_HINT_PGI" group="HintTarget,HintTargetPGI"/>
     </enums>
-    <bananas/>
 
     <enums namespace="GL" start="108000" end="108999" vendor="ES" comment="Evans and Sutherland is out of the graphics hardware business"/>
-
-    <bananas/>
 
     <!-- SECTION: GL command definitions. -->
     <commands namespace="GL">

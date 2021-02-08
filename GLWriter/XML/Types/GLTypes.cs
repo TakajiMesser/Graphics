@@ -1,5 +1,4 @@
 ﻿using GLWriter.CSharp;
-using System;
 
 namespace GLWriter.XML.Types
 {
@@ -52,56 +51,56 @@ namespace GLWriter.XML.Types
 
     public static class GLTypeExtensions
     {
-        public static DataTypes ToDataType(this GLTypes glType) => glType switch
+        public static CSharpType ToCSharpType(this GLTypes glType) => glType switch
         {
-            GLTypes.Enum => DataTypes.ENUM,
-            GLTypes.Boolean => DataTypes.BOOL,
-            GLTypes.Bitfield => DataTypes.UINT,
-            GLTypes.Void => DataTypes.VOID,
-            GLTypes.Byte => DataTypes.BYTE,
-            GLTypes.UByte => DataTypes.BYTE,
-            GLTypes.Short => DataTypes.SHORT,
-            GLTypes.UShort => DataTypes.USHORT,
-            GLTypes.Int => DataTypes.INTEGER,
-            GLTypes.UInt => DataTypes.UINT,
-            GLTypes.ClampX => DataTypes.INTEGER,
-            GLTypes.Sizei => DataTypes.INTEGER,
-            GLTypes.Float => DataTypes.FLOAT,
-            GLTypes.ClampF => DataTypes.FLOAT,
-            GLTypes.Double => DataTypes.DOUBLE,
-            GLTypes.ClampD => DataTypes.DOUBLE,
-            GLTypes.EGLClientBufferEXT => DataTypes.VOIDPTR,
-            GLTypes.EGLImageOES => DataTypes.VOIDPTR,
-            GLTypes.Char => DataTypes.CHAR,
-            GLTypes.CharARB => DataTypes.CHAR,
+            GLTypes.Enum => new CSharpType(DataTypes.Enum),
+            GLTypes.Boolean => new CSharpType(DataTypes.Bool),
+            GLTypes.Bitfield => new CSharpType(DataTypes.UInt),
+            GLTypes.Void => new CSharpType(DataTypes.Void),
+            GLTypes.Byte => new CSharpType(DataTypes.Byte),
+            GLTypes.UByte => new CSharpType(DataTypes.Byte),
+            GLTypes.Short => new CSharpType(DataTypes.Short),
+            GLTypes.UShort => new CSharpType(DataTypes.UShort),
+            GLTypes.Int => new CSharpType(DataTypes.Int),
+            GLTypes.UInt => new CSharpType(DataTypes.UInt),
+            GLTypes.ClampX => new CSharpType(DataTypes.Int),
+            GLTypes.Sizei => new CSharpType(DataTypes.Int),
+            GLTypes.Float => new CSharpType(DataTypes.Float),
+            GLTypes.ClampF => new CSharpType(DataTypes.Float),
+            GLTypes.Double => new CSharpType(DataTypes.Double),
+            GLTypes.ClampD => new CSharpType(DataTypes.Double),
+            GLTypes.EGLClientBufferEXT => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            GLTypes.EGLImageOES => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            GLTypes.Char => new CSharpType(DataTypes.Char),
+            GLTypes.CharARB => new CSharpType(DataTypes.Char),
             GLTypes.HandleARB =>
 #if OSX
-                                 DataTypes.VOIDPTR,
+            new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
 #else
-                                 DataTypes.UINT,
+            new CSharpType(DataTypes.UInt),
 #endif
-            GLTypes.Half => DataTypes.USHORT,
-            GLTypes.HalfARB => DataTypes.USHORT,
-            GLTypes.Fixed => DataTypes.INTEGER,
-            GLTypes.IntPtr => DataTypes.INTPTR,
-            GLTypes.IntPtrARB => DataTypes.INTPTR,
-            GLTypes.SizeiPtr => DataTypes.INTPTR,
-            GLTypes.SizeiPtrARB => DataTypes.INTPTR,
-            GLTypes.Int64 => DataTypes.LONG,
-            GLTypes.Int64EXT => DataTypes.LONG,
-            GLTypes.UInt64 => DataTypes.ULONG,
-            GLTypes.UInt64EXT => DataTypes.ULONG,
-            GLTypes.Sync => DataTypes.STRUCTPTR,
-            GLTypes.ContextStruct => DataTypes.STRUCT,
-            GLTypes.EventStruct => DataTypes.STRUCT,
-            GLTypes.DebugProc => DataTypes.VOIDPTR,
-            GLTypes.DebugProcARB => DataTypes.VOIDPTR,
-            GLTypes.DebugProcKHR => DataTypes.VOIDPTR,
-            GLTypes.DebugProcAMD => DataTypes.VOIDPTR,
-            GLTypes.HalfNV => DataTypes.USHORT,
-            GLTypes.VDPauSurfaceNV => DataTypes.INTPTR,
-            GLTypes.VulkanProcNV => DataTypes.VOIDPTR,
-            _ => DataTypes.None
+            GLTypes.Half => new CSharpType(DataTypes.UShort),
+            GLTypes.HalfARB => new CSharpType(DataTypes.UShort),
+            GLTypes.Fixed => new CSharpType(DataTypes.Int),
+            GLTypes.IntPtr => new CSharpType(DataTypes.IntPtr),
+            GLTypes.IntPtrARB => new CSharpType(DataTypes.IntPtr),
+            GLTypes.SizeiPtr => new CSharpType(DataTypes.IntPtr),
+            GLTypes.SizeiPtrARB => new CSharpType(DataTypes.IntPtr),
+            GLTypes.Int64 => new CSharpType(DataTypes.Long),
+            GLTypes.Int64EXT => new CSharpType(DataTypes.Long),
+            GLTypes.UInt64 => new CSharpType(DataTypes.ULong),
+            GLTypes.UInt64EXT => new CSharpType(DataTypes.ULong),
+            GLTypes.Sync => new CSharpType(DataTypes.Struct, TypeModifiers.Pointer),
+            GLTypes.ContextStruct => new CSharpType(DataTypes.Struct),
+            GLTypes.EventStruct => new CSharpType(DataTypes.Struct),
+            GLTypes.DebugProc => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            GLTypes.DebugProcARB => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            GLTypes.DebugProcKHR => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            GLTypes.DebugProcAMD => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            GLTypes.HalfNV => new CSharpType(DataTypes.UShort),
+            GLTypes.VDPauSurfaceNV => new CSharpType(DataTypes.IntPtr),
+            GLTypes.VulkanProcNV => new CSharpType(DataTypes.Void, TypeModifiers.Pointer),
+            _ => new CSharpType(DataTypes.None)
         };
 
         public static GLTypes ParseGLType(string text) => text switch
@@ -149,40 +148,6 @@ namespace GLWriter.XML.Types
             "GLvdpauSurfaceNV" => GLTypes.VDPauSurfaceNV,
             "GLVULKANPROCNV" => GLTypes.VulkanProcNV,
             _ => GLTypes.None
-        };
-
-        public static string ToText(DataTypes dataType) => dataType switch
-        {
-            DataTypes.VOID => "void",
-            DataTypes.INTEGER => "int",
-            DataTypes.SHORT => "short",
-            DataTypes.LONG => "long",
-            DataTypes.FLOAT => "float",
-            DataTypes.DOUBLE => "double",
-            DataTypes.BOOL => "bool",
-            DataTypes.BYTE => "byte",
-            DataTypes.SBYTE => "sbyte",
-            DataTypes.UINT => "uint",
-            DataTypes.USHORT => "ushort",
-            DataTypes.ULONG => "ulong",
-            DataTypes.INTEGERPTR => "int*",
-            DataTypes.SHORTPTR => "short*",
-            DataTypes.LONGPTR => "long*",
-            DataTypes.FLOATPTR => "float*",
-            DataTypes.DOUBLEPTR => "double*",
-            DataTypes.BOOLPTR => "bool*",
-            DataTypes.BYTEPTR => "byte*",
-            DataTypes.BYTEPTRPTR => "byte**",
-            DataTypes.SBYTEPTR => "sbyte*",
-            DataTypes.UINTPTR => "uint*",
-            DataTypes.USHORTPTR => "ushort*",
-            DataTypes.ULONGPTR => "ulong*",
-            DataTypes.VOIDPTR => "void*",
-            DataTypes.VOIDPTRPTR => "void**",
-            DataTypes.INTPTR => "IntPtr",
-            DataTypes.OUTINTEGER => "out int",
-            DataTypes.OUTINTPTR => "out IntPtr",
-            _ => throw new ArgumentOutOfRangeException("Could not convert data type " + dataType),
         };
     }
 }

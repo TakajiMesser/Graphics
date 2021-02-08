@@ -22,6 +22,23 @@ namespace GLWriter.CSharp
             }
         }
 
+        public void WriteStructFiles(CSharpSpec spec, string directoryPath)
+        {
+            if (Directory.Exists(directoryPath))
+            {
+                foreach (var file in Directory.GetFiles(directoryPath))
+                {
+                    File.Delete(file);
+                }
+            }
+
+            foreach (var structSpec in spec.Structs)
+            {
+                var filePath = Path.Join(directoryPath, structSpec.Name + ".cs");
+                File.WriteAllLines(filePath, structSpec.ToLines());
+            }
+        }
+
         public void WriteFunctionFile(CSharpSpec spec, string filePath)
         {
             var lines = new List<string>();
@@ -56,9 +73,16 @@ namespace GLWriter.CSharp
 
             lines.Add("");
 
-            foreach (var function in spec.Functions)
+            for (var i = 0; i < spec.OverloadCount; i++)
             {
+                var overload = spec.OverloadAt(i);
 
+                foreach (var line in overload.ToDefinitionLines())
+                {
+                    lines.Add("        " + line);
+                }
+
+                lines.Add("");
             }
 
             // TODO - Generate "easy" function overloads

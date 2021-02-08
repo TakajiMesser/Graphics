@@ -10,17 +10,16 @@ namespace GLWriter.CSharp
             var builder = new StringBuilder();
             builder.Append("DEL");
             builder.Append("_");
-            builder.Append(DataTypeExtensions.ToCharacter(function.ReturnType, function.Group));
+            builder.Append(function.ReturnType.ToCode());
             builder.Append("_");
 
             foreach (var parameter in function.Parameters)
             {
-                builder.Append(DataTypeExtensions.ToCharacter(parameter.DataType, parameter.Group));
+                builder.Append(parameter.Type.ToCode());
             }
 
             Name = builder.ToString();
             ReturnType = function.ReturnType;
-            Group = function.Group;
 
             for (var i = 0; i < function.Parameters.Count; i++)
             {
@@ -29,15 +28,13 @@ namespace GLWriter.CSharp
                 Parameters.Add(new Parameter()
                 {
                     Name = "v" + i,
-                    DataType = parameter.DataType,
-                    Group = parameter.Group
+                    Type = parameter.Type
                 });
             }
         }
 
         public string Name { get; }
-        public DataTypes ReturnType { get; set; }
-        public string Group { get; set; }
+        public CSharpType ReturnType { get; set; }
         public List<Parameter> Parameters { get; set; } = new List<Parameter>();
 
         public string ToDefinitionLine()
@@ -45,7 +42,7 @@ namespace GLWriter.CSharp
             var builder = new StringBuilder();
 
             builder.Append("private delegate ");
-            builder.Append(DataTypeExtensions.ToText(ReturnType, Group));
+            builder.Append(ReturnType.ToText());
             builder.Append(" ");
             builder.Append(Name);
             builder.Append("(");
@@ -53,7 +50,7 @@ namespace GLWriter.CSharp
             for (var i = 0; i < Parameters.Count; i++)
             {
                 var parameter = Parameters[i];
-                var parameterType = DataTypeExtensions.ToText(parameter.DataType, parameter.Group);
+                var parameterType = parameter.Type.ToText();
 
                 if (i > 0)
                 {

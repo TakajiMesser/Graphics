@@ -20,12 +20,12 @@ namespace GLWriter
             var builder = new StringBuilder();
             builder.Append("DEL");
             builder.Append("_");
-            builder.Append(DataTypeExtensions.ToCharacter(ReturnType));
+            builder.Append(ReturnType.ToCode());
             builder.Append("_");
 
             foreach (var parameter in Parameters)
             {
-                builder.Append(DataTypeExtensions.ToCharacter(parameter));
+                builder.Append(parameter.ToCode());
             }
 
             DelegateMaskName = builder.ToString();
@@ -129,7 +129,7 @@ namespace GLWriter
 
                 if (isOutVariable)
                 {
-                    parameterType = DataTypeExtensions.ToOutDataType(parameterType);
+                    //parameterType = DataTypeExtensions.ToOutDataType(parameterType);
                 }
 
                 var parameterNameInfo = new ParseInfo(line, currentIndex);

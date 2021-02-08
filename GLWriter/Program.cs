@@ -14,6 +14,7 @@ namespace GLWriter
 
         public const string XML_SOURCE_PATH = @"D:\GitHub\Spice-Engine\GLWriter\gl-enum-specification.xml";
         public const string ENUM_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLEnums";
+        public const string STRUCT_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLStructs";
         public const string COMMAND_DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLCommands.cs";//@"D:\GitHub\Spice-Engine\GLWriter\GLCommands.cs";
 
         static void Main(string[] args)
@@ -23,12 +24,13 @@ namespace GLWriter
             var reader = new XMLSpecReader(XML_SOURCE_PATH);
             reader.Parse();
 
-            var glVersion = Version.GL(3, 0);
+            var glVersion = Version.GL(4, 0);
             var glSpec = reader.Spec;
             var cSharpSpec = glSpec.GenerateCSharpSpec(glVersion);
 
             var writer = new CSharpWriter();
             writer.WriteEnumFiles(cSharpSpec, ENUM_DESTINATION_DIRECTORY);
+            writer.WriteStructFiles(cSharpSpec, STRUCT_DESTINATION_DIRECTORY);
             writer.WriteFunctionFile(cSharpSpec, COMMAND_DESTINATION_PATH);
 
             /*var definitions = ReadFromSource(SOURCE_PATH);

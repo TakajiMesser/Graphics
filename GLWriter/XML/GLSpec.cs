@@ -1,4 +1,5 @@
 ﻿using GLWriter.CSharp;
+using GLWriter.Utilities;
 using GLWriter.XML.Enums;
 using GLWriter.XML.Extensions;
 using GLWriter.XML.Features;
@@ -28,6 +29,7 @@ namespace GLWriter.XML
         {
             var spec = new CSharpSpec();
             spec.AddEnums(ProcessEnums(version));
+            spec.AddStructs(ProcessStructs(version));
             spec.AddFunctions(ProcessFunctions(version));
             spec.Process();
 
@@ -61,36 +63,64 @@ namespace GLWriter.XML
             return groups.Values.Where(v => v.Values.Count > 0);
         }
 
+        public IEnumerable<Struct> ProcessStructs(Version version)
+        {
+            var structNames = new HashSet<string>();
+
+            foreach (var commandSpec in _commandSpecs)
+            {
+                var returnType = GetCSharpType(commandSpec.Prototype.Type, commandSpec.Prototype.Content, commandSpec.Prototype.Group);
+                if (returnType.DataType == DataTypes.Struct)
+                {
+                    var structName = commandSpec.Prototype.Group.Capitalized();
+
+                    if (!structNames.Contains(structName))
+                    {
+                        structNames.Add(structName);
+                        yield return new Struct(structName);
+                    }
+                }
+
+                foreach (var paramSpec in commandSpec.Parameters)
+                {
+                    var parameterType = GetCSharpType(paramSpec.Type, paramSpec.Content, paramSpec.Group);
+
+                    if (parameterType.DataType == DataTypes.Struct)
+                    {
+                        var structName = StringExtensions.Capitalized(paramSpec.Group ?? paramSpec.Class);
+
+                        if (!structNames.Contains(structName))
+                        {
+                            structNames.Add(structName);
+                            yield return new Struct(structName);
+                        }
+                    }
+                }
+            }
+        }
+
         public IEnumerable<Function> ProcessFunctions(Version version)
         {
             foreach (var commandSpec in _commandSpecs)
             {
                 if (IsSupportedCommand(commandSpec.Prototype.Name, version))
                 {
-                    var function = new Function()
+                    var function = new Function(commandSpec.Prototype.Name)
                     {
-                        Name = commandSpec.Prototype.Name,
-                        ReturnType = GetDataType(commandSpec.Prototype.Type, commandSpec.Prototype.Content, commandSpec.Prototype.Group)
+                        ReturnType = GetCSharpType(commandSpec.Prototype.Type, commandSpec.Prototype.Content, commandSpec.Prototype.Group)
                     };
 
-                    if (function.ReturnType == DataTypes.ENUM)
-                    {
-                        function.Group = commandSpec.Prototype.Group;
-                    }
+                    function.ReturnType = function.ReturnType.Capitalized();
 
                     foreach (var paramSpec in commandSpec.Parameters)
                     {
                         var parameter = new Parameter()
                         {
                             Name = paramSpec.Name,
-                            DataType = GetDataType(paramSpec.Type, paramSpec.Content, paramSpec.Group)
+                            Type = GetCSharpType(paramSpec.Type, paramSpec.Content, paramSpec.Group)
                         };
 
-                        if (parameter.DataType == DataTypes.ENUM || parameter.DataType == DataTypes.ENUMPTR)
-                        {
-                            parameter.Group = paramSpec.Group;
-                        }
-
+                        parameter.Type = new CSharpType(parameter.Type.DataType, parameter.Type.Modifier, parameter.Type.IsOut, StringExtensions.Capitalized(paramSpec.Group ?? paramSpec.Class));
                         function.Parameters.Add(parameter);
                     }
 
@@ -193,38 +223,38 @@ namespace GLWriter.XML
             return false;
         }
 
-        private DataTypes GetDataType(string type, string content, string group)
+        private CSharpType GetCSharpType(string type, string content, string group)
         {
             var glType = GLTypeExtensions.ParseGLType(type);
-            var dataType = glType.ToDataType();
-            var nPointers = content.Count(c => c == '*');
+            var cSharpType = glType.ToCSharpType();
+            cSharpType.Group = group;
 
-            if (dataType == DataTypes.None && ContentContains(content, "void"))
+            if (cSharpType.DataType == DataTypes.None && ContentContains(content, "void"))
             {
-                dataType = DataTypes.VOID;
+                cSharpType.DataType = DataTypes.Void;
             }
 
             if (ContentContains(content, "out"))
             {
-                return dataType.ToOutDataType();
+                cSharpType.IsOut = true;
             }
 
-            if (nPointers == 0)
+            var nPointers = content.Count(c => c == '*');
+
+            if (nPointers == 1)
             {
-                return dataType;
-            }
-            else if (nPointers == 1)
-            {
-                return dataType.ToPtrType();
+                cSharpType.Modifier = TypeModifiers.Pointer;
             }
             else if (nPointers == 2)
             {
-                return dataType.ToPtrPtrType();
+                cSharpType.Modifier = TypeModifiers.DoublePointer;
             }
-            else
+            else if (nPointers > 2)
             {
                 throw new System.Exception("");
             }
+
+            return cSharpType;
         }
 
         private bool ContentContains(string content, string match)

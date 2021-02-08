@@ -114,19 +114,16 @@ namespace GLWriter
                     currentIndex = parameterTypeResult.Index + 1;
                 }
 
-                var parameterType = DataTypeExtensions.ParseDataType(parameterTypeResult.Token);
-                if (parameterType == DataTypes.None) return -1;
+                var dataType = DataTypeExtensions.ParseDataType(parameterTypeResult.Token);
+                if (dataType == DataTypes.None) return -1;
 
-                if (isOutVariable)
-                {
-                    parameterType = DataTypeExtensions.ToOutDataType(parameterType);
-                }
+                var parameterType = new CSharpType(dataType, TypeModifiers.None, isOutVariable);
 
                 var parameterNameInfo = new ParseInfo(line, currentIndex);
                 var parameterNameResult = ParseResult.ParseNextToken(parameterNameInfo);
 
                 if (!parameterNameResult.IsSuccess) return -1;
-                var parameter = new Parameter(parameterType, parameterNameResult.Token);
+                var parameter = new Parameter(parameterNameResult.Token, parameterType);
                 Parameters.Add(parameter);
 
                 if (line.Substring(parameterNameResult.Index, 1) == ")")
