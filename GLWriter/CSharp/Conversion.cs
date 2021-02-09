@@ -7,7 +7,8 @@ namespace GLWriter.CSharp
     {
         private string _prefix;
         private string _suffix;
-        private List<string> _lines = new List<string>();
+        private List<string> _prefixLines = new List<string>();
+        private List<string> _suffixLines = new List<string>();
 
         public Conversion(CSharpType fromType, CSharpType toType)
         {
@@ -17,6 +18,9 @@ namespace GLWriter.CSharp
 
         public CSharpType FromType { get; }
         public CSharpType ToType { get; }
+
+        public string ReferenceName { get; set; }
+
         public bool RequiresMultipleLines { get; private set; }
         public bool IsUnsafe { get; private set; }
         public bool IsFixed { get; private set; }
@@ -56,8 +60,8 @@ namespace GLWriter.CSharp
                 IsFixed = true;
                 _suffix = "Ptr";
 
-                _lines.Add("fixed (char* $Ptr = $)");
-                _lines.Add("{");
+                _prefixLines.Add("fixed (char* $Ptr = $)");
+                _prefixLines.Add("{");
             }
             else if (FromType.DataType == DataTypes.Int && FromType.Modifier == TypeModifiers.Array && ToType.DataType == DataTypes.Int && ToType.Modifier == TypeModifiers.Pointer)
             {
@@ -66,8 +70,8 @@ namespace GLWriter.CSharp
                 IsFixed = true;
                 _suffix = "Ptr";
 
-                _lines.Add("fixed (int* $Ptr = &$[0])");
-                _lines.Add("{");
+                _prefixLines.Add("fixed (int* $Ptr = &$[0])");
+                _prefixLines.Add("{");
             }
             else if (FromType.DataType == DataTypes.Int && FromType.Modifier == TypeModifiers.Array && ToType.DataType == DataTypes.UInt && ToType.Modifier == TypeModifiers.Pointer)
             {
@@ -76,27 +80,31 @@ namespace GLWriter.CSharp
                 IsFixed = true;
                 _suffix = "Ptr";
 
-                _lines.Add("var converted = Array.ConvertAll($, i => (uint)i);");
-                _lines.Add("fixed (uint* $Ptr = &converted[0])");
-                _lines.Add("{");
+                _prefixLines.Add("var converted = Array.ConvertAll($, i => (uint)i);");
+                _prefixLines.Add("fixed (uint* $Ptr = &converted[0])");
+                _prefixLines.Add("{");
             }
             else if (FromType.DataType == DataTypes.Int && FromType.Modifier == TypeModifiers.None && ToType.DataType == DataTypes.Int && ToType.Modifier == TypeModifiers.Array)
             {
                 RequiresMultipleLines = true;
 
-                _lines.Add("var $s = new int[] { $ };");
-                _lines.Add("var n = 1;");
+                _prefixLines.Add("var $s = new int[] { $ };");
+                _prefixLines.Add("var n = 1;");
             }
             else if (FromType.DataType == DataTypes.Int && FromType.Modifier == TypeModifiers.Array && ToType.DataType == DataTypes.Int && ToType.Modifier == TypeModifiers.None)
             {
                 RequiresMultipleLines = true;
 
-                _lines.Add("var values = $");
-                _lines.Add("return values[0];");
+                _prefixLines.Add("var values = $");
+                _prefixLines.Add("return values[0];");
             }
             else if (FromType.DataType == DataTypes.None && FromType.Modifier == TypeModifiers.None && ToType.DataType == DataTypes.Int && ToType.Modifier == TypeModifiers.Array)
             {
-                 
+                RequiresMultipleLines = true;
+                _prefix = "values";
+
+                _prefixLines.Add("var values = new int[" + ReferenceName + "];");
+                _suffixLines.Add("return values;");
             }
             else if (FromType.DataType == DataTypes.None && FromType.Modifier == TypeModifiers.None && ToType.DataType == DataTypes.Int && ToType.Modifier == TypeModifiers.None)
             {
@@ -125,7 +133,7 @@ namespace GLWriter.CSharp
 
         public IEnumerable<string> ToLines(string name, int nTabs)
         {
-            foreach (var line in _lines)
+            foreach (var line in _prefixLines)
             {
                 var lineBuilder = new StringBuilder();
 
@@ -135,6 +143,24 @@ namespace GLWriter.CSharp
                 }
 
                 lineBuilder.Append(line.Replace("$", name));
+                yield return lineBuilder.ToString();
+            }
+        }
+
+        public bool RequiresReturnLines => _suffixLines.Count > 0;
+
+        public IEnumerable<string> ToReturnLines(int nTabs)
+        {
+            foreach (var line in _suffixLines)
+            {
+                var lineBuilder = new StringBuilder();
+
+                for (var i = 0; i < nTabs; i++)
+                {
+                    lineBuilder.Append("    ");
+                }
+
+                lineBuilder.Append(line);
                 yield return lineBuilder.ToString();
             }
         }

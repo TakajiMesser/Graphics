@@ -34,6 +34,7 @@ namespace GLWriter.CSharp
         public bool IsExpressionBodied { get; private set; }
         public bool IsUnsafe { get; private set; }
         public bool IsValid { get; private set; }
+        public bool HasSuffixLines { get; private set; }
 
         private void ProcessConversion(Conversion conversion)
         {
@@ -47,6 +48,11 @@ namespace GLWriter.CSharp
             if (conversion.IsUnsafe)
             {
                 IsUnsafe = true;
+            }
+
+            if (conversion.RequiresReturnLines)
+            {
+                HasSuffixLines = true;
             }
         }
 
@@ -163,11 +169,29 @@ namespace GLWriter.CSharp
             // If the function has the "Gen" or "Get" prefix, has a VOID return, and the last parameter is an array, then we can return the array
             if (ReturnType.DataType == DataTypes.Void && ReturnType.Modifier == TypeModifiers.None && _parameters.Count > 0 && (Name.StartsWith("Gen") || Name.StartsWith("Get")))
             {
+                string countName = null;
+
                 for (var i = 0; i < _parameters.Count; i++)
                 {
                     var parameter = _parameters[i];
 
-                    if (i == _parameters.Count - 1)
+                    if (i == 0)
+                    {
+                        if (parameter.Type.DataType == DataTypes.Int && parameter.Type.Modifier == TypeModifiers.None)
+                        {
+                            var overloadParameter = new Parameter(parameter.Name, TypeOverload(parameter.Type));
+
+                            overload._parameters.Add(overloadParameter);
+                            overload._conversions.Add(new Conversion(overloadParameter.Type, parameter.Type));
+
+                            countName = parameter.Name;
+                        }
+                        else
+                        {
+                            return overload;
+                        }
+                    }
+                    else if (i == _parameters.Count - 1)
                     {
                         if (parameter.Type.Modifier == TypeModifiers.Array)
                         {
@@ -175,7 +199,10 @@ namespace GLWriter.CSharp
                             overload.ReturnType = parameter.Type;
                             overload._returnConversion = new Conversion(ReturnType, overload.ReturnType);
 
-                            overload._conversions.Add(new Conversion(new CSharpType(), parameter.Type));
+                            overload._conversions.Add(new Conversion(new CSharpType(), parameter.Type)
+                            {
+                                ReferenceName = countName
+                            });
                         }
                         else
                         {
@@ -219,7 +246,7 @@ namespace GLWriter.CSharp
 
                     if (i == 0)
                     {
-                        if (parameter.Name != "n" || parameter.Type.DataType != DataTypes.Int || parameter.Type.Modifier != TypeModifiers.None
+                        if ((parameter.Name != "n" && parameter.Name != "count") || parameter.Type.DataType != DataTypes.Int || parameter.Type.Modifier != TypeModifiers.None
                             || (i == _parameters.Count - 1 && ReturnType.Modifier != TypeModifiers.Array))
                         {
                             return overload;
@@ -370,6 +397,12 @@ namespace GLWriter.CSharp
                     returnBuilder.Append("    ");
                 }
 
+                var a = 3;
+                if (Name == "GenTextures")
+                {
+                    a = 4;
+                }
+
                 if (ReturnType.DataType == DataTypes.Void && ReturnType.Modifier == TypeModifiers.None)
                 {
                     returnBuilder.Append(GetReturnLine());
@@ -389,6 +422,19 @@ namespace GLWriter.CSharp
                         if (_returnConversion.IsFixed)
                         {
                             nTabs++;
+                        }
+                    }
+                    else if (HasSuffixLines)
+                    {
+                        returnBuilder.Append(GetReturnLine());
+                        yield return returnBuilder.ToString();
+
+                        foreach (var conversion in _conversions)
+                        {
+                            foreach (var line in conversion.ToReturnLines(nTabs))
+                            {
+                                yield return line;
+                            }
                         }
                     }
                     else
