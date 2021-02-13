@@ -120,12 +120,6 @@ namespace GLWriter.CSharp
 
         public static IEnumerable<Overload> ForFunction(Function function)
         {
-            var a = 3;
-            if (function.Name == "GenBuffers")
-            {
-                a = 4;
-            }
-
             var typeOverload = new Overload(function)
             {
                 ReturnType = TypeOverload(function.ReturnType)
@@ -144,7 +138,7 @@ namespace GLWriter.CSharp
             typeOverload.Process();
 
             var getterOverload = typeOverload.Getter();
-            var singularOverload = getterOverload.Singular();
+            var singularOverload = getterOverload.IsValid ? getterOverload.Singular() : typeOverload.Singular();
 
             if (typeOverload.IsValid)
             {
@@ -222,12 +216,6 @@ namespace GLWriter.CSharp
                 overload.Process();
             }
 
-            var a = 3;
-            if (overload.Name == "GenBuffers")
-            {
-                a = 4;
-            }
-
             return overload;
         }
 
@@ -256,9 +244,9 @@ namespace GLWriter.CSharp
                     }
                     else if (i == _parameters.Count - 1)
                     {
-                        if (parameter.Type.Modifier == TypeModifiers.Array)
+                        if (parameter.Type.Modifier == TypeModifiers.Array && parameter.Name.IsPlural())
                         {
-                            var overloadParameter = new Parameter(parameter.Name, parameter.Type.ToUnptr());
+                            var overloadParameter = new Parameter(parameter.Name.Singularized(), parameter.Type.ToUnptr());
 
                             overload.BufferName = parameter.Name;
                             overload._parameters.Add(overloadParameter);
@@ -309,6 +297,8 @@ namespace GLWriter.CSharp
 
             bodyBuilder.Append("(");
 
+            var parameterIndex = 0;
+
             for (var i = 0; i < _conversions.Count; i++)
             {
                 if (i > 0)
@@ -316,8 +306,16 @@ namespace GLWriter.CSharp
                     bodyBuilder.Append(", ");
                 }
 
-                var parameterName = i < _parameters.Count ? _parameters[i].ToName() : "";
-                bodyBuilder.Append(_conversions[i].ToText(parameterName));
+                var conversion = _conversions[i];
+                var parameterName = "";
+
+                if (conversion.FromType.DataType != DataTypes.None && parameterIndex < _parameters.Count)
+                {
+                    parameterName = _parameters[parameterIndex].ToName();
+                    parameterIndex++;
+                }
+
+                bodyBuilder.Append(conversion.ToText(parameterName));
             }
 
             bodyBuilder.Append(")");
@@ -370,11 +368,18 @@ namespace GLWriter.CSharp
                 }
 
                 var nTabs = IsUnsafe ? 2 : 1;
+                var parameterIndex = 0;
 
                 for (var i = 0; i < _conversions.Count; i++)
                 {
                     var conversion = _conversions[i];
-                    var parameterName = i < _parameters.Count ? _parameters[i].ToName() : "";
+                    var parameterName = "";
+
+                    if (conversion.FromType.DataType != DataTypes.None && parameterIndex < _parameters.Count)
+                    {
+                        parameterName = _parameters[parameterIndex].ToName();
+                        parameterIndex++;
+                    }
 
                     if (conversion.RequiresMultipleLines)
                     {
@@ -395,12 +400,6 @@ namespace GLWriter.CSharp
                 for (var i = 0; i < nTabs; i++)
                 {
                     returnBuilder.Append("    ");
-                }
-
-                var a = 3;
-                if (Name == "GenTextures")
-                {
-                    a = 4;
                 }
 
                 if (ReturnType.DataType == DataTypes.Void && ReturnType.Modifier == TypeModifiers.None)

@@ -88,8 +88,8 @@ namespace GLWriter.CSharp
             {
                 RequiresMultipleLines = true;
 
+                _suffix = "s";
                 _prefixLines.Add("var $s = new int[] { $ };");
-                _prefixLines.Add("var n = 1;");
             }
             else if (FromType.DataType == DataTypes.Int && FromType.Modifier == TypeModifiers.Array && ToType.DataType == DataTypes.Int && ToType.Modifier == TypeModifiers.None)
             {
