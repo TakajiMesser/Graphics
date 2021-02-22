@@ -117,7 +117,7 @@ namespace GLWriter
                 var dataType = DataTypeExtensions.ParseDataType(parameterTypeResult.Token);
                 if (dataType == DataTypes.None) return -1;
 
-                var parameterType = new CSharpType(dataType, TypeModifiers.None, isOutVariable);
+                var parameterType = new CSharpType(dataType, TypeModifiers.None, null, isOutVariable);
 
                 var parameterNameInfo = new ParseInfo(line, currentIndex);
                 var parameterNameResult = ParseResult.ParseNextToken(parameterNameInfo);

@@ -34,7 +34,26 @@ namespace GLWriter.CSharp
         public bool IsExpressionBodied { get; private set; }
         public bool IsUnsafe { get; private set; }
         public bool IsValid { get; private set; }
+        public bool NeedsExplicitReturn { get; private set; }
         public bool HasSuffixLines { get; private set; }
+
+        public bool IsDuplicateOf(Function function)
+        {
+            if (Name != function.Name || ReturnType != function.ReturnType || _parameters.Count != function.Parameters.Count)
+            {
+                return false;
+            }
+
+            for (var i = 0; i < _parameters.Count; i++)
+            {
+                if (_parameters[i] != function.Parameters[i])
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
 
         private void ProcessConversion(Conversion conversion)
         {
@@ -54,11 +73,17 @@ namespace GLWriter.CSharp
             {
                 HasSuffixLines = true;
             }
+
+            if (conversion.ContainsReturn)
+            {
+                NeedsExplicitReturn = false;
+            }
         }
 
         public void Process()
         {
             IsExpressionBodied = true;
+            NeedsExplicitReturn = true;
 
             foreach (var conversion in _conversions)
             {
@@ -66,6 +91,11 @@ namespace GLWriter.CSharp
             }
 
             ProcessConversion(_returnConversion);
+
+            if (ReturnType.DataType == DataTypes.Void && ReturnType.Modifier == TypeModifiers.None)
+            {
+                NeedsExplicitReturn = false;
+            }
 
             if (_parameters.Count != Function.Parameters.Count)
             {
@@ -94,29 +124,18 @@ namespace GLWriter.CSharp
             }
         }
 
-        private static CSharpType TypeOverload(CSharpType type)
+        private static CSharpType TypeOverload(CSharpType type) => (type.DataType, type.Modifier) switch
         {
-            if (type.DataType == DataTypes.Char && type.Modifier == TypeModifiers.Pointer)
-            {
-                return new CSharpType(DataTypes.String, TypeModifiers.None, type.IsOut, type.Group);
-            }
-            else if (type.DataType == DataTypes.UInt && type.Modifier == TypeModifiers.None)
-            {
-                return new CSharpType(DataTypes.Int, TypeModifiers.None, type.IsOut, type.Group);
-            }
-            else if (type.DataType == DataTypes.UInt && type.Modifier == TypeModifiers.Pointer)
-            {
-                return new CSharpType(DataTypes.Int, TypeModifiers.Array);
-            }
-            else if (type.DataType == DataTypes.Int && type.Modifier == TypeModifiers.Pointer)
-            {
-                return new CSharpType(DataTypes.Int, TypeModifiers.Array);
-            }
-            else
-            {
-                return type;
-            }
-        }
+            (DataTypes.Char, TypeModifiers.Pointer) => new CSharpType(DataTypes.String, TypeModifiers.None, type.Group, type.IsOut),
+            (DataTypes.UInt, TypeModifiers.None) => new CSharpType(DataTypes.Int, TypeModifiers.None, type.Group, type.IsOut),
+            (DataTypes.UInt, TypeModifiers.Pointer) => new CSharpType(DataTypes.Int, TypeModifiers.Array, type.Group, type.IsOut),
+            (DataTypes.Int, TypeModifiers.Pointer) => new CSharpType(DataTypes.Int, TypeModifiers.Array, type.Group, type.IsOut),
+            (DataTypes.Float, TypeModifiers.Pointer) => new CSharpType(DataTypes.Float, TypeModifiers.Array, type.Group, type.IsOut),
+            (DataTypes.Enum, TypeModifiers.Pointer) => new CSharpType(DataTypes.Enum, TypeModifiers.Array, type.Group, type.IsOut),
+            (DataTypes.Char, TypeModifiers.DoublePointer) => new CSharpType(DataTypes.String, TypeModifiers.Array, type.Group, type.IsOut),
+            (DataTypes.Void, TypeModifiers.Pointer) => new CSharpType(DataTypes.IntPtr, TypeModifiers.None, type.Group, type.IsOut),
+            _ => type
+        };
 
         public static IEnumerable<Overload> ForFunction(Function function)
         {
@@ -158,6 +177,12 @@ namespace GLWriter.CSharp
 
         private Overload Getter()
         {
+            /*var a = 3;
+            if (Function.Name == "GetFloatv")
+            {
+                a = 4;
+            }*/
+
             var overload = new Overload(Function, this);
 
             // If the function has the "Gen" or "Get" prefix, has a VOID return, and the last parameter is an array, then we can return the array
@@ -169,23 +194,12 @@ namespace GLWriter.CSharp
                 {
                     var parameter = _parameters[i];
 
-                    if (i == 0)
+                    if (parameter.Type.DataType == DataTypes.Int && parameter.Type.Modifier == TypeModifiers.None && (parameter.Name == "n" || parameter.Name == "count"))
                     {
-                        if (parameter.Type.DataType == DataTypes.Int && parameter.Type.Modifier == TypeModifiers.None)
-                        {
-                            var overloadParameter = new Parameter(parameter.Name, TypeOverload(parameter.Type));
-
-                            overload._parameters.Add(overloadParameter);
-                            overload._conversions.Add(new Conversion(overloadParameter.Type, parameter.Type));
-
-                            countName = parameter.Name;
-                        }
-                        else
-                        {
-                            return overload;
-                        }
+                        countName = parameter.Name;
                     }
-                    else if (i == _parameters.Count - 1)
+
+                    if (i == _parameters.Count - 1)
                     {
                         if (parameter.Type.Modifier == TypeModifiers.Array)
                         {
@@ -195,7 +209,7 @@ namespace GLWriter.CSharp
 
                             overload._conversions.Add(new Conversion(new CSharpType(), parameter.Type)
                             {
-                                ReferenceName = countName
+                                ReferenceName = countName ?? "1"
                             });
                         }
                         else
@@ -219,13 +233,21 @@ namespace GLWriter.CSharp
             return overload;
         }
 
+        // TODO - Check if this overload signature already exists in the set of defined functions (e.g. glDrawBuffer)
         private Overload Singular()
         {
+            var a = 3;
+            if (Name == "GenFrameBuffers")
+            {
+                a = 4;
+            }
+
             var overload = new Overload(Function, this);
 
             // If the function is plural, the first parameter is an int with name "n", and the last parameter is a pointer, singularize the function name and remove the first parameter
             if (Name.IsPlural() && _parameters.Count > 0)
             {
+                var nPluralParameters = 0;
                 overload.Name = Name.Singularized();
 
                 for (var i = 0; i < _parameters.Count; i++)
@@ -242,10 +264,11 @@ namespace GLWriter.CSharp
 
                         overload._conversions.Add(new Conversion(new CSharpType(), parameter.Type));
                     }
-                    else if (i == _parameters.Count - 1)
+                    else
                     {
                         if (parameter.Type.Modifier == TypeModifiers.Array && parameter.Name.IsPlural())
                         {
+                            nPluralParameters++;
                             var overloadParameter = new Parameter(parameter.Name.Singularized(), parameter.Type.ToUnptr());
 
                             overload.BufferName = parameter.Name;
@@ -254,16 +277,17 @@ namespace GLWriter.CSharp
                         }
                         else
                         {
-                            return overload;
+                            var overloadParameter = new Parameter(parameter.Name, TypeOverload(parameter.Type));
+
+                            overload._parameters.Add(overloadParameter);
+                            overload._conversions.Add(new Conversion(overloadParameter.Type, parameter.Type));
                         }
                     }
-                    else
-                    {
-                        var overloadParameter = new Parameter(parameter.Name, TypeOverload(parameter.Type));
+                }
 
-                        overload._parameters.Add(overloadParameter);
-                        overload._conversions.Add(new Conversion(overloadParameter.Type, parameter.Type));
-                    }
+                if (nPluralParameters == 0)
+                {
+                    //return overload;
                 }
 
                 if (ReturnType.Modifier == TypeModifiers.Array)
@@ -383,7 +407,7 @@ namespace GLWriter.CSharp
 
                     if (conversion.RequiresMultipleLines)
                     {
-                        foreach (var line in conversion.ToLines(parameterName, nTabs))
+                        foreach (var line in conversion.ToPrefixLines(parameterName, nTabs))
                         {
                             yield return line;
                         }
@@ -395,6 +419,12 @@ namespace GLWriter.CSharp
                     }
                 }
 
+                var a = 3;
+                if (Name == "GenBuffer" || Name == "PrioritizeTexture")
+                {
+                    a = 4;
+                }
+
                 var returnBuilder = new StringBuilder();
 
                 for (var i = 0; i < nTabs; i++)
@@ -402,51 +432,76 @@ namespace GLWriter.CSharp
                     returnBuilder.Append("    ");
                 }
 
-                if (ReturnType.DataType == DataTypes.Void && ReturnType.Modifier == TypeModifiers.None)
+                if (_returnConversion.RequiresMultipleLines)
+                {
+                    foreach (var line in _returnConversion.ToPrefixLines(GetReturnLine(), nTabs))
+                    {
+                        yield return line;
+                    }
+
+                    if (_returnConversion.IsFixed)
+                    {
+                        //nTabs++;
+                    }
+                }
+
+                if (Name == "GenBuffer" || Name == "PrioritizeTexture")
+                {
+                    a = 4;
+                }
+
+                if (NeedsExplicitReturn)
+                {
+                    returnBuilder.Append("return " + GetReturnLine());
+                    yield return returnBuilder.ToString();
+                }
+                else if (!_returnConversion.ContainsReturn)
                 {
                     returnBuilder.Append(GetReturnLine());
                     yield return returnBuilder.ToString();
                 }
-                else
+
+                if (HasSuffixLines)
                 {
-                    var returnLine = GetReturnLine();
+                    parameterIndex = _parameters.Count - 1;
 
-                    if (_returnConversion.RequiresMultipleLines)
+                    for (var i = _conversions.Count - 1; i >= 0; i--)
                     {
-                        foreach (var line in _returnConversion.ToLines(returnLine, nTabs))
+                        var conversion = _conversions[i];
+                        var parameterName = "";
+
+                        if (conversion.FromType.DataType != DataTypes.None && parameterIndex >= 0)
                         {
-                            yield return line;
+                            parameterName = _parameters[parameterIndex].ToName();
+                            parameterIndex--;
                         }
 
-                        if (_returnConversion.IsFixed)
+                        if (conversion.RequiresMultipleLines)
                         {
-                            nTabs++;
-                        }
-                    }
-                    else if (HasSuffixLines)
-                    {
-                        returnBuilder.Append(GetReturnLine());
-                        yield return returnBuilder.ToString();
+                            if (conversion.IsFixed)
+                            {
+                                nTabs--;
+                            }
 
-                        foreach (var conversion in _conversions)
-                        {
-                            foreach (var line in conversion.ToReturnLines(nTabs))
+                            foreach (var line in conversion.ToSuffixLines(parameterName, nTabs))
                             {
                                 yield return line;
                             }
                         }
-                    }
-                    else
-                    {
-                        returnBuilder.Append("return " + GetReturnLine());
-                        yield return returnBuilder.ToString();
                     }
                 }
 
                 //returnBuilder.Append(ReturnType.DataType == DataTypes.Void && ReturnType.Modifier == TypeModifiers.None ? GetReturnLine() : "return " + GetReturnLine());
                 //yield return returnBuilder.ToString();
 
-                for (var i = nTabs - 1; i >= 0; i--)
+                if (IsUnsafe)
+                {
+                    yield return "    }";
+                }
+
+                yield return "}";
+
+                /*for (var i = nTabs - 1; i >= 0; i--)
                 {
                     var linebuilder = new StringBuilder();
 
@@ -457,7 +512,7 @@ namespace GLWriter.CSharp
 
                     linebuilder.Append("}");
                     yield return linebuilder.ToString();
-                }
+                }*/
             }
         }
 

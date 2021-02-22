@@ -15,7 +15,7 @@ namespace GLWriter
         public const string XML_SOURCE_PATH = @"D:\GitHub\Spice-Engine\GLWriter\gl-enum-specification.xml";
         public const string ENUM_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLEnums";
         public const string STRUCT_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLStructs";
-        public const string COMMAND_DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLCommands.cs";//@"D:\GitHub\Spice-Engine\GLWriter\GLCommands.cs";
+        public const string COMMAND_DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GL.cs";
 
         static void Main(string[] args)
         {
@@ -24,7 +24,7 @@ namespace GLWriter
             var reader = new XMLSpecReader(XML_SOURCE_PATH);
             reader.Parse();
 
-            var glVersion = Version.GL(4, 0);
+            var glVersion = Version.GL(4, 6);
             var glSpec = reader.Spec;
             var cSharpSpec = glSpec.GenerateCSharpSpec(glVersion);
 
@@ -78,7 +78,7 @@ namespace GLWriter
             lines.Add("using System;");
             lines.Add("using System.Runtime.InteropServices;");
             lines.Add("");
-            lines.Add("namespace SpiceEngineCore.GLFW");
+            lines.Add("namespace SpiceEngine.GLFW");
             lines.Add("{");
             lines.Add("    public static unsafe class GL");
             lines.Add("    {");

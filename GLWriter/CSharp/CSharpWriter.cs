@@ -42,12 +42,14 @@ namespace GLWriter.CSharp
         public void WriteFunctionFile(CSharpSpec spec, string filePath)
         {
             var lines = new List<string>();
+            lines.Add("using SpiceEngineCore.Geometry;");
             lines.Add("using System;");
+            lines.Add("using System.Collections.Generic;");
             lines.Add("using System.Runtime.InteropServices;");
             lines.Add("");
-            lines.Add("namespace SpiceEngineCore.GLFW");
+            lines.Add("namespace SpiceEngine.GLFW");
             lines.Add("{");
-            lines.Add("    public static unsafe class GLCommands");
+            lines.Add("    public static unsafe class GL");
             lines.Add("    {");
 
             foreach (var function in spec.Functions)
@@ -84,6 +86,24 @@ namespace GLWriter.CSharp
 
                 lines.Add("");
             }
+
+            lines.Add("        public static void ClearColor(Color4 color) => ClearColor(color.R, color.G, color.B, color.A);");
+            lines.Add("");
+
+            lines.Add("        public static Color4 ReadPixels(int x, int y, int width, int height, GLFWBindings.GLEnums.PixelFormat format, GLFWBindings.GLEnums.PixelType type)");
+            lines.Add("        {");
+            lines.Add("            var bytes = new byte[4];");
+            lines.Add("");
+            lines.Add("            unsafe");
+            lines.Add("            {");
+            lines.Add("                fixed (byte* bytesPtr = &bytes[0])");
+            lines.Add("                {");
+            lines.Add("                    ReadPixels(x, y, width, height, format, type, (IntPtr)bytesPtr);");
+            lines.Add("                    return new Color4((int)bytes[0], (int)bytes[1], (int)bytes[2], (int)bytes[3]);");
+            lines.Add("                }");
+            lines.Add("            }");
+            lines.Add("        }");
+            lines.Add("");
 
             // TODO - Generate "easy" function overloads
             // Change uint parameters to int and explicitly cast for ease

@@ -29,10 +29,33 @@ namespace GLWriter.CSharp
 
         public void Process()
         {
+            var enumNames = new HashSet<string>();
+            var functionByName = new Dictionary<string, Function>();
             var delegateByName = new Dictionary<string, Delegate>();
+
+            foreach (var enumGroup in _enumGroups)
+            {
+                enumNames.Add(enumGroup.Name);
+            }
 
             foreach (var function in _functions)
             {
+                functionByName.Add(function.Name, function);
+
+                for (var i = 0; i < function.Parameters.Count; i++)
+                {
+                    var parameterType = function.Parameters[i].Type;
+
+                    if (parameterType.DataType == DataTypes.Int && !string.IsNullOrEmpty(parameterType.Group) && enumNames.Contains(parameterType.Group))
+                    {
+                        function.Parameters[i] = function.Parameters[i].Converted(DataTypes.Enum);
+                    }
+                    else if (parameterType.DataType == DataTypes.Enum && (string.IsNullOrEmpty(parameterType.Group) || !enumNames.Contains(parameterType.Group)))
+                    {
+                        function.Parameters[i] = function.Parameters[i].Converted(DataTypes.Int);
+                    }
+                }
+
                 var delegateDefinition = new Delegate(function);
                 if (!delegateByName.ContainsKey(delegateDefinition.Name))
                 {
@@ -45,6 +68,21 @@ namespace GLWriter.CSharp
                 foreach (var overload in Overload.ForFunction(function))
                 {
                     _overloads.Add(overload);
+                }
+            }
+
+            for (var i = _overloads.Count - 1; i >= 0; i--)
+            {
+                var overload = _overloads[i];
+
+                if (functionByName.ContainsKey(overload.Name))
+                {
+                    var function = functionByName[overload.Name];
+
+                    if (overload.IsDuplicateOf(function))
+                    {
+                        _overloads.RemoveAt(i);
+                    }
                 }
             }
 

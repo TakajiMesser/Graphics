@@ -14,18 +14,18 @@ namespace GLWriter.CSharp
 
     public struct CSharpType : IEquatable<CSharpType>
     {
-        public CSharpType(DataTypes dataType, TypeModifiers modifier = TypeModifiers.None, bool isOut = false, string group = null)
+        public CSharpType(DataTypes dataType, TypeModifiers modifier = TypeModifiers.None, string group = null, bool isOut = false)
         {
             DataType = dataType;
             Modifier = modifier;
-            IsOut = isOut;
             Group = group;
+            IsOut = isOut;
         }
 
         public DataTypes DataType { get; set; }
         public TypeModifiers Modifier { get; set; }
-        public bool IsOut { get; set; }
         public string Group { get; set; }
+        public bool IsOut { get; set; }
 
         public bool IsPtr => Modifier == TypeModifiers.Pointer || DataType == DataTypes.String;
 
@@ -33,27 +33,27 @@ namespace GLWriter.CSharp
         {
             DataType = DataType,
             Modifier = TypeModifiers.Pointer,
-            IsOut = IsOut,
-            Group = Group
+            Group = Group,
+            IsOut = IsOut
         };
 
         public CSharpType ToArray() => new CSharpType()
         {
             DataType = DataType,
             Modifier = TypeModifiers.Array,
-            IsOut = IsOut,
-            Group = Group
+            Group = Group,
+            IsOut = IsOut
         };
 
         public CSharpType ToUnptr() => new CSharpType()
         {
             DataType = DataType,
             Modifier = TypeModifiers.None,
-            IsOut = IsOut,
-            Group = Group
+            Group = Group,
+            IsOut = IsOut
         };
 
-        public CSharpType Capitalized() => new CSharpType(DataType, Modifier, IsOut, Group.Capitalized());
+        public CSharpType Capitalized() => new CSharpType(DataType, Modifier, Group.Capitalized(), IsOut);
 
         public string ToText()
         {

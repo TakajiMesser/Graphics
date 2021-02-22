@@ -13,9 +13,15 @@ namespace GLWriter.CSharp
         public string Name { get; set; }
         public string Value { get; set; }
 
-        public string ToLine()
+        public string ToLine(string groupName)
         {
             var builder = new StringBuilder();
+
+            var a = 3;
+            if (groupName == "TextureTarget")
+            {
+                a = 4;
+            }
 
             var nameWords = Name.Split("_");
             for (var i = 0; i < nameWords.Length; i++)
@@ -28,13 +34,18 @@ namespace GLWriter.CSharp
                     {
                         var character = nameWord[j];
 
-                        if (j > 0)
+                        if (j == 0)
                         {
-                            builder.Append(char.ToLower(character));
+                            if (builder.Length == 0 && char.IsNumber(character))
+                            {
+                                builder.Append(groupName);
+                            }
+
+                            builder.Append(character);
                         }
                         else
                         {
-                            builder.Append(character);
+                            builder.Append(char.ToLower(character));
                         }
                     }
                 }

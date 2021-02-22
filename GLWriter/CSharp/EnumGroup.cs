@@ -18,7 +18,7 @@ namespace GLWriter.CSharp
 
             foreach (var value in Values)
             {
-                yield return "\t\t" + value.ToLine();
+                yield return "\t\t" + value.ToLine(Name);
             }
 
             yield return "\t" + "}";

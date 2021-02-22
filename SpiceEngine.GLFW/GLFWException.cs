@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.GLFW.Initialization;
 using System;
 
-namespace TangyHIDCore.Utilities
+namespace SpiceEngine.GLFW
 {
     public class GLFWException: Exception
     {

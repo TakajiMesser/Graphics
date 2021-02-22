@@ -120,7 +120,7 @@ namespace GLWriter.XML
                             Type = GetCSharpType(paramSpec.Type, paramSpec.Content, paramSpec.Group)
                         };
 
-                        parameter.Type = new CSharpType(parameter.Type.DataType, parameter.Type.Modifier, parameter.Type.IsOut, StringExtensions.Capitalized(paramSpec.Group ?? paramSpec.Class));
+                        parameter.Type = new CSharpType(parameter.Type.DataType, parameter.Type.Modifier, StringExtensions.Capitalized(paramSpec.Group ?? paramSpec.Class), parameter.Type.IsOut);
                         function.Parameters.Add(parameter);
                     }
 
@@ -226,8 +226,7 @@ namespace GLWriter.XML
         private CSharpType GetCSharpType(string type, string content, string group)
         {
             var glType = GLTypeExtensions.ParseGLType(type);
-            var cSharpType = glType.ToCSharpType();
-            cSharpType.Group = group;
+            var cSharpType = glType.ToCSharpType(group);
 
             if (cSharpType.DataType == DataTypes.None && ContentContains(content, "void"))
             {
