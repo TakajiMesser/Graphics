@@ -48,6 +48,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SmokyAudioCore", "SmokyAudi
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TangyHIDCore", "TangyHIDCore\TangyHIDCore.csproj", "{48B39AA2-DF70-45FE-B7F5-196A388E68AB}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "SpiceEngine.GLFWBindings", "SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj", "{132EA7F6-E711-4D33-84BE-754F21A73D79}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GLWriter", "GLWriter\GLWriter.csproj", "{3306BA11-7517-4C11-943C-439A6778A2EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -214,6 +218,30 @@ Global
 		{48B39AA2-DF70-45FE-B7F5-196A388E68AB}.Release|x64.Build.0 = Release|Any CPU
 		{48B39AA2-DF70-45FE-B7F5-196A388E68AB}.Release|x86.ActiveCfg = Release|Any CPU
 		{48B39AA2-DF70-45FE-B7F5-196A388E68AB}.Release|x86.Build.0 = Release|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Debug|x64.Build.0 = Debug|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Debug|x86.Build.0 = Debug|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Release|x64.ActiveCfg = Release|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Release|x64.Build.0 = Release|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Release|x86.ActiveCfg = Release|Any CPU
+		{132EA7F6-E711-4D33-84BE-754F21A73D79}.Release|x86.Build.0 = Release|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Debug|x64.Build.0 = Debug|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Debug|x86.Build.0 = Debug|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Release|x64.ActiveCfg = Release|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Release|x64.Build.0 = Release|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Release|x86.ActiveCfg = Release|Any CPU
+		{3306BA11-7517-4C11-943C-439A6778A2EA}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

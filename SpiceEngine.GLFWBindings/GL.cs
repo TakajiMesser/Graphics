@@ -2,6 +2,7 @@ using SpiceEngineCore.Geometry;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace SpiceEngine.GLFWBindings
 {
@@ -1055,6 +1056,7 @@ namespace SpiceEngine.GLFWBindings
         private static DEL_V_Ip _glWindowPos3iv;
         private static DEL_V_SSS _glWindowPos3s;
         private static DEL_V_Sp _glWindowPos3sv;
+
         public static void LoadFunctions()
         {
             _glAccum = GetFunctionDelegate<DEL_V_EAccumOpEF>("glAccum");
@@ -3162,10 +3164,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
-                    return _glAreTexturesResident(n, texturesPtr, residences);
+                    return _glAreTexturesResident(n, (uint*)texturesPtr, residences);
                 }
             }
         }
@@ -3182,9 +3183,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    _glBindAttribLocation((uint)program, (uint)index, namePtr);
+                    _glBindAttribLocation((uint)program, (uint)index, (char*)namePtr);
                 }
             }
         }
@@ -3199,10 +3201,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
-                    _glBindBuffersBase(target, (uint)first, count, buffersPtr);
+                    _glBindBuffersBase(target, (uint)first, count, (uint*)buffersPtr);
                 }
             }
         }
@@ -3211,10 +3212,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
-                    _glBindBuffersRange(target, (uint)first, count, buffersPtr, offsets, sizes);
+                    _glBindBuffersRange(target, (uint)first, count, (uint*)buffersPtr, offsets, sizes);
                 }
             }
         }
@@ -3223,9 +3223,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    _glBindFragDataLocation((uint)program, (uint)color, namePtr);
+                    _glBindFragDataLocation((uint)program, (uint)color, (char*)namePtr);
                 }
             }
         }
@@ -3234,9 +3235,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    _glBindFragDataLocationIndexed((uint)program, (uint)colorNumber, (uint)index, namePtr);
+                    _glBindFragDataLocationIndexed((uint)program, (uint)colorNumber, (uint)index, (char*)namePtr);
                 }
             }
         }
@@ -3249,10 +3251,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
-                    _glBindImageTextures((uint)first, count, texturesPtr);
+                    _glBindImageTextures((uint)first, count, (uint*)texturesPtr);
                 }
             }
         }
@@ -3267,10 +3268,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var samplersConverted = Array.ConvertAll(samplers, i => (uint)i);
-                fixed (uint* samplersPtr = &samplersConverted[0])
+                fixed (int* samplersPtr = &samplers[0])
                 {
-                    _glBindSamplers((uint)first, count, samplersPtr);
+                    _glBindSamplers((uint)first, count, (uint*)samplersPtr);
                 }
             }
         }
@@ -3281,10 +3281,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
-                    _glBindTextures((uint)first, count, texturesPtr);
+                    _glBindTextures((uint)first, count, (uint*)texturesPtr);
                 }
             }
         }
@@ -3301,12 +3300,11 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
                     fixed (int* stridesPtr = &strides[0])
                     {
-                        _glBindVertexBuffers((uint)first, count, buffersPtr, offsets, stridesPtr);
+                        _glBindVertexBuffers((uint)first, count, (uint*)buffersPtr, offsets, stridesPtr);
                     }
                 }
             }
@@ -3366,10 +3364,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glClearBufferuiv(buffer, drawbuffer, valuePtr);
+                    _glClearBufferuiv(buffer, drawbuffer, (uint*)valuePtr);
                 }
             }
         }
@@ -3406,10 +3403,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glClearNamedFramebufferuiv((uint)framebuffer, buffer, drawbuffer, valuePtr);
+                    _glClearNamedFramebufferuiv((uint)framebuffer, buffer, drawbuffer, (uint*)valuePtr);
                 }
             }
         }
@@ -3446,10 +3442,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glColor3uiv(vPtr);
+                    _glColor3uiv((uint*)vPtr);
                 }
             }
         }
@@ -3482,10 +3477,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glColor4uiv(vPtr);
+                    _glColor4uiv((uint*)vPtr);
                 }
             }
         }
@@ -3498,10 +3492,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var colorConverted = Array.ConvertAll(color, i => (uint)i);
-                fixed (uint* colorPtr = &colorConverted[0])
+                fixed (int* colorPtr = &color[0])
                 {
-                    _glColorP3uiv(type, colorPtr);
+                    _glColorP3uiv(type, (uint*)colorPtr);
                 }
             }
         }
@@ -3512,10 +3505,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var colorConverted = Array.ConvertAll(color, i => (uint)i);
-                fixed (uint* colorPtr = &colorConverted[0])
+                fixed (int* colorPtr = &color[0])
                 {
-                    _glColorP4uiv(type, colorPtr);
+                    _glColorP4uiv(type, (uint*)colorPtr);
                 }
             }
         }
@@ -3562,10 +3554,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
-                    _glCreateBuffers(n, buffersPtr);
+                    _glCreateBuffers(n, (uint*)buffersPtr);
                 }
             }
         }
@@ -3580,10 +3571,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var framebuffersConverted = Array.ConvertAll(framebuffers, i => (uint)i);
-                fixed (uint* framebuffersPtr = &framebuffersConverted[0])
+                fixed (int* framebuffersPtr = &framebuffers[0])
                 {
-                    _glCreateFramebuffers(n, framebuffersPtr);
+                    _glCreateFramebuffers(n, (uint*)framebuffersPtr);
                 }
             }
         }
@@ -3600,10 +3590,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var pipelinesConverted = Array.ConvertAll(pipelines, i => (uint)i);
-                fixed (uint* pipelinesPtr = &pipelinesConverted[0])
+                fixed (int* pipelinesPtr = &pipelines[0])
                 {
-                    _glCreateProgramPipelines(n, pipelinesPtr);
+                    _glCreateProgramPipelines(n, (uint*)pipelinesPtr);
                 }
             }
         }
@@ -3612,10 +3601,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glCreateQueries(target, n, idsPtr);
+                    _glCreateQueries(target, n, (uint*)idsPtr);
                 }
             }
         }
@@ -3630,10 +3618,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var renderbuffersConverted = Array.ConvertAll(renderbuffers, i => (uint)i);
-                fixed (uint* renderbuffersPtr = &renderbuffersConverted[0])
+                fixed (int* renderbuffersPtr = &renderbuffers[0])
                 {
-                    _glCreateRenderbuffers(n, renderbuffersPtr);
+                    _glCreateRenderbuffers(n, (uint*)renderbuffersPtr);
                 }
             }
         }
@@ -3648,10 +3635,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var samplersConverted = Array.ConvertAll(samplers, i => (uint)i);
-                fixed (uint* samplersPtr = &samplersConverted[0])
+                fixed (int* samplersPtr = &samplers[0])
                 {
-                    _glCreateSamplers(n, samplersPtr);
+                    _glCreateSamplers(n, (uint*)samplersPtr);
                 }
             }
         }
@@ -3685,10 +3671,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
-                    _glCreateTextures(target, n, texturesPtr);
+                    _glCreateTextures(target, n, (uint*)texturesPtr);
                 }
             }
         }
@@ -3703,10 +3688,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glCreateTransformFeedbacks(n, idsPtr);
+                    _glCreateTransformFeedbacks(n, (uint*)idsPtr);
                 }
             }
         }
@@ -3721,10 +3705,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var arraysConverted = Array.ConvertAll(arrays, i => (uint)i);
-                fixed (uint* arraysPtr = &arraysConverted[0])
+                fixed (int* arraysPtr = &arrays[0])
                 {
-                    _glCreateVertexArrays(n, arraysPtr);
+                    _glCreateVertexArrays(n, (uint*)arraysPtr);
                 }
             }
         }
@@ -3735,10 +3718,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glDebugMessageControl(source, type, severity, count, idsPtr, enabled);
+                    _glDebugMessageControl(source, type, severity, count, (uint*)idsPtr, enabled);
                 }
             }
         }
@@ -3747,9 +3729,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* bufPtr = buf)
+                var bufBytes = Encoding.UTF8.GetBytes(buf);
+                fixed (byte* bufPtr = &bufBytes[0])
                 {
-                    _glDebugMessageInsert(source, type, (uint)id, severity, length, bufPtr);
+                    _glDebugMessageInsert(source, type, (uint)id, severity, length, (char*)bufPtr);
                 }
             }
         }
@@ -3764,10 +3747,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
-                    _glDeleteBuffers(n, buffersPtr);
+                    _glDeleteBuffers(n, (uint*)buffersPtr);
                 }
             }
         }
@@ -3782,10 +3764,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var framebuffersConverted = Array.ConvertAll(framebuffers, i => (uint)i);
-                fixed (uint* framebuffersPtr = &framebuffersConverted[0])
+                fixed (int* framebuffersPtr = &framebuffers[0])
                 {
-                    _glDeleteFramebuffers(n, framebuffersPtr);
+                    _glDeleteFramebuffers(n, (uint*)framebuffersPtr);
                 }
             }
         }
@@ -3804,10 +3785,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var pipelinesConverted = Array.ConvertAll(pipelines, i => (uint)i);
-                fixed (uint* pipelinesPtr = &pipelinesConverted[0])
+                fixed (int* pipelinesPtr = &pipelines[0])
                 {
-                    _glDeleteProgramPipelines(n, pipelinesPtr);
+                    _glDeleteProgramPipelines(n, (uint*)pipelinesPtr);
                 }
             }
         }
@@ -3816,10 +3796,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glDeleteQueries(n, idsPtr);
+                    _glDeleteQueries(n, (uint*)idsPtr);
                 }
             }
         }
@@ -3840,10 +3819,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var renderbuffersConverted = Array.ConvertAll(renderbuffers, i => (uint)i);
-                fixed (uint* renderbuffersPtr = &renderbuffersConverted[0])
+                fixed (int* renderbuffersPtr = &renderbuffers[0])
                 {
-                    _glDeleteRenderbuffers(n, renderbuffersPtr);
+                    _glDeleteRenderbuffers(n, (uint*)renderbuffersPtr);
                 }
             }
         }
@@ -3858,10 +3836,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var samplersConverted = Array.ConvertAll(samplers, i => (uint)i);
-                fixed (uint* samplersPtr = &samplersConverted[0])
+                fixed (int* samplersPtr = &samplers[0])
                 {
-                    _glDeleteSamplers(count, samplersPtr);
+                    _glDeleteSamplers(count, (uint*)samplersPtr);
                 }
             }
         }
@@ -3878,10 +3855,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
-                    _glDeleteTextures(n, texturesPtr);
+                    _glDeleteTextures(n, (uint*)texturesPtr);
                 }
             }
         }
@@ -3896,10 +3872,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glDeleteTransformFeedbacks(n, idsPtr);
+                    _glDeleteTransformFeedbacks(n, (uint*)idsPtr);
                 }
             }
         }
@@ -3914,10 +3889,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var arraysConverted = Array.ConvertAll(arrays, i => (uint)i);
-                fixed (uint* arraysPtr = &arraysConverted[0])
+                fixed (int* arraysPtr = &arrays[0])
                 {
-                    _glDeleteVertexArrays(n, arraysPtr);
+                    _glDeleteVertexArrays(n, (uint*)arraysPtr);
                 }
             }
         }
@@ -4081,10 +4055,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
-                    _glGenBuffers(n, buffersPtr);
+                    _glGenBuffers(n, (uint*)buffersPtr);
                 }
             }
         }
@@ -4108,10 +4081,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var framebuffersConverted = Array.ConvertAll(framebuffers, i => (uint)i);
-                fixed (uint* framebuffersPtr = &framebuffersConverted[0])
+                fixed (int* framebuffersPtr = &framebuffers[0])
                 {
-                    _glGenFramebuffers(n, framebuffersPtr);
+                    _glGenFramebuffers(n, (uint*)framebuffersPtr);
                 }
             }
         }
@@ -4135,10 +4107,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var pipelinesConverted = Array.ConvertAll(pipelines, i => (uint)i);
-                fixed (uint* pipelinesPtr = &pipelinesConverted[0])
+                fixed (int* pipelinesPtr = &pipelines[0])
                 {
-                    _glGenProgramPipelines(n, pipelinesPtr);
+                    _glGenProgramPipelines(n, (uint*)pipelinesPtr);
                 }
             }
         }
@@ -4154,10 +4125,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glGenQueries(n, idsPtr);
+                    _glGenQueries(n, (uint*)idsPtr);
                 }
             }
         }
@@ -4185,10 +4155,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var renderbuffersConverted = Array.ConvertAll(renderbuffers, i => (uint)i);
-                fixed (uint* renderbuffersPtr = &renderbuffersConverted[0])
+                fixed (int* renderbuffersPtr = &renderbuffers[0])
                 {
-                    _glGenRenderbuffers(n, renderbuffersPtr);
+                    _glGenRenderbuffers(n, (uint*)renderbuffersPtr);
                 }
             }
         }
@@ -4217,10 +4186,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var samplersConverted = Array.ConvertAll(samplers, i => (uint)i);
-                fixed (uint* samplersPtr = &samplersConverted[0])
+                fixed (int* samplersPtr = &samplers[0])
                 {
-                    _glGenSamplers(count, samplersPtr);
+                    _glGenSamplers(count, (uint*)samplersPtr);
                 }
             }
         }
@@ -4242,10 +4210,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
-                    _glGenTextures(n, texturesPtr);
+                    _glGenTextures(n, (uint*)texturesPtr);
                 }
             }
         }
@@ -4260,10 +4227,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                fixed (uint* idsPtr = &idsConverted[0])
+                fixed (int* idsPtr = &ids[0])
                 {
-                    _glGenTransformFeedbacks(n, idsPtr);
+                    _glGenTransformFeedbacks(n, (uint*)idsPtr);
                 }
             }
         }
@@ -4285,10 +4251,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var arraysConverted = Array.ConvertAll(arrays, i => (uint)i);
-                fixed (uint* arraysPtr = &arraysConverted[0])
+                fixed (int* arraysPtr = &arrays[0])
                 {
-                    _glGenVertexArrays(n, arraysPtr);
+                    _glGenVertexArrays(n, (uint*)arraysPtr);
                 }
             }
         }
@@ -4328,9 +4293,10 @@ namespace SpiceEngine.GLFWBindings
                     {
                         fixed (SpiceEngine.GLFWBindings.GLEnums.AttributeType* typePtr = &type[0])
                         {
-                            fixed (char* namePtr = name)
+                            var nameBytes = Encoding.UTF8.GetBytes(name);
+                            fixed (byte* namePtr = &nameBytes[0])
                             {
-                                _glGetActiveAttrib((uint)program, (uint)index, bufSize, lengthPtr, sizePtr, typePtr, namePtr);
+                                _glGetActiveAttrib((uint)program, (uint)index, bufSize, lengthPtr, sizePtr, typePtr, (char*)namePtr);
                             }
                         }
                     }
@@ -4344,9 +4310,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* namePtr = name)
+                    var nameBytes = Encoding.UTF8.GetBytes(name);
+                    fixed (byte* namePtr = &nameBytes[0])
                     {
-                        _glGetActiveSubroutineName((uint)program, shadertype, (uint)index, bufSize, lengthPtr, namePtr);
+                        _glGetActiveSubroutineName((uint)program, shadertype, (uint)index, bufSize, lengthPtr, (char*)namePtr);
                     }
                 }
             }
@@ -4376,9 +4343,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* namePtr = name)
+                    var nameBytes = Encoding.UTF8.GetBytes(name);
+                    fixed (byte* namePtr = &nameBytes[0])
                     {
-                        _glGetActiveSubroutineUniformName((uint)program, shadertype, (uint)index, bufSize, lengthPtr, namePtr);
+                        _glGetActiveSubroutineUniformName((uint)program, shadertype, (uint)index, bufSize, lengthPtr, (char*)namePtr);
                     }
                 }
             }
@@ -4394,9 +4362,10 @@ namespace SpiceEngine.GLFWBindings
                     {
                         fixed (SpiceEngine.GLFWBindings.GLEnums.UniformType* typePtr = &type[0])
                         {
-                            fixed (char* namePtr = name)
+                            var nameBytes = Encoding.UTF8.GetBytes(name);
+                            fixed (byte* namePtr = &nameBytes[0])
                             {
-                                _glGetActiveUniform((uint)program, (uint)index, bufSize, lengthPtr, sizePtr, typePtr, namePtr);
+                                _glGetActiveUniform((uint)program, (uint)index, bufSize, lengthPtr, sizePtr, typePtr, (char*)namePtr);
                             }
                         }
                     }
@@ -4428,9 +4397,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* uniformBlockNamePtr = uniformBlockName)
+                    var uniformBlockNameBytes = Encoding.UTF8.GetBytes(uniformBlockName);
+                    fixed (byte* uniformBlockNamePtr = &uniformBlockNameBytes[0])
                     {
-                        _glGetActiveUniformBlockName((uint)program, (uint)uniformBlockIndex, bufSize, lengthPtr, uniformBlockNamePtr);
+                        _glGetActiveUniformBlockName((uint)program, (uint)uniformBlockIndex, bufSize, lengthPtr, (char*)uniformBlockNamePtr);
                     }
                 }
             }
@@ -4442,9 +4412,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* uniformNamePtr = uniformName)
+                    var uniformNameBytes = Encoding.UTF8.GetBytes(uniformName);
+                    fixed (byte* uniformNamePtr = &uniformNameBytes[0])
                     {
-                        _glGetActiveUniformName((uint)program, (uint)uniformIndex, bufSize, lengthPtr, uniformNamePtr);
+                        _glGetActiveUniformName((uint)program, (uint)uniformIndex, bufSize, lengthPtr, (char*)uniformNamePtr);
                     }
                 }
             }
@@ -4454,12 +4425,11 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var uniformIndicesConverted = Array.ConvertAll(uniformIndices, i => (uint)i);
-                fixed (uint* uniformIndicesPtr = &uniformIndicesConverted[0])
+                fixed (int* uniformIndicesPtr = &uniformIndices[0])
                 {
                     fixed (int* @paramsPtr = &@params[0])
                     {
-                        _glGetActiveUniformsiv((uint)program, uniformCount, uniformIndicesPtr, pname, @paramsPtr);
+                        _glGetActiveUniformsiv((uint)program, uniformCount, (uint*)uniformIndicesPtr, pname, @paramsPtr);
                     }
                 }
             }
@@ -4478,10 +4448,9 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* countPtr = &count[0])
                 {
-                    var shadersConverted = Array.ConvertAll(shaders, i => (uint)i);
-                    fixed (uint* shadersPtr = &shadersConverted[0])
+                    fixed (int* shadersPtr = &shaders[0])
                     {
-                        _glGetAttachedShaders((uint)program, maxCount, countPtr, shadersPtr);
+                        _glGetAttachedShaders((uint)program, maxCount, countPtr, (uint*)shadersPtr);
                     }
                 }
             }
@@ -4498,9 +4467,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetAttribLocation((uint)program, namePtr);
+                    return _glGetAttribLocation((uint)program, (char*)namePtr);
                 }
             }
         }
@@ -4541,16 +4511,16 @@ namespace SpiceEngine.GLFWBindings
                 {
                     fixed (SpiceEngine.GLFWBindings.GLEnums.DebugType* typesPtr = &types[0])
                     {
-                        var idsConverted = Array.ConvertAll(ids, i => (uint)i);
-                        fixed (uint* idsPtr = &idsConverted[0])
+                        fixed (int* idsPtr = &ids[0])
                         {
                             fixed (SpiceEngine.GLFWBindings.GLEnums.DebugSeverity* severitiesPtr = &severities[0])
                             {
                                 fixed (int* lengthsPtr = &lengths[0])
                                 {
-                                    fixed (char* messageLogPtr = messageLog)
+                                    var messageLogBytes = Encoding.UTF8.GetBytes(messageLog);
+                                    fixed (byte* messageLogPtr = &messageLogBytes[0])
                                     {
-                                        return (int)_glGetDebugMessageLog((uint)count, bufSize, sourcesPtr, typesPtr, idsPtr, severitiesPtr, lengthsPtr, messageLogPtr);
+                                        return (int)_glGetDebugMessageLog((uint)count, bufSize, sourcesPtr, typesPtr, (uint*)idsPtr, severitiesPtr, lengthsPtr, (char*)messageLogPtr);
                                     }
                                 }
                             }
@@ -4602,9 +4572,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetFragDataIndex((uint)program, namePtr);
+                    return _glGetFragDataIndex((uint)program, (char*)namePtr);
                 }
             }
         }
@@ -4613,9 +4584,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetFragDataLocation((uint)program, namePtr);
+                    return _glGetFragDataLocation((uint)program, (char*)namePtr);
                 }
             }
         }
@@ -4984,10 +4956,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valuesConverted = Array.ConvertAll(values, i => (uint)i);
-                fixed (uint* valuesPtr = &valuesConverted[0])
+                fixed (int* valuesPtr = &values[0])
                 {
-                    _glGetnPixelMapuiv(map, bufSize, valuesPtr);
+                    _glGetnPixelMapuiv(map, bufSize, (uint*)valuesPtr);
                 }
             }
         }
@@ -5045,10 +5016,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetnUniformuiv((uint)program, location, bufSize, @paramsPtr);
+                    _glGetnUniformuiv((uint)program, location, bufSize, (uint*)@paramsPtr);
                 }
             }
         }
@@ -5066,9 +5036,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* labelPtr = label)
+                    var labelBytes = Encoding.UTF8.GetBytes(label);
+                    fixed (byte* labelPtr = &labelBytes[0])
                     {
-                        _glGetObjectLabel(identifier, (uint)name, bufSize, lengthPtr, labelPtr);
+                        _glGetObjectLabel(identifier, (uint)name, bufSize, lengthPtr, (char*)labelPtr);
                     }
                 }
             }
@@ -5080,9 +5051,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* labelPtr = label)
+                    var labelBytes = Encoding.UTF8.GetBytes(label);
+                    fixed (byte* labelPtr = &labelBytes[0])
                     {
-                        _glGetObjectPtrLabel(ptr.ToPointer(), bufSize, lengthPtr, labelPtr);
+                        _glGetObjectPtrLabel(ptr.ToPointer(), bufSize, lengthPtr, (char*)labelPtr);
                     }
                 }
             }
@@ -5117,10 +5089,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valuesConverted = Array.ConvertAll(values, i => (uint)i);
-                fixed (uint* valuesPtr = &valuesConverted[0])
+                fixed (int* valuesPtr = &values[0])
                 {
-                    _glGetPixelMapuiv(map, valuesPtr);
+                    _glGetPixelMapuiv(map, (uint*)valuesPtr);
                 }
             }
         }
@@ -5145,9 +5116,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* infoLogPtr = infoLog)
+                    var infoLogBytes = Encoding.UTF8.GetBytes(infoLog);
+                    fixed (byte* infoLogPtr = &infoLogBytes[0])
                     {
-                        _glGetProgramInfoLog((uint)program, bufSize, lengthPtr, infoLogPtr);
+                        _glGetProgramInfoLog((uint)program, bufSize, lengthPtr, (char*)infoLogPtr);
                     }
                 }
             }
@@ -5195,9 +5167,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* infoLogPtr = infoLog)
+                    var infoLogBytes = Encoding.UTF8.GetBytes(infoLog);
+                    fixed (byte* infoLogPtr = &infoLogBytes[0])
                     {
-                        _glGetProgramPipelineInfoLog((uint)pipeline, bufSize, lengthPtr, infoLogPtr);
+                        _glGetProgramPipelineInfoLog((uint)pipeline, bufSize, lengthPtr, (char*)infoLogPtr);
                     }
                 }
             }
@@ -5225,9 +5198,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return (int)_glGetProgramResourceIndex((uint)program, programInterface, namePtr);
+                    return (int)_glGetProgramResourceIndex((uint)program, programInterface, (char*)namePtr);
                 }
             }
         }
@@ -5260,9 +5234,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetProgramResourceLocation((uint)program, programInterface, namePtr);
+                    return _glGetProgramResourceLocation((uint)program, programInterface, (char*)namePtr);
                 }
             }
         }
@@ -5271,9 +5246,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetProgramResourceLocationIndex((uint)program, programInterface, namePtr);
+                    return _glGetProgramResourceLocationIndex((uint)program, programInterface, (char*)namePtr);
                 }
             }
         }
@@ -5284,9 +5260,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* namePtr = name)
+                    var nameBytes = Encoding.UTF8.GetBytes(name);
+                    fixed (byte* namePtr = &nameBytes[0])
                     {
-                        _glGetProgramResourceName((uint)program, programInterface, (uint)index, bufSize, lengthPtr, namePtr);
+                        _glGetProgramResourceName((uint)program, programInterface, (uint)index, bufSize, lengthPtr, (char*)namePtr);
                     }
                 }
             }
@@ -5380,10 +5357,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetQueryObjectuiv((uint)id, pname, @paramsPtr);
+                    _glGetQueryObjectuiv((uint)id, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -5460,10 +5436,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetSamplerParameterIuiv((uint)sampler, pname, @paramsPtr);
+                    _glGetSamplerParameterIuiv((uint)sampler, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -5492,9 +5467,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* infoLogPtr = infoLog)
+                    var infoLogBytes = Encoding.UTF8.GetBytes(infoLog);
+                    fixed (byte* infoLogPtr = &infoLogBytes[0])
                     {
-                        _glGetShaderInfoLog((uint)shader, bufSize, lengthPtr, infoLogPtr);
+                        _glGetShaderInfoLog((uint)shader, bufSize, lengthPtr, (char*)infoLogPtr);
                     }
                 }
             }
@@ -5545,9 +5521,10 @@ namespace SpiceEngine.GLFWBindings
             {
                 fixed (int* lengthPtr = &length[0])
                 {
-                    fixed (char* sourcePtr = source)
+                    var sourceBytes = Encoding.UTF8.GetBytes(source);
+                    fixed (byte* sourcePtr = &sourceBytes[0])
                     {
-                        _glGetShaderSource((uint)shader, bufSize, lengthPtr, sourcePtr);
+                        _glGetShaderSource((uint)shader, bufSize, lengthPtr, (char*)sourcePtr);
                     }
                 }
             }
@@ -5559,9 +5536,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return (int)_glGetSubroutineIndex((uint)program, shadertype, namePtr);
+                    return (int)_glGetSubroutineIndex((uint)program, shadertype, (char*)namePtr);
                 }
             }
         }
@@ -5570,9 +5548,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetSubroutineUniformLocation((uint)program, shadertype, namePtr);
+                    return _glGetSubroutineUniformLocation((uint)program, shadertype, (char*)namePtr);
                 }
             }
         }
@@ -5755,10 +5734,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetTexParameterIuiv(target, pname, @paramsPtr);
+                    _glGetTexParameterIuiv(target, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -5866,10 +5844,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetTextureParameterIuiv((uint)texture, pname, @paramsPtr);
+                    _glGetTextureParameterIuiv((uint)texture, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -5942,9 +5919,10 @@ namespace SpiceEngine.GLFWBindings
                     {
                         fixed (SpiceEngine.GLFWBindings.GLEnums.AttributeType* typePtr = &type[0])
                         {
-                            fixed (char* namePtr = name)
+                            var nameBytes = Encoding.UTF8.GetBytes(name);
+                            fixed (byte* namePtr = &nameBytes[0])
                             {
-                                _glGetTransformFeedbackVarying((uint)program, (uint)index, bufSize, lengthPtr, sizePtr, typePtr, namePtr);
+                                _glGetTransformFeedbackVarying((uint)program, (uint)index, bufSize, lengthPtr, sizePtr, typePtr, (char*)namePtr);
                             }
                         }
                     }
@@ -5956,9 +5934,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* uniformBlockNamePtr = uniformBlockName)
+                var uniformBlockNameBytes = Encoding.UTF8.GetBytes(uniformBlockName);
+                fixed (byte* uniformBlockNamePtr = &uniformBlockNameBytes[0])
                 {
-                    return (int)_glGetUniformBlockIndex((uint)program, uniformBlockNamePtr);
+                    return (int)_glGetUniformBlockIndex((uint)program, (char*)uniformBlockNamePtr);
                 }
             }
         }
@@ -5998,10 +5977,9 @@ namespace SpiceEngine.GLFWBindings
                     Marshal.WriteIntPtr(uniformNamesPtr, i * size, uniformNamesSinglePtr);
                 }
                 
-                var uniformIndicesConverted = Array.ConvertAll(uniformIndices, i => (uint)i);
-                fixed (uint* uniformIndicesPtr = &uniformIndicesConverted[0])
+                fixed (int* uniformIndicesPtr = &uniformIndices[0])
                 {
-                    _glGetUniformIndices((uint)program, uniformCount, (char**)uniformNamesPtr, uniformIndicesPtr);
+                    _glGetUniformIndices((uint)program, uniformCount, (char**)uniformNamesPtr, (uint*)uniformIndicesPtr);
                 }
                 
                 Marshal.FreeHGlobal(uniformNamesPtr);
@@ -6042,9 +6020,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* namePtr = name)
+                var nameBytes = Encoding.UTF8.GetBytes(name);
+                fixed (byte* namePtr = &nameBytes[0])
                 {
-                    return _glGetUniformLocation((uint)program, namePtr);
+                    return _glGetUniformLocation((uint)program, (char*)namePtr);
                 }
             }
         }
@@ -6053,10 +6032,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetUniformSubroutineuiv(shadertype, location, @paramsPtr);
+                    _glGetUniformSubroutineuiv(shadertype, location, (uint*)@paramsPtr);
                 }
             }
         }
@@ -6072,10 +6050,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetUniformuiv((uint)program, location, @paramsPtr);
+                    _glGetUniformuiv((uint)program, location, (uint*)@paramsPtr);
                 }
             }
         }
@@ -6167,10 +6144,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glGetVertexAttribIuiv((uint)index, pname, @paramsPtr);
+                    _glGetVertexAttribIuiv((uint)index, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -6575,10 +6551,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glMultiTexCoordP1uiv(texture, type, coordsPtr);
+                    _glMultiTexCoordP1uiv(texture, type, (uint*)coordsPtr);
                 }
             }
         }
@@ -6589,10 +6564,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glMultiTexCoordP2uiv(texture, type, coordsPtr);
+                    _glMultiTexCoordP2uiv(texture, type, (uint*)coordsPtr);
                 }
             }
         }
@@ -6603,10 +6577,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glMultiTexCoordP3uiv(texture, type, coordsPtr);
+                    _glMultiTexCoordP3uiv(texture, type, (uint*)coordsPtr);
                 }
             }
         }
@@ -6617,10 +6590,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glMultiTexCoordP4uiv(texture, type, coordsPtr);
+                    _glMultiTexCoordP4uiv(texture, type, (uint*)coordsPtr);
                 }
             }
         }
@@ -6710,10 +6682,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glNormalP3uiv(type, coordsPtr);
+                    _glNormalP3uiv(type, (uint*)coordsPtr);
                 }
             }
         }
@@ -6724,9 +6695,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* labelPtr = label)
+                var labelBytes = Encoding.UTF8.GetBytes(label);
+                fixed (byte* labelPtr = &labelBytes[0])
                 {
-                    _glObjectLabel(identifier, (uint)name, length, labelPtr);
+                    _glObjectLabel(identifier, (uint)name, length, (char*)labelPtr);
                 }
             }
         }
@@ -6735,9 +6707,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* labelPtr = label)
+                var labelBytes = Encoding.UTF8.GetBytes(label);
+                fixed (byte* labelPtr = &labelBytes[0])
                 {
-                    _glObjectPtrLabel(ptr.ToPointer(), length, labelPtr);
+                    _glObjectPtrLabel(ptr.ToPointer(), length, (char*)labelPtr);
                 }
             }
         }
@@ -6768,10 +6741,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valuesConverted = Array.ConvertAll(values, i => (uint)i);
-                fixed (uint* valuesPtr = &valuesConverted[0])
+                fixed (int* valuesPtr = &values[0])
                 {
-                    _glPixelMapuiv(map, mapsize, valuesPtr);
+                    _glPixelMapuiv(map, mapsize, (uint*)valuesPtr);
                 }
             }
         }
@@ -6811,12 +6783,11 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var texturesConverted = Array.ConvertAll(textures, i => (uint)i);
-                fixed (uint* texturesPtr = &texturesConverted[0])
+                fixed (int* texturesPtr = &textures[0])
                 {
                     fixed (float* prioritiesPtr = &priorities[0])
                     {
-                        _glPrioritizeTextures(n, texturesPtr, prioritiesPtr);
+                        _glPrioritizeTextures(n, (uint*)texturesPtr, prioritiesPtr);
                     }
                 }
             }
@@ -6862,10 +6833,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glProgramUniform1uiv((uint)program, location, count, valuePtr);
+                    _glProgramUniform1uiv((uint)program, location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -6906,10 +6876,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glProgramUniform2uiv((uint)program, location, count, valuePtr);
+                    _glProgramUniform2uiv((uint)program, location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -6950,10 +6919,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glProgramUniform3uiv((uint)program, location, count, valuePtr);
+                    _glProgramUniform3uiv((uint)program, location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -6994,10 +6962,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glProgramUniform4uiv((uint)program, location, count, valuePtr);
+                    _glProgramUniform4uiv((uint)program, location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -7123,9 +7090,10 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* messagePtr = message)
+                var messageBytes = Encoding.UTF8.GetBytes(message);
+                fixed (byte* messagePtr = &messageBytes[0])
                 {
-                    _glPushDebugGroup(source, (uint)id, length, messagePtr);
+                    _glPushDebugGroup(source, (uint)id, length, (char*)messagePtr);
                 }
             }
         }
@@ -7264,10 +7232,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var paramConverted = Array.ConvertAll(param, i => (uint)i);
-                fixed (uint* paramPtr = &paramConverted[0])
+                fixed (int* paramPtr = &param[0])
                 {
-                    _glSamplerParameterIuiv((uint)sampler, pname, paramPtr);
+                    _glSamplerParameterIuiv((uint)sampler, pname, (uint*)paramPtr);
                 }
             }
         }
@@ -7335,10 +7302,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glSecondaryColor3uiv(vPtr);
+                    _glSecondaryColor3uiv((uint*)vPtr);
                 }
             }
         }
@@ -7349,10 +7315,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var colorConverted = Array.ConvertAll(color, i => (uint)i);
-                fixed (uint* colorPtr = &colorConverted[0])
+                fixed (int* colorPtr = &color[0])
                 {
-                    _glSecondaryColorP3uiv(type, colorPtr);
+                    _glSecondaryColorP3uiv(type, (uint*)colorPtr);
                 }
             }
         }
@@ -7363,10 +7328,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var bufferConverted = Array.ConvertAll(buffer, i => (uint)i);
-                fixed (uint* bufferPtr = &bufferConverted[0])
+                fixed (int* bufferPtr = &buffer[0])
                 {
-                    _glSelectBuffer(size, bufferPtr);
+                    _glSelectBuffer(size, (uint*)bufferPtr);
                 }
             }
         }
@@ -7375,10 +7339,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var shadersConverted = Array.ConvertAll(shaders, i => (uint)i);
-                fixed (uint* shadersPtr = &shadersConverted[0])
+                fixed (int* shadersPtr = &shaders[0])
                 {
-                    _glShaderBinary(count, shadersPtr, binaryFormat, binary.ToPointer(), length);
+                    _glShaderBinary(count, (uint*)shadersPtr, binaryFormat, binary.ToPointer(), length);
                 }
             }
         }
@@ -7418,15 +7381,14 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                fixed (char* pEntryPointPtr = pEntryPoint)
+                var pEntryPointBytes = Encoding.UTF8.GetBytes(pEntryPoint);
+                fixed (byte* pEntryPointPtr = &pEntryPointBytes[0])
                 {
-                    var pConstantIndexConverted = Array.ConvertAll(pConstantIndex, i => (uint)i);
-                    fixed (uint* pConstantIndexPtr = &pConstantIndexConverted[0])
+                    fixed (int* pConstantIndexPtr = &pConstantIndex[0])
                     {
-                        var pConstantValueConverted = Array.ConvertAll(pConstantValue, i => (uint)i);
-                        fixed (uint* pConstantValuePtr = &pConstantValueConverted[0])
+                        fixed (int* pConstantValuePtr = &pConstantValue[0])
                         {
-                            _glSpecializeShader((uint)shader, pEntryPointPtr, (uint)numSpecializationConstants, pConstantIndexPtr, pConstantValuePtr);
+                            _glSpecializeShader((uint)shader, (char*)pEntryPointPtr, (uint)numSpecializationConstants, (uint*)pConstantIndexPtr, (uint*)pConstantValuePtr);
                         }
                     }
                 }
@@ -7539,10 +7501,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glTexCoordP1uiv(type, coordsPtr);
+                    _glTexCoordP1uiv(type, (uint*)coordsPtr);
                 }
             }
         }
@@ -7553,10 +7514,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glTexCoordP2uiv(type, coordsPtr);
+                    _glTexCoordP2uiv(type, (uint*)coordsPtr);
                 }
             }
         }
@@ -7567,10 +7527,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glTexCoordP3uiv(type, coordsPtr);
+                    _glTexCoordP3uiv(type, (uint*)coordsPtr);
                 }
             }
         }
@@ -7581,10 +7540,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var coordsConverted = Array.ConvertAll(coords, i => (uint)i);
-                fixed (uint* coordsPtr = &coordsConverted[0])
+                fixed (int* coordsPtr = &coords[0])
                 {
-                    _glTexCoordP4uiv(type, coordsPtr);
+                    _glTexCoordP4uiv(type, (uint*)coordsPtr);
                 }
             }
         }
@@ -7667,10 +7625,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glTexParameterIuiv(target, pname, @paramsPtr);
+                    _glTexParameterIuiv(target, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -7726,10 +7683,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var @paramsConverted = Array.ConvertAll(@params, i => (uint)i);
-                fixed (uint* @paramsPtr = &@paramsConverted[0])
+                fixed (int* @paramsPtr = &@params[0])
                 {
-                    _glTextureParameterIuiv((uint)texture, pname, @paramsPtr);
+                    _glTextureParameterIuiv((uint)texture, pname, (uint*)@paramsPtr);
                 }
             }
         }
@@ -7818,10 +7774,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glUniform1uiv(location, count, valuePtr);
+                    _glUniform1uiv(location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -7854,10 +7809,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glUniform2uiv(location, count, valuePtr);
+                    _glUniform2uiv(location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -7890,10 +7844,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glUniform3uiv(location, count, valuePtr);
+                    _glUniform3uiv(location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -7926,10 +7879,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glUniform4uiv(location, count, valuePtr);
+                    _glUniform4uiv(location, count, (uint*)valuePtr);
                 }
             }
         }
@@ -8039,10 +7991,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var indicesConverted = Array.ConvertAll(indices, i => (uint)i);
-                fixed (uint* indicesPtr = &indicesConverted[0])
+                fixed (int* indicesPtr = &indices[0])
                 {
-                    _glUniformSubroutinesuiv(shadertype, count, indicesPtr);
+                    _glUniformSubroutinesuiv(shadertype, count, (uint*)indicesPtr);
                 }
             }
         }
@@ -8141,12 +8092,11 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var buffersConverted = Array.ConvertAll(buffers, i => (uint)i);
-                fixed (uint* buffersPtr = &buffersConverted[0])
+                fixed (int* buffersPtr = &buffers[0])
                 {
                     fixed (int* stridesPtr = &strides[0])
                     {
-                        _glVertexArrayVertexBuffers((uint)vaobj, (uint)first, count, buffersPtr, offsets, stridesPtr);
+                        _glVertexArrayVertexBuffers((uint)vaobj, (uint)first, count, (uint*)buffersPtr, offsets, stridesPtr);
                     }
                 }
             }
@@ -8268,10 +8218,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glVertexAttrib4Nuiv((uint)index, vPtr);
+                    _glVertexAttrib4Nuiv((uint)index, (uint*)vPtr);
                 }
             }
         }
@@ -8288,10 +8237,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glVertexAttrib4uiv((uint)index, vPtr);
+                    _glVertexAttrib4uiv((uint)index, (uint*)vPtr);
                 }
             }
         }
@@ -8323,10 +8271,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glVertexAttribI1uiv((uint)index, vPtr);
+                    _glVertexAttribI1uiv((uint)index, (uint*)vPtr);
                 }
             }
         }
@@ -8350,10 +8297,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glVertexAttribI2uiv((uint)index, vPtr);
+                    _glVertexAttribI2uiv((uint)index, (uint*)vPtr);
                 }
             }
         }
@@ -8377,10 +8323,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glVertexAttribI3uiv((uint)index, vPtr);
+                    _glVertexAttribI3uiv((uint)index, (uint*)vPtr);
                 }
             }
         }
@@ -8410,10 +8355,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var vConverted = Array.ConvertAll(v, i => (uint)i);
-                fixed (uint* vPtr = &vConverted[0])
+                fixed (int* vPtr = &v[0])
                 {
-                    _glVertexAttribI4uiv((uint)index, vPtr);
+                    _glVertexAttribI4uiv((uint)index, (uint*)vPtr);
                 }
             }
         }
@@ -8450,10 +8394,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexAttribP1uiv((uint)index, type, normalized, valuePtr);
+                    _glVertexAttribP1uiv((uint)index, type, normalized, (uint*)valuePtr);
                 }
             }
         }
@@ -8464,10 +8407,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexAttribP2uiv((uint)index, type, normalized, valuePtr);
+                    _glVertexAttribP2uiv((uint)index, type, normalized, (uint*)valuePtr);
                 }
             }
         }
@@ -8478,10 +8420,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexAttribP3uiv((uint)index, type, normalized, valuePtr);
+                    _glVertexAttribP3uiv((uint)index, type, normalized, (uint*)valuePtr);
                 }
             }
         }
@@ -8492,10 +8433,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexAttribP4uiv((uint)index, type, normalized, valuePtr);
+                    _glVertexAttribP4uiv((uint)index, type, normalized, (uint*)valuePtr);
                 }
             }
         }
@@ -8510,10 +8450,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexP2uiv(type, valuePtr);
+                    _glVertexP2uiv(type, (uint*)valuePtr);
                 }
             }
         }
@@ -8524,10 +8463,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexP3uiv(type, valuePtr);
+                    _glVertexP3uiv(type, (uint*)valuePtr);
                 }
             }
         }
@@ -8538,10 +8476,9 @@ namespace SpiceEngine.GLFWBindings
         {
             unsafe
             {
-                var valueConverted = Array.ConvertAll(value, i => (uint)i);
-                fixed (uint* valuePtr = &valueConverted[0])
+                fixed (int* valuePtr = &value[0])
                 {
-                    _glVertexP4uiv(type, valuePtr);
+                    _glVertexP4uiv(type, (uint*)valuePtr);
                 }
             }
         }
@@ -8632,1669 +8569,1683 @@ namespace SpiceEngine.GLFWBindings
             }
         }
 
+        public static void BufferData<T>(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB target, int size, T[] data, SpiceEngine.GLFWBindings.GLEnums.BufferUsageARB usage) where T : struct
+        {
+            var handle = GCHandle.Alloc(data, GCHandleType.Pinned);
+
+            try
+            {
+                BufferData(target, (IntPtr)size, handle.AddrOfPinnedObject(), usage);
+            }
+            finally
+            {
+                handle.Free();
+            }
+        }
+
         private static T GetFunctionDelegate<T>(string name) where T : Delegate
         {
             var address = GLFW.GetProcAddress(name);
             return Marshal.GetDelegateForFunctionPointer<T>(address);
         }
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DEL_B_EBufferTargetARBE(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DEL_B_EEnableCapE(SpiceEngine.GLFWBindings.GLEnums.EnableCap v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DEL_B_EEnableCapEUi(SpiceEngine.GLFWBindings.GLEnums.EnableCap v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DEL_B_IUipBp(int v0, uint* v1, bool* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DEL_B_StpSyncStp(SpiceEngine.GLFWBindings.GLStructs.Sync* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate bool DEL_B_Ui(uint v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate byte* DEL_Byp_EStringNameE(SpiceEngine.GLFWBindings.GLEnums.StringName v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate byte* DEL_Byp_EStringNameEUi(SpiceEngine.GLFWBindings.GLEnums.StringName v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate SpiceEngine.GLFWBindings.GLEnums.ErrorCode DEL_EErrorCodeE_();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate SpiceEngine.GLFWBindings.GLEnums.FramebufferStatus DEL_EFramebufferStatusE_EFramebufferTargetE(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate SpiceEngine.GLFWBindings.GLEnums.FramebufferStatus DEL_EFramebufferStatusE_UiEFramebufferTargetE(uint v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate SpiceEngine.GLFWBindings.GLEnums.GraphicsResetStatus DEL_EGraphicsResetStatusE_();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate SpiceEngine.GLFWBindings.GLEnums.SyncStatus DEL_ESyncStatusE_StpSyncStpESyncObjectMaskEUl(SpiceEngine.GLFWBindings.GLStructs.Sync* v0, SpiceEngine.GLFWBindings.GLEnums.SyncObjectMask v1, ulong v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int DEL_I_ERenderingModeE(SpiceEngine.GLFWBindings.GLEnums.RenderingMode v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int DEL_I_UiCp(uint v0, char* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int DEL_I_UiEProgramInterfaceECp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramInterface v1, char* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate int DEL_I_UiEShaderTypeECp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ShaderType v1, char* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate SpiceEngine.GLFWBindings.GLStructs.Sync* DEL_StpSyncStp_ESyncConditionEESyncBehaviorFlagsE(SpiceEngine.GLFWBindings.GLEnums.SyncCondition v0, SpiceEngine.GLFWBindings.GLEnums.SyncBehaviorFlags v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_EShaderTypeE(SpiceEngine.GLFWBindings.GLEnums.ShaderType v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_EShaderTypeEICpp(SpiceEngine.GLFWBindings.GLEnums.ShaderType v0, int v1, char** v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_I(int v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_UiCp(uint v0, char* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_UiEProgramInterfaceECp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramInterface v1, char* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_UiEShaderTypeECp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ShaderType v1, char* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate uint DEL_Ui_UiIEpDebugSourceEpEpDebugTypeEpUipEpDebugSeverityEpIpCp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.DebugSource* v2, SpiceEngine.GLFWBindings.GLEnums.DebugType* v3, uint* v4, SpiceEngine.GLFWBindings.GLEnums.DebugSeverity* v5, int* v6, char* v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_();
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_B(bool v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_BBBB(bool v0, bool v1, bool v2, bool v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Bp(bool* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_By(byte v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ByByBy(byte v0, byte v1, byte v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ByByByBy(byte v0, byte v1, byte v2, byte v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Byp(byte* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_D(double v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_DD(double v0, double v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_DDD(double v0, double v1, double v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_DDDD(double v0, double v1, double v2, double v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_DDDDDD(double v0, double v1, double v2, double v3, double v4, double v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Dp(double* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_DpDp(double* v0, double* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EAccumOpEF(SpiceEngine.GLFWBindings.GLEnums.AccumOp v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EAlphaFunctionEF(SpiceEngine.GLFWBindings.GLEnums.AlphaFunction v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EAttribMaskE(SpiceEngine.GLFWBindings.GLEnums.AttribMask v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBindTransformFeedbackTargetEUi(SpiceEngine.GLFWBindings.GLEnums.BindTransformFeedbackTarget v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBlendEquationModeEXTE(SpiceEngine.GLFWBindings.GLEnums.BlendEquationModeEXT v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBlendEquationModeEXTEEBlendEquationModeEXTE(SpiceEngine.GLFWBindings.GLEnums.BlendEquationModeEXT v0, SpiceEngine.GLFWBindings.GLEnums.BlendEquationModeEXT v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBlendingFactorEEBlendingFactorE(SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v0, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBlendingFactorEEBlendingFactorEEBlendingFactorEEBlendingFactorE(SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v0, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v1, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v2, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferEIFI(SpiceEngine.GLFWBindings.GLEnums.Buffer v0, int v1, float v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferEIFp(SpiceEngine.GLFWBindings.GLEnums.Buffer v0, int v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferEIIp(SpiceEngine.GLFWBindings.GLEnums.Buffer v0, int v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferEIUip(SpiceEngine.GLFWBindings.GLEnums.Buffer v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferStorageTargetEEInternalFormatEEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.BufferStorageTarget v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferStorageTargetEPVpEBufferStorageMaskE(SpiceEngine.GLFWBindings.GLEnums.BufferStorageTarget v0, IntPtr v1, void* v2, SpiceEngine.GLFWBindings.GLEnums.BufferStorageMask v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEEBufferPNameARBEIp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, SpiceEngine.GLFWBindings.GLEnums.BufferPNameARB v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEEBufferPNameARBELp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, SpiceEngine.GLFWBindings.GLEnums.BufferPNameARB v1, long* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEEBufferPointerNameARBEVpp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, SpiceEngine.GLFWBindings.GLEnums.BufferPointerNameARB v1, void** v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEEInternalFormatEPPEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, IntPtr v2, IntPtr v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, SpiceEngine.GLFWBindings.GLEnums.PixelType v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEPP(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, IntPtr v1, IntPtr v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEPPVp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, IntPtr v1, IntPtr v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEPVpEBufferUsageARBE(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, IntPtr v1, void* v2, SpiceEngine.GLFWBindings.GLEnums.BufferUsageARB v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEUi(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEUiBp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, uint v1, bool* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEUiIUip(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, uint v1, int v2, uint* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEUiIUipPpPp(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, uint v1, int v2, uint* v3, IntPtr* v4, IntPtr* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEUiUi(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, uint v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EBufferTargetARBEUiUiPP(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, uint v1, uint v2, IntPtr v3, IntPtr v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EClampColorTargetARBEEClampColorModeARBE(SpiceEngine.GLFWBindings.GLEnums.ClampColorTargetARB v0, SpiceEngine.GLFWBindings.GLEnums.ClampColorModeARB v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EClearBufferMaskE(SpiceEngine.GLFWBindings.GLEnums.ClearBufferMask v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EClientAttribMaskE(SpiceEngine.GLFWBindings.GLEnums.ClientAttribMask v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EClipControlOriginEEClipControlDepthE(SpiceEngine.GLFWBindings.GLEnums.ClipControlOrigin v0, SpiceEngine.GLFWBindings.GLEnums.ClipControlDepth v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EClipPlaneNameEDp(SpiceEngine.GLFWBindings.GLEnums.ClipPlaneName v0, double* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EColorPointerTypeEUi(SpiceEngine.GLFWBindings.GLEnums.ColorPointerType v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EColorPointerTypeEUip(SpiceEngine.GLFWBindings.GLEnums.ColorPointerType v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EColorTableTargetEEPixelFormatEEPixelTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.ColorTableTarget v0, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v1, SpiceEngine.GLFWBindings.GLEnums.PixelType v2, int v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EConvolutionTargetEEPixelFormatEEPixelTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.ConvolutionTarget v0, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v1, SpiceEngine.GLFWBindings.GLEnums.PixelType v2, int v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ECopyBufferSubDataTargetEECopyBufferSubDataTargetEPPP(SpiceEngine.GLFWBindings.GLEnums.CopyBufferSubDataTarget v0, SpiceEngine.GLFWBindings.GLEnums.CopyBufferSubDataTarget v1, IntPtr v2, IntPtr v3, IntPtr v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ECullFaceModeE(SpiceEngine.GLFWBindings.GLEnums.CullFaceMode v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EDebugSourceEEDebugTypeEEDebugSeverityEIUipB(SpiceEngine.GLFWBindings.GLEnums.DebugSource v0, SpiceEngine.GLFWBindings.GLEnums.DebugType v1, SpiceEngine.GLFWBindings.GLEnums.DebugSeverity v2, int v3, uint* v4, bool v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EDebugSourceEEDebugTypeEUiEDebugSeverityEICp(SpiceEngine.GLFWBindings.GLEnums.DebugSource v0, SpiceEngine.GLFWBindings.GLEnums.DebugType v1, uint v2, SpiceEngine.GLFWBindings.GLEnums.DebugSeverity v3, int v4, char* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EDebugSourceEUiICp(SpiceEngine.GLFWBindings.GLEnums.DebugSource v0, uint v1, int v2, char* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EDepthFunctionE(SpiceEngine.GLFWBindings.GLEnums.DepthFunction v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EDrawBufferModeE(SpiceEngine.GLFWBindings.GLEnums.DrawBufferMode v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EEnableCapE(SpiceEngine.GLFWBindings.GLEnums.EnableCap v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EEnableCapEUi(SpiceEngine.GLFWBindings.GLEnums.EnableCap v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFogParameterEF(SpiceEngine.GLFWBindings.GLEnums.FogParameter v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFogParameterEFp(SpiceEngine.GLFWBindings.GLEnums.FogParameter v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFogParameterEI(SpiceEngine.GLFWBindings.GLEnums.FogParameter v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFogParameterEIp(SpiceEngine.GLFWBindings.GLEnums.FogParameter v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFogPointerTypeEXTEIVp(SpiceEngine.GLFWBindings.GLEnums.FogPointerTypeEXT v0, int v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEEFramebufferAttachmentParameterNameEIp(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachmentParameterName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEERenderbufferTargetEUi(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, SpiceEngine.GLFWBindings.GLEnums.RenderbufferTarget v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiI(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, SpiceEngine.GLFWBindings.GLEnums.TextureTarget v2, uint v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiII(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, SpiceEngine.GLFWBindings.GLEnums.TextureTarget v2, uint v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEUiI(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, uint v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEUiII(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, uint v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentParameterNameEIp(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachmentParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferParameterNameEI(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferParameterName v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEIEpInvalidateFramebufferAttachmentEp(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InvalidateFramebufferAttachment* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEIEpInvalidateFramebufferAttachmentEpIIII(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InvalidateFramebufferAttachment* v2, int v3, int v4, int v5, int v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEUi(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFrontFaceDirectionE(SpiceEngine.GLFWBindings.GLEnums.FrontFaceDirection v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetMultisamplePNameNVEUiFp(SpiceEngine.GLFWBindings.GLEnums.GetMultisamplePNameNV v0, uint v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEBp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, bool* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEDp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, double* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEFp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEIp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameELp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, long* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEUiDp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, uint v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEUiFp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, uint v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEUiIp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, uint v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPNameEUiLp(SpiceEngine.GLFWBindings.GLEnums.GetPName v0, uint v1, long* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EGetPointervPNameEVpp(SpiceEngine.GLFWBindings.GLEnums.GetPointervPName v0, void** v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EHintTargetEEHintModeE(SpiceEngine.GLFWBindings.GLEnums.HintTarget v0, SpiceEngine.GLFWBindings.GLEnums.HintMode v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EHistogramTargetEBEPixelFormatEEPixelTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.HistogramTarget v0, bool v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, int v4, void* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EIndexPointerTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.IndexPointerType v0, int v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EInterleavedArrayFormatEIVp(SpiceEngine.GLFWBindings.GLEnums.InterleavedArrayFormat v0, int v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightModelParameterEF(SpiceEngine.GLFWBindings.GLEnums.LightModelParameter v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightModelParameterEFp(SpiceEngine.GLFWBindings.GLEnums.LightModelParameter v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightModelParameterEI(SpiceEngine.GLFWBindings.GLEnums.LightModelParameter v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightModelParameterEIp(SpiceEngine.GLFWBindings.GLEnums.LightModelParameter v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightNameEELightParameterEF(SpiceEngine.GLFWBindings.GLEnums.LightName v0, SpiceEngine.GLFWBindings.GLEnums.LightParameter v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightNameEELightParameterEFp(SpiceEngine.GLFWBindings.GLEnums.LightName v0, SpiceEngine.GLFWBindings.GLEnums.LightParameter v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightNameEELightParameterEI(SpiceEngine.GLFWBindings.GLEnums.LightName v0, SpiceEngine.GLFWBindings.GLEnums.LightParameter v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELightNameEELightParameterEIp(SpiceEngine.GLFWBindings.GLEnums.LightName v0, SpiceEngine.GLFWBindings.GLEnums.LightParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ELogicOpE(SpiceEngine.GLFWBindings.GLEnums.LogicOp v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEDDIIDDIIDp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, double v1, double v2, int v3, int v4, double v5, double v6, int v7, int v8, double* v9);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEDDIIDp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, double v1, double v2, int v3, int v4, double* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEEGetMapQueryEDp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, SpiceEngine.GLFWBindings.GLEnums.GetMapQuery v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEEGetMapQueryEFp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, SpiceEngine.GLFWBindings.GLEnums.GetMapQuery v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEEGetMapQueryEIp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, SpiceEngine.GLFWBindings.GLEnums.GetMapQuery v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEEMapQueryEIDp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, SpiceEngine.GLFWBindings.GLEnums.MapQuery v1, int v2, double* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEEMapQueryEIFp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, SpiceEngine.GLFWBindings.GLEnums.MapQuery v1, int v2, float* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEEMapQueryEIIp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, SpiceEngine.GLFWBindings.GLEnums.MapQuery v1, int v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEFFIIFFIIFp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, float v1, float v2, int v3, int v4, float v5, float v6, int v7, int v8, float* v9);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMapTargetEFFIIFp(SpiceEngine.GLFWBindings.GLEnums.MapTarget v0, float v1, float v2, int v3, int v4, float* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMaterialFaceEEColorMaterialParameterE(SpiceEngine.GLFWBindings.GLEnums.MaterialFace v0, SpiceEngine.GLFWBindings.GLEnums.ColorMaterialParameter v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMaterialFaceEEMaterialParameterEF(SpiceEngine.GLFWBindings.GLEnums.MaterialFace v0, SpiceEngine.GLFWBindings.GLEnums.MaterialParameter v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMaterialFaceEEMaterialParameterEFp(SpiceEngine.GLFWBindings.GLEnums.MaterialFace v0, SpiceEngine.GLFWBindings.GLEnums.MaterialParameter v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMaterialFaceEEMaterialParameterEI(SpiceEngine.GLFWBindings.GLEnums.MaterialFace v0, SpiceEngine.GLFWBindings.GLEnums.MaterialParameter v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMaterialFaceEEMaterialParameterEIp(SpiceEngine.GLFWBindings.GLEnums.MaterialFace v0, SpiceEngine.GLFWBindings.GLEnums.MaterialParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMaterialFaceEEPolygonModeE(SpiceEngine.GLFWBindings.GLEnums.MaterialFace v0, SpiceEngine.GLFWBindings.GLEnums.PolygonMode v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMatrixModeE(SpiceEngine.GLFWBindings.GLEnums.MatrixMode v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMemoryBarrierMaskE(SpiceEngine.GLFWBindings.GLEnums.MemoryBarrierMask v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMeshMode1EII(SpiceEngine.GLFWBindings.GLEnums.MeshMode1 v0, int v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMeshMode2EIIII(SpiceEngine.GLFWBindings.GLEnums.MeshMode2 v0, int v1, int v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EMinmaxTargetEBEPixelFormatEEPixelTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.MinmaxTarget v0, bool v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, int v4, void* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ENormalPointerTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.NormalPointerType v0, int v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ENormalPointerTypeEUi(SpiceEngine.GLFWBindings.GLEnums.NormalPointerType v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ENormalPointerTypeEUip(SpiceEngine.GLFWBindings.GLEnums.NormalPointerType v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EObjectIdentifierEUiICp(SpiceEngine.GLFWBindings.GLEnums.ObjectIdentifier v0, uint v1, int v2, char* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EObjectIdentifierEUiIIpCp(SpiceEngine.GLFWBindings.GLEnums.ObjectIdentifier v0, uint v1, int v2, int* v3, char* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPatchParameterNameEFp(SpiceEngine.GLFWBindings.GLEnums.PatchParameterName v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPatchParameterNameEI(SpiceEngine.GLFWBindings.GLEnums.PatchParameterName v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelMapEFp(SpiceEngine.GLFWBindings.GLEnums.PixelMap v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelMapEIFp(SpiceEngine.GLFWBindings.GLEnums.PixelMap v0, int v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelMapEIUip(SpiceEngine.GLFWBindings.GLEnums.PixelMap v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelMapEIUsp(SpiceEngine.GLFWBindings.GLEnums.PixelMap v0, int v1, ushort* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelMapEUip(SpiceEngine.GLFWBindings.GLEnums.PixelMap v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelMapEUsp(SpiceEngine.GLFWBindings.GLEnums.PixelMap v0, ushort* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelStoreParameterEF(SpiceEngine.GLFWBindings.GLEnums.PixelStoreParameter v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelStoreParameterEI(SpiceEngine.GLFWBindings.GLEnums.PixelStoreParameter v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelTransferParameterEF(SpiceEngine.GLFWBindings.GLEnums.PixelTransferParameter v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPixelTransferParameterEI(SpiceEngine.GLFWBindings.GLEnums.PixelTransferParameter v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPointParameterNameARBEF(SpiceEngine.GLFWBindings.GLEnums.PointParameterNameARB v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPointParameterNameARBEFp(SpiceEngine.GLFWBindings.GLEnums.PointParameterNameARB v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPointParameterNameARBEI(SpiceEngine.GLFWBindings.GLEnums.PointParameterNameARB v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPointParameterNameARBEIp(SpiceEngine.GLFWBindings.GLEnums.PointParameterNameARB v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeE(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEEDrawElementsTypeEVp(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEEDrawElementsTypeEVpII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v1, void* v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEEDrawElementsTypeEVpPII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v1, void* v2, IntPtr v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIEDrawElementsTypeEVp(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIEDrawElementsTypeEVpI(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v2, void* v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIEDrawElementsTypeEVpII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v2, void* v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIEDrawElementsTypeEVpIIUi(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v2, void* v3, int v4, int v5, uint v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIEPrimitiveTypeEVpIUi(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v2, void* v3, int v4, uint v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIIIUi(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int v1, int v2, int v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIpEDrawElementsTypeEVppI(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int* v1, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v2, void** v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIpEDrawElementsTypeEVppIIp(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int* v1, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v2, void** v3, int v4, int* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEIpIpI(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, int* v1, int* v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEUi(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEUiI(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, uint v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEUiUi(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, uint v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEUiUiI(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, uint v1, uint v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEUiUiIEDrawElementsTypeEVp(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, uint v1, uint v2, int v3, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v4, void* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEUiUiIEDrawElementsTypeEVpI(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, uint v1, uint v2, int v3, SpiceEngine.GLFWBindings.GLEnums.DrawElementsType v4, void* v5, int v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEVp(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, void* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEVpII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, void* v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EPrimitiveTypeEVpPII(SpiceEngine.GLFWBindings.GLEnums.PrimitiveType v0, void* v1, IntPtr v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EQueryTargetE(SpiceEngine.GLFWBindings.GLEnums.QueryTarget v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EQueryTargetEEQueryParameterNameEIp(SpiceEngine.GLFWBindings.GLEnums.QueryTarget v0, SpiceEngine.GLFWBindings.GLEnums.QueryParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EQueryTargetEIUip(SpiceEngine.GLFWBindings.GLEnums.QueryTarget v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EQueryTargetEUi(SpiceEngine.GLFWBindings.GLEnums.QueryTarget v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EQueryTargetEUiEQueryParameterNameEIp(SpiceEngine.GLFWBindings.GLEnums.QueryTarget v0, uint v1, SpiceEngine.GLFWBindings.GLEnums.QueryParameterName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EQueryTargetEUiUi(SpiceEngine.GLFWBindings.GLEnums.QueryTarget v0, uint v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EReadBufferModeE(SpiceEngine.GLFWBindings.GLEnums.ReadBufferMode v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ERenderbufferTargetEEInternalFormatEII(SpiceEngine.GLFWBindings.GLEnums.RenderbufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ERenderbufferTargetEERenderbufferParameterNameEIp(SpiceEngine.GLFWBindings.GLEnums.RenderbufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.RenderbufferParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ERenderbufferTargetEIEInternalFormatEII(SpiceEngine.GLFWBindings.GLEnums.RenderbufferTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ERenderbufferTargetEUi(SpiceEngine.GLFWBindings.GLEnums.RenderbufferTarget v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ESeparableTargetEEPixelFormatEEPixelTypeEIVpIVpVp(SpiceEngine.GLFWBindings.GLEnums.SeparableTarget v0, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v1, SpiceEngine.GLFWBindings.GLEnums.PixelType v2, int v3, void* v4, int v5, void* v6, void* v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EShaderTypeEEPrecisionTypeEIpIp(SpiceEngine.GLFWBindings.GLEnums.ShaderType v0, SpiceEngine.GLFWBindings.GLEnums.PrecisionType v1, int* v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EShaderTypeEIUip(SpiceEngine.GLFWBindings.GLEnums.ShaderType v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EShadingModelE(SpiceEngine.GLFWBindings.GLEnums.ShadingModel v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EStencilFaceDirectionEEStencilFunctionEIUi(SpiceEngine.GLFWBindings.GLEnums.StencilFaceDirection v0, SpiceEngine.GLFWBindings.GLEnums.StencilFunction v1, int v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EStencilFaceDirectionEEStencilOpEEStencilOpEEStencilOpE(SpiceEngine.GLFWBindings.GLEnums.StencilFaceDirection v0, SpiceEngine.GLFWBindings.GLEnums.StencilOp v1, SpiceEngine.GLFWBindings.GLEnums.StencilOp v2, SpiceEngine.GLFWBindings.GLEnums.StencilOp v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EStencilFaceDirectionEUi(SpiceEngine.GLFWBindings.GLEnums.StencilFaceDirection v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EStencilFunctionEIUi(SpiceEngine.GLFWBindings.GLEnums.StencilFunction v0, int v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EStencilOpEEStencilOpEEStencilOpE(SpiceEngine.GLFWBindings.GLEnums.StencilOp v0, SpiceEngine.GLFWBindings.GLEnums.StencilOp v1, SpiceEngine.GLFWBindings.GLEnums.StencilOp v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETexCoordPointerTypeEUi(SpiceEngine.GLFWBindings.GLEnums.TexCoordPointerType v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETexCoordPointerTypeEUip(SpiceEngine.GLFWBindings.GLEnums.TexCoordPointerType v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureCoordNameEETextureGenParameterED(SpiceEngine.GLFWBindings.GLEnums.TextureCoordName v0, SpiceEngine.GLFWBindings.GLEnums.TextureGenParameter v1, double v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureCoordNameEETextureGenParameterEDp(SpiceEngine.GLFWBindings.GLEnums.TextureCoordName v0, SpiceEngine.GLFWBindings.GLEnums.TextureGenParameter v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureCoordNameEETextureGenParameterEF(SpiceEngine.GLFWBindings.GLEnums.TextureCoordName v0, SpiceEngine.GLFWBindings.GLEnums.TextureGenParameter v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureCoordNameEETextureGenParameterEFp(SpiceEngine.GLFWBindings.GLEnums.TextureCoordName v0, SpiceEngine.GLFWBindings.GLEnums.TextureGenParameter v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureCoordNameEETextureGenParameterEI(SpiceEngine.GLFWBindings.GLEnums.TextureCoordName v0, SpiceEngine.GLFWBindings.GLEnums.TextureGenParameter v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureCoordNameEETextureGenParameterEIp(SpiceEngine.GLFWBindings.GLEnums.TextureCoordName v0, SpiceEngine.GLFWBindings.GLEnums.TextureGenParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureEnvTargetEETextureEnvParameterEF(SpiceEngine.GLFWBindings.GLEnums.TextureEnvTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureEnvParameter v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureEnvTargetEETextureEnvParameterEFp(SpiceEngine.GLFWBindings.GLEnums.TextureEnvTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureEnvParameter v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureEnvTargetEETextureEnvParameterEI(SpiceEngine.GLFWBindings.GLEnums.TextureEnvTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureEnvParameter v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureEnvTargetEETextureEnvParameterEIp(SpiceEngine.GLFWBindings.GLEnums.TextureEnvTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureEnvParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetE(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEGetTextureParameterEFp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEGetTextureParameterEIp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEGetTextureParameterEUip(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEInternalFormatEEInternalFormatPNameEIIp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormatPName v2, int v3, int* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEInternalFormatEEInternalFormatPNameEILp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormatPName v2, int v3, long* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEInternalFormatEUi(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEEInternalFormatEUiPP(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, uint v2, IntPtr v3, IntPtr v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEETextureParameterNameEF(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEETextureParameterNameEFp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEETextureParameterNameEI(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEETextureParameterNameEIp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEETextureParameterNameEUip(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEGetTextureParameterEFp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v2, float* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEGetTextureParameterEIp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEI(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIB(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, bool v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v5, SpiceEngine.GLFWBindings.GLEnums.PixelType v6, void* v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIB(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, bool v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v6, SpiceEngine.GLFWBindings.GLEnums.PixelType v7, void* v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, int v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, int v6, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v7, SpiceEngine.GLFWBindings.GLEnums.PixelType v8, void* v9);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, int v6, int v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIIIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, int v6, int v7, void* v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, int v6, void* v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEInternalFormatEIIIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEPixelFormatEEPixelTypeEIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, int v4, void* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, SpiceEngine.GLFWBindings.GLEnums.PixelType v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIEPixelFormatEIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, int v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIIIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v6, SpiceEngine.GLFWBindings.GLEnums.PixelType v7, void* v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIIIEPixelFormatEIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v6, int v7, void* v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIIIII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIIIIIEPixelFormatEEPixelTypeEVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v8, SpiceEngine.GLFWBindings.GLEnums.PixelType v9, void* v10);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIIIIIEPixelFormatEIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v8, int v9, void* v10);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIIIIIII(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, int v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIUip(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEIVp(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, int v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureTargetEUi(SpiceEngine.GLFWBindings.GLEnums.TextureTarget v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitE(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitED(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, double v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEDD(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, double v1, double v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEDDD(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, double v1, double v2, double v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEDDDD(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, double v1, double v2, double v3, double v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEDp(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, double* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEETexCoordPointerTypeEUi(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, SpiceEngine.GLFWBindings.GLEnums.TexCoordPointerType v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEETexCoordPointerTypeEUip(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, SpiceEngine.GLFWBindings.GLEnums.TexCoordPointerType v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEF(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEFF(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, float v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEFFF(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, float v1, float v2, float v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEFFFF(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, float v1, float v2, float v3, float v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEFp(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEI(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEII(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, int v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEIII(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, int v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEIIII(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, int v1, int v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitEIp(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitES(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, short v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitESp(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, short* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitESS(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, short v1, short v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitESSS(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, short v1, short v2, short v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ETextureUnitESSSS(SpiceEngine.GLFWBindings.GLEnums.TextureUnit v0, short v1, short v2, short v3, short v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EVertexPointerTypeEUi(SpiceEngine.GLFWBindings.GLEnums.VertexPointerType v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EVertexPointerTypeEUip(SpiceEngine.GLFWBindings.GLEnums.VertexPointerType v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EVertexProvokingModeE(SpiceEngine.GLFWBindings.GLEnums.VertexProvokingMode v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_F(float v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_FB(float v0, bool v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_FF(float v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_FFF(float v0, float v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_FFFF(float v0, float v1, float v2, float v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Fp(float* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_FpFp(float* v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_I(int v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IByp(int v0, byte* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_ID(int v0, double v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IDD(int v0, double v1, double v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IDDD(int v0, double v1, double v2, double v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IDDDD(int v0, double v1, double v2, double v3, double v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IDDIDD(int v0, double v1, double v2, int v3, double v4, double v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IEColorPointerTypeEIVp(int v0, SpiceEngine.GLFWBindings.GLEnums.ColorPointerType v1, int v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IEFeedbackTypeEFp(int v0, SpiceEngine.GLFWBindings.GLEnums.FeedbackType v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IEListNameTypeEVp(int v0, SpiceEngine.GLFWBindings.GLEnums.ListNameType v1, void* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IEpDrawBufferModeEp(int v0, SpiceEngine.GLFWBindings.GLEnums.DrawBufferMode* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IETexCoordPointerTypeEIVp(int v0, SpiceEngine.GLFWBindings.GLEnums.TexCoordPointerType v1, int v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IEVertexPointerTypeEIVp(int v0, SpiceEngine.GLFWBindings.GLEnums.VertexPointerType v1, int v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IF(int v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IFF(int v0, float v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IFFF(int v0, float v1, float v2, float v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IFFFF(int v0, float v1, float v2, float v3, float v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IFFIFF(int v0, float v1, float v2, int v3, float v4, float v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_II(int v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIBDp(int v0, int v1, bool v2, double* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIBFp(int v0, int v1, bool v2, float* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIDp(int v0, int v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIEPixelFormatEEPixelTypeEVp(int v0, int v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIFFFFByp(int v0, int v1, float v2, float v3, float v4, float v5, byte* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIFp(int v0, int v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_III(int v0, int v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIII(int v0, int v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIIIEPixelCopyTypeE(int v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelCopyType v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIIIEPixelFormatEEPixelTypeEIVp(int v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, SpiceEngine.GLFWBindings.GLEnums.PixelType v5, int v6, void* v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIIIEPixelFormatEEPixelTypeEVp(int v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, SpiceEngine.GLFWBindings.GLEnums.PixelType v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIIII(int v0, int v1, int v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIIIIIIIEClearBufferMaskEEBlitFramebufferFilterE(int v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, SpiceEngine.GLFWBindings.GLEnums.ClearBufferMask v8, SpiceEngine.GLFWBindings.GLEnums.BlitFramebufferFilter v9);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIIp(int v0, int v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IIUip(int v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Ip(int* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IpIp(int* v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUi(int v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUip(int v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUipEShaderBinaryFormatEVpI(int v0, uint* v1, SpiceEngine.GLFWBindings.GLEnums.ShaderBinaryFormat v2, void* v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUipFp(int v0, uint* v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUiUi(int v0, uint v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUiUiUi(int v0, uint v1, uint v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUiUiUiUi(int v0, uint v1, uint v2, uint v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IUs(int v0, ushort v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_IVp(int v0, void* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_P(IntPtr v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_S(short v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Sp(short* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_SpSp(short* v0, short* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_SS(short v0, short v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_SSS(short v0, short v1, short v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_SSSS(short v0, short v1, short v2, short v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_StpSyncStp(SpiceEngine.GLFWBindings.GLStructs.Sync* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_StpSyncStpESyncBehaviorFlagsEUl(SpiceEngine.GLFWBindings.GLStructs.Sync* v0, SpiceEngine.GLFWBindings.GLEnums.SyncBehaviorFlags v1, ulong v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_StpSyncStpESyncParameterNameEIIpIp(SpiceEngine.GLFWBindings.GLStructs.Sync* v0, SpiceEngine.GLFWBindings.GLEnums.SyncParameterName v1, int v2, int* v3, int* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Ui(uint v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiBBBB(uint v0, bool v1, bool v2, bool v3, bool v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiByByByBy(uint v0, byte v1, byte v2, byte v3, byte v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiByp(uint v0, byte* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiCpUiUipUip(uint v0, char* v1, uint v2, uint* v3, uint* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiD(uint v0, double v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiDD(uint v0, double v1, double v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiDDD(uint v0, double v1, double v2, double v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiDDDD(uint v0, double v1, double v2, double v3, double v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiDp(uint v0, double* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBlendEquationModeEXTE(uint v0, SpiceEngine.GLFWBindings.GLEnums.BlendEquationModeEXT v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBlendEquationModeEXTEEBlendEquationModeEXTE(uint v0, SpiceEngine.GLFWBindings.GLEnums.BlendEquationModeEXT v1, SpiceEngine.GLFWBindings.GLEnums.BlendEquationModeEXT v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBlendingFactorEEBlendingFactorE(uint v0, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v1, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBlendingFactorEEBlendingFactorEEBlendingFactorEEBlendingFactorE(uint v0, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v1, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v2, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v3, SpiceEngine.GLFWBindings.GLEnums.BlendingFactor v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferEIFI(uint v0, SpiceEngine.GLFWBindings.GLEnums.Buffer v1, int v2, float v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferEIFp(uint v0, SpiceEngine.GLFWBindings.GLEnums.Buffer v1, int v2, float* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferEIIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.Buffer v1, int v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferEIUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.Buffer v1, int v2, uint* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferPNameARBEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.BufferPNameARB v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferPNameARBELp(uint v0, SpiceEngine.GLFWBindings.GLEnums.BufferPNameARB v1, long* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEBufferPointerNameARBEVpp(uint v0, SpiceEngine.GLFWBindings.GLEnums.BufferPointerNameARB v1, void** v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEColorBufferE(uint v0, SpiceEngine.GLFWBindings.GLEnums.ColorBuffer v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEConditionalRenderModeE(uint v0, SpiceEngine.GLFWBindings.GLEnums.ConditionalRenderMode v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiECopyImageSubDataTargetEIIIIUiECopyImageSubDataTargetEIIIIIII(uint v0, SpiceEngine.GLFWBindings.GLEnums.CopyImageSubDataTarget v1, int v2, int v3, int v4, int v5, uint v6, SpiceEngine.GLFWBindings.GLEnums.CopyImageSubDataTarget v7, int v8, int v9, int v10, int v11, int v12, int v13, int v14);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEFramebufferAttachmentEEFramebufferAttachmentParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachmentParameterName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEFramebufferAttachmentEERenderbufferTargetEUi(uint v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, SpiceEngine.GLFWBindings.GLEnums.RenderbufferTarget v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEFramebufferAttachmentEUiI(uint v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, uint v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEFramebufferAttachmentEUiII(uint v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, uint v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEFramebufferParameterNameEI(uint v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferParameterName v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEGetFramebufferParameterEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.GetFramebufferParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEGetTextureParameterEFp(uint v0, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEGetTextureParameterEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEGetTextureParameterEUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEInternalFormatEEPixelFormatEEPixelTypeEVp(uint v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEInternalFormatEII(uint v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEInternalFormatEPPEPixelFormatEEPixelTypeEVp(uint v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, IntPtr v2, IntPtr v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, SpiceEngine.GLFWBindings.GLEnums.PixelType v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEInternalFormatEUi(uint v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEInternalFormatEUiPP(uint v0, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v1, uint v2, IntPtr v3, IntPtr v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEListModeE(uint v0, SpiceEngine.GLFWBindings.GLEnums.ListMode v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEPipelineParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.PipelineParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEProgramInterfaceEEProgramInterfacePNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramInterface v1, SpiceEngine.GLFWBindings.GLEnums.ProgramInterfacePName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEProgramInterfaceEUiIEpProgramResourcePropertyEpIIpIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramInterface v1, uint v2, int v3, SpiceEngine.GLFWBindings.GLEnums.ProgramResourceProperty* v4, int v5, int* v6, int* v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEProgramInterfaceEUiIIpCp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramInterface v1, uint v2, int v3, int* v4, char* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEProgramParameterPNameEI(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramParameterPName v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEProgramPropertyARBEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ProgramPropertyARB v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEQueryCounterTargetE(uint v0, SpiceEngine.GLFWBindings.GLEnums.QueryCounterTarget v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEQueryObjectParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.QueryObjectParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEQueryObjectParameterNameELp(uint v0, SpiceEngine.GLFWBindings.GLEnums.QueryObjectParameterName v1, long* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEQueryObjectParameterNameEUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.QueryObjectParameterName v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEQueryObjectParameterNameEUlp(uint v0, SpiceEngine.GLFWBindings.GLEnums.QueryObjectParameterName v1, ulong* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiERenderbufferParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.RenderbufferParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiESamplerParameterFEF(uint v0, SpiceEngine.GLFWBindings.GLEnums.SamplerParameterF v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiESamplerParameterFEFp(uint v0, SpiceEngine.GLFWBindings.GLEnums.SamplerParameterF v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiESamplerParameterIEI(uint v0, SpiceEngine.GLFWBindings.GLEnums.SamplerParameterI v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiESamplerParameterIEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.SamplerParameterI v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiESamplerParameterIEUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.SamplerParameterI v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEShaderParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ShaderParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEShaderTypeEEProgramStagePNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ShaderType v1, SpiceEngine.GLFWBindings.GLEnums.ProgramStagePName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEShaderTypeEUiESubroutineParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ShaderType v1, uint v2, SpiceEngine.GLFWBindings.GLEnums.SubroutineParameterName v3, int* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEShaderTypeEUiIIpCp(uint v0, SpiceEngine.GLFWBindings.GLEnums.ShaderType v1, uint v2, int v3, int* v4, char* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETextureParameterNameEF(uint v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETextureParameterNameEFp(uint v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETextureParameterNameEI(uint v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETextureParameterNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETextureParameterNameEUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.TextureParameterName v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETextureTargetEUiEInternalFormatEUiUiUiUi(uint v0, SpiceEngine.GLFWBindings.GLEnums.TextureTarget v1, uint v2, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v3, uint v4, uint v5, uint v6, uint v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETransformFeedbackPNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.TransformFeedbackPName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETransformFeedbackPNameEUiIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.TransformFeedbackPName v1, uint v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiETransformFeedbackPNameEUiLp(uint v0, SpiceEngine.GLFWBindings.GLEnums.TransformFeedbackPName v1, uint v2, long* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEUseProgramStageMaskEUi(uint v0, SpiceEngine.GLFWBindings.GLEnums.UseProgramStageMask v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexArrayPNameEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexArrayPName v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribEnumEDp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribEnum v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribEnumEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribEnum v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribEnumEUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribEnum v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribPointerPropertyARBEVpp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPointerPropertyARB v1, void** v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribPointerTypeEBUi(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPointerType v1, bool v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribPointerTypeEBUip(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPointerType v1, bool v2, uint* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribPropertyARBEDp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPropertyARB v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribPropertyARBEFp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPropertyARB v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiEVertexAttribPropertyARBEIp(uint v0, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPropertyARB v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiF(uint v0, float v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiFF(uint v0, float v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiFFF(uint v0, float v1, float v2, float v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiFFFF(uint v0, float v1, float v2, float v3, float v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiFp(uint v0, float* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiI(uint v0, int v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiICppETransformFeedbackBufferModeE(uint v0, int v1, char** v2, SpiceEngine.GLFWBindings.GLEnums.TransformFeedbackBufferMode v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiICppIp(uint v0, int v1, char** v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiICppUip(uint v0, int v1, char** v2, uint* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiID(uint v0, int v1, double v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIDD(uint v0, int v1, double v2, double v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIDDD(uint v0, int v1, double v2, double v3, double v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIDDDD(uint v0, int v1, double v2, double v3, double v4, double v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIDp(uint v0, int v1, double* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEGetTextureParameterEFp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v2, float* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEGetTextureParameterEIp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.GetTextureParameter v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEInternalFormatEI(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEInternalFormatEII(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEInternalFormatEIIB(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, bool v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEInternalFormatEIII(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEInternalFormatEIIIB(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v2, int v3, int v4, int v5, bool v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEpColorBufferEp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.ColorBuffer* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEpFramebufferAttachmentEp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEpFramebufferAttachmentEpIIII(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment* v2, int v3, int v4, int v5, int v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEPixelFormatEEPixelTypeEIVp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, int v4, void* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEPixelFormatEEPixelTypeEVp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v2, SpiceEngine.GLFWBindings.GLEnums.PixelType v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEVertexAttribITypeEIVp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.VertexAttribIType v2, int v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEVertexAttribITypeEUi(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.VertexAttribIType v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEVertexAttribLTypeEIVp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.VertexAttribLType v2, int v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEVertexAttribLTypeEUi(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.VertexAttribLType v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEVertexAttribPointerTypeEBIVp(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.VertexAttribPointerType v2, bool v3, int v4, void* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIEVertexAttribTypeEBUi(uint v0, int v1, SpiceEngine.GLFWBindings.GLEnums.VertexAttribType v2, bool v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIF(uint v0, int v1, float v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIFF(uint v0, int v1, float v2, float v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIFFF(uint v0, int v1, float v2, float v3, float v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIFFFF(uint v0, int v1, float v2, float v3, float v4, float v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIFp(uint v0, int v1, float* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiII(uint v0, int v1, int v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIBDp(uint v0, int v1, int v2, bool v3, double* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIBFp(uint v0, int v1, int v2, bool v3, float* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIDp(uint v0, int v1, int v2, double* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIFp(uint v0, int v1, int v2, float* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIII(uint v0, int v1, int v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIEPixelFormatEEPixelTypeEVp(uint v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, SpiceEngine.GLFWBindings.GLEnums.PixelType v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIEPixelFormatEIVp(uint v0, int v1, int v2, int v3, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v4, int v5, void* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIII(uint v0, int v1, int v2, int v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIII(uint v0, int v1, int v2, int v3, int v4, int v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIEPixelFormatEEPixelTypeEVp(uint v0, int v1, int v2, int v3, int v4, int v5, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v6, SpiceEngine.GLFWBindings.GLEnums.PixelType v7, void* v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIEPixelFormatEIVp(uint v0, int v1, int v2, int v3, int v4, int v5, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v6, int v7, void* v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIII(uint v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIIIEPixelFormatEEPixelTypeEIVp(uint v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v8, SpiceEngine.GLFWBindings.GLEnums.PixelType v9, int v10, void* v11);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIIIEPixelFormatEEPixelTypeEVp(uint v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v8, SpiceEngine.GLFWBindings.GLEnums.PixelType v9, void* v10);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIIIEPixelFormatEIVp(uint v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, SpiceEngine.GLFWBindings.GLEnums.PixelFormat v8, int v9, void* v10);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIIII(uint v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIIIIIIVp(uint v0, int v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8, void* v9);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIIp(uint v0, int v1, int v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIp(uint v0, int v1, int* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIpCp(uint v0, int v1, int* v2, char* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIpIpVp(uint v0, int v1, int* v2, int* v3, void* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIpUip(uint v0, int v1, int* v2, uint* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIUip(uint v0, int v1, int v2, uint* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIIVp(uint v0, int v1, int v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIp(uint v0, int* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUi(uint v0, int v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUip(uint v0, int v1, uint* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUipEUniformPNameEIp(uint v0, int v1, uint* v2, SpiceEngine.GLFWBindings.GLEnums.UniformPName v3, int* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUipPpIp(uint v0, int v1, uint* v2, IntPtr* v3, int* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUiUi(uint v0, int v1, uint v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUiUiUi(uint v0, int v1, uint v2, uint v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIUiUiUiUi(uint v0, int v1, uint v2, uint v3, uint v4, uint v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiIVpI(uint v0, int v1, void* v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Uip(uint* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiPP(uint v0, IntPtr v1, IntPtr v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiPPVp(uint v0, IntPtr v1, IntPtr v2, void* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiPVpEBufferStorageMaskE(uint v0, IntPtr v1, void* v2, SpiceEngine.GLFWBindings.GLEnums.BufferStorageMask v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiPVpEVertexBufferObjectUsageE(uint v0, IntPtr v1, void* v2, SpiceEngine.GLFWBindings.GLEnums.VertexBufferObjectUsage v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiS(uint v0, short v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiSp(uint v0, short* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiSS(uint v0, short v1, short v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiSSS(uint v0, short v1, short v2, short v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiSSSS(uint v0, short v1, short v2, short v3, short v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUi(uint v0, uint v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiCp(uint v0, uint v1, char* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiEAtomicCounterBufferPNameEIp(uint v0, uint v1, SpiceEngine.GLFWBindings.GLEnums.AtomicCounterBufferPName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiEQueryObjectParameterNameEP(uint v0, uint v1, SpiceEngine.GLFWBindings.GLEnums.QueryObjectParameterName v2, IntPtr v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiEUniformBlockPNameEIp(uint v0, uint v1, SpiceEngine.GLFWBindings.GLEnums.UniformBlockPName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiEVertexArrayPNameEIp(uint v0, uint v1, SpiceEngine.GLFWBindings.GLEnums.VertexArrayPName v2, int* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiEVertexArrayPNameELp(uint v0, uint v1, SpiceEngine.GLFWBindings.GLEnums.VertexArrayPName v2, long* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIBIEBufferAccessARBEEInternalFormatE(uint v0, uint v1, int v2, bool v3, int v4, SpiceEngine.GLFWBindings.GLEnums.BufferAccessARB v5, SpiceEngine.GLFWBindings.GLEnums.InternalFormat v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIEVertexAttribITypeEUi(uint v0, uint v1, int v2, SpiceEngine.GLFWBindings.GLEnums.VertexAttribIType v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIEVertexAttribLTypeEUi(uint v0, uint v1, int v2, SpiceEngine.GLFWBindings.GLEnums.VertexAttribLType v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIEVertexAttribTypeEBUi(uint v0, uint v1, int v2, SpiceEngine.GLFWBindings.GLEnums.VertexAttribType v3, bool v4, uint v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIIIIIIIIEClearBufferMaskEEBlitFramebufferFilterE(uint v0, uint v1, int v2, int v3, int v4, int v5, int v6, int v7, int v8, int v9, SpiceEngine.GLFWBindings.GLEnums.ClearBufferMask v10, SpiceEngine.GLFWBindings.GLEnums.BlitFramebufferFilter v11);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIIpCp(uint v0, uint v1, int v2, int* v3, char* v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIIpIpEpAttributeTypeEpCp(uint v0, uint v1, int v2, int* v3, int* v4, SpiceEngine.GLFWBindings.GLEnums.AttributeType* v5, char* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIIpIpEpUniformTypeEpCp(uint v0, uint v1, int v2, int* v3, int* v4, SpiceEngine.GLFWBindings.GLEnums.UniformType* v5, char* v6);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiIUipPpIp(uint v0, uint v1, int v2, uint* v3, IntPtr* v4, int* v5);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUip(uint v0, uint* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiPI(uint v0, uint v1, IntPtr v2, int v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiPPP(uint v0, uint v1, IntPtr v2, IntPtr v3, IntPtr v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiUi(uint v0, uint v1, uint v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiUiCp(uint v0, uint v1, uint v2, char* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiUiPI(uint v0, uint v1, uint v2, IntPtr v3, int v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiUiPP(uint v0, uint v1, uint v2, IntPtr v3, IntPtr v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiUiUi(uint v0, uint v1, uint v2, uint v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUiUiUiUi(uint v0, uint v1, uint v2, uint v3, uint v4);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UiUsp(uint v0, ushort* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_Usp(ushort* v0);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UsUsUs(ushort v0, ushort v1, ushort v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_UsUsUsUs(ushort v0, ushort v1, ushort v2, ushort v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_VpICp(void* v0, int v1, char* v2);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_VpIIpCp(void* v0, int v1, int* v2, char* v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_VpVp(void* v0, void* v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void* DEL_Vp_EBufferTargetARBEEBufferAccessARBE(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, SpiceEngine.GLFWBindings.GLEnums.BufferAccessARB v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void* DEL_Vp_EBufferTargetARBEPPEMapBufferAccessMaskE(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB v0, IntPtr v1, IntPtr v2, SpiceEngine.GLFWBindings.GLEnums.MapBufferAccessMask v3);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void* DEL_Vp_UiEBufferAccessARBE(uint v0, SpiceEngine.GLFWBindings.GLEnums.BufferAccessARB v1);
 
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void* DEL_Vp_UiPPEMapBufferAccessMaskE(uint v0, IntPtr v1, IntPtr v2, SpiceEngine.GLFWBindings.GLEnums.MapBufferAccessMask v3);
     }
 }

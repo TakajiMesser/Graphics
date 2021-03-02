@@ -46,8 +46,9 @@ namespace GLWriter.CSharp
             lines.Add("using System;");
             lines.Add("using System.Collections.Generic;");
             lines.Add("using System.Runtime.InteropServices;");
+            lines.Add("using System.Text;");
             lines.Add("");
-            lines.Add("namespace SpiceEngine.GLFW");
+            lines.Add("namespace SpiceEngine.GLFWBindings");
             lines.Add("{");
             lines.Add("    public static unsafe class GL");
             lines.Add("    {");
@@ -57,6 +58,7 @@ namespace GLWriter.CSharp
                 lines.Add("        " + function.ToFieldLine());
             }
 
+            lines.Add("");
             lines.Add("        public static void LoadFunctions()");
             lines.Add("        {");
 
@@ -105,6 +107,21 @@ namespace GLWriter.CSharp
             lines.Add("        }");
             lines.Add("");
 
+            lines.Add("        public static void BufferData<T>(SpiceEngine.GLFWBindings.GLEnums.BufferTargetARB target, int size, T[] data, SpiceEngine.GLFWBindings.GLEnums.BufferUsageARB usage) where T : struct");
+            lines.Add("        {");
+            lines.Add("            var handle = GCHandle.Alloc(data, GCHandleType.Pinned);");
+            lines.Add("");
+            lines.Add("            try");
+            lines.Add("            {");
+            lines.Add("                BufferData(target, (IntPtr)size, handle.AddrOfPinnedObject(), usage);");
+            lines.Add("            }");
+            lines.Add("            finally");
+            lines.Add("            {");
+            lines.Add("                handle.Free();");
+            lines.Add("            }");
+            lines.Add("        }");
+            lines.Add("");
+
             // TODO - Generate "easy" function overloads
             // Change uint parameters to int and explicitly cast for ease
             // Convert char* to string
@@ -123,7 +140,7 @@ namespace GLWriter.CSharp
             {
                 var delegateDefinition = spec.DelegateAt(i);
 
-                lines.Add("        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]");
+                lines.Add("        [UnmanagedFunctionPointer(CallingConvention.StdCall)]");
                 lines.Add("        " + delegateDefinition.ToDefinitionLine());
 
                 if (i < spec.DelegateCount - 1)

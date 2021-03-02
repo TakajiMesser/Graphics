@@ -10,12 +10,12 @@ namespace GLWriter
     class Program
     {
         public const string SOURCE_PATH = @"D:\GitHub\glfw-net\Examples\HelloTriangle\OpenGL.cs";
-        public const string DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GL.cs";
+        public const string DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFWBindings\GL.cs";
 
         public const string XML_SOURCE_PATH = @"D:\GitHub\Spice-Engine\GLWriter\gl-enum-specification.xml";
-        public const string ENUM_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLEnums";
-        public const string STRUCT_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GLStructs";
-        public const string COMMAND_DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFW\GL.cs";
+        public const string ENUM_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFWBindings\GLEnums";
+        public const string STRUCT_DESTINATION_DIRECTORY = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFWBindings\GLStructs";
+        public const string COMMAND_DESTINATION_PATH = @"D:\GitHub\Spice-Engine\SpiceEngine.GLFWBindings\GL.cs";
 
         static void Main(string[] args)
         {
@@ -78,7 +78,7 @@ namespace GLWriter
             lines.Add("using System;");
             lines.Add("using System.Runtime.InteropServices;");
             lines.Add("");
-            lines.Add("namespace SpiceEngine.GLFW");
+            lines.Add("namespace SpiceEngine.GLFWBindings");
             lines.Add("{");
             lines.Add("    public static unsafe class GL");
             lines.Add("    {");

@@ -64,9 +64,11 @@ namespace GLWriter.CSharp
                 RequiresMultipleLines = true;
                 IsUnsafe = true;
                 IsFixed = true;
+                _prefix = "(char*)";
                 _suffix = "Ptr";
 
-                _prefixLines.Add("fixed (char* $Ptr = $)");
+                _prefixLines.Add("var $Bytes = Encoding.UTF8.GetBytes($);");
+                _prefixLines.Add("fixed (byte* $Ptr = &$Bytes[0])");
                 _prefixLines.Add("{");
                 _suffixLines.Add("}");
             }
@@ -86,10 +88,10 @@ namespace GLWriter.CSharp
                 RequiresMultipleLines = true;
                 IsUnsafe = true;
                 IsFixed = true;
+                _prefix = "(uint*)";
                 _suffix = "Ptr";
 
-                _prefixLines.Add("var $Converted = Array.ConvertAll($, i => (uint)i);");
-                _prefixLines.Add("fixed (uint* $Ptr = &$Converted[0])");
+                _prefixLines.Add("fixed (int* $Ptr = &$[0])");
                 _prefixLines.Add("{");
                 _suffixLines.Add("}");
             }

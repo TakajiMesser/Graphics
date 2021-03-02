@@ -288,3 +288,8 @@ __pycache__/
 
 # Screenshots
 Screenshots/
+
+# GL Bindings
+SpiceEngine.GLFWBindings/GLEnums
+SpiceEngine.GLFWBindings/GLStructs
+SpiceEngine.GLFWBindings/GLCommands.cs

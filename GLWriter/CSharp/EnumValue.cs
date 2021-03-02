@@ -16,14 +16,8 @@ namespace GLWriter.CSharp
         public string ToLine(string groupName)
         {
             var builder = new StringBuilder();
-
-            var a = 3;
-            if (groupName == "TextureTarget")
-            {
-                a = 4;
-            }
-
             var nameWords = Name.Split("_");
+
             for (var i = 0; i < nameWords.Length; i++)
             {
                 var nameWord = nameWords[i];
@@ -54,12 +48,42 @@ namespace GLWriter.CSharp
             if (!string.IsNullOrEmpty(Value))
             {
                 builder.Append(" = ");
-                builder.Append(Value);
+
+                if (IsUintValue(Value))
+                {
+                    builder.Append("unchecked((int)" + Value + ")");
+                }
+                else
+                {
+                    builder.Append(Value);
+                }
             }
 
             builder.Append(",");
 
             return builder.ToString();
+        }
+
+        private bool IsUintValue(string value)
+        {
+            if (value.StartsWith("0x"))
+            {
+                if (value.Length > 10)
+                {
+                    return true;
+                }
+                else if (value.Length == 10)
+                {
+                    var digit = value[2];
+
+                    if (digit == '8' || digit == '9' || digit == 'A' || digit == 'B' || digit == 'C' || digit == 'D' || digit == 'E' || digit == 'F')
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
     }
 }
