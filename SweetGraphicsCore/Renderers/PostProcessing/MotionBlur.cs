@@ -1,14 +1,15 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Rendering;
+using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
-using SweetGraphicsCore.Rendering.Processing.Post;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 
 namespace SweetGraphicsCore.Renderers.PostProcessing
 {
-    public class MotionBlur : PostProcess
+    public class MotionBlur : Renderer
     {
         public const string NAME = "MotionBlur";
 
@@ -18,69 +19,74 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
         private Texture _velocityTextureA;
         private Texture _velocityTextureB;
 
-        public MotionBlur(Resolution resolution) : base(NAME, resolution) { }
+        private FrameBuffer _frameBuffer;
 
-        protected override void LoadProgram()
+        public Texture FinalTexture { get; protected set; }
+
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            var dilateShader = new Shader(ShaderType.ComputeShader, Resources.dilate_frag);
-            _dilateProgram = new ShaderProgram(dilateShader);
+            _dilateProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.ComputeShader },
+                new[] { Resources.dilate_frag });
 
-            var blurShader = new Shader(ShaderType.FragmentShader, Resources.blur_frag);
-            _blurProgram = new ShaderProgram(blurShader);
+            _blurProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.FragmentShader },
+                new[] { Resources.blur_frag });
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            _velocityTextureA = new Texture((int)(Resolution.Width * 0.5f), (int)(Resolution.Height * 0.5f), 0)
+            _velocityTextureA = new Texture(contextProvider, (int)(resolution.Width * 0.5f), (int)(resolution.Height * 0.5f), 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rg16f,
+                InternalFormat = InternalFormat.Rg16f,
                 PixelFormat = PixelFormat.Rg,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            _velocityTextureA.Bind();
-            _velocityTextureA.ReserveMemory();
+            _velocityTextureA.Load();
 
-            _velocityTextureB = new Texture(_velocityTextureA.Width, _velocityTextureA.Height, 0)
+            _velocityTextureB = new Texture(contextProvider, _velocityTextureA.Width, _velocityTextureA.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rg16f,
+                InternalFormat = InternalFormat.Rg16f,
                 PixelFormat = PixelFormat.Rg,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            _velocityTextureB.Bind();
-            _velocityTextureB.ReserveMemory();
+            _velocityTextureB.Load();
 
-            FinalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-
-            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            FinalTexture.Load();
         }
+
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        {
+            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Load();
+        }
+
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         public void Render(Texture velocity, Texture depth, Texture scene, float fps)
         {
@@ -90,41 +96,41 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
 
         private void DilateVelocity(Texture velocity)
         {
-            _dilateProgram.Use();
+            _dilateProgram.Bind();
 
             int blurLocation = _dilateProgram.GetUniformLocation("blur_amount");
-            GL.Uniform1(blurLocation, 50/*150*/);
+            GL.Uniform1i(blurLocation, 50/*150*/);
 
             int sizeLocation = _dilateProgram.GetUniformLocation("texture_size");
-            GL.Uniform2(sizeLocation, _velocityTextureA.Width, _velocityTextureA.Height);
+            GL.Uniform2i(sizeLocation, _velocityTextureA.Width, _velocityTextureA.Height);
 
             int directionLocation = _dilateProgram.GetUniformLocation("direction_selector");
 
             // Horizontal direction
-            GL.Uniform1(directionLocation, 0);
+            GL.Uniform1i(directionLocation, 0);
 
             _dilateProgram.BindTexture(velocity, "source", 0);
             _dilateProgram.BindImageTexture(_velocityTextureB, "destination", 1);
 
             GL.DispatchCompute(_velocityTextureA.Height, 2, 1);
-            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            GL.MemoryBarrier(MemoryBarrierMask.ShaderImageAccessBarrierBit);
 
             // Vertical direction
-            GL.Uniform1(directionLocation, 1);
+            GL.Uniform1i(directionLocation, 1);
 
             _dilateProgram.BindTexture(_velocityTextureB, "source", 0);
             _dilateProgram.BindImageTexture(_velocityTextureA, "destination", 1);
 
             GL.DispatchCompute(_velocityTextureA.Width, 2, 1);
-            GL.MemoryBarrier(MemoryBarrierFlags.ShaderImageAccessBarrierBit);
+            GL.MemoryBarrier(MemoryBarrierMask.ShaderImageAccessBarrierBit);
         }
 
         private void ApplyMotionBlur(Texture depth, Texture scene, float fps)
         {
-            _blurProgram.Use();
+            _blurProgram.Bind();
 
             int fpsLocation = _blurProgram.GetUniformLocation("fps_scaler");
-            GL.Uniform1(fpsLocation, fps);
+            GL.Uniform1f(fpsLocation, fps);
 
             _blurProgram.BindTexture(_velocityTextureA, "velocity", 1);
             _blurProgram.BindTexture(depth, "depth", 2);

@@ -1,4 +1,4 @@
-﻿using SpiceEngine.GLFW.Inputs;
+﻿using SpiceEngine.GLFWBindings.Inputs;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;

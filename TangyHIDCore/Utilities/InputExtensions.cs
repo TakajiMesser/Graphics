@@ -1,5 +1,5 @@
 ﻿using OpenTK.Input;
-using SpiceEngine.GLFW.Inputs;
+using SpiceEngine.GLFWBindings.Inputs;
 using System;
 
 namespace TangyHIDCore.Utilities

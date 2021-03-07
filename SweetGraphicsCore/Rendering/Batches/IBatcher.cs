@@ -15,8 +15,8 @@ namespace SweetGraphicsCore.Rendering.Batches
         void AddEntity(int entityID, IRenderable renderable);
         void RemoveByEntityID(int entityID);
 
-        void Load();
-        void Load(int entityID);
+        void Load(IRenderContextProvider contextProvider);
+        //void Load(int entityID);
 
         void UpdateVertices(int entityID, Func<IVertex, IVertex> vertexUpdate);
         void DuplicateBatch(int entityID, int newID);

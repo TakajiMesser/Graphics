@@ -1,75 +1,83 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using System;
-using PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-using OpenTK;
-using OpenTK.Graphics;
 
 namespace SweetGraphicsCore.Rendering.Textures
 {
-    public class Texture : ITexture, IDisposable, IBindable
+    public class Texture : OpenGLObject, ITexture
     {
         private int _maxMipMapLevels;
         private float _maxAnisotrophy;
 
-        public int Handle { get; }
-
-        public TextureTarget Target { get; set; }
-
-        public bool EnableMipMap { get; set; }
-        public bool EnableAnisotropy { get; set; }
-        //public bool Bindless { get; set; }
-
-        public PixelInternalFormat PixelInternalFormat { get; set; }
-        public PixelFormat PixelFormat { get; set; }
-        public PixelType PixelType { get; set; }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-        public int Depth { get; private set; }
-
-        public TextureMinFilter MinFilter { get; set; }
-        public TextureMagFilter MagFilter { get; set; }
-        public TextureWrapMode WrapMode { get; set; }
-        public Vector4 BorderColor { get; set; }
-
-        public Texture(int width, int height, int depth)
+        public Texture(IRenderContextProvider contextProvider, int width, int height, int depth) : base(contextProvider)
         {
-            Handle = GL.GenTexture();
-
-            if (Handle == 0)
-            {
-                var errorCode = GL.GetError();
-                throw new Exception("Failed to generate texture: " + errorCode);//GL.GetShaderInfoLog(_handle));
-            }
-
             Width = width;
             Height = height;
             Depth = depth;
         }
 
-        public void Bind() => GL.BindTexture(Target, Handle);
+        public int Width { get; private set; }
+        public int Height { get; private set; }
+        public int Depth { get; private set; }
+
+        public TextureTarget Target { get; set; }
+        public InternalFormat InternalFormat { get; set; }
+        public PixelFormat PixelFormat { get; set; }
+        public PixelType PixelType { get; set; }
+        public TextureMinFilter MinFilter { get; set; }
+        public TextureMagFilter MagFilter { get; set; }
+        public TextureWrapMode WrapMode { get; set; }
+        public Color4 BorderColor { get; set; }
+
+        public bool EnableMipMap { get; set; }
+        public bool EnableAnisotropy { get; set; }
+        //public bool Bindless { get; set; }
+
+        public override void Load()
+        {
+            base.Load();
+
+            Bind();
+            ReserveMemory();
+            //Unbind();
+        }
+
+        public void Load(IntPtr pixels)
+        {
+            base.Load();
+
+            Bind();
+            Specify(pixels);
+            SetTextureParameters();
+        }
+
+        public void Load(IntPtr[] pixels)
+        {
+            base.Load();
+
+            Bind();
+            Specify(pixels);
+            SetTextureParameters();
+        }
+
+        protected override int Create() => GL.GenTexture();
+        protected override void Delete() => GL.DeleteTexture(Handle);
+
+        public override void Bind() => GL.BindTexture(Target, Handle);
+        public override void Unbind() => GL.BindTexture(Target, 0);
 
         public void BindImageTexture(int index)
         {
-            bool layered = Target == TextureTarget.Texture2DArray
+            bool layered = Target == TextureTarget.Texture2dArray
                 || Target == TextureTarget.TextureCubeMap
                 || Target == TextureTarget.TextureCubeMapArray
-                || Target == TextureTarget.Texture3D;
+                || Target == TextureTarget.Texture3d;
 
-            GL.BindImageTexture(index, Handle, 0, layered, 0, TextureAccess.WriteOnly, (SizedInternalFormat)PixelInternalFormat);
+            GL.BindImageTexture(index, Handle, 0, layered, 0, BufferAccessARB.WriteOnly, InternalFormat);
         }
-
-        public void Unbind() => GL.BindTexture(Target, 0);
 
         public void GenerateMipMap() => GL.GenerateTextureMipmap(Handle);
 
@@ -78,41 +86,16 @@ namespace SweetGraphicsCore.Rendering.Textures
             Width = width;
             Height = height;
             Depth = depth;
+
+            Bind();
+            ReserveMemory();
         }
 
-        public Vector4 ReadPixelColor(int x, int y)
-        {
-            var bytes = new byte[4];
-
-            if (x <= Width && y <= Height)
-            {
-                GL.ReadPixels(x, y, 1, 1, PixelFormat, PixelType, bytes);
-            }
-
-            return new Vector4()
-            {
-                X = (int)bytes[0],
-                Y = (int)bytes[1],
-                Z = (int)bytes[2],
-                W = (int)bytes[3]
-            };
-        }
+        public Color4 ReadPixelColor(int x, int y) => GL.ReadPixels(x, y, 1, 1, PixelFormat, PixelType);
 
         public void ReserveMemory()
         {
             Specify(IntPtr.Zero);
-            SetTextureParameters();
-        }
-
-        public void Load(byte[] pixels)
-        {
-            Specify(pixels);
-            SetTextureParameters();
-        }
-
-        public void Load(IntPtr pixels)
-        {
-            Specify(pixels);
             SetTextureParameters();
         }
 
@@ -124,60 +107,60 @@ namespace SweetGraphicsCore.Rendering.Textures
             }
         }
 
-        public void Specify(byte[] pixels)
+        /*public void Specify(byte[] pixels)
         {
             switch (Target)
             {
-                case TextureTarget.Texture1D:
-                    GL.TexImage1D(Target, 0, PixelInternalFormat, Width, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture1d:
+                    GL.TexImage1D(Target, 0, InternalFormat, Width, 0, PixelFormat, PixelType, pixels);
                     break;
-                case TextureTarget.Texture2D:
-                    GL.TexImage2D(Target, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture2d:
+                    GL.TexImage2D(Target, 0, InternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
                     break;
-                case TextureTarget.Texture2DArray:
-                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture2dArray:
+                    GL.TexImage3D(Target, 0, InternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
                     break;
                 case TextureTarget.TextureCubeMap:
                     for (var i = 0; i < Depth; i++)
                     {
-                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
+                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, InternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
                     }
                     break;
                 case TextureTarget.TextureCubeMapArray:
-                    GL.TexStorage3D((TextureTarget3d)Target, _maxMipMapLevels + 1, (SizedInternalFormat)PixelInternalFormat, Width, Height, Depth * 6);
+                    GL.TexStorage3D(Target, _maxMipMapLevels + 1, InternalFormat, Width, Height, Depth * 6);
                     break;
-                case TextureTarget.Texture3D:
-                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture3d:
+                    GL.TexImage3D(Target, 0, InternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
                     break;
                 default:
                     throw new NotImplementedException("Cannot specify texture target " + Target);
             }
-        }
+        }*/
 
         public void Specify(IntPtr pixels)
         {
             switch (Target)
             {
-                case TextureTarget.Texture1D:
-                    GL.TexImage1D(Target, 0, PixelInternalFormat, Width, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture1d:
+                    GL.TexImage1D(Target, 0, InternalFormat, Width, 0, PixelFormat, PixelType, pixels);
                     break;
-                case TextureTarget.Texture2D:
-                    GL.TexImage2D(Target, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture2d:
+                    GL.TexImage2D(Target, 0, InternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
                     break;
-                case TextureTarget.Texture2DArray:
-                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture2dArray:
+                    GL.TexImage3D(Target, 0, InternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
                     break;
                 case TextureTarget.TextureCubeMap:
                     for (var i = 0; i < Depth; i++)
                     {
-                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
+                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, InternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels);
                     }
                     break;
                 case TextureTarget.TextureCubeMapArray:
-                    GL.TexStorage3D((TextureTarget3d)Target, _maxMipMapLevels + 1, (SizedInternalFormat)PixelInternalFormat, Width, Height, Depth * 6);
+                    GL.TexStorage3D(Target, _maxMipMapLevels + 1, InternalFormat, Width, Height, Depth * 6);
                     break;
-                case TextureTarget.Texture3D:
-                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
+                case TextureTarget.Texture3d:
+                    GL.TexImage3D(Target, 0, InternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, pixels);
                     break;
                 default:
                     throw new NotImplementedException("Cannot specify texture target " + Target);
@@ -186,15 +169,12 @@ namespace SweetGraphicsCore.Rendering.Textures
 
         public void Specify(IntPtr[] pixels)
         {
-            if (pixels.Length != Depth)
-            {
-                throw new ArgumentException("Pixel array length (" + pixels.Length + ") must match texture depth (" + Depth + ")");
-            }
+            if (pixels.Length != Depth) throw new ArgumentException("Pixel array length (" + pixels.Length + ") must match texture depth (" + Depth + ")");
 
             switch (Target)
             {
-                case TextureTarget.Texture2DArray:
-                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, IntPtr.Zero);
+                case TextureTarget.Texture2dArray:
+                    GL.TexImage3D(Target, 0, InternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, IntPtr.Zero);
                     for (var i = 0; i < Depth; i++)
                     {
                         GL.TexSubImage3D(Target, 0, 0, 0, i, Width, Height, 1, PixelFormat, PixelType, pixels[i]);
@@ -203,11 +183,11 @@ namespace SweetGraphicsCore.Rendering.Textures
                 case TextureTarget.TextureCubeMap:
                     for (var i = 0; i < 6; i++)
                     {
-                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, PixelInternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels[i]);
+                        GL.TexImage2D(TextureTarget.TextureCubeMapPositiveX + i, 0, InternalFormat, Width, Height, 0, PixelFormat, PixelType, pixels[i]);
                     }
                     break;
-                case TextureTarget.Texture3D:
-                    GL.TexImage3D(Target, 0, PixelInternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, IntPtr.Zero);
+                case TextureTarget.Texture3d:
+                    GL.TexImage3D(Target, 0, InternalFormat, Width, Height, Depth, 0, PixelFormat, PixelType, IntPtr.Zero);
                     for (var i = 0; i < Depth; i++)
                     {
                         GL.TexSubImage3D(Target, 0, 0, 0, i, Width, Height, 1, PixelFormat, PixelType, pixels[i]);
@@ -225,10 +205,10 @@ namespace SweetGraphicsCore.Rendering.Textures
                 _maxMipMapLevels = (int)(Math.Log(Math.Max(Width, Height), 2.0) - 1.0);
                 MinFilter = TextureMinFilter.LinearMipmapLinear;
 
-                GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
-                GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, _maxMipMapLevels);
+                GL.TexParameteri(Target, TextureParameterName.TextureBaseLevel, 0);
+                GL.TexParameteri(Target, TextureParameterName.TextureMaxLevel, _maxMipMapLevels);
 
-                GL.GenerateMipmap((GenerateMipmapTarget)Target);
+                GL.GenerateMipmap(Target);
 
                 // This appears to require OpenGL v4.5 :(
                 //GL.GenerateTextureMipmap(_handle);
@@ -236,50 +216,20 @@ namespace SweetGraphicsCore.Rendering.Textures
 
             if (EnableAnisotropy)
             {
-                _maxAnisotrophy = GL.GetFloat((GetPName)All.MaxTextureMaxAnisotropyExt);
-                GL.TexParameter(Target, (TextureParameterName)All.TextureMaxAnisotropyExt, _maxAnisotrophy);
+                //_maxAnisotrophy = GL.GetFloatv((GetPName)All.MaxTextureMaxAnisotropyExt);
+                //GL.TexParameterf(Target, (TextureParameterName)All.TextureMaxAnisotropyExt, _maxAnisotrophy);
             }
 
-            GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (float)MinFilter);
-            GL.TexParameter(Target, TextureParameterName.TextureMagFilter, (float)MinFilter);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapS, (int)WrapMode);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)WrapMode);
-            GL.TexParameter(Target, TextureParameterName.TextureWrapR, (int)WrapMode);
+            GL.TexParameterf(Target, TextureParameterName.TextureMinFilter, (float)MinFilter);
+            GL.TexParameterf(Target, TextureParameterName.TextureMagFilter, (float)MinFilter);
+            GL.TexParameteri(Target, TextureParameterName.TextureWrapS, (int)WrapMode);
+            GL.TexParameteri(Target, TextureParameterName.TextureWrapT, (int)WrapMode);
+            GL.TexParameteri(Target, TextureParameterName.TextureWrapR, (int)WrapMode);
 
-            if (BorderColor != Vector4.Zero)
+            if (BorderColor != Color4.Zero)
             {
-                GL.TexParameter(Target, TextureParameterName.TextureBorderColor,
-                    new[] { BorderColor.X, BorderColor.Y, BorderColor.Z, BorderColor.W });
+                GL.TexParameterfv(Target, TextureParameterName.TextureBorderColor, new[] { BorderColor.R, BorderColor.G, BorderColor.B, BorderColor.A });
             }
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteTexture(Handle);
-                disposedValue = true;
-            }
-        }
-
-        ~Texture()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

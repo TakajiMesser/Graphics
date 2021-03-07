@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
@@ -32,8 +32,8 @@ namespace SweetGraphicsCore.Renderers.Processing
         private ShaderProgram _billboardProgram;
         private ShaderProgram _billboardSelectionProgram;
 
-        private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
-        private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
+        private VertexArray<ColorVertex3D> _vertexArray;
+        private VertexBuffer<ColorVertex3D> _vertexBuffer;
 
         private Texture _vertexTexture;
 
@@ -45,58 +45,50 @@ namespace SweetGraphicsCore.Renderers.Processing
         private Texture _selectedSpotLightTexture;
         private Texture _selectedDirectionalLightTexture;
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _billboardProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.billboard_vert),
-                new Shader(ShaderType.GeometryShader, Resources.billboard_geom),
-                new Shader(ShaderType.FragmentShader, Resources.billboard_frag)
-            );
+            _billboardProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.billboard_vert, Resources.billboard_geom, Resources.billboard_frag });
 
-            _billboardSelectionProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.billboard_selection_vert),
-                new Shader(ShaderType.GeometryShader, Resources.billboard_selection_geom),
-                new Shader(ShaderType.FragmentShader, Resources.billboard_selection_frag)
-            );
+            _billboardSelectionProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.billboard_selection_vert, Resources.billboard_selection_geom, Resources.billboard_selection_frag });
         }
 
-        protected override void Resize(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
-
-        protected override void LoadTextures(Resolution resolution)
-        {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
 
-            _vertexTexture = TextureHelper.Load(Resources.vertex, false, false);
+            _vertexTexture = TextureHelper.Load(contextProvider, Resources.vertex, false, false);
 
-            _pointLightTexture = TextureHelper.Load(Resources.point_light_billboard, false, false);
-            _spotLightTexture = TextureHelper.Load(Resources.spot_light_billboard, false, false);
-            _directionalLightTexture = TextureHelper.Load(Resources.directional_light_billboard, false, false);
+            _pointLightTexture = TextureHelper.Load(contextProvider, Resources.point_light_billboard, false, false);
+            _spotLightTexture = TextureHelper.Load(contextProvider, Resources.spot_light_billboard, false, false);
+            _directionalLightTexture = TextureHelper.Load(contextProvider, Resources.directional_light_billboard, false, false);
 
-            _selectedPointLightTexture = TextureHelper.Load(Resources.selected_point_light, false, false);
-            _selectedSpotLightTexture = TextureHelper.Load(Resources.selected_spot_light, false, false);
-            _selectedDirectionalLightTexture = TextureHelper.Load(Resources.selected_directional_light, false, false);
+            _selectedPointLightTexture = TextureHelper.Load(contextProvider, Resources.selected_point_light, false, false);
+            _selectedSpotLightTexture = TextureHelper.Load(contextProvider, Resources.selected_spot_light, false, false);
+            _selectedDirectionalLightTexture = TextureHelper.Load(contextProvider, Resources.selected_directional_light, false, false);
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
+            _vertexBuffer = new VertexBuffer<ColorVertex3D>(contextProvider);
+            _vertexArray = new VertexArray<ColorVertex3D>(contextProvider);
+
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
@@ -107,6 +99,8 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             textureProvider.AddTexture
         }*/
+
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         public void GeometryPass(ICamera camera, IBatcher batcher)
         {
@@ -138,7 +132,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderEntities(ICamera camera, IEnumerable<IEntity> entities, ITexture texture)
         {
-            _billboardProgram.Use();
+            _billboardProgram.Bind();
             _billboardProgram.BindTexture(texture, "mainTexture", 0);
 
             _billboardProgram.SetCamera(camera);
@@ -152,9 +146,9 @@ namespace SweetGraphicsCore.Renderers.Processing
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
 
-            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+            _vertexBuffer.Buffer();
+            _vertexBuffer.DrawPoints();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
@@ -162,7 +156,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderLights(ICamera camera, IEnumerable<ILight> lights)
         {
-            _billboardProgram.Use();
+            _billboardProgram.Bind();
 
             _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
@@ -180,7 +174,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderSelection(ICamera camera, Volume volume, IBatcher batcher)
         {
-            _billboardProgram.Use();
+            _billboardProgram.Bind();
 
             _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
@@ -198,9 +192,9 @@ namespace SweetGraphicsCore.Renderers.Processing
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
 
-            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+            _vertexBuffer.Buffer();
+            _vertexBuffer.DrawPoints();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
@@ -208,7 +202,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderSelection(ICamera camera, ILight light)
         {
-            _billboardProgram.Use();
+            _billboardProgram.Bind();
 
             _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
@@ -231,7 +225,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderVertexSelection(ICamera camera, IEntity entity)
         {
-            _billboardProgram.Use();
+            _billboardProgram.Bind();
 
             _billboardProgram.SetCamera(camera);
             _billboardProgram.SetUniform("cameraPosition", camera.Position);
@@ -242,7 +236,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderVertexSelectIDs(ICamera camera, IEnumerable<IEntity> entities)
         {
-            _billboardSelectionProgram.Use();
+            _billboardSelectionProgram.Bind();
 
             _billboardSelectionProgram.SetCamera(camera);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
@@ -253,7 +247,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderLightSelectIDs(ICamera camera, IEnumerable<ILight> lights)
         {
-            _billboardSelectionProgram.Use();
+            _billboardSelectionProgram.Bind();
 
             _billboardSelectionProgram.SetCamera(camera);
             _billboardSelectionProgram.SetUniform("cameraPosition", camera.Position);
@@ -278,9 +272,9 @@ namespace SweetGraphicsCore.Renderers.Processing
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
 
-            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+            _vertexBuffer.Buffer();
+            _vertexBuffer.DrawPoints();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
@@ -296,9 +290,9 @@ namespace SweetGraphicsCore.Renderers.Processing
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
 
-            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+            _vertexBuffer.Buffer();
+            _vertexBuffer.DrawPoints();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();

@@ -1,10 +1,13 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
@@ -12,15 +15,6 @@ using SweetGraphicsCore.Selection;
 using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -45,109 +39,95 @@ namespace SweetGraphicsCore.Renderers.Processing
         private ShaderProgram _rotateProgram;
         private ShaderProgram _scaleProgram;
 
-        private FrameBuffer _frameBuffer = new FrameBuffer();
-        private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
-        private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
+        private FrameBuffer _frameBuffer;
+        private VertexArray<ColorVertex3D> _vertexArray;
+        private VertexBuffer<ColorVertex3D> _vertexBuffer;
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _selectionProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.selection_vert),
-                new Shader(ShaderType.FragmentShader, Resources.selection_frag)
-            );
+            _selectionProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.selection_vert, Resources.selection_frag });
 
-            _jointSelectionProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.selection_skinning_vert),
-                new Shader(ShaderType.FragmentShader, Resources.selection_frag)
-            );
+            _jointSelectionProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.selection_skinning_vert, Resources.selection_frag });
 
-            _translateProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.arrow_vert),
-                new Shader(ShaderType.GeometryShader, Resources.arrow_geom),
-                new Shader(ShaderType.FragmentShader, Resources.arrow_frag)
-            );
+            _translateProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.arrow_vert, Resources.arrow_geom, Resources.arrow_frag });
 
-            _rotateProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.rotation_vert),
-                new Shader(ShaderType.GeometryShader, Resources.rotation_geom),
-                new Shader(ShaderType.FragmentShader, Resources.rotation_frag)
-            );
+            _rotateProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.rotation_vert, Resources.rotation_geom, Resources.rotation_frag });
 
-            _scaleProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.scale_vert),
-                new Shader(ShaderType.GeometryShader, Resources.scale_geom),
-                new Shader(ShaderType.FragmentShader, Resources.scale_frag)
-            );
+            _scaleProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.scale_vert, Resources.scale_geom, Resources.scale_frag });
         }
 
-        protected override void Resize(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-
-            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
-        }
-
-        protected override void LoadTextures(Resolution resolution)
-        {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.UnsignedByte,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
 
-            DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
+            DepthStencilTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Depth32fStencil8,
+                InternalFormat = InternalFormat.Depth32fStencil8,
                 PixelFormat = PixelFormat.DepthComponent,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
+            DepthStencilTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
+            _frameBuffer = new FrameBuffer(contextProvider);
+            _vertexArray = new VertexArray<ColorVertex3D>(contextProvider);
+            _vertexBuffer = new VertexBuffer<ColorVertex3D>(contextProvider);
+
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
 
-            _frameBuffer.Clear();
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+            _frameBuffer.Add(FramebufferAttachment.StencilAttachment, DepthStencilTexture);
+            _frameBuffer.Load();
+        }
 
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+        protected override void Resize(Resolution resolution)
+        {
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
         }
 
         public void BindForReading()
         {
             _frameBuffer.BindAndRead(ReadBufferMode.ColorAttachment0);
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            GL.PixelStorei(PixelStoreParameter.UnpackAlignment, 1);
         }
 
         public void BindForWriting()
         {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
+            _frameBuffer.BindAndDraw(DrawBufferMode.ColorAttachment0);
             GL.Enable(EnableCap.DepthTest);
             GL.Enable(EnableCap.CullFace);
         }
@@ -155,7 +135,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         public int GetEntityIDFromPoint(Vector2 point)
         {
             var color = FinalTexture.ReadPixelColor((int)point.X, (int)point.Y);
-            return SelectionHelper.GetIDFromColorVector(color);
+            return SelectionHelper.GetIDFromColor(color);
         }
 
         // IEntityProvider entityProvider, Camera camera, BatchManager batchManager, TextureManager textureManager
@@ -187,7 +167,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         public void RenderTranslationArrows(ICamera camera, Vector3 position) { RenderTranslationArrows(camera, position, Vector3.UnitX, Vector3.UnitY, Vector3.UnitZ); }
         public void RenderTranslationArrows(ICamera camera, Vector3 position, Vector3 xDirection, Vector3 yDirection, Vector3 zDirection)
         {
-            _translateProgram.Use();
+            _translateProgram.Bind();
 
             _translateProgram.SetCamera(camera);
             _translateProgram.SetUniform("cameraPosition", camera.Position);
@@ -210,7 +190,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderRotationRings(ICamera camera, Vector3 position)
         {
-            _rotateProgram.Use();
+            _rotateProgram.Bind();
 
             _rotateProgram.SetCamera(camera);
             _rotateProgram.SetUniform("cameraPosition", camera.Position);
@@ -230,7 +210,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderScaleLines(ICamera camera, Vector3 position)
         {
-            _scaleProgram.Use();
+            _scaleProgram.Bind();
 
             _scaleProgram.SetCamera(camera);
             _scaleProgram.SetUniform("cameraPosition", camera.Position);

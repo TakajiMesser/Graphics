@@ -1,5 +1,6 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
@@ -8,29 +9,18 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-
 namespace SweetGraphicsCore.Vertices
 {
-    public class VertexSet<T> : IVertexSet, IDisposable where T : IVertex3D
+    public class VertexSet<T> : IVertexSet where T : struct, IVertex
     {
+        private List<T> _vertices = new List<T>();
+        private List<int> _triangleIndices = new List<int>();
+
         private VertexBuffer<T> _vertexBuffer;
         private VertexArray<T> _vertexArray;
         private float _alpha = 1.0f;
 
-        public VertexSet()
-        {
-
-        }
-
-        public IEnumerable<IVertex3D> Vertices
+        public IEnumerable<IVertex> Vertices
         {
             get
             {
@@ -81,7 +71,7 @@ namespace SweetGraphicsCore.Vertices
             var vertices = Vertices.ToList();
 
             _vertexBuffer.Clear();
-            _vertexBuffer.AddVertices(vertices.Select(v => (T)v.Transformed(transform)));
+            //_vertexBuffer.AddVertices(vertices.Select(v => (T)v.Transformed(transform)));
         }
 
         public void TransformTexture(Vector3 center, Vector2 translation, float rotation, Vector2 scale) => TransformTexture(center, translation, rotation, scale, 0, _vertexBuffer.Count);
@@ -104,14 +94,14 @@ namespace SweetGraphicsCore.Vertices
             _vertexBuffer.AddVertices(vertices.Select(v => (T)vertexUpdate(v)));
         }
 
-        public void Load()
+        public void Load(IRenderContextProvider contextProvider)
         {
-            _vertexBuffer = new VertexBuffer<T>();
-            _vertexArray = new VertexArray<T>();
+            _vertexBuffer = new VertexBuffer<T>(contextProvider);
+            _vertexArray = new VertexArray<T>(contextProvider);
 
-            _vertexBuffer.Clear();
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
 
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
@@ -128,34 +118,5 @@ namespace SweetGraphicsCore.Vertices
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                //GL.DeleteShader(Handle);
-                disposedValue = true;
-            }
-        }
-
-        ~VertexSet()
-        {
-            Dispose(false);
-        }
-
-        public virtual void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

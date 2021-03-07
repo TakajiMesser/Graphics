@@ -1,5 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Matrices;
@@ -12,9 +14,6 @@ using SweetGraphicsCore.Shaders;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -36,35 +35,33 @@ namespace SweetGraphicsCore.Renderers.Processing
             _texturePaths.AddRange(texturePaths);
         }
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _program = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.skybox_vert),
-                new Shader(ShaderType.FragmentShader, Resources.skybox_frag)
-            );
+            _program = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.skybox_vert, Resources.skybox_frag });
 
-            _2DProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.skybox2D_vert),
-                new Shader(ShaderType.FragmentShader, Resources.skybox2D_frag)
-            );
+            _2DProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.skybox2D_vert, Resources.skybox2D_frag });
         }
 
-        protected override void LoadTextures(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
             if (_texturePaths.Any())
             {
-                SkyTexture = TextureHelper.LoadFromFile(_texturePaths, TextureTarget.TextureCubeMap, true, true);
-                SkyTexture2D = TextureHelper.LoadFromFile(_texturePaths.First(), true, true);
+                SkyTexture = TextureHelper.LoadFromFile(contextProvider, _texturePaths, TextureTarget.TextureCubeMap, true, true);
+                SkyTexture2D = TextureHelper.LoadFromFile(contextProvider, _texturePaths.First(), true, true);
             }
         }
 
-        protected override void Resize(Resolution resolution) { }
-
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
-            _cubeMesh = SimpleMesh.LoadFromFile(FilePathHelper.CUBE_MESH_PATH, _program);
-            _squareMesh = SimpleMesh.LoadFromFile(FilePathHelper.SQUARE_MESH_PATH, _2DProgram);
+            _cubeMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.CUBE_MESH_PATH, _program);
+            _squareMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.SQUARE_MESH_PATH, _2DProgram);
         }
+
+        protected override void Resize(Resolution resolution) { }
 
         public void Render(ICamera camera)
         {
@@ -83,10 +80,10 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             if (SkyTexture != null)
             {
-                _program.Use();
+                _program.Bind();
 
-                int oldCullFaceMode = GL.GetInteger(GetPName.CullFaceMode);
-                int oldDepthFunc = GL.GetInteger(GetPName.DepthFunc);
+                int oldCullFaceMode = GL.GetIntegerv(GetPName.CullFaceMode)[0];
+                int oldDepthFunc = GL.GetIntegerv(GetPName.DepthFunc)[0];
 
                 GL.Enable(EnableCap.DepthTest);
                 GL.CullFace(CullFaceMode.Front);
@@ -107,7 +104,7 @@ namespace SweetGraphicsCore.Renderers.Processing
         {
             if (SkyTexture2D != null)
             {
-                _2DProgram.Use();
+                _2DProgram.Bind();
 
                 GL.Enable(EnableCap.DepthTest);
                 //GL.CullFace(CullFaceMode.Front);

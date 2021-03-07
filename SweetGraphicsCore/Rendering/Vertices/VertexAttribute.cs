@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using System;
 
 namespace SweetGraphicsCore.Vertices
 {
@@ -10,7 +12,7 @@ namespace SweetGraphicsCore.Vertices
         private readonly VertexAttribPointerType _type;
         private readonly bool _normalize;
         private readonly int _stride;
-        private readonly int _offset;
+        private readonly IntPtr _offset;
 
         public VertexAttribute(string name, int size, VertexAttribPointerType type, int stride, int offset, bool normalize = false)
         {
@@ -18,7 +20,7 @@ namespace SweetGraphicsCore.Vertices
             _size = size;
             _type = type;
             _stride = stride;
-            _offset = offset;
+            _offset = (IntPtr)offset;
             _normalize = normalize;
         }
 

@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Vertices;
 using System;

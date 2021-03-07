@@ -1,9 +1,8 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Rendering.Textures;
 using System;
-//using System.Drawing;
-//using System.Drawing.Text;
 using System.Linq;
 
 namespace SweetGraphicsCore.Rendering
@@ -48,7 +47,7 @@ namespace SweetGraphicsCore.Rendering
 
         public ITexture Texture { get; private set; }
 
-        public void LoadTexture()
+        public void LoadTexture(IRenderContextProvider contextProvider)
         {
             var bitmapWidth = GlyphsPerLine * GlyphWidth;
             var bitmapHeight = GlyphLineCount * GlyphHeight;
@@ -77,19 +76,19 @@ namespace SweetGraphicsCore.Rendering
                             }
                         }
 
-                        Texture = LoadFromBitmap(bitmap, false, false);
+                        Texture = LoadFromBitmap(contextProvider, bitmap, false, false);
                     }
                 }
             }
         }
 
-        private Texture LoadFromBitmap(System.Drawing.Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        private Texture LoadFromBitmap(IRenderContextProvider contextProvider, System.Drawing.Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             var data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(bitmap.Width, bitmap.Height, 0)
+            var texture = new Texture(contextProvider, bitmap.Width, bitmap.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,
                 MagFilter = magFilter,
                 WrapMode = TextureWrapMode.Repeat,
@@ -100,23 +99,22 @@ namespace SweetGraphicsCore.Rendering
             switch (data.PixelFormat)
             {
                 case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.ColorIndex;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.ColorIndex;
                     texture.PixelType = PixelType.Bitmap;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    texture.InternalFormat = InternalFormat.Rgba;
+                    texture.PixelFormat = PixelFormat.Bgra;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
             }
 
-            texture.Bind();
             texture.Load(data.Scan0);
 
             bitmap.UnlockBits(data);

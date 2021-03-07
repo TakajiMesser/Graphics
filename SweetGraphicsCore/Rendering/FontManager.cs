@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Rendering.Textures;
+﻿using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Textures;
 //using System.Drawing;
 //using System.Drawing.Imaging;
 using System.Collections.Generic;
@@ -7,10 +8,15 @@ namespace SweetGraphicsCore.Rendering
 {
     public class FontManager : IFontProvider
     {
-        ITextureProvider _textureProvider;
+        private IRenderContextProvider _contextProvider;
+        private ITextureProvider _textureProvider;
         private Dictionary<string, Font> _fontByPath = new Dictionary<string, Font>();
 
-        public FontManager(ITextureProvider textureProvider) => _textureProvider = textureProvider;
+        public FontManager(IRenderContextProvider contextProvider, ITextureProvider textureProvider)
+        {
+            _contextProvider = contextProvider;
+            _textureProvider = textureProvider;
+        }
 
         public IFont AddFontFile(string filePath, int fontSize)
         {
@@ -22,7 +28,7 @@ namespace SweetGraphicsCore.Rendering
             var textureIndex = _textureProvider.AddTexture(texture);
             font.Texture = _textureProvider.RetrieveTexture(textureIndex);*/
 
-            font.LoadTexture();
+            font.LoadTexture(_contextProvider);
             _textureProvider.AddTexture(font.Texture);
 
             _fontByPath.Add(filePath, font);
@@ -37,7 +43,7 @@ namespace SweetGraphicsCore.Rendering
 
             var texture = new Texture(bitmap.Width, bitmap.Height, 1)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,
                 MagFilter = magFilter,
                 WrapMode = TextureWrapMode.Repeat,
@@ -48,17 +54,17 @@ namespace SweetGraphicsCore.Rendering
             switch (data.PixelFormat)
             {
                 case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.InternalFormat = InternalFormat.Rgb8;
                     texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.ColorIndex;
                     texture.PixelType = PixelType.Bitmap;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.InternalFormat = InternalFormat.Rgb8;
                     texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgba;
+                    texture.InternalFormat = InternalFormat.Rgba;
                     texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;

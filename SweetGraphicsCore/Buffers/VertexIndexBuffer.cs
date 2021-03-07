@@ -1,18 +1,23 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using SweetGraphicsCore.Rendering;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace SweetGraphicsCore.Buffers
 {
-    public class VertexIndexBuffer : IDisposable, IBindable
+    public class VertexIndexBuffer : OpenGLObject
     {
-        private int _handle;
         private List<ushort> _indices = new List<ushort>();
 
-        public VertexIndexBuffer() => _handle = GL.GenBuffer();
+        public VertexIndexBuffer(IRenderContextProvider contextProvider) : base(contextProvider) { }
+
+        protected override int Create() => GL.GenBuffer();
+        protected override void Delete() => GL.DeleteBuffer(Handle);
+
+        public override void Bind() => GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, Handle);
+        public override void Unbind() => GL.BindBuffer(BufferTargetARB.ElementArrayBuffer, 0);
 
         public void AddIndex(ushort index) => _indices.Add(index);
 
@@ -20,41 +25,8 @@ namespace SweetGraphicsCore.Buffers
 
         public void Clear() => _indices.Clear();
 
-        public void Buffer() => GL.BufferData(BufferTarget.ElementArrayBuffer, Marshal.SizeOf<ushort>() * _indices.Count, _indices.ToArray(), BufferUsageHint.StreamDraw);
-
-        public void Bind() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
-
-        public void Unbind() => GL.BindBuffer(BufferTarget.ElementArrayBuffer, _handle);
+        public void Buffer() => GL.BufferData(BufferTargetARB.ElementArrayBuffer, Marshal.SizeOf<ushort>() * _indices.Count, _indices.ToArray(), BufferUsageARB.StreamDraw);
 
         public void Draw() => GL.DrawElements(PrimitiveType.Triangles, _indices.Count, DrawElementsType.UnsignedShort, IntPtr.Zero);
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteBuffer(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~VertexIndexBuffer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

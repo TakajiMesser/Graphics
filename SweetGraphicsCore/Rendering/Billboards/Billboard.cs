@@ -1,5 +1,4 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Textures;
@@ -9,21 +8,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-
 namespace SweetGraphicsCore.Rendering.Billboards
 {
-    public class Billboard : IBillboard, IDisposable
+    public class Billboard : IBillboard
     {
-        private VertexArray<ColorVertex3D> _vertexArray = new VertexArray<ColorVertex3D>();
-        private VertexBuffer<ColorVertex3D> _vertexBuffer = new VertexBuffer<ColorVertex3D>();
+        private VertexArray<ColorVertex3D> _vertexArray;
+        private VertexBuffer<ColorVertex3D> _vertexBuffer;
 
         private List<ColorVertex3D> _vertices = new List<ColorVertex3D>();
         private float _alpha = 1.0f;
@@ -114,14 +104,14 @@ namespace SweetGraphicsCore.Rendering.Billboards
             }
         }
 
-        public void Load()
+        public void Load(IRenderContextProvider contextProvider)
         {
-            _vertexBuffer = new VertexBuffer<ColorVertex3D>();
-            _vertexArray = new VertexArray<ColorVertex3D>();
+            _vertexBuffer = new VertexBuffer<ColorVertex3D>(contextProvider);
+            _vertexArray = new VertexArray<ColorVertex3D>(contextProvider);
 
-            _vertexBuffer.Clear();
             _vertexBuffer.AddVertices(_vertices);
 
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
@@ -133,8 +123,7 @@ namespace SweetGraphicsCore.Rendering.Billboards
             _vertexBuffer.Bind();
 
             _vertexBuffer.Buffer();
-
-            GL.DrawArrays(PrimitiveType.Points, 0, _vertexBuffer.Count);
+            _vertexBuffer.DrawPoints();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();
@@ -157,34 +146,5 @@ namespace SweetGraphicsCore.Rendering.Billboards
             Index = Index,
             Alpha = Alpha
         };*/
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                //GL.DeleteShader(Handle);
-                disposedValue = true;
-            }
-        }
-
-        ~Billboard()
-        {
-            Dispose(false);
-        }
-
-        public virtual void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

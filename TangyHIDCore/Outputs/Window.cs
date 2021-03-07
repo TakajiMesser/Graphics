@@ -31,7 +31,7 @@ namespace TangyHIDCore.Outputs
         protected GameLoader _gameLoader;
 
         //base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
-        public Window(Configuration configuration) : base(configuration.WindowSize.Width, configuration.WindowSize.Height, configuration.WindowTitle, GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default)
+        public Window(Configuration configuration) : base(configuration.Size.Width, configuration.Size.Height, configuration.Title, GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default)
         {
             _context = new GraphicsContext(GraphicsMode.Default, WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
             _context.MakeCurrent(WindowInfo);

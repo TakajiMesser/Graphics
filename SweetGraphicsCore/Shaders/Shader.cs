@@ -1,55 +1,32 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
+using SweetGraphicsCore.Helpers;
 using System;
 
 namespace SweetGraphicsCore.Shaders
 {
-    public class Shader : IDisposable
+    public class Shader : OpenGLObject, IDisposable
     {
-        internal int _handle;
+        public Shader(IRenderContextProvider contextProvider, ShaderType type) : base(contextProvider) => ShaderType = type;
+
         public ShaderType ShaderType { get; private set; }
 
-        public Shader(ShaderType type, string code)
+        public void Load(string code)
         {
-            _handle = GL.CreateShader(type);
-            ShaderType = type;
+            base.Load();
 
-            GL.ShaderSource(_handle, code);
-            GL.CompileShader(_handle);
-
-            GL.GetShader(_handle, ShaderParameter.CompileStatus, out int statusCode);
-            if (statusCode != 1)
+            if (!ShaderHelper.CompileShader(this, code, out string errorLog))
             {
-                throw new Exception(ShaderType + " Shader failed to compile: " + GL.GetShaderInfoLog(_handle));
+                Unload();
+                throw new Exception(ShaderType + " Shader failed to compile: " + errorLog);
             }
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false;
+        protected override int Create() => GL.CreateShader(ShaderType);
+        protected override void Delete() => GL.DeleteShader(Handle);
 
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteShader(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~Shader() {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
+        public override void Bind() { }
+        public override void Unbind() { }
     }
 }

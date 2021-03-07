@@ -1,9 +1,10 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Materials;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Shaders;
@@ -11,54 +12,54 @@ using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-
 namespace SweetGraphicsCore.Shaders
 {
-    public class ShaderProgram : IShader
+    public class ShaderProgram : OpenGLObject, IShader
     {
-        private readonly int _handle;
+        private Shader[] _shaders;
 
-        public ShaderProgram(params Shader[] shaders)
+        public ShaderProgram(IRenderContextProvider contextProvider) : base(contextProvider) { }
+
+        public void Load(params Shader[] shaders)
         {
-            _handle = GL.CreateProgram();
+            base.Load();
+            
+            // Arbitrarily holding onto these references
+            _shaders = shaders;
 
             foreach (var shader in shaders)
             {
-                GL.AttachShader(_handle, shader._handle);
+                GL.AttachShader(Handle, shader.Handle);
             }
 
-            GL.LinkProgram(_handle);
+            GL.LinkProgram(Handle);
 
             foreach (var shader in shaders)
             {
-                GL.DetachShader(_handle, shader._handle);
+                GL.DetachShader(Handle, shader.Handle);
             }
         }
 
-        public void Use() => GL.UseProgram(_handle);
+        protected override int Create() => GL.CreateProgram();
+        protected override void Delete() => GL.DeleteProgram(Handle);
 
-        public int GetAttributeLocation(string name) => GL.GetAttribLocation(_handle, name);
+        public override void Bind() => GL.UseProgram(Handle);
+        public override void Unbind() => GL.UseProgram(0);
 
-        public int GetUniformLocation(string name) => GL.GetUniformLocation(_handle, name);
+        public int GetAttributeLocation(string name) => GL.GetAttribLocation(Handle, name);
+
+        public int GetUniformLocation(string name) => GL.GetUniformLocation(Handle, name);
 
         public void BindUniformBlock(string name, int binding)
         {
-            var blockIndex = GL.GetUniformBlockIndex(_handle, name);
-            GL.UniformBlockBinding(_handle, blockIndex, binding);
+            var blockIndex = GL.GetUniformBlockIndex(Handle, name);
+            GL.UniformBlockBinding(Handle, blockIndex, binding);
         }
 
         public void BindShaderStorageBlock(string name, int binding)
         {
-            var blockIndex = 0;// GL.ShaderSto;
-            GL.ShaderStorageBlockBinding(_handle, blockIndex, binding);
+            var blockIndex = 0;
+            GL.ShaderStorageBlockBinding(Handle, blockIndex, binding);
         }
 
         public void BindTexture(ITexture texture, string name, int index)
@@ -67,7 +68,7 @@ namespace SweetGraphicsCore.Shaders
 
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.Bind();
-            GL.Uniform1(location, index);
+            GL.Uniform1i(location, index);
         }
 
         /*var diffuseMap = textureProvider.RetrieveTexture(textureMapping.DiffuseIndex);
@@ -83,7 +84,7 @@ namespace SweetGraphicsCore.Shaders
 
             GL.ActiveTexture(TextureUnit.Texture0 + index);
             texture.BindImageTexture(index);
-            GL.Uniform1(location, index);
+            GL.Uniform1i(location, index);
         }
 
         public void SetUniform<T>(string name, T value) where T : struct
@@ -125,7 +126,7 @@ namespace SweetGraphicsCore.Shaders
             {
                 fixed (float* matrix_ptr = &matrix.Values[0])
                 {
-                    GL.UniformMatrix4(location, 1, false, matrix_ptr);
+                    GL.UniformMatrix4fv(location, 1, false, matrix_ptr);
                 }
 
                 /*fixed (float* matrix_ptr = &matrix.Row0.X)
@@ -177,37 +178,37 @@ namespace SweetGraphicsCore.Shaders
         public void SetUniform(string name, Vector2 vector)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform2(location, vector.X, vector.Y);
+            GL.Uniform2f(location, vector.X, vector.Y);
         }
 
         public void SetUniform(string name, Vector3 vector)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform3(location, vector.X, vector.Y, vector.Z);
+            GL.Uniform3f(location, vector.X, vector.Y, vector.Z);
         }
 
         public void SetUniform(string name, Vector4 vector)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform4(location, vector.X, vector.Y, vector.Z, vector.W);
+            GL.Uniform4f(location, vector.X, vector.Y, vector.Z, vector.W);
         }
 
         public void SetUniform(string name, Color4 color)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform4(location, color.R, color.G, color.B, color.A);
+            GL.Uniform4f(location, color.R, color.G, color.B, color.A);
         }
 
         public void SetUniform(string name, float value)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform1(location, value);
+            GL.Uniform1f(location, value);
         }
 
         public void SetUniform(string name, int value)
         {
             var location = GetUniformLocation(name);
-            GL.Uniform1(location, value);
+            GL.Uniform1i(location, value);
         }
 
         public void SetMaterial(Material material)
@@ -345,28 +346,28 @@ namespace SweetGraphicsCore.Shaders
             // TODO - Order brush rendering in a way that allows us to not re-bind duplicate textures repeatedly
             // Check brush's texture mapping to see which textures we need to bind
             var diffuseMap = textureProvider.RetrieveTexture(textureMapping.DiffuseIndex);
-            GL.Uniform1(GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
+            GL.Uniform1i(GetUniformLocation("useDiffuseMap"), (diffuseMap != null) ? 1 : 0);
             if (diffuseMap != null)
             {
                 BindTexture(diffuseMap, "diffuseMap", 0);
             }
 
             var normalMap = textureProvider.RetrieveTexture(textureMapping.NormalIndex);
-            GL.Uniform1(GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
+            GL.Uniform1i(GetUniformLocation("useNormalMap"), (normalMap != null) ? 1 : 0);
             if (normalMap != null)
             {
                 BindTexture(normalMap, "normalMap", 1);
             }
 
             var specularMap = textureProvider.RetrieveTexture(textureMapping.SpecularIndex);
-            GL.Uniform1(GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
+            GL.Uniform1i(GetUniformLocation("useSpecularMap"), (specularMap != null) ? 1 : 0);
             if (specularMap != null)
             {
                 BindTexture(specularMap, "specularMap", 2);
             }
 
             var parallaxMap = textureProvider.RetrieveTexture(textureMapping.ParallaxIndex);
-            GL.Uniform1(GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
+            GL.Uniform1i(GetUniformLocation("useParallaxMap"), (parallaxMap != null) ? 1 : 0);
             if (parallaxMap != null)
             {
                 BindTexture(parallaxMap, "parallaxMap", 3);
@@ -375,10 +376,10 @@ namespace SweetGraphicsCore.Shaders
 
         public void UnbindTextures()
         {
-            GL.Uniform1(GetUniformLocation("useDiffuseMap"), 0);
-            GL.Uniform1(GetUniformLocation("useNormalMap"), 0);
-            GL.Uniform1(GetUniformLocation("useSpecularMap"), 0);
-            GL.Uniform1(GetUniformLocation("useParallaxMap"), 0);
+            GL.Uniform1i(GetUniformLocation("useDiffuseMap"), 0);
+            GL.Uniform1i(GetUniformLocation("useNormalMap"), 0);
+            GL.Uniform1i(GetUniformLocation("useSpecularMap"), 0);
+            GL.Uniform1i(GetUniformLocation("useParallaxMap"), 0);
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Buffers;
 using SweetGraphicsCore.Rendering.Textures;
@@ -12,13 +14,13 @@ namespace SweetGraphicsCore.Helpers
 {
     public static class TextureHelper
     {
-        public static Texture LoadFromFile(string path, bool enableMipMap, bool enableAnisotrophy)
+        public static Texture LoadFromFile(IRenderContextProvider contextProvider, string path, bool enableMipMap, bool enableAnisotrophy)
         {
             switch (Path.GetExtension(path))
             {
                 case ".jpg":
                 case ".png":
-                    return LoadFromBitmap(path, enableMipMap, enableAnisotrophy);
+                    return LoadFromBitmap(contextProvider, path, enableMipMap, enableAnisotrophy);
                 //case ".tga":
                 //return LoadFromTGA(path, enableMipMap, enableAnisotrophy);
                 default:
@@ -26,7 +28,7 @@ namespace SweetGraphicsCore.Helpers
                     /*var image = DevILSharp.Image.Load(path);
                     var texture = new Texture(image.Width, image.Height, 1)
                     {
-                        Target = TextureTarget.Texture2D,
+                        Target = TextureTarget.Texture2d,
                         MinFilter = TextureMinFilter.Linear,
                         MagFilter = TextureMagFilter.Linear,
                         WrapMode = TextureWrapMode.Repeat,
@@ -37,7 +39,7 @@ namespace SweetGraphicsCore.Helpers
                     switch (image.ChannelFormat)
                     {
                         case ChannelFormat.RGB:
-                            texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                            texture.InternalFormat = InternalFormat.Rgb8;
                             break;
                     }
 
@@ -55,13 +57,13 @@ namespace SweetGraphicsCore.Helpers
             }
         }
 
-        public static Texture Load(Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        public static Texture Load(IRenderContextProvider contextProvider, Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(bitmap.Width, bitmap.Height, 1)
+            var texture = new Texture(contextProvider, bitmap.Width, bitmap.Height, 1)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,
                 MagFilter = magFilter,
                 WrapMode = TextureWrapMode.Repeat,
@@ -72,23 +74,22 @@ namespace SweetGraphicsCore.Helpers
             switch (data.PixelFormat)
             {
                 case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.ColorIndex;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.ColorIndex;
                     texture.PixelType = PixelType.Bitmap;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    texture.InternalFormat = InternalFormat.Rgba;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.Bgra;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
             }
 
-            texture.Bind();
             texture.Load(data.Scan0);
 
             bitmap.UnlockBits(data);
@@ -97,14 +98,14 @@ namespace SweetGraphicsCore.Helpers
             return texture;
         }
 
-        public static Texture LoadFromBitmap(string path, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        public static Texture LoadFromBitmap(IRenderContextProvider contextProvider, string path, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             var bitmap = new Bitmap(path);
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(bitmap.Width, bitmap.Height, 1)
+            var texture = new Texture(contextProvider, bitmap.Width, bitmap.Height, 1)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,
                 MagFilter = magFilter,
                 WrapMode = TextureWrapMode.Repeat,
@@ -115,23 +116,22 @@ namespace SweetGraphicsCore.Helpers
             switch (data.PixelFormat)
             {
                 case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.ColorIndex;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.ColorIndex;
                     texture.PixelType = PixelType.Bitmap;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format32bppArgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgba;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgra;
+                    texture.InternalFormat = InternalFormat.Rgba;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.Bgra;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
             }
 
-            texture.Bind();
             texture.Load(data.Scan0);
 
             bitmap.UnlockBits(data);
@@ -148,7 +148,7 @@ namespace SweetGraphicsCore.Helpers
 
             var texture = new Texture((int)FreeImage.GetWidth(bitmap), (int)FreeImage.GetHeight(bitmap), 1)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Repeat,
@@ -159,12 +159,12 @@ namespace SweetGraphicsCore.Helpers
             /*switch (data.PixelFormat)
             {
                 case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.InternalFormat = InternalFormat.Rgb8;
                     texture.PixelFormat = PixelFormat.ColorIndex;
                     texture.PixelType = PixelType.Bitmap;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                    texture.InternalFormat = InternalFormat.Rgb8;
                     texture.PixelFormat = PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
@@ -184,7 +184,7 @@ namespace SweetGraphicsCore.Helpers
 
                 var texture = new Texture(image.Header.Width, image.Header.Height, 1)
                 {
-                    Target = TextureTarget.Texture2D,
+                    Target = TextureTarget.Texture2d,
                     MinFilter = TextureMinFilter.Linear,
                     MagFilter = TextureMagFilter.Linear,
                     WrapMode = TextureWrapMode.Repeat,
@@ -197,12 +197,12 @@ namespace SweetGraphicsCore.Helpers
                 /*switch (image.PixelFormat)
                 {
                     case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                        texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                        texture.InternalFormat = InternalFormat.Rgb8;
                         texture.PixelFormat = PixelFormat.ColorIndex;
                         texture.PixelType = PixelType.Bitmap;
                         break;
                     case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                        texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
+                        texture.InternalFormat = InternalFormat.Rgb8;
                         texture.PixelFormat = PixelFormat.Bgr;
                         texture.PixelType = PixelType.UnsignedByte;
                         break;
@@ -215,12 +215,12 @@ namespace SweetGraphicsCore.Helpers
         }*/
         }
 
-        public static Texture LoadFromFile(IList<string> paths, TextureTarget target, bool enableMipMap, bool enableAnisotrophy)
+        public static Texture LoadFromFile(IRenderContextProvider contextProvider, IList<string> paths, TextureTarget target, bool enableMipMap, bool enableAnisotrophy)
         {
             var firstBitmap = new Bitmap(paths.First());
             var data = firstBitmap.LockBits(new Rectangle(0, 0, firstBitmap.Width, firstBitmap.Height), ImageLockMode.ReadOnly, firstBitmap.PixelFormat);
 
-            var texture = new Texture(firstBitmap.Width, firstBitmap.Height, paths.Count)
+            var texture = new Texture(contextProvider, firstBitmap.Width, firstBitmap.Height, paths.Count)
             {
                 Target = target,
                 MinFilter = TextureMinFilter.Linear,
@@ -233,13 +233,13 @@ namespace SweetGraphicsCore.Helpers
             switch (data.PixelFormat)
             {
                 case System.Drawing.Imaging.PixelFormat.Format8bppIndexed:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.ColorIndex;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.ColorIndex;
                     texture.PixelType = PixelType.Bitmap;
                     break;
                 case System.Drawing.Imaging.PixelFormat.Format24bppRgb:
-                    texture.PixelInternalFormat = PixelInternalFormat.Rgb8;
-                    texture.PixelFormat = OpenTK.Graphics.OpenGL.PixelFormat.Bgr;
+                    texture.InternalFormat = InternalFormat.Rgb8;
+                    texture.PixelFormat = SpiceEngine.GLFWBindings.GLEnums.PixelFormat.Bgr;
                     texture.PixelType = PixelType.UnsignedByte;
                     break;
             }
@@ -255,9 +255,7 @@ namespace SweetGraphicsCore.Helpers
                 bitmaps.Add(bitmap);
             }
 
-            texture.Bind();
-            texture.Specify(imageData.Select(d => d.Scan0).ToArray());
-            texture.SetTextureParameters();
+            texture.Load(imageData.Select(d => d.Scan0).ToArray());
 
             for (var i = 0; i < bitmaps.Count; i++)
             {
@@ -268,24 +266,22 @@ namespace SweetGraphicsCore.Helpers
             return texture;
         }
 
-        public static void SaveToFile(string filePath, ITexture texture)
+        public static void SaveToFile(IRenderContextProvider contextProvider, string filePath, ITexture texture)
         {
             // Create a frame buffer for our texture
-            var frameBuffer = new FrameBuffer();
+            var frameBuffer = new FrameBuffer(contextProvider);
             frameBuffer.Add(FramebufferAttachment.ColorAttachment0, texture);
-            frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            frameBuffer.AttachAttachments();
-            frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            frameBuffer.Load();
 
             // Bind the frame buffer for reading
             frameBuffer.BindAndRead(ReadBufferMode.ColorAttachment0);
-            GL.PixelStore(PixelStoreParameter.UnpackAlignment, 1);
+            GL.PixelStorei(PixelStoreParameter.UnpackAlignment, 1);
 
             // Create bitmap to transfer texture pixels over to
             var bitmap = new Bitmap(texture.Width, texture.Height);
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, texture.Width, texture.Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            GL.ReadPixels(0, 0, texture.Width, texture.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.ReadPixels(0, 0, texture.Width, texture.Height, SpiceEngine.GLFWBindings.GLEnums.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
             GL.Finish();
 
             bitmap.UnlockBits(data);

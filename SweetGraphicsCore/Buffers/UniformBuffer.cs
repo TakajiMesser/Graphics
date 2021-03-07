@@ -1,63 +1,37 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using SweetGraphicsCore.Rendering;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using SweetGraphicsCore.Shaders;
-using System;
 using System.Runtime.InteropServices;
 
 namespace SweetGraphicsCore.Buffers
 {
-    public abstract class UniformBuffer<T> : IDisposable, IBindable
+    public abstract class UniformBuffer<T> : OpenGLObject
     {
-        public string Name { get; private set; }
-        protected readonly int _handle;
         protected readonly int _size;
-        protected readonly int _binding;
 
-        public UniformBuffer(string name, int binding)
+        public UniformBuffer(IRenderContextProvider contextProvider, string name, int binding) : base(contextProvider)
         {
             Name = name;
-
-            _handle = GL.GenBuffer();
+            Binding = binding;
             _size = Marshal.SizeOf<T>();
-            _binding = binding;
         }
 
-        public void Load(ShaderProgram program) => program.BindUniformBlock(Name, _binding);
+        public string Name { get; }
+        public int Binding { get; }
 
-        public void Buffer() => GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
-
-        public abstract void Bind();
-
-        public void Unbind() => GL.BindBuffer(BufferTarget.UniformBuffer, 0);
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
+        public void Load(ShaderProgram shaderProgram)
         {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteBuffer(_handle);
-                disposedValue = true;
-            }
+            base.Load();
+            shaderProgram.BindUniformBlock(Name, Binding);
         }
 
-        ~UniformBuffer()
-        {
-            Dispose(false);
-        }
+        protected override int Create() => GL.GenBuffer();
+        protected override void Delete() => GL.DeleteBuffer(Handle);
 
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
+        public override void Bind() => GL.BindBuffer(BufferTargetARB.UniformBuffer, Handle);
+        public override void Unbind() => GL.BindBuffer(BufferTargetARB.UniformBuffer, 0);
+
+        public virtual void Buffer() => GL.BindBufferBase(BufferTargetARB.UniformBuffer, Binding, Handle);
     }
 }

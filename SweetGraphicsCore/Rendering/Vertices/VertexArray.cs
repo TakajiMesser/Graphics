@@ -1,43 +1,57 @@
-﻿using SpiceEngineCore.Rendering.Vertices;
-using SweetGraphicsCore.Rendering;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Rendering.Vertices;
 using System;
 using System.Runtime.InteropServices;
-using OpenTK.Graphics.OpenGL;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-using OpenTK.Graphics;
 
 namespace SweetGraphicsCore.Vertices
 {
-    public class VertexArray<T> : IDisposable, IBindable where T : IVertex
+    public class VertexArray<T> : OpenGLObject where T : IVertex
     {
-        private bool _generated = false;
+        public VertexArray(IRenderContextProvider contextProvider) : base(contextProvider) { }
 
-        public int Handle { get; }
-
-        public VertexArray()
+        public override void Load()
         {
-            if (_generated)
-            {
-                GL.DeleteVertexArray(Handle);
-            }
+            base.Load();
 
-            Handle = GL.GenVertexArray();
-            _generated = true;
-        }
-
-        public void Load()
-        {
             Bind();
             SetVertexAttributes();
             Unbind();
+        }
+
+        protected override int Create() => GL.GenVertexArray();
+        protected override void Delete() => GL.DeleteVertexArray(Handle);
+
+        public override void Bind() => GL.BindVertexArray(Handle);
+        public override void Unbind() => GL.BindVertexArray(0);
+
+        private void SetVertexAttributes()
+        {
+            // TODO - This should all either be hard-coded or determined at compile time, since doing this on the fly is pointlessly wasteful
+            int stride = Marshal.SizeOf<T>();
+            int offset = 0;
+
+            var properties = typeof(T).GetProperties();
+
+            for (var i = 0; i < properties.Length; i++)
+            {
+                GL.EnableVertexAttribArray(i);
+
+                var size = GetSize(properties[i].PropertyType);
+                //IntPtr offset = Marshal.OffsetOf<T>(properties[i].Name);
+                var type = GetPointerType(properties[i].PropertyType);
+
+                GL.VertexAttribPointer(i, size, type, false, stride, (IntPtr)offset);
+                offset += size * 4;
+            }
+
+            /*foreach (var attribute in VertexHelper.GetAttributes<T>())
+            {
+                int index = program.GetAttributeLocation(attribute.Name);
+                attribute.Set(index);
+            }*/
         }
 
         private int GetSize(Type type)
@@ -83,71 +97,5 @@ namespace SweetGraphicsCore.Vertices
                 throw new NotImplementedException("Cannot handle property type " + type);
             }
         }
-
-        private void SetVertexAttributes(/*ShaderProgram program*/)
-        {
-            // TODO - This should all either be hard-coded or determined at compile time, since doing this on the fly is pointlessly wasteful
-            int stride = Marshal.SizeOf<T>();
-            int offset = 0;
-
-            var properties = typeof(T).GetProperties();
-
-            for (var i = 0; i < properties.Length; i++)
-            {
-                GL.EnableVertexAttribArray(i);
-
-                int size = GetSize(properties[i].PropertyType);
-                //IntPtr offset = Marshal.OffsetOf<T>(properties[i].Name);
-                VertexAttribPointerType type = GetPointerType(properties[i].PropertyType);
-
-                GL.VertexAttribPointer(i, size, type, false, stride, offset);
-                offset += size * 4;
-            }
-
-            /*foreach (var attribute in VertexHelper.GetAttributes<T>())
-            {
-                int index = program.GetAttributeLocation(attribute.Name);
-                attribute.Set(index);
-            }*/
-        }
-
-        public void Bind()
-        {
-            GL.BindVertexArray(Handle);
-        }
-
-        public void Unbind()
-        {
-            GL.BindVertexArray(0);
-        }
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteVertexArray(Handle);
-                disposedValue = true;
-            }
-        }
-
-        ~VertexArray()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

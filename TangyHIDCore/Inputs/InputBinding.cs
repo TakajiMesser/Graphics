@@ -1,4 +1,4 @@
-﻿using SpiceEngine.GLFW.Inputs;
+﻿using SpiceEngine.GLFWBindings.Inputs;
 
 namespace TangyHIDCore.Inputs
 {

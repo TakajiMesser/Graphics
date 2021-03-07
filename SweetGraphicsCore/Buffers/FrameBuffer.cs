@@ -1,5 +1,6 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
@@ -7,26 +8,53 @@ using System.Linq;
 
 namespace SweetGraphicsCore.Buffers
 {
-    public class FrameBuffer : IDisposable
+    public class FrameBuffer : OpenGLObject
     {
-        private readonly int _handle;
-
+        private ITexture _depthStencilTexture = null;
         private Dictionary<FramebufferAttachment, ITexture> _textures = new Dictionary<FramebufferAttachment, ITexture>();
         private Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
 
-        public FrameBuffer() => _handle = GL.GenFramebuffer();
+        public FrameBuffer(IRenderContextProvider contextProvider) : base(contextProvider) { }
 
+        public override void Load()
+        {
+            base.Load();
+
+            Bind();
+            Attach();
+            Unbind();
+        }
+
+        protected override int Create() => GL.GenFramebuffer();
+        protected override void Delete() => GL.DeleteFramebuffer(Handle);
+
+        public override void Bind() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, Handle);
+        public override void Unbind() => GL.BindFramebuffer(FramebufferTarget.Framebuffer, 0);
+
+        public void BindForDraw() => GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, Handle);
+        public void UnbindForDraw() => GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
+
+        public void BindForRead() => GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, Handle);
+        public void UnbindForRead() => GL.BindFramebuffer(FramebufferTarget.ReadFramebuffer, 0);
+
+        public void AddDepthStencilTexture(ITexture texture) => _depthStencilTexture = texture;
         public void Add(FramebufferAttachment attachment, ITexture texture) => _textures.Add(attachment, texture);
         public void Add(FramebufferAttachment attachment, RenderBuffer renderBuffer) => _renderBuffers.Add(attachment, renderBuffer);
 
         public void Clear()
         {
+            _depthStencilTexture = null;
             _textures.Clear();
             _renderBuffers.Clear();
         }
 
-        public void AttachAttachments()
+        private void Attach()
         {
+            if (_depthStencilTexture != null)
+            {
+                GL.FramebufferTexture(FramebufferTarget.Framebuffer, InvalidateFramebufferAttachment.DepthStencilAttachment, _depthStencilTexture.Handle, 0);
+            }
+
             foreach (var texture in _textures)
             {
                 GL.FramebufferTexture(FramebufferTarget.Framebuffer, texture.Key, texture.Value.Handle, 0);
@@ -38,22 +66,19 @@ namespace SweetGraphicsCore.Buffers
             }
 
             // Check if the framebuffer is "complete"
-            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferErrorCode.FramebufferComplete)
+            if (GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer) != FramebufferStatus.FramebufferComplete)
             {
                 throw new Exception("Error in FrameBuffer: " + GL.CheckFramebufferStatus(FramebufferTarget.Framebuffer));
             }
         }
 
-        public void Bind(FramebufferTarget target) => GL.BindFramebuffer(target, _handle);
-        public void Unbind(FramebufferTarget target) => GL.BindFramebuffer(target, 0);
-
         public void BindAndDraw()
         {
-            Bind(FramebufferTarget.DrawFramebuffer);
+            BindForDraw();
 
             GL.DrawBuffers(_textures.Count, _textures.Keys
-                .Where(k => k != FramebufferAttachment.DepthStencilAttachment && k != FramebufferAttachment.DepthAttachment)
-                .Select(k => (DrawBuffersEnum)k)
+                .Where(k => k != FramebufferAttachment.DepthAttachment)
+                .Select(k => (DrawBufferMode)k)
                 .ToArray());
 
             foreach (var attachment in _renderBuffers)
@@ -62,45 +87,16 @@ namespace SweetGraphicsCore.Buffers
             }
         }
 
-        public void BindAndDraw(params DrawBuffersEnum[] colorBuffers)
+        public void BindAndDraw(params DrawBufferMode[] colorBuffers)
         {
-            Bind(FramebufferTarget.DrawFramebuffer);
+            BindForDraw();
             GL.DrawBuffers(colorBuffers.Length, colorBuffers);
         }
 
         public void BindAndRead(ReadBufferMode readBuffer)
         {
-            Bind(FramebufferTarget.ReadFramebuffer);
+            BindForRead();
             GL.ReadBuffer(readBuffer);
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteFramebuffer(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~FrameBuffer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

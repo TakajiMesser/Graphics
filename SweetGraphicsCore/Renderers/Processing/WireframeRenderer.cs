@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
@@ -6,8 +7,8 @@ using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Meshes;
@@ -19,6 +20,13 @@ namespace SweetGraphicsCore.Renderers.Processing
 {
     public class WireframeRenderer : Renderer
     {
+        private ShaderProgram _wireframeProgram;
+        private ShaderProgram _jointWireframeProgram;
+        private ShaderProgram _gridProgram;
+
+        private FrameBuffer _frameBuffer;
+        private SimpleMesh _gridSquare;
+
         public float LineThickness { get; set; } = 0.02f;
         public Vector4 LineColor { get; set; } = Vector4.One;
 
@@ -40,93 +48,71 @@ namespace SweetGraphicsCore.Renderers.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        private ShaderProgram _wireframeProgram;
-        private ShaderProgram _jointWireframeProgram;
-        private ShaderProgram _gridProgram;
-
-        private FrameBuffer _frameBuffer = new FrameBuffer();
-        private SimpleMesh _gridSquare;
-
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _wireframeProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.wireframe_vert),
-                new Shader(ShaderType.GeometryShader, Resources.wireframe_geom),
-                new Shader(ShaderType.FragmentShader, Resources.wireframe_frag)
-            );
+            _wireframeProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.wireframe_vert, Resources.wireframe_geom, Resources.wireframe_frag });
 
-            _jointWireframeProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.wireframe_skinning_vert),
-                new Shader(ShaderType.GeometryShader, Resources.wireframe_geom),
-                new Shader(ShaderType.FragmentShader, Resources.wireframe_frag)
-            );
+            _jointWireframeProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.wireframe_skinning_vert, Resources.wireframe_geom, Resources.wireframe_frag });
 
-            _gridProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.grid_vert),
-                new Shader(ShaderType.FragmentShader, Resources.grid_frag)
-            );
+            _gridProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.grid_vert, Resources.grid_frag });
         }
 
-        protected override void Resize(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-
-            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
-        }
-
-        protected override void LoadTextures(Resolution resolution)
-        {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
 
-            DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
+            DepthStencilTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Depth32fStencil8,
+                InternalFormat = InternalFormat.Depth32fStencil8,
                 PixelFormat = PixelFormat.DepthComponent,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
+            DepthStencilTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
-            _frameBuffer.Clear();
+            _frameBuffer = new FrameBuffer(contextProvider);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+            _frameBuffer.Add(FramebufferAttachment.StencilAttachment, DepthStencilTexture);
+            _frameBuffer.Load();
 
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _gridSquare = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.SQUARE_MESH_PATH, _gridProgram);
+        }
 
-            _gridSquare = SimpleMesh.LoadFromFile(FilePathHelper.SQUARE_MESH_PATH, _gridProgram);
+        protected override void Resize(Resolution resolution)
+        {
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
         }
 
         public void BindForWriting()
         {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
+            _frameBuffer.BindAndDraw(DrawBufferMode.ColorAttachment0);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
             GL.DepthMask(false);
@@ -201,7 +187,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void RenderGridLines(ICamera camera)
         {
-            _gridProgram.Use();
+            _gridProgram.Bind();
             _gridProgram.SetCamera(camera);
 
             var model = Matrix4.Identity * Matrix4.CreateFromQuaternion(GridRotation) * Matrix4.CreateScale(GridLength);
@@ -256,7 +242,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void SelectionPass(ICamera camera, ILight light, SimpleMesh mesh)
         {
-            _wireframeProgram.Use();
+            _wireframeProgram.Bind();
             _wireframeProgram.SetCamera(camera);
 
             _wireframeProgram.SetUniform("lineThickness", SelectedLightLineThickness);

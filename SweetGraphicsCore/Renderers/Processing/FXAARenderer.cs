@@ -1,22 +1,16 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -29,58 +23,51 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         private ShaderProgram _fxaaProgram;
 
-        private FrameBuffer _frameBuffer = new FrameBuffer();
+        private FrameBuffer _frameBuffer;
         private int _vertexArrayHandle;
-        private VertexBuffer<Simple3DVertex> _vertexBuffer = new VertexBuffer<Simple3DVertex>();
+        private VertexBuffer<Simple3DVertex> _vertexBuffer;
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _fxaaProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.fxaa_vert),
-                new Shader(ShaderType.FragmentShader, Resources.fxaa_frag)
-            );
+            _fxaaProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.fxaa_vert, Resources.fxaa_frag });
         }
 
-        protected override void Resize(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
-
-        protected override void LoadTextures(Resolution resolution)
-        {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
-            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer = new FrameBuffer(contextProvider);
+            _vertexArrayHandle = GL.GenVertexArray(); // TODO - This vertex array is never de-allocated, which is terrible...
+            _vertexBuffer = new VertexBuffer<Simple3DVertex>(contextProvider);
 
-            _vertexArrayHandle = GL.GenVertexArray();
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Load();
+
             GL.BindVertexArray(_vertexArrayHandle);
+            _vertexBuffer.Load();
             _vertexBuffer.AddVertices(new[]
             {
                 new Simple3DVertex(1.0f, 1.0f, 0.0f),
                 new Simple3DVertex(-1.0f, 1.0f, 0.0f),
-                new Simple3DVertex(-1.0f, -1.0f, 0.0f),
-                new Simple3DVertex(1.0f, -1.0f, 0.0f)
+                new Simple3DVertex(1.0f, -1.0f, 0.0f),
+                new Simple3DVertex(-1.0f, -1.0f, 0.0f)
             });
             _vertexBuffer.Bind();
             _vertexBuffer.Buffer();
@@ -92,11 +79,13 @@ namespace SweetGraphicsCore.Renderers.Processing
             _vertexBuffer.Unbind();
         }
 
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+
         public void BindForWriting()
         {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment0);
+            _frameBuffer.BindAndDraw(DrawBufferMode.ColorAttachment0);
             GL.Disable(EnableCap.DepthTest);
-            GL.ClearColor(OpenTK.Graphics.Color4.Black);
+            GL.ClearColor(Color4.Black);
             GL.Clear(ClearBufferMask.ColorBufferBit);
         }
 
@@ -105,7 +94,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             BindForWriting();
             GL.Viewport(0, 0, texture.Width, texture.Height);
 
-            _fxaaProgram.Use();
+            _fxaaProgram.Bind();
             _fxaaProgram.BindTexture(texture, "filterTexture", 0);
             _fxaaProgram.SetUniform("texelStep", Vector2.One);
             _fxaaProgram.SetUniform("maxThreshold", 100.0f);
@@ -116,7 +105,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             GL.BindVertexArray(_vertexArrayHandle);
             _vertexBuffer.Bind();
 
-            _vertexBuffer.DrawQuads();
+            _vertexBuffer.DrawTriangleStrips();
 
             GL.BindVertexArray(0);
             _vertexBuffer.Unbind();

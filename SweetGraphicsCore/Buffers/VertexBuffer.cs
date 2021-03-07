@@ -1,27 +1,28 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.ES20;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
-using SweetGraphicsCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 namespace SweetGraphicsCore.Buffers
 {
-    public class VertexBuffer<T> : IDisposable, IBindable where T : IVertex
+    public class VertexBuffer<T> : OpenGLObject where T : struct, IVertex
     {
-        public int Count => _vertices.Count;
-
-        private readonly int _handle;
         private readonly int _vertexSize;
         private List<T> _vertices = new List<T>();
 
-        public VertexBuffer()
-        {
-            _handle = GL.GenBuffer();
-            _vertexSize = UnitConversions.SizeOf(typeof(T));
-        }
+        public VertexBuffer(IRenderContextProvider contextProvider) : base(contextProvider) => _vertexSize = UnitConversions.SizeOf(typeof(T));
+
+        public int Count => _vertices.Count;
+
+        protected override int Create() => GL.GenBuffer();
+        protected override void Delete() => GL.DeleteBuffer(Handle);
+
+        public override void Bind() => GL.BindBuffer(BufferTargetARB.ArrayBuffer, Handle);
+        public override void Unbind() => GL.BindBuffer(BufferTargetARB.ArrayBuffer, 0);
 
         public void AddVertex(T vertex) => _vertices.Add(vertex);
         public void AddVertices(params T[] vertices) => _vertices.AddRange(vertices);
@@ -35,49 +36,14 @@ namespace SweetGraphicsCore.Buffers
 
         public void Clear() => _vertices.Clear();
 
-        public void Buffer()
-        {
-            //GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, _vertices.ToArray(), BufferUsageHint.StreamDraw);
-            var handle = GCHandle.Alloc(_vertices.ToArray(), GCHandleType.Pinned);
-            GL.BufferData(BufferTarget.ArrayBuffer, _vertexSize * _vertices.Count, handle.AddrOfPinnedObject(), BufferUsageHint.StreamDraw);
-            handle.Free();
-        }
+        public void Buffer() => GL.BufferData(BufferTargetARB.ArrayBuffer, _vertexSize * _vertices.Count, _vertices.ToArray(), BufferUsageARB.StreamDraw);
 
-        public void Bind() => GL.BindBuffer(BufferTarget.ArrayBuffer, _handle);
-
-        public void Unbind() => GL.BindBuffer(BufferTarget.ArrayBuffer, 0);
+        public void DrawPoints() => GL.DrawArrays(PrimitiveType.Points, 0, _vertices.Count);
 
         public void DrawTriangles() => GL.DrawArrays(PrimitiveType.Triangles, 0, _vertices.Count);
 
+        public void DrawTriangleStrips() => GL.DrawArrays(PrimitiveType.TriangleStrip, 0, _vertices.Count);
+
         public void DrawQuads() => GL.DrawArrays(PrimitiveType.Quads, 0, _vertices.Count);
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteBuffer(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~VertexBuffer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

@@ -1,20 +1,14 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Renderers.PostProcessing
 {
@@ -30,90 +24,96 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
         private ShaderProgram _renderCubeProgram;
         private ShaderProgram _renderCubeArrayProgram;
 
-        private VertexArray<Simple2DVertex> _vertexArray = new VertexArray<Simple2DVertex>();
-        private VertexBuffer<Simple2DVertex> _vertexBuffer = new VertexBuffer<Simple2DVertex>();
+        private VertexArray<Simple2DVertex> _vertexArray;
+        private VertexBuffer<Simple2DVertex> _vertexBuffer;
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _render1DProgram = new ShaderProgram(new Shader(ShaderType.FragmentShader, Resources.render_1D_frag));
+            _render1DProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.FragmentShader },
+                new[] { Resources.render_1D_frag });
 
-            _render2DProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, Resources.render_2D_vert), 
-                new Shader(ShaderType.FragmentShader, Resources.render_2D_frag));
+            _render2DProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.render_2D_vert, Resources.render_2D_frag });
 
-            _render2DArrayProgram = new ShaderProgram(new Shader(ShaderType.FragmentShader, Resources.render_2D_array_frag));
+            _render2DArrayProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.FragmentShader },
+                new[] { Resources.render_2D_array_frag });
 
-            _render3DProgram = new ShaderProgram(new Shader(ShaderType.FragmentShader, Resources.render_3D_frag));
+            _render3DProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.FragmentShader },
+                new[] { Resources.render_3D_frag });
 
-            _renderCubeProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, Resources.render_cube_vert),
-                new Shader(ShaderType.FragmentShader, Resources.render_cube_frag));
+            _renderCubeProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.render_cube_vert, Resources.render_cube_frag });
 
-            _renderCubeArrayProgram = new ShaderProgram(new Shader(ShaderType.VertexShader, Resources.render_cube_vert),
-                new Shader(ShaderType.FragmentShader, Resources.render_cube_array_frag));
+            _renderCubeArrayProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.render_cube_vert, Resources.render_cube_array_frag });
         }
 
-        protected override void LoadTextures(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
+            _vertexBuffer = new VertexBuffer<Simple2DVertex>(contextProvider);
+            _vertexArray = new VertexArray<Simple2DVertex>(contextProvider);
+
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
 
-            _vertexBuffer.Clear();
             _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, 1.0f)));
             _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, 1.0f)));
-            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, -1.0f)));
             _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(1.0f, -1.0f)));
+            _vertexBuffer.AddVertex(new Simple2DVertex(new Vector2(-1.0f, -1.0f)));
         }
 
-        protected override void Resize(Resolution resolution)
-        {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         public void Render(Texture texture, int channel = -1)
         {
-            GL.Disable(EnableCap.DepthTest);
+            //GL.Disable(EnableCap.DepthTest);
             GL.BindFramebuffer(FramebufferTarget.DrawFramebuffer, 0);
 
-            GL.ClearColor(OpenTK.Graphics.Color4.Black);
+            //GL.ClearColor(Color4.Blue);
             GL.Clear(ClearBufferMask.ColorBufferBit);
             GL.Viewport(0, 0, FinalTexture.Width, FinalTexture.Height);
 
             switch (texture.Target)
             {
-                case TextureTarget.Texture1D:
-                    _render1DProgram.Use();
+                case TextureTarget.Texture1d:
+                    _render1DProgram.Bind();
                     _render1DProgram.BindTexture(texture, "textureSampler", 0);
                     break;
-                case TextureTarget.Texture2D:
-                    _render2DProgram.Use();
+                case TextureTarget.Texture2d:
+                    _render2DProgram.Bind();
                     _render2DProgram.BindTexture(texture, "textureSampler", 0);
 
                     _render2DProgram.SetUniform("gamma", Gamma);
                     _render2DProgram.SetUniform("channel", channel);
                     break;
-                case TextureTarget.Texture3D:
+                case TextureTarget.Texture3d:
                     break;
-                case TextureTarget.Texture2DArray:
+                case TextureTarget.Texture2dArray:
                     break;
                 case TextureTarget.TextureCubeMapArray:
                     break;
@@ -123,9 +123,9 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
 
             _vertexArray.Bind();
             _vertexBuffer.Bind();
-            _vertexBuffer.Buffer();
 
-            _vertexBuffer.DrawQuads();
+            _vertexBuffer.Buffer();
+            _vertexBuffer.DrawTriangleStrips();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();

@@ -14,7 +14,7 @@ using TangyHIDCore.Inputs;
 
 namespace TangyHIDCore.Outputs
 {
-    public abstract class NativeWindow : IRenderContext
+    public abstract class HiddenWindow : IRenderContext
     {
         private SpiceEngine.GLFWBindings.Windowing.Window _windowHandle;
         private Cursor _cursorHandle;
@@ -37,7 +37,7 @@ namespace TangyHIDCore.Outputs
 
         private static readonly ErrorCallback _errorCallback = (code, description) => throw new GLFWException(description.ToStringUTF8(), code);
 
-        public NativeWindow(Configuration configuration)
+        public HiddenWindow(Configuration configuration)
         {
             GLFW.Init();
             GLFW.SetErrorCallback(_errorCallback);
@@ -51,15 +51,6 @@ namespace TangyHIDCore.Outputs
             SetWindowHints(configuration);
             _windowHandle = GLFW.CreateWindow(configuration.Size.Width, configuration.Size.Height, titleBytes, monitor, window);
             SetCallbacks();
-
-            MakeCurrent();
-            GL.LoadFunctions();
-
-            /*GL.Flush();
-            var error = GL.GetError();
-
-            GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-            GL.Clear(SpiceEngine.GLFWBindings.GLEnums.ClearBufferMask.DepthBufferBit);*/
 
             Exists = true;
         }
@@ -76,7 +67,7 @@ namespace TangyHIDCore.Outputs
                 //GLFW.WindowHint(Hints.OpenGLDebugContext, 1);
                 GLFW.WindowHint(Hints.OpenGLProfile, (int)OpenGLProfiles.Any);
             }
-            
+
             GLFW.WindowHint(WindowHints.Focused, 1);
 
             var monitor = GLFW.GetPrimaryMonitor();

@@ -1,10 +1,12 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
@@ -24,93 +26,74 @@ namespace SweetGraphicsCore.Renderers.Processing
         private ShaderProgram _spotShadowProgram;
         private ShaderProgram _spotShadowJointProgram;
 
-        private FrameBuffer _pointFrameBuffer = new FrameBuffer();
-        private FrameBuffer _spotFrameBuffer = new FrameBuffer();
+        private FrameBuffer _pointFrameBuffer;
+        private FrameBuffer _spotFrameBuffer;
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _pointShadowProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.point_shadow_vert),
-                new Shader(ShaderType.GeometryShader, Resources.point_shadow_geom),
-                new Shader(ShaderType.FragmentShader, Resources.point_shadow_frag)
-            );
+            _pointShadowProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.point_shadow_vert, Resources.point_shadow_geom, Resources.point_shadow_frag });
 
-            _pointShadowJointProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.point_shadow_skinning_vert),
-                new Shader(ShaderType.GeometryShader, Resources.point_shadow_geom),
-                new Shader(ShaderType.FragmentShader, Resources.point_shadow_frag)
-            );
+            _pointShadowJointProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.point_shadow_skinning_vert, Resources.point_shadow_geom, Resources.point_shadow_frag });
 
-            _spotShadowProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.spot_shadow_vert),
-                new Shader(ShaderType.FragmentShader, Resources.spot_shadow_frag)
-            );
+            _spotShadowProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.spot_shadow_vert, Resources.spot_shadow_frag });
 
-            _spotShadowJointProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.spot_shadow_skinning_vert),
-                new Shader(ShaderType.FragmentShader, Resources.spot_shadow_frag)
-            );
+            _spotShadowJointProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.spot_shadow_skinning_vert, Resources.spot_shadow_frag });
+        }
+
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        {
+            PointDepthCubeMap = new Texture(contextProvider, SHADOW_SIZE, SHADOW_SIZE, 6)
+            {
+                Target = TextureTarget.TextureCubeMap,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                InternalFormat = InternalFormat.DepthComponent,
+                PixelFormat = PixelFormat.DepthComponent,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.ClampToEdge
+            };
+            PointDepthCubeMap.Load();
+
+            SpotDepthTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2d,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                InternalFormat = InternalFormat.DepthComponent,
+                PixelFormat = PixelFormat.DepthComponent,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.ClampToEdge
+            };
+            SpotDepthTexture.Load();
+        }
+
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        {
+            _pointFrameBuffer = new FrameBuffer(contextProvider);
+            _pointFrameBuffer.Add(FramebufferAttachment.DepthAttachment, PointDepthCubeMap);
+            _pointFrameBuffer.Load();
+
+            _spotFrameBuffer = new FrameBuffer(contextProvider);
+            _spotFrameBuffer.Add(FramebufferAttachment.DepthAttachment, SpotDepthTexture);
+            _spotFrameBuffer.Load();
         }
 
         protected override void Resize(Resolution resolution)
         {
             PointDepthCubeMap.Resize(SHADOW_SIZE, SHADOW_SIZE, 0);
-            PointDepthCubeMap.Bind();
-            PointDepthCubeMap.ReserveMemory();
-
             SpotDepthTexture.Resize(resolution.Width, resolution.Height, 0);
-            SpotDepthTexture.Bind();
-            SpotDepthTexture.ReserveMemory();
-        }
-
-        protected override void LoadTextures(Resolution resolution)
-        {
-            PointDepthCubeMap = new Texture(SHADOW_SIZE, SHADOW_SIZE, 6)
-            {
-                Target = TextureTarget.TextureCubeMap,
-                EnableMipMap = false,
-                EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                PixelFormat = PixelFormat.DepthComponent,
-                PixelType = PixelType.Float,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.ClampToEdge
-            };
-            PointDepthCubeMap.Bind();
-            PointDepthCubeMap.ReserveMemory();
-
-            SpotDepthTexture = new Texture(resolution.Width, resolution.Height, 0)
-            {
-                Target = TextureTarget.Texture2D,
-                EnableMipMap = false,
-                EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.DepthComponent,
-                PixelFormat = PixelFormat.DepthComponent,
-                PixelType = PixelType.Float,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.ClampToEdge
-            };
-            SpotDepthTexture.Bind();
-            SpotDepthTexture.ReserveMemory();
-        }
-
-        protected override void LoadBuffers()
-        {
-            _pointFrameBuffer.Clear();
-            _pointFrameBuffer.Add(FramebufferAttachment.DepthAttachment, PointDepthCubeMap);
-
-            _pointFrameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _pointFrameBuffer.AttachAttachments();
-            _pointFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
-
-            _spotFrameBuffer.Clear();
-            _spotFrameBuffer.Add(FramebufferAttachment.DepthAttachment, SpotDepthTexture);
-
-            _spotFrameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _spotFrameBuffer.AttachAttachments();
-            _spotFrameBuffer.Unbind(FramebufferTarget.Framebuffer);
         }
 
         public void Render(ICamera camera, ILight light, IBatcher batcher)
@@ -130,7 +113,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         private void BindForPointShadowDrawing()
         {
-            _pointFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
+            _pointFrameBuffer.BindAndDraw(DrawBufferMode.None);
 
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
@@ -145,7 +128,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         private void BindForSpotShadowDrawing()
         {
-            _spotFrameBuffer.BindAndDraw(DrawBuffersEnum.None);
+            _spotFrameBuffer.BindAndDraw(DrawBufferMode.None);
 
             GL.DepthMask(true);
             GL.Enable(EnableCap.DepthTest);
@@ -173,7 +156,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .Render()
                 .Execute();
 
-            _pointFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
+            _pointFrameBuffer.UnbindForDraw();
         }
 
         private void SpotLightPass(ICamera camera, SpotLight light, IBatcher batcher)
@@ -189,7 +172,7 @@ namespace SweetGraphicsCore.Renderers.Processing
                 .Render()
                 .Execute();
 
-            _spotFrameBuffer.Unbind(FramebufferTarget.DrawFramebuffer);
+            _spotFrameBuffer.UnbindForDraw();
         }
     }
 }

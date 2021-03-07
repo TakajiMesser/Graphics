@@ -1,19 +1,20 @@
-﻿using OpenTK.Graphics;
-using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Textures;
 using SweetGraphicsCore.Helpers;
-using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 
 namespace SweetGraphicsCore.Rendering.Textures
 {
-    public class TextureManager : ITextureProvider, IDisposable
+    public class TextureManager : ITextureProvider
     {
+        private IRenderContextProvider _contextProvider;
         private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
         private List<ITexture> _textures = new List<ITexture>();
 
         private object _textureLock = new object();
+
+        public TextureManager(IRenderContextProvider contextProvider) => _contextProvider = contextProvider;
 
         public bool EnableMipMapping { get; set; } = true;
         public bool EnableAnisotropy { get; set; } = true;
@@ -51,7 +52,7 @@ namespace SweetGraphicsCore.Rendering.Textures
             {
                 Invoker.RunSync(() =>
                 {
-                    font.LoadTexture();
+                    font.LoadTexture(_contextProvider);
 
                     /*var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
                         + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
@@ -86,7 +87,7 @@ namespace SweetGraphicsCore.Rendering.Textures
                 // TODO - If Invoker is null, queue this action up
                 Invoker?.RunSync(() =>
                 {
-                    var texture = TextureHelper.LoadFromFile(texturePath, EnableMipMapping, EnableAnisotropy);
+                    var texture = TextureHelper.LoadFromFile(_contextProvider, texturePath, EnableMipMapping, EnableAnisotropy);
                     _textures[index] = texture;
                 });
 
@@ -114,42 +115,13 @@ namespace SweetGraphicsCore.Rendering.Textures
             }*/
         }
 
+        public ITexture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
+
         public void Clear()
         {
             // TODO - Probably need to unbind/unload textures here...
             _indexByPath.Clear();
             _textures.Clear();
         }
-
-        public ITexture RetrieveTexture(int index) => (index >= 0 && index < _textures.Count) ? _textures[index] : null;
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                //GL.DeleteTexture(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~TextureManager()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

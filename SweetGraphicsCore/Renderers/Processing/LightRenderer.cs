@@ -1,9 +1,11 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Lights;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Meshes;
 using SweetGraphicsCore.Rendering.Textures;
@@ -22,26 +24,70 @@ namespace SweetGraphicsCore.Renderers.Processing
         private SimpleMesh _pointLightMesh;
         private SimpleMesh _spotLightMesh;
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _stencilProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.stencil_vert)
-            );
+            _stencilProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader },
+                new[] { Resources.stencil_vert });
 
-            _pointLightProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.light_vert),
-                new Shader(ShaderType.FragmentShader, Resources.point_light_frag)
-            );
+            _pointLightProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.light_vert, Resources.point_light_frag });
 
-            _spotLightProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.light_vert),
-                new Shader(ShaderType.FragmentShader, Resources.spot_light_frag)
-            );
+            _spotLightProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.light_vert, Resources.spot_light_frag });
 
-            _simpleProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.simple_vert),
-                new Shader(ShaderType.FragmentShader, Resources.simple_frag)
-            );
+            _simpleProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.simple_vert, Resources.simple_frag });
+        }
+
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        {
+            /*DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2d,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                InternalFormat = InternalFormat.Depth32fStencil8,
+                PixelFormat = PixelFormat.DepthComponent,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            DepthStencilTexture.Bind();
+            DepthStencilTexture.ReserveMemory();
+
+            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            {
+                Target = TextureTarget.Texture2d,
+                EnableMipMap = false,
+                EnableAnisotropy = false,
+                InternalFormat = InternalFormat.Rgba16f,
+                PixelFormat = PixelFormat.Rgba,
+                PixelType = PixelType.Float,
+                MinFilter = TextureMinFilter.Linear,
+                MagFilter = TextureMagFilter.Linear,
+                WrapMode = TextureWrapMode.Clamp
+            };
+            FinalTexture.Bind();
+            FinalTexture.ReserveMemory();*/
+        }
+
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        {
+            /*_frameBuffer.Clear();
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+
+            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
+            _frameBuffer.AttachAttachments();
+            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);*/
+
+            _pointLightMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
+            _spotLightMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
         protected override void Resize(Resolution resolution)
@@ -55,56 +101,9 @@ namespace SweetGraphicsCore.Renderers.Processing
             FinalTexture.ReserveMemory();*/
         }
 
-        protected override void LoadTextures(Resolution resolution)
-        {
-            /*DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
-            {
-                Target = TextureTarget.Texture2D,
-                EnableMipMap = false,
-                EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Depth32fStencil8,
-                PixelFormat = PixelFormat.DepthComponent,
-                PixelType = PixelType.Float,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.Clamp
-            };
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
-
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
-            {
-                Target = TextureTarget.Texture2D,
-                EnableMipMap = false,
-                EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
-                PixelFormat = PixelFormat.Rgba,
-                PixelType = PixelType.Float,
-                MinFilter = TextureMinFilter.Linear,
-                MagFilter = TextureMagFilter.Linear,
-                WrapMode = TextureWrapMode.Clamp
-            };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();*/
-        }
-
-        protected override void LoadBuffers()
-        {
-            /*_frameBuffer.Clear();
-            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
-
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);*/
-
-            _pointLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
-            _spotLightMesh = SimpleMesh.LoadFromFile(FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
-        }
-
         public void StencilPass(ILight light, ICamera camera, SimpleMesh mesh)
         {
-            _stencilProgram.Use();
+            _stencilProgram.Bind();
             GL.DrawBuffer(DrawBufferMode.None);
 
             GL.DepthMask(false);
@@ -114,8 +113,8 @@ namespace SweetGraphicsCore.Renderers.Processing
             GL.Clear(ClearBufferMask.StencilBufferBit);
 
             GL.StencilFunc(StencilFunction.Always, 0, 0);
-            GL.StencilOpSeparate(StencilFace.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
-            GL.StencilOpSeparate(StencilFace.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
+            GL.StencilOpSeparate(StencilFaceDirection.Back, StencilOp.Keep, StencilOp.IncrWrap, StencilOp.Keep);
+            GL.StencilOpSeparate(StencilFaceDirection.Front, StencilOp.Keep, StencilOp.DecrWrap, StencilOp.Keep);
 
             _stencilProgram.SetCamera(camera);
             _stencilProgram.SetLight(light);
@@ -126,7 +125,7 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         public void LightPass(DeferredRenderer deferredRenderer, ILight light, ICamera camera, SimpleMesh mesh, Texture shadowMap, ShaderProgram program)
         {
-            program.Use();
+            program.Bind();
 
             GL.StencilFunc(StencilFunction.Notequal, 0, 0xFF);
             GL.Disable(EnableCap.DepthTest);

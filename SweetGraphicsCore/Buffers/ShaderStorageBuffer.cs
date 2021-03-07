@@ -1,64 +1,41 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using SweetGraphicsCore.Rendering;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using SweetGraphicsCore.Shaders;
-using System;
 using System.Runtime.InteropServices;
 
 namespace SweetGraphicsCore.Buffers
 {
-    public abstract class ShaderStorageBuffer<T> : IDisposable, IBindable
+    public abstract class ShaderStorageBuffer<T> : OpenGLObject
     {
-        protected readonly int _handle;
         protected readonly int _size;
-        protected readonly int _binding;
 
-        public ShaderStorageBuffer(string name, int binding, ShaderProgram program)
+        public ShaderStorageBuffer(IRenderContextProvider contextProvider, string name, int binding) : base(contextProvider)
         {
-            _handle = GL.GenBuffer();
+            Name = name;
+            Binding = binding;
             _size = Marshal.SizeOf<T>();
-            _binding = binding;
-
-            program.BindShaderStorageBlock(name, binding);
         }
 
-        public void Buffer() => GL.BindBufferBase(BufferRangeTarget.UniformBuffer, _binding, _handle);
+        public string Name { get; }
+        public int Binding { get; }
 
-        public abstract void Bind();
+        public void Load(ShaderProgram shaderProgram)
+        {
+            base.Load();
+            shaderProgram.BindShaderStorageBlock(Name, Binding);
+        }
+
+        protected override int Create() => GL.GenBuffer();
+        protected override void Delete() => GL.DeleteBuffer(Handle);
+
+        public override void Bind() => GL.BindBuffer(BufferTargetARB.ShaderStorageBuffer, Handle);
+        public override void Unbind() => GL.BindBuffer(BufferTargetARB.ShaderStorageBuffer, 0);
+
+        public void Buffer() => GL.BindBufferBase(BufferTargetARB.ShaderStorageBuffer, Binding, Handle);
         // GL.BindBuffer(BufferTarget.ShaderStorageBuffer, _handle);
         // GL.BindBufferBase(BufferRangeTarget.ShaderStorageBuffer, index, _id);
         // GL.BufferData(BufferTarget.ShaderStorageBuffer, (int)EngineHelper.size.vec2, ref default_luminosity, BufferUsageHint.DynamicCopy);
         // GL.GetBufferSubData(BufferTarget.ShaderStorageBuffer, (IntPtr)0, exp_size, ref lumRead);
-
-        public void Unbind() => GL.BindBuffer(BufferTarget.ShaderStorageBuffer, 0);
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteBuffer(_handle);
-                disposedValue = true;
-            }
-        }
-
-        ~ShaderStorageBuffer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

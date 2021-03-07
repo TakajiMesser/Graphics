@@ -10,7 +10,6 @@ namespace SweetGraphicsCore.Vertices
         private List<T> _vertices = new List<T>();
         private List<int> _triangleIndices = new List<int>();
 
-        public Vertex3DSet() { }
         public Vertex3DSet(IList<T> vertices, IList<int> triangleIndices)
         {
             if (triangleIndices.Count % 3 != 0) throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");

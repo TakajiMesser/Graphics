@@ -1,20 +1,23 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Platform;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.Utilities;
+using SpiceEngineCore.Rendering;
 
 namespace SweetGraphicsCore
 {
-    public class OpenGLContext
+    /*public class OpenGLContext : IRenderContext
     {
         private GraphicsContext _context;
         private IWindowInfo _windowInfo;
 
-        public OpenGLContext(IWindowInfo windowInfo, int majorVersion, int minorVersion)
+        public OpenGLContext()
         {
             _windowInfo = windowInfo;
             _context = new GraphicsContext(GraphicsMode.Default, windowInfo, majorVersion, minorVersion, GraphicsContextFlags.ForwardCompatible);
             _context.MakeCurrent(windowInfo);
             _context.LoadAll();
         }
+
+        public bool IsDisposed { get; private set; }
 
         public void MakeCurrent() => _context.MakeCurrent(_windowInfo);
 
@@ -23,5 +26,14 @@ namespace SweetGraphicsCore
         public void SwapBuffers() => _context.SwapBuffers();
 
         public void Dispose() => _context.Dispose();
-    }
+
+
+
+
+        /*bool IsDisposed { get; }
+
+        void MakeCurrent();
+        void Update();
+        void SwapBuffers();*
+    }*/
 }

@@ -1,42 +1,28 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 
 namespace SweetGraphicsCore.Rendering.Processing.Post
 {
-    public abstract class PostProcess
+    public abstract class PostProcess : Renderer
     {
+        private int _vertexArrayHandle;
+        private VertexBuffer<Simple3DVertex> _vertexBuffer;
+
+        public PostProcess(string name) => Name = name;
+
         public string Name { get; private set; }
         public bool Enabled { get; set; } = true;
-        public Resolution Resolution { get; set; }
-
         public Texture FinalTexture { get; protected set; }
 
-        //protected ShaderProgram _program;
-        private int _vertexArrayHandle;
-        private VertexBuffer<Simple3DVertex> _vertexBuffer = new VertexBuffer<Simple3DVertex>();
-        protected FrameBuffer _frameBuffer = new FrameBuffer();
-
-        public PostProcess(string name, Resolution resolution)
-        {
-            Name = name;
-            Resolution = resolution;
-        }
-
-        public void Load()
-        {
-            LoadProgram();
-            LoadBuffers();
-        }
-
-        protected abstract void LoadProgram();
-
-        protected void LoadQuad(ShaderProgram program)
+        protected void LoadBuffers(ShaderProgram program)
         {
             _vertexArrayHandle = GL.GenVertexArray();
             GL.BindVertexArray(_vertexArrayHandle);
@@ -44,9 +30,11 @@ namespace SweetGraphicsCore.Rendering.Processing.Post
             {
                 new Simple3DVertex(1.0f, 1.0f, 0.0f),
                 new Simple3DVertex(-1.0f, 1.0f, 0.0f),
-                new Simple3DVertex(-1.0f, -1.0f, 0.0f),
-                new Simple3DVertex(1.0f, -1.0f, 0.0f)
+                new Simple3DVertex(1.0f, -1.0f, 0.0f),
+                new Simple3DVertex(-1.0f, -1.0f, 0.0f)
             });
+
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexBuffer.Buffer();
 
@@ -57,39 +45,31 @@ namespace SweetGraphicsCore.Rendering.Processing.Post
             _vertexBuffer.Unbind();
         }
 
-        protected void LoadFinalTexture()
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture = new Texture(Resolution.Width, Resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
         }
 
-        protected abstract void LoadBuffers();
-
-        public virtual void ResizeTextures()
-        {
-            FinalTexture.Resize(Resolution.Width, Resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         protected void RenderQuad()
         {
             GL.BindVertexArray(_vertexArrayHandle);
             _vertexBuffer.Bind();
 
-            _vertexBuffer.DrawQuads();
+            _vertexBuffer.DrawTriangleStrips();
 
             GL.BindVertexArray(0);
             _vertexBuffer.Unbind();

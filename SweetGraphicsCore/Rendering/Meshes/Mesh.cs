@@ -1,4 +1,4 @@
-﻿using OpenTK.Graphics;
+﻿using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Matrices;
 using SpiceEngineCore.Rendering.Vertices;
@@ -8,19 +8,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
-
 namespace SweetGraphicsCore.Rendering.Meshes
 {
-    public class Mesh<T> : IMesh, IDisposable where T : IVertex3D
+    public class Mesh<T> : IMesh where T : struct, IVertex3D
     {
+        private Vertex3DSet<T> _vertexSet;
+
+        private VertexBuffer<T> _vertexBuffer;
+        private VertexIndexBuffer _indexBuffer;
+        private VertexArray<T> _vertexArray;
+
+        private float _alpha = 1.0f;
+
+        public Mesh(Vertex3DSet<T> vertexSet) => _vertexSet = vertexSet;
+
         public IEnumerable<IVertex3D> Vertices => _vertexSet.Vertices.Cast<IVertex3D>();
         public IEnumerable<int> TriangleIndices => _vertexSet.TriangleIndices;
         public float Alpha
@@ -46,16 +47,6 @@ namespace SweetGraphicsCore.Rendering.Meshes
         public bool IsSelectable { get; set; } = true;
 
         public event EventHandler<AlphaEventArgs> AlphaChanged;
-
-        private Vertex3DSet<T> _vertexSet;
-
-        private VertexBuffer<T> _vertexBuffer;
-        private VertexIndexBuffer _indexBuffer;
-        private VertexArray<T> _vertexArray;
-
-        private float _alpha = 1.0f;
-
-        public Mesh(Vertex3DSet<T> vertexSet) => _vertexSet = vertexSet;
 
         public IMesh Duplicate() => new Mesh<T>(_vertexSet.Duplicate());
 
@@ -108,39 +99,24 @@ namespace SweetGraphicsCore.Rendering.Meshes
             }
         }
 
-        public void Load()
+        public void Load(IRenderContextProvider contextProvider)
         {
-            _vertexBuffer = new VertexBuffer<T>();
-            _indexBuffer = new VertexIndexBuffer();
-            _vertexArray = new VertexArray<T>();
+            _vertexBuffer = new VertexBuffer<T>(contextProvider);
+            _indexBuffer = new VertexIndexBuffer(contextProvider);
+            _vertexArray = new VertexArray<T>(contextProvider);
 
-            _vertexBuffer.Clear();
             _vertexBuffer.AddVertices(_vertexSet.Vertices);
             _indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);
 
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
+            _indexBuffer.Load();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
         }
 
         public void Draw()
         {
-            var a = 3;
-            for (var i = 0; i < _vertexBuffer.Count; i++)
-            {
-                if (_vertexBuffer.GetVertex(i) is ISelectionVertex selectionVertex)
-                {
-                    if (selectionVertex.SelectionID.A != 1.0f)
-                    {
-                        a = 4;
-                    }
-                }
-                else
-                {
-                    a = 5;
-                }
-            }
-
             _vertexArray.Bind();
             _vertexBuffer.Bind();
             _indexBuffer.Bind();
@@ -309,34 +285,5 @@ namespace SweetGraphicsCore.Rendering.Meshes
 
             return new Mesh<Vertex>(verticies, materials, triangleIndices);
         }*/
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                //GL.DeleteShader(Handle);
-                disposedValue = true;
-            }
-        }
-
-        ~Mesh()
-        {
-            Dispose(false);
-        }
-
-        public virtual void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

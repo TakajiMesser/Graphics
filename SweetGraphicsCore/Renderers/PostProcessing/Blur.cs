@@ -1,8 +1,10 @@
-﻿using OpenTK;
-using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
@@ -12,46 +14,46 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
 {
     public class Blur : Renderer
     {
-        public Texture FinalTexture { get; protected set; }
-
         private ShaderProgram _blurProgram;
 
         private int _vertexArrayHandle;
-        private VertexBuffer<Simple3DVertex> _vertexBuffer = new VertexBuffer<Simple3DVertex>();
-        private FrameBuffer _frameBuffer = new FrameBuffer();
+        private VertexBuffer<Simple3DVertex> _vertexBuffer;
+        private FrameBuffer _frameBuffer;
 
-        protected override void LoadPrograms()
+        public Texture FinalTexture { get; protected set; }
+
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _blurProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.render_2D_vert),
-                new Shader(ShaderType.FragmentShader, Resources.myBlur_frag)
-            );
+            _blurProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.render_2D_vert, Resources.myBlur_frag });
         }
 
-        protected override void LoadTextures(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
+            _frameBuffer = new FrameBuffer(contextProvider);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Load();
+
+            _vertexBuffer = new VertexBuffer<Simple3DVertex>(contextProvider);
+            _vertexBuffer.Load();
 
             _vertexArrayHandle = GL.GenVertexArray();
             GL.BindVertexArray(_vertexArrayHandle);
@@ -59,8 +61,8 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             {
                 new Simple3DVertex(1.0f, 1.0f, 0.0f),
                 new Simple3DVertex(-1.0f, 1.0f, 0.0f),
-                new Simple3DVertex(-1.0f, -1.0f, 0.0f),
-                new Simple3DVertex(1.0f, -1.0f, 0.0f)
+                new Simple3DVertex(1.0f, -1.0f, 0.0f),
+                new Simple3DVertex(-1.0f, -1.0f, 0.0f)
             });
             _vertexBuffer.Bind();
             _vertexBuffer.Buffer();
@@ -72,19 +74,14 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             _vertexBuffer.Unbind();
         }
 
-        protected override void Resize(Resolution resolution)
-        {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         public void Render(Texture scene, Texture velocity, float fps)
         {
             _frameBuffer.BindAndDraw();
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
 
-            _blurProgram.Use();
+            _blurProgram.Bind();
 
             _blurProgram.BindTexture(scene, "sceneTexture", 0);
             _blurProgram.BindTexture(velocity, "velocityTexture", 1);
@@ -92,7 +89,7 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             GL.BindVertexArray(_vertexArrayHandle);
             _vertexBuffer.Bind();
 
-            _vertexBuffer.DrawQuads();
+            _vertexBuffer.DrawTriangleStrips();
 
             GL.BindVertexArray(0);
             _vertexBuffer.Unbind();

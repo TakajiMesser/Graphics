@@ -1,23 +1,17 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Properties;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
 using System.Collections.Generic;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SweetGraphicsCore.Renderers.Processing
 {
@@ -32,191 +26,140 @@ namespace SweetGraphicsCore.Renderers.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        private FrameBuffer _frameBuffer = new FrameBuffer();
-
         private ShaderProgram _geometryProgram;
         private ShaderProgram _jointGeometryProgram;
 
-        protected override void LoadPrograms()
-        {
-            _geometryProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.deferred_vert),
-                //new Shader(ShaderType.TessControlShader, File.ReadAllText(FilePathHelper.DEFERRED_TESS_CONTROL_SHADER_PATH)),
-                //new Shader(ShaderType.TessEvaluationShader, File.ReadAllText(FilePathHelper.DEFERRED_TESS_EVAL_SHADER_PATH)),
-                //new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.DEFERRED_GEOMETRY_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, Resources.deferred_frag)
-            );
+        private FrameBuffer _frameBuffer;
 
-            _jointGeometryProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.deferred_skinning_vert),
-                //new Shader(ShaderType.TessControlShader, File.ReadAllText(FilePathHelper.DEFERRED_TESS_CONTROL_SHADER_PATH)),
-                //new Shader(ShaderType.TessEvaluationShader, File.ReadAllText(FilePathHelper.DEFERRED_TESS_EVAL_SHADER_PATH)),
-                //new Shader(ShaderType.GeometryShader, File.ReadAllText(FilePathHelper.DEFERRED_GEOMETRY_SHADER_PATH)),
-                new Shader(ShaderType.FragmentShader, Resources.deferred_frag)
-            );
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        {
+            _geometryProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.deferred_vert, Resources.deferred_frag });
+
+            _jointGeometryProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.deferred_skinning_vert, Resources.deferred_frag });
         }
 
-        protected override void Resize(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            PositionTexture.Resize(resolution.Width, resolution.Height, 0);
-            PositionTexture.Bind();
-            PositionTexture.ReserveMemory();
-
-            ColorTexture.Resize(resolution.Width, resolution.Height, 0);
-            ColorTexture.Bind();
-            ColorTexture.ReserveMemory();
-
-            NormalTexture.Resize(resolution.Width, resolution.Height, 0);
-            NormalTexture.Bind();
-            NormalTexture.ReserveMemory();
-
-            DiffuseMaterialTexture.Resize(resolution.Width, resolution.Height, 0);
-            DiffuseMaterialTexture.Bind();
-            DiffuseMaterialTexture.ReserveMemory();
-
-            SpecularTexture.Resize(resolution.Width, resolution.Height, 0);
-            SpecularTexture.Bind();
-            SpecularTexture.ReserveMemory();
-
-            VelocityTexture.Resize(resolution.Width, resolution.Height, 0);
-            VelocityTexture.Bind();
-            VelocityTexture.ReserveMemory();
-
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-
-            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
-        }
-
-        protected override void LoadTextures(Resolution resolution)
-        {
-            PositionTexture = new Texture(resolution.Width, resolution.Height, 0)
+            PositionTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgb16f,
+                InternalFormat = InternalFormat.Rgb16f,
                 PixelFormat = PixelFormat.Rgb,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            PositionTexture.Bind();
-            PositionTexture.ReserveMemory();
+            PositionTexture.Load();
 
-            ColorTexture = new Texture(resolution.Width, resolution.Height, 0)
+            ColorTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            ColorTexture.Bind();
-            ColorTexture.ReserveMemory();
+            ColorTexture.Load();
 
-            NormalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            NormalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgb16f,
+                InternalFormat = InternalFormat.Rgb16f,
                 PixelFormat = PixelFormat.Rgb,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            NormalTexture.Bind();
-            NormalTexture.ReserveMemory();
+            NormalTexture.Load();
 
-            DiffuseMaterialTexture = new Texture(resolution.Width, resolution.Height, 0)
+            DiffuseMaterialTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            DiffuseMaterialTexture.Bind();
-            DiffuseMaterialTexture.ReserveMemory();
+            DiffuseMaterialTexture.Load();
 
-            SpecularTexture = new Texture(resolution.Width, resolution.Height, 0)
+            SpecularTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            SpecularTexture.Bind();
-            SpecularTexture.ReserveMemory();
+            SpecularTexture.Load();
 
-            VelocityTexture = new Texture(resolution.Width, resolution.Height, 0)
+            VelocityTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rg16f,
+                InternalFormat = InternalFormat.Rg16f,
                 PixelFormat = PixelFormat.Rg,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            VelocityTexture.Bind();
-            VelocityTexture.ReserveMemory();
+            VelocityTexture.Load();
 
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
 
-            DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
+            DepthStencilTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Depth32fStencil8,
+                InternalFormat = InternalFormat.Depth32fStencil8,
                 PixelFormat = PixelFormat.DepthComponent,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            DepthStencilTexture.Bind();
-            DepthStencilTexture.ReserveMemory();
+            DepthStencilTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
-            _frameBuffer.Clear();
+            _frameBuffer = new FrameBuffer(contextProvider);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, PositionTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment1, ColorTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment2, NormalTexture);
@@ -224,24 +167,36 @@ namespace SweetGraphicsCore.Renderers.Processing
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment4, SpecularTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment5, VelocityTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment6, FinalTexture);
-            _frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, DepthStencilTexture);
+            //_frameBuffer.Add(FramebufferAttachment.StencilAttachment, DepthStencilTexture);
+            _frameBuffer.AddDepthStencilTexture(DepthStencilTexture);
+            //InvalidateFramebufferAttachment.DepthStencilAttachment;
 
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Load();
+        }
+
+        protected override void Resize(Resolution resolution)
+        {
+            PositionTexture.Resize(resolution.Width, resolution.Height, 0);
+            ColorTexture.Resize(resolution.Width, resolution.Height, 0);
+            NormalTexture.Resize(resolution.Width, resolution.Height, 0);
+            DiffuseMaterialTexture.Resize(resolution.Width, resolution.Height, 0);
+            SpecularTexture.Resize(resolution.Width, resolution.Height, 0);
+            VelocityTexture.Resize(resolution.Width, resolution.Height, 0);
+            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
+            DepthStencilTexture.Resize(resolution.Width, resolution.Height, 0);
         }
 
         public void BindForGeometryWriting()
         {
-            _frameBuffer.BindAndDraw(new DrawBuffersEnum[]
+            _frameBuffer.BindAndDraw(new []
             {
-                DrawBuffersEnum.ColorAttachment0,
-                DrawBuffersEnum.ColorAttachment1,
-                DrawBuffersEnum.ColorAttachment2,
-                DrawBuffersEnum.ColorAttachment3,
-                DrawBuffersEnum.ColorAttachment4,
-                DrawBuffersEnum.ColorAttachment5,
-                DrawBuffersEnum.ColorAttachment6
+                DrawBufferMode.ColorAttachment0,
+                DrawBufferMode.ColorAttachment1,
+                DrawBufferMode.ColorAttachment2,
+                DrawBufferMode.ColorAttachment3,
+                DrawBufferMode.ColorAttachment4,
+                DrawBufferMode.ColorAttachment5,
+                DrawBufferMode.ColorAttachment6
             });
             
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
@@ -254,33 +209,21 @@ namespace SweetGraphicsCore.Renderers.Processing
             //GL.Disable(EnableCap.CullFace);
         }
 
-        public void BindForTransparentWriting()
+        public void BindForTransparentWriting() => _frameBuffer.BindAndDraw(new[]
         {
-            _frameBuffer.BindAndDraw(new DrawBuffersEnum[]
-            {
-                DrawBuffersEnum.ColorAttachment0,
-                DrawBuffersEnum.ColorAttachment1
-            });
-        }
+            DrawBufferMode.ColorAttachment0,
+            DrawBufferMode.ColorAttachment1
+        });
 
-        public void BindForLitTransparentWriting()
+        public void BindForLitTransparentWriting() => _frameBuffer.BindAndDraw(new[]
         {
-            _frameBuffer.BindAndDraw(new DrawBuffersEnum[]
-            {
-                DrawBuffersEnum.ColorAttachment0,
-                DrawBuffersEnum.ColorAttachment6
-            });
-        }
+            DrawBufferMode.ColorAttachment0,
+            DrawBufferMode.ColorAttachment6
+        });
 
-        public void BindForDiffuseWriting()
-        {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment1);
-        }
+        public void BindForDiffuseWriting() => _frameBuffer.BindAndDraw(DrawBufferMode.ColorAttachment1);
 
-        public void BindForLitWriting()
-        {
-            _frameBuffer.BindAndDraw(DrawBuffersEnum.ColorAttachment6);
-        }
+        public void BindForLitWriting() => _frameBuffer.BindAndDraw(DrawBufferMode.ColorAttachment6);
 
         public void GeometryPass(ICamera camera, IBatcher batcher)
         {

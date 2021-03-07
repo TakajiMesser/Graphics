@@ -1,6 +1,7 @@
 ﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Brushes;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Rendering;
 using System.Collections.Generic;
 
 namespace SweetGraphicsCore.Buffers
@@ -19,12 +20,18 @@ namespace SweetGraphicsCore.Buffers
         public const string MVP_NAME = "MVPMatrixBlock";
         public const int MVP_BINDING = 4;
 
-        private MatrixBuffer _modelMatrixBuffer = new MatrixBuffer(MODEL_NAME, MODEL_BINDING);
-        private MatrixBuffer _viewMatrixBuffer = new MatrixBuffer(VIEW_NAME, VIEW_BINDING);
-        private MatrixBuffer _projectionMatrixBuffer = new MatrixBuffer(PROJECTION_NAME, PROJECTION_BINDING);
-        private MatrixBuffer _mvpMatrixBuffer = new MatrixBuffer(MVP_NAME, MVP_BINDING);
+        private MatrixBuffer _modelMatrixBuffer;
+        private MatrixBuffer _viewMatrixBuffer;
+        private MatrixBuffer _projectionMatrixBuffer;
+        private MatrixBuffer _mvpMatrixBuffer;
 
-        public MatrixStack() { }
+        public MatrixStack(IRenderContextProvider contextProvider)
+        {
+            _modelMatrixBuffer = new MatrixBuffer(contextProvider, MODEL_NAME, MODEL_BINDING);
+            _viewMatrixBuffer = new MatrixBuffer(contextProvider, VIEW_NAME, VIEW_BINDING);
+            _projectionMatrixBuffer = new MatrixBuffer(contextProvider, PROJECTION_NAME, PROJECTION_BINDING);
+            _mvpMatrixBuffer = new MatrixBuffer(contextProvider, MVP_NAME, MVP_BINDING);
+        }
 
         public void AddEntities(ICamera camera, IEnumerable<Actor> actors, IEnumerable<Brush> brushes)
         {

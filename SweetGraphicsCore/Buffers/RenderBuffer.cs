@@ -1,21 +1,13 @@
-﻿using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using SweetGraphicsCore.Rendering;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
+using SpiceEngineCore.Rendering;
 using System;
 
 namespace SweetGraphicsCore.Buffers
 {
-    public class RenderBuffer : IDisposable, IBindable
+    public class RenderBuffer : OpenGLObject
     {
-        public int Handle { get; }
-
-        public RenderbufferTarget Target { get; private set; }
-        public RenderbufferStorage Storage { get; set; }
-
-        public int Width { get; private set; }
-        public int Height { get; private set; }
-
-        public RenderBuffer(RenderbufferTarget target, int width, int height)
+        public RenderBuffer(IRenderContextProvider contextProvider, RenderbufferTarget target, int width, int height) : base(contextProvider)
         {
             Handle = GL.GenRenderbuffer();
 
@@ -24,11 +16,16 @@ namespace SweetGraphicsCore.Buffers
             Height = height;
         }
 
-        public void Bind() => GL.BindRenderbuffer(Target, Handle);
+        public RenderbufferTarget Target { get; private set; }
+        public InternalFormat Storage { get; set; }
+        public int Width { get; private set; }
+        public int Height { get; private set; }
 
-        public void Unbind() => GL.BindRenderbuffer(Target, 0);
+        protected override int Create() => GL.GenRenderbuffer();
+        protected override void Delete() => GL.DeleteRenderbuffer(Handle);
 
-        public void ReserveMemory() => GL.RenderbufferStorage(Target, Storage, Width, Height);
+        public override void Bind() => GL.BindRenderbuffer(Target, Handle);
+        public override void Unbind() => GL.BindRenderbuffer(Target, 0);
 
         public void Load(IntPtr pixels)
         {
@@ -36,33 +33,6 @@ namespace SweetGraphicsCore.Buffers
             //SetTextureParameters();
         }
 
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue && GraphicsContext.CurrentContext != null && !GraphicsContext.CurrentContext.IsDisposed)
-            {
-                if (disposing)
-                {
-                    // TODO: dispose managed state (managed objects).
-                }
-
-                GL.DeleteRenderbuffer(Handle);
-                disposedValue = true;
-            }
-        }
-
-        ~RenderBuffer()
-        {
-            Dispose(false);
-        }
-
-        public void Dispose()
-        {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-        #endregion
+        public void ReserveMemory() => GL.RenderbufferStorage(Target, Storage, Width, Height);
     }
 }

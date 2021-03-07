@@ -1,5 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities.Lights;
+using SpiceEngineCore.Rendering;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -10,19 +12,19 @@ namespace SweetGraphicsCore.Buffers
         public const string NAME = "PointLightBlock";
         public const int BINDING = 1;
 
-        public List<PLight> PointLights { get; } = new List<PLight>();
+        public LightBuffer(IRenderContextProvider contextProvider) : base(contextProvider, NAME, BINDING) { }
 
-        public LightBuffer() : base(NAME, BINDING) { }
+        public List<PLight> PointLights { get; } = new List<PLight>();
 
         public void AddPointLight(PointLight light) => PointLights.Add(light.ToStruct());
         public void AddPointLights(IEnumerable<PointLight> lights) => PointLights.AddRange(lights.Select(l => l.ToStruct()));
 
         public void Clear() => PointLights.Clear();
 
-        public override void Bind()
+        public override void Buffer()
         {
-            GL.BindBuffer(BufferTarget.UniformBuffer, _handle);
-            GL.BufferData(BufferTarget.UniformBuffer, _size * PointLights.Count, PointLights.ToArray(), BufferUsageHint.DynamicDraw);
+            Bind();
+            GL.BufferData(BufferTargetARB.UniformBuffer, _size * PointLights.Count, PointLights.ToArray(), BufferUsageARB.DynamicDraw);
         }
     }
 }

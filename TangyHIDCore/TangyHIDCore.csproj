@@ -18,7 +18,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpiceEngine.GLFW\SpiceEngine.GLFWBindings.csproj" />
+    <ProjectReference Include="..\SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj" />
+    <ProjectReference Include="..\SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj" />
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj" />
   </ItemGroup>
 

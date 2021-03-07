@@ -5,7 +5,7 @@ using System;
 
 namespace SweetGraphicsCore.Rendering.Meshes
 {
-    public class TexturedMesh<T> : Mesh<T>, ITexturedMesh, IDisposable where T : IVertex3D
+    public class TexturedMesh<T> : Mesh<T>, ITexturedMesh where T : struct, IVertex3D
     {
         public Material Material { get; set; }
         public TextureMapping? TextureMapping { get; set; }
