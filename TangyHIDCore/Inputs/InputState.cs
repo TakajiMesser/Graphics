@@ -1,55 +1,93 @@
-﻿using OpenTK.Input;
+﻿using SpiceEngine.GLFWBindings.Inputs;
+using SpiceEngineCore.Utilities;
 using System;
-using TangyHIDCore.Utilities;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
+using System.Collections.Generic;
 
 namespace TangyHIDCore.Inputs
 {
-    public class InputState
+    public abstract class InputState<T> : IInputState<T> where T : Enum
     {
-        private KeyboardState _keyboardState = Keyboard.GetState();
-        private MouseState _mouseState = Mouse.GetState();
-        private GamePadState _gamePadState;
+        private Dictionary<T, int> _indexByInput = new Dictionary<T, int>();
+        private bool[] _inputPresses;
 
-        public InputState()
+        public InputState(DeviceTypes deviceType)
         {
-            // How to choose index for GamePad?
+            DeviceType = deviceType;
+
+            var index = 0;
+
+            foreach (var value in Enum.GetValues(typeof(T)))
+            {
+                var input = (T)value;
+
+                if (!_indexByInput.ContainsKey(input))
+                {
+                    _indexByInput.Add(input, index);
+                    index++;
+                }
+            }
+
+            _inputPresses = ArrayExtensions.Initialize(index, false);
         }
 
-        public Vector2 MousePosition => new Vector2(_mouseState.X, _mouseState.Y);
-        public int MouseWheel => _mouseState.Wheel;
+        public DeviceTypes DeviceType { get; }
 
-        public bool IsDown(Input input)
+        public bool IsDown(T input)
         {
-            switch (input.Type)
-            {
-                case InputTypes.Key:
-                    return _keyboardState.IsKeyDown(input.PrimaryInput.ConvertToOpenTKKey()) || _keyboardState.IsKeyDown(input.SecondaryInput.ConvertToOpenTKKey());
-                case InputTypes.Mouse:
-                    var primaryMouseButton = input.PrimaryInput.ConvertToOpenTKMouseButton();
-                    var secondaryMouseButton = input.SecondaryInput.ConvertToOpenTKMouseButton();
+            var index = _indexByInput[input];
+            return _inputPresses[index];
+        }
 
-                    return primaryMouseButton.HasValue && _mouseState.IsButtonDown(primaryMouseButton.Value)
-                        || secondaryMouseButton.HasValue && _mouseState.IsButtonDown(secondaryMouseButton.Value);
-                default:
-                    throw new NotImplementedException("");
+        public abstract bool IsDown(InputBinding inputBinding);
+
+        public void Update(T input, InputStates state)
+        {
+            var index = _indexByInput[input];
+
+            if (state == InputStates.Press)
+            {
+                var a = 3;
+                if (index == 40)
+                {
+                    a = 4;
+                }
+
+                _inputPresses[index] = true;
+            }
+            else if (state == InputStates.Release)
+            {
+                var a = 3;
+                if (index == 40)
+                {
+                    a = 4;
+                }
+
+                _inputPresses[index] = false;
             }
         }
 
-        public bool IsUp(Input input)
+        public virtual void UpdateFrom(IInputState state)
         {
-            switch (input.Type)
+            if (state is InputState<T> inputState)
             {
-                case InputTypes.Key:
-                    return _keyboardState.IsKeyUp((Key)input.PrimaryInput) && _keyboardState.IsKeyUp((Key)input.SecondaryInput);
-                case InputTypes.Mouse:
-                    var primaryMouseButton = input.PrimaryInput.ConvertToOpenTKMouseButton();
-                    var secondaryMouseButton = input.SecondaryInput.ConvertToOpenTKMouseButton();
+                for (var i = 0; i < _inputPresses.Length; i++)
+                {
+                    var a = 3;
+                    if (inputState is KeyState && i == 40)
+                    {
+                        a = 4;
+                    }
 
-                    return primaryMouseButton.HasValue && _mouseState.IsButtonUp(primaryMouseButton.Value)
-                        || secondaryMouseButton.HasValue && _mouseState.IsButtonUp(secondaryMouseButton.Value);
-                default:
-                    throw new NotImplementedException("");
+                    _inputPresses[i] = inputState._inputPresses[i];
+                }
+            }
+        }
+
+        public void Clear()
+        {
+            for (var i = 0; i < _inputPresses.Length; i++)
+            {
+                _inputPresses[i] = false;
             }
         }
     }

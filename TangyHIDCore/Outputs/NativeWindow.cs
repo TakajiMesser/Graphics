@@ -14,26 +14,26 @@ using TangyHIDCore.Inputs;
 
 namespace TangyHIDCore.Outputs
 {
-    public abstract class NativeWindow : IRenderContext
+    public abstract class NativeWindow : IRenderContext, IInputTracker
     {
-        private SpiceEngine.GLFWBindings.Windowing.Window _windowHandle;
-        private Cursor _cursorHandle;
+        protected SpiceEngine.GLFWBindings.Windowing.Window _windowHandle;
+        protected Cursor _cursorHandle;
 
-        private PositionCallback _windowPositionCallback;
-        private SizeCallback _windowSizeCallback;
-        private SizeCallback _framebufferSizeCallback;
-        private FocusCallback _windowFocusCallback;
-        private WindowMaximizedCallback _windowMaximizeCallback;
-        private WindowContentsScaleCallback _windowContentScaleCallback;
-        private WindowCallback _windowRefreshCallback;
-        private WindowCallback _closeCallback;
-        private FileDropCallback _dropCallback;
-        private MouseCallback _cursorPositionCallback;
-        private MouseCallback _scrollCallback;
-        private MouseEnterCallback _cursorEnterCallback;
-        private KeyCallback _keyCallback;
-        private MouseButtonCallback _mouseButtonCallback;
-        private CharModsCallback _charModsCallback;
+        protected PositionCallback _windowPositionCallback;
+        protected SizeCallback _windowSizeCallback;
+        protected SizeCallback _framebufferSizeCallback;
+        protected FocusCallback _windowFocusCallback;
+        protected WindowMaximizedCallback _windowMaximizeCallback;
+        protected WindowContentsScaleCallback _windowContentScaleCallback;
+        protected WindowCallback _windowRefreshCallback;
+        protected WindowCallback _closeCallback;
+        protected FileDropCallback _dropCallback;
+        protected MouseCallback _cursorPositionCallback;
+        protected MouseCallback _scrollCallback;
+        protected MouseEnterCallback _cursorEnterCallback;
+        protected KeyCallback _keyCallback;
+        protected MouseButtonCallback _mouseButtonCallback;
+        protected CharModsCallback _charModsCallback;
 
         private static readonly ErrorCallback _errorCallback = (code, description) => throw new GLFWException(description.ToStringUTF8(), code);
 
@@ -64,7 +64,7 @@ namespace TangyHIDCore.Outputs
             Exists = true;
         }
 
-        private void SetWindowHints(Configuration configuration)
+        protected virtual void SetWindowHints(Configuration configuration)
         {
             if (configuration.API == "OpenGL")
             {
@@ -86,6 +86,41 @@ namespace TangyHIDCore.Outputs
             //GLFW.WindowHint(Hints.GreenBits, videoMode.GreenBits);
             //GLFW.WindowHint(Hints.BlueBits, videoMode.BlueBits);
             GLFW.WindowHint(Hints.RefreshRate, videoMode.RefreshRate);
+        }
+
+        protected virtual void SetCallbacks()
+        {
+            _windowPositionCallback = (_, x, y) => OnPositionChanged(x, y);
+            _windowSizeCallback = (_, w, h) => OnSizeChanged(w, h);
+            _framebufferSizeCallback = (_, w, h) => OnFramebufferSizeChanged(w, h);
+            _windowFocusCallback = (_, focusing) => OnFocusChanged(focusing);
+            _windowMaximizeCallback = (_, maximized) => OnMaximizeChanged(maximized);
+            _windowContentScaleCallback = (_, x, y) => OnContentScaleChanged(x, y);
+            _windowRefreshCallback = _ => OnRefreshed();
+            _closeCallback = _ => OnClosing();
+            _dropCallback = (_, count, arrayPtr) => OnFileDrop(arrayPtr.ToStringsUTF8(count));
+            _cursorPositionCallback = (_, x, y) => OnCursorPositionChanged(x, y);
+            _scrollCallback = (_, x, y) => OnScrolled(x, y);
+            _cursorEnterCallback = (_, entering) => OnCursorEnterChanged(entering);
+            _keyCallback = (_, key, code, state, mods) => OnKey(key, code, state, mods);
+            _mouseButtonCallback = (_, button, state, mod) => OnMouseButton(button, state, mod);
+            _charModsCallback = (_, cp, mods) => OnCharacterInput(cp, mods);
+
+            GLFW.SetWindowPositionCallback(_windowHandle, _windowPositionCallback);
+            GLFW.SetWindowSizeCallback(_windowHandle, _windowSizeCallback);
+            GLFW.SetFramebufferSizeCallback(_windowHandle, _framebufferSizeCallback);
+            GLFW.SetWindowFocusCallback(_windowHandle, _windowFocusCallback);
+            GLFW.SetWindowMaximizeCallback(_windowHandle, _windowMaximizeCallback);
+            GLFW.SetWindowContentScaleCallback(_windowHandle, _windowContentScaleCallback);
+            GLFW.SetWindowRefreshCallback(_windowHandle, _windowRefreshCallback);
+            GLFW.SetCloseCallback(_windowHandle, _closeCallback);
+            GLFW.SetDropCallback(_windowHandle, _dropCallback);
+            GLFW.SetCursorPositionCallback(_windowHandle, _cursorPositionCallback);
+            GLFW.SetScrollCallback(_windowHandle, _scrollCallback);
+            GLFW.SetCursorEnterCallback(_windowHandle, _cursorEnterCallback);
+            GLFW.SetKeyCallback(_windowHandle, _keyCallback);
+            GLFW.SetMouseButtonCallback(_windowHandle, _mouseButtonCallback);
+            GLFW.SetCharModsCallback(_windowHandle, _charModsCallback);
         }
 
         /*public NativeWindow(int width, int height, string title, Monitor monitor, SpiceEngine.GLFWBindings.Windowing.Window share)
@@ -281,41 +316,6 @@ namespace TangyHIDCore.Outputs
         {
             var value = GLFW.GetWindowAttribute(_windowHandle, (int)attribute);
             return value == 1;
-        }
-
-        private void SetCallbacks()
-        {
-            _windowPositionCallback = (_, x, y) => OnPositionChanged(x, y);
-            _windowSizeCallback = (_, w, h) => OnSizeChanged(w, h);
-            _framebufferSizeCallback = (_, w, h) => OnFramebufferSizeChanged(w, h);
-            _windowFocusCallback = (_, focusing) => OnFocusChanged(focusing);
-            _windowMaximizeCallback = (_, maximized) => OnMaximizeChanged(maximized);
-            _windowContentScaleCallback = (_, x, y) => OnContentScaleChanged(x, y);
-            _windowRefreshCallback = _ => OnRefreshed();
-            _closeCallback = _ => OnClosing();
-            _dropCallback = (_, count, arrayPtr) => OnFileDrop(arrayPtr.ToStringsUTF8(count));
-            _cursorPositionCallback = (_, x, y) => OnCursorPositionChanged(x, y);
-            _scrollCallback = (_, x, y) => OnScrolled(x, y);
-            _cursorEnterCallback = (_, entering) => OnCursorEnterChanged(entering);
-            _keyCallback = (_, key, code, state, mods) => OnKey(key, code, state, mods);
-            _mouseButtonCallback = (_, button, state, mod) => OnMouseButton(button, state, mod);
-            _charModsCallback = (_, cp, mods) => OnCharacterInput(cp, mods);
-
-            GLFW.SetWindowPositionCallback(_windowHandle, _windowPositionCallback);
-            GLFW.SetWindowSizeCallback(_windowHandle, _windowSizeCallback);
-            GLFW.SetFramebufferSizeCallback(_windowHandle, _framebufferSizeCallback);
-            GLFW.SetWindowFocusCallback(_windowHandle, _windowFocusCallback);
-            GLFW.SetWindowMaximizeCallback(_windowHandle, _windowMaximizeCallback);
-            GLFW.SetWindowContentScaleCallback(_windowHandle, _windowContentScaleCallback);
-            GLFW.SetWindowRefreshCallback(_windowHandle, _windowRefreshCallback);
-            GLFW.SetCloseCallback(_windowHandle, _closeCallback);
-            GLFW.SetDropCallback(_windowHandle, _dropCallback);
-            GLFW.SetCursorPositionCallback(_windowHandle, _cursorPositionCallback);
-            GLFW.SetScrollCallback(_windowHandle, _scrollCallback);
-            GLFW.SetCursorEnterCallback(_windowHandle, _cursorEnterCallback);
-            GLFW.SetKeyCallback(_windowHandle, _keyCallback);
-            GLFW.SetMouseButtonCallback(_windowHandle, _mouseButtonCallback);
-            GLFW.SetCharModsCallback(_windowHandle, _charModsCallback);
         }
 
         protected virtual void OnPositionChanged(double x, double y) => PositionChanged?.Invoke(this, EventArgs.Empty);

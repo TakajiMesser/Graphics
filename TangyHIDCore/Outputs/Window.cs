@@ -1,20 +1,17 @@
-﻿using OpenTK;
-using OpenTK.Graphics;
-using SpiceEngineCore.Game;
+﻿using SpiceEngineCore.Game;
 using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Concurrent;
-using System.ComponentModel;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using Configuration = SpiceEngineCore.Game.Settings.Configuration;
 
 namespace TangyHIDCore.Outputs
 {
-    public abstract class Window : OpenTK.NativeWindow, IInvoker, IDisposable
+    public abstract class Window : NativeWindow, IInvoker
     {
-        private GraphicsContext _context;
-        private ConcurrentQueue<Action> _mainActionQueue = new ConcurrentQueue<Action>();
+        //private GraphicsContext _context;
+        private ConcurrentQueue<Action> _loadQueue = new ConcurrentQueue<Action>();
 
         private Stopwatch _updateWatch = new Stopwatch();
         private Stopwatch _renderWatch = new Stopwatch();
@@ -31,12 +28,8 @@ namespace TangyHIDCore.Outputs
         protected GameLoader _gameLoader;
 
         //base(1280, 720, GraphicsMode.Default, "My First OpenGL Game", GameWindowFlags.Default, DisplayDevice.Default, 3, 0, GraphicsContextFlags.ForwardCompatible)
-        public Window(Configuration configuration) : base(configuration.Size.Width, configuration.Size.Height, configuration.Title, GameWindowFlags.Default, GraphicsMode.Default, DisplayDevice.Default)
+        public Window(Configuration configuration) : base(configuration)
         {
-            _context = new GraphicsContext(GraphicsMode.Default, WindowInfo, 3, 0, GraphicsContextFlags.ForwardCompatible);
-            _context.MakeCurrent(WindowInfo);
-            _context.LoadAll();
-            
             _configuration = configuration;
 
             _msPerUpdate = 1000.0 / _configuration.UpdatesPerSecond;
@@ -47,13 +40,6 @@ namespace TangyHIDCore.Outputs
 
         public Display Display { get; }
         public bool IsLoaded { get; protected set; }
-        public bool IsExiting { get; private set; }
-
-        public void MakeCurrent()
-        {
-            EnsureUndisposed();
-            _context.MakeCurrent(WindowInfo);
-        }
 
         public void Start()
         {
@@ -70,7 +56,7 @@ namespace TangyHIDCore.Outputs
                 else
                 {
                     // Check the queue every second. Once we find items in the queue, handle all of them before waiting again
-                    CheckAndHandleQueue();
+                    ProcessLoadQueue();
                     Task.Delay(1000).Wait();
                 }
 
@@ -85,7 +71,7 @@ namespace TangyHIDCore.Outputs
 
         public void Run()
         {
-            Visible = true;
+            //Visible = true;
 
             _updateWatch.Start();
             _renderWatch.Start();
@@ -96,6 +82,7 @@ namespace TangyHIDCore.Outputs
 
                 if (!Exists || IsExiting)
                 {
+                    DestroyWindow();
                     return;
                 }
 
@@ -108,7 +95,7 @@ namespace TangyHIDCore.Outputs
         {
             var taskCompletionSource = new TaskCompletionSource<bool>();
 
-            _mainActionQueue.Enqueue(() =>
+            _loadQueue.Enqueue(() =>
             {
                 action();
                 taskCompletionSource.TrySetResult(true);
@@ -117,31 +104,25 @@ namespace TangyHIDCore.Outputs
             await taskCompletionSource.Task;
         }
 
-        public void RunSync(Action action) => _mainActionQueue.Enqueue(action);
+        public void RunSync(Action action) => _loadQueue.Enqueue(action);
 
         // TODO - No-op...
         public void ForceUpdate() { }
 
-        private void CheckAndHandleQueue()
+        private void ProcessLoadQueue()
         {
-            while (_mainActionQueue.TryDequeue(out Action action))
+            while (_loadQueue.TryDequeue(out Action action))
             {
                 action();
             }
         }
 
-        protected override void OnResize(EventArgs e)
+        protected override void OnSizeChanged(int width, int height)
         {
-            base.OnResize(e);
-            _context.Update(WindowInfo);
+            base.OnSizeChanged(width, height);
+            //_context.Update(WindowInfo);
             Display.Window.Update(Width, Height);
             // _gameState?.Resize();
-        }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            IsExiting = true;
-            base.OnClosing(e);
         }
 
         protected virtual void Update(double elapsedMilliseconds = 0.0) => _simulator.Tick();
@@ -152,10 +133,7 @@ namespace TangyHIDCore.Outputs
             if (_renderer != null && _renderer.IsLoaded)
             {
                 _renderer.Tick();
-                //GL.UseProgram(0); // TODO - Why is this needed?
-
-                EnsureUndisposed();
-                _context.SwapBuffers();
+                SwapBuffers();
             }
         }
 
@@ -206,41 +184,5 @@ namespace TangyHIDCore.Outputs
                 Render();
             }
         }
-
-        #region IDisposable Support
-        private bool disposedValue = false;
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (!disposedValue)
-            {
-                if (disposing && _context != null)
-                {
-                    _context.Dispose();
-                    _context = null;
-                }
-                
-                disposedValue = true;
-            }
-        }
-
-        ~Window()
-        {
-            Dispose(false);
-        }
-
-        public override void Dispose()
-        {
-            try
-            {
-                Dispose(true);
-            }
-            finally
-            {
-                base.Dispose();
-            }
-            GC.SuppressFinalize(this);
-        }
-        #endregion
     }
 }

@@ -1,4 +1,5 @@
-﻿using SpiceEngineCore.Game;
+﻿using SpiceEngine.GLFWBindings.Inputs;
+using SpiceEngineCore.Game;
 using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using System;
@@ -8,11 +9,10 @@ namespace TangyHIDCore
 {
     public interface IInputProvider : IGameSystem
     {
-        InputBinding InputMapping { get; set; }
+        InputMapping InputMapping { get; set; }
 
         bool IsMouseInWindow { get; }
-        Vector2? MouseCoordinates { get; }
-        Vector2? RelativeCoordinates { get; }
+        Vector2 MouseCoordinates { get; }
         Resolution WindowSize { get; }
 
         Vector2 MouseDelta { get; }
@@ -20,26 +20,35 @@ namespace TangyHIDCore
 
         event EventHandler<MouseClickEventArgs> MouseDownSelected;
         event EventHandler<MouseClickEventArgs> MouseUpSelected;
+        public event EventHandler<EventArgs> EscapePressed;
 
-        bool IsDown(Input input);
-        bool IsUp(Input input);
+        void RegisterDevices(IInputTracker inputTracker);
 
-        /// <summary>
-        /// Determines if this input was triggered this frame but was NOT triggered last frame.
-        /// </summary>
-        bool IsPressed(Input input);
+        bool IsDown(string command);
+        bool IsUp(string command);
+        bool IsPressed(string command);
+        bool IsHeld(string command, int nFrames);
+        bool IsReleased(string command);
 
-        /// <summary>
-        /// Determines if this input was triggered for the requested frame count.
-        /// </summary>
-        bool IsHeld(Input input, int nFrames);
+        bool IsDown(Keys key);
+        bool IsUp(Keys key);
+        bool IsPressed(Keys key);
+        bool IsReleased(Keys key);
+        bool IsHeld(Keys key, int nFrames);
 
-        /// <summary>
-        /// Determines if this input was triggered last frame, but is not triggered this frame.
-        /// </summary>
-        bool IsReleased(Input input);
+        bool IsDown(MouseButtons mouseButton);
+        bool IsUp(MouseButtons mouseButton);
+        bool IsPressed(MouseButtons mouseButton);
+        bool IsReleased(MouseButtons mouseButton);
+        bool IsHeld(MouseButtons mouseButton, int nFrames);
 
-        void SwallowInputs(params Input[] inputs);
+        bool IsDown(GamePadButtons gamePadButtons);
+        bool IsUp(GamePadButtons gamePadButtons);
+        bool IsPressed(GamePadButtons gamePadButtons);
+        bool IsReleased(GamePadButtons gamePadButtons);
+        bool IsHeld(GamePadButtons gamePadButtons, int nFrames);
+
+        //void SwallowInputs(params Input[] inputs);
         void Clear();
     }
 }

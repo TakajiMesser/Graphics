@@ -2,20 +2,237 @@
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
+using SpiceEngineCore.Utilities;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace TangyHIDCore.Inputs
 {
-    public class InputManager : GameSystem, IInputProvider
+    public class InputManager : GameSystem, IInputProvider, IInputStateProvider
     {
-        public const int DEFAULT_NUMBER_OF_TRACKED_STATES = 2;
+        private KeyDevice _keyboard;
+        private MouseDevice _mouse;
+        private GamePadDevice _gamePad;
 
-        private List<InputState> _inputStates = new List<InputState>();
+        private KeyState[] _keyStates;
+        private MouseState[] _mouseStates;
+        private GamePadState[] _gamePadStates;
 
-        public InputBinding InputMapping { get; set; } = new InputBinding();
+        private int _stateIndex = 0;
+
+        public InputManager(int nTrackedStates = 2)
+        {
+            TrackedStates = nTrackedStates;
+
+            _keyStates = ArrayExtensions.Initialize<KeyState>(TrackedStates + 1);
+            _mouseStates = ArrayExtensions.Initialize<MouseState>(TrackedStates + 1);
+            _gamePadStates = ArrayExtensions.Initialize<GamePadState>(TrackedStates + 1);
+        }
+
+        public int TrackedStates { get; }
+
+        public InputMapping InputMapping { get; set; } = InputMapping.Default();
         public IMouseTracker MouseTracker { get; set; }
+
+        public Resolution WindowSize => MouseTracker.WindowSize;
+
+        public bool IsMouseInWindow => _mouseStates[_stateIndex].IsInWindow;
+        public Vector2 MouseCoordinates => _mouseStates[_stateIndex].Position;
+
+        public Vector2 MouseDelta => _mouseStates[_stateIndex].Position - _mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Position;
+        public int MouseWheelDelta => _mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Wheel - _mouseStates[_stateIndex].Wheel;
+
+        public event EventHandler<MouseClickEventArgs> MouseDownSelected;
+        public event EventHandler<MouseClickEventArgs> MouseUpSelected;
+        public event EventHandler<EventArgs> EscapePressed;
+
+        protected override void Update()
+        {
+            _keyStates[_stateIndex] = _keyboard.GetState();
+            _mouseStates[_stateIndex] = _mouse.GetState();
+            _gamePadStates[_stateIndex] = _gamePad.GetState();
+
+            _stateIndex = (_stateIndex + 1) % (TrackedStates + 1);
+
+            HandleMouseSelection();
+
+            if (EscapePressed != null && _keyStates[_stateIndex].IsDown(Keys.Escape))
+            {
+                EscapePressed.Invoke(this, new EventArgs());
+            }
+        }
+
+        public void Clear()
+        {
+            _keyStates = ArrayExtensions.Initialize<KeyState>(TrackedStates + 1);
+            _mouseStates = ArrayExtensions.Initialize<MouseState>(TrackedStates + 1);
+            _gamePadStates = ArrayExtensions.Initialize<GamePadState>(TrackedStates + 1);
+        }
+
+        public void RegisterDevices(IInputTracker inputTracker)
+        {
+            _keyboard = new KeyDevice(this, inputTracker);
+            _mouse = new MouseDevice(this, inputTracker);
+            _gamePad = new GamePadDevice(this, inputTracker);
+        }
+
+        public bool IsDown(string command)
+        {
+            foreach (var binding in InputMapping.GetBindings(command))
+            {
+                var inputState = GetCurrentFrameState(binding.DeviceType);
+
+                if (inputState != null)
+                {
+                    return inputState.IsDown(binding);
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsUp(string command) => !IsDown(command);
+
+        /// <summary>
+        /// Determines if this input was triggered this frame but was NOT triggered last frame.
+        /// </summary>
+        public bool IsPressed(string command)
+        {
+            foreach (var binding in InputMapping.GetBindings(command))
+            {
+                var currentState = GetCurrentFrameState(binding.DeviceType);
+                var previousState = GetPreviousFrameState(binding.DeviceType);
+
+                if (currentState != null && previousState != null)
+                {
+                    return currentState.IsDown(binding) && !previousState.IsDown(binding);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if this input was triggered last frame, but is not triggered this frame.
+        /// </summary>
+        public bool IsReleased(string command)
+        {
+            foreach (var binding in InputMapping.GetBindings(command))
+            {
+                var currentState = GetCurrentFrameState(binding.DeviceType);
+                var previousState = GetPreviousFrameState(binding.DeviceType);
+
+                if (currentState != null && previousState != null)
+                {
+                    return !currentState.IsDown(binding) && previousState.IsDown(binding);
+                }
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Determines if this input was triggered for the requested frame count.
+        /// </summary>
+        public bool IsHeld(string command, int nFrames)
+        {
+            if (nFrames > TrackedStates) throw new ArgumentOutOfRangeException("Not tracking enough frames to determine.");
+
+            foreach (var binding in InputMapping.GetBindings(command))
+            {
+                for (var i = 0; i < nFrames; i++)
+                {
+                    var index = TrackedStates - 1 - nFrames;
+                    var state = GetFrameState(binding.DeviceType, index);
+
+                    if (state == null || !state.IsDown(binding))
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool IsDown(Keys key) => _keyStates[_stateIndex].IsDown(key);
+        public bool IsUp(Keys key) => !IsDown(key);
+        public bool IsPressed(Keys key) => _keyStates[_stateIndex].IsDown(key) && !_keyStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].IsDown(key);
+        public bool IsReleased(Keys key) => !_keyStates[_stateIndex].IsDown(key) && _keyStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].IsDown(key);
+        public bool IsHeld(Keys key, int nFrames)
+        {
+            if (nFrames > TrackedStates) throw new ArgumentOutOfRangeException("Not tracking enough frames to determine.");
+
+            for (var i = 0; i < nFrames; i++)
+            {
+                var index = TrackedStates - 1 - nFrames;
+
+                if (!_keyStates[index].IsDown(key))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool IsDown(MouseButtons mouseButton) => _mouseStates[_stateIndex].IsDown(mouseButton);
+        public bool IsUp(MouseButtons mouseButton) => !IsDown(mouseButton);
+        public bool IsPressed(MouseButtons mouseButton) => _mouseStates[_stateIndex].IsDown(mouseButton) && !_mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].IsDown(mouseButton);
+        public bool IsReleased(MouseButtons mouseButton) => !_mouseStates[_stateIndex].IsDown(mouseButton) && _mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].IsDown(mouseButton);
+        public bool IsHeld(MouseButtons mouseButton, int nFrames)
+        {
+            if (nFrames > TrackedStates) throw new ArgumentOutOfRangeException("Not tracking enough frames to determine.");
+
+            for (var i = 0; i < nFrames; i++)
+            {
+                var index = TrackedStates - 1 - nFrames;
+
+                if (!_mouseStates[index].IsDown(mouseButton))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public bool IsDown(GamePadButtons gamePadButton) => _gamePadStates[_stateIndex].IsDown(gamePadButton);
+        public bool IsUp(GamePadButtons gamePadButton) => !IsDown(gamePadButton);
+        public bool IsPressed(GamePadButtons gamePadButton) => _gamePadStates[_stateIndex].IsDown(gamePadButton) && !_gamePadStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].IsDown(gamePadButton);
+        public bool IsReleased(GamePadButtons gamePadButton) => !_gamePadStates[_stateIndex].IsDown(gamePadButton) && _gamePadStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].IsDown(gamePadButton);
+        public bool IsHeld(GamePadButtons gamePadButton, int nFrames)
+        {
+            if (nFrames > TrackedStates) throw new ArgumentOutOfRangeException("Not tracking enough frames to determine.");
+
+            for (var i = 0; i < nFrames; i++)
+            {
+                var index = TrackedStates - 1 - nFrames;
+
+                if (!_gamePadStates[index].IsDown(gamePadButton))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public IInputState GetNextAvailableState(DeviceTypes deviceType) => GetFrameState(deviceType, (_stateIndex + 1) % (TrackedStates + 1));
+
+        private IInputState GetCurrentFrameState(DeviceTypes deviceType) => GetFrameState(deviceType, _stateIndex);
+
+        private IInputState GetPreviousFrameState(DeviceTypes deviceType) => GetFrameState(deviceType, _stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1);
+
+        private IInputState GetFrameState(DeviceTypes deviceType, int index) => deviceType switch
+        {
+            DeviceTypes.Key => _keyStates[index],
+            DeviceTypes.Mouse => _mouseStates[index],
+            DeviceTypes.GamePad => _gamePadStates[index],
+            DeviceTypes.None => null,
+            _ => throw new ArgumentException("Could not handle device type " + deviceType)
+        };
 
         /*public bool IsMouseInWindow
         {
@@ -40,65 +257,24 @@ namespace TangyHIDCore.Inputs
             ? _inputStates[_inputStates.Count - 1].MousePosition
             : (Vector2?)null;*/
 
-        public bool IsMouseInWindow => MouseTracker.IsMouseInWindow;
-        public Vector2? MouseCoordinates => MouseTracker?.MouseCoordinates;
-        public Vector2? RelativeCoordinates => MouseTracker?.RelativeCoordinates;
-        public Resolution WindowSize => MouseTracker.WindowSize;
-
-        public int TrackedStates { get; set; } = DEFAULT_NUMBER_OF_TRACKED_STATES;
-
-        public Vector2 MouseDelta => _inputStates.Count >= 2
-            ? _inputStates[_inputStates.Count - 1].MousePosition - _inputStates[_inputStates.Count - 2].MousePosition
-            : Vector2.Zero;
-
-        public int MouseWheelDelta => _inputStates.Count >= 1
-            ? _inputStates.Count >= 2
-                ? _inputStates[_inputStates.Count - 2].MouseWheel - _inputStates[_inputStates.Count - 1].MouseWheel
-                : _inputStates[_inputStates.Count - 1].MouseWheel
-            : 0;
-
-        public event EventHandler<MouseClickEventArgs> MouseDownSelected;
-        public event EventHandler<MouseClickEventArgs> MouseUpSelected;
-        public event EventHandler<EventArgs> EscapePressed;
-
-        protected override void Update()
-        {
-            var inputState = new InputState();
-            _inputStates.Add(inputState);
-
-            while (_inputStates.Count > TrackedStates)
-            {
-                _inputStates.RemoveAt(0);
-            }
-
-            HandleMouseSelection();
-
-            if (EscapePressed != null && inputState.IsDown(new Input(Keys.Escape)))
-            {
-                EscapePressed.Invoke(this, new EventArgs());
-            }
-        }
-
         private void HandleMouseSelection()
         {
             if (MouseDownSelected != null || MouseUpSelected != null)
             {
-                if (MouseCoordinates.HasValue && IsMouseInWindow)
+                if (IsMouseInWindow)
                 {
-                    if (MouseDownSelected != null && IsPressed(new Input(MouseButtons.Left)))
+                    if (MouseDownSelected != null && IsPressed(MouseButtons.Left))
                     {
-                        MouseDownSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
+                        MouseDownSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates));
                     }
                     
-                    if (MouseUpSelected != null && IsReleased(new Input(MouseButtons.Left)))
+                    if (MouseUpSelected != null && IsReleased(MouseButtons.Left))
                     {
-                        MouseUpSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates.Value));
+                        MouseUpSelected.Invoke(this, new MouseClickEventArgs(MouseCoordinates));
                     }
                 }
             }
         }
-
-        public void Clear() => _inputStates.Clear();
 
         /*public void HandleInputs(Camera camera, IEnumerable<Actor> actors)
         {
@@ -110,77 +286,7 @@ namespace TangyHIDCore.Inputs
             }
         }*/
 
-        public bool IsDown(Input input)
-        {
-            var inputState = _inputStates.LastOrDefault();
-            return inputState != null && inputState.IsDown(input);
-        }
-
-        public bool IsUp(Input input)
-        {
-            var inputState = _inputStates.LastOrDefault();
-            return inputState != null && inputState.IsUp(input);
-        }
-
-        /// <summary>
-        /// Determines if this input was triggered this frame but was NOT triggered last frame.
-        /// </summary>
-        public bool IsPressed(Input input)
-        {
-            var currentInputState = _inputStates.LastOrDefault();
-
-            if (currentInputState != null)
-            {
-                if (_inputStates.Count > 1)
-                {
-                    var previousInputState = _inputStates[_inputStates.Count - 2];
-                    return currentInputState.IsDown(input) && !previousInputState.IsDown(input);
-                }
-                else
-                {
-                    return currentInputState.IsDown(input);
-                }
-            }
-
-            return false;
-        }
-
-        /// <summary>
-        /// Determines if this input was triggered for the requested frame count.
-        /// </summary>
-        public bool IsHeld(Input input, int nFrames)
-        {
-            if (nFrames > TrackedStates) throw new ArgumentOutOfRangeException("Not tracking enough frames to determine.");
-            
-            for (var i = 0; i < nFrames; i++)
-            {
-                var inputState = _inputStates[_inputStates.Count - 1 - nFrames];
-                if (inputState.IsUp(input))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Determines if this input was triggered last frame, but is not triggered this frame.
-        /// </summary>
-        public bool IsReleased(Input input)
-        {
-            var currentInputState = _inputStates.LastOrDefault();
-
-            if (currentInputState != null && _inputStates.Count > 1)
-            {
-                var previousInputState = _inputStates[_inputStates.Count - 2];
-                return currentInputState.IsUp(input) && previousInputState.IsDown(input);
-            }
-
-            return false;
-        }
-
-        public void SwallowInputs(params Input[] inputs)
+        /*public void SwallowInputs(params Input[] inputs)
         {
             foreach (var input in inputs)
             {
@@ -190,13 +296,13 @@ namespace TangyHIDCore.Inputs
                         /*if (_keyState != null)
                         {
                             //_keyState = new KeyboardState();
-                        }*/
+                        }*
                         break;
                     case InputTypes.Mouse:
                         break;
                 }
             }
-        }
+        }*/
 
         /*private void HandleInput()
         {
