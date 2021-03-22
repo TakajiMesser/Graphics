@@ -48,6 +48,8 @@ namespace TangyHIDCore.Outputs
             var monitor = SpiceEngine.GLFWBindings.Monitoring.Monitor.None;//GLFW.GetPrimaryMonitor();
             var window = SpiceEngine.GLFWBindings.Windowing.Window.None;//new SpiceEngine.GLFWBindings.Windowing.Window();
 
+            WindowSize = new Resolution(configuration.Size.Width, configuration.Size.Height);
+
             SetWindowHints(configuration);
             _windowHandle = GLFW.CreateWindow(configuration.Size.Width, configuration.Size.Height, titleBytes, monitor, window);
             SetCallbacks();
@@ -63,6 +65,8 @@ namespace TangyHIDCore.Outputs
 
             Exists = true;
         }
+
+        public Resolution WindowSize { get; private set; }
 
         protected virtual void SetWindowHints(Configuration configuration)
         {
@@ -320,7 +324,11 @@ namespace TangyHIDCore.Outputs
 
         protected virtual void OnPositionChanged(double x, double y) => PositionChanged?.Invoke(this, EventArgs.Empty);
 
-        protected virtual void OnSizeChanged(int width, int height) => SizeChanged?.Invoke(this, new SizeEventArgs(width, height));
+        protected virtual void OnSizeChanged(int width, int height)
+        {
+            WindowSize.Update(width, height);
+            SizeChanged?.Invoke(this, new SizeEventArgs(width, height));
+        }
 
         protected virtual void OnFramebufferSizeChanged(int width, int height) => FramebufferSizeChanged?.Invoke(this, new SizeEventArgs(width, height));
 

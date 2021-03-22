@@ -1,22 +1,16 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngine.Properties;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
 using SweetGraphicsCore.Shaders;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {
@@ -24,61 +18,46 @@ namespace SpiceEngine.Rendering.PostProcessing
     {
         private ShaderProgram _uiProgram;
         private ShaderProgram _uiSelectionProgram;
-        private FrameBuffer _frameBuffer = new FrameBuffer();
+        private FrameBuffer _frameBuffer;
 
         public Texture FinalTexture { get; protected set; }
         
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _uiProgram = new ShaderProgram(
-                //new Shader(ShaderType.VertexShader, Resources.ui_vert),
-                //new Shader(ShaderType.FragmentShader, Resources.ui_frag)
-                new Shader(ShaderType.VertexShader, Resources.uiquad_vert),
-                new Shader(ShaderType.GeometryShader, Resources.uiquad_geom),
-                new Shader(ShaderType.FragmentShader, Resources.uiquad_frag)
-            );
+            _uiProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.uiquad_vert, Resources.uiquad_geom, Resources.uiquad_frag });
 
-            _uiSelectionProgram = new ShaderProgram(
-                //new Shader(ShaderType.VertexShader, Resources.ui_vert),
-                //new Shader(ShaderType.FragmentShader, Resources.ui_frag)
-                new Shader(ShaderType.VertexShader, Resources.uiquad_selection_vert),
-                new Shader(ShaderType.GeometryShader, Resources.uiquad_selection_geom),
-                new Shader(ShaderType.FragmentShader, Resources.uiquad_selection_frag)
-            );
+            _uiSelectionProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
+                new[] { Resources.uiquad_selection_vert, Resources.uiquad_selection_geom, Resources.uiquad_selection_frag });
         }
 
-        protected override void LoadTextures(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
+            _frameBuffer = new FrameBuffer(contextProvider);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _frameBuffer.Load();
         }
 
-        protected override void Resize(Resolution resolution)
-        {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         /*public void Render(IBatcher batcher)
         {

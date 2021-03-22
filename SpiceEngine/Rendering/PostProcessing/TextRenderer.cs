@@ -1,11 +1,13 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngine.Properties;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Batches;
-using SpiceEngineCore.Rendering.Shaders;
 using SpiceEngineCore.Rendering.Textures;
 using StarchUICore;
 using SweetGraphicsCore.Buffers;
+using SweetGraphicsCore.Helpers;
 using SweetGraphicsCore.Renderers;
 using SweetGraphicsCore.Rendering.Batches;
 using SweetGraphicsCore.Rendering.Textures;
@@ -13,15 +15,6 @@ using SweetGraphicsCore.Shaders;
 using SweetGraphicsCore.Vertices;
 using System.Collections.Generic;
 using System.IO;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Rendering.PostProcessing
 {
@@ -31,60 +24,56 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         private ShaderProgram _textProgram;
 
-        private VertexBuffer<TextureVertex2D> _vertexBuffer = new VertexBuffer<TextureVertex2D>();
-        private VertexArray<TextureVertex2D> _vertexArray = new VertexArray<TextureVertex2D>();
-        private FrameBuffer _frameBuffer = new FrameBuffer();
+        private VertexBuffer<TextureVertex2D> _vertexBuffer;
+        private VertexArray<TextureVertex2D> _vertexArray;
+        private FrameBuffer _frameBuffer;
 
         public Texture FinalTexture { get; protected set; }
 
-        protected override void LoadPrograms()
+        protected override void LoadPrograms(IRenderContextProvider contextProvider)
         {
-            _textProgram = new ShaderProgram(
-                new Shader(ShaderType.VertexShader, Resources.text_vert),
-                new Shader(ShaderType.FragmentShader, Resources.text_frag)
-            );
+            _textProgram = ShaderHelper.LoadProgram(contextProvider,
+                new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
+                new[] { Resources.text_vert, Resources.text_frag });
         }
 
-        protected override void LoadTextures(Resolution resolution)
+        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
         {
-            FinalTexture = new Texture(resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
             {
-                Target = TextureTarget.Texture2D,
+                Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
                 EnableAnisotropy = false,
-                PixelInternalFormat = PixelInternalFormat.Rgba16f,
+                InternalFormat = InternalFormat.Rgba16f,
                 PixelFormat = PixelFormat.Rgba,
                 PixelType = PixelType.Float,
                 MinFilter = TextureMinFilter.Linear,
                 MagFilter = TextureMagFilter.Linear,
                 WrapMode = TextureWrapMode.Clamp
             };
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
+            FinalTexture.Load();
 
             /*var bitmapPath = Path.GetDirectoryName(FONT_PATH) + "\\" + Path.GetFileNameWithoutExtension(FONT_PATH) + ".png";
             SaveFontBitmap(FONT_PATH, bitmapPath, 14);
             FontTexture = TextureHelper.LoadFromBitmap(bitmapPath, false, false);*/
         }
 
-        protected override void LoadBuffers()
+        protected override void LoadBuffers(IRenderContextProvider contextProvider)
         {
-            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
-            _frameBuffer.Bind(FramebufferTarget.Framebuffer);
-            _frameBuffer.AttachAttachments();
-            _frameBuffer.Unbind(FramebufferTarget.Framebuffer);
+            _vertexBuffer = new VertexBuffer<TextureVertex2D>(contextProvider);
+            _vertexArray = new VertexArray<TextureVertex2D>(contextProvider);
+            _frameBuffer = new FrameBuffer(contextProvider);
 
+            _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
+            _frameBuffer.Load();
+
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
         }
 
-        protected override void Resize(Resolution resolution)
-        {
-            FinalTexture.Resize(resolution.Width, resolution.Height, 0);
-            FinalTexture.Bind();
-            FinalTexture.ReserveMemory();
-        }
+        protected override void Resize(Resolution resolution) => FinalTexture.Resize(resolution.Width, resolution.Height, 0);
 
         public void Render(IBatcher batcher, IUIProvider uiProvider)
         {
@@ -158,10 +147,10 @@ namespace SpiceEngine.Rendering.PostProcessing
 
                 _vertexBuffer.AddVertices(new List<TextureVertex2D>()
                 {
-                    new TextureVertex2D(pbr, tbr),
-                    new TextureVertex2D(pbl, tbl),
+                    new TextureVertex2D(ptr, ttr),
                     new TextureVertex2D(ptl, ttl),
-                    new TextureVertex2D(ptr, ttr)
+                    new TextureVertex2D(pbr, tbr),
+                    new TextureVertex2D(pbl, tbl)
                 });
 
                 /*_vertexBuffer.AddVertex(new TextureVertex2D(new Vector2(x + width, y + height), new Vector2(u + uStep, v)));
@@ -172,7 +161,7 @@ namespace SpiceEngine.Rendering.PostProcessing
                 x += font.XSpacing + 20;
             }
 
-            _textProgram.Use();
+            _textProgram.Bind();
             _textProgram.BindTexture(font.Texture, "textureSampler", 0);
             _textProgram.SetUniform("halfResolution", new Vector2(FinalTexture.Width / 2, FinalTexture.Height / 2));
 
@@ -180,7 +169,7 @@ namespace SpiceEngine.Rendering.PostProcessing
             _vertexBuffer.Bind();
             _vertexBuffer.Buffer();
 
-            _vertexBuffer.DrawQuads();
+            _vertexBuffer.DrawTriangleStrips();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();

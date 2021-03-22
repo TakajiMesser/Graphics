@@ -16,11 +16,11 @@ namespace TowerWarfare
         static void Main(string[] args)
         {
             //PerformUITest();
-
             ProjectBuilder.CreateTestProject();
             var map = Map.Load(FilePathHelper.MAP_PATH);
-            var windowWrapper = new GameWindowWrapper(map);
-            windowWrapper.Start();
+
+            var windowWrapper = new WindowWrapper(new SpiceEngineCore.Game.Settings.Configuration());
+            windowWrapper.Start(map);
 
             /*var configuration = new Configuration()
             {

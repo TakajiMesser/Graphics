@@ -11,16 +11,11 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
         protected override bool Condition(BehaviorContext context)
         {
             var coordinates = context.SystemProvider.GetGameSystem<IInputProvider>().MouseCoordinates;
-            
-            if (coordinates.HasValue)
-            {
-                var entityID = context.SystemProvider.RenderProvider.GetEntityIDFromSelection(coordinates.Value);
-                return EntityID == 0
-                    ? entityID == context.GetEntity().ID
-                    : entityID == EntityID;
-            }
 
-            return false;
+            var entityID = context.SystemProvider.RenderProvider.GetEntityIDFromSelection(coordinates);
+            return EntityID == 0
+                ? entityID == context.GetEntity().ID
+                : entityID == EntityID;
         }
     }
 }

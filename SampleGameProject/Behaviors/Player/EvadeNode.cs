@@ -1,22 +1,13 @@
 ﻿using SavoryPhysicsCore;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Utilities;
 using System;
-using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SampleGameProject.Behaviors.Player
 {
@@ -38,7 +29,7 @@ namespace SampleGameProject.Behaviors.Player
                 var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
                 var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
-                if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
+                if (context.ContainsVariable("coverDirection") && nEvadeTicks == 0 && inputProvider.IsPressed("Evade"))
                 {
                     var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, EvadeSpeed, inputProvider);
 
@@ -60,7 +51,7 @@ namespace SampleGameProject.Behaviors.Player
                     }
                 }
 
-                if (nEvadeTicks == 0 && inputProvider.IsPressed(inputProvider.InputMapping.Evade))
+                if (nEvadeTicks == 0 && inputProvider.IsPressed("Evade"))
                 {
                     var evadeTranslation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, EvadeSpeed, inputProvider);
 

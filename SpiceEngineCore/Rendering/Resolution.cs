@@ -9,8 +9,8 @@ namespace SpiceEngineCore.Rendering
 
         public Resolution(int width, int height)
         {
-            Width = width;
-            Height = height;
+            _width = width;
+            _height = height;
         }
 
         public int Width
@@ -35,6 +35,8 @@ namespace SpiceEngineCore.Rendering
 
         public float AspectRatio => (float)_width / _height;
 
+        public event EventHandler<ResolutionEventArgs> ResolutionChanged;
+
         public void Update(int width, int height)
         {
             _width = width;
@@ -42,7 +44,5 @@ namespace SpiceEngineCore.Rendering
 
             ResolutionChanged?.Invoke(this, new ResolutionEventArgs(this));
         }
-
-        public event EventHandler<ResolutionEventArgs> ResolutionChanged;
     }
 }

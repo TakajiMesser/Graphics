@@ -256,6 +256,7 @@ namespace SpiceEngine.GLFWBindings
         private static DEL_V_EFramebufferTargetEEFramebufferParameterNameEI _glFramebufferParameteri;
         private static DEL_V_EFramebufferTargetEEFramebufferAttachmentEERenderbufferTargetEUi _glFramebufferRenderbuffer;
         private static DEL_V_EFramebufferTargetEEFramebufferAttachmentEUiI _glFramebufferTexture;
+        private static DEL_V_EFrameBufferTargetEEInvalidateFramebufferAttachmentEUiI _glFramebufferTexture2;
         private static DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiI _glFramebufferTexture1D;
         private static DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiI _glFramebufferTexture2D;
         private static DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiII _glFramebufferTexture3D;
@@ -1307,6 +1308,7 @@ namespace SpiceEngine.GLFWBindings
             _glFramebufferParameteri = GetFunctionDelegate<DEL_V_EFramebufferTargetEEFramebufferParameterNameEI>("glFramebufferParameteri");
             _glFramebufferRenderbuffer = GetFunctionDelegate<DEL_V_EFramebufferTargetEEFramebufferAttachmentEERenderbufferTargetEUi>("glFramebufferRenderbuffer");
             _glFramebufferTexture = GetFunctionDelegate<DEL_V_EFramebufferTargetEEFramebufferAttachmentEUiI>("glFramebufferTexture");
+            _glFramebufferTexture2 = GetFunctionDelegate<DEL_V_EFrameBufferTargetEEInvalidateFramebufferAttachmentEUiI>("glFramebufferTexture");
             _glFramebufferTexture1D = GetFunctionDelegate<DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiI>("glFramebufferTexture1D");
             _glFramebufferTexture2D = GetFunctionDelegate<DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiI>("glFramebufferTexture2D");
             _glFramebufferTexture3D = GetFunctionDelegate<DEL_V_EFramebufferTargetEEFramebufferAttachmentEETextureTargetEUiII>("glFramebufferTexture3D");
@@ -8583,6 +8585,8 @@ namespace SpiceEngine.GLFWBindings
             }
         }
 
+        public static void FramebufferTexture(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget target, GLEnums.InvalidateFramebufferAttachment attachment, int texture, int level) => _glFramebufferTexture2(target, attachment, (uint)texture, level);
+
         private static T GetFunctionDelegate<T>(string name) where T : Delegate
         {
             var address = GLFW.GetProcAddress(name);
@@ -8876,6 +8880,9 @@ namespace SpiceEngine.GLFWBindings
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEUiI(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, uint v2, int v3);
+
+        [UnmanagedFunctionPointer(CallingConvention.StdCall)]
+        private delegate void DEL_V_EFrameBufferTargetEEInvalidateFramebufferAttachmentEUiI(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.InvalidateFramebufferAttachment v1, uint v2, int v3);
 
         [UnmanagedFunctionPointer(CallingConvention.StdCall)]
         private delegate void DEL_V_EFramebufferTargetEEFramebufferAttachmentEUiII(SpiceEngine.GLFWBindings.GLEnums.FramebufferTarget v0, SpiceEngine.GLFWBindings.GLEnums.FramebufferAttachment v1, uint v2, int v3, int v4);

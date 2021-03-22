@@ -1,56 +1,26 @@
-﻿using System.Linq;
-using TangyHIDCore;
-using TangyHIDCore.Inputs;
+﻿using TangyHIDCore;
 
 namespace UmamiScriptingCore.Behaviors.Nodes.Decorators
 {
-    public enum InputTypes
-    {
-        Down,
-        Up,
-        Pressed,
-        Released,
-        Held
-    }
-
     public class InputConditionNode : ConditionNode
     {
-        public Input[] Inputs { get; }
-        public InputTypes InputType { get; }
-        public int FramesHeldCount { get; }
+        public InputConditionNode(Node child, params InputCondition[] conditions) : base(child) => Conditions = conditions;
 
-        public InputConditionNode(Node child, InputTypes inputType, params Input[] inputs) : base(child)
-        {
-            InputType = inputType;
-            Inputs = inputs;
-        }
-
-        public InputConditionNode(Node child, InputTypes inputType, int nFramesHeld, params Input[] inputs) : base(child)
-        {
-            InputType = inputType;
-            Inputs = inputs;
-            FramesHeldCount = nFramesHeld;
-        }
+        public InputCondition[] Conditions { get; }
 
         protected override bool Condition(BehaviorContext context)
         {
             var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
 
-            switch (InputType)
+            foreach (var condition in Conditions)
             {
-                case InputTypes.Down:
-                    return Inputs.All(i => inputProvider.IsDown(i));
-                case InputTypes.Up:
-                    return Inputs.All(i => inputProvider.IsUp(i));
-                case InputTypes.Pressed:
-                    return Inputs.All(i => inputProvider.IsPressed(i));
-                case InputTypes.Released:
-                    return Inputs.All(i => inputProvider.IsReleased(i));
-                case InputTypes.Held:
-                    return Inputs.All(i => inputProvider.IsHeld(i, FramesHeldCount));
+                if (!condition.Condition(inputProvider))
+                {
+                    return false;
+                }
             }
 
-            return false;
+            return true;
         }
     }
 }

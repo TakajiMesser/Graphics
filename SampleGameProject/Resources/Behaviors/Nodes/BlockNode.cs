@@ -2,22 +2,13 @@
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
 using SpiceEngineCore.Entities.Actors;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Utilities;
 using System;
-using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {
@@ -70,14 +61,14 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     return BehaviorStatus.Failure;
                 }
-                else if (inputProvider.IsPressed(inputProvider.InputMapping.Block))
+                else if (inputProvider.IsPressed("Block"))
                 {
                     context.SetVariable("nBlockTicks", 1);
 
                     // Swallow any directional movement inputs
                     //context.InputState.SwallowInputs(context.InputProvider.InputMapping.Forward, context.InputProvider.InputMapping.Backward, context.InputProvider.InputMapping.Left, context.InputProvider.InputMapping.Right);
                 }
-                else if (inputProvider.IsDown(inputProvider.InputMapping.Block))
+                else if (inputProvider.IsDown("Block"))
                 {
                     var nBlockTicks = context.GetVariableOrDefault<int>("nBlockTicks");
                     nBlockTicks++;

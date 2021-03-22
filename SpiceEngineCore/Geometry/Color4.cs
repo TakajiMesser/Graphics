@@ -30,6 +30,7 @@ namespace SpiceEngineCore.Geometry
             return unchecked((int)value);
         }
 
+        public static Color4 Zero => new Color4(0, 0, 0, 0);
         public static Color4 Transparent => new Color4(255, 255, 255, 0);
         public static Color4 AliceBlue => new Color4(240, 248, 255, 255);
         public static Color4 AntiqueWhite => new Color4(250, 235, 215, 255);

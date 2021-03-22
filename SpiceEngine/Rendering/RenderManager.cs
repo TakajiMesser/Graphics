@@ -1,5 +1,6 @@
 ﻿using CitrusAnimationCore.Animations;
-using OpenTK.Graphics.OpenGL;
+using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering.Batches;
 using SpiceEngine.Rendering.PostProcessing;
@@ -28,7 +29,7 @@ using TangyHIDCore.Outputs;
 
 namespace SpiceEngine.Rendering
 {
-    public class RenderManager : RenderableLoader, IRender, IRenderProvider
+    public class RenderManager : RenderableLoader, IRender, IRenderProvider, IRenderContextProvider
     {
         private IAnimationProvider _animationProvider;
         private IUIProvider _uiProvider;
@@ -49,8 +50,9 @@ namespace SpiceEngine.Rendering
         protected RenderToScreen _renderToScreen = new RenderToScreen();
         protected UIRenderer _uiRenderer = new UIRenderer();
 
-        public RenderManager(Display display)
+        public RenderManager(IRenderContext context, Display display)
         {
+            CurrentContext = context;
             Display = display;
 
             // TODO - We likely want to split the resolution by nCameras for splitscreen support
@@ -63,13 +65,15 @@ namespace SpiceEngine.Rendering
                 }
             };
 
-            FontManager = new FontManager(TextureManager);
+            TextureManager = new TextureManager(this);
+            FontManager = new FontManager(this, TextureManager);
         }
 
+        public IRenderContext CurrentContext { get; }
         public Display Display { get; }
         public double Frequency { get; set; }
         public bool RenderGrid { get; set; }
-        public TextureManager TextureManager { get; } = new TextureManager();
+        public TextureManager TextureManager { get; }
         public FontManager FontManager { get; }
         public IInvoker Invoker
         {
@@ -203,23 +207,23 @@ namespace SpiceEngine.Rendering
             // TODO - If Invoker is null, queue up this action
             return Invoker.RunAsync(() =>
             {
-                _deferredRenderer.Load(Display.Resolution);
-                _shadowRenderer.Load(Display.Resolution);
-                _lightRenderer.Load(Display.Resolution);
-                _skyboxRenderer.Load(Display.Resolution);
-                _billboardRenderer.Load(Display.Resolution);
-                _selectionRenderer.Load(Display.Resolution);
-                _fxaaRenderer.Load(Display.Resolution);
-                _blurRenderer.Load(Display.Resolution);
-                _invertRenderer.Load(Display.Resolution);
-                _textRenderer.Load(Display.Resolution);
-                _renderToScreen.Load(Display.Window);
-                _uiRenderer.Load(Display.Window);
+                _deferredRenderer.Load(this, Display.Resolution);
+                _shadowRenderer.Load(this, Display.Resolution);
+                _lightRenderer.Load(this, Display.Resolution);
+                _skyboxRenderer.Load(this, Display.Resolution);
+                _billboardRenderer.Load(this, Display.Resolution);
+                _selectionRenderer.Load(this, Display.Resolution);
+                _fxaaRenderer.Load(this, Display.Resolution);
+                _blurRenderer.Load(this, Display.Resolution);
+                _invertRenderer.Load(this, Display.Resolution);
+                _textRenderer.Load(this, Display.Resolution);
+                _renderToScreen.Load(this, Display.Window);
+                _uiRenderer.Load(this, Display.Window);
 
                 //var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
                 //_logManager.SetFont(font);
 
-                GL.ClearColor(OpenTK.Graphics.Color4.Black);
+                //GL.ClearColor(OpenTK.Graphics.Color4.Black);
             });
         }
 
@@ -237,7 +241,7 @@ namespace SpiceEngine.Rendering
                 {
                     try
                     {
-                        _batchManager.Load();
+                        _batchManager.Load(this);
                         //_uiProvider.Load();
 
                         Invoker.ForceUpdate();
@@ -255,7 +259,7 @@ namespace SpiceEngine.Rendering
         }
 
         // TODO - Can we remove this call?
-        public void LoadBatcher() => _batchManager.Load();
+        public void LoadBatcher() => _batchManager.Load(this);
 
         protected override void LoadComponent(int entityID, IRenderable component)
         {
@@ -290,7 +294,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForLitTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
@@ -321,7 +325,7 @@ namespace SpiceEngine.Rendering
             //_invertRenderer.Render(texture);
             _blurRenderer.Render(texture, _deferredRenderer.VelocityTexture, 60.0f);
             texture = _blurRenderer.FinalTexture;
-
+            
             _renderToScreen.Render(texture);
 
             RenderUI();
@@ -360,7 +364,7 @@ namespace SpiceEngine.Rendering
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
             var camera = _entityProvider.ActiveCamera;

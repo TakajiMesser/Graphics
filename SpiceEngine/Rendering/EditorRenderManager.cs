@@ -39,7 +39,7 @@ namespace SpiceEngine.Rendering
         private LogManager _logManager;
         private WireframeRenderer _wireframeRenderer = new WireframeRenderer();
 
-        public EditorRenderManager(Display display, PanelCamera camera) : base(display)
+        public EditorRenderManager(IRenderContext context, Display display, PanelCamera camera) : base(context, display)
         {
             _logManager = new LogManager(_textRenderer);
 
@@ -54,7 +54,7 @@ namespace SpiceEngine.Rendering
 
         protected async override Task LoadInitial()
         {
-            await Invoker.RunAsync(() => _wireframeRenderer.Load(Display.Resolution));
+            await Invoker.RunAsync(() => _wireframeRenderer.Load(this, Display.Resolution));
             await base.LoadInitial();
         }
 

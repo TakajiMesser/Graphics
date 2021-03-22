@@ -1,7 +1,6 @@
-﻿using SpiceEngine.GLFW.Inputs;
+﻿using SpiceEngine.GLFWBindings.Inputs;
 using SpiceEngineCore.Entities.Cameras;
 using TangyHIDCore;
-using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
@@ -40,7 +39,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                 var currentAngles = perspectiveCamera.CurrentAngles;
 
-                if (inputProvider.IsDown(new Input(MouseButtons.Right)))
+                if (inputProvider.IsDown(MouseButtons.Right))
                 {
                     var mouseDelta = inputProvider.MouseDelta * TurnSpeed;
 
@@ -57,22 +56,22 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 }
                 else
                 {
-                    if (inputProvider.IsDown(new Input(Keys.Up)))
+                    if (inputProvider.IsDown(Keys.Up))
                     {
                         currentAngles.Y += MoveSpeed;
                     }
 
-                    if (inputProvider.IsDown(new Input(Keys.Down)))
+                    if (inputProvider.IsDown(Keys.Down))
                     {
                         currentAngles.Y -= MoveSpeed;
                     }
 
-                    if (inputProvider.IsDown(new Input(Keys.Right)))
+                    if (inputProvider.IsDown(Keys.Right))
                     {
                         currentAngles.X -= MoveSpeed;
                     }
 
-                    if (inputProvider.IsDown(new Input(Keys.Left)))
+                    if (inputProvider.IsDown(Keys.Left))
                     {
                         currentAngles.X += MoveSpeed;
                     }

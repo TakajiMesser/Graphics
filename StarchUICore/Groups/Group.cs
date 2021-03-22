@@ -1,4 +1,5 @@
-﻿using StarchUICore.Attributes.Sizes;
+﻿using SpiceEngineCore.Rendering;
+using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Traversal;
 using System.Collections.Generic;
@@ -27,11 +28,11 @@ namespace StarchUICore.Groups
 
         public IElement GetChildAt(int index) => _children[index];
 
-        public override void Load()
+        public override void Load(IRenderContextProvider contextProvider)
         {
             foreach (var child in Children)
             {
-                child.Load();
+                child.Load(contextProvider);
             }
         }
 

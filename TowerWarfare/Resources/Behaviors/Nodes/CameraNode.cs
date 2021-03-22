@@ -1,9 +1,9 @@
-﻿using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngine.GLFWBindings.Inputs;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Utilities;
 using System;
 using TangyHIDCore;
-using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
@@ -43,7 +43,7 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
             {
                 var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
 
-                if (inputProvider.IsDown(new Input(MouseButtons.Right)))
+                if (inputProvider.IsDown(MouseButtons.Right))
                 {
                     Strafe(camera, inputProvider.MouseDelta);
                 }
@@ -53,12 +53,12 @@ namespace TowerWarfare.Resources.Behaviors.Nodes
                     Zoom(camera, inputProvider.MouseWheelDelta);
                 }
 
-                if (inputProvider.IsDown(new Input(MouseButtons.Button1)))
+                if (inputProvider.IsDown(MouseButtons.Button1))
                 {
                     Travel(camera, inputProvider.MouseDelta);
                 }
 
-                if (inputProvider.IsDown(new Input(MouseButtons.Button2)))
+                if (inputProvider.IsDown(MouseButtons.Button2))
                 {
                     Turn(camera, inputProvider.MouseDelta);
                 }

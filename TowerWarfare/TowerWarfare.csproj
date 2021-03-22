@@ -92,6 +92,10 @@
     <Folder Include="Resources\Behaviors\Scripts\" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj">
+      <Project>{132ea7f6-e711-4d33-84be-754f21a73d79}</Project>
+      <Name>SpiceEngine.GLFWBindings</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
       <Project>{6c5c7f0d-05af-4817-9fd3-c817b1111872}</Project>
       <Name>SpiceEngineCore</Name>
@@ -130,4 +134,7 @@
     <Error Condition="!Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\AssimpNet.4.1.0\build\AssimpNet.targets'))" />
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /d "$(ProjectDir)..\SpiceEngine.GLFWBindings\libs\Win32\*" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -1,14 +1,6 @@
 ﻿using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using TangyHIDCore;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SpiceEngine.Helpers
 {
@@ -24,22 +16,22 @@ namespace SpiceEngine.Helpers
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Forward))
+            if (inputProvider.IsDown("Forward"))
             {
                 translation += up.Normalized() * speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Left))
+            if (inputProvider.IsDown("Left"))
             {
                 translation -= right.Normalized() * speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Backward))
+            if (inputProvider.IsDown("Backward"))
             {
                 translation -= up.Normalized() * speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Right))
+            if (inputProvider.IsDown("Right"))
             {
                 translation += right.Normalized() * speed;
             }
@@ -57,22 +49,22 @@ namespace SpiceEngine.Helpers
             var up = new Vector3(flattenedUp.X, flattenedUp.Y, 0.0f);
             var right = new Vector3(flattenedUp.Y, -flattenedUp.X, 0.0f);
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Forward))
+            if (inputProvider.IsDown("Forward"))
             {
                 translation += up.Normalized() * speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Left))
+            if (inputProvider.IsDown("Left"))
             {
                 translation -= right.Normalized() * speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Backward))
+            if (inputProvider.IsDown("Backward"))
             {
                 translation -= up.Normalized() * speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Right))
+            if (inputProvider.IsDown("Right"))
             {
                 translation += right.Normalized() * speed;
             }

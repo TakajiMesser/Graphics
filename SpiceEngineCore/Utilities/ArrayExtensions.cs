@@ -16,6 +16,18 @@ namespace SpiceEngineCore.Utilities
             return array;
         }
 
+        public static T[] Initialize<T>(int size) where T : new()
+        {
+            var array = new T[size];
+
+            for (var i = 0; i < size; i++)
+            {
+                array[i] = new T();
+            }
+
+            return array;
+        }
+
         public static void Populate<T>(this T[] source, T value)
         {
             for (var i = 0; i < source.Length; i++)

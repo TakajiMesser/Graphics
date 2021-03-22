@@ -21,7 +21,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using TangyHIDCore;
-using TangyHIDCore.Inputs;
 using TangyHIDCore.Outputs;
 using Color4 = SpiceEngineCore.Geometry.Color4;
 using GLControl = OpenTK.GLControl;
@@ -290,7 +289,7 @@ namespace SpiceEngine.Game
                     ViewType = ViewType
                 };
 
-                RenderManager = new EditorRenderManager(Display, _panelCamera)
+                RenderManager = new EditorRenderManager(null, Display, _panelCamera)
                 {
                     RenderMode = _renderMode,
                     Invoker = this
@@ -635,7 +634,7 @@ namespace SpiceEngine.Game
         public bool IsHeld()
         {
             _inputProvider.Tick();
-            return _inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Left)) || _inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Right));
+            return _inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Left) || _inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Right);
         }
 
         public void EndDrag()
@@ -651,17 +650,17 @@ namespace SpiceEngine.Game
 
         private void HandleInput()
         {
-            if (_isDuplicating && !_inputProvider.IsDown(new Input(GLFW.Inputs.Keys.LeftShift)))
+            if (_isDuplicating && !_inputProvider.IsDown(GLFWBindings.Inputs.Keys.LeftShift))
             {
                 _isDuplicating = false;
             }
 
-            if (_inputProvider.IsReleased(new Input(GLFW.Inputs.MouseButtons.Left)))
+            if (_inputProvider.IsReleased(GLFWBindings.Inputs.MouseButtons.Left))
             {
                 SelectionManager.SelectionType = SelectionTypes.None;
             }
 
-            if (_inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Left)) && _inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Right)))
+            if (_inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Left) && _inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Right))
             {
                 _panelCamera.Strafe(_inputProvider.MouseDelta);
 
@@ -671,9 +670,9 @@ namespace SpiceEngine.Game
             }
             else if (SelectionManager.SelectionType != SelectionTypes.None)
             {
-                if (_inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Left)))
+                if (_inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Left))
                 {
-                    if (!_isDuplicating && _inputProvider.IsDown(new Input(GLFW.Inputs.Keys.LeftShift)))
+                    if (!_isDuplicating && _inputProvider.IsDown(GLFWBindings.Inputs.Keys.LeftShift))
                     {
                         _isDuplicating = true;
 
@@ -691,17 +690,17 @@ namespace SpiceEngine.Game
             }
             else if (_panelCamera.ViewType == ViewTypes.Perspective)
             {
-                if (_inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Left)))
+                if (_inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Left))
                 {
                     _panelCamera.Travel(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Right)))
+                else if (_inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Right))
                 {
                     _panelCamera.Turn(_inputProvider.MouseDelta);
                     _invalidated = true;
                 }
-                else if (_inputProvider.IsDown(new Input(GLFW.Inputs.MouseButtons.Button1)))
+                else if (_inputProvider.IsDown(GLFWBindings.Inputs.MouseButtons.Button1))
                 {
                     if (SelectionManager.SelectionCount > 0)
                     {

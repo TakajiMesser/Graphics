@@ -1,10 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 
 namespace SpiceEngineCore.Helpers
 {
-    public class SetDictionary<TKey, TValue>
+    public class ListDictionary<TKey, TValue>
     {
         private Dictionary<TKey, List<TValue>> _valueSetByKey = new Dictionary<TKey, List<TValue>>();
 

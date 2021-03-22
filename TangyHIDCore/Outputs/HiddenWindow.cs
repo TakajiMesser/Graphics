@@ -14,7 +14,7 @@ namespace TangyHIDCore.Outputs
 
             // TODO - Are these two calls redundant?
             GLFW.WindowHint(WindowHints.Visible, 0);
-            GLFW.HideWindow(_windowHandle);
+            //uGLFW.HideWindow(_windowHandle);
         }
 
         protected override void SetCallbacks()

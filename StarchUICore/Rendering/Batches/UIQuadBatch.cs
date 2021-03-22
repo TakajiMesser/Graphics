@@ -1,4 +1,5 @@
-﻿using OpenTK.Graphics.OpenGL;
+﻿using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Helpers;
 using SpiceEngineCore.Rendering;
@@ -30,14 +31,14 @@ namespace StarchUICore.Rendering.Batches
 
         public UIQuadBatch(IElement item) : base(item) { }
 
-        public override void Load()
+        public override void Load(IRenderContextProvider contextProvider)
         {
-            _vertexBuffer = new VertexBuffer<ViewQuadVertex>();
-            _vertexArray = new VertexArray<ViewQuadVertex>();
+            _vertexBuffer = new VertexBuffer<ViewQuadVertex>(contextProvider);
+            _vertexArray = new VertexArray<ViewQuadVertex>(contextProvider);
 
-            _vertexBuffer.Clear();
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
 
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();

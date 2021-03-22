@@ -301,7 +301,7 @@ namespace SpiceEngine.Rendering.Batches
             }
         }*/
 
-        public void Load(int entityID)
+        /*public void Load(int entityID)
         {
             var batch = GetBatch(entityID);
 
@@ -309,9 +309,9 @@ namespace SpiceEngine.Rendering.Batches
             {
                 Load();
             }
-        }
+        }*/
 
-        public void Load()
+        public void Load(IRenderContextProvider contextProvider)
         {
             while (_batchIndicesToLoad.Count > 0)
             {
@@ -320,7 +320,7 @@ namespace SpiceEngine.Rendering.Batches
 
                 if (batch != null)
                 {
-                    batch.Load();
+                    batch.Load(contextProvider);
                     _loadedBatches[batchIndex] = batch;
                 }
             }
@@ -518,7 +518,7 @@ namespace SpiceEngine.Rendering.Batches
                 _commandQueue.Enqueue(() =>
                 {
                     _shader = shader;
-                    _shader.Use();
+                    _shader.Bind();
                 });
                 return this;
             }

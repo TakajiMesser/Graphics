@@ -19,14 +19,14 @@ namespace StarchUICore
 
         private Resolution _resolution;
         private int _rootID;
-        private SetDictionary<int, int> _childIDSetByID = new SetDictionary<int, int>();
+        private ListDictionary<int, int> _childIDsByID = new ListDictionary<int, int>();
         private HashSet<int> _selectedEntityIDs = new HashSet<int>();
 
         private Dictionary<int, string> _horizontalAnchorNamesByID = new Dictionary<int, string>();
         private Dictionary<int, string> _verticalAnchorNamesByID = new Dictionary<int, string>();
         private Dictionary<int, string> _horizontalDockNamesByID = new Dictionary<int, string>();
         private Dictionary<int, string> _verticalDockNamesByID = new Dictionary<int, string>();
-        private SetDictionary<int, string> _childNamesByID = new SetDictionary<int, string>();
+        private ListDictionary<int, string> _childNamesByID = new ListDictionary<int, string>();
 
         private List<int> _idDrawOrder = new List<int>();
         private HashSet<int> _changedIDs = new HashSet<int>();
@@ -126,7 +126,7 @@ namespace StarchUICore
                             var childElement = GetComponent(childID);
                             group.AddChild(childElement);
 
-                            _childIDSetByID.Add(component.EntityID, childID);
+                            _childIDsByID.Add(component.EntityID, childID);
                         }
                     }
                 }
@@ -252,10 +252,10 @@ namespace StarchUICore
         {
             _rootID = 0;
             //_elementByID.Clear();
-            _childIDSetByID.Clear();
+            _childIDsByID.Clear();
         }
 
-        public void Load() => GetRoot()?.Load();
+        public void Load(IRenderContextProvider contextProvider) => GetRoot()?.Load(contextProvider);
 
         //private int _tickCounter = 0;
 
@@ -307,7 +307,7 @@ namespace StarchUICore
             {
                 yield return id;
 
-                if (_childIDSetByID.TryGetValues(id, out IEnumerable<int> childIDs))
+                if (_childIDsByID.TryGetValues(id, out IEnumerable<int> childIDs))
                 {
                     foreach (var childID in childIDs)
                     {

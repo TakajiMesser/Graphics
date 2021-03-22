@@ -1,21 +1,12 @@
 ﻿using SpiceEngineCore.Entities.Actors;
 using SpiceEngineCore.Entities.Cameras;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Utilities;
 using System;
-using System.Linq;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {
@@ -29,7 +20,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 var nEvadeTicks = context.ContainsVariable("nEvadeTicks") ? context.GetVariable<int>("nEvadeTicks") : 0;
 
                 // Compare current position to location of mouse, and set rotation to face the mouse
-                if (!inputProvider.IsDown(inputProvider.InputMapping.ItemWheel) && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
+                if (!inputProvider.IsDown("ItemWheel") && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
                 {
                     var camera = context.SystemProvider.EntityProvider.ActiveCamera;
 
@@ -40,19 +31,16 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                         Y = ((1.0f - clipSpacePosition.Y) / 2.0f) * inputProvider.WindowSize.Height,
                     };
 
-                    if (inputProvider.MouseCoordinates.HasValue)
-                    {
-                        var vectorBetween = inputProvider.MouseCoordinates.Value - screenCoordinates;
-                        float turnAngle = -(float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
+                    var vectorBetween = inputProvider.MouseCoordinates - screenCoordinates;
+                    float turnAngle = -(float)Math.Atan2(vectorBetween.Y, vectorBetween.X);
 
-                        // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
-                        // TODO - This is mad suspect...
-                        var flattenedUp = context.SystemProvider.EntityProvider.ActiveCamera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
-                        turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
+                    // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
+                    // TODO - This is mad suspect...
+                    var flattenedUp = context.SystemProvider.EntityProvider.ActiveCamera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
+                    turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
 
-                        actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
-                        context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
-                    }
+                    actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);
+                    context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, turnAngle);
                 }
             }
 

@@ -1,4 +1,4 @@
-﻿using SpiceEngine.GLFW.Inputs;
+﻿using SpiceEngine.GLFWBindings.Inputs;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.UserInterfaces;
@@ -17,7 +17,6 @@ using SweetGraphicsCore.Rendering.Textures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TangyHIDCore.Inputs;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
@@ -155,7 +154,7 @@ namespace SpiceEngine.Maps
                     new SelectionConditionNode(
                         new ScriptNode(PushScript)
                     ),
-                    InputTypes.Released, new Input(MouseButtons.Left)
+                    new MouseButtonCondition(MouseButtons.Left, InputTypes.Released)
                 ));
 
                 /*var pushNode = new ScriptNode(PushScript);

@@ -25,7 +25,8 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -34,7 +35,8 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <LangVersion>7.1</LangVersion>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
     <DebugSymbols>true</DebugSymbols>
@@ -44,6 +46,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
     <OutputPath>bin\x64\Release\</OutputPath>
@@ -53,6 +57,8 @@
     <PlatformTarget>x64</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -62,6 +68,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -71,6 +79,8 @@
     <PlatformTarget>x86</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <LangVersion>7.3</LangVersion>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="AssimpNet, Version=4.1.0.0, Culture=neutral, PublicKeyToken=0d51b391f59f42a6, processorArchitecture=MSIL">
@@ -104,6 +114,8 @@
     <Reference Include="OpenTK.GLControl, Version=3.0.1.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <HintPath>..\packages\OpenTK.GLControl.3.0.1\lib\net20\OpenTK.GLControl.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.CodeDom, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.CodeDom.4.7.0\lib\net461\System.CodeDom.dll</HintPath>
@@ -214,7 +226,9 @@
       <HintPath>..\packages\System.Threading.AccessControl.4.7.0\lib\net461\System.Threading.AccessControl.dll</HintPath>
     </Reference>
     <Reference Include="System.Transactions" />
+    <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -237,20 +251,21 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
-    <Compile Include="Game\GameWindowWrapper.cs" />
+    <Compile Include="Game\Viewport.xaml.cs">
+      <DependentUpon>Viewport.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Game\FrameWindow.cs" />
     <Compile Include="Game\WindowWrapper.cs" />
-    <Compile Include="Game\Window.cs" />
+    <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Game\SimulationManager.cs" />
     <Compile Include="Game\PanelCamera.cs" />
     <Compile Include="Game\PanelLoadedEventArgs.cs" />
     <Compile Include="Game\TransformModeEventArgs.cs" />
     <Compile Include="Game\TransformSelectedEventArgs.cs" />
     <Compile Include="Game\EntitiesEventArgs.cs" />
-    <Compile Include="Game\CursorEventArgs.cs" />
     <Compile Include="Game\GameControl.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Game\GameWindow.cs" />
     <Compile Include="Helpers\GeometryHelper.cs" />
     <Compile Include="Maps\Map.cs" />
     <Compile Include="Maps\Map2D.cs" />
@@ -279,11 +294,13 @@
     <Compile Include="Rendering\EditorRenderManager.cs" />
     <Compile Include="Rendering\RenderManager.cs" />
     <Compile Include="Scripting\Nodes\CameraNode.cs" />
+    <Compile Include="Scripting\Nodes\InputCondition.cs" />
     <Compile Include="Scripting\Nodes\InputConditionNode.cs" />
     <Compile Include="Scripting\Nodes\BaseNode.cs" />
     <Compile Include="Scripting\Nodes\SelectionConditionNode.cs" />
     <Compile Include="Scripting\Response.cs" />
     <Compile Include="Scripting\ScriptManager.cs" />
+    <Compile Include="Utilities\WPFExtensions.cs" />
     <Compile Include="Utilities\AssimpExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -368,7 +385,7 @@
       <Project>{eb22b876-fb30-45ee-8168-17a6d3295d03}</Project>
       <Name>SmokyAudioCore</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SpiceEngine.GLFW\SpiceEngine.GLFWBindings.csproj">
+    <ProjectReference Include="..\SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj">
       <Project>{132EA7F6-E711-4D33-84BE-754F21A73D79}</Project>
       <Name>SpiceEngine.GLFWBindings</Name>
     </ProjectReference>
@@ -396,6 +413,12 @@
       <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
       <Name>UmamiScriptingCore</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Page Include="Game\Viewport.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\AssimpNet.4.1.0\build\AssimpNet.targets" Condition="Exists('..\packages\AssimpNet.4.1.0\build\AssimpNet.targets')" />

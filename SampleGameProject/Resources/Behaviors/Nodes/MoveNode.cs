@@ -1,20 +1,11 @@
 ﻿using SavoryPhysicsCore;
 using SavoryPhysicsCore.Bodies;
 using SpiceEngine.Helpers;
-using System.Linq;
+using SpiceEngineCore.Geometry;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
 using UmamiScriptingCore.Behaviors.Nodes;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SampleGameProject.Resources.Behaviors.Nodes
 {
@@ -34,45 +25,45 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
         public override BehaviorStatus Tick(BehaviorContext context)
         {
             var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
-            var speed = inputProvider.IsDown(inputProvider.InputMapping.Run)
+            var speed = inputProvider.IsDown("Run")
                 ? RunSpeed
-                : inputProvider.IsDown(inputProvider.InputMapping.Crawl)
+                : inputProvider.IsDown("Crawl")
                     ? CreepSpeed
                     : WalkSpeed;
 
             var translation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, speed, inputProvider);
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.In))
+            if (inputProvider.IsDown("In"))
             {
                 translation.Z += speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Out))
+            if (inputProvider.IsDown("Out"))
             {
                 translation.Z -= speed;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.Evade))
+            if (inputProvider.IsDown("Evade"))
             {
                 translation.Z += 0.6f;
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot1))
+            if (inputProvider.IsDown("ItemSlot1"))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y + 0.1f, context.EulerRotation.Z);
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot2))
+            if (inputProvider.IsDown("ItemSlot2"))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y - 0.1f, context.EulerRotation.Z);
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot3))
+            if (inputProvider.IsDown("ItemSlot3"))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z + 0.1f);
             }
 
-            if (inputProvider.IsDown(inputProvider.InputMapping.ItemSlot4))
+            if (inputProvider.IsDown("ItemSlot4"))
             {
                 context.EulerRotation = new Vector3(context.EulerRotation.X, context.EulerRotation.Y, context.EulerRotation.Z - 0.1f);
             }

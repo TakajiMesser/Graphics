@@ -45,7 +45,7 @@ namespace SpiceEngineCore.Rendering.Batches
 
         bool CanBatch(IRenderable renderable);
 
-        void Load();
+        void Load(IRenderContextProvider contextProvider);
         void Draw(IShader shader, IEntityProvider entityProvider, ITextureProvider textureProvider = null);
 
         IBatch Duplicate();

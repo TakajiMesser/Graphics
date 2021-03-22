@@ -32,8 +32,6 @@ namespace SpiceEngine.Game
 
         public bool IsLoaded { get; private set; }
 
-        public void SetMouseTracker(IMouseTracker mouseTracker) => InputManager.MouseTracker = mouseTracker;
-
         public override void Load()
         {
             IsLoaded = false;

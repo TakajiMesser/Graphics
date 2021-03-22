@@ -116,7 +116,6 @@
     <None Include="packages.config" />
     <None Include="Resources\Animations\boblampclean.md5anim" />
     <None Include="Resources\Animations\boblampclean.md5mesh" />
-    <None Include="Resources\Behaviors\Enemy.btt" />
     <None Include="Resources\Behaviors\EnemyPatrol.btt" />
     <None Include="Resources\Behaviors\EnemyTurn.btt" />
     <None Include="Resources\Behaviors\PlayerCover.btt" />
@@ -149,7 +148,6 @@
     <None Include="Resources\Meshes\Player.obj" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\Maps\TestMap.xml" />
     <Content Include="Resources\Screenshots\20180108_211355.png" />
     <Content Include="Resources\Screenshots\20180111_085059.png" />
     <Content Include="Resources\Screenshots\20180111_104600.png" />
@@ -224,8 +222,8 @@
     <Content Include="Resources\Textures\water1-n.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpiceEngine.GLFW\SpiceEngine.GLFWBindings.csproj">
-      <Project>{132EA7F6-E711-4D33-84BE-754F21A73D79}</Project>
+    <ProjectReference Include="..\SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj">
+      <Project>{132ea7f6-e711-4d33-84be-754f21a73d79}</Project>
       <Name>SpiceEngine.GLFWBindings</Name>
     </ProjectReference>
     <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
@@ -267,4 +265,7 @@
     <Error Condition="!Exists('..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Net.Compilers.2.10.0\build\Microsoft.Net.Compilers.props'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>xcopy /y /d "$(ProjectDir)..\SpiceEngine.GLFWBindings\libs\Win32\*" "$(TargetDir)"</PostBuildEvent>
+  </PropertyGroup>
 </Project>

@@ -1,0 +1,241 @@
+﻿using Assimp;
+using CitrusAnimationCore.Bones;
+using SweetGraphicsCore.Rendering.Textures;
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+
+namespace SpiceEngine.Utilities
+{
+    public static class WPFExtensions
+    {
+        public static GLFWBindings.Inputs.Keys ToGLFWKey(this System.Windows.Input.Key key)
+        {
+            switch (key)
+            {
+                case System.Windows.Input.Key.Tab:
+                    return GLFWBindings.Inputs.Keys.Tab;
+                case System.Windows.Input.Key.Return:
+                    return GLFWBindings.Inputs.Keys.Enter;
+                case System.Windows.Input.Key.Pause:
+                    return GLFWBindings.Inputs.Keys.Pause;
+                case System.Windows.Input.Key.CapsLock:
+                    return GLFWBindings.Inputs.Keys.CapsLock;
+                case System.Windows.Input.Key.Escape:
+                    return GLFWBindings.Inputs.Keys.Escape;
+                case System.Windows.Input.Key.Space:
+                    return GLFWBindings.Inputs.Keys.Space;
+                case System.Windows.Input.Key.PageUp:
+                    return GLFWBindings.Inputs.Keys.PageUp;
+                case System.Windows.Input.Key.PageDown:
+                    return GLFWBindings.Inputs.Keys.PageDown;
+                case System.Windows.Input.Key.End:
+                    return GLFWBindings.Inputs.Keys.End;
+                case System.Windows.Input.Key.Home:
+                    return GLFWBindings.Inputs.Keys.Home;
+                case System.Windows.Input.Key.Left:
+                    return GLFWBindings.Inputs.Keys.Left;
+                case System.Windows.Input.Key.Up:
+                    return GLFWBindings.Inputs.Keys.Up;
+                case System.Windows.Input.Key.Right:
+                    return GLFWBindings.Inputs.Keys.Right;
+                case System.Windows.Input.Key.Down:
+                    return GLFWBindings.Inputs.Keys.Down;
+                case System.Windows.Input.Key.PrintScreen:
+                    return GLFWBindings.Inputs.Keys.PrintScreen;
+                case System.Windows.Input.Key.Insert:
+                    return GLFWBindings.Inputs.Keys.Insert;
+                case System.Windows.Input.Key.Delete:
+                    return GLFWBindings.Inputs.Keys.Delete;
+                case System.Windows.Input.Key.D0:
+                    return GLFWBindings.Inputs.Keys.Num0;
+                case System.Windows.Input.Key.D1:
+                    return GLFWBindings.Inputs.Keys.Num1;
+                case System.Windows.Input.Key.D2:
+                    return GLFWBindings.Inputs.Keys.Num2;
+                case System.Windows.Input.Key.D3:
+                    return GLFWBindings.Inputs.Keys.Num3;
+                case System.Windows.Input.Key.D4:
+                    return GLFWBindings.Inputs.Keys.Num4;
+                case System.Windows.Input.Key.D5:
+                    return GLFWBindings.Inputs.Keys.Num5;
+                case System.Windows.Input.Key.D6:
+                    return GLFWBindings.Inputs.Keys.Num6;
+                case System.Windows.Input.Key.D7:
+                    return GLFWBindings.Inputs.Keys.Num7;
+                case System.Windows.Input.Key.D8:
+                    return GLFWBindings.Inputs.Keys.Num8;
+                case System.Windows.Input.Key.D9:
+                    return GLFWBindings.Inputs.Keys.Num9;
+                case System.Windows.Input.Key.A:
+                    return GLFWBindings.Inputs.Keys.A;
+                case System.Windows.Input.Key.B:
+                    return GLFWBindings.Inputs.Keys.B;
+                case System.Windows.Input.Key.C:
+                    return GLFWBindings.Inputs.Keys.C;
+                case System.Windows.Input.Key.D:
+                    return GLFWBindings.Inputs.Keys.D;
+                case System.Windows.Input.Key.E:
+                    return GLFWBindings.Inputs.Keys.E;
+                case System.Windows.Input.Key.F:
+                    return GLFWBindings.Inputs.Keys.F;
+                case System.Windows.Input.Key.G:
+                    return GLFWBindings.Inputs.Keys.G;
+                case System.Windows.Input.Key.H:
+                    return GLFWBindings.Inputs.Keys.H;
+                case System.Windows.Input.Key.I:
+                    return GLFWBindings.Inputs.Keys.I;
+                case System.Windows.Input.Key.J:
+                    return GLFWBindings.Inputs.Keys.J;
+                case System.Windows.Input.Key.K:
+                    return GLFWBindings.Inputs.Keys.K;
+                case System.Windows.Input.Key.L:
+                    return GLFWBindings.Inputs.Keys.L;
+                case System.Windows.Input.Key.M:
+                    return GLFWBindings.Inputs.Keys.M;
+                case System.Windows.Input.Key.N:
+                    return GLFWBindings.Inputs.Keys.N;
+                case System.Windows.Input.Key.O:
+                    return GLFWBindings.Inputs.Keys.O;
+                case System.Windows.Input.Key.P:
+                    return GLFWBindings.Inputs.Keys.P;
+                case System.Windows.Input.Key.Q:
+                    return GLFWBindings.Inputs.Keys.Q;
+                case System.Windows.Input.Key.R:
+                    return GLFWBindings.Inputs.Keys.R;
+                case System.Windows.Input.Key.S:
+                    return GLFWBindings.Inputs.Keys.S;
+                case System.Windows.Input.Key.T:
+                    return GLFWBindings.Inputs.Keys.T;
+                case System.Windows.Input.Key.U:
+                    return GLFWBindings.Inputs.Keys.U;
+                case System.Windows.Input.Key.V:
+                    return GLFWBindings.Inputs.Keys.V;
+                case System.Windows.Input.Key.W:
+                    return GLFWBindings.Inputs.Keys.W;
+                case System.Windows.Input.Key.X:
+                    return GLFWBindings.Inputs.Keys.X;
+                case System.Windows.Input.Key.Y:
+                    return GLFWBindings.Inputs.Keys.Y;
+                case System.Windows.Input.Key.Z:
+                    return GLFWBindings.Inputs.Keys.Z;
+                case System.Windows.Input.Key.NumPad0:
+                    return GLFWBindings.Inputs.Keys.KP0;
+                case System.Windows.Input.Key.NumPad1:
+                    return GLFWBindings.Inputs.Keys.KP1;
+                case System.Windows.Input.Key.NumPad2:
+                    return GLFWBindings.Inputs.Keys.KP2;
+                case System.Windows.Input.Key.NumPad3:
+                    return GLFWBindings.Inputs.Keys.KP3;
+                case System.Windows.Input.Key.NumPad4:
+                    return GLFWBindings.Inputs.Keys.KP4;
+                case System.Windows.Input.Key.NumPad5:
+                    return GLFWBindings.Inputs.Keys.KP5;
+                case System.Windows.Input.Key.NumPad6:
+                    return GLFWBindings.Inputs.Keys.KP6;
+                case System.Windows.Input.Key.NumPad7:
+                    return GLFWBindings.Inputs.Keys.KP7;
+                case System.Windows.Input.Key.NumPad8:
+                    return GLFWBindings.Inputs.Keys.KP8;
+                case System.Windows.Input.Key.NumPad9:
+                    return GLFWBindings.Inputs.Keys.KP9;
+                case System.Windows.Input.Key.Multiply:
+                    return GLFWBindings.Inputs.Keys.KPMultiply;
+                case System.Windows.Input.Key.Add:
+                    return GLFWBindings.Inputs.Keys.KPAdd;
+                case System.Windows.Input.Key.Subtract:
+                    return GLFWBindings.Inputs.Keys.KPSubtract;
+                case System.Windows.Input.Key.Decimal:
+                    return GLFWBindings.Inputs.Keys.KPDecimal;
+                case System.Windows.Input.Key.Divide:
+                    return GLFWBindings.Inputs.Keys.KPDivide;
+                case System.Windows.Input.Key.F1:
+                    return GLFWBindings.Inputs.Keys.F1;
+                case System.Windows.Input.Key.F2:
+                    return GLFWBindings.Inputs.Keys.F2;
+                case System.Windows.Input.Key.F3:
+                    return GLFWBindings.Inputs.Keys.F3;
+                case System.Windows.Input.Key.F4:
+                    return GLFWBindings.Inputs.Keys.F4;
+                case System.Windows.Input.Key.F5:
+                    return GLFWBindings.Inputs.Keys.F5;
+                case System.Windows.Input.Key.F6:
+                    return GLFWBindings.Inputs.Keys.F6;
+                case System.Windows.Input.Key.F7:
+                    return GLFWBindings.Inputs.Keys.F7;
+                case System.Windows.Input.Key.F8:
+                    return GLFWBindings.Inputs.Keys.F8;
+                case System.Windows.Input.Key.F9:
+                    return GLFWBindings.Inputs.Keys.F9;
+                case System.Windows.Input.Key.F10:
+                    return GLFWBindings.Inputs.Keys.F10;
+                case System.Windows.Input.Key.F11:
+                    return GLFWBindings.Inputs.Keys.F11;
+                case System.Windows.Input.Key.F12:
+                    return GLFWBindings.Inputs.Keys.F12;
+                case System.Windows.Input.Key.F13:
+                    return GLFWBindings.Inputs.Keys.F13;
+                case System.Windows.Input.Key.F14:
+                    return GLFWBindings.Inputs.Keys.F14;
+                case System.Windows.Input.Key.F15:
+                    return GLFWBindings.Inputs.Keys.F15;
+                case System.Windows.Input.Key.F16:
+                    return GLFWBindings.Inputs.Keys.F16;
+                case System.Windows.Input.Key.F17:
+                    return GLFWBindings.Inputs.Keys.F17;
+                case System.Windows.Input.Key.F18:
+                    return GLFWBindings.Inputs.Keys.F18;
+                case System.Windows.Input.Key.F19:
+                    return GLFWBindings.Inputs.Keys.F19;
+                case System.Windows.Input.Key.F20:
+                    return GLFWBindings.Inputs.Keys.F20;
+                case System.Windows.Input.Key.F21:
+                    return GLFWBindings.Inputs.Keys.F21;
+                case System.Windows.Input.Key.F22:
+                    return GLFWBindings.Inputs.Keys.F22;
+                case System.Windows.Input.Key.F23:
+                    return GLFWBindings.Inputs.Keys.F23;
+                case System.Windows.Input.Key.F24:
+                    return GLFWBindings.Inputs.Keys.F24;
+                case System.Windows.Input.Key.NumLock:
+                    return GLFWBindings.Inputs.Keys.NumLock;
+                case System.Windows.Input.Key.Scroll:
+                    return GLFWBindings.Inputs.Keys.ScrollLock;
+                case System.Windows.Input.Key.LeftShift:
+                    return GLFWBindings.Inputs.Keys.LeftShift;
+                case System.Windows.Input.Key.RightShift:
+                    return GLFWBindings.Inputs.Keys.RightShift;
+                case System.Windows.Input.Key.LeftCtrl:
+                    return GLFWBindings.Inputs.Keys.LeftControl;
+                case System.Windows.Input.Key.RightCtrl:
+                    return GLFWBindings.Inputs.Keys.RightControl;
+                case System.Windows.Input.Key.LeftAlt:
+                    return GLFWBindings.Inputs.Keys.LeftAlt;
+                case System.Windows.Input.Key.RightAlt:
+                    return GLFWBindings.Inputs.Keys.RightAlt;
+                default:
+                    return GLFWBindings.Inputs.Keys.Unknown;
+            }
+        }
+
+        public static GLFWBindings.Inputs.MouseButtons ToGLFWMouseButton(this System.Windows.Input.MouseButton button)
+        {
+            switch (button)
+            {
+                case System.Windows.Input.MouseButton.Left:
+                    return GLFWBindings.Inputs.MouseButtons.Left;
+                case System.Windows.Input.MouseButton.Middle:
+                    return GLFWBindings.Inputs.MouseButtons.Middle;
+                case System.Windows.Input.MouseButton.Right:
+                    return GLFWBindings.Inputs.MouseButtons.Right;
+                case System.Windows.Input.MouseButton.XButton1:
+                    return GLFWBindings.Inputs.MouseButtons.Button4;
+                case System.Windows.Input.MouseButton.XButton2:
+                    return GLFWBindings.Inputs.MouseButtons.Button5;
+                default:
+                    return GLFWBindings.Inputs.MouseButtons.Unknown;
+            }
+        }
+    }
+}

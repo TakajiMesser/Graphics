@@ -19,6 +19,6 @@ namespace SpiceEngineCore.Helpers
             A = 1.0f
         };
 
-        public static int GetIDFromColorVector(Vector4 colorVector) => (int)(colorVector.X + colorVector.Y * 256 + colorVector.Z * 256 * 256);
+        public static int GetIDFromColor(Color4 color) => (int)(color.R + color.B * 256 + color.B * 256 * 256);
     }
 }

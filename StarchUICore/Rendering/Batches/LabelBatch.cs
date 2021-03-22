@@ -16,22 +16,22 @@ namespace StarchUICore.Rendering.Batches
 {
     public class LabelBatch : Batch<Label>
     {
-        private VertexBuffer<TextureVertex2D> _vertexBuffer = new VertexBuffer<TextureVertex2D>();
-        private VertexArray<TextureVertex2D> _vertexArray = new VertexArray<TextureVertex2D>();
+        private VertexBuffer<TextureVertex2D> _vertexBuffer;
+        private VertexArray<TextureVertex2D> _vertexArray;
 
         private Dictionary<int, int> _offsetByID = new Dictionary<int, int>();
         private Dictionary<int, int> _countByID = new Dictionary<int, int>();
 
         public LabelBatch(Label item) : base(item) { }
 
-        public override void Load()
+        public override void Load(IRenderContextProvider contextProvider)
         {
-            _vertexBuffer = new VertexBuffer<TextureVertex2D>();
-            _vertexArray = new VertexArray<TextureVertex2D>();
+            _vertexBuffer = new VertexBuffer<TextureVertex2D>(contextProvider);
+            _vertexArray = new VertexArray<TextureVertex2D>(contextProvider);
 
-            _vertexBuffer.Clear();
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
 
+            _vertexBuffer.Load();
             _vertexBuffer.Bind();
             _vertexArray.Load();
             _vertexBuffer.Unbind();
@@ -134,7 +134,7 @@ namespace StarchUICore.Rendering.Batches
             _vertexBuffer.Bind();
 
             _vertexBuffer.Buffer();
-            _vertexBuffer.DrawQuads();
+            _vertexBuffer.DrawTriangleStrips();
 
             _vertexArray.Unbind();
             _vertexBuffer.Unbind();

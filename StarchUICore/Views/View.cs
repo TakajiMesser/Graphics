@@ -1,4 +1,5 @@
-﻿using StarchUICore.Attributes.Sizes;
+﻿using SpiceEngineCore.Rendering;
+using StarchUICore.Attributes.Sizes;
 using StarchUICore.Attributes.Units;
 using StarchUICore.Layers;
 using System;
@@ -12,7 +13,7 @@ namespace StarchUICore.Views
         public Layer Foreground { get; set; }
         public Layer Background { get; set; }
 
-        public override void Load() { }
+        public override void Load(IRenderContextProvider contextProvider) { }
         public override void Draw() { }
 
         protected override int GetRelativeX(LayoutInfo layoutInfo)

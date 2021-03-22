@@ -9,6 +9,8 @@ namespace TangyHIDCore.Inputs
 {
     public class InputManager : GameSystem, IInputProvider, IInputStateProvider
     {
+        private IInputTracker _inputTracker;
+
         private KeyDevice _keyboard;
         private MouseDevice _mouse;
         private GamePadDevice _gamePad;
@@ -28,12 +30,11 @@ namespace TangyHIDCore.Inputs
             _gamePadStates = ArrayExtensions.Initialize<GamePadState>(TrackedStates + 1);
         }
 
+        public Resolution WindowSize => _inputTracker.WindowSize;
+
         public int TrackedStates { get; }
 
         public InputMapping InputMapping { get; set; } = InputMapping.Default();
-        public IMouseTracker MouseTracker { get; set; }
-
-        public Resolution WindowSize => MouseTracker.WindowSize;
 
         public bool IsMouseInWindow => _mouseStates[_stateIndex].IsInWindow;
         public Vector2 MouseCoordinates => _mouseStates[_stateIndex].Position;
@@ -70,6 +71,8 @@ namespace TangyHIDCore.Inputs
 
         public void RegisterDevices(IInputTracker inputTracker)
         {
+            _inputTracker = inputTracker;
+
             _keyboard = new KeyDevice(this, inputTracker);
             _mouse = new MouseDevice(this, inputTracker);
             _gamePad = new GamePadDevice(this, inputTracker);

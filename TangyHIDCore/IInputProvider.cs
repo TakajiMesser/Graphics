@@ -11,9 +11,10 @@ namespace TangyHIDCore
     {
         InputMapping InputMapping { get; set; }
 
+        Resolution WindowSize { get; }
+
         bool IsMouseInWindow { get; }
         Vector2 MouseCoordinates { get; }
-        Resolution WindowSize { get; }
 
         Vector2 MouseDelta { get; }
         int MouseWheelDelta { get; }
