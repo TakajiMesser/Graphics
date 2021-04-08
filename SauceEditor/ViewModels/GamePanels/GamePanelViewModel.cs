@@ -69,18 +69,18 @@ namespace SauceEditor.ViewModels
 
         public void OnTransformModeChanged()
         {
-            PerspectiveViewModel.Control.TransformMode = TransformMode;
-            XViewModel.Control.TransformMode = TransformMode;
-            YViewModel.Control.TransformMode = TransformMode;
-            ZViewModel.Control.TransformMode = TransformMode;
+            PerspectiveViewModel.Viewport.TransformMode = TransformMode;
+            XViewModel.Viewport.TransformMode = TransformMode;
+            YViewModel.Viewport.TransformMode = TransformMode;
+            ZViewModel.Viewport.TransformMode = TransformMode;
 
             CommandManager.InvalidateRequerySuggested();
         }
 
-        public void OnPerspectiveViewModelChanged() => OnPanelViewModelChange(PerspectiveViewModel);
-        public void OnXViewModelChanged() => OnPanelViewModelChange(XViewModel);
-        public void OnYViewModelChanged() => OnPanelViewModelChange(YViewModel);
-        public void OnZViewModelChanged() => OnPanelViewModelChange(ZViewModel);
+        public void OnPerspectiveViewModelChanged() => OnPaneViewModelChange(PerspectiveViewModel);
+        public void OnXViewModelChanged() => OnPaneViewModelChange(XViewModel);
+        public void OnYViewModelChanged() => OnPaneViewModelChange(YViewModel);
+        public void OnZViewModelChanged() => OnPaneViewModelChange(ZViewModel);
 
         public void AddMapCamera(IMapCamera mapCamera)
         {
@@ -122,14 +122,14 @@ namespace SauceEditor.ViewModels
             _gameLoader.LoadSync();
         }
 
-        private void OnPanelViewModelChange(GamePaneViewModel panelViewModel)
+        private void OnPaneViewModelChange(GamePaneViewModel paneViewModel)
         {
             //SelectionManager = panelViewModel.Panel.SelectionManager;
-            panelViewModel.EntityProvider = SimulationManager.EntityProvider;
-            panelViewModel.GameLoader = _gameLoader; 
-            panelViewModel.Mapper = this;
-            panelViewModel.Control.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
-            panelViewModel.Control.Load += (s, args) =>
+            paneViewModel.EntityProvider = SimulationManager.EntityProvider;
+            paneViewModel.GameLoader = _gameLoader;
+            paneViewModel.Mapper = this;
+            paneViewModel.Viewport.EntitySelectionChanged += (s, args) => UpdatedSelection(args.Entities);
+            paneViewModel.Viewport.PanelLoaded += (s, args) =>
             {
                 // Because this panel has finished loading in, we can now safely notify the GameLoader that we are ready to load in some RenderBuilders
                 //panelViewModel.Panel.LoadGameManager(GameManager, MapComponent.Map);
@@ -137,12 +137,13 @@ namespace SauceEditor.ViewModels
                 // We need to "register" the PanelCamera with the game loader to avoid ID offset problems
                 //_gameLoader.Add(mapActor);
                 //_gameLoader.LoadSync();
-
-                panelViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                //paneViewModel.Viewport.Initialize(new SpiceEngineCore.Game.Settings.Configuration(), SimulationManager, MapComponent.Map);
+                //paneViewModel.Viewport.LoadSimulation(SimulationManager, MapComponent.Map);
                 //LoadPanels();
-                _gameLoader.AddRenderableLoader(panelViewModel.Control.RenderManager);
+                _gameLoader.AddRenderableLoader(paneViewModel.Viewport.RenderManager);
             };
-            panelViewModel.Control.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
+            paneViewModel.Viewport.EntityDuplicated += (s, args) => DuplicateEntity(args.Duplication.OriginalID, args.Duplication.DuplicatedID);
+            //paneViewModel.Viewport.Initialize(new SpiceEngineCore.Game.Settings.Configuration(), SimulationManager, MapComponent.Map);
             /*panelViewModel.Panel.PanelLoaded += (s, args) =>
             {
                 //_gameLoader.AddRenderManager(panelViewModel.Panel.RenderManager);
@@ -179,10 +180,10 @@ namespace SauceEditor.ViewModels
 
             foreach (var entityID in entityIDs)
             {
-                PerspectiveViewModel.Control.RemoveEntity(entityID);
-                XViewModel.Control.RemoveEntity(entityID);
-                YViewModel.Control.RemoveEntity(entityID);
-                ZViewModel.Control.RemoveEntity(entityID);
+                PerspectiveViewModel.Viewport.RemoveEntity(entityID);
+                XViewModel.Viewport.RemoveEntity(entityID);
+                YViewModel.Viewport.RemoveEntity(entityID);
+                ZViewModel.Viewport.RemoveEntity(entityID);
             }
         }
 
@@ -227,17 +228,17 @@ namespace SauceEditor.ViewModels
                     {
                         var renderable = renderableBuilder.ToRenderable();
 
-                        PerspectiveViewModel.Control.AddEntity(builder.Item1, renderable);
-                        XViewModel.Control.AddEntity(builder.Item1, renderable);
-                        YViewModel.Control.AddEntity(builder.Item1, renderable);
-                        ZViewModel.Control.AddEntity(builder.Item1, renderable);
+                        PerspectiveViewModel.Viewport.AddEntity(builder.Item1, renderable);
+                        XViewModel.Viewport.AddEntity(builder.Item1, renderable);
+                        YViewModel.Viewport.AddEntity(builder.Item1, renderable);
+                        ZViewModel.Viewport.AddEntity(builder.Item1, renderable);
                     }
                 }
 
-                PerspectiveViewModel.Control.DoLoad();
-                XViewModel.Control.DoLoad();
-                YViewModel.Control.DoLoad();
-                ZViewModel.Control.DoLoad();
+                PerspectiveViewModel.Viewport.DoLoad();
+                XViewModel.Viewport.DoLoad();
+                YViewModel.Viewport.DoLoad();
+                ZViewModel.Viewport.DoLoad();
             };
 
             // Add these entities to a new layer, enable it, and disable all other layers
@@ -276,10 +277,10 @@ namespace SauceEditor.ViewModels
 
         public void SelectEntities(IEnumerable<int> ids)
         {
-            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(ids);
-            if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(ids);
-            if (ViewType != ViewTypes.Y) YViewModel.Control.SelectEntities(ids);
-            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(ids);
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Viewport.SelectEntities(ids);
+            if (ViewType != ViewTypes.X) XViewModel.Viewport.SelectEntities(ids);
+            if (ViewType != ViewTypes.Y) YViewModel.Viewport.SelectEntities(ids);
+            if (ViewType != ViewTypes.Z) ZViewModel.Viewport.SelectEntities(ids);
 
             CenterView();
         }
@@ -289,17 +290,17 @@ namespace SauceEditor.ViewModels
             //SelectedEntities = MapManager.GetEditorEntities(entities).ToList();
             //PropertyDisplayer.UpdateFromEntity(MapComponent.GetEditorEntities(entities).FirstOrDefault());
 
-            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.SelectEntities(entities.Select(e => e.ID));
-            if (ViewType != ViewTypes.X) XViewModel.Control.SelectEntities(entities.Select(e => e.ID));
-            if (ViewType != ViewTypes.Y) YViewModel.Control.SelectEntities(entities.Select(e => e.ID));
-            if (ViewType != ViewTypes.Z) ZViewModel.Control.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Viewport.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.X) XViewModel.Viewport.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Y) YViewModel.Viewport.SelectEntities(entities.Select(e => e.ID));
+            if (ViewType != ViewTypes.Z) ZViewModel.Viewport.SelectEntities(entities.Select(e => e.ID));
 
             if (entities.Any())
             {
-                if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Control.UpdateEntities(entities);
-                if (ViewType != ViewTypes.X) XViewModel.Control.UpdateEntities(entities);
-                if (ViewType != ViewTypes.Y) YViewModel.Control.UpdateEntities(entities);
-                if (ViewType != ViewTypes.Z) ZViewModel.Control.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Perspective) PerspectiveViewModel.Viewport.UpdateEntities(entities);
+                if (ViewType != ViewTypes.X) XViewModel.Viewport.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Y) YViewModel.Viewport.UpdateEntities(entities);
+                if (ViewType != ViewTypes.Z) ZViewModel.Viewport.UpdateEntities(entities);
 
                 MapComponent.UpdateEntities(entities);
             }
@@ -313,50 +314,50 @@ namespace SauceEditor.ViewModels
 
         public void RequestUpdate()
         {
-            PerspectiveViewModel.Control.Invalidate();
-            XViewModel.Control.Invalidate();
-            YViewModel.Control.Invalidate();
-            ZViewModel.Control.Invalidate();
+            PerspectiveViewModel.Viewport.Invalidate();
+            XViewModel.Viewport.Invalidate();
+            YViewModel.Viewport.Invalidate();
+            ZViewModel.Viewport.Invalidate();
         }
 
         public void SetSelectedTool(SpiceEngine.Game.Tools tool)
         {
-            PerspectiveViewModel.Control.SelectedTool = tool;
-            XViewModel.Control.SelectedTool = tool;
-            YViewModel.Control.SelectedTool = tool;
-            ZViewModel.Control.SelectedTool = tool;
+            /*PerspectiveViewModel.Viewport.SelectedTool = tool;
+            XViewModel.Viewport.SelectedTool = tool;
+            YViewModel.Viewport.SelectedTool = tool;
+            ZViewModel.Viewport.SelectedTool = tool;*/
         }
 
         public void UpdateEntity(EditorEntity entity)
         {
-            PerspectiveViewModel.Control.UpdateEntities(entity.Entity.Yield());
-            XViewModel.Control.UpdateEntities(entity.Entity.Yield());
-            YViewModel.Control.UpdateEntities(entity.Entity.Yield());
-            ZViewModel.Control.UpdateEntities(entity.Entity.Yield());
+            PerspectiveViewModel.Viewport.UpdateEntities(entity.Entity.Yield());
+            XViewModel.Viewport.UpdateEntities(entity.Entity.Yield());
+            YViewModel.Viewport.UpdateEntities(entity.Entity.Yield());
+            ZViewModel.Viewport.UpdateEntities(entity.Entity.Yield());
         }
 
         public void UpdateEntities(IEnumerable<IEntity> entities)
         {
-            PerspectiveViewModel.Control.UpdateEntities(entities);
-            XViewModel.Control.UpdateEntities(entities);
-            YViewModel.Control.UpdateEntities(entities);
-            ZViewModel.Control.UpdateEntities(entities);
+            PerspectiveViewModel.Viewport.UpdateEntities(entities);
+            XViewModel.Viewport.UpdateEntities(entities);
+            YViewModel.Viewport.UpdateEntities(entities);
+            ZViewModel.Viewport.UpdateEntities(entities);
         }
 
         public void DuplicateEntity(int entityID, int duplicateEntityID)
         {
-            PerspectiveViewModel.Control.Duplicate(entityID, duplicateEntityID);
-            XViewModel.Control.Duplicate(entityID, duplicateEntityID);
-            YViewModel.Control.Duplicate(entityID, duplicateEntityID);
-            ZViewModel.Control.Duplicate(entityID, duplicateEntityID);
+            /*PerspectiveViewModel.Viewport.Duplicate(entityID, duplicateEntityID);
+            XViewModel.Viewport.Duplicate(entityID, duplicateEntityID);
+            YViewModel.Viewport.Duplicate(entityID, duplicateEntityID);
+            ZViewModel.Viewport.Duplicate(entityID, duplicateEntityID);*/
         }
 
         public void CenterView()
         {
-            PerspectiveViewModel?.Control.CenterView();
-            XViewModel?.Control.CenterView();
-            YViewModel?.Control.CenterView();
-            ZViewModel?.Control.CenterView();
+            PerspectiveViewModel?.Viewport.CenterView();
+            XViewModel?.Viewport.CenterView();
+            YViewModel?.Viewport.CenterView();
+            ZViewModel?.Viewport.CenterView();
         }
 
         /*public void LoadAndRun()
@@ -379,8 +380,39 @@ namespace SauceEditor.ViewModels
             LoadAsync();
         }
 
+        /*private IWindowContext _windowContext;
+        private IRenderContext _renderContext;
+
+        public WindowWrapper(Configuration configuration)
+        {
+            _windowContext = WindowContextFactory.SharedInstance.CreateWindowContext(configuration);
+            _renderContext = RenderContextFactory.SharedInstance.CreateRenderContext(configuration, _windowContext);
+        }
+
+        public void Start(IMap map)
+        {
+            // TODO - Casting is a poor way to do this, can we instead put the Start call in the IWindowContext interface and handle map loading elsewhere?
+            if (_windowContext is GameWindow gameWindow)
+            {
+                gameWindow.RenderContext = _renderContext;
+                gameWindow.Map = map as Map;
+                gameWindow.Start();
+            }
+        }*/
+
         private async void LoadAsync()
         {
+            var configuration = new SpiceEngineCore.Game.Settings.Configuration()
+            {
+                HandleInputEvents = false,
+                Visible = false
+            };
+
+            XViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+            YViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+            ZViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+            PerspectiveViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+
             //GameManager = new GameManager(Resolution);
             //SimulationManager.LoadFromMap(MapComponent.Map);
             var map = MapComponent.Map as Map3D;
@@ -413,7 +445,7 @@ namespace SauceEditor.ViewModels
             //GameManager.BehaviorManager.Load();
         }
 
-        private void LoadPanels()
+        /*private void LoadPanels()
         {
             // Wait for at least one panel to finish loading so that we can be sure the GLContext is properly loaded
             if (!_isGLContextLoaded)
@@ -427,15 +459,17 @@ namespace SauceEditor.ViewModels
                     if (!_isMapLoadedInPanels && MapComponent != null)
                     {
                         // TODO - Determine how to handle the fact that each GamePanel is its own IMouseDelta...
-                        PerspectiveViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
-                        XViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
-                        YViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
-                        ZViewModel.Control.LoadSimulation(SimulationManager, MapComponent.Map);
+                        var configuration = new SpiceEngineCore.Game.Settings.Configuration();
+
+                        PerspectiveViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+                        XViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+                        YViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
+                        ZViewModel.Viewport.Initialize(configuration, SimulationManager, MapComponent.Map);
 
                         _isMapLoadedInPanels = true;
                     }
                 }
             }
-        }
+        }*/
     }
 }

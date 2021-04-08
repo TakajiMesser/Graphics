@@ -105,6 +105,8 @@ namespace SpiceEngine.Scripting
                             script.First().Errors.Add(error.ToString());
                         }
                     }
+
+                    throw new Exception();
                 }
                 else
                 {

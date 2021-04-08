@@ -22,16 +22,16 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
 
         public Texture FinalTexture { get; protected set; }
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _blurProgram = ShaderHelper.LoadProgram(contextProvider,
+            _blurProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.render_2D_vert, Resources.myBlur_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -46,13 +46,13 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             FinalTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Load();
 
-            _vertexBuffer = new VertexBuffer<Simple3DVertex>(contextProvider);
+            _vertexBuffer = new VertexBuffer<Simple3DVertex>(renderContext);
             _vertexBuffer.Load();
 
             _vertexArrayHandle = GL.GenVertexArray();

@@ -22,20 +22,20 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         public Texture FinalTexture { get; protected set; }
         
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _uiProgram = ShaderHelper.LoadProgram(contextProvider,
+            _uiProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.uiquad_vert, Resources.uiquad_geom, Resources.uiquad_frag });
 
-            _uiSelectionProgram = ShaderHelper.LoadProgram(contextProvider,
+            _uiSelectionProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.uiquad_selection_vert, Resources.uiquad_selection_geom, Resources.uiquad_selection_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -50,9 +50,9 @@ namespace SpiceEngine.Rendering.PostProcessing
             FinalTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Load();
         }

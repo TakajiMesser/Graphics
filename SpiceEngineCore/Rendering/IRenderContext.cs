@@ -6,9 +6,7 @@ namespace SpiceEngineCore.Rendering
     {
         bool IsDisposed { get; }
 
-        //void Initialize();
         void MakeCurrent();
         void Update();
-        void SwapBuffers();
     }
 }

@@ -188,7 +188,7 @@ namespace SauceEditor.Views
                         if (EditorSettings.Instance.DefaultView == ViewTypes.Perspective)
                         {
                             // TODO - This is mad janky, we are waiting for this specific panel to load before we trigger adding the appropriate entities
-                            gamePanel.ViewModel.PerspectiveViewModel.Control.PanelLoaded += (s, args) =>
+                            gamePanel.ViewModel.PerspectiveViewModel.Viewport.PanelLoaded += (s, args) =>
                             {
                                 _mainWindowViewModel.ModelToolPanelViewModel.OnModelToolTypeChanged();
                             };

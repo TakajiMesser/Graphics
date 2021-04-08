@@ -2,6 +2,7 @@
 using SauceEditor.Views.Factories;
 using SauceEditor.Views.Settings;
 using SauceEditor.Views.Tools;
+using SpiceEngine.Game;
 using SpiceEngineCore.Maps;
 using System;
 using System.ComponentModel;
@@ -108,11 +109,8 @@ namespace SauceEditor.Views
         public void CreateGameWindow(IMap map)
         {
             //_gamePanelManager.IsEnabled = false;
-            using (var gameWindow = new GameWindow(map))
-            {
-                gameWindow.LoadAndRun();
-                //gameWindow.Run(60.0, 0.0);
-            }
+            var windowWrapper = new WindowWrapper(new SpiceEngineCore.Game.Settings.Configuration());
+            windowWrapper.Start(map);
 
             /*var gameWindow = new GameWindow(map)
             {

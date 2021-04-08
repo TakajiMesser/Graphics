@@ -8,14 +8,6 @@ namespace SweetGraphicsCore.Rendering.Models
     // TODO - Pick a name that isn't shit
     public class ModelBuilder
     {
-        public List<Vector3> Positions { get; set; } = new List<Vector3>();
-        public List<Vector3> Normals { get; set; } = new List<Vector3>();
-        public List<Vector3> Tangents { get; set; } = new List<Vector3>();
-        public List<Vector2> UVs { get; set; } = new List<Vector2>();
-        public List<Vector4> BoneIDs { get; set; } = new List<Vector4>();
-        public List<Vector4> BoneWeights { get; set; } = new List<Vector4>();
-        public List<int> TriangleIndices { get; set; } = new List<int>();
-
         public ModelBuilder(ModelMesh modelMesh)
         {
             foreach (var face in modelMesh.Faces)
@@ -41,6 +33,14 @@ namespace SweetGraphicsCore.Rendering.Models
 
             AddTriangle(modelTriangle, uvXOrigin, uvYOrigin, uvRotation, uvMap);
         }
+
+        public List<Vector3> Positions { get; set; } = new List<Vector3>();
+        public List<Vector3> Normals { get; set; } = new List<Vector3>();
+        public List<Vector3> Tangents { get; set; } = new List<Vector3>();
+        public List<Vector2> UVs { get; set; } = new List<Vector2>();
+        public List<Vector4> BoneIDs { get; set; } = new List<Vector4>();
+        public List<Vector4> BoneWeights { get; set; } = new List<Vector4>();
+        public List<int> TriangleIndices { get; set; } = new List<int>();
 
         public IEnumerable<ModelVertex> GetVertices()
         {

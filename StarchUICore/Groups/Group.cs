@@ -28,11 +28,11 @@ namespace StarchUICore.Groups
 
         public IElement GetChildAt(int index) => _children[index];
 
-        public override void Load(IRenderContextProvider contextProvider)
+        public override void Load(IRenderContext renderContext)
         {
             foreach (var child in Children)
             {
-                child.Load(contextProvider);
+                child.Load(renderContext);
             }
         }
 

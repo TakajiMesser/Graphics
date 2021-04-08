@@ -243,7 +243,7 @@ namespace SpiceEngine.Game
             }
         }
 
-        public Task RunAsync(Action action) => Task.Run(() =>
+        public Task InvokeAsync(Action action) => Task.Run(() =>
         {
             Invoke((Action)(() =>
             {
@@ -252,7 +252,7 @@ namespace SpiceEngine.Game
             }));
         });
 
-        public void RunSync(Action action)
+        public void InvokeSync(Action action)
         {
             Invoke((Action)(() =>
             {
@@ -263,7 +263,7 @@ namespace SpiceEngine.Game
 
         public void ForceUpdate() => Invalidate();
 
-        public Task<object> RunAsync(Func<object> func) => Task.Run(() =>
+        public Task<object> InvokeAsync(Func<object> func) => Task.Run(() =>
         {
             return Invoke((Func<object>)(() =>
             {
@@ -272,7 +272,7 @@ namespace SpiceEngine.Game
             }));
         });
 
-        public T RunSync<T>(Func<T> func) => (T)Invoke((Func<object>)(() =>
+        public T InvokeSync<T>(Func<T> func) => (T)Invoke((Func<object>)(() =>
         {
             MakeCurrent();
             return func();
@@ -281,7 +281,7 @@ namespace SpiceEngine.Game
         private void LoadFromSimulation()
         {
             // TODO - Should we run this all on the UI thread?
-            RunSync(() =>
+            InvokeSync(() =>
             {
                 //MakeCurrent();
                 _panelCamera = new PanelCamera(Display.Resolution, _entityProvider)

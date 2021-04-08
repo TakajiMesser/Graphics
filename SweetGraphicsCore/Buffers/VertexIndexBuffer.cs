@@ -11,7 +11,7 @@ namespace SweetGraphicsCore.Buffers
     {
         private List<ushort> _indices = new List<ushort>();
 
-        public VertexIndexBuffer(IRenderContextProvider contextProvider) : base(contextProvider) { }
+        public VertexIndexBuffer(IRenderContext renderContext) : base(renderContext) { }
 
         protected override int Create() => GL.GenBuffer();
         protected override void Delete() => GL.DeleteBuffer(Handle);

@@ -234,7 +234,7 @@ namespace StarchUICore.Views
             TextChanged?.Invoke(this, new TextEventArgs(vertices));
         }
 
-        public override void Load(IRenderContextProvider contextProvider) { }
+        public override void Load(IRenderContext renderContext) { }
         public override void Draw() { }
     }
 }

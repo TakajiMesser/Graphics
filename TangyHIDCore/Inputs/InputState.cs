@@ -46,22 +46,10 @@ namespace TangyHIDCore.Inputs
 
             if (state == InputStates.Press)
             {
-                var a = 3;
-                if (index == 40)
-                {
-                    a = 4;
-                }
-
                 _inputPresses[index] = true;
             }
             else if (state == InputStates.Release)
             {
-                var a = 3;
-                if (index == 40)
-                {
-                    a = 4;
-                }
-
                 _inputPresses[index] = false;
             }
         }
@@ -72,12 +60,6 @@ namespace TangyHIDCore.Inputs
             {
                 for (var i = 0; i < _inputPresses.Length; i++)
                 {
-                    var a = 3;
-                    if (inputState is KeyState && i == 40)
-                    {
-                        a = 4;
-                    }
-
                     _inputPresses[i] = inputState._inputPresses[i];
                 }
             }

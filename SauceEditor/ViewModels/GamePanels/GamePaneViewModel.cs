@@ -5,21 +5,14 @@ using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Game.Loading;
+using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Maps;
 using System;
 using System.Timers;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using ViewTypes = SpiceEngine.Game.ViewTypes;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace SauceEditor.ViewModels
 {
@@ -27,15 +20,17 @@ namespace SauceEditor.ViewModels
     {
         public const double MOUSE_HOLD_MILLISECONDS = 200;
 
-        private System.Drawing.Point _cursorLocation;
-        private Timer _mouseHoldTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
+        private Point _cursorLocation;
+        private Timer _mouseDragTimer = new Timer(MOUSE_HOLD_MILLISECONDS);
+        private bool _isMouseInWindow = false;
+        private bool _isDragging = false;
 
         public IDragPosition DragPositioner { get; set; }
         public IEntityProvider EntityProvider { get; set; }
         public IGameLoader GameLoader { get; set; }
         public IMapper Mapper { get; set; }
 
-        public GameControl Control { get; set; }
+        public Viewport Viewport { get; set; }
 
         [DoNotCheckEquality]
         public ViewTypes ViewType { get; set; }
@@ -58,7 +53,7 @@ namespace SauceEditor.ViewModels
                     var mapEntity = GetDropData(args.Data);
 
                     var coordinates = DragPositioner.Position(args);
-                    var placementID = Control.RunSync(() => Control.GetEntityIDFromPoint(coordinates));
+                    var placementID = Viewport.GetEntityIDFromPoint(coordinates);
 
                     if (placementID > 0)
                     {
@@ -85,16 +80,13 @@ namespace SauceEditor.ViewModels
             ));
         }
 
-        public GamePaneViewModel()
-        {
-            _mouseHoldTimer.Elapsed += MouseHoldTimer_Elapsed;
-        }
+        public GamePaneViewModel() => _mouseDragTimer.Elapsed += MouseDragTimer_Elapsed;
 
         public void OnShowGridChanged()
         {
-            if (Control != null)
+            if (Viewport != null)
             {
-                Control.RenderGrid = ShowGrid;
+                Viewport.RenderGrid = ShowGrid;
             }
         }
 
@@ -103,22 +95,25 @@ namespace SauceEditor.ViewModels
 
         }
 
-        public void OnControlChanged()
+        public void OnViewportChanged()
         {
-            Control.MouseWheel += (s, args) => Control.Zoom(args.Delta);
-            Control.MouseDown += Panel_MouseDown;
-            Control.MouseUp += Panel_MouseUp;
-            Control.PanelLoaded += (s, args) => ShowGrid = true;
+            Viewport.MouseWheel += (s, args) => Viewport.Zoom(args.Delta);
+            Viewport.MouseEnter += (s, args) => _isMouseInWindow = true;
+            Viewport.MouseLeave += (s, args) => _isMouseInWindow = false;
+            Viewport.MouseDown += Viewport_MouseDown;
+            Viewport.MouseUp += Viewport_MouseUp;
+            Viewport.MouseMove += Viewport_MouseMove;
+            Viewport.PanelLoaded += (s, args) => ShowGrid = true;
             //Panel.EntitySelectionChanged += (s, args) => SelectedEntities = args.Entities;
 
             // Default to wireframe rendering
-            Control.RenderMode = RenderModes.Wireframe;
+            Viewport.RenderMode = RenderModes.Wireframe;
             //CommandManager.InvalidateRequerySuggested();
         }
 
         public void OnViewTypeChanged()
         {
-            Control.ViewType = ViewType;
+            Viewport.ViewType = ViewType;
 
             switch (ViewType)
             {
@@ -138,7 +133,7 @@ namespace SauceEditor.ViewModels
                     throw new ArgumentException("Could not handle ViewType " + ViewType);
             }
 
-            Control.Name = Title;
+            Viewport.Name = Title;
         }
 
         private IMapEntity GetDropData(IDataObject dataObject)
@@ -191,100 +186,119 @@ namespace SauceEditor.ViewModels
             }
         }
 
+        private void Viewport_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (Viewport.IsLoaded && _isMouseInWindow)
+            {
+                switch (e.ChangedButton)
+                {
+                    case MouseButton.Left:
+                        if (Mouse.RightButton == MouseButtonState.Pressed)
+                        {
+                            _mouseDragTimer.Stop();
+
+                            if (!_isDragging)
+                            {
+                                BeginDrag();
+                            }
+                        }
+                        else
+                        {
+                            _mouseDragTimer.Start();
+                        }
+                        break;
+                    case MouseButton.Right:
+                        _mouseDragTimer.Stop();
+
+                        if (!_isDragging)
+                        {
+                            BeginDrag();
+                        }
+                        break;
+                    case MouseButton.XButton1:
+                        _mouseDragTimer.Stop();
+
+                        if (!_isDragging)
+                        {
+                            BeginDrag();
+                        }
+                        break;
+                }
+            }
+        }
+
+        private void Viewport_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            if (_isDragging)
+            {
+                _isDragging = false;
+                Mouse.Capture(null);
+                Viewport.Cursor = Cursors.Arrow;
+
+                if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released && Mouse.XButton1 == MouseButtonState.Released)
+                {
+                    // Double-check with Panel, since its input tracking is more reliable
+                    if (!Viewport.InputManager.IsDown(SpiceEngine.GLFWBindings.Inputs.MouseButtons.Left) && !Viewport.InputManager.IsDown(SpiceEngine.GLFWBindings.Inputs.MouseButtons.Right) && !Viewport.InputManager.IsDown(SpiceEngine.GLFWBindings.Inputs.MouseButtons.Button4))
+                    {
+                        _mouseDragTimer.Stop();
+
+                        if (_isDragging)
+                        {
+                            EndDrag();
+                        }
+                        else if (Viewport.IsLoaded && e.ChangedButton == MouseButton.Left)
+                        {
+                            Viewport.SelectEntity(e.GetPosition(Viewport), Keyboard.IsKeyDown(Key.LeftCtrl));
+                        }
+                    }
+                }
+            }
+        }
+
+        private void Viewport_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
+        {
+            _cursorLocation = Mouse.GetPosition(Viewport);
+
+            if (_isDragging && _isMouseInWindow)
+            {
+                //Mouse.SetPosition(_startMouseLocation.X, _startMouseLocation.Y);
+                Mouse.Capture(Viewport);
+                Viewport.Cursor = Cursors.None;
+            }
+        }
+
         private void BeginDrag()
         {
-            if (Control.IsLoaded)
-            {
-                _cursorLocation = System.Windows.Forms.Cursor.Position;
-                System.Windows.Forms.Cursor.Hide();
-                Control.Capture = true;
-                //Mouse.Capture(PanelHost);
-                Control.StartDrag(_cursorLocation);
-            }
+            _isDragging = true;
+
+            _cursorLocation = Mouse.GetPosition(Viewport);
+            Viewport.Cursor = Cursors.None;
+            Mouse.Capture(Viewport);
+
+            _mouseDragTimer.Start();
         }
 
         private void EndDrag()
         {
-            Control.Capture = false; //PanelHost.ReleaseMouseCapture();
-            System.Windows.Forms.Cursor.Show();
-            System.Windows.Forms.Cursor.Position = _cursorLocation;
-            Control.EndDrag();
-        }
+            _isDragging = false;
+            _mouseDragTimer.Stop();
 
-        private void MouseHoldTimer_Elapsed(object sender, ElapsedEventArgs e)
-        {
-            _mouseHoldTimer.Stop();
-
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-                if (!Control.IsDragging)
-                {
-                    Control.SetSelectionType();
-                    BeginDrag();
-                }
-            });
-        }
-
-        private void Panel_MouseDown(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            //Panel.Capture = true;//.Capture(PanelHost);
-
-            switch (e.Button)
-            {
-                case System.Windows.Forms.MouseButtons.Left:
-                    if (Mouse.RightButton == MouseButtonState.Pressed)
-                    {
-                        if (!Control.IsDragging)
-                        {
-                            BeginDrag();
-                        }
-                    }
-                    else
-                    {
-                        _mouseHoldTimer.Start();
-                    }
-                    break;
-                case System.Windows.Forms.MouseButtons.Right:
-                    _mouseHoldTimer.Stop();
-
-                    if (!Control.IsDragging)
-                    {
-                        BeginDrag();
-                    }
-                    break;
-                case System.Windows.Forms.MouseButtons.XButton1:
-                    _mouseHoldTimer.Stop();
-
-                    if (!Control.IsDragging)
-                    {
-                        BeginDrag();
-                    }
-                    break;
-            }
-        }
-
-        private void Panel_MouseUp(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
+            Mouse.Capture(null);
+            Viewport.Cursor = Cursors.Arrow;
             //System.Windows.Forms.Cursor.Position = _cursorLocation;
+        }
 
-            if (Mouse.LeftButton == MouseButtonState.Released && Mouse.RightButton == MouseButtonState.Released && Mouse.XButton1 == MouseButtonState.Released)
-            {
-                // Double-check with Panel, since its input tracking is more reliable
-                if (!Control.IsHeld())
+        private void MouseDragTimer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            _mouseDragTimer.Stop();
+            //Application.Current.Dispatcher.Invoke(() =>
+            //{
+                if (_isDragging)
                 {
-                    _mouseHoldTimer.Stop();
-
-                    if (Control.IsDragging)
-                    {
-                        EndDrag();
-                    }
-                    else if (Control.IsLoaded && e.Button == System.Windows.Forms.MouseButtons.Left)
-                    {
-                        var point = e.Location;
-                        Control.SelectEntity(point, Keyboard.IsKeyDown(Key.LeftCtrl));
-                    }
+                    Viewport.SetSelectionType();
+                    Viewport.BeginUpdates();
                 }
-            }
+            //});
         }
     }
 }

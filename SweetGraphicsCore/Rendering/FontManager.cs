@@ -8,13 +8,13 @@ namespace SweetGraphicsCore.Rendering
 {
     public class FontManager : IFontProvider
     {
-        private IRenderContextProvider _contextProvider;
+        private IRenderContext _renderContext;
         private ITextureProvider _textureProvider;
         private Dictionary<string, Font> _fontByPath = new Dictionary<string, Font>();
 
-        public FontManager(IRenderContextProvider contextProvider, ITextureProvider textureProvider)
+        public FontManager(IRenderContext renderContext, ITextureProvider textureProvider)
         {
-            _contextProvider = contextProvider;
+            _renderContext = renderContext;
             _textureProvider = textureProvider;
         }
 
@@ -28,7 +28,7 @@ namespace SweetGraphicsCore.Rendering
             var textureIndex = _textureProvider.AddTexture(texture);
             font.Texture = _textureProvider.RetrieveTexture(textureIndex);*/
 
-            font.LoadTexture(_contextProvider);
+            font.LoadTexture(_renderContext);
             _textureProvider.AddTexture(font.Texture);
 
             _fontByPath.Add(filePath, font);

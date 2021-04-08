@@ -24,12 +24,6 @@
 
         public T GetState()
         {
-            var a = 3;
-            if (this is KeyDevice)
-            {
-                a = 4;
-            }
-
             var state = _state;
             _state = (T)_stateProvider.GetNextAvailableState(DeviceType);
             _state.UpdateFrom(state);

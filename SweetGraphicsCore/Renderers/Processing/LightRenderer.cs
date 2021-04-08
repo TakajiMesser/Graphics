@@ -24,26 +24,26 @@ namespace SweetGraphicsCore.Renderers.Processing
         private SimpleMesh _pointLightMesh;
         private SimpleMesh _spotLightMesh;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _stencilProgram = ShaderHelper.LoadProgram(contextProvider,
+            _stencilProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader },
                 new[] { Resources.stencil_vert });
 
-            _pointLightProgram = ShaderHelper.LoadProgram(contextProvider,
+            _pointLightProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.light_vert, Resources.point_light_frag });
 
-            _spotLightProgram = ShaderHelper.LoadProgram(contextProvider,
+            _spotLightProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.light_vert, Resources.spot_light_frag });
 
-            _simpleProgram = ShaderHelper.LoadProgram(contextProvider,
+            _simpleProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.simple_vert, Resources.simple_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
             /*DepthStencilTexture = new Texture(resolution.Width, resolution.Height, 0)
             {
@@ -76,7 +76,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             FinalTexture.ReserveMemory();*/
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
             /*_frameBuffer.Clear();
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
@@ -86,8 +86,8 @@ namespace SweetGraphicsCore.Renderers.Processing
             _frameBuffer.AttachAttachments();
             _frameBuffer.Unbind(FramebufferTarget.Framebuffer);*/
 
-            _pointLightMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
-            _spotLightMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
+            _pointLightMesh = SimpleMesh.LoadFromFile(renderContext, FilePathHelper.SPHERE_MESH_PATH, _pointLightProgram);
+            _spotLightMesh = SimpleMesh.LoadFromFile(renderContext, FilePathHelper.CONE_MESH_PATH, _spotLightProgram);
         }
 
         protected override void Resize(Resolution resolution)

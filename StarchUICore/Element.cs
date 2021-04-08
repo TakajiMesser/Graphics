@@ -95,7 +95,7 @@ namespace StarchUICore
         public event EventHandler<SizeEventArgs> SizeChanged;
         public event EventHandler<AlphaEventArgs> AlphaChanged;
 
-        public abstract void Load(IRenderContextProvider contextProvider);
+        public abstract void Load(IRenderContext renderContext);
 
         public virtual void Update(int nTicks) { }
 

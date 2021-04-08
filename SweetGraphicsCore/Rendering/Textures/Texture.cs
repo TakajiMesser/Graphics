@@ -12,7 +12,7 @@ namespace SweetGraphicsCore.Rendering.Textures
         private int _maxMipMapLevels;
         private float _maxAnisotrophy;
 
-        public Texture(IRenderContextProvider contextProvider, int width, int height, int depth) : base(contextProvider)
+        public Texture(IRenderContext renderContext, int width, int height, int depth) : base(renderContext)
         {
             Width = width;
             Height = height;

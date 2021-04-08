@@ -1,6 +1,7 @@
-﻿using OpenTK.Graphics.OpenGL;
-using SpiceEngine.Entities.Selection;
+﻿using SpiceEngine.Entities.Selection;
 using SpiceEngine.Game;
+using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngine.Rendering.PostProcessing;
 using SpiceEngineCore.Entities;
 using SpiceEngineCore.Entities.Layers;
@@ -54,7 +55,10 @@ namespace SpiceEngine.Rendering
 
         protected async override Task LoadInitial()
         {
-            await Invoker.RunAsync(() => _wireframeRenderer.Load(this, Display.Resolution));
+            await Invoker.InvokeAsync(() =>
+            {
+                _wireframeRenderer.Load(RenderContext, Display.Resolution);
+            });
             await base.LoadInitial();
         }
 
@@ -385,7 +389,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
@@ -436,7 +440,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForLitTransparentWriting();
 
             GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.OneMinusSrcColor);
             GL.Disable(EnableCap.CullFace);
 
@@ -467,7 +471,7 @@ namespace SpiceEngine.Rendering
         {
             GL.Enable(EnableCap.StencilTest);
             GL.Enable(EnableCap.Blend);
-            GL.BlendEquation(BlendEquationMode.FuncAdd);
+            GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
             foreach (var light in _entityProvider.Lights)

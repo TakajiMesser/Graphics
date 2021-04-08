@@ -104,10 +104,10 @@ namespace SweetGraphicsCore.Rendering.Billboards
             }
         }
 
-        public void Load(IRenderContextProvider contextProvider)
+        public void Load(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<ColorVertex3D>(contextProvider);
-            _vertexArray = new VertexArray<ColorVertex3D>(contextProvider);
+            _vertexBuffer = new VertexBuffer<ColorVertex3D>(renderContext);
+            _vertexArray = new VertexArray<ColorVertex3D>(renderContext);
 
             _vertexBuffer.AddVertices(_vertices);
 

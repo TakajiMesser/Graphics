@@ -24,6 +24,8 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 {
                     var camera = context.SystemProvider.EntityProvider.ActiveCamera;
 
+                    if (camera == null) throw new Exception("Bananas");
+
                     var clipSpacePosition = (camera.CurrentModelMatrix * camera.CurrentProjectionMatrix).Inverted() * new Vector4(0.0f, 0.0f, 0.0f, 1.0f);//new Vector4(context.Entity.Position, 1.0f);
                     var screenCoordinates = new Vector2()
                     {

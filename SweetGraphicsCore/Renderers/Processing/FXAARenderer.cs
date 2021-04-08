@@ -27,16 +27,16 @@ namespace SweetGraphicsCore.Renderers.Processing
         private int _vertexArrayHandle;
         private VertexBuffer<Simple3DVertex> _vertexBuffer;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _fxaaProgram = ShaderHelper.LoadProgram(contextProvider,
+            _fxaaProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.fxaa_vert, Resources.fxaa_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -51,11 +51,11 @@ namespace SweetGraphicsCore.Renderers.Processing
             FinalTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
             _vertexArrayHandle = GL.GenVertexArray(); // TODO - This vertex array is never de-allocated, which is terrible...
-            _vertexBuffer = new VertexBuffer<Simple3DVertex>(contextProvider);
+            _vertexBuffer = new VertexBuffer<Simple3DVertex>(renderContext);
 
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Load();

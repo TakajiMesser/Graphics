@@ -10,7 +10,7 @@ namespace SweetGraphicsCore.Buffers
     {
         protected readonly int _size;
 
-        public ShaderStorageBuffer(IRenderContextProvider contextProvider, string name, int binding) : base(contextProvider)
+        public ShaderStorageBuffer(IRenderContext renderContext, string name, int binding) : base(renderContext)
         {
             Name = name;
             Binding = binding;

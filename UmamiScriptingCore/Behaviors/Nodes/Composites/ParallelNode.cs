@@ -16,6 +16,16 @@ namespace UmamiScriptingCore.Behaviors.Nodes.Composites
 
             foreach (var child in Children)
             {
+                var a = 3;
+                if (child != null)
+                {
+                    a = 4;
+                }
+                else
+                {
+                    a = 5;
+                }
+
                 switch (child.Tick(context))
                 {
                     case BehaviorStatus.Failure:

@@ -12,7 +12,7 @@ namespace SweetGraphicsCore.Buffers
         public const string NAME = "PointLightBlock";
         public const int BINDING = 1;
 
-        public LightBuffer(IRenderContextProvider contextProvider) : base(contextProvider, NAME, BINDING) { }
+        public LightBuffer(IRenderContext renderContext) : base(renderContext, NAME, BINDING) { }
 
         public List<PLight> PointLights { get; } = new List<PLight>();
 

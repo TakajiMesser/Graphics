@@ -88,9 +88,10 @@
                 <Separator/>
                 <ToggleButton Name="GridButton" Content="Grid" IsChecked="{Binding ShowGrid}"/>
             </ToolBar>
-            <WindowsFormsHost x:Name="PanelHost">
+            <spice:Viewport x:Name="Viewport"/>
+            <!--<WindowsFormsHost x:Name="PanelHost">
                 <spice:GameControl x:Name="GameControl" Dock="Fill"></spice:GameControl>
-            </WindowsFormsHost>
+            </WindowsFormsHost>-->
         </DockPanel>
     </xcad:LayoutAnchorable>
 </xcad:LayoutAnchorablePane>

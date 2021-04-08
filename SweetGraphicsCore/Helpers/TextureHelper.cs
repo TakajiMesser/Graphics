@@ -14,13 +14,13 @@ namespace SweetGraphicsCore.Helpers
 {
     public static class TextureHelper
     {
-        public static Texture LoadFromFile(IRenderContextProvider contextProvider, string path, bool enableMipMap, bool enableAnisotrophy)
+        public static Texture LoadFromFile(IRenderContext renderContext, string path, bool enableMipMap, bool enableAnisotrophy)
         {
             switch (Path.GetExtension(path))
             {
                 case ".jpg":
                 case ".png":
-                    return LoadFromBitmap(contextProvider, path, enableMipMap, enableAnisotrophy);
+                    return LoadFromBitmap(renderContext, path, enableMipMap, enableAnisotrophy);
                 //case ".tga":
                 //return LoadFromTGA(path, enableMipMap, enableAnisotrophy);
                 default:
@@ -57,11 +57,11 @@ namespace SweetGraphicsCore.Helpers
             }
         }
 
-        public static Texture Load(IRenderContextProvider contextProvider, Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        public static Texture Load(IRenderContext renderContext, Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(contextProvider, bitmap.Width, bitmap.Height, 1)
+            var texture = new Texture(renderContext, bitmap.Width, bitmap.Height, 1)
             {
                 Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,
@@ -98,12 +98,12 @@ namespace SweetGraphicsCore.Helpers
             return texture;
         }
 
-        public static Texture LoadFromBitmap(IRenderContextProvider contextProvider, string path, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        public static Texture LoadFromBitmap(IRenderContext renderContext, string path, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             var bitmap = new Bitmap(path);
             var data = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(contextProvider, bitmap.Width, bitmap.Height, 1)
+            var texture = new Texture(renderContext, bitmap.Width, bitmap.Height, 1)
             {
                 Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,
@@ -215,12 +215,12 @@ namespace SweetGraphicsCore.Helpers
         }*/
         }
 
-        public static Texture LoadFromFile(IRenderContextProvider contextProvider, IList<string> paths, TextureTarget target, bool enableMipMap, bool enableAnisotrophy)
+        public static Texture LoadFromFile(IRenderContext renderContext, IList<string> paths, TextureTarget target, bool enableMipMap, bool enableAnisotrophy)
         {
             var firstBitmap = new Bitmap(paths.First());
             var data = firstBitmap.LockBits(new Rectangle(0, 0, firstBitmap.Width, firstBitmap.Height), ImageLockMode.ReadOnly, firstBitmap.PixelFormat);
 
-            var texture = new Texture(contextProvider, firstBitmap.Width, firstBitmap.Height, paths.Count)
+            var texture = new Texture(renderContext, firstBitmap.Width, firstBitmap.Height, paths.Count)
             {
                 Target = target,
                 MinFilter = TextureMinFilter.Linear,
@@ -266,10 +266,10 @@ namespace SweetGraphicsCore.Helpers
             return texture;
         }
 
-        public static void SaveToFile(IRenderContextProvider contextProvider, string filePath, ITexture texture)
+        public static void SaveToFile(IRenderContext renderContext, string filePath, ITexture texture)
         {
             // Create a frame buffer for our texture
-            var frameBuffer = new FrameBuffer(contextProvider);
+            var frameBuffer = new FrameBuffer(renderContext);
             frameBuffer.Add(FramebufferAttachment.ColorAttachment0, texture);
             frameBuffer.Load();
 

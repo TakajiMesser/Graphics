@@ -29,7 +29,7 @@ using TangyHIDCore.Outputs;
 
 namespace SpiceEngine.Rendering
 {
-    public class RenderManager : RenderableLoader, IRender, IRenderProvider, IRenderContextProvider
+    public class RenderManager : RenderableLoader, IRender, IRenderProvider
     {
         private IAnimationProvider _animationProvider;
         private IUIProvider _uiProvider;
@@ -52,7 +52,7 @@ namespace SpiceEngine.Rendering
 
         public RenderManager(IRenderContext context, Display display)
         {
-            CurrentContext = context;
+            RenderContext = context;
             Display = display;
 
             // TODO - We likely want to split the resolution by nCameras for splitscreen support
@@ -65,11 +65,11 @@ namespace SpiceEngine.Rendering
                 }
             };
 
-            TextureManager = new TextureManager(this);
-            FontManager = new FontManager(this, TextureManager);
+            TextureManager = new TextureManager(RenderContext);
+            FontManager = new FontManager(RenderContext, TextureManager);
         }
 
-        public IRenderContext CurrentContext { get; }
+        public IRenderContext RenderContext { get; }
         public Display Display { get; }
         public double Frequency { get; set; }
         public bool RenderGrid { get; set; }
@@ -202,23 +202,25 @@ namespace SpiceEngine.Rendering
             }
         });
 
+        // TODO - The issue here is that LoadInitial() isn't triggered until RenderableLoader hears from Viewport that FrameWindow has finished loading
+        // BUT by the time we get there, we don't have anything that can tell FrameWindow to once again process its load-queue...
         protected override Task LoadInitial()
         {
             // TODO - If Invoker is null, queue up this action
-            return Invoker.RunAsync(() =>
+            return Invoker.InvokeAsync(() =>
             {
-                _deferredRenderer.Load(this, Display.Resolution);
-                _shadowRenderer.Load(this, Display.Resolution);
-                _lightRenderer.Load(this, Display.Resolution);
-                _skyboxRenderer.Load(this, Display.Resolution);
-                _billboardRenderer.Load(this, Display.Resolution);
-                _selectionRenderer.Load(this, Display.Resolution);
-                _fxaaRenderer.Load(this, Display.Resolution);
-                _blurRenderer.Load(this, Display.Resolution);
-                _invertRenderer.Load(this, Display.Resolution);
-                _textRenderer.Load(this, Display.Resolution);
-                _renderToScreen.Load(this, Display.Window);
-                _uiRenderer.Load(this, Display.Window);
+                _deferredRenderer.Load(RenderContext, Display.Resolution);
+                _shadowRenderer.Load(RenderContext, Display.Resolution);
+                _lightRenderer.Load(RenderContext, Display.Resolution);
+                _skyboxRenderer.Load(RenderContext, Display.Resolution);
+                _billboardRenderer.Load(RenderContext, Display.Resolution);
+                _selectionRenderer.Load(RenderContext, Display.Resolution);
+                _fxaaRenderer.Load(RenderContext, Display.Resolution);
+                _blurRenderer.Load(RenderContext, Display.Resolution);
+                _invertRenderer.Load(RenderContext, Display.Resolution);
+                _textRenderer.Load(RenderContext, Display.Resolution);
+                _renderToScreen.Load(RenderContext, Display.Window);
+                _uiRenderer.Load(RenderContext, Display.Window);
 
                 //var font = FontManager.AddFontFile(TextRenderer.FONT_PATH, 14);
                 //_logManager.SetFont(font);
@@ -237,11 +239,11 @@ namespace SpiceEngine.Rendering
                 //Invoker.RunSync(() => _batchManager.Load());
                 //Invoker.ForceUpdate();
                 //Invoker.RunAsync(() => _batchManager.Load()).ContinueWith(t => Invoker.ForceUpdate());
-                Invoker.RunAsync(() =>
+                Invoker.InvokeAsync(() =>
                 {
                     try
                     {
-                        _batchManager.Load(this);
+                        _batchManager.Load(RenderContext);
                         //_uiProvider.Load();
 
                         Invoker.ForceUpdate();
@@ -259,7 +261,7 @@ namespace SpiceEngine.Rendering
         }
 
         // TODO - Can we remove this call?
-        public void LoadBatcher() => _batchManager.Load(this);
+        public void LoadBatcher() => _batchManager.Load(RenderContext);
 
         protected override void LoadComponent(int entityID, IRenderable component)
         {

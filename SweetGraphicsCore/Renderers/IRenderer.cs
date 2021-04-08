@@ -4,6 +4,6 @@ namespace SweetGraphicsCore.Renderers
 {
     public interface IRenderer
     {
-        void Load(IRenderContextProvider contextProvider, Resolution resolution);
+        void Load(IRenderContext renderContext, Resolution resolution);
     }
 }

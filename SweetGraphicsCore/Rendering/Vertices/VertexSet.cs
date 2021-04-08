@@ -94,10 +94,10 @@ namespace SweetGraphicsCore.Vertices
             _vertexBuffer.AddVertices(vertices.Select(v => (T)vertexUpdate(v)));
         }
 
-        public void Load(IRenderContextProvider contextProvider)
+        public void Load(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<T>(contextProvider);
-            _vertexArray = new VertexArray<T>(contextProvider);
+            _vertexBuffer = new VertexBuffer<T>(renderContext);
+            _vertexArray = new VertexArray<T>(renderContext);
 
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
 

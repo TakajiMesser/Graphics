@@ -16,7 +16,7 @@
 
         ITexture Texture { get; }
 
-        void LoadTexture(IRenderContextProvider contextProvider);
+        void LoadTexture(IRenderContext renderContext);
 
         //System.Drawing.Bitmap ToBitmap();
     }

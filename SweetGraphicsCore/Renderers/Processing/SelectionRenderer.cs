@@ -43,32 +43,45 @@ namespace SweetGraphicsCore.Renderers.Processing
         private VertexArray<ColorVertex3D> _vertexArray;
         private VertexBuffer<ColorVertex3D> _vertexBuffer;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        private static object _dumbassLock = new object();
+        private static int _dumbassCounter = 0;
+        private int _dumbassID = 0;
+
+        public SelectionRenderer()
         {
-            _selectionProgram = ShaderHelper.LoadProgram(contextProvider,
+            lock (_dumbassLock)
+            {
+                _dumbassCounter++;
+                _dumbassID = _dumbassCounter;
+            }
+        }
+
+        protected override void LoadPrograms(IRenderContext renderContext)
+        {
+            _selectionProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.selection_vert, Resources.selection_frag });
 
-            _jointSelectionProgram = ShaderHelper.LoadProgram(contextProvider,
+            _jointSelectionProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.selection_skinning_vert, Resources.selection_frag });
 
-            _translateProgram = ShaderHelper.LoadProgram(contextProvider,
+            _translateProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.arrow_vert, Resources.arrow_geom, Resources.arrow_frag });
 
-            _rotateProgram = ShaderHelper.LoadProgram(contextProvider,
+            _rotateProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.rotation_vert, Resources.rotation_geom, Resources.rotation_frag });
 
-            _scaleProgram = ShaderHelper.LoadProgram(contextProvider,
+            _scaleProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.scale_vert, Resources.scale_geom, Resources.scale_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -82,7 +95,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             FinalTexture.Load();
 
-            DepthStencilTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            DepthStencilTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -97,11 +110,11 @@ namespace SweetGraphicsCore.Renderers.Processing
             DepthStencilTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
-            _vertexArray = new VertexArray<ColorVertex3D>(contextProvider);
-            _vertexBuffer = new VertexBuffer<ColorVertex3D>(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
+            _vertexArray = new VertexArray<ColorVertex3D>(renderContext);
+            _vertexBuffer = new VertexBuffer<ColorVertex3D>(renderContext);
 
             _vertexBuffer.Load();
             _vertexBuffer.Bind();

@@ -14,7 +14,7 @@ namespace SweetGraphicsCore.Buffers
         private Dictionary<FramebufferAttachment, ITexture> _textures = new Dictionary<FramebufferAttachment, ITexture>();
         private Dictionary<FramebufferAttachment, RenderBuffer> _renderBuffers = new Dictionary<FramebufferAttachment, RenderBuffer>();
 
-        public FrameBuffer(IRenderContextProvider contextProvider) : base(contextProvider) { }
+        public FrameBuffer(IRenderContext renderContext) : base(renderContext) { }
 
         public override void Load()
         {

@@ -25,12 +25,12 @@ namespace SweetGraphicsCore.Buffers
         private MatrixBuffer _projectionMatrixBuffer;
         private MatrixBuffer _mvpMatrixBuffer;
 
-        public MatrixStack(IRenderContextProvider contextProvider)
+        public MatrixStack(IRenderContext renderContext)
         {
-            _modelMatrixBuffer = new MatrixBuffer(contextProvider, MODEL_NAME, MODEL_BINDING);
-            _viewMatrixBuffer = new MatrixBuffer(contextProvider, VIEW_NAME, VIEW_BINDING);
-            _projectionMatrixBuffer = new MatrixBuffer(contextProvider, PROJECTION_NAME, PROJECTION_BINDING);
-            _mvpMatrixBuffer = new MatrixBuffer(contextProvider, MVP_NAME, MVP_BINDING);
+            _modelMatrixBuffer = new MatrixBuffer(renderContext, MODEL_NAME, MODEL_BINDING);
+            _viewMatrixBuffer = new MatrixBuffer(renderContext, VIEW_NAME, VIEW_BINDING);
+            _projectionMatrixBuffer = new MatrixBuffer(renderContext, PROJECTION_NAME, PROJECTION_BINDING);
+            _mvpMatrixBuffer = new MatrixBuffer(renderContext, MVP_NAME, MVP_BINDING);
         }
 
         public void AddEntities(ICamera camera, IEnumerable<Actor> actors, IEnumerable<Brush> brushes)

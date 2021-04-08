@@ -11,7 +11,7 @@ namespace SweetGraphicsCore.Buffers
         public const string NAME = "MaterialBlock";
         public const int BINDING = 0;
 
-        public MaterialBuffer(IRenderContextProvider contextProvider) : base(contextProvider, NAME, BINDING) { }
+        public MaterialBuffer(IRenderContext renderContext) : base(renderContext, NAME, BINDING) { }
 
         public List<Material> Materials { get; } = new List<Material>();
 

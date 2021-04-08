@@ -13,9 +13,9 @@ namespace SweetGraphicsCore
 
     public abstract class OpenGLObject : IDisposable
     {
-        private IRenderContextProvider _contextProvider;
+        private IRenderContext _renderContext;
 
-        public OpenGLObject(IRenderContextProvider contextProvider) => _contextProvider = contextProvider;
+        public OpenGLObject(IRenderContext renderContext) => _renderContext = renderContext;
 
         public int Handle { get; protected set; }
         public GLObjectStates State { get; protected set; }
@@ -54,13 +54,14 @@ namespace SweetGraphicsCore
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!disposedValue && _contextProvider.CurrentContext != null && !_contextProvider.CurrentContext.IsDisposed)
+            if (!disposedValue && !_renderContext.IsDisposed)
             {
                 if (disposing)
                 {
                     // TODO: dispose managed state (managed objects).
                 }
 
+                // TODO - Fix this...
                 //Unload();
                 disposedValue = true;
             }

@@ -30,16 +30,16 @@ namespace SpiceEngine.Rendering.PostProcessing
 
         public Texture FinalTexture { get; protected set; }
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _textProgram = ShaderHelper.LoadProgram(contextProvider,
+            _textProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.text_vert, Resources.text_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -58,11 +58,11 @@ namespace SpiceEngine.Rendering.PostProcessing
             FontTexture = TextureHelper.LoadFromBitmap(bitmapPath, false, false);*/
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<TextureVertex2D>(contextProvider);
-            _vertexArray = new VertexArray<TextureVertex2D>(contextProvider);
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _vertexBuffer = new VertexBuffer<TextureVertex2D>(renderContext);
+            _vertexArray = new VertexArray<TextureVertex2D>(renderContext);
+            _frameBuffer = new FrameBuffer(renderContext);
 
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Load();

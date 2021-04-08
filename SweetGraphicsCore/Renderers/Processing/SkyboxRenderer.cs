@@ -35,30 +35,30 @@ namespace SweetGraphicsCore.Renderers.Processing
             _texturePaths.AddRange(texturePaths);
         }
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _program = ShaderHelper.LoadProgram(contextProvider,
+            _program = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.skybox_vert, Resources.skybox_frag });
 
-            _2DProgram = ShaderHelper.LoadProgram(contextProvider,
+            _2DProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.skybox2D_vert, Resources.skybox2D_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
             if (_texturePaths.Any())
             {
-                SkyTexture = TextureHelper.LoadFromFile(contextProvider, _texturePaths, TextureTarget.TextureCubeMap, true, true);
-                SkyTexture2D = TextureHelper.LoadFromFile(contextProvider, _texturePaths.First(), true, true);
+                SkyTexture = TextureHelper.LoadFromFile(renderContext, _texturePaths, TextureTarget.TextureCubeMap, true, true);
+                SkyTexture2D = TextureHelper.LoadFromFile(renderContext, _texturePaths.First(), true, true);
             }
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _cubeMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.CUBE_MESH_PATH, _program);
-            _squareMesh = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.SQUARE_MESH_PATH, _2DProgram);
+            _cubeMesh = SimpleMesh.LoadFromFile(renderContext, FilePathHelper.CUBE_MESH_PATH, _program);
+            _squareMesh = SimpleMesh.LoadFromFile(renderContext, FilePathHelper.SQUARE_MESH_PATH, _2DProgram);
         }
 
         protected override void Resize(Resolution resolution) { }

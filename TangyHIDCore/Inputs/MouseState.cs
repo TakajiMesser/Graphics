@@ -15,10 +15,12 @@ namespace TangyHIDCore.Inputs
 
         public override void UpdateFrom(IInputState state)
         {
+            base.UpdateFrom(state);
+
             if (state is MouseState mouseState)
             {
                 Position = mouseState.Position;
-                Wheel = mouseState.Wheel;
+                Wheel = 0;
                 IsInWindow = mouseState.IsInWindow;
             }
         }

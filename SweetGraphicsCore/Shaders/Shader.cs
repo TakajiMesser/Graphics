@@ -8,7 +8,7 @@ namespace SweetGraphicsCore.Shaders
 {
     public class Shader : OpenGLObject, IDisposable
     {
-        public Shader(IRenderContextProvider contextProvider, ShaderType type) : base(contextProvider) => ShaderType = type;
+        public Shader(IRenderContext renderContext, ShaderType type) : base(renderContext) => ShaderType = type;
 
         public ShaderType ShaderType { get; private set; }
 

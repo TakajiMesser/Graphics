@@ -4,6 +4,7 @@ using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using System;
+using System.Text;
 
 namespace TangyHIDCore.Inputs
 {
@@ -40,19 +41,41 @@ namespace TangyHIDCore.Inputs
         public Vector2 MouseCoordinates => _mouseStates[_stateIndex].Position;
 
         public Vector2 MouseDelta => _mouseStates[_stateIndex].Position - _mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Position;
-        public int MouseWheelDelta => _mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Wheel - _mouseStates[_stateIndex].Wheel;
+        public int MouseWheelDelta => -_mouseStates[_stateIndex].Wheel;//_mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Wheel - _mouseStates[_stateIndex].Wheel;
 
         public event EventHandler<MouseClickEventArgs> MouseDownSelected;
         public event EventHandler<MouseClickEventArgs> MouseUpSelected;
         public event EventHandler<EventArgs> EscapePressed;
 
+        //public bool IsDown(MouseButtons mouseButton) => _mouseStates[_stateIndex].IsDown(mouseButton);
+        //public IInputState GetNextAvailableState(DeviceTypes deviceType) => GetFrameState(deviceType, (_stateIndex + 1) % (TrackedStates + 1));
+
         protected override void Update()
         {
+            var lineBuilder = new StringBuilder();
+
             _keyStates[_stateIndex] = _keyboard.GetState();
             _mouseStates[_stateIndex] = _mouse.GetState();
             _gamePadStates[_stateIndex] = _gamePad.GetState();
 
-            _stateIndex = (_stateIndex + 1) % (TrackedStates + 1);
+            /*for (var i = 0; i < TrackedStates + 1; i++)
+            {
+                lineBuilder.Append(_mouseStates[i].IsDown(MouseButtons.Right) ? "T" : "F");
+            }
+
+            // So whatever our current state index is, we're actively updating the next state to match our current state (in _mouse.GetState())
+            lineBuilder.Append("     " + _stateIndex);
+            lineBuilder.Append("     " + ((_stateIndex + 1) % (TrackedStates + 1)));
+            lineBuilder.Append("     " + (_mouseStates[(_stateIndex + 1) % (TrackedStates + 1)].IsDown(MouseButtons.Right) ? "T" : "F"));*/
+
+            var mouseDelta = _mouseStates[_stateIndex].Position;
+            lineBuilder.Append("(");
+            lineBuilder.Append("\t");
+            lineBuilder.Append(mouseDelta.X.ToString("N2"));
+            lineBuilder.Append(",");
+            lineBuilder.Append("\t");
+            lineBuilder.Append(mouseDelta.Y.ToString("N2"));
+            lineBuilder.Append(")");
 
             HandleMouseSelection();
 
@@ -60,6 +83,10 @@ namespace TangyHIDCore.Inputs
             {
                 EscapePressed.Invoke(this, new EventArgs());
             }
+
+            _stateIndex = (_stateIndex + 1) % (TrackedStates + 1);
+
+            Console.WriteLine(lineBuilder.ToString());
         }
 
         public void Clear()

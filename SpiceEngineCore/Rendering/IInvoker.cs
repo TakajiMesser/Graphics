@@ -5,8 +5,8 @@ namespace SpiceEngineCore.Rendering
 {
     public interface IInvoker
     {
-        Task RunAsync(Action action);
-        void RunSync(Action action);
+        Task InvokeAsync(Action action);
+        void InvokeSync(Action action);
 
         void ForceUpdate();
     }

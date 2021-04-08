@@ -8,7 +8,7 @@ namespace SpiceEngineCore.Rendering
         bool IsAnimated { get; }
         bool IsSelectable { get; }
 
-        void Load(IRenderContextProvider contextProvider);
+        void Load(IRenderContext renderContext);
         void Draw();
 
         event EventHandler<AlphaEventArgs> AlphaChanged;

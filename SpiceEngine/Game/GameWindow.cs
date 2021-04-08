@@ -1,30 +1,36 @@
 ﻿using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
+using SpiceEngineCore.Game;
+using SpiceEngineCore.Game.Settings;
+using SpiceEngineCore.HID;
+using SpiceEngineCore.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Timers;
 using TangyHIDCore.Outputs;
-using Configuration = SpiceEngineCore.Game.Settings.Configuration;
 
 namespace SpiceEngine.Game
 {
-    public class GameWindow : Window
+    public class GameWindow : NativeWindow
     {
         private Timer _fpsTimer = new Timer(1000);
         private List<double> _frequencies = new List<double>();
 
-        public GameWindow(Configuration configuration) : base(configuration)
+        protected GameLoader _gameLoader;
+
+        public GameWindow(IWindowConfig configuration, IWindowContextFactory windowFactory) : base(configuration, windowFactory)
         {
             _fpsTimer.Elapsed += FpsTimer_Elapsed;
             //Console.WriteLine("GL Version: " + GL.GetString(StringName.Version));
         }
 
+        public IRenderContext RenderContext { get; set; }
         public Map Map { get; set; }
 
         public override async Task LoadAsync()
         {
-            var renderManager = new RenderManager(this, Display)
+            var renderManager = new RenderManager(RenderContext, Display)
             {
                 Invoker = this
             };
@@ -37,7 +43,7 @@ namespace SpiceEngine.Game
             simulationManager.RenderProvider = renderManager;
             simulationManager.PhysicsSystem.SetBoundaries(Map.Boundaries);
 
-            _gameLoader = new SpiceEngineCore.Game.GameLoader();
+            _gameLoader = new GameLoader();
             _gameLoader.SetEntityProvider(simulationManager.EntityProvider);
             _gameLoader.AddComponentLoader(simulationManager.PhysicsSystem);
             _gameLoader.AddComponentLoader(simulationManager.BehaviorSystem);
@@ -54,7 +60,7 @@ namespace SpiceEngine.Game
             renderManager.LoadFromMap(Map);
 
             //_gameLoader.Load();
-            _gameLoader.TimedOut += (s, args) => RunSync(() => throw new TimeoutException());
+            _gameLoader.TimedOut += (s, args) => InvokeSync(() => throw new TimeoutException());
             await _gameLoader.LoadAsync();
 
             // Set up UIManager to track mouse selections for UI control interactions
@@ -67,8 +73,6 @@ namespace SpiceEngine.Game
 
             _simulator = simulationManager;
             _renderer = renderManager;
-
-            IsLoaded = true;
         }
 
         /*protected override void Update(double elapsedMilliseconds)

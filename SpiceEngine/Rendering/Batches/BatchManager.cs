@@ -311,7 +311,7 @@ namespace SpiceEngine.Rendering.Batches
             }
         }*/
 
-        public void Load(IRenderContextProvider contextProvider)
+        public void Load(IRenderContext renderContext)
         {
             while (_batchIndicesToLoad.Count > 0)
             {
@@ -320,7 +320,7 @@ namespace SpiceEngine.Rendering.Batches
 
                 if (batch != null)
                 {
-                    batch.Load(contextProvider);
+                    batch.Load(renderContext);
                     _loadedBatches[batchIndex] = batch;
                 }
             }

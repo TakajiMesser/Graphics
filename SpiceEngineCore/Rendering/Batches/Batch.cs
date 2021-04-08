@@ -35,9 +35,9 @@ namespace SpiceEngineCore.Rendering.Batches
 
         public abstract bool CanBatch(IRenderable renderable);
 
-        public virtual void Load(IRenderContextProvider contextProvider)
+        public virtual void Load(IRenderContext renderContext)
         {
-            _renderable.Load(contextProvider);
+            _renderable.Load(renderContext);
             IsLoaded = true;
         }
 

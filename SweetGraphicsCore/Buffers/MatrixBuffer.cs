@@ -8,7 +8,7 @@ namespace SweetGraphicsCore.Buffers
 {
     public class MatrixBuffer : UniformBuffer<Matrix4>
     {
-        public MatrixBuffer(IRenderContextProvider contextProvider, string name, int binding) : base(contextProvider, name, binding) { }
+        public MatrixBuffer(IRenderContext renderContext, string name, int binding) : base(renderContext, name, binding) { }
 
         public List<Matrix4> Matrices { get; } = new List<Matrix4>();
 

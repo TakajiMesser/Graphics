@@ -5,14 +5,6 @@ namespace SweetGraphicsCore.Rendering.Models
 {
     public class ModelTriangle : IModelShape, ITexturedShape
     {
-        public ModelVertex VertexA { get; set; }
-        public ModelVertex VertexB { get; set; }
-        public ModelVertex VertexC { get; set; }
-
-        public Vector3 Normal { get; set; }
-        public Vector3 Tangent { get; set; }
-        public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
-
         public ModelTriangle() { }
         public ModelTriangle(ModelVertex vertexA, ModelVertex vertexB, ModelVertex vertexC)
         {
@@ -20,6 +12,14 @@ namespace SweetGraphicsCore.Rendering.Models
             VertexB = vertexB;
             VertexC = vertexC;
         }
+
+        public ModelVertex VertexA { get; set; }
+        public ModelVertex VertexB { get; set; }
+        public ModelVertex VertexC { get; set; }
+
+        public Vector3 Normal { get; set; }
+        public Vector3 Tangent { get; set; }
+        public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
 
         public ModelTriangle Duplicated() => new ModelTriangle()
         {

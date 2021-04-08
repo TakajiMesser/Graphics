@@ -25,16 +25,16 @@ namespace SweetGraphicsCore.Renderers.Processing
         internal ShaderProgram _program;
         internal FrameBuffer _frameBuffer;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _program = ShaderHelper.LoadProgram(contextProvider,
+            _program = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.forward_vert, Resources.forward_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -48,7 +48,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             FinalTexture.Load();
 
-            VelocityTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            VelocityTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -62,7 +62,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             VelocityTexture.Load();
 
-            DepthTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            DepthTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -77,9 +77,9 @@ namespace SweetGraphicsCore.Renderers.Processing
             DepthTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment1, VelocityTexture);
             //_frameBuffer.Add(FramebufferAttachment.DepthStencilAttachment, new RenderBuffer(RenderbufferTarget.Renderbuffer, Resolution.Width, Resolution.Height));

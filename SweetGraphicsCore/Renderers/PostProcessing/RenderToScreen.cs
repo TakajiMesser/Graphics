@@ -27,36 +27,36 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
         private VertexArray<Simple2DVertex> _vertexArray;
         private VertexBuffer<Simple2DVertex> _vertexBuffer;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _render1DProgram = ShaderHelper.LoadProgram(contextProvider,
+            _render1DProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.FragmentShader },
                 new[] { Resources.render_1D_frag });
 
-            _render2DProgram = ShaderHelper.LoadProgram(contextProvider,
+            _render2DProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.render_2D_vert, Resources.render_2D_frag });
 
-            _render2DArrayProgram = ShaderHelper.LoadProgram(contextProvider,
+            _render2DArrayProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.FragmentShader },
                 new[] { Resources.render_2D_array_frag });
 
-            _render3DProgram = ShaderHelper.LoadProgram(contextProvider,
+            _render3DProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.FragmentShader },
                 new[] { Resources.render_3D_frag });
 
-            _renderCubeProgram = ShaderHelper.LoadProgram(contextProvider,
+            _renderCubeProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.render_cube_vert, Resources.render_cube_frag });
 
-            _renderCubeArrayProgram = ShaderHelper.LoadProgram(contextProvider,
+            _renderCubeArrayProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.render_cube_vert, Resources.render_cube_array_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -71,10 +71,10 @@ namespace SweetGraphicsCore.Renderers.PostProcessing
             FinalTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<Simple2DVertex>(contextProvider);
-            _vertexArray = new VertexArray<Simple2DVertex>(contextProvider);
+            _vertexBuffer = new VertexBuffer<Simple2DVertex>(renderContext);
+            _vertexArray = new VertexArray<Simple2DVertex>(renderContext);
 
             _vertexBuffer.Load();
             _vertexBuffer.Bind();

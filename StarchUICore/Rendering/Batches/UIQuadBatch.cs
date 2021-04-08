@@ -31,10 +31,10 @@ namespace StarchUICore.Rendering.Batches
 
         public UIQuadBatch(IElement item) : base(item) { }
 
-        public override void Load(IRenderContextProvider contextProvider)
+        public override void Load(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<ViewQuadVertex>(contextProvider);
-            _vertexArray = new VertexArray<ViewQuadVertex>(contextProvider);
+            _vertexBuffer = new VertexBuffer<ViewQuadVertex>(renderContext);
+            _vertexArray = new VertexArray<ViewQuadVertex>(renderContext);
 
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
 

@@ -47,7 +47,7 @@ namespace SweetGraphicsCore.Rendering
 
         public ITexture Texture { get; private set; }
 
-        public void LoadTexture(IRenderContextProvider contextProvider)
+        public void LoadTexture(IRenderContext renderContext)
         {
             var bitmapWidth = GlyphsPerLine * GlyphWidth;
             var bitmapHeight = GlyphLineCount * GlyphHeight;
@@ -76,17 +76,17 @@ namespace SweetGraphicsCore.Rendering
                             }
                         }
 
-                        Texture = LoadFromBitmap(contextProvider, bitmap, false, false);
+                        Texture = LoadFromBitmap(renderContext, bitmap, false, false);
                     }
                 }
             }
         }
 
-        private Texture LoadFromBitmap(IRenderContextProvider contextProvider, System.Drawing.Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
+        private Texture LoadFromBitmap(IRenderContext renderContext, System.Drawing.Bitmap bitmap, bool enableMipMap, bool enableAnisotrophy, TextureMinFilter minFilter = TextureMinFilter.Linear, TextureMagFilter magFilter = TextureMagFilter.Linear)
         {
             var data = bitmap.LockBits(new System.Drawing.Rectangle(0, 0, bitmap.Width, bitmap.Height), System.Drawing.Imaging.ImageLockMode.ReadOnly, bitmap.PixelFormat);
 
-            var texture = new Texture(contextProvider, bitmap.Width, bitmap.Height, 0)
+            var texture = new Texture(renderContext, bitmap.Width, bitmap.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 MinFilter = minFilter,

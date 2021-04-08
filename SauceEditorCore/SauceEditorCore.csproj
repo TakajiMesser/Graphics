@@ -13,4 +13,8 @@
     <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Rendering\" />
+  </ItemGroup>
+
 </Project>

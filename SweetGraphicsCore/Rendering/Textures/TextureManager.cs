@@ -8,13 +8,13 @@ namespace SweetGraphicsCore.Rendering.Textures
 {
     public class TextureManager : ITextureProvider
     {
-        private IRenderContextProvider _contextProvider;
+        private IRenderContext _renderContext;
         private ConcurrentDictionary<string, int> _indexByPath = new ConcurrentDictionary<string, int>(); 
         private List<ITexture> _textures = new List<ITexture>();
 
         private object _textureLock = new object();
 
-        public TextureManager(IRenderContextProvider contextProvider) => _contextProvider = contextProvider;
+        public TextureManager(IRenderContext renderContext) => _renderContext = renderContext;
 
         public bool EnableMipMapping { get; set; } = true;
         public bool EnableAnisotropy { get; set; } = true;
@@ -33,7 +33,7 @@ namespace SweetGraphicsCore.Rendering.Textures
                 var index = _textures.Count;
                 _textures.Add(texture);
 
-                Invoker?.RunSync(() =>
+                Invoker?.InvokeSync(() =>
                 {
                     /*var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
                         + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
@@ -50,9 +50,9 @@ namespace SweetGraphicsCore.Rendering.Textures
         {
             if (Invoker != null)
             {
-                Invoker.RunSync(() =>
+                Invoker.InvokeSync(() =>
                 {
-                    font.LoadTexture(_contextProvider);
+                    font.LoadTexture(_renderContext);
 
                     /*var filePath = FilePathHelper.SCREENSHOT_PATH + "\\"
                         + DateTime.Now.Year.ToString("0000") + DateTime.Now.Month.ToString("00") + DateTime.Now.Day.ToString("00") + "_"
@@ -85,9 +85,9 @@ namespace SweetGraphicsCore.Rendering.Textures
                 }
 
                 // TODO - If Invoker is null, queue this action up
-                Invoker?.RunSync(() =>
+                Invoker?.InvokeSync(() =>
                 {
-                    var texture = TextureHelper.LoadFromFile(_contextProvider, texturePath, EnableMipMapping, EnableAnisotropy);
+                    var texture = TextureHelper.LoadFromFile(_renderContext, texturePath, EnableMipMapping, EnableAnisotropy);
                     _textures[index] = texture;
                 });
 

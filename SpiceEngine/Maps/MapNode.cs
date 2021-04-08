@@ -22,7 +22,8 @@ namespace SpiceEngine.Maps
             InlineCondition,
             Repeater,
             InlineLeaf,
-            Node
+            Node,
+            Camera
         };
 
         public MapNode() { }
@@ -54,6 +55,10 @@ namespace SpiceEngine.Maps
             }
         }
 
+        public const float CAMERA_MOVE_SPEED = 0.02f;
+        public const float CAMERA_TURN_SPEED = 0.001f;
+        public const float CAMERA_ZOOM_SPEED = 1.0f;
+
         public Node ToNode()
         {
             switch (NodeType)
@@ -73,7 +78,9 @@ namespace SpiceEngine.Maps
                 case NodeTypes.Node:
                     // We now need to DELAY this...
                     return new ScriptNode(Script, Arguments, Children.Select(c => c.ToNode()));
-                    //return ParseContent(scriptCompiler);
+                //return ParseContent(scriptCompiler);
+                case NodeTypes.Camera:
+                    return new CameraNode(CAMERA_MOVE_SPEED, CAMERA_TURN_SPEED, CAMERA_ZOOM_SPEED);
             }
 
             // TODO - Perform a better default case

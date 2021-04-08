@@ -4,16 +4,16 @@ namespace SweetGraphicsCore.Rendering.Meshes
 {
     public struct UVMap
     {
-        public Vector2 Translation { get; private set; }
-        public float Rotation { get; private set; }
-        public Vector2 Scale { get; private set; }
-
         public UVMap(Vector2 translation, float rotation, Vector2 scale)
         {
             Translation = translation;
             Rotation = rotation;
             Scale = scale;
         }
+
+        public Vector2 Translation { get; private set; }
+        public float Rotation { get; private set; }
+        public Vector2 Scale { get; private set; }
 
         /*public UVMap(IList<ITextureVertex> vertices)
         {

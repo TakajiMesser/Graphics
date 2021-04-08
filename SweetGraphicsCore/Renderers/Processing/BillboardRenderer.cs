@@ -45,20 +45,20 @@ namespace SweetGraphicsCore.Renderers.Processing
         private Texture _selectedSpotLightTexture;
         private Texture _selectedDirectionalLightTexture;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _billboardProgram = ShaderHelper.LoadProgram(contextProvider,
+            _billboardProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.billboard_vert, Resources.billboard_geom, Resources.billboard_frag });
 
-            _billboardSelectionProgram = ShaderHelper.LoadProgram(contextProvider,
+            _billboardSelectionProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.billboard_selection_vert, Resources.billboard_selection_geom, Resources.billboard_selection_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -72,21 +72,21 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             FinalTexture.Load();
 
-            _vertexTexture = TextureHelper.Load(contextProvider, Resources.vertex, false, false);
+            _vertexTexture = TextureHelper.Load(renderContext, Resources.vertex, false, false);
 
-            _pointLightTexture = TextureHelper.Load(contextProvider, Resources.point_light_billboard, false, false);
-            _spotLightTexture = TextureHelper.Load(contextProvider, Resources.spot_light_billboard, false, false);
-            _directionalLightTexture = TextureHelper.Load(contextProvider, Resources.directional_light_billboard, false, false);
+            _pointLightTexture = TextureHelper.Load(renderContext, Resources.point_light_billboard, false, false);
+            _spotLightTexture = TextureHelper.Load(renderContext, Resources.spot_light_billboard, false, false);
+            _directionalLightTexture = TextureHelper.Load(renderContext, Resources.directional_light_billboard, false, false);
 
-            _selectedPointLightTexture = TextureHelper.Load(contextProvider, Resources.selected_point_light, false, false);
-            _selectedSpotLightTexture = TextureHelper.Load(contextProvider, Resources.selected_spot_light, false, false);
-            _selectedDirectionalLightTexture = TextureHelper.Load(contextProvider, Resources.selected_directional_light, false, false);
+            _selectedPointLightTexture = TextureHelper.Load(renderContext, Resources.selected_point_light, false, false);
+            _selectedSpotLightTexture = TextureHelper.Load(renderContext, Resources.selected_spot_light, false, false);
+            _selectedDirectionalLightTexture = TextureHelper.Load(renderContext, Resources.selected_directional_light, false, false);
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<ColorVertex3D>(contextProvider);
-            _vertexArray = new VertexArray<ColorVertex3D>(contextProvider);
+            _vertexBuffer = new VertexBuffer<ColorVertex3D>(renderContext);
+            _vertexArray = new VertexArray<ColorVertex3D>(renderContext);
 
             _vertexBuffer.Load();
             _vertexBuffer.Bind();

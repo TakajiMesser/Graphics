@@ -21,6 +21,12 @@ namespace UmamiScriptingCore.Behaviors.Nodes
             _script = script;
             _script.Compiled += (s, args) =>
             {
+                var a = 3;
+                if (_script.Name == "TurnNode")
+                {
+                    a = 4;
+                }
+
                 var compiledNode = ToCompiledNode();
                 Compiled?.Invoke(this, new NodeEventArgs(compiledNode));
             };
@@ -47,9 +53,10 @@ namespace UmamiScriptingCore.Behaviors.Nodes
 
         private Node ToCompiledNode()
         {
-            if (_script.HasErrors)
+            if (_script.HasErrors || !_script.IsCompiled)
             {
                 // TODO - Handle errors by notifying user
+                throw new Exception("Script node compilation failed");
             }
             else
             {

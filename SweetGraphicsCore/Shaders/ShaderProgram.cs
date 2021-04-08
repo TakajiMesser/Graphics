@@ -18,13 +18,13 @@ namespace SweetGraphicsCore.Shaders
     {
         private Shader[] _shaders;
 
-        public ShaderProgram(IRenderContextProvider contextProvider) : base(contextProvider) { }
+        public ShaderProgram(IRenderContext renderContext) : base(renderContext) { }
 
         public void Load(params Shader[] shaders)
         {
             base.Load();
             
-            // Arbitrarily holding onto these references
+            // TODO - Arbitrarily holding onto these references in order to prevent them from being unloaded...
             _shaders = shaders;
 
             foreach (var shader in shaders)

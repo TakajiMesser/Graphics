@@ -1,39 +1,29 @@
 ﻿using SpiceEngine.GLFWBindings;
-using SpiceEngine.GLFWBindings.Utilities;
+using SpiceEngineCore.Geometry;
+using SpiceEngineCore.HID;
 using SpiceEngineCore.Rendering;
 
 namespace SweetGraphicsCore
 {
-    /*public class OpenGLContext : IRenderContext
+    public class OpenGLContext : IRenderContext
     {
-        private GraphicsContext _context;
-        private IWindowInfo _windowInfo;
+        private IWindowContext _windowContext;
 
-        public OpenGLContext()
+        public OpenGLContext(IWindowContext windowContext)
         {
-            _windowInfo = windowInfo;
-            _context = new GraphicsContext(GraphicsMode.Default, windowInfo, majorVersion, minorVersion, GraphicsContextFlags.ForwardCompatible);
-            _context.MakeCurrent(windowInfo);
-            _context.LoadAll();
+            _windowContext = windowContext;
+
+            MakeCurrent();
+            GL.LoadFunctions();
+            GL.ClearColor(Color4.Black);
         }
 
         public bool IsDisposed { get; private set; }
 
-        public void MakeCurrent() => _context.MakeCurrent(_windowInfo);
+        public void MakeCurrent() => _windowContext.MakeCurrent();
 
-        public void Update() => _context.Update(_windowInfo);
+        public void Update() => _windowContext.SwapBuffers();
 
-        public void SwapBuffers() => _context.SwapBuffers();
-
-        public void Dispose() => _context.Dispose();
-
-
-
-
-        /*bool IsDisposed { get; }
-
-        void MakeCurrent();
-        void Update();
-        void SwapBuffers();*
-    }*/
+        public void Dispose() { }
+    }
 }

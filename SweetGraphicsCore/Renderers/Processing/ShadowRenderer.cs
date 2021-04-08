@@ -29,28 +29,28 @@ namespace SweetGraphicsCore.Renderers.Processing
         private FrameBuffer _pointFrameBuffer;
         private FrameBuffer _spotFrameBuffer;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _pointShadowProgram = ShaderHelper.LoadProgram(contextProvider,
+            _pointShadowProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.point_shadow_vert, Resources.point_shadow_geom, Resources.point_shadow_frag });
 
-            _pointShadowJointProgram = ShaderHelper.LoadProgram(contextProvider,
+            _pointShadowJointProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.point_shadow_skinning_vert, Resources.point_shadow_geom, Resources.point_shadow_frag });
 
-            _spotShadowProgram = ShaderHelper.LoadProgram(contextProvider,
+            _spotShadowProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.spot_shadow_vert, Resources.spot_shadow_frag });
 
-            _spotShadowJointProgram = ShaderHelper.LoadProgram(contextProvider,
+            _spotShadowJointProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.spot_shadow_skinning_vert, Resources.spot_shadow_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            PointDepthCubeMap = new Texture(contextProvider, SHADOW_SIZE, SHADOW_SIZE, 6)
+            PointDepthCubeMap = new Texture(renderContext, SHADOW_SIZE, SHADOW_SIZE, 6)
             {
                 Target = TextureTarget.TextureCubeMap,
                 EnableMipMap = false,
@@ -64,7 +64,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             PointDepthCubeMap.Load();
 
-            SpotDepthTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            SpotDepthTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -79,13 +79,13 @@ namespace SweetGraphicsCore.Renderers.Processing
             SpotDepthTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _pointFrameBuffer = new FrameBuffer(contextProvider);
+            _pointFrameBuffer = new FrameBuffer(renderContext);
             _pointFrameBuffer.Add(FramebufferAttachment.DepthAttachment, PointDepthCubeMap);
             _pointFrameBuffer.Load();
 
-            _spotFrameBuffer = new FrameBuffer(contextProvider);
+            _spotFrameBuffer = new FrameBuffer(renderContext);
             _spotFrameBuffer.Add(FramebufferAttachment.DepthAttachment, SpotDepthTexture);
             _spotFrameBuffer.Load();
         }

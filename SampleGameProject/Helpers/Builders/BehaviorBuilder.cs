@@ -46,12 +46,12 @@ namespace SampleGameProject.Helpers.Builders
             {
                 new MapNode(CAMERA_MOVE_SPEED, CAMERA_TURN_SPEED, CAMERA_ZOOM_SPEED)
                 {
-                    NodeType = MapNode.NodeTypes.Node,
-                    Script = new Script()
+                    NodeType = MapNode.NodeTypes.Camera,
+                    /*Script = new Script()
                     {
                         Name = "CameraNode",
                         SourcePath = FilePathHelper.CAMERA_NODE_PATH
-                    }
+                    }*/
                 }
             }
         };

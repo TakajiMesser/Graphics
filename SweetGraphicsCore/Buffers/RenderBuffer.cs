@@ -6,7 +6,7 @@ namespace SweetGraphicsCore.Buffers
 {
     public class RenderBuffer : OpenGLObject
     {
-        public RenderBuffer(IRenderContextProvider contextProvider, int width, int height, RenderbufferTarget target = RenderbufferTarget.Renderbuffer, InternalFormat format = InternalFormat.Rgba) : base(contextProvider)
+        public RenderBuffer(IRenderContext renderContext, int width, int height, RenderbufferTarget target = RenderbufferTarget.Renderbuffer, InternalFormat format = InternalFormat.Rgba) : base(renderContext)
         {
             Width = width;
             Height = height;

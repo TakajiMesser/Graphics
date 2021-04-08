@@ -10,13 +10,20 @@ namespace SweetGraphicsCore.Rendering.Models
 {
     public class ModelFace : IModelShape, ITexturedShape
     {
+        private Vector3 _normal = Vector3.UnitZ;
+        private Vector3 _tangent = Vector3.UnitY;
+
+        public ModelFace() { }
+        public ModelFace(params ModelVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
+        public ModelFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new ModelVertex() { Position = v })) { }
+        public ModelFace(IEnumerable<ModelVertex> vertices) => Vertices.AddRange(vertices);
+
         /// <summary>
         /// The vertices should be in clockwise order.
         /// </summary>
         public List<ModelVertex> Vertices { get; set; } = new List<ModelVertex>();
         //public List<MeshTriangle> Triangles { get; set; } = new List<MeshTriangle>();
-
-        private Vector3 _normal = Vector3.UnitZ;
+        
         public Vector3 Normal
         {
             get => _normal;
@@ -30,8 +37,7 @@ namespace SweetGraphicsCore.Rendering.Models
                 }
             }
         }
-
-        private Vector3 _tangent = Vector3.UnitY;
+        
         public Vector3 Tangent
         {
             get => _tangent;
@@ -46,15 +52,9 @@ namespace SweetGraphicsCore.Rendering.Models
             }
         }
         public UVMap UVMap { get; set; } = UVMap.Standard;
-
         public Vector3 Bitangent => -Vector3.Cross(Normal, Tangent);
         public float UVXOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Bitangent, v.Position));
         public float UVYOrigin => Vertices.Min(v => Vector3.Dot(Quaternion.FromAxisAngle(Normal, UVMap.Rotation) * Tangent, v.Position));
-
-        public ModelFace() { }
-        public ModelFace(params ModelVertex[] vertices) : this(LINQExtensions.Generate(vertices)) { }
-        public ModelFace(IEnumerable<Vector3> vertices) : this(vertices.Select(v => new ModelVertex() { Position = v })) { }
-        public ModelFace(IEnumerable<ModelVertex> vertices) => Vertices.AddRange(vertices);
 
         public ModelFace Duplicated() => new ModelFace()
         {

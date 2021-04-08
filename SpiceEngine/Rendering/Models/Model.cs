@@ -130,11 +130,11 @@ namespace SpiceEngine.Rendering.Models
             Meshes.Add(mesh);
         }
 
-        public void Load(IRenderContextProvider contextProvider)
+        public void Load(IRenderContext renderContext)
         {
             foreach (var mesh in Meshes)
             {
-                mesh.Load(contextProvider);
+                mesh.Load(renderContext);
             }
         }
 

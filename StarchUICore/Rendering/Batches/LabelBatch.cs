@@ -24,10 +24,10 @@ namespace StarchUICore.Rendering.Batches
 
         public LabelBatch(Label item) : base(item) { }
 
-        public override void Load(IRenderContextProvider contextProvider)
+        public override void Load(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<TextureVertex2D>(contextProvider);
-            _vertexArray = new VertexArray<TextureVertex2D>(contextProvider);
+            _vertexBuffer = new VertexBuffer<TextureVertex2D>(renderContext);
+            _vertexArray = new VertexArray<TextureVertex2D>(renderContext);
 
             //_vertexBuffer.AddVertices(_vertexSet.Vertices);
 

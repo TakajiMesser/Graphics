@@ -13,7 +13,7 @@ namespace StarchUICore.Views
         public Layer Foreground { get; set; }
         public Layer Background { get; set; }
 
-        public override void Load(IRenderContextProvider contextProvider) { }
+        public override void Load(IRenderContext renderContext) { }
         public override void Draw() { }
 
         protected override int GetRelativeX(LayoutInfo layoutInfo)

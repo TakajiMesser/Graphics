@@ -10,6 +10,8 @@ namespace TangyHIDCore.Inputs
 
         public override void UpdateFrom(IInputState state)
         {
+            base.UpdateFrom(state);
+
             if (state is GamePadState gamePadState)
             {
                 

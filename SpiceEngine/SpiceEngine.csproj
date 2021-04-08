@@ -251,6 +251,8 @@
     <Compile Include="Game\GameSettings\AudioSettings.cs" />
     <Compile Include="Game\GameSettings\VideoSettings.cs" />
     <Compile Include="Game\GameSettings\Settings.cs" />
+    <Compile Include="Game\GLFWContext.cs" />
+    <Compile Include="HID\WindowContextFactory.cs" />
     <Compile Include="Game\Viewport.xaml.cs">
       <DependentUpon>Viewport.xaml</DependentUpon>
     </Compile>
@@ -292,6 +294,7 @@
     <Compile Include="Rendering\PostProcessing\TextRenderer.cs" />
     <Compile Include="Rendering\PostProcessing\UIRenderer.cs" />
     <Compile Include="Rendering\EditorRenderManager.cs" />
+    <Compile Include="Rendering\RenderContextFactory.cs" />
     <Compile Include="Rendering\RenderManager.cs" />
     <Compile Include="Scripting\Nodes\CameraNode.cs" />
     <Compile Include="Scripting\Nodes\InputCondition.cs" />

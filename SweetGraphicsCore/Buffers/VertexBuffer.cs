@@ -3,9 +3,7 @@ using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Rendering.Vertices;
 using SpiceEngineCore.Utilities;
-using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
 
 namespace SweetGraphicsCore.Buffers
 {
@@ -14,7 +12,7 @@ namespace SweetGraphicsCore.Buffers
         private readonly int _vertexSize;
         private List<T> _vertices = new List<T>();
 
-        public VertexBuffer(IRenderContextProvider contextProvider) : base(contextProvider) => _vertexSize = UnitConversions.SizeOf(typeof(T));
+        public VertexBuffer(IRenderContext renderContext) : base(renderContext) => _vertexSize = UnitConversions.SizeOf(typeof(T));
 
         public int Count => _vertices.Count;
 

@@ -99,11 +99,11 @@ namespace SweetGraphicsCore.Rendering.Meshes
             }
         }
 
-        public void Load(IRenderContextProvider contextProvider)
+        public void Load(IRenderContext renderContext)
         {
-            _vertexBuffer = new VertexBuffer<T>(contextProvider);
-            _indexBuffer = new VertexIndexBuffer(contextProvider);
-            _vertexArray = new VertexArray<T>(contextProvider);
+            _vertexBuffer = new VertexBuffer<T>(renderContext);
+            _indexBuffer = new VertexIndexBuffer(renderContext);
+            _vertexArray = new VertexArray<T>(renderContext);
 
             _vertexBuffer.AddVertices(_vertexSet.Vertices);
             _indexBuffer.AddIndices(_vertexSet.TriangleIndicesShort);

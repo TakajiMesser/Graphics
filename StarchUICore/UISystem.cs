@@ -255,7 +255,7 @@ namespace StarchUICore
             _childIDsByID.Clear();
         }
 
-        public void Load(IRenderContextProvider contextProvider) => GetRoot()?.Load(contextProvider);
+        public void Load(IRenderContext renderContext) => GetRoot()?.Load(renderContext);
 
         //private int _tickCounter = 0;
 

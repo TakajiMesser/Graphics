@@ -48,24 +48,24 @@ namespace SweetGraphicsCore.Renderers.Processing
         public Texture FinalTexture { get; protected set; }
         public Texture DepthStencilTexture { get; protected set; }
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _wireframeProgram = ShaderHelper.LoadProgram(contextProvider,
+            _wireframeProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.wireframe_vert, Resources.wireframe_geom, Resources.wireframe_frag });
 
-            _jointWireframeProgram = ShaderHelper.LoadProgram(contextProvider,
+            _jointWireframeProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.GeometryShader, ShaderType.FragmentShader },
                 new[] { Resources.wireframe_skinning_vert, Resources.wireframe_geom, Resources.wireframe_frag });
 
-            _gridProgram = ShaderHelper.LoadProgram(contextProvider,
+            _gridProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.grid_vert, Resources.grid_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -79,7 +79,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             FinalTexture.Load();
 
-            DepthStencilTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            DepthStencilTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -94,14 +94,14 @@ namespace SweetGraphicsCore.Renderers.Processing
             DepthStencilTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, FinalTexture);
             _frameBuffer.Add(FramebufferAttachment.StencilAttachment, DepthStencilTexture);
             _frameBuffer.Load();
 
-            _gridSquare = SimpleMesh.LoadFromFile(contextProvider, FilePathHelper.SQUARE_MESH_PATH, _gridProgram);
+            _gridSquare = SimpleMesh.LoadFromFile(renderContext, FilePathHelper.SQUARE_MESH_PATH, _gridProgram);
         }
 
         protected override void Resize(Resolution resolution)

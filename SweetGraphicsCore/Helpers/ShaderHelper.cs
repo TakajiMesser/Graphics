@@ -8,16 +8,16 @@ namespace SweetGraphicsCore.Helpers
 {
     public static class ShaderHelper
     {
-        public static ShaderProgram LoadProgram(IRenderContextProvider contextProvider, ShaderType[] shaderTypes, string[] shaderCodes)
+        public static ShaderProgram LoadProgram(IRenderContext renderContext, ShaderType[] shaderTypes, string[] shaderCodes)
         {
             if (shaderTypes.Length != shaderCodes.Length) throw new ArgumentException("Number of shader types and code do not match");
             
-            var program = new ShaderProgram(contextProvider);
+            var program = new ShaderProgram(renderContext);
             var shaders = new Shader[shaderTypes.Length];
 
             for (var i = 0; i < shaderTypes.Length; i++)
             {
-                shaders[i] = new Shader(contextProvider, shaderTypes[i]);
+                shaders[i] = new Shader(renderContext, shaderTypes[i]);
                 shaders[i].Load(shaderCodes[i]);
             }
 
@@ -41,7 +41,7 @@ namespace SweetGraphicsCore.Helpers
                     GL.GetShaderInfoLog(shader.Handle, infoLogLengths[0] * 2, infoLogLengths, errorLog);
                 }
 
-                return false;
+                throw new Exception(errorLog);
             }
 
             errorLog = null;

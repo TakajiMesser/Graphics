@@ -31,20 +31,20 @@ namespace SweetGraphicsCore.Renderers.Processing
 
         private FrameBuffer _frameBuffer;
 
-        protected override void LoadPrograms(IRenderContextProvider contextProvider)
+        protected override void LoadPrograms(IRenderContext renderContext)
         {
-            _geometryProgram = ShaderHelper.LoadProgram(contextProvider,
+            _geometryProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.deferred_vert, Resources.deferred_frag });
 
-            _jointGeometryProgram = ShaderHelper.LoadProgram(contextProvider,
+            _jointGeometryProgram = ShaderHelper.LoadProgram(renderContext,
                 new[] { ShaderType.VertexShader, ShaderType.FragmentShader },
                 new[] { Resources.deferred_skinning_vert, Resources.deferred_frag });
         }
 
-        protected override void LoadTextures(IRenderContextProvider contextProvider, Resolution resolution)
+        protected override void LoadTextures(IRenderContext renderContext, Resolution resolution)
         {
-            PositionTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            PositionTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -58,7 +58,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             PositionTexture.Load();
 
-            ColorTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            ColorTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -72,7 +72,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             ColorTexture.Load();
 
-            NormalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            NormalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -86,7 +86,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             NormalTexture.Load();
 
-            DiffuseMaterialTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            DiffuseMaterialTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -100,7 +100,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             DiffuseMaterialTexture.Load();
 
-            SpecularTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            SpecularTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -114,7 +114,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             SpecularTexture.Load();
 
-            VelocityTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            VelocityTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -128,7 +128,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             VelocityTexture.Load();
 
-            FinalTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            FinalTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -142,7 +142,7 @@ namespace SweetGraphicsCore.Renderers.Processing
             };
             FinalTexture.Load();
 
-            DepthStencilTexture = new Texture(contextProvider, resolution.Width, resolution.Height, 0)
+            DepthStencilTexture = new Texture(renderContext, resolution.Width, resolution.Height, 0)
             {
                 Target = TextureTarget.Texture2d,
                 EnableMipMap = false,
@@ -157,9 +157,9 @@ namespace SweetGraphicsCore.Renderers.Processing
             DepthStencilTexture.Load();
         }
 
-        protected override void LoadBuffers(IRenderContextProvider contextProvider)
+        protected override void LoadBuffers(IRenderContext renderContext)
         {
-            _frameBuffer = new FrameBuffer(contextProvider);
+            _frameBuffer = new FrameBuffer(renderContext);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment0, PositionTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment1, ColorTexture);
             _frameBuffer.Add(FramebufferAttachment.ColorAttachment2, NormalTexture);

@@ -296,7 +296,7 @@ namespace SauceEditor.ViewModels
 
             PanelFactory.CreateGamePanel(mapComponent, textureComponent);
             GamePanelViewModel.ViewType = ViewTypes.Perspective;
-            GamePanelViewModel.PerspectiveViewModel.Control.RenderMode = SpiceEngine.Rendering.RenderModes.Diffuse;
+            GamePanelViewModel.PerspectiveViewModel.Viewport.RenderMode = SpiceEngine.Rendering.RenderModes.Diffuse;
 
             CommandManager.InvalidateRequerySuggested();
         }

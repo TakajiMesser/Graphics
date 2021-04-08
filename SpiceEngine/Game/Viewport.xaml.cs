@@ -1,4 +1,5 @@
 ﻿using SpiceEngine.Entities.Selection;
+using SpiceEngine.HID;
 using SpiceEngine.Rendering;
 using SpiceEngine.Utilities;
 using SpiceEngineCore.Entities;
@@ -13,6 +14,7 @@ using SweetGraphicsCore.Selection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Timers;
 using System.Windows;
 using System.Windows.Controls;
@@ -24,7 +26,7 @@ namespace SpiceEngine.Game
     /// <summary>
     /// Interaction logic for Viewport.xaml
     /// </summary>
-    public partial class Viewport : UserControl, IInputTracker
+    public partial class Viewport : UserControl, IInputTracker, IInvoker
     {
         public const double UPDATE_MILLISECONDS = 16.67;
 
@@ -33,6 +35,7 @@ namespace SpiceEngine.Game
         private Timer _updateTimer = new Timer(UPDATE_MILLISECONDS);
 
         private FrameWindow _frameWindow;
+        private IRenderContext _renderContext;
         private Configuration _configuration;
 
         private PanelCamera _panelCamera;
@@ -42,6 +45,7 @@ namespace SpiceEngine.Game
         private bool _isDuplicating = false;
 
         private bool _isLoaded = false;
+        private bool _isStarted = false;
         private object _loadLock = new object();
 
         private TransformModes _transformMode;
@@ -137,7 +141,7 @@ namespace SpiceEngine.Game
 
         public void Initialize(Configuration configuration, SimulationManager simulationManager, IMap map)
         {
-            _frameWindow = new FrameWindow(configuration, Frame);
+            _frameWindow = new FrameWindow(configuration, WindowContextFactory.SharedInstance, Frame);
             _configuration = configuration;
 
             SizeChanged += Viewport_SizeChanged;
@@ -155,16 +159,17 @@ namespace SpiceEngine.Game
             {
                 SimulationManager = simulationManager;
 
-                if (_isLoaded)
+                if (_isLoaded && !_isStarted)
                 {
-                    LoadSimulation();
+                    _isStarted = true;
+                    StartFrameWindow();
                 }
             }
         }
 
         private void SetUpCallbacks()
         {
-            MouseMove += (s, args) =>
+            MouseMove += (s, args) =>  
             {
                 var position = args.GetPosition(this);
                 CursorPositionChanged?.Invoke(s, new CursorEventArgs(position.X, position.Y));
@@ -198,9 +203,10 @@ namespace SpiceEngine.Game
             {
                 _isLoaded = true;
 
-                if (SimulationManager != null)
+                if (SimulationManager != null && !_isStarted)
                 {
-                    LoadSimulation();
+                    _isStarted = true;
+                    StartFrameWindow();
                 }
             }
         }
@@ -211,14 +217,19 @@ namespace SpiceEngine.Game
 
         public void BeginUpdates()
         {
-            _isUpdating = true;
-            _updateTimer.Start();
+            InvokeSync(() =>
+            {
+                _isUpdating = true;
+                _updateTimer.Start();
+                _frameWindow.Start();
+            });
         }
 
         public void EndUpdates()
         {
             _isUpdating = false;
             _updateTimer.Stop();
+            _frameWindow.Stop();
         }
 
         private void UpdateTimer_Elapsed(object sender, ElapsedEventArgs e)
@@ -228,10 +239,10 @@ namespace SpiceEngine.Game
             HandleInput();
             InputManager.Tick();
 
-            if (_isInvalidated)
+            /*if (_isInvalidated)
             {
                 Invalidate();
-            }
+            }*/
 
             if (_isUpdating)
             {
@@ -302,36 +313,32 @@ namespace SpiceEngine.Game
             }
         }
 
-        public void Start() => _frameWindow.Start();
-
-        public void LoadSimulation()
+        private void StartFrameWindow()
         {
-            // TODO - Should we run this all on the UI thread?
-            _frameWindow.RunSync(() =>
+            _panelCamera = new PanelCamera(_frameWindow.Display.Resolution, SimulationManager.EntityProvider)
             {
-                //MakeCurrent();
-                _panelCamera = new PanelCamera(_frameWindow.Display.Resolution, SimulationManager.EntityProvider)
-                {
-                    ViewType = ViewType
-                };
+                ViewType = ViewType
+            };
 
-                RenderManager = new EditorRenderManager(_frameWindow, _frameWindow.Display, _panelCamera)
-                {
-                    RenderMode = _renderMode,
-                    Invoker = _frameWindow
-                };
-
-                _panelCamera.GridRenderer = RenderManager;
-                _panelCamera.Load();
-
-                RenderManager.SetEntityProvider(SimulationManager.EntityProvider);
-                RenderManager.SetAnimationProvider(SimulationManager.AnimationSystem);
-                RenderManager.SetUIProvider(SimulationManager.UISystem);
-                RenderManager.SetSelectionProvider(SelectionManager);
-                RenderManager.LoadFromMap(Map);
-
-                Invalidate();
+            _frameWindow.Loaded += (s, args) =>
+            {
+                // TODO - This is janky, but force reprocessing the load queue
                 PanelLoaded?.Invoke(this, new PanelLoadedEventArgs());
+            };
+
+            // TODO - Should we run this all on the UI thread?
+            InvokeSync(() =>
+            {
+                _renderContext = RenderContextFactory.SharedInstance.CreateRenderContext(_configuration, _frameWindow);
+                _frameWindow.LoadBuffers(_renderContext);
+
+                RenderManager = new EditorRenderManager(_renderContext, _frameWindow.Display, _panelCamera)
+                {
+                    Invoker = this
+                };
+
+                _frameWindow.LoadSimulation(SimulationManager, RenderManager, SelectionManager, _panelCamera, _renderMode);
+                _frameWindow.StartLoad();
             });
         }
 
@@ -346,7 +353,7 @@ namespace SpiceEngine.Game
 
         public void SetSelectionType()
         {
-            Application.Current.Dispatcher.Invoke(() =>
+            InvokeSync(() =>
             {
                 var id = RenderManager.GetEntityIDFromSelection(new Vector2((float)_currentMouseLocation.X, (float)_currentMouseLocation.Y));
                 SelectionManager.SelectionType = SelectionRenderer.GetSelectionTypeFromID(id);
@@ -567,13 +574,37 @@ namespace SpiceEngine.Game
 
         public void ClearSelectedEntities() => SelectionManager.Clear();
 
+        public Task InvokeAsync(Action action) => Task.Run(() =>
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                //_frameWindow.MakeCurrent();
+                action();
+            });
+        });
+
+        public void InvokeSync(Action action)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                //_frameWindow.MakeCurrent();
+                action();
+            });
+        }
+
+        public void ForceUpdate() => Invalidate();
+
         public void Invalidate()
         {
-            _frameWindow.ForceUpdate();
-            _isInvalidated = false;
+            InvokeSync(() =>
+            {
+                _frameWindow.ForceUpdate();
+            });
+
+            /*_isInvalidated = false;
 
             // TODO - Determine how to handle this
-            /*if (SelectionManager.SelectionCount > 0)
+            if (SelectionManager.SelectionCount > 0)
             {
                 // This is still necessary right now for rendering lights and transform arrows...
                 RenderManager.RenderSelection(SelectionManager.SelectedEntities, TransformMode);

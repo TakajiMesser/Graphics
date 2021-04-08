@@ -10,7 +10,7 @@ namespace SweetGraphicsCore.Vertices
 {
     public class VertexArray<T> : OpenGLObject where T : IVertex
     {
-        public VertexArray(IRenderContextProvider contextProvider) : base(contextProvider) { }
+        public VertexArray(IRenderContext renderContext) : base(renderContext) { }
 
         public override void Load()
         {

@@ -16,13 +16,13 @@ namespace SweetGraphicsCore.Rendering.Meshes
         private VertexBuffer<Simple3DVertex> _vertexBuffer;
         private VertexIndexBuffer _indexBuffer;
 
-        public SimpleMesh(IRenderContextProvider contextProvider, List<Vector3> vertices, List<int> triangleIndices, ShaderProgram program)
+        public SimpleMesh(IRenderContext renderContext, List<Vector3> vertices, List<int> triangleIndices, ShaderProgram program)
         {
             if (triangleIndices.Count % 3 != 0) throw new ArgumentException(nameof(triangleIndices) + " must be divisible by three");
 
-            _vertexBuffer = new VertexBuffer<Simple3DVertex>(contextProvider);
-            _indexBuffer = new VertexIndexBuffer(contextProvider);
-            _vertexArray = new VertexArray<Simple3DVertex>(contextProvider);
+            _vertexBuffer = new VertexBuffer<Simple3DVertex>(renderContext);
+            _indexBuffer = new VertexIndexBuffer(renderContext);
+            _vertexArray = new VertexArray<Simple3DVertex>(renderContext);
 
             _vertexBuffer.AddVertices(vertices.Select(v => new Simple3DVertex(v)));
             _indexBuffer.AddIndices(triangleIndices.ConvertAll(i => (ushort)i));
@@ -53,7 +53,7 @@ namespace SweetGraphicsCore.Rendering.Meshes
             _indexBuffer.Unbind();
         }
 
-        public static SimpleMesh LoadFromFile(IRenderContextProvider contextProvider, string path, ShaderProgram program)
+        public static SimpleMesh LoadFromFile(IRenderContext renderContext, string path, ShaderProgram program)
         {
             var vertices = new List<Vector3>();
             var vertexIndices = new List<int>();
@@ -99,7 +99,7 @@ namespace SweetGraphicsCore.Rendering.Meshes
                 }
             }
 
-            return new SimpleMesh(contextProvider, verticies, triangleIndices, program);
+            return new SimpleMesh(renderContext, verticies, triangleIndices, program);
         }
     }
 }
