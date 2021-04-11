@@ -52,7 +52,7 @@ namespace TangyHIDCore.Inputs
 
         protected override void Update()
         {
-            var lineBuilder = new StringBuilder();
+            //var lineBuilder = new StringBuilder();
 
             _keyStates[_stateIndex] = _keyboard.GetState();
             _mouseStates[_stateIndex] = _mouse.GetState();
@@ -68,14 +68,14 @@ namespace TangyHIDCore.Inputs
             lineBuilder.Append("     " + ((_stateIndex + 1) % (TrackedStates + 1)));
             lineBuilder.Append("     " + (_mouseStates[(_stateIndex + 1) % (TrackedStates + 1)].IsDown(MouseButtons.Right) ? "T" : "F"));*/
 
-            var mouseDelta = _mouseStates[_stateIndex].Position;
+            /*var mouseDelta = _mouseStates[_stateIndex].Position;
             lineBuilder.Append("(");
             lineBuilder.Append("\t");
             lineBuilder.Append(mouseDelta.X.ToString("N2"));
             lineBuilder.Append(",");
             lineBuilder.Append("\t");
             lineBuilder.Append(mouseDelta.Y.ToString("N2"));
-            lineBuilder.Append(")");
+            lineBuilder.Append(")");*/
 
             HandleMouseSelection();
 
@@ -86,7 +86,7 @@ namespace TangyHIDCore.Inputs
 
             _stateIndex = (_stateIndex + 1) % (TrackedStates + 1);
 
-            Console.WriteLine(lineBuilder.ToString());
+            //Console.WriteLine(lineBuilder.ToString());
         }
 
         public void Clear()

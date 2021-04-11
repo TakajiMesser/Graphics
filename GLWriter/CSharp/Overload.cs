@@ -177,12 +177,6 @@ namespace GLWriter.CSharp
 
         private Overload Getter()
         {
-            /*var a = 3;
-            if (Function.Name == "GetFloatv")
-            {
-                a = 4;
-            }*/
-
             var overload = new Overload(Function, this);
 
             // If the function has the "Gen" or "Get" prefix, has a VOID return, and the last parameter is an array, then we can return the array
@@ -236,12 +230,6 @@ namespace GLWriter.CSharp
         // TODO - Check if this overload signature already exists in the set of defined functions (e.g. glDrawBuffer)
         private Overload Singular()
         {
-            var a = 3;
-            if (Name == "GenFrameBuffers")
-            {
-                a = 4;
-            }
-
             var overload = new Overload(Function, this);
 
             // If the function is plural, the first parameter is an int with name "n", and the last parameter is a pointer, singularize the function name and remove the first parameter
@@ -419,12 +407,6 @@ namespace GLWriter.CSharp
                     }
                 }
 
-                var a = 3;
-                if (Name == "GenBuffer" || Name == "PrioritizeTexture")
-                {
-                    a = 4;
-                }
-
                 var returnBuilder = new StringBuilder();
 
                 for (var i = 0; i < nTabs; i++)
@@ -443,11 +425,6 @@ namespace GLWriter.CSharp
                     {
                         //nTabs++;
                     }
-                }
-
-                if (Name == "GenBuffer" || Name == "PrioritizeTexture")
-                {
-                    a = 4;
                 }
 
                 if (NeedsExplicitReturn)

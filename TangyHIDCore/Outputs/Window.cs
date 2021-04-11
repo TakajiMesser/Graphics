@@ -360,7 +360,7 @@ namespace TangyHIDCore.Outputs
             }
 
             // TODO - Poll for inputs?
-            //GLFW.PollEvents();
+            GLFW.PollEvents();
             return true;
         }
 

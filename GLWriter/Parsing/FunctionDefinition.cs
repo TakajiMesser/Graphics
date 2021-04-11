@@ -18,12 +18,6 @@ namespace GLWriter
         {
             line = line.Trim();
 
-            var a = 3;
-            if (line == "public static void glDepthMask(bool enabled) => _glDepthMask(enabled);")
-            {
-                a = 4;
-            }
-
             if (line.Length < LINE_PREFIX.Length) return false;
             var prefix = line.Substring(0, LINE_PREFIX.Length);
             if (prefix != LINE_PREFIX) return false;

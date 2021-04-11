@@ -21,12 +21,6 @@ namespace UmamiScriptingCore.Behaviors.Nodes
             _script = script;
             _script.Compiled += (s, args) =>
             {
-                var a = 3;
-                if (_script.Name == "TurnNode")
-                {
-                    a = 4;
-                }
-
                 var compiledNode = ToCompiledNode();
                 Compiled?.Invoke(this, new NodeEventArgs(compiledNode));
             };

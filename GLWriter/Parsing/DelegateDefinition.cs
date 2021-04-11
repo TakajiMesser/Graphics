@@ -35,12 +35,6 @@ namespace GLWriter
         {
             line = line.Trim();
 
-            var a = 3;
-            if (line == "private delegate uint PFNGLCREATEPROGRAMPROC();")
-            {
-                a = 4;
-            }
-
             if (line.Length < LINE_PREFIX.Length) return false;
             var prefix = line.Substring(0, LINE_PREFIX.Length);
             if (prefix != LINE_PREFIX) return false;

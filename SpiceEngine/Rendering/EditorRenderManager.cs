@@ -112,12 +112,6 @@ namespace SpiceEngine.Rendering
 
         private IMesh TransformToEditorMesh(IMesh mesh, Color4 colorID)
         {
-            var a = 3;
-            if (colorID.A != 1.0f)
-            {
-                a = 4;
-            }
-
             var vertices = mesh.Vertices.Select(v => new EditorVertex3D(v, colorID)).ToList();
             var triangleIndices = mesh.TriangleIndices.ToList();
             var vertexSet = new Vertex3DSet<EditorVertex3D>(vertices, triangleIndices);
