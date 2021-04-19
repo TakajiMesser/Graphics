@@ -75,7 +75,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     context.SetVariable("nBlockTicks", nBlockTicks);
 
-                    var evadeTranslation = GeometryHelper.GetPressedTranslation(context.SystemProvider.EntityProvider.ActiveCamera, EvadeSpeed, inputProvider);
+                    var evadeTranslation = GeometryHelper.GetPressedTranslation(context.SystemProvider.EntityProvider.ActiveScene.ActiveCamera, EvadeSpeed, inputProvider);
 
                     if (evadeTranslation.IsSignificant())
                     {

@@ -1,16 +1,8 @@
 ﻿using SpiceEngine.Maps;
+using SpiceEngineCore.Geometry;
 using System.Collections.Generic;
 using TowerWarfare.Helpers;
 using UmamiScriptingCore.Scripts;
-
-using Color4 = SpiceEngineCore.Geometry.Color4;
-using Matrix2 = SpiceEngineCore.Geometry.Matrix2;
-using Matrix3 = SpiceEngineCore.Geometry.Matrix3;
-using Matrix4 = SpiceEngineCore.Geometry.Matrix4;
-using Quaternion = SpiceEngineCore.Geometry.Quaternion;
-using Vector2 = SpiceEngineCore.Geometry.Vector2;
-using Vector3 = SpiceEngineCore.Geometry.Vector3;
-using Vector4 = SpiceEngineCore.Geometry.Vector4;
 
 namespace TowerWarfare.Builders
 {
@@ -43,7 +35,7 @@ namespace TowerWarfare.Builders
             {
                 new MapNode(CAMERA_MOVE_SPEED, CAMERA_TURN_SPEED, CAMERA_ZOOM_SPEED)
                 {
-                    NodeType = MapNode.NodeTypes.Node,
+                    NodeType = MapNode.NodeTypes.Script,
                     Script = new Script()
                     {
                         Name = "CameraNode",
@@ -86,7 +78,7 @@ namespace TowerWarfare.Builders
                             {
                                 new MapNode(new Vector3(5.0f, 5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
@@ -95,7 +87,7 @@ namespace TowerWarfare.Builders
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
@@ -111,7 +103,7 @@ namespace TowerWarfare.Builders
                             {
                                 new MapNode(new Vector3(5.0f, -5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
@@ -120,7 +112,7 @@ namespace TowerWarfare.Builders
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
@@ -136,7 +128,7 @@ namespace TowerWarfare.Builders
                             {
                                 new MapNode(new Vector3(-5.0f, -5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
@@ -145,7 +137,7 @@ namespace TowerWarfare.Builders
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
@@ -161,7 +153,7 @@ namespace TowerWarfare.Builders
                             {
                                 new MapNode(new Vector3(-5.0f, 5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
@@ -170,7 +162,7 @@ namespace TowerWarfare.Builders
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
+                                    NodeType = MapNode.NodeTypes.Script,
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",

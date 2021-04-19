@@ -46,7 +46,8 @@ namespace SampleGameProject.Helpers.Builders
             {
                 new MapNode(CAMERA_MOVE_SPEED, CAMERA_TURN_SPEED, CAMERA_ZOOM_SPEED)
                 {
-                    NodeType = MapNode.NodeTypes.Camera,
+                    NodeType = MapNode.NodeTypes.Leaf,
+                    LeafType = typeof(Resources.Behaviors.Nodes.CameraNode),
                     /*Script = new Script()
                     {
                         Name = "CameraNode",
@@ -83,12 +84,13 @@ namespace SampleGameProject.Helpers.Builders
                             {
                                 new MapNode(PLAYER_EVADE_SPEED, PLAYER_EVADE_TICK_COUNT)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.BlockNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "BlockNode",
                                         SourcePath = FilePathHelper.BLOCK_NODE_PATH
-                                    }
+                                    }*/
                                 }
                             }
                         },
@@ -99,21 +101,23 @@ namespace SampleGameProject.Helpers.Builders
                             {
                                 new MapNode(PLAYER_RUN_SPEED, PLAYER_CREEP_SPEED, PLAYER_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.MoveNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "MoveNode",
                                         SourcePath = FilePathHelper.MOVE_NODE_PATH
-                                    }
+                                    }*/
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.TurnNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "TurnNode",
                                         SourcePath = FilePathHelper.TURN_NODE_PATH
-                                    }
+                                    }*/
                                 }
                             }
                         }
@@ -150,21 +154,23 @@ namespace SampleGameProject.Helpers.Builders
                             {
                                 new MapNode(new Vector3(5.0f, 5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.MoveToNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "MoveToNode",
                                         SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
-                                    }
+                                    }*/
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.TurnTowardsNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
                                         SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
-                                    }
+                                    }*/
                                 }
                             }
                         },
@@ -175,21 +181,23 @@ namespace SampleGameProject.Helpers.Builders
                             {
                                 new MapNode(new Vector3(5.0f, -5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.MoveToNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "MoveToNode",
                                         SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
-                                    }
+                                    }*/
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.TurnTowardsNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
                                         SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
-                                    }
+                                    }*/
                                 }
                             }
                         },
@@ -200,21 +208,23 @@ namespace SampleGameProject.Helpers.Builders
                             {
                                 new MapNode(new Vector3(-5.0f, -5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.MoveToNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "MoveToNode",
                                         SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
-                                    }
+                                    }*/
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.TurnTowardsNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
                                         SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
-                                    }
+                                    }*/
                                 }
                             }
                         },
@@ -225,21 +235,23 @@ namespace SampleGameProject.Helpers.Builders
                             {
                                 new MapNode(new Vector3(-5.0f, 5.0f, -0.5f), ENEMY_WALK_SPEED)
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.MoveToNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "MoveToNode",
                                         SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
-                                    }
+                                    }*/
                                 },
                                 new MapNode()
                                 {
-                                    NodeType = MapNode.NodeTypes.Node,
-                                    Script = new Script()
+                                    NodeType = MapNode.NodeTypes.Leaf,
+                                    LeafType = typeof(Resources.Behaviors.Nodes.TurnTowardsNode),
+                                    /*Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
                                         SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
-                                    }
+                                    }*/
                                 }
                             }
                         }

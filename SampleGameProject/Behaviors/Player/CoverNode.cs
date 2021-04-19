@@ -45,7 +45,7 @@ namespace SampleGameProject.Behaviors.Player
                     {
                         // Handle movement while in cover here
                         var inputProvider = context.SystemProvider.GetGameSystem<IInputProvider>();
-                        var translation = GeometryHelper.GetHeldTranslation(context.SystemProvider.EntityProvider.ActiveCamera, CoverSpeed, inputProvider);
+                        var translation = GeometryHelper.GetHeldTranslation(context.ActiveCamera, CoverSpeed, inputProvider);
 
                         if (translation.IsSignificant())
                         {

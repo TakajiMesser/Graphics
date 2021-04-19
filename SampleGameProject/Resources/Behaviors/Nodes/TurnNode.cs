@@ -22,7 +22,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 // Compare current position to location of mouse, and set rotation to face the mouse
                 if (!inputProvider.IsDown("ItemWheel") && nEvadeTicks == 0 && inputProvider.IsMouseInWindow)
                 {
-                    var camera = context.SystemProvider.EntityProvider.ActiveCamera;
+                    var camera = context.ActiveCamera;
 
                     if (camera == null) throw new Exception("Bananas");
 
@@ -38,7 +38,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
 
                     // Need to add the angle that the camera's Up vector is turned from Vector3.UnitY
                     // TODO - This is mad suspect...
-                    var flattenedUp = context.SystemProvider.EntityProvider.ActiveCamera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
+                    var flattenedUp = context.ActiveCamera is Camera cameraInstance ? cameraInstance.Up.Xy : Vector2.One;
                     turnAngle += (float)Math.Atan2(flattenedUp.Y, flattenedUp.X) - MathExtensions.HALF_PI;
 
                     actor.Rotation = new Quaternion(0.0f, 0.0f, turnAngle);

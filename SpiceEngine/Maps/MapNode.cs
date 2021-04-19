@@ -1,5 +1,4 @@
-﻿using SpiceEngineCore.Utilities;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using UmamiScriptingCore.Behaviors;
@@ -22,7 +21,8 @@ namespace SpiceEngine.Maps
             InlineCondition,
             Repeater,
             InlineLeaf,
-            Node,
+            Leaf,
+            Script,
             Camera
         };
 
@@ -36,12 +36,14 @@ namespace SpiceEngine.Maps
         public Predicate<BehaviorContext> InlineCondition { get; set; }
         public Action<BehaviorContext> InlineAction { get; set; }
 
+        public Type LeafType { get; set; }
+
         // For more complex custom nodes, we must parse and analyze the node's C# code
         public Script Script { get; set; }
 
         public IEnumerable<Script> GetScripts()
         {
-            if (NodeType == NodeTypes.Node)
+            if (NodeType == NodeTypes.Script)
             {
                 yield return Script;
             }
@@ -75,16 +77,26 @@ namespace SpiceEngine.Maps
                     return new RepeaterNode(Children.First().ToNode());
                 case NodeTypes.InlineLeaf:
                     return new InlineLeafNode(InlineAction);
-                case NodeTypes.Node:
+                case NodeTypes.Script:
                     // We now need to DELAY this...
                     return new ScriptNode(Script, Arguments, Children.Select(c => c.ToNode()));
-                //return ParseContent(scriptCompiler);
+                    //return ParseContent(scriptCompiler);
+                case NodeTypes.Leaf:
+                    return (Node)Activator.CreateInstance(LeafType, GetConvertedArguments().ToArray());
                 case NodeTypes.Camera:
                     return new CameraNode(CAMERA_MOVE_SPEED, CAMERA_TURN_SPEED, CAMERA_ZOOM_SPEED);
             }
 
             // TODO - Perform a better default case
             return null;
+        }
+
+        private IEnumerable<object> GetConvertedArguments()
+        {
+            foreach (var arg in Arguments)
+            {
+                yield return arg.Cast();
+            }
         }
 
         /*private Node ParseContent(IScriptCompiler scriptCompiler)

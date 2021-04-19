@@ -1,5 +1,6 @@
 ﻿using SpiceEngine.GLFWBindings.Inputs;
 using SpiceEngineCore.Entities.Cameras;
+using System;
 using TangyHIDCore;
 using UmamiScriptingCore;
 using UmamiScriptingCore.Behaviors;
@@ -42,6 +43,7 @@ namespace SampleGameProject.Resources.Behaviors.Nodes
                 if (inputProvider.IsDown(MouseButtons.Right))
                 {
                     var mouseDelta = inputProvider.MouseDelta * TurnSpeed;
+                    //Console.WriteLine("(" + mouseDelta.X + ", " + mouseDelta.Y + ")");
 
                     if (mouseDelta != Vector2.Zero)
                     {
