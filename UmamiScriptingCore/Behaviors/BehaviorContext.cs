@@ -1,6 +1,7 @@
 ﻿using SpiceEngineCore.Commands;
 using SpiceEngineCore.Components;
 using SpiceEngineCore.Entities;
+using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Geometry;
 using System.Collections.Generic;
@@ -71,6 +72,8 @@ namespace UmamiScriptingCore.Behaviors
                 _variablesByName.Remove(name);
             }
         }
+
+        public ICamera ActiveCamera => SystemProvider.EntityProvider.ActiveScene?.ActiveCamera;
 
         /*public int GetEntityIDFromMouseCoordinates()
         {

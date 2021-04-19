@@ -59,7 +59,7 @@ namespace SpiceEngine.Rendering
             Display.Window.ResolutionChanged += (s, args) =>
             {
                 // TODO - This no longer works with our _entityProvider.ActiveCamera property
-                foreach (var camera in _entityProvider.Cameras.Where(c => c.IsActive))
+                foreach (var camera in _entityProvider.ActiveScene.Cameras.Where(c => c.IsActive))
                 {
                     camera.UpdateAspectRatio(args.Resolution.AspectRatio);
                 }
@@ -283,7 +283,7 @@ namespace SpiceEngine.Rendering
         {
             _deferredRenderer.BindForGeometryWriting();
             GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
-            var camera = _entityProvider.ActiveCamera;
+            var camera = _entityProvider.ActiveScene.ActiveCamera;
 
             _deferredRenderer.GeometryPass(camera, _batchManager);
 
@@ -341,9 +341,9 @@ namespace SpiceEngine.Rendering
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
-            var camera = _entityProvider.ActiveCamera;
+            var camera = _entityProvider.ActiveScene.ActiveCamera;
             _selectionRenderer.SelectionPass(camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
-            _billboardRenderer.RenderLightSelectIDs(camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
+            _billboardRenderer.RenderLightSelectIDs(camera, _entityProvider.ActiveScene.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
             _uiRenderer.RenderSelections(_batchManager, _uiProvider);
         }
 
@@ -369,9 +369,9 @@ namespace SpiceEngine.Rendering
             GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
-            var camera = _entityProvider.ActiveCamera;
+            var camera = _entityProvider.ActiveScene.ActiveCamera;
 
-            foreach (var light in _entityProvider.Lights)
+            foreach (var light in _entityProvider.ActiveScene.Lights)
             {
                 var lightMesh = _lightRenderer.GetMeshForLight(light);
                 _lightRenderer.StencilPass(light, camera, lightMesh);

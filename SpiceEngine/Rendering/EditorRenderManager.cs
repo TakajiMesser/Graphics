@@ -270,7 +270,7 @@ namespace SpiceEngine.Rendering
 
         public void SetPhysicsVolumeColor(Color4 color)
         {
-            var entityIDs = _entityProvider.Volumes.Where(v => v is PhysicsVolume).Select(v => v.ID);
+            var entityIDs = _entityProvider.ActiveScene.Volumes.Where(v => v is PhysicsVolume).Select(v => v.ID);
 
             foreach (var entityID in entityIDs)
             {
@@ -325,7 +325,7 @@ namespace SpiceEngine.Rendering
             GL.Viewport(0, 0, Display.Resolution.Width, Display.Resolution.Height);
 
             _selectionRenderer.SelectionPass(EditorCamera.Camera, _batchManager, _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select));
-            _billboardRenderer.RenderLightSelectIDs(EditorCamera.Camera, _entityProvider.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
+            _billboardRenderer.RenderLightSelectIDs(EditorCamera.Camera, _entityProvider.ActiveScene.Lights.Where(l => _entityProvider.LayerProvider.GetEntityIDs(LayerTypes.Select).Contains(l.ID)));
 
             var vertexEntities = _entityProvider.LayerProvider.GetLayerEntityIDs("Vertices");
             if (vertexEntities.Any())
@@ -351,7 +351,7 @@ namespace SpiceEngine.Rendering
             GL.Enable(EnableCap.DepthTest);
             GL.DepthFunc(DepthFunction.Less);
 
-            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.Lights);
+            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.ActiveScene.Lights);
 
             GL.Disable(EnableCap.DepthTest);
 
@@ -378,7 +378,7 @@ namespace SpiceEngine.Rendering
 
             _skyboxRenderer.Render(EditorCamera.Camera);
             _billboardRenderer.GeometryPass(EditorCamera.Camera, _batchManager);
-            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.Lights);
+            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.ActiveScene.Lights);
 
             _deferredRenderer.BindForTransparentWriting();
 
@@ -422,7 +422,7 @@ namespace SpiceEngine.Rendering
             _deferredRenderer.BindForLitWriting();
 
             _skyboxRenderer.Render(EditorCamera.Camera);
-            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.Lights);
+            _billboardRenderer.RenderLights(EditorCamera.Camera, _entityProvider.ActiveScene.Lights);
 
             if (RenderGrid)
             {
@@ -468,7 +468,7 @@ namespace SpiceEngine.Rendering
             GL.BlendEquation(BlendEquationModeEXT.FuncAdd);
             GL.BlendFunc(BlendingFactor.One, BlendingFactor.One);
 
-            foreach (var light in _entityProvider.Lights)
+            foreach (var light in _entityProvider.ActiveScene.Lights)
             {
                 var lightMesh = _lightRenderer.GetMeshForLight(light);
                 _lightRenderer.StencilPass(light, EditorCamera.Camera, lightMesh);

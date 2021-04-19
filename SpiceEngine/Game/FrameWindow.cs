@@ -118,15 +118,17 @@ namespace SpiceEngine.Game
 
             _bitmap.AddDirtyRect(new System.Windows.Int32Rect(0, 0, Width, Height));
             _bitmap.Unlock();
+
+            _frame.Source = _bitmap;
         }
 
         public void Resize(int width, int height)
         {
-            _colorBuffer.Resize(width, height);
+            /*_colorBuffer.Resize(width, height);
             _depthBuffer.Resize(width, height);
 
             _bitmap = new WriteableBitmap(Width, Height, 1.0, 1.0, PixelFormats.Bgra32, null);
-            _frame.Source = _bitmap;
+            _frame.Source = _bitmap;*/
         }
     }
 }

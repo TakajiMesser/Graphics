@@ -18,7 +18,7 @@
     <None Remove="Geometry\SwitchToM0.py" />
     <None Remove="Geometry\SwitchToM1.py" />
     <None Remove="Geometry\SwitchToTK.py" />
-    <None Remove="Maps\IMap.cs~RF391f498.TMP" />
+    <None Remove="Mapping\IMap.cs~RF391f498.TMP" />
   </ItemGroup>
 
   <ItemGroup>

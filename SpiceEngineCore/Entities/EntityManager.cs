@@ -1,11 +1,9 @@
-﻿using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Entities.Cameras;
+﻿using SpiceEngineCore.Entities.Cameras;
 using SpiceEngineCore.Entities.Layers;
-using SpiceEngineCore.Entities.UserInterfaces;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
 using SpiceEngineCore.Maps;
+using SpiceEngineCore.Scenes;
 using SpiceEngineCore.Utilities;
 using System;
 using System.Collections.Concurrent;
@@ -18,42 +16,18 @@ namespace SpiceEngineCore.Entities
     public class EntityManager : IEntityProvider
     {
         private List<IEntity> _entities = new List<IEntity>();
-
         private Dictionary<string, INamedEntity> _entitiesByName = new Dictionary<string, INamedEntity>();
-        //private Dictionary<string, Archetype> _archetypeByName = new Dictionary<string, Archetype>();
 
         private ConcurrentDictionary<int, IEntityBuilder> _buildersByID = new ConcurrentDictionary<int, IEntityBuilder>();
-        private ConcurrentQueue<Tuple<int, IEntityBuilder>> _builderIDQueue = new ConcurrentQueue<Tuple<int, IEntityBuilder>>();
-
         private ConcurrentQueue<INamedEntity> _namedEntityQueue = new ConcurrentQueue<INamedEntity>();
         private ConcurrentQueue<Tuple<string, ICamera>> _attachedCameraQueue = new ConcurrentQueue<Tuple<string, ICamera>>();
-
         private ConcurrentQueue<int> _removedIDs = new ConcurrentQueue<int>();
-        private int _nextAvailableID = 1;
 
+        private int _nextAvailableID = 1;
         private object _availableIDLock = new object();
 
+        public IScene ActiveScene { get; private set; } = new Scene();
         public ILayerProvider LayerProvider { get; } = new LayerManager();
-        public ICamera ActiveCamera
-        {
-            get
-            {
-                var camera = Cameras.FirstOrDefault(c => c.IsActive);
-                if (camera == null)
-                {
-                    camera = Cameras.FirstOrDefault();
-                }
-
-                return camera;
-            }
-        }
-
-        public List<ICamera> Cameras { get; } = new List<ICamera>();
-        public List<IActor> Actors { get; } = new List<IActor>();
-        public List<IBrush> Brushes { get; } = new List<IBrush>();
-        public List<IVolume> Volumes { get; } = new List<IVolume>();
-        public List<ILight> Lights { get; } = new List<ILight>();
-        public List<IUIItem> UIItems { get; } = new List<IUIItem>();
 
         public event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         public event EventHandler<IDEventArgs> EntitiesRemoved;
@@ -68,13 +42,6 @@ namespace SpiceEngineCore.Entities
             {
                 _nextAvailableID = 1;
             }
-
-            Cameras.Clear();
-            Actors.Clear();
-            Brushes.Clear();
-            Volumes.Clear();
-            Lights.Clear();
-            UIItems.Clear();
         }
 
         public IEntity GetEntity(int id)
@@ -188,7 +155,7 @@ namespace SpiceEngineCore.Entities
 
                 LayerProvider.AddToLayer(LayerManager.ROOT_LAYER_NAME, id);
                 _buildersByID.TryAdd(id, entityBuilder);
-                //_builderIDQueue.Enqueue(Tuple.Create(id, entityBuilder));
+
                 yield return id;
             }
         }
@@ -206,12 +173,6 @@ namespace SpiceEngineCore.Entities
                 if (entity is INamedEntity namedEntity)
                 {
                     if (string.IsNullOrEmpty(namedEntity.Name)) throw new ArgumentException("Named entities must have a name defined");
-                    /*if (_entitiesByName.ContainsKey(namedEntity.Name))
-                    {
-                        var uniqueName = GetUniqueName(namedEntity.Name);
-                        namedEntity.Name = uniqueName;
-                    }*/
-
                     _namedEntityQueue.Enqueue(namedEntity);
                 }
 
@@ -220,7 +181,7 @@ namespace SpiceEngineCore.Entities
                     _attachedCameraQueue.Enqueue(Tuple.Create(mapCamera.AttachedEntityName, camera));
                 }
 
-                AddToList(entity);
+                ActiveScene?.AddEntity(entity);
             }
         }
 
@@ -296,47 +257,9 @@ namespace SpiceEngineCore.Entities
                 _namedEntityQueue.Enqueue(namedEntity);
             }
 
-            if (entity is ICamera camera)
-            {
-                camera.BecameActive += Camera_BecameActive;
-            }
-
-            AddToList(entity);
+            ActiveScene?.AddEntity(entity);
 
             return entity.ID;
-        }
-
-        private void Camera_BecameActive(object sender, EventArgs e)
-        {
-            foreach (var camera in Cameras.Where(c => c != sender))
-            {
-                //camera.IsActive = false;
-            }
-        }
-
-        private void AddToList(IEntity entity)
-        {
-            switch (entity)
-            {
-                case ICamera camera:
-                    Cameras.Add(camera);
-                    break;
-                case IActor actor:
-                    Actors.Add(actor);
-                    break;
-                case IBrush brush:
-                    Brushes.Add(brush);
-                    break;
-                case IVolume volume:
-                    Volumes.Add(volume);
-                    break;
-                case ILight light:
-                    Lights.Add(light);
-                    break;
-                case IUIItem uiItem:
-                    UIItems.Add(uiItem);
-                    break;
-            }
         }
 
         public IEntity DuplicateEntity(IEntity entity)
@@ -362,28 +285,7 @@ namespace SpiceEngineCore.Entities
                 _removedIDs.Enqueue(entity.ID);
             }
 
-            switch (entity)
-            {
-                case ICamera camera:
-                    camera.BecameActive -= Camera_BecameActive;
-                    Cameras.Remove(camera);
-                    break;
-                case IActor actor:
-                    Actors.Remove(actor);
-                    break;
-                case IBrush brush:
-                    Brushes.Remove(brush);
-                    break;
-                case IVolume volume:
-                    Volumes.Remove(volume);
-                    break;
-                case ILight light:
-                    Lights.Remove(light);
-                    break;
-                case IUIItem uiItem:
-                    UIItems.Remove(uiItem);
-                    break;
-            }
+            ActiveScene?.RemoveEntity(entity);
         }
 
         public void RemoveEntityByID(int id) => RemoveEntity(GetEntity(id));

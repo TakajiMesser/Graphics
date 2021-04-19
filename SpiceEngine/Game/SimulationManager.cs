@@ -1,8 +1,9 @@
 ﻿using CitrusAnimationCore;
 using CitrusAnimationCore.Animations;
-using OpenTK.Graphics.OpenGL;
 using SavoryPhysicsCore;
 using SmokyAudioCore.Sounds;
+using SpiceEngine.GLFWBindings;
+using SpiceEngine.GLFWBindings.GLEnums;
 using SpiceEngine.Scripting;
 using SpiceEngineCore.Game;
 using SpiceEngineCore.Helpers;
@@ -70,7 +71,7 @@ namespace SpiceEngine.Game
             var bitmap = new Bitmap(_resolution.Width, _resolution.Height);
             BitmapData data = bitmap.LockBits(new Rectangle(0, 0, _resolution.Width, _resolution.Height), ImageLockMode.WriteOnly, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 
-            GL.ReadPixels(0, 0, _resolution.Width, _resolution.Height, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
+            GL.ReadPixels(0, 0, _resolution.Width, _resolution.Height, GLFWBindings.GLEnums.PixelFormat.Bgra, PixelType.UnsignedByte, data.Scan0);
             GL.Finish();
 
             bitmap.UnlockBits(data);

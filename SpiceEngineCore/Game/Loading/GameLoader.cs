@@ -168,7 +168,7 @@ namespace SpiceEngineCore.Game
             {
                 //LogWatch logWatch = LogWatch.CreateWithTimeout("GameLoader", 300000, 1000);
                 //logWatch.TimedOut += (s, args) => TimedOut?.Invoke(this, args);
-                LogWatch logWatch = LogWatch.CreateAndStart("GameLoader");
+                var logWatch = LogWatch.CreateAndStart("GameLoader");
 
                 // Only process for builders added by the time we begin loading
                 var entityCount = 0;

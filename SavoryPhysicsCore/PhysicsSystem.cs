@@ -244,7 +244,7 @@ namespace SavoryPhysicsCore
 
             // TODO - ONLY move the actor colliders that reported movement in the last frame (including physics)
             // Update the actor colliders every frame, since they could have moved
-            foreach (var actor in _systemProvider.EntityProvider.Actors)
+            foreach (var actor in _systemProvider.EntityProvider.ActiveScene.Actors)
             {
                 if (_componentByID.ContainsKey(actor.ID))
                 {
@@ -258,7 +258,7 @@ namespace SavoryPhysicsCore
             }
 
             // Now, for each actor, check for broad collisions against other actors, brushes, and volumes
-            foreach (var actor in _systemProvider.EntityProvider.Actors)
+            foreach (var actor in _systemProvider.EntityProvider.ActiveScene.Actors)
             {
                 var bounds = boundsByEntityID[actor.ID];
 

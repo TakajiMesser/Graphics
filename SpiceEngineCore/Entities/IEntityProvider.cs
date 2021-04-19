@@ -1,10 +1,7 @@
-﻿using SpiceEngineCore.Entities.Actors;
-using SpiceEngineCore.Entities.Brushes;
-using SpiceEngineCore.Entities.Cameras;
-using SpiceEngineCore.Entities.Layers;
-using SpiceEngineCore.Entities.UserInterfaces;
+﻿using SpiceEngineCore.Entities.Layers;
 using SpiceEngineCore.Game.Loading;
 using SpiceEngineCore.Game.Loading.Builders;
+using SpiceEngineCore.Scenes;
 using System;
 using System.Collections.Generic;
 
@@ -13,14 +10,7 @@ namespace SpiceEngineCore.Entities
     public interface IEntityProvider
     {
         ILayerProvider LayerProvider { get; }
-        ICamera ActiveCamera { get; }
-
-        List<ICamera> Cameras { get; }
-        List<IActor> Actors { get; }
-        List<IBrush> Brushes { get; }
-        List<IVolume> Volumes { get; }
-        List<ILight> Lights { get; }
-        List<IUIItem> UIItems { get; }
+        IScene ActiveScene { get; }
 
         event EventHandler<EntityBuilderEventArgs> EntitiesAdded;
         event EventHandler<IDEventArgs> EntitiesRemoved;

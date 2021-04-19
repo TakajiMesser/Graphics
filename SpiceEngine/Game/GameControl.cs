@@ -1,7 +1,7 @@
 ﻿using CitrusAnimationCore.Animations;
-using OpenTK.Graphics;
-using OpenTK.Graphics.OpenGL;
-using OpenTK.Input;
+//using OpenTK.Graphics;
+//using OpenTK.Graphics.OpenGL;
+//using OpenTK.Input;
 using SpiceEngine.Entities.Selection;
 using SpiceEngine.Maps;
 using SpiceEngine.Rendering;
@@ -23,7 +23,7 @@ using System.Windows.Forms;
 using TangyHIDCore;
 using TangyHIDCore.Outputs;
 using Color4 = SpiceEngineCore.Geometry.Color4;
-using GLControl = OpenTK.GLControl;
+//using GLControl = OpenTK.GLControl;
 using Timer = System.Timers.Timer;
 using Vector2 = SpiceEngineCore.Geometry.Vector2;
 
@@ -38,7 +38,7 @@ namespace SpiceEngine.Game
         Texture
     }
 
-    public class GameControl : GLControl, IMouseTracker, IInvoker
+    /*public class GameControl : GLControl, IMouseTracker, IInvoker
     {
         private PanelCamera _panelCamera;
 
@@ -142,7 +142,7 @@ namespace SpiceEngine.Game
                                 //RenderManager.BatchManager.AddVolume(entityID, mesh);
                                 RenderManager.BatchManager.Load(entityID);
                             }
-                        }*/
+                        }*
                         break;
                     default:
                         if (_toolVolume != null)
@@ -298,7 +298,7 @@ namespace SpiceEngine.Game
                 _panelCamera.GridRenderer = RenderManager;
                 _panelCamera.Load();
                 
-                //RenderManager.LoadFromMap(_map/*, _entityMapping*/);
+                //RenderManager.LoadFromMap(_map/*, _entityMapping*);
                 RenderManager.SetEntityProvider(_entityProvider);
                 RenderManager.SetAnimationProvider(_animationProvider);
                 RenderManager.SetUIProvider(_uiProvider);
@@ -318,7 +318,7 @@ namespace SpiceEngine.Game
                     var mesh = new Mesh3D<ColorVertex3D>(mapVolume.Vertices.Select(v => new ColorVertex3D(v, new Color4(0.0f, 0.0f, 1.0f, 0.5f))).ToList(), mapVolume.TriangleIndices);
                     RenderManager.BatchManager.AddVolume(_toolVolume.ID, mesh);
                     RenderManager.BatchManager.Load(_toolVolume.ID);
-                }*/
+                }*
 
                 // Default to allowing all rendered entities to be selectable
                 //SelectionManager.SetSelectable(_entityProvider.EntityRenderIDs);
@@ -679,7 +679,7 @@ namespace SpiceEngine.Game
                         /*foreach (var duplication in SelectionManager.DuplicateSelection())
                         {
                             EntityDuplicated?.Invoke(this, new DuplicationEventArgs(duplication));
-                        }*/
+                        }*
                     }
 
                     SelectionManager.HandleEntityTransforms(TransformMode, _inputProvider.MouseDelta);
@@ -720,5 +720,5 @@ namespace SpiceEngine.Game
                 Mouse.SetPosition(_startMouseLocation.X, _startMouseLocation.Y);
             }
         }
-    }
+    }*/
 }
