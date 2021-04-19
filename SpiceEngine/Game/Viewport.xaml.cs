@@ -63,6 +63,14 @@ namespace SpiceEngine.Game
         }
 
         public Resolution WindowSize { get; private set; }
+        public Vector2d CursorPosition
+        {
+            get => new Vector2d(_currentMouseLocation.X, _currentMouseLocation.Y);
+            set
+            {
+                // TODO
+            }
+        }
 
         // TODO - Abstract out skybox texture provider to avoid needing map here
         public IMap Map { get; set; }
@@ -172,6 +180,7 @@ namespace SpiceEngine.Game
             MouseMove += (s, args) =>  
             {
                 var position = args.GetPosition(this);
+                _currentMouseLocation = position;
                 CursorPositionChanged?.Invoke(s, new CursorEventArgs(position.X, position.Y));
             };
 

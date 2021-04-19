@@ -1,13 +1,13 @@
-﻿using SpiceEngineCore.Rendering;
+﻿using SpiceEngineCore.Geometry;
+using SpiceEngineCore.Rendering;
 using System;
-using System.ComponentModel;
-using TangyHIDCore.Outputs;
 
 namespace TangyHIDCore.Inputs
 {
     public interface IInputTracker
     {
         Resolution WindowSize { get; }
+        Vector2d CursorPosition { get; set; }
 
         //event EventHandler PositionChanged;
         //event EventHandler<SizeEventArgs> SizeChanged;

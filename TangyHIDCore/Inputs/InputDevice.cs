@@ -22,12 +22,15 @@
 
         public DeviceTypes DeviceType { get; }
 
-        public T GetState()
+        public virtual T CaptureState()
         {
-            var state = _state;
-            _state = (T)_stateProvider.GetNextAvailableState(DeviceType);
-            _state.UpdateFrom(state);
-            return state;
+            var currentState = _state;
+            var nextState = (T)_stateProvider.GetNextAvailableState(DeviceType);
+
+            nextState.UpdateFrom(currentState);
+            _state = nextState;
+
+            return currentState;
         }
     }
 }

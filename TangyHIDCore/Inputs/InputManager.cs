@@ -4,7 +4,6 @@ using SpiceEngineCore.Geometry;
 using SpiceEngineCore.Rendering;
 using SpiceEngineCore.Utilities;
 using System;
-using System.Text;
 
 namespace TangyHIDCore.Inputs
 {
@@ -37,11 +36,10 @@ namespace TangyHIDCore.Inputs
 
         public InputMapping InputMapping { get; set; } = InputMapping.Default();
 
-        public bool IsMouseInWindow => _mouseStates[_stateIndex].IsInWindow;
-        public Vector2 MouseCoordinates => _mouseStates[_stateIndex].Position;
-
-        public Vector2 MouseDelta => _mouseStates[_stateIndex].Position - _mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Position;
-        public int MouseWheelDelta => -_mouseStates[_stateIndex].Wheel;//_mouseStates[_stateIndex > 0 ? _stateIndex - 1 : TrackedStates - 1].Wheel - _mouseStates[_stateIndex].Wheel;
+        public Vector2 MouseCoordinates => _mouse.Position;
+        public Vector2 MouseDelta => _mouse.PositionDelta;
+        public int MouseWheelDelta => -_mouse.Wheel;
+        public bool IsMouseInWindow => _mouse.IsInWindow;
 
         public event EventHandler<MouseClickEventArgs> MouseDownSelected;
         public event EventHandler<MouseClickEventArgs> MouseUpSelected;
@@ -54,9 +52,18 @@ namespace TangyHIDCore.Inputs
         {
             //var lineBuilder = new StringBuilder();
 
-            _keyStates[_stateIndex] = _keyboard.GetState();
-            _mouseStates[_stateIndex] = _mouse.GetState();
-            _gamePadStates[_stateIndex] = _gamePad.GetState();
+            _keyStates[_stateIndex] = _keyboard.CaptureState();
+            _mouseStates[_stateIndex] = _mouse.CaptureState();
+            _gamePadStates[_stateIndex] = _gamePad.CaptureState();
+
+            /*lineBuilder.Append(_stateIndex);
+            for (var i = 0; i < TrackedStates + 1; i++)
+            {
+                var state = _mouseStates[i];
+
+                lineBuilder.Append("(" + state.Position.X + ", " + state.Position.Y + ")");
+                lineBuilder.Append("\t");
+            }*/
 
             /*for (var i = 0; i < TrackedStates + 1; i++)
             {

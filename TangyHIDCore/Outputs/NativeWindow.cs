@@ -141,7 +141,7 @@ namespace TangyHIDCore.Outputs
 
             while (IsRunning)
             {
-                ProcessEvents();
+                //ProcessEvents();
 
                 if (!Exists || IsExiting)
                 {
@@ -181,7 +181,11 @@ namespace TangyHIDCore.Outputs
             // _gameState?.Resize();
         }
 
-        protected virtual void Update(double elapsedMilliseconds = 0.0) => _simulator.Tick();
+        protected virtual void Update(double elapsedMilliseconds = 0.0)
+        {
+            ProcessEvents();
+            _simulator.Tick();
+        }
 
         protected virtual void Render(double elapsedMilliseconds = 0.0)
         {

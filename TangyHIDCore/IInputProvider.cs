@@ -12,12 +12,11 @@ namespace TangyHIDCore
         InputMapping InputMapping { get; set; }
 
         Resolution WindowSize { get; }
-
-        bool IsMouseInWindow { get; }
+        
         Vector2 MouseCoordinates { get; }
-
         Vector2 MouseDelta { get; }
         int MouseWheelDelta { get; }
+        bool IsMouseInWindow { get; }
 
         event EventHandler<MouseClickEventArgs> MouseDownSelected;
         event EventHandler<MouseClickEventArgs> MouseUpSelected;
