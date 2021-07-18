@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SpiceEngine.Core\SpiceEngine.Core.csproj" />
+    <ProjectReference Include="..\SpiceEngine.GLFWBindings\SpiceEngine.GLFWBindings.csproj" />
+  </ItemGroup>
+
+</Project>

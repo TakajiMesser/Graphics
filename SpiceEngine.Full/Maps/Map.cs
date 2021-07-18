@@ -1,0 +1,110 @@
+﻿using Newtonsoft.Json;
+using SavoryPhysicsCore.Partitioning;
+using SpiceEngineCore.Maps;
+using System.Collections.Generic;
+
+namespace SpiceEngine.Maps
+{
+    /// <summary>
+    /// A map should consist of a collection of static brushes, actors, a camera, and/or a player (cutscenes and menu's won't have a player)
+    /// 
+    /// </summary>
+    public abstract class Map : MapLoader<Map3D>, IMap
+    {
+        public Map() => CalculateBounds();
+
+        public List<MapCamera> Cameras { get; set; } = new List<MapCamera>();
+        public List<MapBrush> Brushes { get; set; } = new List<MapBrush>();
+        public List<MapActor> Actors { get; set; } = new List<MapActor>();
+        public List<MapLight> Lights { get; set; } = new List<MapLight>();
+        public List<MapVolume> Volumes { get; set; } = new List<MapVolume>();
+        public List<MapUIItem> UIItems { get; set; } = new List<MapUIItem>();
+
+        public List<string> SkyboxTextureFilePaths { get; set; } = new List<string>();
+
+        public int CameraCount => Cameras.Count;
+        public int BrushCount => Brushes.Count;
+        public int ActorCount => Actors.Count;
+        public int LightCount => Lights.Count;
+        public int VolumeCount => Volumes.Count;
+        public int UIItemCount => UIItems.Count;
+
+        [JsonIgnore]
+        public IPartition Boundaries { get; protected set; }
+
+        public IMapCamera GetCameraAt(int index) => Cameras[index];
+        public IMapBrush GetBrushAt(int index) => Brushes[index];
+        public IMapActor GetActorAt(int index) => Actors[index];
+        public IMapLight GetLightAt(int index) => Lights[index];
+        public IMapVolume GetVolumeAt(int index) => Volumes[index];
+        public IMapUIItem GetUIItemAt(int index) => UIItems[index];
+
+        public int AddCamera(IMapCamera mapCamera)
+        {
+            if (mapCamera is MapCamera camera)
+            {
+                Cameras.Add(camera);
+                return Cameras.Count - 1;
+            }
+
+            return -1;
+        }
+
+        public int AddBrush(IMapBrush mapBrush)
+        {
+            if (mapBrush is MapBrush brush)
+            {
+                Brushes.Add(brush);
+                return Brushes.Count - 1;
+            }
+
+            return -1;
+        }
+
+        public int AddActor(IMapActor mapActor)
+        {
+            if (mapActor is MapActor actor)
+            {
+                Actors.Add(actor);
+                return Actors.Count - 1;
+            }
+
+            return -1;
+        }
+
+        public int AddLight(IMapLight mapLight)
+        {
+            if (mapLight is MapLight light)
+            {
+                Lights.Add(light);
+                return Lights.Count - 1;
+            }
+
+            return -1;
+        }
+
+        public int AddVolume(IMapVolume mapVolume)
+        {
+            if (mapVolume is MapVolume volume)
+            {
+                Volumes.Add(volume);
+                return Volumes.Count - 1;
+            }
+
+            return -1;
+        }
+
+        public int AddUIItem(IMapUIItem mapUIItem)
+        {
+            if (mapUIItem is MapUIItem uiItem)
+            {
+                UIItems.Add(uiItem);
+                return UIItems.Count - 1;
+            }
+
+            return -1;
+        }
+
+        protected abstract void CalculateBounds();
+    }
+}

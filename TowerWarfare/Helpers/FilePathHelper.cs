@@ -7,7 +7,7 @@ namespace TowerWarfare.Helpers
     /// </summary>
     public static class FilePathHelper
     {
-        private static readonly string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..";
+        private static readonly string SOLUTION_DIRECTORY = AppDomain.CurrentDomain.BaseDirectory + @"..\..\..\..";
 
         #region Projects
         public static string PROJECT_PATH = SOLUTION_DIRECTORY + @"\TowerWarfare\Resources\Projects\TestProject.pro";

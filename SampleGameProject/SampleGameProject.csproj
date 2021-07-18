@@ -112,6 +112,9 @@
     <Compile Include="Resources\Behaviors\Nodes\BlockNode.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="App.config" />
     <None Include="packages.config" />
     <None Include="Resources\Animations\boblampclean.md5anim" />
@@ -226,33 +229,9 @@
       <Project>{132ea7f6-e711-4d33-84be-754f21a73d79}</Project>
       <Name>SpiceEngine.GLFWBindings</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SpiceEngineCore\SpiceEngineCore.csproj">
-      <Project>{6C5C7F0D-05AF-4817-9FD3-C817B1111872}</Project>
-      <Name>SpiceEngineCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj">
+    <ProjectReference Include="..\SpiceEngine\SpiceEngine.Old.csproj">
       <Project>{016d7a9d-c5d9-4d7f-a6e5-7753cc8832fe}</Project>
-      <Name>SpiceEngine</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\StarchUICore\StarchUICore.csproj">
-      <Project>{0fe2afa5-606d-47f1-b267-dac3936b300f}</Project>
-      <Name>StarchUICore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SweetGraphicsCore\SweetGraphicsCore.csproj">
-      <Project>{f6c9b29f-7751-4fd2-88da-cfe8b512c645}</Project>
-      <Name>SweetGraphicsCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SavoryPhysicsCore\SavoryPhysicsCore.csproj">
-      <Project>{38042CD2-2EB5-43CF-8973-6DA5DCD16AAA}</Project>
-      <Name>SavoryPhysicsCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\TangyHIDCore\TangyHIDCore.csproj">
-      <Project>{48B39AA2-DF70-45FE-B7F5-196A388E68AB}</Project>
-      <Name>TangyHIDCore</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\UmamiScriptingCore\UmamiScriptingCore.csproj">
-      <Project>{380125f7-f5c5-4397-a1ac-eaae9c061959}</Project>
-      <Name>UmamiScriptingCore</Name>
+      <Name>SpiceEngine.Old</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

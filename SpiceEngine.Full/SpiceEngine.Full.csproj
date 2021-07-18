@@ -1,0 +1,53 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Game\Viewport.xaml.cs" />
+    <Compile Remove="Utilities\WPFExtensions.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Game\Viewport.xaml" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="3.10.0" />
+    <PackageReference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform" Version="3.6.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="12.0.2" />
+    <PackageReference Include="AssimpNet" Version="4.1.0" />
+    <PackageReference Include="System.CodeDom" Version="5.0.0" />
+    <PackageReference Include="System.Runtime.Loader" Version="4.3.0" />
+    <PackageReference Include="TgaLib" Version="1.0.1" />
+    <PackageReference Include="System.Resources.Extensions" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CitrusAnimation\CitrusAnimation.csproj" />
+    <ProjectReference Include="..\SavoryPhysics\SavoryPhysics.csproj" />
+    <ProjectReference Include="..\SmokyAudio\SmokyAudio.csproj" />
+    <ProjectReference Include="..\SpiceEngine.Core\SpiceEngine.Core.csproj" />
+    <ProjectReference Include="..\StarchUI\StarchUI.csproj" />
+    <ProjectReference Include="..\SweetGraphics\SweetGraphics.csproj" />
+    <ProjectReference Include="..\TangyHID\TangyHID.csproj" />
+    <ProjectReference Include="..\UmamiScripting\UmamiScripting.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Properties\Resources.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Properties\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>

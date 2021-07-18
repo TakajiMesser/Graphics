@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\SpiceEngine\SpiceEngine.csproj" />
+    <ProjectReference Include="..\SpiceEngine\SpiceEngine.Old.csproj" />
   </ItemGroup>
 
   <ItemGroup>

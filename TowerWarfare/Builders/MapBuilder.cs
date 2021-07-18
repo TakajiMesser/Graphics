@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using TowerWarfare.Entities.Actors.Towers;
 using TowerWarfare.Entities.Actors.Troops;
 using TowerWarfare.Entities.Cameras;
+using TowerWarfare.Properties;
 using static SpiceEngineCore.Maps.MapLight;
 
 namespace TowerWarfare.Builders
@@ -252,7 +253,7 @@ namespace TowerWarfare.Builders
                 PushScript = new UmamiScriptingCore.Scripts.Script()
                 {
                     Name = "ButtonPushNode",
-                    SourcePath = Helpers.FilePathHelper.BUTTON_PUSH_NODE_PATH
+                    Contents = Resources.ButtonPushNode
                 }
             };
 

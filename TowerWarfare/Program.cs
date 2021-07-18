@@ -17,7 +17,7 @@ namespace TowerWarfare
         {
             //PerformUITest();
             ProjectBuilder.CreateTestProject();
-            var map = Map.Load(FilePathHelper.MAP_PATH);
+            var map = Map.LoadFromPath(FilePathHelper.MAP_PATH);
 
             var windowWrapper = new WindowWrapper(new SpiceEngineCore.Game.Settings.Configuration());
             windowWrapper.Start(map);
@@ -105,7 +105,7 @@ namespace TowerWarfare
         {
             var builder = new StringBuilder();
 
-            for(var i = 0; i < GetAncestryTier(element); i++)
+            for (var i = 0; i < GetAncestryTier(element); i++)
             {
                 builder.Append("\t");
             }

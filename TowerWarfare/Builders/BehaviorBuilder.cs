@@ -1,7 +1,7 @@
 ﻿using SpiceEngine.Maps;
 using SpiceEngineCore.Geometry;
 using System.Collections.Generic;
-using TowerWarfare.Helpers;
+using TowerWarfare.Properties;
 using UmamiScriptingCore.Scripts;
 
 namespace TowerWarfare.Builders
@@ -39,7 +39,7 @@ namespace TowerWarfare.Builders
                     Script = new Script()
                     {
                         Name = "CameraNode",
-                        SourcePath = FilePathHelper.CAMERA_NODE_PATH
+                        Contents = Resources.CameraNode
                     }
                 }
             }
@@ -82,7 +82,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
-                                        SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
+                                        Contents = Resources.MoveToNode
                                     }
                                 },
                                 new MapNode()
@@ -91,7 +91,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
-                                        SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
+                                        Contents = Resources.TurnTowardsNode
                                     }
                                 }
                             }
@@ -107,7 +107,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
-                                        SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
+                                        Contents = Resources.MoveToNode
                                     }
                                 },
                                 new MapNode()
@@ -116,7 +116,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
-                                        SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
+                                        Contents = Resources.TurnTowardsNode
                                     }
                                 }
                             }
@@ -132,7 +132,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
-                                        SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
+                                        Contents = Resources.MoveToNode
                                     }
                                 },
                                 new MapNode()
@@ -141,7 +141,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
-                                        SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
+                                        Contents = Resources.TurnTowardsNode
                                     }
                                 }
                             }
@@ -157,7 +157,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "MoveToNode",
-                                        SourcePath = FilePathHelper.MOVE_TO_NODE_PATH
+                                        Contents = Resources.MoveToNode
                                     }
                                 },
                                 new MapNode()
@@ -166,7 +166,7 @@ namespace TowerWarfare.Builders
                                     Script = new Script()
                                     {
                                         Name = "TurnTowardsNode",
-                                        SourcePath = FilePathHelper.TURN_TOWARDS_NODE_PATH
+                                        Contents = Resources.TurnTowardsNode
                                     }
                                 }
                             }
